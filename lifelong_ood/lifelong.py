@@ -33,11 +33,16 @@ from .score import ScoreField
 
 class LifelongLearner:
     def __init__(self, tree=None, prior_var=0.05, min_count=3, mode="leaves", backend="auto",
-                 K=3, tau=0.5, w0=1.2, wmax=2.0, steps=50, seed=0):
+                 K=3, tau=0.05, w0=1.2, wmax=2.0, wmin=0.8, schedule="anneal",
+                 u_start=0.4, steps=50, seed=0):
+        # K, tau, schedule, wmin/wmax and u_start are all set by experiments/e0_tune.py, not guessed:
+        # tau=0.05 adaptive takes teacher accuracy to the probe ceiling (0.20 -> 0.75 joint), and the
+        # annealed schedule keeps 71% of that through sampling where the paper's variance schedule
+        # keeps 21%.  See PLAN.md 3.1 for the measurements.
         self.tree = tree if tree is not None else make_tree(prior_var, backend=backend)
         self.adapters = []              # [(name, tree)] -- separate trees, base stays frozen
-        self.cfg = dict(min_count=min_count, mode=mode, K=K, tau=tau,
-                        w0=w0, wmax=wmax, steps=steps, seed=seed)
+        self.cfg = dict(min_count=min_count, mode=mode, K=K, tau=tau, w0=w0, wmax=wmax,
+                        wmin=wmin, schedule=schedule, u_start=u_start, steps=steps, seed=seed)
         self._field = None
         self.history = []
 
@@ -81,7 +86,7 @@ class LifelongLearner:
 
     # ── step 3: recreate OOD instances by sampling the composed prototype ────
     def sample_teacher(self, teacher, n=64, steps=None, seed=None, w0=None, wmax=None,
-                       u_start=0.55):
+                       wmin=None, schedule=None, u_start=None):
         """Guided reverse diffusion from a NOISED TEACHER DRAW rather than pure noise (SDEdit-style).
 
         The teacher already knows the composition (mu_T, Sigma_T); what it lacks is manifold detail.
@@ -93,10 +98,14 @@ class LifelongLearner:
         seed = c["seed"] if seed is None else seed
         rng = np.random.default_rng(seed)
         x0 = teacher["mu"] + np.sqrt(teacher["var"]) * rng.standard_normal((n, len(teacher["mu"])))
+        gw = cfg_weight(teacher, w0 if w0 is not None else c["w0"],
+                        wmax if wmax is not None else c["wmax"],
+                        wmin if wmin is not None else c["wmin"],
+                        schedule or c["schedule"])
         return self.field.sample(n=n, steps=steps or c["steps"], seed=seed,
-                                 u_start=u_start, x_init=np.clip(x0, 0, 1),
-                                 guide_eps=teacher_eps(teacher),
-                                 guide_w=cfg_weight(teacher, w0 or c["w0"], wmax or c["wmax"]))
+                                 u_start=c["u_start"] if u_start is None else u_start,
+                                 x_init=np.clip(x0, 0, 1),
+                                 guide_eps=teacher_eps(teacher), guide_w=gw)
 
     # ── step 4: consolidate the recreated instances into the manifold ────────
     def consolidate(self, pool, name, strategy="graft"):

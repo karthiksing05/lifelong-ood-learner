@@ -85,6 +85,43 @@ def composition_accuracy(probes, samples, d, f, b):
                 joint=float((pd & pf & pb).mean()))
 
 
+def _rmse(A, B):
+    return float(np.sqrt(np.mean((np.asarray(A, np.float64) - np.asarray(B, np.float64)) ** 2)))
+
+
+def sample_geometry(samples, xq, reference=None):
+    """The faithfulness/generalization split the accuracy metric cannot see.
+
+    Composition accuracy alone has a degenerate optimum: copy the query.  It scores 1.0 while
+    learning nothing about the held-out class, which is exactly the failure the poe-diffusion paper
+    diagnoses in its query-only baseline (their Table 2: best faithfulness, collapsed
+    generalization).  These three numbers separate the cases.
+
+      novelty      RMSE from each sample to the QUERY.  Near zero = memorization.
+      diversity    mean pairwise RMSE among samples.  Near zero = mode collapse onto one image.
+      gen_rmse     mean over samples of the min RMSE to the slot's OTHER held-out instances.
+                   Low = the samples look like real members of the OOD class, not just like x_q.
+
+    A method that has genuinely recovered the composition has all three healthy: novelty and
+    diversity comparable to the reference set's own internal spread, gen_rmse no worse than it.
+    """
+    S = np.asarray(samples, np.float64)
+    out = dict(novelty=_rmse(S, np.ravel(xq)[None]))
+    if len(S) > 1:
+        d = np.sqrt(((S[:, None] - S[None]) ** 2).mean(2))
+        out["diversity"] = float(d[np.triu_indices(len(S), 1)].mean())
+    else:
+        out["diversity"] = 0.0
+    if reference is not None and len(reference):
+        R = np.asarray(reference, np.float64)
+        dm = np.sqrt(((S[:, None] - R[None]) ** 2).mean(2))
+        out["gen_rmse"] = float(dm.min(1).mean())
+        if len(R) > 1:
+            dr = np.sqrt(((R[:, None] - R[None]) ** 2).mean(2))
+            out["ref_spread"] = float(dr[np.triu_indices(len(R), 1)].mean())
+    return out
+
+
 # ── forgetting on the generative object itself ───────────────────────────────
 def per_slot_metrics(field, X, slots, slot_ids, u_recon=0.05, max_per_slot=40):
     """-> {slot: dict(loglik, r2)} on held-out data, under the CURRENT field."""

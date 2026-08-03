@@ -37,13 +37,116 @@ def cosine_abar(u, s=0.008):
     return np.clip(f / f0, 1e-5, 1.0)
 
 
-class ScoreField:
+class BaseScoreField:
+    """Everything a diffusion manifold must provide, expressed in terms of ONE primitive: `eps`.
+
+    Reverse sampling, mode ascent and the Laplace covariance are all written against
+    `self.eps(X, u, branch) -> epsilon prediction at noise level u`, so a backbone only has to supply
+    that.  Two do: `ScoreField` (a Cobweb tree read as an analytic Gaussian mixture) and
+    `neural.NeuralScoreField` (a trained UNet).  Because `compose.py` and `LifelongLearner` also
+    speak only this interface, the entire composition-and-consolidation stack runs unchanged on
+    either -- which is what lets the experiments attribute results to the METHOD rather than to the
+    backbone that happens to implement it.
+
+    Subclasses must define `dim` and exactly one of `eps` / `score` (the two are related by
+    eps = -sqrt(1-abar) * score, and each default is written in terms of the other).  `logp` is
+    optional: the analytic field has it in closed form, a UNet does not.
+    """
+    dim = None
+
+    def eps(self, X, u, branch=None):
+        a = float(cosine_abar(u))
+        return -np.sqrt(1.0 - a) * self.score(X, u, branch)
+
+    def score(self, X, u, branch=None):
+        a = float(cosine_abar(u))
+        return -self.eps(X, u, branch) / np.sqrt(1.0 - a)
+
+    def tweedie(self, X, u, branch=None):
+        a = float(cosine_abar(u))
+        return (np.atleast_2d(X) + (1.0 - a) * self.score(X, u, branch)) / np.sqrt(a)
+
+    def logp(self, X, u=0.0, branch=None):
+        raise NotImplementedError(f"{type(self).__name__} has no closed-form density")
+
+    # ── reverse-diffusion sampling (DDIM), with optional analytic guidance ───
+    def sample(self, n=16, steps=50, seed=0, u_start=1.0, x_init=None,
+               guide_eps=None, guide_w=None, branch=None, clip=(-0.2, 1.2)):
+        """DDIM sampler.
+
+        guide_eps(x, u) -> conditional epsilon (e.g. the PoE teacher of compose.py, their Eq. 12);
+        guide_w(u) -> guidance weight.  Composed as classifier-free guidance, their Eq. 13:
+        eps_hat = eps_uncond + w(u) * (eps_cond - eps_uncond).  `branch` selects a conditional
+        branch of the unconditional model itself (a consolidated concept).
+        """
+        rng = np.random.default_rng(seed)
+        D = self.dim
+        a0 = float(cosine_abar(u_start))
+        if x_init is None:
+            x = rng.standard_normal((n, D))
+        else:
+            x = np.sqrt(a0) * np.atleast_2d(x_init) + np.sqrt(1 - a0) * rng.standard_normal((n, D))
+        us = np.linspace(u_start, 0.0, steps + 1)
+        for i in range(steps):
+            u, un = float(us[i]), float(us[i + 1])
+            a, an = float(cosine_abar(u)), float(cosine_abar(un))
+            e = self.eps(x, u, branch)
+            if guide_eps is not None:
+                w = float(guide_w(u)) if guide_w is not None else 1.0
+                e = e + w * (guide_eps(x, u) - e)
+            x0 = np.clip((x - np.sqrt(1 - a) * e) / np.sqrt(a), *clip)
+            x = np.sqrt(an) * x0 + np.sqrt(1 - an) * e
+        return np.clip(x, clip[0], clip[1])
+
+    # ── mode ascent on p_t (the paper's Eq. 4) ──────────────────────────────
+    def mode_ascent(self, xq, u, n_starts=16, iters=100, lr=0.05, seed=0, init="query"):
+        """Adam ascent on log p_t from noised copies of the query -> (modes in x_t space, x0-space)."""
+        rng = np.random.default_rng(seed)
+        a = float(cosine_abar(u))
+        D = self.dim
+        if init == "query" and xq is not None:
+            Q = np.atleast_2d(np.asarray(xq, np.float64))
+            Q = Q[np.arange(n_starts) % len(Q)]
+            x = np.sqrt(a) * Q + np.sqrt(1 - a) * rng.standard_normal((n_starts, D))
+        else:
+            x = rng.standard_normal((n_starts, D))
+        m = np.zeros_like(x); v = np.zeros_like(x)
+        b1, b2, eps = 0.9, 0.999, 1e-8
+        for i in range(1, iters + 1):
+            g = self.score(x, u)
+            m = b1 * m + (1 - b1) * g
+            v = b2 * v + (1 - b2) * g * g
+            x = x + lr * (m / (1 - b1 ** i)) / (np.sqrt(v / (1 - b2 ** i)) + eps)
+        return x, x / np.sqrt(a)
+
+    def laplace_diag(self, xt, u, probes=4, delta=5e-3, seed=0, var_floor=1e-4, var_cap=1.0):
+        """Diagonal Laplace covariance of p_t at x_t via Hutchinson finite differences on the score,
+        pulled back to x0-space:  Sigma_t = -1/diag(H),  Sigma_0 = (Sigma_t - (1-abar))/abar."""
+        rng = np.random.default_rng(seed)
+        xt = np.atleast_2d(xt)
+        a = float(cosine_abar(u))
+        h = np.zeros_like(xt)
+        for _ in range(probes):
+            vsg = rng.choice([-1.0, 1.0], size=xt.shape)
+            h += vsg * (self.score(xt + delta * vsg, u) - self.score(xt - delta * vsg, u)) / (2 * delta)
+        h /= probes
+        # only strictly-negative curvature defines a variance; elsewhere fall back to the cap.
+        # np.divide with a `where` mask rather than `np.where(cond, -1/h, cap)`, which would still
+        # evaluate -1/h at h == 0 and emit a divide-by-zero warning.
+        neg = h < -1e-9
+        st = np.full_like(h, var_cap)
+        np.divide(-1.0, h, out=st, where=neg)
+        return np.clip((st - (1.0 - a)) / a, var_floor, var_cap)
+
+
+class ScoreField(BaseScoreField):
     def __init__(self, snap, mode="leaves", level_gamma=1.0, chunk=128):
         self.snap = snap
         self.mode = mode
         self.level_gamma = float(level_gamma)
         self.chunk = int(chunk)
         self.max_depth = int(snap["depth"].max())
+        self.dim = int(snap["M"].shape[1])
         self._masks = {}
 
     # ── which components are active at noise level u ─────────────────────────
@@ -109,79 +212,6 @@ class ScoreField:
             out += np.einsum("bk,bkd->bd", r[:, j0:j1], d)
         return out
 
-    def eps(self, X, u, branch=None):
-        a = float(cosine_abar(u))
-        return -np.sqrt(1.0 - a) * self.score(X, u, branch)
-
-    def tweedie(self, X, u, branch=None):
-        a = float(cosine_abar(u))
-        return (np.atleast_2d(X) + (1.0 - a) * self.score(X, u, branch)) / np.sqrt(a)
-
-    # ── reverse-diffusion sampling (DDIM), with optional analytic guidance ───
-    def sample(self, n=16, steps=50, seed=0, u_start=1.0, x_init=None,
-               guide_eps=None, guide_w=None, branch=None, clip=(-0.2, 1.2)):
-        """DDIM sampler on the analytic field.
-
-        guide_eps(x, u) -> conditional epsilon (e.g. the PoE teacher of compose.py, their Eq. 12);
-        guide_w(u) -> guidance weight (their Eq. 14).  Composed as classifier-free guidance, Eq. 13:
-        eps_hat = eps_uncond + w(u) * (eps_cond - eps_uncond).  `branch` restricts the UNCONDITIONAL
-        field to one adapter's components (conditional generation from a consolidated concept).
-        """
-        rng = np.random.default_rng(seed)
-        D = self.snap["M"].shape[1]
-        a0 = float(cosine_abar(u_start))
-        if x_init is None:
-            x = rng.standard_normal((n, D))
-        else:
-            x = np.sqrt(a0) * np.atleast_2d(x_init) + np.sqrt(1 - a0) * rng.standard_normal((n, D))
-        us = np.linspace(u_start, 0.0, steps + 1)
-        for i in range(steps):
-            u, un = float(us[i]), float(us[i + 1])
-            a, an = float(cosine_abar(u)), float(cosine_abar(un))
-            e = self.eps(x, u, branch)
-            if guide_eps is not None:
-                w = float(guide_w(u)) if guide_w is not None else 1.0
-                e = e + w * (guide_eps(x, u) - e)
-            x0 = (x - np.sqrt(1 - a) * e) / np.sqrt(a)
-            x0 = np.clip(x0, *clip)
-            x = np.sqrt(an) * x0 + np.sqrt(1 - an) * e
-        return np.clip(x, 0.0, 1.0)
-
-    # ── mode ascent on p_t (the paper's Eq. 4, against the analytic score) ───
-    def mode_ascent(self, xq, u, n_starts=16, iters=100, lr=0.05, seed=0, init="query"):
-        """Adam ascent on log p_t from noised copies of the query -> (modes in x_t space, x0 = /sqrt(abar))."""
-        rng = np.random.default_rng(seed)
-        a = float(cosine_abar(u))
-        D = self.snap["M"].shape[1]
-        if init == "query" and xq is not None:
-            Q = np.atleast_2d(np.asarray(xq, np.float64))
-            Q = Q[np.arange(n_starts) % len(Q)]
-            x = np.sqrt(a) * Q + np.sqrt(1 - a) * rng.standard_normal((n_starts, D))
-        else:
-            x = rng.standard_normal((n_starts, D))
-        m = np.zeros_like(x); v = np.zeros_like(x)
-        b1, b2, eps = 0.9, 0.999, 1e-8
-        for i in range(1, iters + 1):
-            g = self.score(x, u)
-            m = b1 * m + (1 - b1) * g
-            v = b2 * v + (1 - b2) * g * g
-            mh = m / (1 - b1 ** i); vh = v / (1 - b2 ** i)
-            x = x + lr * mh / (np.sqrt(vh) + eps)
-        return x, x / np.sqrt(a)
-
-    def laplace_diag(self, xt, u, probes=4, delta=5e-3, seed=0, var_floor=1e-4, var_cap=1.0):
-        """Diagonal Laplace covariance of p_t at x_t via Hutchinson finite differences on the score,
-        pulled back to x0-space:  Sigma_t = -1/diag(H),  Sigma_0 = (Sigma_t - (1-abar))/abar."""
-        rng = np.random.default_rng(seed)
-        xt = np.atleast_2d(xt)
-        a = float(cosine_abar(u))
-        h = np.zeros_like(xt)
-        for _ in range(probes):
-            vsg = rng.choice([-1.0, 1.0], size=xt.shape)
-            gp = self.score(xt + delta * vsg, u)
-            gm = self.score(xt - delta * vsg, u)
-            h += vsg * (gp - gm) / (2 * delta)
-        h /= probes
-        st = np.where(h < -1e-9, -1.0 / h, var_cap)
-        s0 = (st - (1.0 - a)) / a
-        return np.clip(s0, var_floor, var_cap)
+    # `eps`, `tweedie`, `sample`, `mode_ascent` and `laplace_diag` are inherited from
+    # BaseScoreField -- they are written against `score`/`eps` alone, so the analytic field and the
+    # neural one run the identical algorithms.  Only the closed-form pieces are overridden above.

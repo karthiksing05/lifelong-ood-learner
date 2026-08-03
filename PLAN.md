@@ -55,52 +55,59 @@ each run, which is fast in C++). Delete the cache after changing tree/backend co
 
 ## 3. Open issues, in priority order
 
-### 3.1 E2 sampling quality (IN PROGRESS — next action)
-State: teacher μ_T composes correctly (probes read the queried (digit,fg,bg) off μ_T), but guided
-DDIM samples lose digit identity on some slots (quick run: poe_tree joint 0.19–0.38; digit acc is the
-weak factor). Fixes already in: candidate pool = ALL tree concepts (total-loglik ranking let
-background pixels crowd out fg experts — do not undo this), guidance floor `wmin` in `cfg_weight`,
-SDEdit-style teacher-init sampling (`sample_teacher(u_start=0.55)`).
+### 3.1 E2 composition quality — ROOT CAUSE FOUND AND FIXED (adaptive PoE temperature)
 
-Next action (script ready to paste, run with the cobweb env python from repo root):
-sweep `(w0, u_start) ∈ {1.2, 2.5, 4.0} × {0.4, 0.55, 0.7}` on ~4 OOD slots, measure joint
-composition accuracy AND novelty RMSE `sqrt(mean((S - x_q)^2))` (novelty guards against the
-query-copy degenerate optimum). Pick the best joint accuracy with novelty ≥ roughly the query_only
-baseline's novelty × 3, set as defaults in `LifelongLearner.cfg` / `sample_teacher`.
+**The bug was the teacher, not the sampler.** Diagnosis chain:
 
-```python
-# from repo root:  ~/flash/miniconda3/envs/cobweb/bin/python <this>
-import sys, numpy as np
-sys.path.insert(0, '.'); sys.path.insert(0, 'experiments')
-from common import base_parser, load_all, ood_queries
-from lifelong_ood.evals import composition_accuracy
-args = base_parser().parse_args(['--quick'])
-data, learner, probes = load_all(args)
-qs = ood_queries(data, n_slots=4, seed=0)
-for w0, us in [(1.2,.55),(2.5,.55),(4.,.55),(2.5,.4),(4.,.4),(2.5,.7)]:
-    js, novs = [], []
-    for qi,q in enumerate(qs):
-        xq = data['X'][q['query']]
-        t = learner.compose(xq, discovery='tree')
-        S = learner.sample_teacher(t, n=12, seed=100+qi, w0=w0, u_start=us)
-        a = composition_accuracy(probes, S, q['d'], q['f'], q['b'])
-        js.append(a['joint']); novs.append(float(np.sqrt(((S-xq)**2).mean())))
-    print(f"w0={w0} u_start={us}: joint={np.mean(js):.3f} {[round(j,2) for j in js]} nov={np.mean(novs):.3f}")
-```
+1. A `(w0, u_start)` sweep over `{1.2, 2.5, 4.0, 6.0} × {0.4, 0.55, 0.7}` moved joint accuracy
+   barely at all (0.00–0.21) and two of four slots stayed at exactly 0.0 for every setting —
+   guidance strength was not the lever.
+2. Per-slot inspection showed μ_T probe-reads the queried triple on exactly the slots that scored
+   nonzero, and misreads it on the ones that scored zero. **Sample accuracy is bounded by teacher
+   accuracy**; the sampler was faithfully rendering a wrong teacher.
+3. Expert dumps explained the misreads: on slot 19 (`digit 1, yellow on dark_brown`) the three
+   selected experts read `(1,1,3)`, `(1,0,0)`, `(1,1,0)` — one correct background, two wrong ones.
+   At the paper's τ=0.5 the per-dimension softmax gave them 0.42 / 0.29 / 0.29, so the two wrong
+   backgrounds outvoted the one right one and μ_T came out `deep_red`.
 
-If digit identity still breaks after the sweep: the likely cause is per-dim weight mixing of stroke
-pixels across experts with different digits. Two structured fixes to try, in order:
-(a) bias selection toward SHAPE-compatible experts — add the digit-region coverage (pixels where the
-query deviates from its background) as a mask when computing marginal gains in `submodular_select`;
-(b) two-stage teacher: first select the best shape expert (same-digit, any color), then restrict the
-color experts' per-dim weights to the background/stroke partition implied by μ of the shape expert.
+**Why the paper's τ=0.5 does not port.** Their experts are DDPM modes with per-mode Laplace
+covariances that vary widely; Cobweb's variances sit near `prior_var` almost everywhere, which
+compresses every per-dimension log-likelihood gap by a common factor (a whole background-colour
+difference is only ~0.2 nats/pixel at prior_var=0.05). A fixed τ tuned for the former near-uniformly
+averages the latter — and that also breaks the internal consistency of the method, since selection
+maximizes a per-dimension MAX (their Eq. 8) while composition was applying a near-uniform blend.
 
-### 3.2 E2 metrics: faithfulness vs generalization (NOT STARTED)
-query_only currently scores joint=1.0 by construction (teacher-init makes it copy the query). Mirror
-the paper's split: report per method (i) joint composition accuracy, (ii) novelty RMSE to the query,
-(iii) sample diversity (mean pairwise RMSE), and optionally (iv) mean min-RMSE to the slot's held-out
-`rest` images (their "generalization" reference). Add to `e2_composition.py` row dict; the paper's
-narrative to reproduce: query_only = faithful but degenerate, top-k = wrong composition, PoE = both.
+**The fix** (in `compose.poe_teacher`, documented there as a deviation): set the temperature from the
+data's own scale, `T = tau · mean_r std_j l_{j,r}`, exactly as cobweb-poincare sets its profile
+temperature. Scale-free, so it transfers across datasets and `prior_var` without retuning.
+
+Measured on ALL 40 held-out slots (quick scale, teacher μ_T probe reading, no sampling):
+
+| K | τ | joint | digit | fg | bg |
+|---|---|---|---|---|---|
+| 3 | 0.5 (paper) | 0.200 | 0.72 | 0.90 | **0.42** |
+| 3 | 0.05·adaptive | **0.625** | 0.75 | 0.90 | **0.97** |
+| 6 | 0.05·adaptive | 0.650 | 0.75 | 0.93 | 0.97 |
+| — | *probe ceiling on REAL held-out images* | *0.700* | *0.90* | *0.90* | *0.90* |
+
+0.625 against a 0.700 ceiling = **89% of what a genuine OOD instance scores**. Defaults changed to
+`tau=0.05, adaptive_tau=True`; K stays at the paper's 3 (K=6 buys +0.025, not worth the deviation).
+
+Remaining gap is digit identity (0.75 vs 0.90 ceiling). If worth closing later, the structured fixes
+are: (a) mask `submodular_select`'s marginal gains by the digit region (pixels where the query
+deviates from its background) so shape-compatible experts are preferred; (b) two-stage teacher —
+pick the shape expert first, then let colour experts weigh only within the stroke/background
+partition its μ implies.
+
+Sampler settings are being re-swept against the corrected teacher (the first sweep measured a broken
+one); update the defaults in `LifelongLearner.cfg` when that lands.
+
+### 3.2 E2 metrics: faithfulness vs generalization — DONE
+`evals.sample_geometry` returns novelty (RMSE to the query), diversity (mean pairwise RMSE),
+gen_rmse (mean min-RMSE to the slot's OTHER held-out instances) and ref_spread (the reference set's
+own internal spread, the yardstick for the other three). Wired into `e2_composition.py` rows and
+summary table. The narrative to reproduce: query_only = high accuracy but near-zero novelty
+(memorization), top-k = wrong composition, PoE = accuracy at reference-like novelty and diversity.
 
 ### 3.3 poe_ascent discovery is weak at quick scale (NOT STARTED)
 `candidates_ascent` (the paper-faithful route) got joint 0.0 on the quick run. Before tuning, verify

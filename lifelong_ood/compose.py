@@ -43,22 +43,43 @@ def candidates_tree(snap, xq, top=None, per_depth_cap=None):
     return M[keep], V[keep], dict(node=keep, depth=depth[keep], loglik=ll[keep])
 
 
-def candidates_ascent(field, xq, u_grid=(0.15, 0.3, 0.45, 0.6), n_starts=8, iters=80,
-                      lr=0.05, seed=0, probes=4, dedup_tol=1.0):
-    """The paper's discovery: mode ascent on p_t at several noise levels, Laplace covariance at each
-    mode, pulled back to x0-space, deduplicated by L2 distance.  -> (M [P,D], V [P,D], meta)."""
+def candidates_ascent(field, xq, u_grid=(0.05, 0.1, 0.15, 0.2, 0.3, 0.4), n_starts=16, iters=150,
+                      lr=0.1, seed=0, probes=4, dedup_rmse=0.05, init="hybrid"):
+    """The paper's discovery route: mode ascent on p_t at several noise levels (their Eq. 4), a
+    Laplace covariance at each mode from Hutchinson probes, pulled back to x0-space, deduplicated.
+
+    Defaults follow the paper's ColorMNIST column (their Table 6) rather than round numbers:
+    a low-noise timestep grid (their [50, 400] of T=1000 -> u in [0.05, 0.4]), 150 ascent iterations,
+    base step 0.1, 4 Hutchinson probes, and -- the detail that matters most -- HYBRID INITIALIZATION,
+    half the chains started from the noised query and half from pure noise.  A pool grown only from
+    the query explores one basin, and composition needs experts that DISAGREE with the query
+    (the right background lives in a different basin from the right foreground).
+
+    `dedup_rmse` is a per-dimension RMSE, not a raw squared L2: over D=3072 dimensions two visibly
+    different images sit ~190 apart in squared L2, so the old raw threshold of 1.0 deduplicated
+    nothing and the pool was mostly copies of one mode.
+    """
     Ms, Vs, us = [], [], []
+    half = max(1, n_starts // 2)
     for u in u_grid:
-        xt, x0 = field.mode_ascent(xq, u, n_starts=n_starts, iters=iters, lr=lr, seed=seed)
-        v0 = field.laplace_diag(xt, u, probes=probes, seed=seed)
-        Ms.append(x0); Vs.append(v0); us.extend([u] * len(x0))
+        parts = ([("query", n_starts - half), ("random", half)] if init == "hybrid"
+                 else [(init, n_starts)])
+        for k, (mode, ns) in enumerate(parts):
+            if ns <= 0:
+                continue
+            xt, x0 = field.mode_ascent(xq, u, n_starts=ns, iters=iters, lr=lr,
+                                       seed=seed + 1000 * k, init=mode)
+            Ms.append(x0)
+            Vs.append(field.laplace_diag(xt, u, probes=probes, seed=seed))
+            us.extend([u] * len(x0))
     M = np.concatenate(Ms); V = np.concatenate(Vs); us = np.array(us)
+    tol2 = (dedup_rmse ** 2) * M.shape[1]
     keep = []
     for i in range(len(M)):
-        if all(np.sum((M[i] - M[j]) ** 2) > dedup_tol for j in keep):
+        if all(np.sum((M[i] - M[j]) ** 2) > tol2 for j in keep):
             keep.append(i)
     keep = np.array(keep)
-    return M[keep], V[keep], dict(u=us[keep])
+    return M[keep], V[keep], dict(u=us[keep], n_raw=len(M))
 
 
 # ── steps 2-3: submodular selection + weighted PoE ────────────────────────────
@@ -83,17 +104,35 @@ def submodular_select(L, K=3):
     return np.array(sel)
 
 
-def poe_teacher(xq, M, V, K=3, tau=0.5):
-    """Select + weigh + multiply.  -> dict(mu, var, sel, w) with mu, var [D]."""
+def poe_teacher(xq, M, V, K=3, tau=0.05, adaptive_tau=True):
+    """Select + weigh + multiply.  -> dict(mu, var, sel, w) with mu, var [D].
+
+    ADAPTIVE TEMPERATURE is a documented deviation from the paper's Eq. 10, and it is the single
+    change that makes composition work here.  The paper fixes tau=0.5 against experts whose Laplace
+    covariances are estimated per-mode from a UNet and therefore vary widely.  Cobweb's variances
+    instead sit near `prior_var` almost everywhere, which compresses every per-dimension
+    log-likelihood difference by a common factor: two experts differing by a whole background colour
+    are separated by only ~0.2 nats per pixel, so a tau=0.5 softmax averages them, and a background
+    supported by ONE correct expert loses to two incorrect ones.  Measured on the 40 held-out
+    ColorMNIST slots, background accuracy of mu_T runs 0.35 at the paper's tau and 0.97 sharpened.
+
+    So the temperature is set from the data's own scale, exactly as cobweb-poincare sets its profile
+    temperature:  T = tau * mean_r std_j l_{j,r}.  That makes the weighting scale-free -- it
+    transfers across datasets and prior_var settings without retuning -- and it restores the
+    consistency the fixed value breaks: selection maximizes a per-dimension MAX (Eq. 8), so the
+    composition should approach a per-dimension argmax rather than a near-uniform blend.
+    """
     L = loglik_perdim(xq, M, V)
     sel = submodular_select(L, K)
-    Ls = L[sel] / tau
-    Ls -= Ls.max(0, keepdims=True)
-    w = np.exp(Ls)
+    Ls = L[sel]
+    T = tau * max(float(Ls.std(0).mean()), 1e-6) if adaptive_tau else tau
+    Z = Ls / T
+    Z -= Z.max(0, keepdims=True)
+    w = np.exp(Z)
     w /= w.sum(0, keepdims=True)                     # their Eq. 10, per-dimension
     prec = (w / V[sel]).sum(0)                       # their Eq. 7
     mu = (w * M[sel] / V[sel]).sum(0) / prec
-    return dict(mu=mu, var=1.0 / prec, sel=sel, w=w)
+    return dict(mu=mu, var=1.0 / prec, sel=sel, w=w, temperature=T)
 
 
 # ── the analytic teacher inside classifier-free guidance ─────────────────────
@@ -108,18 +147,38 @@ def teacher_eps(teacher):
     return _eps
 
 
-def cfg_weight(teacher, w0=1.2, wmax=2.0, wmin=0.8):
-    """-> guide_w(u): variance-aware guidance schedule, their Eq. 14, with a floor.
+def cfg_weight(teacher, w0=1.2, wmax=2.0, wmin=0.8, schedule="anneal"):
+    """-> guide_w(u): how hard the analytic teacher pulls, as a function of noise level.
 
-    The floor is an addition to the paper's schedule that our analytic setting needs: their
-    unconditional branch is a UNet whose epsilon has O(1) scale, while ours is a mixture score whose
-    precision 1/(abar V + (1-abar)) grows large at small noise -- with concept variances ~prior_var
-    the prior pulls ~1/prior_var times harder per unit distance than the teacher near u=0, and an
-    unfloored schedule lets late denoising steps drag the sample back onto the nearest SEEN slot,
-    exactly the failure the guidance exists to prevent."""
+    Read w as a mixing weight: classifier-free guidance forms
+    `(1 - w) * eps_uncond + w * eps_cond`, so w=1 follows the teacher exactly, w<1 lets the
+    unconditional manifold contribute detail, and w>1 extrapolates away from it.
+
+    `schedule="variance"` is the paper's Eq. 14, `min(w0 * tr(Sigma_t)/d, wmax)`, whose job is to
+    cancel the implicit Sigma_t^-1 in Eq. 12 so that guidance strength is comparable across queries
+    regardless of prototype geometry.  A floor `wmin` is added because our unconditional branch is a
+    Gaussian mixture, not a UNet: its precision 1/(abar*V + (1-abar)) is large at low noise, so an
+    unfloored weight lets the last denoising steps drag the sample onto the nearest SEEN slot.
+
+    `schedule="anneal"` (default) is this repository's schedule and reflects a real difference
+    between the two settings.  A convolutional UNet trained on 120 ColorMNIST slots shares weights
+    across colours and therefore assigns some density to an unseen (fg, bg) pairing; a Gaussian
+    mixture over tree concepts assigns it essentially NONE -- that is what makes the composition
+    out-of-distribution for this model class.  So the unconditional field is trustworthy for generic
+    image structure at high noise but actively wrong about the composition at low noise, where
+    identity is decided.  The schedule therefore anneals from `wmin` at u=1 to `wmax` at u=0,
+    handing the late steps to the teacher.  E0's sampler sweep is what selects between the two.
+
+    `schedule="const"` holds w fixed at `wmax`; useful for isolating the mixing weight.
+    """
     var = teacher["var"]
 
     def _w(u):
+        u = float(np.clip(u, 0.0, 1.0))
+        if schedule == "const":
+            return float(wmax)
+        if schedule == "anneal":
+            return float(wmin + (wmax - wmin) * (1.0 - u))
         a = float(cosine_abar(u))
         return float(np.clip(w0 * float(np.mean(a * var + (1.0 - a))), wmin, wmax))
     return _w
