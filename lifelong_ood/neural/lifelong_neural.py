@@ -176,7 +176,7 @@ class NeuralLifelongLearner:
         return self
 
     def consolidate_batch(self, items, epochs=10, batch=16, lr=1e-3, seed=None, group=True,
-                          verbose=False):
+                          replay=None, verbose=False):
         """Add K concepts to the manifold in ONE consolidation.  `items` = [(name, pool, mu), ...].
 
         All K leaves and any shared group node they were given are optimized TOGETHER: one Adam over
@@ -194,10 +194,22 @@ class NeuralLifelongLearner:
         names = [n for n, _, _ in items]
         mus = [np.ravel(m if m is not None else p.mean(0)) for _, p, m in items]
         self.bank.add_concepts(names, mus, group=group)
-        params = self.bank.trainable_batch(names)
+        # `replay` = [(existing_name, pool), ...] trained alongside the new concepts WITHOUT being
+        # re-registered.  This is generative replay (Shin et al.): the pools are sampled from the
+        # model's own earlier concepts, so old knowledge defends itself through the loss.  It only
+        # does anything when ancestors are trainable -- with frozen ancestors nothing shared can
+        # move, so there is nothing for replay to protect, which is the point of the comparison.
+        replay = list(replay or [])
+        new_names, names = names, names + [n for n, _ in replay]
+        params, seen_ids = [], set()
+        for p in self.bank.trainable_batch(names):
+            if id(p) not in seen_ids:
+                seen_ids.add(id(p)); params.append(p)
         opt = torch.optim.Adam(params, lr=lr)
         pools = [torch.from_numpy(np.asarray(p, np.float32)).to(self.device).reshape(-1, CH, IMG, IMG)
                  for _, p, _ in items]
+        pools += [torch.from_numpy(np.asarray(p, np.float32)).to(self.device).reshape(-1, CH, IMG, IMG)
+                  for _, p in replay]
         model = self.field.model
         model.train()
         g = torch.Generator(device="cpu").manual_seed(seed)
@@ -228,13 +240,13 @@ class NeuralLifelongLearner:
                 print(f"      batch distil ep {ep + 1}/{epochs}: "
                       f"mean {np.mean(list(last.values())):.4f}", flush=True)
         model.eval()
-        self.history += names
+        self.history += new_names            # replayed concepts were already in the history
         self.last_batch_curves = {
             n: dict(name=n, curve=v, first=float(np.mean(v[:4])) if v else None,
                     final=float(np.mean(v[-4:])) if v else None,
                     depth=len(self.bank.tree.path_of(self.bank.concepts[n]["leaf"])) - 1)
-            for n, v in curves.items()}
-        self.last_curve = self.last_batch_curves[names[-1]]
+            for n, v in curves.items() if n in new_names}
+        self.last_curve = self.last_batch_curves[new_names[-1]]
         return self
 
     def learn_concept(self, xq, name, n_pool=64, epochs=10, **kw):
