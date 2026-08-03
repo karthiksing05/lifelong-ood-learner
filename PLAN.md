@@ -64,6 +64,8 @@ tree in `tree.py` is only a portability fallback).
 
 ## 2. Status
 
+> Full results, with the paper-replication analysis, live in [`RESULTS.md`](RESULTS.md).
+
 ### Verified and working
 
 | piece | file | evidence |
@@ -77,10 +79,13 @@ tree in `tree.py` is only a portability fallback).
 | **hierarchical adapter bank** | `neural/adapters.py`, `neural/lifelong_neural.py` | ✅ `tests/test_neural.py` |
 | tuning-of-record | `experiments/e0_tune.py` | ✅ chose tau, K, guidance schedule |
 | E1 manifold validity | `experiments/e1_manifold.py` | ✅ **full scale** |
-| E2 OOD composition | `experiments/e2_composition.py` | 🔄 full-scale run in flight |
-| E3 analytic lifelong | `experiments/e3_lifelong.py` | 🔄 full-scale run in flight |
+| E2 OOD composition | `experiments/e2_composition.py` | ✅ **full scale, all 40 slots** |
+| E3 analytic lifelong | `experiments/e3_lifelong.py` | ✅ **full scale, 12 concepts, both strategies** |
 | E4 composition closure | `experiments/e4_closure.py` | ⚠️ runs; hypothesis needs redesign, see §3.2 |
-| N1/N2/N3 neural experiments | `experiments/n{1,2,3}_*.py` | N1 🔄 training; N2/N3 plumbing ✅, awaiting checkpoint |
+| N1/N2/N3 neural experiments | `experiments/n{1,2,3}_*.py` | ✅ **all complete** (N1 trained 146 min; N3 10 concepts × 3 arms) |
+| N0 neural sampler diagnosis | `experiments/n0_tune.py` | ✅ found the teacher-covariance bias |
+| per-concept retention analysis | `experiments/analyze_n3.py` | ✅ |
+| multi-seed pooling | `experiments/aggregate.py` | ✅ (no multi-seed runs yet — see §3.0) |
 
 ### Headline numbers so far
 
@@ -120,7 +125,7 @@ gets denser*, so the advantage of annealing is largest on small trees. Any claim
 must state the scale it was measured at. This is also direct evidence for the argument that
 motivates the neural backbone.
 
-**E2 (full scale, in flight).** Per-slot joint accuracy over the first 11 held-out slots:
+**E2 (full scale, complete — see RESULTS.md §4 for the final 40-slot table).** Per-slot joint accuracy over the first 11 held-out slots:
 `poe_tree` 0.79 / 0.00 / 1.00 / 0.96 / 0.96 / 0.46 / 1.00 / 0.71 / 0.25 / 0.83 / 0.00, with
 `poe_ascent` tracking it closely (0.71 / 0.08 / 1.00 / 1.00 / 0.88 / 0.54 / 1.00 / 0.00) and
 `top1`/`top3` at essentially 0.00 throughout. That is the paper's qualitative result reproduced, plus

@@ -180,7 +180,9 @@ colours on the requested backgrounds (`results/n1_cond_samples.png`).
 - **The analytic `ifit` control is not destructive**, so the analytic non-degradation guarantee is
   structural rather than empirically decisive (see above).
 
-`PLAN.md` carries the full status, the open work, and the threats to validity.
+[`RESULTS.md`](RESULTS.md) collects every number in one place, together with an honest account of
+**why we do not reproduce the paper's query-only collapse** -- the one row where our table inverts
+theirs. `PLAN.md` carries the working status, the open work, and the threats to validity.
 
 ### The headline: 10 OOD concepts consolidated in sequence (N3, neural backbone)
 
