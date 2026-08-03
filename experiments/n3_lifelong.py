@@ -101,13 +101,14 @@ def main():
         steps = [dict(step=0, base_err=e0, base_drift=0.0, params=0,
                       retention_exact=1.0, retention_acc=None)]
         print(f"\n[n3:{arm}] base epsilon error {e0:.4f}", flush=True)
-        marks, learned = {}, []
+        marks, learned, marks_seed = {}, [], {}
         for k, q in enumerate(qs, 1):
             name = f"ood_{q['slot']}"
             xq01 = data["X"][q["query"]]
             teacher, pool = L.learn_concept(to_model(xq01).ravel(), name, n_pool=args.n_pool,
                                             epochs=args.epochs, seed=args.seed + k)
             marks[name] = fingerprint(field, name, seed=args.seed)
+            marks_seed[name] = k          # pin this concept's eval seed for the rest of the run
             learned.append((name, q))
 
             S = to_data(L.sample_concept(name, n=args.n_samples, seed=args.seed + k)).astype(np.float32)
@@ -132,16 +133,24 @@ def main():
             # the run, so it is evaluated on a bounded subset: the OLDEST concept (the one with the
             # most chances to have decayed) plus the most recent few.
             sub = ([prev[0]] + prev[-args.retention_probe:]) if prev else []
-            seen_names, accs = set(), []
+            seen_names, accs, per = set(), [], {}
             for pname, pq in sub:
                 if pname in seen_names:
                     continue
                 seen_names.add(pname)
+                # FIXED seed per concept, not per step: re-sampling a concept with a different seed
+                # each step makes retention_acc wander by pure sampling noise, which reads as
+                # forgetting even when retention_exact proves the function is bit-identical.  With
+                # the seed pinned to the concept, any movement in this number is real.
                 Sp = to_data(L.sample_concept(pname, n=args.n_samples,
-                                              seed=args.seed + 500 + k)).astype(np.float32)
-                accs.append(composition_accuracy(probes, Sp, pq["d"], pq["f"], pq["b"])["joint"])
+                                              seed=args.seed + 500 + marks_seed[pname])
+                             ).astype(np.float32)
+                a = composition_accuracy(probes, Sp, pq["d"], pq["f"], pq["b"])["joint"]
+                accs.append(a)
+                per[pname] = a
             rec["retention_exact"] = float(np.mean(exact)) if exact else 1.0
             rec["retention_acc"] = float(np.mean(accs)) if accs else None
+            rec["retention_per_concept"] = per
             rec["retention_n_exact"] = len(exact)
             rec["retention_n_acc"] = len(accs)
             rec["depth"] = len(L.bank.tree.path_of(L.bank.concepts[name]["leaf"])) - 1

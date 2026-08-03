@@ -182,19 +182,33 @@ colours on the requested backgrounds (`results/n1_cond_samples.png`).
 
 `PLAN.md` carries the full status, the open work, and the threats to validity.
 
-**The mechanism holds in the strong form (N3, neural backbone).** `retention_exact = 1.00` at every
-step for the hierarchical arm — every previously consolidated concept *bit-identical* after every
-later insertion — against **0.00** for the `unfrozen` ablation as soon as a second concept lands,
-with frozen-base drift `+0.00000` throughout and distillation loss falling normally (0.09 → 0.044).
-This is where the mechanism earns its keep: unlike the analytic backbone, gradient training on a
-shared adapter genuinely does overwrite, and freezing ancestors is what prevents it.
+### The headline: 10 OOD concepts consolidated in sequence (N3, neural backbone)
 
-*Plasticity in that run was not measurable* — conditional samples from a freshly consolidated concept
-scored 0.00 — for two reasons since diagnosed and fixed: the pools were near-identical (see below),
-and 12 epochs over 64 images is only 48 optimizer steps, far too few for a rank-8 LoRA. A rerun with
-a corrected pool and a 5× distillation budget is in flight; **the retention and drift numbers above
-are unaffected**, since they concern what consolidation does to *other* concepts, not how well it
-learns its own.
+| arm | bit-identical retention | per-concept accuracy drift | accuracy range across steps | plasticity | frozen-base drift |
+|---|---|---|---|---|---|
+| **`hier`** (ours) | **1.00** | **+0.021** | **0.000** | 0.65 | +0.00000 |
+| `flat` (no sharing) | 1.00 | +0.035 | 0.000 | 0.64 | +0.00000 |
+| `unfrozen` (no freezing) | **0.00** | **−0.625** | 0.375 | 0.66 | +0.00000 |
+
+Reproduce with `python experiments/analyze_n3.py`.
+
+The middle columns are the claim. With ancestors frozen, **every consolidated concept's composition
+accuracy is literally constant** — range 0.000 across all subsequent consolidations — and its
+epsilon output is bit-identical. Remove only the freezing and concepts that worked at birth lose
+**0.917** of their accuracy. Plasticity is unaffected (0.64–0.66 across all arms), so this is not a
+stability/plasticity trade being paid for: it is free, because it is structural.
+
+**Consolidation is faithful when the pool is.** Across the stream, `pool → consolidated` reads
+0.98 → 0.94, 0.83 → 0.88, 1.00 → 1.00, 0.00 → 0.00: **98% of the pool's composition accuracy is
+retained** on pools that worked, and a bad pool is faithfully reproduced as a bad concept.
+Consolidation neither invents quality nor destroys it, so the quality of the whole loop is set by
+composition — the step this repository inherits from the paper — not by the step it adds.
+
+**The hierarchy buys a warm start, not a better endpoint.** New leaves inherit their ancestors'
+deltas, so distillation *starts* 30% lower in the hierarchical arm (first-epoch loss 0.113 vs
+0.160 flat) — but converges to the same place (0.0495 vs 0.0499). On this benchmark, sharing
+accelerates learning without improving it. The freezing is what carries the no-forgetting result;
+the hierarchy is what makes it cheap.
 
 **Composition works, and one fix is responsible (E0, all 40 held-out slots).** Composing the
 out-of-distribution teacher and reading it with the attribute probes:

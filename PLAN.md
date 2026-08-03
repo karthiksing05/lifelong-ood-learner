@@ -135,22 +135,62 @@ image, not method failures, which is why the per-slot table matters and the mean
 −0.05 nats**, drift in denoise R² **+0.0000**, unconditional validity stays 0.94–1.00. Non-degradation
 is holding at full scale.
 
-**N3 (plumbing run on an untrained checkpoint — structure only).** `hier` keeps
-`retention_exact = 1.00` at every step; the `unfrozen` ablation drops to **0.00** as soon as a second
-concept is consolidated; frozen-base drift is **+0.00000** in all arms. The mechanism does what it
-claims; the accuracy numbers need the trained checkpoint.
+**N1 (neural backbone, trained).** 6.8M-param UNet, 200 epochs, 146 min on one GPU. Unconditional
+valid-composition rate **0.938**; conditional joint accuracy **0.789** on requested seen slots, level
+with the probe ceiling. It generates clean digits in the requested colours.
+
+**N2 (composition on the neural backbone, 12 slots).** `poe` 0.674, `query_only` **0.833**,
+`top1`/`top3` 0.000. **query_only beats PoE here** — a negative result, and the opposite of the
+analytic backbone. When the backbone generalizes well enough to re-render a single query, concept
+discovery is not obviously buying anything on this benchmark.
+
+**N3 (the headline — 10 OOD concepts consolidated in sequence, trained backbone).**
+
+| arm | bit-identical retention | per-concept drift from birth | accuracy range across steps | plasticity | base drift |
+|---|---|---|---|---|---|
+| `hier` | **1.00** | **+0.021** | **0.000** | 0.650 | +0.00000 |
+| `flat` | 1.00 | +0.035 | 0.000 | 0.637 | +0.00000 |
+| `unfrozen` | **0.00** | **−0.625** (−0.917 on concepts that worked) | 0.375 | 0.662 | +0.00000 |
+
+With ancestors frozen, a consolidated concept's accuracy is *exactly* constant (range 0.000) for the
+rest of the run. Remove only the freezing and concepts that worked lose 0.917 of their accuracy.
+Plasticity is unchanged across arms, so no stability/plasticity trade is being paid.
+
+Consolidation retains **98%** of pool accuracy on pools that worked (0.98→0.94, 1.00→1.00), and
+faithfully reproduces a bad pool as a bad concept. The hierarchy gives a **warm start** — first-epoch
+distillation loss 0.113 (`hier`) vs 0.160 (`flat`), 30% lower — but converges to the same final loss
+(0.0495 vs 0.0499). Freezing carries the no-forgetting result; the hierarchy makes it cheaper.
+
+Reproduce the per-concept analysis with `python experiments/analyze_n3.py`.
 
 ## 3. Open work, in priority order
 
-### 3.1 Collect the in-flight full-scale runs (DO THIS FIRST)
-Jobs submitted this session: E2 `3647390`, E3 `3647391`, DDPM training `3647581`. Check with
-`squeue --me`; outputs in `experiments/slurm/`. E2 ≈ 7 h (40 slots × 5 methods × 32 samples), DDPM
-≈ 3.5 h (200 epochs). When the checkpoint lands, run N2 and N3 at full scale:
+### 3.0 Seeds — THE most important remaining gap
+Everything above is **single-seed**. `--seed` is plumbed through every experiment and
+`experiments/aggregate.py` pools `results/<name>__seed<k>.json` into mean ± SE automatically (every
+run writes its seed-tagged copy, so this needs no discipline beyond launching the jobs). Before any
+of this is written up:
 ```
-sbatch --export=ALL,SCRIPT="experiments/n2_composition.py --n-slots 12" experiments/run_gpu.sh
-sbatch --export=ALL,SCRIPT="experiments/n3_lifelong.py --n-concepts 12" experiments/run_gpu.sh
+for s in 0 1 2; do
+  sbatch --export=ALL,SCRIPT="experiments/e2_composition.py --n-slots 40 --seed $s" experiments/run.sh
+  sbatch --export=ALL,SCRIPT="experiments/e3_lifelong.py --n-concepts 12 --seed $s" experiments/run.sh
+  sbatch --export=ALL,SCRIPT="experiments/n3_lifelong.py --n-concepts 10 --n-pool 96 --epochs 60 --seed $s" experiments/run_gpu.sh
+done
+python experiments/aggregate.py
 ```
-Then write the numbers into README §Experiments and into §2 above.
+N3's headline (`range across steps = 0.000` vs `unfrozen` −0.917) is structural and will not move,
+but every accuracy number will.
+
+### 3.1 The composition step is now the bottleneck, not consolidation
+Consolidation retains 98% of what it is given, so end-to-end quality is set by how good the pool is,
+and pools vary wildly by slot (0.00 to 1.00). Two concrete leads:
+- **Per-slot failures are systematic, not noise.** Slots on the `(cyan, deep_red)` pair fail far more
+  than others across both backbones. Diagnose at teacher level (cheap, no sampling): which experts
+  get selected, and does μ_T probe-read correctly?
+- **Digit identity is the weak factor everywhere** (E2 full: fg 0.99, bg 0.84, digit 0.69). The
+  per-dimension coverage objective has no notion of shape. Try masking `submodular_select`'s marginal
+  gains by the digit region (pixels where the query deviates from its background) so shape-compatible
+  experts are preferred.
 
 ### 3.2 E4's hypothesis needs a redesign (analysis done, fix not written)
 E4 asks whether a consolidated concept gets *reused* by later compositions. The quick run measured
@@ -181,14 +221,13 @@ deduplicated *nothing* over 3072 dims). Still worth checking: does ascent actual
 p_t rising, modes stationary), and are the Laplace variances hitting the clip bounds? The headline
 claim to aim for is `poe_tree ≈ poe_ascent`: the tree gives the paper's discovery for free.
 
-### 3.4 Analytic `sample_concept` is weak
-E3 reports `new joint` between 0.03 and 0.88 across concepts — conditional generation from a grafted
-adapter is unreliable, unlike `sample_teacher` which E0 tuned. It uses a fixed `guidance=2.0`. Give
-it the same treatment: sweep guidance and `u_start` in `e0_tune.py` against consolidated concepts.
-
-### 3.5 Seeds and error bars
-Everything is single-seed. Before any of this is written up, run E1/E2/E3 and N3 over ≥3 seeds and
-report mean ± SE. `--seed` is already plumbed through every experiment.
+### 3.4 Analytic `sample_concept` is weak — and the neural fix probably applies
+E3 reports `new joint` between 0.03 and 1.00 across concepts. The neural equivalent turned out to be
+a **guidance bug, not a learning failure**: the default `guidance=2.0` scored 0.00 while `1.0` scored
+0.38, because classifier-free guidance extrapolates away from a *weak* unconditional model, and here
+the unconditional branch is a strong one (see `tests/diag_sample_concept.py`). The analytic
+`sample_concept` still uses `guidance=2.0` against a full-mixture unconditional branch — the same
+setup. **Try `guidance=1.0` first**; it is a one-line change and likely most of the gap.
 
 ### 3.6 Threats to validity to state plainly in the writeup
 - Metrics are **probe-based**, not FID/CLIP as in the paper. The probes are linear-ish softmax
