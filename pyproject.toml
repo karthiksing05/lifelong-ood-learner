@@ -1,0 +1,13 @@
+[build-system]
+requires = ["setuptools>=65"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "lifelong-ood-learner"
+version = "0.1.0"
+description = "Lifelong learning as repeated composition of hierarchical prototypes on an analytic diffusion manifold"
+requires-python = ">=3.10"
+dependencies = ["numpy>=1.24", "matplotlib>=3.7"]
+
+[tool.setuptools]
+packages = ["lifelong_ood"]
