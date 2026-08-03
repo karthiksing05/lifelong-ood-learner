@@ -142,9 +142,19 @@ class NeuralLifelongLearner:
         return teacher, pool
 
     # ── using what was learned ───────────────────────────────────────────────
-    def sample_concept(self, name, n=16, steps=None, seed=None, guidance=2.0, u_start=1.0):
+    def sample_concept(self, name, n=16, steps=None, seed=None, guidance=1.0, u_start=1.0):
         """Conditional generation from a consolidated concept: its adapter path is active and its
-        learned embedding conditions the model, contrasted against the frozen base (CFG)."""
+        learned embedding conditions the model, contrasted against the frozen base (CFG).
+
+        `guidance=1.0` -- follow the adapter exactly -- rather than the usual CFG value above 1, and
+        this is measured, not conservative (tests/diag_sample_concept.py): joint accuracy runs 0.38
+        at w=1.0, 0.12 at 1.5, and 0.00 at 2.0 and above.  Standard CFG extrapolates away from a
+        WEAK unconditional model, which sharpens; here the "unconditional" branch is the frozen base
+        DDPM, which is a strong generative model of the seen slots, so pushing away from it leaves
+        the image manifold entirely.  The diagnostic also confirms the adapter itself is fine --
+        post-hoc loss on its pool is 0.0041 with the adapter active against 0.0131 for the frozen
+        base -- so what looked like a failure to learn was purely a failure to sample.
+        """
         c = self.cfg
         # `field.eps(x, u, name)` activates this concept's adapter path and embedding; the
         # unconditional branch inside sample() is `field.eps(x, u, None)`, which activates the empty
