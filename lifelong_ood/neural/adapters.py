@@ -226,13 +226,20 @@ class HierarchicalAdapterBank:
 
     # -- activation -----------------------------------------------------------
     def activate(self, name):
-        """Context manager setting the active adapter path (None -> the frozen base model)."""
+        """Context manager setting the active adapter path.
+
+        Anything that is not a registered concept -- None, or an int class id of the base model's
+        own trained classes -- activates the EMPTY path, i.e. the frozen base.  Only consolidated
+        concepts have adapters.
+        """
         bank = self
+        path = list(self.concepts[name]["path"]) if (isinstance(name, str)
+                                                     and name in self.concepts) else []
 
         class _Ctx:
             def __enter__(self):
                 self.prev = list(bank.state["path"])
-                bank.state["path"] = [] if name is None else list(bank.concepts[name]["path"])
+                bank.state["path"] = path
                 return self
 
             def __exit__(self, *a):
