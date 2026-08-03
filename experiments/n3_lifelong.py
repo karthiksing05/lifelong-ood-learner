@@ -73,6 +73,9 @@ def main():
     p.add_argument("--n-eval", type=int, default=128)
     p.add_argument("--seed", type=int, default=0)
     p.add_argument("--arms", nargs="+", default=["hier", "flat", "unfrozen"])
+    p.add_argument("--retention-probe", type=int, default=3,
+                   help="most-recent earlier concepts re-sampled for behavioural retention "
+                        "(the oldest is always included; the exact test always covers all)")
     p.add_argument("--quick", action="store_true")
     args = p.parse_args()
     if args.quick:
@@ -115,16 +118,27 @@ def main():
                        geometry=sample_geometry(S, xq01, data["X"][q["rest"][:100]]))
             rec["base_drift"] = rec["base_err"] - e0
             rec["distil"] = L.last_curve                 # first/final loss: the transfer signal
-            # the strong no-forgetting test: are earlier concepts' functions untouched?
-            exact, accs = [], []
-            for pname, pq in learned[:-1]:
-                exact.append(float(np.array_equal(fingerprint(field, pname, seed=args.seed),
-                                                  marks[pname])))
+            # The strong no-forgetting test runs over EVERY earlier concept, because it is cheap: a
+            # fingerprint is a handful of forward passes on fixed noise.
+            prev = learned[:-1]
+            exact = [float(np.array_equal(fingerprint(field, pn, seed=args.seed), marks[pn]))
+                     for pn, _ in prev]
+            # The behavioural version needs full sampling, which is O(k) per step and would dominate
+            # the run, so it is evaluated on a bounded subset: the OLDEST concept (the one with the
+            # most chances to have decayed) plus the most recent few.
+            sub = ([prev[0]] + prev[-args.retention_probe:]) if prev else []
+            seen_names, accs = set(), []
+            for pname, pq in sub:
+                if pname in seen_names:
+                    continue
+                seen_names.add(pname)
                 Sp = to_data(L.sample_concept(pname, n=args.n_samples,
                                               seed=args.seed + 500 + k)).astype(np.float32)
                 accs.append(composition_accuracy(probes, Sp, pq["d"], pq["f"], pq["b"])["joint"])
             rec["retention_exact"] = float(np.mean(exact)) if exact else 1.0
             rec["retention_acc"] = float(np.mean(accs)) if accs else None
+            rec["retention_n_exact"] = len(exact)
+            rec["retention_n_acc"] = len(accs)
             rec["depth"] = len(L.bank.tree.path_of(L.bank.concepts[name]["leaf"])) - 1
             steps.append(rec)
             if k <= 2 and arm == "hier":
@@ -135,7 +149,8 @@ def main():
                           title=f"conditional samples from adapter {name}")
             ra = "n/a" if rec["retention_acc"] is None else f"{rec['retention_acc']:.2f}"
             print(f"[n3:{arm}] step {k} (+{rec['name']}): new {rec['new_acc']['joint']:.2f}, "
-                  f"retention exact {rec['retention_exact']:.2f} acc {ra}, "
+                  f"retention exact {rec['retention_exact']:.2f} ({rec['retention_n_exact']}) "
+                  f"acc {ra} ({rec['retention_n_acc']}), "
                   f"base drift {rec['base_drift']:+.5f}, depth {rec['depth']}, "
                   f"distil {rec['distil']['first']:.4f}->{rec['distil']['final']:.4f}, "
                   f"params {rec['params'] / 1e6:.2f}M", flush=True)
