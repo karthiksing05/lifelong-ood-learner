@@ -119,7 +119,7 @@ def main():
               f"(delta {after['joint'] - before['joint']:+.3f}), "
               f"adapter-experts {after['adapter_expert_frac']:.2f}")
 
-    save_json(out, os.path.join(RESULTS, "e4_closure.json"))
+    save_json(out, os.path.join(RESULTS, "e4_closure.json"), seed=args.seed)
     dt = out["delta_treatment"]["joint"]
     dc = out["delta_control"]["joint"]
     print(f"\n[e4] composition accuracy on held-out digits of ({target_fg}, {target_bg}):")

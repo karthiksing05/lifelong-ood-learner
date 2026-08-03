@@ -81,7 +81,8 @@ def main():
         rs = [r[k] for r in rows if k in r]
         if rs:
             summary[k] = {m: float(np.mean([r[m] for r in rs])) for m in keys if m in rs[0]}
-    save_json(dict(rows=rows, summary=summary), os.path.join(RESULTS, "e2_composition.json"))
+    save_json(dict(rows=rows, summary=summary), os.path.join(RESULTS, "e2_composition.json"),
+              seed=args.seed)
     print(f"\n[e2] {len(rows)} OOD slots, {args.n_samples} samples each")
     print(f"    {'method':11s} {'joint':>6s} {'digit':>6s} {'fg':>5s} {'bg':>5s} "
           f"{'novel':>7s} {'divers':>7s} {'gen':>7s}")

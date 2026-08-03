@@ -110,7 +110,7 @@ def main():
                   f"drift R2 {rec['drift_r2']:+.4f}, valid {rec['valid_rate']:.2f}{extra}", flush=True)
         results[strat] = steps
 
-    save_json(results, os.path.join(RESULTS, "e3_lifelong.json"))
+    save_json(results, os.path.join(RESULTS, "e3_lifelong.json"), seed=args.seed)
 
     # the degradation curves
     import matplotlib

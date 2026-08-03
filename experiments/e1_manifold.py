@@ -87,7 +87,7 @@ def main():
     out["seen_r2_mean"] = float(np.mean([v["r2"] for v in m.values()]))
     print(f"[e1] seen: loglik {out['seen_loglik_mean']:.1f}, denoise R2 {out['seen_r2_mean']:.3f}")
 
-    save_json(out, os.path.join(RESULTS, "e1_manifold.json"))
+    save_json(out, os.path.join(RESULTS, "e1_manifold.json"), seed=args.seed)
     print(f"[e1] wrote {RESULTS}/e1_manifold.json")
 
 

@@ -126,7 +126,8 @@ def main():
     keys = ("digit", "fg", "bg", "joint", "novelty", "diversity", "gen_rmse", "ref_spread")
     summary = {k: {m: float(np.mean([r[k][m] for r in rows])) for m in keys if m in rows[0][k]}
                for k in ("poe", "query_only", "top1", "top3")}
-    save_json(dict(rows=rows, summary=summary), os.path.join(RESULTS, "n2_composition.json"))
+    save_json(dict(rows=rows, summary=summary), os.path.join(RESULTS, "n2_composition.json"),
+              seed=args.seed)
     print(f"\n[n2] {len(rows)} OOD slots on the neural backbone")
     print(f"    {'method':11s} {'joint':>6s} {'digit':>6s} {'fg':>5s} {'bg':>5s} "
           f"{'novel':>7s} {'divers':>7s} {'gen':>7s}")

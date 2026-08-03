@@ -167,7 +167,14 @@ def save_grid(images, path, ncol=8, title=None):
     plt.close(fig)
 
 
-def save_json(obj, path):
+def save_json(obj, path, seed=None):
+    """Write `obj` to `path`, and -- when `seed` is given -- also to `<path>__seed<k>.json`.
+
+    Writing both means multi-seed aggregation needs no flags and no discipline: the base path is
+    always the most recent run, and `experiments/aggregate.py` finds every seed that has ever been
+    run.  Without this, re-running with a new seed silently overwrites the old result and a
+    single-seed table looks indistinguishable from a pooled one.
+    """
     os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
 
     def clean(o):
@@ -182,5 +189,10 @@ def save_json(obj, path):
         if isinstance(o, np.ndarray):
             return o.tolist()
         return o
+    payload = clean(obj)
     with open(path, "w") as fh:
-        json.dump(clean(obj), fh, indent=1)
+        json.dump(payload, fh, indent=1)
+    if seed is not None:
+        stem = path[:-5] if path.endswith(".json") else path
+        with open(f"{stem}__seed{int(seed)}.json", "w") as fh:
+            json.dump(payload, fh, indent=1)

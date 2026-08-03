@@ -154,7 +154,7 @@ def main():
               f"{t['late_first']:.4f} (late); final {t['early_final']:.4f} -> {t['late_final']:.4f}",
               flush=True)
 
-    save_json(results, os.path.join(RESULTS, "n3_lifelong.json"))
+    save_json(results, os.path.join(RESULTS, "n3_lifelong.json"), seed=args.seed)
 
     import matplotlib
     matplotlib.use("Agg")
