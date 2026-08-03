@@ -185,9 +185,17 @@ def cfg_weight(teacher, w0=1.2, wmax=2.0, wmin=0.8, schedule="anneal"):
 
 
 def query_only_teacher(xq, var=0.01):
-    """The paper's query-only baseline: a single isotropic Gaussian around the query."""
+    """The paper's query-only baseline: a single isotropic Gaussian around the query.
+
+    `fixed_var` marks this teacher as exempt from the PoE covariance correction (see
+    `neural.lifelong_neural`).  That correction exists because a Laplace-estimated PoE covariance
+    understates class spread; this baseline's variance is not estimated at all, it is DEFINED as "a
+    fixed small isotropic spread around the query".  Rescaling it would silently replace the paper's
+    baseline with a different, more diffuse one and make the comparison meaningless.
+    """
     xq = np.ravel(xq)
-    return dict(mu=xq.copy(), var=np.full_like(xq, var), sel=np.array([]), w=None)
+    return dict(mu=xq.copy(), var=np.full_like(xq, var), sel=np.array([]), w=None,
+                fixed_var=True)
 
 
 def topk_teacher(snap, xq, k=1, tau=1.0):

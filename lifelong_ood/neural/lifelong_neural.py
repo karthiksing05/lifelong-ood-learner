@@ -68,6 +68,8 @@ class NeuralLifelongLearner:
         seed = c["seed"] if seed is None else seed
         rng = np.random.default_rng(seed)
         vs = c["teacher_var_scale"] if var_scale is None else var_scale
+        if teacher.get("fixed_var"):        # baselines whose variance is defined, not estimated
+            vs = 1.0
         teacher = dict(teacher, var=teacher["var"] * float(vs))
         x0 = teacher["mu"] + np.sqrt(teacher["var"]) * rng.standard_normal((n, len(teacher["mu"])))
         gw = cfg_weight(teacher, wmin=kw.get("wmin", c["wmin"]), wmax=kw.get("wmax", c["wmax"]),

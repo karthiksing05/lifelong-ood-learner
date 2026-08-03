@@ -159,9 +159,41 @@ unconditional valid-composition rate **0.938**, and conditional joint accuracy *
 seen slots — level with the 0.775–0.82 probe ceiling. Samples are clean digits in the requested
 colours on the requested backgrounds (`results/n1_cond_samples.png`).
 
-**The mechanism holds in the strong form (N3).** `retention_exact = 1.00` at every step for the
-hierarchical arm — every previously consolidated concept bit-identical — against **0.00** for the
-`unfrozen` ablation as soon as a second concept lands, with frozen-base drift `+0.00000` throughout.
+### What did not work, and what it cost to find out
+
+- **The PoE teacher is far too sharp, and that is structural.** Its covariance comes from Laplace
+  estimates at modes, which measure *local curvature*, not how far a class extends — and the product
+  over K experts sharpens it further. Measured: teacher σ **0.0117** against a real intra-class
+  spread of **0.1595**, a 13.6× gap. Guided sampling faithfully reproduces that tightness, so every
+  chain lands on μ_T and a "pool" of 64 images is 64 near-copies. Two sweeps (initialization, then
+  the whole guidance schedule from `wmin=0.0` to `0.8`) moved diversity from 0.016 to at most 0.042
+  before the real cause was measured. Inflating the covariance recovers spread along a clean
+  tradeoff — scale 1 → 0.13× reference at joint 0.94; scale 30 → 0.61× at 0.71; scale 100 → 0.78× at
+  0.70 — and the scale that works matches the predicted variance ratio (13.6² ≈ 186).
+- **On the neural backbone, `query_only` beats PoE.** With baselines held faithful (the variance
+  correction is *not* applied to a baseline whose variance is defined rather than estimated),
+  N2 reads `query_only` 0.833 vs `poe` 0.674, at near-identical geometry. When the backbone
+  generalizes well enough to re-render a single query, concept discovery is not obviously buying
+  anything on this benchmark — the opposite of the analytic backbone, where `query_only`'s
+  memorization is stark. This is a real negative result, not a tuning gap we have closed.
+- **The analytic `ifit` control is not destructive**, so the analytic non-degradation guarantee is
+  structural rather than empirically decisive (see above).
+
+`PLAN.md` carries the full status, the open work, and the threats to validity.
+
+**The mechanism holds in the strong form (N3, neural backbone).** `retention_exact = 1.00` at every
+step for the hierarchical arm — every previously consolidated concept *bit-identical* after every
+later insertion — against **0.00** for the `unfrozen` ablation as soon as a second concept lands,
+with frozen-base drift `+0.00000` throughout and distillation loss falling normally (0.09 → 0.044).
+This is where the mechanism earns its keep: unlike the analytic backbone, gradient training on a
+shared adapter genuinely does overwrite, and freezing ancestors is what prevents it.
+
+*Plasticity in that run was not measurable* — conditional samples from a freshly consolidated concept
+scored 0.00 — for two reasons since diagnosed and fixed: the pools were near-identical (see below),
+and 12 epochs over 64 images is only 48 optimizer steps, far too few for a rank-8 LoRA. A rerun with
+a corrected pool and a 5× distillation budget is in flight; **the retention and drift numbers above
+are unaffected**, since they concern what consolidation does to *other* concepts, not how well it
+learns its own.
 
 **Composition works, and one fix is responsible (E0, all 40 held-out slots).** Composing the
 out-of-distribution teacher and reading it with the attribute probes:
