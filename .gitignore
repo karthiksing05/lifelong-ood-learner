@@ -8,3 +8,4 @@ results/*.npz
 slurm-*.out
 .DS_Store
 experiments/slurm/
+results/cache/
