@@ -206,6 +206,35 @@ retained** on pools that worked, and a bad pool is faithfully reproduced as a ba
 Consolidation neither invents quality nor destroys it, so the quality of the whole loop is set by
 composition — the step this repository inherits from the paper — not by the step it adds.
 
+**Batch addition is free (N4).** Adding 8 concepts in batches of 4 rather than one at a time is
+**1.71x faster at identical final accuracy (0.609) and identical perfect retention** -- discovery
+shares its query-agnostic modes, the K pools come out of one reverse-diffusion run, and distillation
+is one joint optimization. It costs parameters (6.61M vs 4.96M) because shared group nodes are extra
+nodes, not safety. A side effect we did not design for: batching *partially mitigates forgetting on
+its own* -- the `unfrozen` arm improves from ACC 0.008 to 0.336 when batched, because concepts
+trained together do not overwrite each other and only batch boundaries do damage.
+
+**It also does ordinary class-incremental learning on real data (N5).** 12 tasks x 64 *real* held-out
+images arriving in batches, no composition anywhere:
+
+| arm | ACC | BWT | FGT | bit-identical |
+|---|---|---|---|---|
+| ours (hierarchical, frozen) | 0.802 | **+0.000** | **0.000** | **1.00** |
+| independent (parameter isolation) | **0.839** | +0.000 | 0.000 | 1.00 |
+| finetune (shared, sequential) | 0.651 | -0.199 | 0.205 | 0.25 |
+| finetune + generative replay | 0.589 | -0.205 | 0.205 | 0.25 |
+
+Zero forgetting by both standard measures. Two honest negatives sit in that table: **generative
+replay does not help** (0.589 < 0.651, at 1.8x the wall clock -- replayed pools come from concepts
+that are themselves drifting, so replay reinforces the drift), and **`independent` beats `ours` on
+final accuracy** with fewer parameters. That sharpens the attribution: freezing delivers the
+no-forgetting result; the hierarchy buys the warm start and the batch speedup, not final quality.
+
+**And the mechanism does not degrade with scale.** `tests/test_unbounded.py` adds 40 concepts in
+mixed batch sizes and asserts every earlier concept stays bit-identical at every step, the frozen
+base never moves, and parameter cost per concept is constant (max residual 1.3%) -- so "how many
+concepts fit in a budget" has an exact answer. Linear, not sublinear: ~45K params/concept at rank 2.
+
 **The hierarchy buys a warm start, not a better endpoint.** New leaves inherit their ancestors'
 deltas, so distillation *starts* 30% lower in the hierarchical arm (first-epoch loss 0.113 vs
 0.160 flat) — but converges to the same place (0.0495 vs 0.0499). On this benchmark, sharing
@@ -245,7 +274,8 @@ that motivated them.
 
 ```bash
 python tests/test_smoke.py      # analytic, synthetic, ~10 s, no data needed
-python tests/test_neural.py     # neural, CPU, <1 min
+python tests/test_neural.py     # neural, CPU, <1 min (incl. batch addition)
+python tests/test_unbounded.py  # 40 concepts: preservation and cost are K-independent
 
 # on SLURM (login nodes are contended; lab convention is to validate via sbatch)
 sbatch --export=ALL,SCRIPT="experiments/e1_manifold.py"           experiments/run.sh      # CPU
@@ -265,6 +295,8 @@ tuning-of-record: it chose τ, K and the guidance schedule, and reports each aga
 | `n1_train` | train the neural backbone |
 | `n2_composition` | E2 on the neural backbone |
 | `n3_lifelong` | **the headline**: hierarchical consolidation vs `flat` and `unfrozen` ablations |
+| `n4_batch` | batch vs sequential addition: speedup, and CL metrics (ACC/BWT/FGT) |
+| `n5_classinc` | Split-ColorMNIST class-incremental on **real** data vs finetune / replay / isolation |
 
 ## What this is not
 

@@ -186,6 +186,53 @@ Two further readings:
 
 ---
 
+## 5b. N4 — batch addition (8 OOD concepts, batches of 4)
+
+| arm | mode | wall (s) | speedup | ACC | BWT | FGT | bit-identical | params | shared nodes |
+|---|---|---|---|---|---|---|---|---|---|
+| **`hier`** | **batch** | **222** | **1.71×** | 0.609 | **+0.000** | **0.000** | **1.00** | 6.61M | 6 |
+| `hier` | sequential | 379 | 1.00× | 0.609 | +0.000 | 0.000 | 1.00 | 4.96M | 3 |
+| `flat` | batch | 162 | 2.09× | 0.617 | +0.000 | 0.000 | 1.00 | 4.96M | 1 |
+| `flat` | sequential | 339 | 1.00× | 0.609 | +0.000 | 0.000 | 1.00 | 4.96M | 1 |
+| `unfrozen` | batch | 224 | 1.71× | 0.336 | −0.214 | 0.214 | 0.50 | 6.61M | 6 |
+| `unfrozen` | sequential | 383 | 1.00× | **0.008** | **−0.688** | 0.688 | 0.12 | 4.96M | 3 |
+
+- **Batching is free.** 1.7–2.1× faster at *identical* final accuracy (0.609) and *identical* perfect
+  retention. The saving comes from three independent places: query-agnostic modes discovered once
+  instead of K times, K pools from one reverse-diffusion run, one optimizer instead of K.
+- **It costs parameters, not safety.** `hier/batch` uses 6.61M against 4.96M sequential, because
+  group nodes are extra nodes. That is the price of genuinely shared structure.
+- **Unexpected: batching partially *mitigates* forgetting on its own.** The `unfrozen` arm goes from
+  ACC 0.008 / BWT −0.688 sequentially to 0.336 / −0.214 batched. Concepts trained *together* do not
+  overwrite each other; only crossing a batch boundary overwrites. Fewer boundaries, less damage.
+  This is a real effect and not something we designed for.
+
+## 5c. N5 — Split-ColorMNIST class-incremental, on REAL data, vs named CL baselines
+
+12 tasks × 64 **real** held-out images, arriving in batches of 3. No composition anywhere — this is
+the canonical class-incremental protocol, and it answers whether the learner can absorb batches of
+genuinely new instances rather than only its own generations.
+
+| arm | ACC | BWT | FGT | bit-identical | params | wall (s) |
+|---|---|---|---|---|---|---|
+| `ours` (hierarchical, frozen) | 0.802 | **+0.000** | **0.000** | **1.00** | 8.82M | 265 |
+| `independent` (parameter isolation) | **0.839** | +0.000 | 0.000 | 1.00 | 7.16M | 174 |
+| `finetune` (shared, sequential) | 0.651 | −0.199 | 0.205 | 0.25 | 7.16M | 175 |
+| `replay` (finetune + generative replay) | 0.589 | −0.205 | 0.205 | 0.25 | 7.16M | 317 |
+
+- **Yes, it does incremental learning on real batched data** — 0.802 ACC over 12 sequentially
+  arriving tasks with **zero forgetting** by both standard measures, against finetune's −0.199 BWT.
+- **Generative replay does not help here (0.589 < 0.651), and costs 1.8× the wall clock.** An honest
+  negative. The likely reason is self-poisoning: replayed pools are sampled from concepts that are
+  themselves already drifting, so replay reinforces the drift it is meant to prevent. Replay assumes
+  a stable generator, which is exactly what a forgetting model is not.
+- **`independent` beats `ours` on final accuracy (0.839 vs 0.802) with fewer parameters.** Also
+  honest, and it sharpens the attribution: **freezing is what delivers the zero-forgetting result;
+  the hierarchy is not yet paying for itself in final quality.** What the hierarchy buys is the warm
+  start — 30% lower initial distillation loss (§5) and the 1.7× batch speedup — at +23% parameters
+  and −0.04 ACC. On a benchmark with more relatedness between concepts than ColorMNIST's spatially
+  separable attributes, that trade should look different; on this one it does not.
+
 ## 6. Why we are *not* replicating the paper's diffusion results
 
 Side by side on ColorMNIST — their F1 (harmonic mean of precision and recall in Inception feature
@@ -292,6 +339,27 @@ same thing the paper's Table 1 tests**, and the inverted row should not be read 
 their result.
 
 ---
+
+## 6b. Can it learn an unbounded amount of new content?
+
+"Infinite" cannot be run, so `tests/test_unbounded.py` tests the **invariants that would make it
+possible**: that the cost of adding concept K+1 and its effect on concepts 1…K are both independent
+of K. Verified at K = 40, added in batches of 1, 2, 3, 5 and 8:
+
+- **Preservation is K-independent.** After every batch, *every* concept ever consolidated is still
+  bit-identical to its fingerprint at birth — checked against all previous concepts at every one of
+  the 12 batches, so the test gets stricter as it runs.
+- **The frozen base never moves**, at any K.
+- **Cost per concept is constant** — parameter growth is linear with max residual 1.3%, so the
+  budget question has an exact answer: at rank 2 on the test model, **45K params/concept**, i.e.
+  ~5.6K concepts per GB of fp32 adapter, ~45K concepts per 8 GB.
+- **Batch placement is order-independent** — the same K concepts shuffled produce the same structure.
+
+The honest limit: growth is **linear, not sublinear**. At the rank-8 setting used in N3–N5 each
+concept costs ~0.55M parameters, so 40 concepts already exceed the 6.8M-parameter base. Unbounded in
+principle, expensive in practice — see `PLAN.md` for the compression directions (lower rank for
+leaves, adapting a subset of layers, and merging sibling adapters during an offline consolidation
+pass with a fingerprint check to keep the guarantee auditable).
 
 ## 7. Threats to validity
 
