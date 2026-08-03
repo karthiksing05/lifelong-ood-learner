@@ -170,7 +170,23 @@ Reproduce the per-concept analysis with `python experiments/analyze_n3.py`.
 
 ## 3. Open work, in priority order
 
-### 3.0 Compress the adapter bank — the real scaling limit
+### 3.0 Sample diversity — now the single biggest defect
+Vetting the case-study figures showed PoE samples are near-copies of the query: `div/novelty` 1.04
+(independent draws would give 1.41) and content diversity 0.45x the real class spread. Everything
+else in the pipeline is healthier than this. Three leads, and the first is nearly free:
+
+- **Raise `teacher_var_scale` further and re-check with the CONTENT metric.** N0 swept it against raw
+  pixel diversity, which we now know overstates variety by ~35%. The sweep should be redone against
+  `content_ratio`; the optimum is probably above the 30 currently defaulted.
+- **Stochastic sampling.** The sampler is DDIM with eta=0 — fully deterministic given x_T, so all
+  variety must come from the initial draw, which the too-tight teacher covariance controls. Ancestral
+  (eta>0) sampling injects noise at every step and is the standard fix.
+- **Estimate the teacher covariance from a batch rather than one query.** The Laplace estimate
+  measures curvature at a mode, not class extent, which is *why* it is 13.6x too tight. With a batch
+  of related queries (now supported, see `compose_batch`) the covariance can be estimated
+  empirically instead. This is the principled fix and batch addition already provides the inputs.
+
+### 3.0a Compress the adapter bank — the real scaling limit
 Growth is **linear, not sublinear**: ~0.55M params/concept at rank 8, so 40 concepts already exceed
 the 6.8M base. `tests/test_unbounded.py` proves the *guarantee* is K-independent; the *cost* is not
 free. Three directions, cheapest first:
