@@ -24,8 +24,17 @@ from .ddpm import CH, IMG
 
 class NeuralLifelongLearner:
     def __init__(self, field, rank=8, K=3, tau=0.05, wmin=0.8, wmax=2.0, schedule="anneal",
-                 u_start=0.6, steps=50, seed=0, device="cuda", flat=False,
+                 u_start=1.0, teacher_var_scale=30.0, steps=50, seed=0, device="cuda", flat=False,
                  freeze_ancestors=True, var=0.1, branch_max=4, max_depth=3):
+        # teacher_var_scale corrects a systematic bias, measured in experiments/n0_tune.py.  The PoE
+        # covariance is built from LAPLACE estimates at modes, which measure local curvature rather
+        # than how much a class actually varies -- on ColorMNIST the teacher's sigma comes out 0.0117
+        # against a real intra-class spread of 0.1595, a 13.6x gap (186x in variance).  Sampling such
+        # a sharp teacher collapses the pool: every chain lands on mu_T, and distilling 64 copies of
+        # one image teaches an adapter one image.  Inflating the covariance recovers spread along a
+        # measured tradeoff (scale 1 -> diversity 0.13x reference at joint 0.94; scale 30 -> 0.61x at
+        # 0.71; scale 100 -> 0.78x at 0.70).  30 is the default because pools feed distillation,
+        # where covering the class matters more than every sample being individually correct.
         self.field = field
         self.device = device
         self.bank = HierarchicalAdapterBank(field.model, rank=rank, device=device, flat=flat,
@@ -33,7 +42,8 @@ class NeuralLifelongLearner:
                                             branch_max=branch_max, max_depth=max_depth)
         field.bank = self.bank
         self.cfg = dict(K=K, tau=tau, wmin=wmin, wmax=wmax, schedule=schedule,
-                        u_start=u_start, steps=steps, seed=seed)
+                        u_start=u_start, teacher_var_scale=teacher_var_scale,
+                        steps=steps, seed=seed)
         self.history = []
 
     # ── steps 1-2 ────────────────────────────────────────────────────────────
@@ -52,10 +62,13 @@ class NeuralLifelongLearner:
         raise ValueError(kind)
 
     # ── step 3 ───────────────────────────────────────────────────────────────
-    def sample_teacher(self, teacher, n=64, steps=None, seed=None, u_start=None, **kw):
+    def sample_teacher(self, teacher, n=64, steps=None, seed=None, u_start=None,
+                       var_scale=None, **kw):
         c = self.cfg
         seed = c["seed"] if seed is None else seed
         rng = np.random.default_rng(seed)
+        vs = c["teacher_var_scale"] if var_scale is None else var_scale
+        teacher = dict(teacher, var=teacher["var"] * float(vs))
         x0 = teacher["mu"] + np.sqrt(teacher["var"]) * rng.standard_normal((n, len(teacher["mu"])))
         gw = cfg_weight(teacher, wmin=kw.get("wmin", c["wmin"]), wmax=kw.get("wmax", c["wmax"]),
                         schedule=kw.get("schedule", c["schedule"]))

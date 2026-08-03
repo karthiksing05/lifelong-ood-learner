@@ -111,9 +111,14 @@ def main():
             learned.append((name, q))
 
             S = to_data(L.sample_concept(name, n=args.n_samples, seed=args.seed + k)).astype(np.float32)
+            # what went IN vs what comes OUT.  Without both, `new_acc` cannot distinguish "the
+            # composition was bad" from "consolidation could not reproduce a good composition".
+            pool01 = to_data(pool).astype(np.float32)
             rec = dict(step=k, slot=q["slot"], name=slot_name(q["d"], q["f"], q["b"]),
                        base_err=base_error(field, Xev, seed=args.seed),
                        params=L.bank.n_params(),
+                       pool_acc=composition_accuracy(probes, pool01, q["d"], q["f"], q["b"]),
+                       pool_geometry=sample_geometry(pool01, xq01),
                        new_acc=composition_accuracy(probes, S, q["d"], q["f"], q["b"]),
                        geometry=sample_geometry(S, xq01, data["X"][q["rest"][:100]]))
             rec["base_drift"] = rec["base_err"] - e0
@@ -148,7 +153,10 @@ def main():
                 save_grid(S[:16], os.path.join(RESULTS, f"n3_cond_{name}.png"),
                           title=f"conditional samples from adapter {name}")
             ra = "n/a" if rec["retention_acc"] is None else f"{rec['retention_acc']:.2f}"
-            print(f"[n3:{arm}] step {k} (+{rec['name']}): new {rec['new_acc']['joint']:.2f}, "
+            print(f"[n3:{arm}] step {k} (+{rec['name']}): "
+                  f"pool {rec['pool_acc']['joint']:.2f}"
+                  f"(div {rec['pool_geometry']['diversity']:.3f}) -> "
+                  f"new {rec['new_acc']['joint']:.2f}, "
                   f"retention exact {rec['retention_exact']:.2f} ({rec['retention_n_exact']}) "
                   f"acc {ra} ({rec['retention_n_acc']}), "
                   f"base drift {rec['base_drift']:+.5f}, depth {rec['depth']}, "
