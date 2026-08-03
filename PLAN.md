@@ -170,7 +170,28 @@ Reproduce the per-concept analysis with `python experiments/analyze_n3.py`.
 
 ## 3. Open work, in priority order
 
-### 3.0 Seeds — THE most important remaining gap
+### 3.0 Compress the adapter bank — the real scaling limit
+Growth is **linear, not sublinear**: ~0.55M params/concept at rank 8, so 40 concepts already exceed
+the 6.8M base. `tests/test_unbounded.py` proves the *guarantee* is K-independent; the *cost* is not
+free. Three directions, cheapest first:
+- **Lower rank for leaves, higher for shared nodes.** Leaves carry one concept; ancestors carry many.
+  `inject(..., rank=)` is already per-bank; make it per-node.
+- **Adapt a subset of layers.** `inject(model, rank, state, targets=("conv","linear"))` already
+  supports restriction; sweep which blocks actually matter (attention and mid-block first).
+- **Merge sibling adapters in an offline consolidation pass.** Sample from two sibling concepts,
+  distil into their shared parent, and *keep the merge only if both fingerprints reproduce within
+  tolerance* — that turns the guarantee from structural to audited for merged nodes, which is a
+  defensible trade when memory is the binding constraint.
+
+### 3.0b Make the hierarchy earn its keep
+N5 is blunt: `independent` (no sharing) beats `ours` on final accuracy, 0.839 vs 0.802, with fewer
+parameters. Freezing gives the no-forgetting result; the hierarchy currently buys only the warm start
+and the batch speedup. Either find a regime where sharing pays — concepts with genuine overlap,
+rather than ColorMNIST's spatially separable attributes — or drop the hierarchy and keep flat frozen
+adapters, which would be a simpler and equally safe method. **Do not keep the hierarchy on the
+strength of the idea alone; it has to show up in a number.**
+
+### 3.0c Seeds — still unaddressed
 Everything above is **single-seed**. `--seed` is plumbed through every experiment and
 `experiments/aggregate.py` pools `results/<name>__seed<k>.json` into mean ± SE automatically (every
 run writes its seed-tagged copy, so this needs no discipline beyond launching the jobs). Before any
