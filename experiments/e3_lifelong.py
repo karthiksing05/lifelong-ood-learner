@@ -33,6 +33,24 @@ from lifelong_ood.datasets import slot_name                            # noqa: E
 from lifelong_ood.evals import composition_accuracy, save_grid, save_json  # noqa: E402
 
 
+def drift_bound(learner):
+    """The analytic ceiling on how much consolidation can cost old data, from the ACTUAL weights.
+
+    Grafting leaves every base component untouched and only adds new ones, so the merged density is
+    p_new = (1-a) p_base + a p_adapters with `a` the adapter share of the mixture weight.  Since
+    p_adapters >= 0, log p_new >= log p_base + log(1-a): the worst case is adapters contributing
+    nothing at all on old data, and the drift is then exactly log(1-a).
+
+    `a` must be read off the mixture weights actually in use, not from instance counts -- min_count
+    pruning drops instances that sat in small children of kept internal nodes, so raw counts
+    overstate the base mass and would make this bound look tighter than it is.
+    """
+    snap = learner.field.snap
+    w = snap["W"]
+    a = float(w[(snap["branch"] != "base") & snap["is_leaf"]].sum())
+    return float(np.log(max(1.0 - a, 1e-12))), a
+
+
 def seen_metrics(learner, Xev):
     ll = float(np.mean(learner.field.logp(Xev, u=0.0)))
     from lifelong_ood.score import cosine_abar
@@ -88,6 +106,10 @@ def main():
             # the single `new_concept` number cannot distinguish.
             rec["pool"] = composition_accuracy(probes, pool, q["d"], q["f"], q["b"])
             if strat == "graft":
+                b, share = drift_bound(learner)
+                rec["drift_bound"] = b
+                rec["adapter_weight_share"] = share
+                rec["bound_holds"] = bool(rec["drift_loglik"] >= b - 1e-6)
                 S = learner.sample_concept(name, n=16 if args.quick else 32, seed=args.seed + k)
                 rec["new_concept"] = composition_accuracy(probes, S, q["d"], q["f"], q["b"])
                 rec["consolidation_retained"] = (rec["new_concept"]["joint"]
@@ -106,8 +128,11 @@ def main():
             steps.append(rec)
             extra = (f", pool {rec['pool']['joint']:.2f} -> new {rec['new_concept']['joint']:.2f}"
                      if "new_concept" in rec else f", pool {rec['pool']['joint']:.2f}")
-            print(f"[e3:{strat}] step {k} (+{rec['name']}): drift loglik {rec['drift_loglik']:+.2f}, "
-                  f"drift R2 {rec['drift_r2']:+.4f}, valid {rec['valid_rate']:.2f}{extra}", flush=True)
+            bnd = (f", bound {rec['drift_bound']:+.2f} "
+                   f"[{'ok' if rec['bound_holds'] else 'VIOLATED'}]") if "drift_bound" in rec else ""
+            print(f"[e3:{strat}] step {k} (+{rec['name']}): drift loglik {rec['drift_loglik']:+.2f}"
+                  f"{bnd}, drift R2 {rec['drift_r2']:+.4f}, valid {rec['valid_rate']:.2f}{extra}",
+                  flush=True)
         results[strat] = steps
 
     save_json(results, os.path.join(RESULTS, "e3_lifelong.json"), seed=args.seed)

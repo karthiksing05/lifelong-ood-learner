@@ -125,9 +125,39 @@ Read the accuracy column together with the geometry columns, because alone it is
 - **Closed-form tree discovery ≈ the paper's mode-ascent discovery** (0.706 vs 0.651). On this
   backbone, concept discovery is free.
 
-**Consolidation does not degrade the manifold (E3, full scale).** Per consolidation, drift in
-held-out log-likelihood is **−0.01 to −0.14 nats** over 11 consolidations, drift in denoise R² is
-**+0.0000** throughout, and unconditional sample validity stays 0.88–1.00.
+**Consolidation does not degrade the manifold (E3, full scale).** Over 12 consolidations, drift in
+held-out log-likelihood totals **−0.15 nats**, drift in denoise R² is **+0.0000** throughout, and
+unconditional sample validity stays 0.88–1.00.
+
+More usefully, the drift is *exactly* what theory says it must be. Grafting leaves every base
+component untouched, so the merged density is `(1−a)·p_base + a·p_adapters` and drift on old data is
+bounded below by `log(1−a)`, with equality when the adapters contribute nothing there. E3 computes
+that bound from the mixture weights actually in use and compares:
+
+| after consolidation | 1 | 2 | 3 |
+|---|---|---|---|
+| observed drift (nats) | −0.01 | −0.02 | −0.04 |
+| predicted bound `log(1−a)` | −0.01 | −0.02 | −0.04 |
+
+The bound is not merely satisfied, it is *attained* — the new concepts sit where the old data is not,
+which is exactly what one wants from adding an out-of-distribution composition.
+
+Two things to state plainly rather than bury:
+
+- **The destructive control was not very destructive.** Classic Cobweb absorption (`ifit`) drifted
+  −0.10 nats by step 8 against grafting's −0.10 — indistinguishable. Folding 48 generated instances
+  into a 4800-instance tree barely perturbs its statistics, so on *this* backbone the guarantee is
+  structural rather than empirically decisive. The mechanism earns its keep on the neural backbone,
+  where gradient training genuinely does overwrite (`unfrozen` retention 1.00 → 0.00).
+- **Consolidation loses some of the composition.** Conditional sampling from a grafted adapter
+  retains roughly 50–80% of the pool's composition accuracy (pool 1.00 → 0.50, 1.00 → 0.81). The
+  analytic `sample_concept` path has not had the tuning treatment `sample_teacher` got; see
+  `PLAN.md` §3.4.
+
+**The neural backbone is real (N1).** 6.8M-parameter UNet, 200 epochs, 146 min on one GPU:
+unconditional valid-composition rate **0.938**, and conditional joint accuracy **0.789** on requested
+seen slots — level with the 0.775–0.82 probe ceiling. Samples are clean digits in the requested
+colours on the requested backgrounds (`results/n1_cond_samples.png`).
 
 **The mechanism holds in the strong form (N3).** `retention_exact = 1.00` at every step for the
 hierarchical arm — every previously consolidated concept bit-identical — against **0.00** for the
