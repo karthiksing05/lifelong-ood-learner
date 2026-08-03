@@ -100,9 +100,34 @@ matching to the nearest tree node:
 At low noise the modes are *exactly* the tree's leaves (RMSE 2e-4); at high noise they migrate to
 shallow internal nodes. Free, explicit, and no ascent required to obtain it.
 
+**One OOD query is enough to recreate its composition (E2, 16 held-out slots × 24 samples).**
+
+| method | joint | digit | fg | bg | novelty | diversity | gen |
+|---|---|---|---|---|---|---|---|
+| `poe_tree` (closed-form discovery) | 0.706 | 0.73 | 0.97 | 1.00 | 0.254 | 0.348 | 0.278 |
+| `poe_ascent` (the paper's discovery) | 0.651 | 0.66 | 0.99 | 1.00 | 0.260 | 0.354 | 0.277 |
+| `query_only` | **0.792** | 0.82 | 0.97 | 1.00 | **0.087** | **0.107** | 0.145 |
+| `top1` | 0.000 | 0.80 | 0.44 | 0.56 | 0.287 | 0.364 | 0.284 |
+| `top3` | 0.023 | 0.75 | 0.44 | 0.16 | 0.281 | 0.362 | 0.278 |
+| *reference set's own internal spread* | | | | | | *0.167* | |
+
+Read the accuracy column together with the geometry columns, because alone it is misleading:
+
+- **Nearest-trained-class retrieval does not recover the composition.** `top1`/`top3` get the *digit*
+  right (0.80) and the colour combination wrong (fg 0.44, bg 0.56/0.16), for a joint score of ~0.
+- **`query_only` wins on accuracy by memorizing.** Its novelty is 0.087 and its diversity 0.107 —
+  against a reference set whose own internal spread is 0.167. It is producing near-copies of the one
+  query, which is precisely the failure mode the paper reports for this baseline (best faithfulness,
+  collapsed generalization).
+- **PoE recovers the composition *and* varies within it**, at diversity 0.348 — twice the reference
+  spread. Being *more* varied than the true class is its own imperfection, and worth saying: some of
+  that spread is off-manifold rather than useful variety.
+- **Closed-form tree discovery ≈ the paper's mode-ascent discovery** (0.706 vs 0.651). On this
+  backbone, concept discovery is free.
+
 **Consolidation does not degrade the manifold (E3, full scale).** Per consolidation, drift in
-held-out log-likelihood is **−0.01 to −0.05 nats**, drift in denoise R² is **+0.0000**, and
-unconditional sample validity stays 0.92–1.00.
+held-out log-likelihood is **−0.01 to −0.14 nats** over 11 consolidations, drift in denoise R² is
+**+0.0000** throughout, and unconditional sample validity stays 0.88–1.00.
 
 **The mechanism holds in the strong form (N3).** `retention_exact = 1.00` at every step for the
 hierarchical arm — every previously consolidated concept bit-identical — against **0.00** for the
