@@ -82,10 +82,35 @@ def main():
     shared = len(set(L2.bank.concepts["A"]["path"]) & set(L2.bank.concepts["B"]["path"])) > 1
     assert (not shared) or moved, "unfrozen ancestors sharing a path SHOULD perturb the earlier concept"
 
+    # 5. a BATCH addition preserves everything a sequential one does, and shares more
+    f3 = build()
+    L3 = NeuralLifelongLearner(f3, rank=4, device=dev, steps=4)
+    centre = rng.standard_normal(f3.dim) * 0.3
+    items = [(f"b{i}", np.clip(centre + 0.2 * rng.standard_normal((6, f3.dim)), -1, 1), None)
+             for i in range(3)]
+    base3 = fingerprint(f3, None, seed=1)
+    L3.consolidate_batch(items, epochs=1, batch=3)
+    fps = {n: fingerprint(f3, n, seed=1) for n, _, _ in items}
+    assert len(set(map(bytes, (v.tobytes() for v in fps.values())))) == 3, \
+        "batch members must end up as distinct functions, not copies of one another"
+    assert np.array_equal(fingerprint(f3, None, seed=1), base3), \
+        "a batch must leave the frozen base bit-identical"
+    # a second batch must not disturb the first
+    items2 = [(f"c{i}", np.clip(-centre + 0.2 * rng.standard_normal((6, f3.dim)), -1, 1), None)
+              for i in range(2)]
+    L3.consolidate_batch(items2, epochs=1, batch=3)
+    for n, fp in fps.items():
+        assert np.array_equal(fingerprint(f3, n, seed=1), fp), \
+            f"batch-added concept {n} moved when a later batch was added"
+    s3 = L3.bank.summary()
+    grouped = len(s3["shared_ancestors"])
+
     s = L.bank.summary()
     print(f"neural smoke: ok  (adapter {s['adapter_params'] / 1e3:.0f}K params, "
           f"{s['n_concepts']} concepts, depths {list(s['depths'].values())}, "
           f"unfrozen-ablation perturbed={moved}, shared-path={shared})")
+    print(f"  batch: 5 concepts over 2 batches, {grouped} shared node(s), "
+          f"all earlier concepts bit-identical after the later batch")
 
 
 if __name__ == "__main__":

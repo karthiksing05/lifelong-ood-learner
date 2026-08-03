@@ -15,8 +15,8 @@ consolidations accumulate, share, and provably cannot disturb each other.
 import numpy as np
 import torch
 
-from ..compose import (candidates_ascent, cfg_weight, poe_teacher, query_only_teacher,
-                       teacher_eps)
+from ..compose import (candidates_ascent, candidates_ascent_batch, cfg_weight, poe_teacher,
+                       query_only_teacher, stacked_teacher_eps, teacher_eps)
 from ..score import cosine_abar
 from .adapters import HierarchicalAdapterBank
 from .ddpm import CH, IMG
@@ -56,6 +56,17 @@ class NeuralLifelongLearner:
         t["meta"] = meta
         return t
 
+    def compose_batch(self, xqs, K=None, tau=None, **disc):
+        """Discover and compose K OOD prototypes in one pass.  -> list of teachers."""
+        c = self.cfg
+        pools = candidates_ascent_batch(self.field, xqs, seed=c["seed"], **disc)
+        out = []
+        for xq, (M, V, meta) in zip(xqs, pools):
+            t = poe_teacher(np.ravel(xq), M, V, K=K or c["K"], tau=tau or c["tau"])
+            t["meta"] = meta
+            out.append(t)
+        return out
+
     def baseline_teacher(self, xq, kind="query_only"):
         if kind == "query_only":
             return query_only_teacher(xq, var=0.01)
@@ -78,6 +89,35 @@ class NeuralLifelongLearner:
                                  u_start=c["u_start"] if u_start is None else u_start,
                                  x_init=np.clip(x0, -1, 1), clip=(-1, 1),
                                  guide_eps=teacher_eps(teacher), guide_w=gw)
+
+    def sample_teacher_batch(self, teachers, n=64, steps=None, seed=None, u_start=None,
+                             var_scale=None, **kw):
+        """Sample K pools of `n` in ONE reverse-diffusion run.  -> list of K arrays [n, D].
+
+        Eq. 12 is elementwise across the batch, so the K teachers are stacked one row per sample and
+        the whole K*n batch denoises together.  The unconditional branch is evaluated once per step
+        for the whole batch rather than once per concept, which is where the wall-clock saving comes
+        from -- the sampler is the dominant cost of the loop.
+        """
+        c = self.cfg
+        seed = c["seed"] if seed is None else seed
+        rng = np.random.default_rng(seed)
+        vs = c["teacher_var_scale"] if var_scale is None else var_scale
+        MU, VAR = [], []
+        for t in teachers:
+            s = 1.0 if t.get("fixed_var") else float(vs)
+            MU.append(np.tile(t["mu"], (n, 1)))
+            VAR.append(np.tile(t["var"] * s, (n, 1)))
+        MU, VAR = np.concatenate(MU), np.concatenate(VAR)
+        x0 = np.clip(MU + np.sqrt(VAR) * rng.standard_normal(MU.shape), -1, 1)
+        gw = cfg_weight(teachers[0], wmin=kw.get("wmin", c["wmin"]),
+                        wmax=kw.get("wmax", c["wmax"]),
+                        schedule=kw.get("schedule", c["schedule"]))
+        S = self.field.sample(n=len(MU), steps=steps or c["steps"], seed=seed,
+                              u_start=c["u_start"] if u_start is None else u_start,
+                              x_init=x0, clip=(-1, 1),
+                              guide_eps=stacked_teacher_eps(MU, VAR), guide_w=gw)
+        return [S[i * n:(i + 1) * n] for i in range(len(teachers))]
 
     # ── step 4: distil the pool into a new hierarchical adapter ──────────────
     def consolidate(self, pool, name, mu=None, epochs=10, batch=16, lr=1e-3, p_drop=0.1,
@@ -135,11 +175,88 @@ class NeuralLifelongLearner:
                                depth=len(self.bank.tree.path_of(self.bank.concepts[name]["leaf"])) - 1)
         return self
 
+    def consolidate_batch(self, items, epochs=10, batch=16, lr=1e-3, seed=None, group=True,
+                          verbose=False):
+        """Add K concepts to the manifold in ONE consolidation.  `items` = [(name, pool, mu), ...].
+
+        All K leaves and any shared group node they were given are optimized TOGETHER: one Adam over
+        the union of their parameters, with minibatches interleaved across concepts so a shared node
+        accumulates gradient from every member.  That is the difference from K sequential
+        consolidations, which can only ever hand a later concept a frozen warm start.
+
+        The preservation guarantee is untouched.  `add_concepts` seals every node that existed before
+        this call, so no parameter any earlier concept depends on is in the optimizer at all -- and
+        that is true whatever K is, which is what makes the batch size a free efficiency knob rather
+        than a safety trade.
+        """
+        seed = self.cfg["seed"] if seed is None else seed
+        torch.manual_seed(seed)
+        names = [n for n, _, _ in items]
+        mus = [np.ravel(m if m is not None else p.mean(0)) for _, p, m in items]
+        self.bank.add_concepts(names, mus, group=group)
+        params = self.bank.trainable_batch(names)
+        opt = torch.optim.Adam(params, lr=lr)
+        pools = [torch.from_numpy(np.asarray(p, np.float32)).to(self.device).reshape(-1, CH, IMG, IMG)
+                 for _, p, _ in items]
+        model = self.field.model
+        model.train()
+        g = torch.Generator(device="cpu").manual_seed(seed)
+        curves = {n: [] for n in names}
+        for ep in range(epochs):
+            # one pass over every concept's pool per epoch, concepts interleaved
+            order = []
+            for j, P in enumerate(pools):
+                perm = torch.randperm(len(P), generator=g)
+                order += [(j, perm[i0:i0 + batch]) for i0 in range(0, len(P), batch)]
+            for i in torch.randperm(len(order), generator=g).tolist():
+                j, idx = order[i]
+                x0 = pools[j][idx]
+                u = torch.rand(len(x0), device=self.device).clamp_(1e-3, 1.0)
+                a = torch.from_numpy(cosine_abar(u.detach().cpu().numpy())).to(self.device)
+                a = a.float().view(-1, 1, 1, 1)
+                e = torch.randn_like(x0)
+                xt = a.sqrt() * x0 + (1 - a).sqrt() * e
+                with self.bank.activate(names[j]):
+                    loss = torch.nn.functional.mse_loss(
+                        model(xt, u, emb_override=self.bank.embedding(names[j])), e)
+                opt.zero_grad(set_to_none=True)
+                loss.backward()
+                opt.step()
+                curves[names[j]].append(float(loss))
+            if verbose:
+                last = {n: (np.mean(v[-4:]) if v else float("nan")) for n, v in curves.items()}
+                print(f"      batch distil ep {ep + 1}/{epochs}: "
+                      f"mean {np.mean(list(last.values())):.4f}", flush=True)
+        model.eval()
+        self.history += names
+        self.last_batch_curves = {
+            n: dict(name=n, curve=v, first=float(np.mean(v[:4])) if v else None,
+                    final=float(np.mean(v[-4:])) if v else None,
+                    depth=len(self.bank.tree.path_of(self.bank.concepts[n]["leaf"])) - 1)
+            for n, v in curves.items()}
+        self.last_curve = self.last_batch_curves[names[-1]]
+        return self
+
     def learn_concept(self, xq, name, n_pool=64, epochs=10, **kw):
         teacher = self.compose(xq)
         pool = self.sample_teacher(teacher, n=n_pool, **kw)
         self.consolidate(pool, name, mu=teacher["mu"], epochs=epochs)
         return teacher, pool
+
+    def learn_concepts_batch(self, xqs, names, n_pool=64, epochs=10, group=True,
+                             disc=None, **kw):
+        """The whole loop for K OOD queries at once: compose -> sample -> consolidate, all batched.
+
+        This is the efficiency path.  Discovery shares its query-agnostic modes across the batch,
+        the K pools come out of a single reverse-diffusion run, and consolidation is one joint
+        optimization -- while what reaches the manifold is the same K additive concepts, and
+        everything already in it stays bit-identical.
+        """
+        teachers = self.compose_batch(xqs, **(disc or {}))
+        pools = self.sample_teacher_batch(teachers, n=n_pool, **kw)
+        self.consolidate_batch([(n, p, t["mu"]) for n, p, t in zip(names, pools, teachers)],
+                               epochs=epochs, group=group)
+        return teachers, pools
 
     # ── using what was learned ───────────────────────────────────────────────
     def sample_concept(self, name, n=16, steps=None, seed=None, guidance=1.0, u_start=1.0):

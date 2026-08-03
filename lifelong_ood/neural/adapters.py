@@ -138,16 +138,14 @@ class ConceptTree:
         self.children[parent].append(nid)
         return nid
 
-    def insert(self, mu):
-        mu = np.asarray(mu, np.float64).ravel()
-        path, cur = [0], 0
+    def _descend(self, mu):
+        """Where would `mu` attach?  Returns the path of EXISTING nodes, root first.  No mutation,
+        so a whole batch can be placed against one consistent snapshot of the tree."""
         if self.flat:
-            # no descent at all: the root delta plus one private leaf per concept, which is the
-            # paper's per-query adapter with nothing shared between queries
-            leaf = self._new(mu, 0)
-            return path + [leaf], leaf
+            return [0]
+        path, cur = [0], 0
         for _ in range(self.max_depth):
-            kids = [k for k in self.children[cur] if self.children[k] or True]
+            kids = list(self.children[cur])
             inner = [k for k in kids if self.children[k]] or kids
             if not inner:
                 break
@@ -156,8 +154,10 @@ class ConceptTree:
                 break
             path.append(best)
             cur = best
-        leaf = self._new(mu, cur)
-        # ancestors track a running mean for PLACEMENT only; their adapter deltas stay frozen
+        return path
+
+    def _touch(self, path, mu):
+        """Ancestors track a running mean for PLACEMENT only; their adapter deltas stay frozen."""
         for nid in path:
             if self.mean[nid] is None:
                 self.mean[nid] = mu.copy()
@@ -165,7 +165,53 @@ class ConceptTree:
             else:
                 self.count[nid] += 1
                 self.mean[nid] += (mu - self.mean[nid]) / self.count[nid]
+
+    def insert(self, mu):
+        mu = np.asarray(mu, np.float64).ravel()
+        path = self._descend(mu)
+        leaf = self._new(mu, path[-1])
+        self._touch(path, mu)
         return path + [leaf], leaf
+
+    def insert_batch(self, mus, group=True):
+        """Insert K concepts against ONE snapshot of the tree.  -> (paths, leaves, new_node_ids).
+
+        Placement is computed for every member before anything is created, so the batch does not
+        depend on its own arrival order -- the same K concepts give the same structure however they
+        are shuffled, which sequential insertion does not guarantee.
+
+        `group=True` adds one NEW intermediate node per set of members landing on the same parent.
+        That node is trainable for the duration of this batch and frozen afterwards, so it is a real
+        shared parameter learned from all its members -- not the warm start a sequential run gets,
+        but genuine joint structure -- while every node that existed BEFORE the batch stays frozen
+        and therefore bit-identical.  This is what makes batch consolidation different in kind from
+        K consolidations in a row, rather than merely faster.
+        """
+        mus = [np.asarray(m, np.float64).ravel() for m in mus]
+        placements = [self._descend(m) for m in mus]
+        by_parent = {}
+        for i, p in enumerate(placements):
+            by_parent.setdefault(p[-1], []).append(i)
+
+        paths, leaves, new_nodes = [None] * len(mus), [None] * len(mus), []
+        for parent, members in by_parent.items():
+            prefix = placements[members[0]]
+            if group and len(members) > 1 and not self.flat:
+                gmu = np.mean([mus[i] for i in members], 0)
+                gnode = self._new(gmu, parent)
+                self.count[gnode] = len(members)
+                new_nodes.append(gnode)
+                host, hpath = gnode, prefix + [gnode]
+            else:
+                host, hpath = parent, prefix
+            for i in members:
+                leaf = self._new(mus[i], host)
+                new_nodes.append(leaf)
+                leaves[i] = leaf
+                paths[i] = hpath + [leaf]
+        for i, m in enumerate(mus):
+            self._touch(placements[i], m)
+        return paths, leaves, new_nodes
 
     def path_of(self, leaf):
         parent = {c: p for p, ks in self.children.items() for c in ks}
@@ -192,15 +238,14 @@ class HierarchicalAdapterBank:
             p.requires_grad_(False)
         self.wrapped = inject(model, rank, self.state)
         self.tree = ConceptTree(var=var, branch_max=branch_max, max_depth=max_depth, flat=flat)
-        self.concepts = {}                   # name -> dict(path, leaf, class_id)
-        self.frozen = set()
+        self.concepts = {}                   # name -> dict(path, leaf)
+        self.frozen = set()                  # created by an earlier batch: immutable
+        self._open = set()                   # created by the batch being consolidated right now
         self._emb_extra = {}                 # name -> learned class embedding vector
         self.base_null = model.null_id
 
     # -- registration ---------------------------------------------------------
-    def add_concept(self, name, mu):
-        """Place a new concept in the hierarchy and create its parameters.  Ancestors are NOT reset."""
-        path, leaf = self.tree.insert(mu)
+    def _register(self, name, path, leaf):
         for nid in path:
             for w in self.wrapped:
                 w.add_node(nid, self.device)
@@ -208,18 +253,53 @@ class HierarchicalAdapterBank:
         emb.normal_(0, 0.01)
         self._emb_extra[name] = nn.Parameter(emb)
         self.concepts[name] = dict(path=path, leaf=leaf)
-        if self.freeze_ancestors:
-            self.frozen.update(path[:-1])    # everything but the new leaf is now immutable
         return self.concepts[name]
 
+    def _seal(self):
+        """Freeze whatever the previous batch left open.  Called at the start of every insertion, so
+        'open' always means 'created by the batch currently being consolidated'."""
+        if self.freeze_ancestors:
+            self.frozen.update(self._open)
+        self._open = set()
+
+    def add_concept(self, name, mu):
+        """Place ONE new concept and create its parameters.  Nothing existing is reset."""
+        self._seal()
+        path, leaf = self.tree.insert(mu)
+        self._open = {leaf}
+        return self._register(name, path, leaf)
+
+    def add_concepts(self, names, mus, group=True):
+        """Place K concepts as ONE batch.  -> list of concept records.
+
+        Everything created here -- the K leaves plus any shared intermediate nodes -- stays trainable
+        until the next insertion seals it, so a group node genuinely learns from all of its members.
+        Everything that existed before this call is already frozen and cannot move.
+        """
+        self._seal()
+        paths, leaves, new_nodes = self.tree.insert_batch(mus, group=group)
+        self._open = set(new_nodes)
+        return [self._register(n, p, l) for n, p, l in zip(names, paths, leaves)]
+
     def trainable(self, name):
-        """Parameters trained when consolidating `name`: its leaf delta (+ ancestors if unfrozen),
-        plus its own class embedding.  Nothing else in the model is touched."""
-        c = self.concepts[name]
-        ids = {str(c["leaf"])} if self.freeze_ancestors else {str(i) for i in c["path"]}
-        ps = [self._emb_extra[name]]
+        """Parameters trained when consolidating `name`: the nodes on its path that this batch
+        created, plus its own class embedding.  Nothing else in the model is touched."""
+        return self.trainable_batch([name])
+
+    def trainable_batch(self, names):
+        """Union of the trainable parameters for a set of concepts consolidated together.
+
+        A shared group node appears once even though several members sit under it, so it receives
+        gradients from all of them through a single set of parameters -- which is the point.
+        """
+        ids, ps = set(), []
+        for name in names:
+            c = self.concepts[name]
+            on_path = set(c["path"])
+            ids |= (on_path & self._open) if self.freeze_ancestors else on_path
+            ps.append(self._emb_extra[name])
         for w in self.wrapped:
-            for nid in ids:
+            for nid in map(str, sorted(ids)):
                 if nid in w.A:
                     ps += [w.A[nid], w.B[nid]]
         return ps
@@ -267,6 +347,7 @@ class HierarchicalAdapterBank:
                 shared[nid] = shared.get(nid, 0) + 1
         return dict(n_concepts=len(self.concepts), n_nodes=self.tree._next,
                     adapter_params=self.n_params(), depths=depth,
+                    n_frozen=len(self.frozen), n_open=len(self._open),
                     shared_ancestors={k: v for k, v in shared.items() if v > 1})
 
 

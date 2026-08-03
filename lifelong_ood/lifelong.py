@@ -126,12 +126,33 @@ class LifelongLearner:
         self.invalidate()
         return self
 
+    def consolidate_batch(self, items, strategy="graft"):
+        """Add K concepts at once.  `items` = [(name, pool), ...].
+
+        On the analytic backbone a batch is exactly K grafts -- each adapter is its own tree and the
+        mixture is order-independent, so there is nothing to gain from joint optimization and nothing
+        to lose either.  The field is rebuilt ONCE at the end instead of K times, which is the whole
+        saving here; the neural backbone is where batching changes the result rather than the cost.
+        """
+        for name, pool in items:
+            self.consolidate(pool, name, strategy=strategy)
+        return self
+
     def learn_concept(self, xq, name, n_pool=64, discovery="tree", strategy="graft", **kw):
         """The whole loop for one OOD query: compose -> sample -> consolidate."""
         teacher = self.compose(xq, discovery=discovery)
         pool = self.sample_teacher(teacher, n=n_pool, **kw)
         self.consolidate(pool, name, strategy=strategy)
         return teacher, pool
+
+    def learn_concepts_batch(self, xqs, names, n_pool=64, discovery="tree", strategy="graft", **kw):
+        """Compose, sample and consolidate K OOD queries, rebuilding the field once at the end."""
+        out = []
+        for xq, name in zip(xqs, names):
+            teacher = self.compose(xq, discovery=discovery)
+            out.append((teacher, self.sample_teacher(teacher, n=n_pool, **kw)))
+        self.consolidate_batch([(n, p) for n, (_, p) in zip(names, out)], strategy=strategy)
+        return [t for t, _ in out], [p for _, p in out]
 
     # ── using what was learned ───────────────────────────────────────────────
     def sample_concept(self, name, n=16, steps=None, seed=None, guidance=2.0):

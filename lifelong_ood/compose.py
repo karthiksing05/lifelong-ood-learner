@@ -147,6 +147,72 @@ def teacher_eps(teacher):
     return _eps
 
 
+def stacked_teacher_eps(MU, VAR):
+    """-> guide_eps(x, u) where ROW i of x is guided by teacher i.
+
+    Eq. 12 is elementwise in the batch dimension, so K different teachers can drive K blocks of one
+    sampling run with no change to the sampler: build MU/VAR with one row per sample and the whole
+    batch denoises together.  This is what makes batched consolidation cheap -- the K pools come out
+    of a single reverse-diffusion pass instead of K sequential ones.
+    """
+    MU = np.atleast_2d(MU)
+    VAR = np.atleast_2d(VAR)
+
+    def _eps(x, u):
+        a = float(cosine_abar(u))
+        s = a * VAR + (1.0 - a)
+        return np.sqrt(1.0 - a) * (np.atleast_2d(x) - np.sqrt(a) * MU) / s
+    return _eps
+
+
+def candidates_ascent_batch(field, xqs, u_grid=(0.05, 0.1, 0.15, 0.2, 0.3, 0.4), n_starts=16,
+                            iters=150, lr=0.1, seed=0, probes=4, dedup_rmse=0.05, init="hybrid"):
+    """Discovery for K queries at once.  -> list of (M, V, meta), one per query.
+
+    Two savings over calling `candidates_ascent` K times, and the second is the larger:
+
+      * the query-initialized chains for all K queries ascend in ONE batched call per noise level,
+        because mode ascent uses the UNCONDITIONAL score and the chains are independent;
+      * the random-initialized half does not depend on the query at all, so it is run ONCE and its
+        modes are shared by every query's candidate pool.  Sequential discovery re-derives the same
+        query-agnostic modes K times over.
+    """
+    xqs = [np.ravel(x) for x in xqs]
+    K = len(xqs)
+    per = [[] for _ in range(K)]
+    half = max(1, n_starts // 2) if init == "hybrid" else (n_starts if init == "random" else 0)
+    nq = n_starts - half if init != "random" else 0
+    for u in u_grid:
+        if nq > 0:
+            Q = np.stack([xqs[i % K] for i in range(K * nq)])
+            xt, x0 = field.mode_ascent(Q, u, n_starts=K * nq, iters=iters, lr=lr, seed=seed,
+                                       init="query")
+            v0 = field.laplace_diag(xt, u, probes=probes, seed=seed)
+            for k in range(K):
+                idx = np.arange(k, K * nq, K)
+                per[k].append((x0[idx], v0[idx], u))
+        if half > 0:
+            xt, x0 = field.mode_ascent(None, u, n_starts=half, iters=iters, lr=lr,
+                                       seed=seed + 1000, init="random")
+            v0 = field.laplace_diag(xt, u, probes=probes, seed=seed)
+            for k in range(K):
+                per[k].append((x0, v0, u))          # query-agnostic: shared, not recomputed
+    out = []
+    tol2 = None
+    for k in range(K):
+        M = np.concatenate([m for m, _, _ in per[k]])
+        V = np.concatenate([v for _, v, _ in per[k]])
+        us = np.concatenate([np.full(len(m), u) for m, _, u in per[k]])
+        tol2 = (dedup_rmse ** 2) * M.shape[1]
+        keep = []
+        for i in range(len(M)):
+            if all(np.sum((M[i] - M[j]) ** 2) > tol2 for j in keep):
+                keep.append(i)
+        keep = np.array(keep)
+        out.append((M[keep], V[keep], dict(u=us[keep], n_raw=len(M))))
+    return out
+
+
 def cfg_weight(teacher, w0=1.2, wmax=2.0, wmin=0.8, schedule="anneal"):
     """-> guide_w(u): how hard the analytic teacher pulls, as a function of noise level.
 

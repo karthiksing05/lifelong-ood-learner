@@ -1,0 +1,168 @@
+"""N4 — batch addition, benchmarked as continual learning.
+
+Two questions, one run.
+
+**Is batch addition worth it?**  The same K OOD concepts are added to the manifold two ways:
+  `sequential`  K calls to learn_concept -- discover, sample and distil one concept at a time
+  `batch`       ceil(K/B) calls to learn_concepts_batch, B concepts at a time
+Both must end with the same K concepts in the manifold and the same preservation guarantee; the
+question is what batching costs and what it buys.  Batching should win on wall clock for three
+separate reasons (query-agnostic modes discovered once instead of K times, one reverse-diffusion run
+instead of K, one optimizer instead of K) and should additionally produce genuinely SHARED group
+nodes, which a sequential run cannot: a sequential concept can only inherit a frozen warm start,
+while a batch trains the shared node on all of its members at once.
+
+**How does it score as a continual learner?**  The full accuracy matrix `acc[i][t]` -- concept i
+evaluated after step t -- is recorded, giving the standard continual-learning metrics:
+
+  ACC   mean final accuracy over all concepts                       (higher better)
+  BWT   mean_i acc[i][T] - acc[i][i]   -- backward transfer         (0 = no forgetting, <0 = forgetting)
+  FGT   mean_i max_t acc[i][t] - acc[i][T]  -- forgetting measure   (0 = none)
+
+Reported against arms that are the standard baselines of that literature under different names:
+  `unfrozen` = sequential fine-tuning of shared parameters (the catastrophic-forgetting control)
+  `flat`     = one independent adapter per task, stored (parameter-isolation, no sharing;
+               this is also exactly the poe-diffusion paper's per-query LoRA, merely kept)
+  `hier`     = ours
+"""
+import argparse
+import os
+import sys
+import time
+
+import numpy as np
+import torch
+
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from common import CACHE, RESULTS, ood_queries                         # noqa: E402
+
+from lifelong_ood.datasets import load_colormnist, slot_name           # noqa: E402
+from lifelong_ood.evals import composition_accuracy, fit_probes, save_grid, save_json  # noqa: E402
+from lifelong_ood.neural import (NeuralLifelongLearner, fingerprint, load_field,  # noqa: E402
+                                 to_data, to_model)
+
+
+def cl_metrics(acc):
+    """acc[i][t] = accuracy of concept i after step t (t >= i).  -> ACC / BWT / FGT."""
+    K = len(acc)
+    final = [acc[i][-1] for i in range(K)]
+    bwt = [acc[i][-1] - acc[i][0] for i in range(K - 1)]          # [0] is "right after learning i"
+    fgt = [max(acc[i]) - acc[i][-1] for i in range(K - 1)]
+    return dict(ACC=float(np.mean(final)), BWT=float(np.mean(bwt)) if bwt else 0.0,
+                FGT=float(np.mean(fgt)) if fgt else 0.0)
+
+
+def evaluate_all(L, field, probes, learned, n_samples, seed):
+    """Accuracy of EVERY concept learned so far, each with its own pinned seed."""
+    out = {}
+    for name, q, s in learned:
+        S = to_data(L.sample_concept(name, n=n_samples, seed=seed + 500 + s)).astype(np.float32)
+        out[name] = composition_accuracy(probes, S, q["d"], q["f"], q["b"])["joint"]
+    return out
+
+
+def run_arm(args, data, probes, qs, mode, arm, dev):
+    field = load_field(args.ckpt, device=dev)
+    L = NeuralLifelongLearner(field, rank=args.rank, steps=args.steps, seed=args.seed, device=dev,
+                              flat=(arm == "flat"), freeze_ancestors=(arm != "unfrozen"))
+    names = [f"ood_{q['slot']}" for q in qs]
+    xqs = [to_model(data["X"][q["query"]]).ravel() for q in qs]
+    disc = dict(u_grid=(0.1, 0.2, 0.3, 0.4), n_starts=args.ascent_starts, iters=args.ascent_iters)
+
+    learned, marks, acc_rows, exact_rows = [], {}, {n: [] for n in names}, []
+    t0 = time.time()
+    steps = list(range(0, len(qs), args.batch_size)) if mode == "batch" else list(range(len(qs)))
+    for si, i0 in enumerate(steps):
+        sl = slice(i0, i0 + args.batch_size) if mode == "batch" else slice(i0, i0 + 1)
+        if mode == "batch":
+            teachers, pools = L.learn_concepts_batch(xqs[sl], names[sl], n_pool=args.n_pool,
+                                                     epochs=args.epochs, disc=disc)
+        else:
+            teachers, pools = [], []
+            for xq, nm in zip(xqs[sl], names[sl]):
+                t, p = L.learn_concept(xq, nm, n_pool=args.n_pool, epochs=args.epochs, disc=None)
+                teachers.append(t); pools.append(p)
+        for nm, q in zip(names[sl], qs[sl]):
+            learned.append((nm, q, len(learned)))
+            marks[nm] = fingerprint(field, nm, seed=args.seed)
+        # every concept so far, so the full acc[i][t] matrix is available
+        cur = evaluate_all(L, field, probes, learned, args.n_samples, args.seed)
+        for nm, v in cur.items():
+            acc_rows[nm].append(v)
+        exact_rows.append(float(np.mean([
+            float(np.array_equal(fingerprint(field, nm, seed=args.seed), marks[nm]))
+            for nm, _, _ in learned])))
+        print(f"[n4:{arm}:{mode}] step {si + 1}/{len(steps)} "
+              f"({len(learned)} concepts): mean acc {np.mean(list(cur.values())):.2f}, "
+              f"exact retention {exact_rows[-1]:.2f}, {L.bank.n_params() / 1e6:.2f}M params, "
+              f"{time.time() - t0:.0f}s", flush=True)
+        if si == 0 and mode == "batch" and arm == "hier":
+            save_grid(np.concatenate([to_data(pools[0])[:8], to_data(pools[-1])[:8]]),
+                      os.path.join(RESULTS, "n4_batch_pools.png"),
+                      title="two concepts from one batched sampling run")
+    wall = time.time() - t0
+    acc = [acc_rows[n] for n in names if acc_rows[n]]
+    m = cl_metrics(acc)
+    s = L.bank.summary()
+    return dict(arm=arm, mode=mode, wall_seconds=wall, params=s["adapter_params"],
+                n_nodes=s["n_nodes"], shared=len(s["shared_ancestors"]),
+                retention_exact=exact_rows[-1], acc_matrix=acc, **m)
+
+
+def main():
+    p = argparse.ArgumentParser()
+    p.add_argument("--ckpt", default=os.path.join(CACHE, "ddpm_colormnist.pt"))
+    p.add_argument("--n-concepts", type=int, default=8)
+    p.add_argument("--batch-size", type=int, default=4)
+    p.add_argument("--n-pool", type=int, default=64)
+    p.add_argument("--n-samples", type=int, default=16)
+    p.add_argument("--n-per-slot", type=int, default=100)
+    p.add_argument("--epochs", type=int, default=40)
+    p.add_argument("--rank", type=int, default=8)
+    p.add_argument("--steps", type=int, default=50)
+    p.add_argument("--ascent-starts", type=int, default=16)
+    p.add_argument("--ascent-iters", type=int, default=120)
+    p.add_argument("--seed", type=int, default=0)
+    p.add_argument("--arms", nargs="+", default=["hier"])
+    p.add_argument("--modes", nargs="+", default=["batch", "sequential"])
+    p.add_argument("--quick", action="store_true")
+    args = p.parse_args()
+    if args.quick:
+        args.n_concepts, args.batch_size, args.n_pool = 4, 2, 16
+        args.n_samples, args.n_per_slot, args.epochs = 8, 20, 4
+        args.ascent_starts, args.ascent_iters, args.steps = 4, 20, 10
+    dev = "cuda" if torch.cuda.is_available() else "cpu"
+
+    data = load_colormnist(n_per_slot=args.n_per_slot, seed=args.seed)
+    probes = fit_probes(data, seed=args.seed, epochs=8 if args.quick else 30)
+    qs = ood_queries(data, n_slots=args.n_concepts, seed=args.seed)
+    print(f"[n4] {len(qs)} concepts, batch size {args.batch_size}, arms {args.arms}, "
+          f"modes {args.modes}, device {dev}", flush=True)
+
+    rows = []
+    for arm in args.arms:
+        for mode in args.modes:
+            rows.append(run_arm(args, data, probes, qs, mode, arm, dev))
+            print(f"[n4] -> {arm}/{mode}: {rows[-1]['wall_seconds']:.0f}s, "
+                  f"ACC {rows[-1]['ACC']:.3f}, BWT {rows[-1]['BWT']:+.3f}, "
+                  f"FGT {rows[-1]['FGT']:.3f}\n", flush=True)
+    save_json(dict(rows=rows, config=vars(args)), os.path.join(RESULTS, "n4_batch.json"),
+              seed=args.seed)
+
+    print(f"\n[n4] {args.n_concepts} OOD concepts, batch size {args.batch_size}")
+    print(f"    {'arm':8s}{'mode':>11s}{'wall(s)':>9s}{'speedup':>9s}{'ACC':>7s}"
+          f"{'BWT':>8s}{'FGT':>7s}{'exact':>7s}{'params':>9s}{'shared':>8s}")
+    base = {r["arm"]: r["wall_seconds"] for r in rows if r["mode"] == "sequential"}
+    for r in rows:
+        sp = base.get(r["arm"], r["wall_seconds"]) / max(r["wall_seconds"], 1e-9)
+        print(f"    {r['arm']:8s}{r['mode']:>11s}{r['wall_seconds']:9.0f}{sp:9.2f}x"
+              f"{r['ACC']:7.3f}{r['BWT']:+8.3f}{r['FGT']:7.3f}{r['retention_exact']:7.2f}"
+              f"{r['params'] / 1e6:8.2f}M{r['shared']:8d}")
+    print("\n  ACC final mean accuracy | BWT backward transfer (0 = no forgetting) | "
+          "FGT forgetting measure\n  exact = fraction of concepts still bit-identical to birth")
+    print(f"[n4] wrote {RESULTS}/n4_batch.json")
+
+
+if __name__ == "__main__":
+    main()
