@@ -99,15 +99,37 @@ i.e. at low noise the modes are *exactly* the tree's leaves (RMSE 2e-4), and at 
 to shallow internal nodes. The hierarchy Cobweb built incrementally is the density-mode hierarchy the
 paper recovers from a DDPM by gradient ascent (their Appendix A) — here explicit and free.
 
-**E0 (the two tuning results that made composition work).** See §4 for the full story.
-- teacher: paper's τ=0.5 → joint **0.200**; adaptive temperature → **0.625**, vs a **0.700** probe
-  ceiling measured on real held-out images (89% of ceiling).
-- sampler: paper's variance-aware guidance retains **21%** of teacher accuracy; annealed retains
-  **71%**.
+**E0 (full scale, all 40 held-out slots).** See §4 for the full story.
 
-**E2 (partial, full scale).** First slots: `poe_tree` 0.81 vs `top1`/`top3` 0.00. `query_only` scores
-1.00 by memorizing — which is why the geometry triple (novelty / diversity / gen_rmse) is reported
-alongside and is the thing that separates them.
+| K=3 teacher | joint | digit | fg | bg |
+|---|---|---|---|---|
+| paper's fixed τ=0.5 | 0.300 | 0.80 | 1.00 | **0.38** |
+| adaptive temperature | **0.800** | 0.80 | 0.97 | **1.00** |
+| *probe ceiling on real images* | *0.775* | *0.82* | *0.97* | *0.97* |
+
+The teacher scoring slightly above the ceiling is expected, not a bug: μ_T is a clean prototype and
+the probes read it more easily than a real noisy image. τ=0.02 fixed and τ=0.05 adaptive tie at
+0.800; adaptive is kept because it is scale-free and transfers.
+
+Sampler, on the best teacher: annealed guidance retains **89%** of teacher accuracy (joint 0.740),
+the paper's variance-aware schedule **78%** (0.646), constant w=1.5 **85%**.
+
+⚠️ **Scale-dependence worth knowing.** At quick scale (12/slot) the same comparison read 71% vs
+**21%** — a far bigger gap. The density hole that annealing compensates for *shrinks as the mixture
+gets denser*, so the advantage of annealing is largest on small trees. Any claim about the schedule
+must state the scale it was measured at. This is also direct evidence for the argument that
+motivates the neural backbone.
+
+**E2 (full scale, in flight).** Per-slot joint accuracy over the first 11 held-out slots:
+`poe_tree` 0.79 / 0.00 / 1.00 / 0.96 / 0.96 / 0.46 / 1.00 / 0.71 / 0.25 / 0.83 / 0.00, with
+`poe_ascent` tracking it closely (0.71 / 0.08 / 1.00 / 1.00 / 0.88 / 0.54 / 1.00 / 0.00) and
+`top1`/`top3` at essentially 0.00 throughout. That is the paper's qualitative result reproduced, plus
+the extra claim this repo can make: **closed-form tree discovery ≈ the paper's mode-ascent
+discovery**, so discovery is free. `query_only` scores high by memorizing, which is exactly what the
+geometry triple (novelty / diversity / gen_rmse) is reported to expose.
+
+Two slots read 0.00 for *every* method including `query_only` — those are probe failures on the real
+image, not method failures, which is why the per-slot table matters and the mean alone would mislead.
 
 **E3 (partial, full scale).** Per consolidation: drift in held-out seen log-likelihood ≈ **−0.01 to
 −0.05 nats**, drift in denoise R² **+0.0000**, unconditional validity stays 0.94–1.00. Non-degradation
@@ -197,14 +219,17 @@ internal consistency: selection maximizes a per-dimension MAX (their Eq. 8) whil
 applying a near-uniform blend. Fix: `T = tau · mean_r std_j l_{j,r}`, scale-free, transfers across
 datasets and `prior_var`. Background accuracy 0.42 → 0.97.
 
-**Annealed guidance.** Diagnosis order matters here: a `(w0, u_start)` sweep across
-`{1.2, 2.5, 4.0, 6.0} × {0.4, 0.55, 0.7}` moved joint accuracy barely at all and two of four slots
-sat at exactly 0.0 for *every* setting. The teacher, not the sampler, was wrong — μ_T probe-read
-correctly on exactly the slots that scored nonzero. Only after fixing the teacher did the sampler
-sweep become informative, and it then showed the paper's variance-aware schedule retaining 21% of
-teacher accuracy versus 71% for a schedule that anneals guidance up as noise falls. The reason is
-the density hole in §1: the unconditional mixture is trustworthy for generic image structure at high
-noise and actively wrong about the composition at low noise, where identity is decided.
+**Annealed guidance, and the order of diagnosis.** A `(w0, u_start)` sweep across
+`{1.2, 2.5, 4.0, 6.0} × {0.4, 0.55, 0.7}` moved joint accuracy barely at all, and two of four slots
+sat at exactly 0.0 for *every* setting. That flatness was the signal: the teacher, not the sampler,
+was wrong — μ_T probe-read correctly on exactly the slots that scored nonzero, and wrongly on the
+ones that scored zero. **Sample accuracy is bounded by teacher accuracy**, so the sampler sweep was
+uninformative until the teacher was fixed. Re-run afterwards it became informative immediately.
+
+The reason annealing helps is the density hole in §1: the unconditional mixture is trustworthy for
+generic image structure at high noise and actively wrong about the composition at low noise, where
+identity is decided. **But the size of the effect depends on how dense the mixture is** — 71% vs 21%
+on a 315-concept tree, 89% vs 78% on a 1589-concept one. Report the scale with the claim.
 
 ## 5. Environment / running
 

@@ -108,18 +108,32 @@ unconditional sample validity stays 0.92–1.00.
 hierarchical arm — every previously consolidated concept bit-identical — against **0.00** for the
 `unfrozen` ablation as soon as a second concept lands, with frozen-base drift `+0.00000` throughout.
 
-Two tuning results were needed to make composition work at all, and both are deviations from the
-paper documented at their implementation sites:
+**Composition works, and one fix is responsible (E0, all 40 held-out slots).** Composing the
+out-of-distribution teacher and reading it with the attribute probes:
 
-- **Adaptive PoE temperature.** The paper's fixed τ=0.5 gives joint teacher accuracy **0.200**;
-  setting the temperature from the data's own scale gives **0.625** against a **0.700** ceiling.
-  Cobweb's variances sit near `prior_var` everywhere, compressing per-dimension log-likelihood gaps
-  so that two experts with the *wrong* background outvote the one correct one.
-- **Annealed guidance.** A Gaussian mixture assigns essentially **zero density to an unseen
-  composition**, so during sampling its unconditional score drags the result back toward seen slots.
-  The paper's variance-aware schedule retains **21%** of the teacher's accuracy; annealing guidance
-  up as noise falls retains **71%**. This measured hole is precisely what a convolutional UNet does
-  not have, and is why the neural backbone exists.
+| K=3 | joint | digit | fg | **bg** |
+|---|---|---|---|---|
+| the paper's fixed τ=0.5 | 0.300 | 0.80 | 1.00 | **0.38** |
+| adaptive temperature (ours) | **0.800** | 0.80 | 0.97 | **1.00** |
+| *probe ceiling on real held-out images* | *0.775* | *0.82* | *0.97* | *0.97* |
+
+Background accuracy **0.38 → 1.00** is the whole story. Cobweb's variances sit near `prior_var`
+everywhere, which compresses every per-dimension log-likelihood gap by a common factor; at τ=0.5 the
+per-dimension softmax gave three selected experts weights 0.42/0.29/0.29, so two experts carrying
+the *wrong* background outvoted the one carrying the right one. Setting the temperature from the
+data's own scale fixes it. (The teacher scoring slightly *above* the ceiling is not a paradox: μ_T is
+a clean prototype, and these probes read a clean prototype more easily than a real noisy image.)
+
+**Guidance schedule.** A Gaussian mixture assigns essentially zero density to an unseen composition,
+so during sampling its unconditional score pulls the result back toward seen slots. Annealing
+guidance up as noise falls — handing the late, identity-deciding steps to the teacher — retains
+**89%** of the teacher's accuracy against **78%** for the paper's variance-aware schedule. The gap is
+much larger on a small tree (71% vs 21%), which is the tell: the density hole shrinks as the mixture
+gets denser, and it is precisely the hole a convolutional UNet does not have. That is why the neural
+backbone exists.
+
+Both are deviations from the paper, documented at their implementation sites with the measurement
+that motivated them.
 
 `PLAN.md` carries the living status, the open work, and the threats to validity.
 
