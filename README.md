@@ -1,85 +1,164 @@
 # lifelong-ood-learner
 
-**Lifelong learning as repeated composition of prototypes, on a manifold learned the way diffusion
-models learn it — but where the score field is read, analytically, off a Cobweb hierarchy.**
+**Continually adding compositions — including out-of-distribution ones — to a learned generative
+manifold, forever, without the manifold degrading.**
 
-No neural network, no gradient descent, no backprop. The generative model is an incremental Cobweb
-tree of diagonal-Gaussian prototypes ([cobweb-private]'s `CobwebContinuousTree`); its mixture defines
-noisy marginals `p_t` whose score, Tweedie denoiser and ε-prediction are closed-form, so everything a
-DDPM does by learned approximation — reverse-diffusion sampling, mode ascent on `p_t`,
-classifier-free guidance against a teacher — runs here in exact arithmetic.
-
-## The idea
-
-The [poe-diffusion paper] (Wang et al., *Test-Time Compositional Generalization in Diffusion Models
-via Concept Discovery*) shows that a pretrained DDPM's time-indexed score field hides a hierarchy of
-density modes; that these modes, discovered by gradient ascent from a single OOD query, can be
-composed by a product-of-experts into a teacher for an unseen composition; and that the teacher can
-be distilled back into the model with LoRA. Its stated limitation: a full mechanism for
-*consolidating and reusing* discovered concepts — lifelong learning — is future work.
-
-This repository is that future work, with the hierarchy made explicit:
-
-1. **The manifold.** A Cobweb tree grown one instance at a time IS the diffusion model
-   (`lifelong_ood/score.py`). Its effective leaves are the mixture components of `p_0`; its internal
-   nodes are the modes of the smoothed marginals `p_t` at coarser noise — the density-mode hierarchy
-   the paper recovers by ascent (their Appendix A), here explicit and free (validated in E1).
-2. **Composition.** From one OOD query: discover prototypes (closed-form ranking over tree concepts,
-   or the paper's mode ascent — both implemented), select K complementary ones with the submodular
-   per-dimension coverage objective (their Eq. 8–9), weigh per-dimension (Eq. 10), multiply into an
-   analytic PoE teacher (Eq. 7), and sample it through the manifold with variance-aware
-   classifier-free guidance (Eq. 12–14) (`lifelong_ood/compose.py`, E2).
-3. **Lifelong consolidation.** The paper distills its teacher into a LoRA adapter on a frozen UNet.
-   We make the same move structural: the sampled pool grows a **separate adapter tree**; the base is
-   frozen and the adapter is merged at snapshot level as new mixture components
-   (`lifelong_ood/lifelong.py`, `backend.merge_snapshots`). Interference with old knowledge is
-   bounded analytically — `|Δ loglik| ≤ log(1 + n_adapter/n_base)` — so **the manifold cannot
-   degrade over time by construction**, and consolidated concepts become ordinary prototypes that
-   later compositions can select: composition is closed under consolidation (E3).
+A model meets a composition it has never seen. It assembles that composition out of prototypes it
+already has, samples the assembly through its own manifold to render it properly, and then absorbs
+the result *back into the manifold* as a new, reusable concept. Then it does it again, and again,
+and nothing it already knew gets worse.
 
 ```python
 from lifelong_ood import LifelongLearner
 
-L = LifelongLearner()                 # cobweb-private backend if installed, numpy fallback otherwise
-L.fit(stream)                         # Cobweb's own incremental loop — the only training there is
-teacher, pool = L.learn_concept(x_ood_query, "my_new_concept")   # compose -> sample -> consolidate
-S = L.sample_concept("my_new_concept", n=16)                     # conditional generation, no c_new training
+L = LifelongLearner()
+L.fit(stream)                                                    # incremental, no gradients
+teacher, pool = L.learn_concept(x_ood_query, "cyan_on_deep_red") # compose -> sample -> consolidate
+S = L.sample_concept("cyan_on_deep_red", n=16)                   # generate it, forever after
 ```
 
-## Experiments (ColorMNIST, 120 seen / 40 held-out compositional slots)
+## Where this comes from, and what is new
 
-Benchmark, palette and splits are byte-identical to [cobweb-poincare]'s reconstruction of the paper's
-Appendix B benchmark, so numbers are comparable slot-for-slot across the two repositories.
+Steps 1–3 of that loop are [Wang et al., *Test-Time Compositional Generalization in Diffusion Models
+via Concept Discovery*](poe-diffusion.pdf), reimplemented faithfully: discover concept prototypes as
+modes of a diffusion model's noisy marginals `p_t`, select a complementary few with a submodular
+per-dimension coverage objective, multiply them into an analytic product-of-experts teacher, and
+sample it through classifier-free guidance (their Eq. 4, 7–10, 12–14).
 
-| exp | question | quick-scale evidence so far |
+**Step 4 is ours, and the paper names the gap in its own conclusion:**
+
+> *"human-level intelligence also requires learning new primitives and incorporating them into
+> future compositions … A full mechanism for detecting, consolidating, and reusing genuinely new
+> primitives remains an important direction for future work."*
+
+Their distillation trains one flat `(LoRA, c_new)` pair per query and throws it away. Scaled to a
+stream, that gives you either N isolated adapters that never help each other, or one adapter trained
+sequentially that forgets. We make consolidation a first-class, accumulating operation with a
+structural non-degradation guarantee.
+
+### The mechanism: an insert-only hierarchy of adapters
+
+The page we take from Cobweb is its *insertion discipline*, not its statistics. Consolidated concepts
+are leaves of an incrementally grown, insert-only hierarchy, and a concept's effective adapter is the
+**sum of the deltas along its root→leaf path**:
+
+```
+root delta                            shared by everything ever consolidated
+ └─ "warm colours on dark" delta      shared by that neighbourhood
+     └─ "cyan on deep_red" leaf       this concept alone
+```
+
+Two properties follow, and a lifelong learner needs both at once:
+
+- **No forgetting, structurally.** Ancestors freeze the moment they are created; inserting a concept
+  trains only its new leaf. An existing concept's path — and therefore its function — is *bit-identical*
+  after any number of later insertions. We verify the strong form: not "accuracy stayed similar" but
+  "the epsilon output on fixed noise is unchanged to the bit."
+- **Forward transfer, structurally.** A new leaf inherits its ancestors' accumulated delta as a warm
+  start, so a concept landing near relatives only has to learn its residual.
+
+Ablations isolate each ingredient: `flat` (no sharing — the paper's per-query adapter, merely stored)
+and `unfrozen` (hierarchy kept, ancestors trainable). Retention collapses in `unfrozen` exactly as
+predicted.
+
+## Two backbones, one method
+
+`BaseScoreField` defines a diffusion manifold by a single primitive, `eps(x, u)`. Sampling, mode
+ascent and the Laplace covariance are written against it once, so the composition-and-consolidation
+stack runs *unchanged* on either backbone — results are attributable to the method, not the model.
+
+| | **analytic** (`ScoreField`) | **neural** (`NeuralScoreField`) |
 |---|---|---|
-| `e1_manifold.py` | is the tree a valid diffusion manifold? | pure-noise DDIM samples land in seen compositions at 0.88 (leaf field) / 0.94 (depth-annealed frontier field); ascended modes of `p_t` match deep tree nodes at low noise and coarsen to depth-2 internal nodes at `u=0.8` |
-| `e2_composition.py` | can one OOD query be recreated by composing prototypes? | PoE teacher `μ_T` probe-reads the queried (digit, fg, bg); baselines (query-only, top-k retrieval) fail exactly the way the paper reports; guided-sampling tuning in progress — see `PLAN.md` §3 |
-| `e3_lifelong.py` | does repeated consolidation degrade the manifold? | smoke: one consolidation drifts old-data loglik by −0.03 nats; full curves (graft vs destructive `ifit` control) pending |
+| what | a Cobweb tree read as a Gaussian mixture — score, Tweedie and ε all closed-form | a trained class-conditional DDPM |
+| training | incremental `ifit`; **no gradient descent anywhere** | ~3.5 h on one GPU |
+| discovery | free: the tree's own nodes *are* the modes of `p_t` | mode ascent on the learned score |
+| consolidation | adapter trees merged at snapshot level; drift bounded by `log(1 + n_adapter/n_base)` | hierarchical LoRA bank |
 
-Run everything through SLURM (`experiments/run.sh`; CPU-only by design):
+The analytic backbone came first and gives something the neural one cannot: concept discovery for
+free, with the hierarchy explicit. It also has a measured limitation that motivated adding the neural
+one — see below.
+
+## Results
+
+ColorMNIST, 120 seen / 40 held-out compositional slots. Benchmark, palette and splits are identical
+to [cobweb-poincare]'s reconstruction of the paper's Appendix B, so numbers are comparable
+slot-for-slot across the two repositories. Every table reports the **probe ceiling** — the same
+probes applied to *real* held-out images — because the metrics are probe-based and that ceiling is
+what any method is actually competing against.
+
+**The tree is a valid diffusion manifold (E1, full scale).** Unconditional DDIM sampling on the
+analytic field lands in seen compositions at rate **1.000**; denoise R² 0.995. And its hierarchy *is*
+the density-mode hierarchy the paper recovers from a DDPM by gradient ascent — ascending `p_t` and
+matching to the nearest tree node:
+
+| noise `u` | 0.10 | 0.25 | 0.40 | 0.60 | 0.80 |
+|---|---|---|---|---|---|
+| matched node depth | 7.12 | 7.25 | 7.25 | 7.25 | **1.62** |
+| match RMSE | 0.0002 | 0.0006 | 0.0011 | 0.0076 | 0.0296 |
+| fraction that are leaves | 1.00 | 1.00 | 1.00 | 0.88 | **0.00** |
+
+At low noise the modes are *exactly* the tree's leaves (RMSE 2e-4); at high noise they migrate to
+shallow internal nodes. Free, explicit, and no ascent required to obtain it.
+
+**Consolidation does not degrade the manifold (E3, full scale).** Per consolidation, drift in
+held-out log-likelihood is **−0.01 to −0.05 nats**, drift in denoise R² is **+0.0000**, and
+unconditional sample validity stays 0.92–1.00.
+
+**The mechanism holds in the strong form (N3).** `retention_exact = 1.00` at every step for the
+hierarchical arm — every previously consolidated concept bit-identical — against **0.00** for the
+`unfrozen` ablation as soon as a second concept lands, with frozen-base drift `+0.00000` throughout.
+
+Two tuning results were needed to make composition work at all, and both are deviations from the
+paper documented at their implementation sites:
+
+- **Adaptive PoE temperature.** The paper's fixed τ=0.5 gives joint teacher accuracy **0.200**;
+  setting the temperature from the data's own scale gives **0.625** against a **0.700** ceiling.
+  Cobweb's variances sit near `prior_var` everywhere, compressing per-dimension log-likelihood gaps
+  so that two experts with the *wrong* background outvote the one correct one.
+- **Annealed guidance.** A Gaussian mixture assigns essentially **zero density to an unseen
+  composition**, so during sampling its unconditional score drags the result back toward seen slots.
+  The paper's variance-aware schedule retains **21%** of the teacher's accuracy; annealing guidance
+  up as noise falls retains **71%**. This measured hole is precisely what a convolutional UNet does
+  not have, and is why the neural backbone exists.
+
+`PLAN.md` carries the living status, the open work, and the threats to validity.
+
+## Running it
 
 ```bash
-sbatch --export=ALL,SCRIPT="tests/test_smoke.py" experiments/run.sh
-sbatch --export=ALL,SCRIPT="experiments/e1_manifold.py" experiments/run.sh
+python tests/test_smoke.py      # analytic, synthetic, ~10 s, no data needed
+python tests/test_neural.py     # neural, CPU, <1 min
+
+# on SLURM (login nodes are contended; lab convention is to validate via sbatch)
+sbatch --export=ALL,SCRIPT="experiments/e1_manifold.py"           experiments/run.sh      # CPU
+sbatch --export=ALL,SCRIPT="experiments/n1_train.py --epochs 200" experiments/run_gpu.sh  # GPU
 ```
 
-or locally at toy scale: `python experiments/e1_manifold.py --quick` (1–3 min, any machine with
-numpy+matplotlib; MNIST idx files are auto-located or downloaded).
+Every experiment takes `--quick` for a small local run. `experiments/e0_tune.py` is the
+tuning-of-record: it chose τ, K and the guidance schedule, and reports each against the probe ceiling.
+
+| experiment | question |
+|---|---|
+| `e0_tune` | how the defaults were chosen (teacher sweep, then sampler sweep) |
+| `e1_manifold` | is the Cobweb tree a valid diffusion manifold, and is its hierarchy the mode hierarchy? |
+| `e2_composition` | can one OOD query be recreated by composing prototypes? vs query-only and top-k |
+| `e3_lifelong` | does repeated consolidation degrade the manifold? vs a destructive `ifit` control |
+| `e4_closure` | are consolidated concepts reused by later compositions? (hypothesis under revision — see `PLAN.md` §3.2) |
+| `n1_train` | train the neural backbone |
+| `n2_composition` | E2 on the neural backbone |
+| `n3_lifelong` | **the headline**: hierarchical consolidation vs `flat` and `unfrozen` ablations |
 
 ## What this is not
 
 - It does not deprecate [cobweb-poincare]: that repo studies the *representation* (hyperbolic
-  geometry, encode/decode/interpolate); this one studies the *generative loop* (diffusion-style
-  sampling, composition, lifelong consolidation) over the same kind of tree, and reuses its
-  benchmark unchanged.
-- It is not a reimplementation of Cobweb: the backend is [cobweb-private]'s `CobwebContinuousTree`
-  (`covar_from=1`, `var = sum_sq/n + prior_var`, matching cobweb-poincare's configuration exactly);
-  `lifelong_ood/tree.py` is a portability fallback only.
+  geometry, encode/decode/interpolate). This one studies the *generative loop* over the same kind of
+  tree, and reuses its benchmark unchanged.
+- It is not a reimplementation of Cobweb — the backend is [cobweb-private]'s `CobwebContinuousTree`
+  (`covar_from=1`, `var = sum_sq/n + prior_var`, matching cobweb-poincare exactly). The numpy tree in
+  `tree.py` is a portability fallback.
+- The metrics are probe-based, not FID/CLIP, and the palette is reconstructed from the paper's colour
+  names rather than its RGB values. Absolute numbers are not comparable to the paper's tables; only
+  within-table comparisons are. `PLAN.md` §3.6 lists these plainly.
 
-`PLAN.md` is the living working plan: current status, open issues in priority order, and the exact
-next actions.
-
-[poe-diffusion paper]: ../poe-diffusion.pdf
 [cobweb-poincare]: https://github.com/karthiksing05/cobweb-poincare
 [cobweb-private]: ../Chunkformer/cobweb-private

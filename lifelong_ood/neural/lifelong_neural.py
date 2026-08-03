@@ -83,6 +83,7 @@ class NeuralLifelongLearner:
         model.train()
         n = len(X)
         g = torch.Generator(device="cpu").manual_seed(seed)
+        curve = []
         with self.bank.activate(name):
             for ep in range(epochs):
                 tot, nb = 0.0, 0
@@ -105,11 +106,18 @@ class NeuralLifelongLearner:
                     loss.backward()
                     opt.step()
                     tot += float(loss); nb += 1
+                curve.append(tot / max(nb, 1))
                 if verbose:
-                    print(f"      distil {name} ep {ep + 1}/{epochs}: {tot / max(nb, 1):.4f}",
-                          flush=True)
+                    print(f"      distil {name} ep {ep + 1}/{epochs}: {curve[-1]:.4f}", flush=True)
         model.eval()
         self.history.append(name)
+        # The COST of learning this concept, which is how closure is measured on a dataset whose
+        # attributes are spatially separable (see PLAN.md 3.2): if the hierarchy shares anything
+        # useful, a concept landing near existing relatives should start lower and end lower than an
+        # isolated one, even though its final accuracy may be no different.
+        self.last_curve = dict(name=name, curve=curve, first=curve[0] if curve else None,
+                               final=curve[-1] if curve else None,
+                               depth=len(self.bank.tree.path_of(self.bank.concepts[name]["leaf"])) - 1)
         return self
 
     def learn_concept(self, xq, name, n_pool=64, epochs=10, **kw):

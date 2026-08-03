@@ -83,9 +83,15 @@ def main():
             rec["valid_rate"] = valid_rate(
                 probes, learner.field.sample(n=n_uncond, steps=args.steps, seed=args.seed + 7 * k),
                 seen_slots)
+            # the pool is what was consolidated; the conditional samples are what comes back out.
+            # Reporting both separates "the composition was bad" from "consolidation lost it", which
+            # the single `new_concept` number cannot distinguish.
+            rec["pool"] = composition_accuracy(probes, pool, q["d"], q["f"], q["b"])
             if strat == "graft":
                 S = learner.sample_concept(name, n=16 if args.quick else 32, seed=args.seed + k)
                 rec["new_concept"] = composition_accuracy(probes, S, q["d"], q["f"], q["b"])
+                rec["consolidation_retained"] = (rec["new_concept"]["joint"]
+                                                 / max(rec["pool"]["joint"], 1e-9))
                 rec["retention"] = {}
                 for pname, pq in names[:-1]:
                     Sp = learner.sample_concept(pname, n=16, seed=args.seed + 100 + k)
@@ -98,7 +104,8 @@ def main():
                     save_grid(S[:16], os.path.join(RESULTS, f"e3_cond_{name}.png"),
                               title=f"conditional samples from grafted adapter {name}")
             steps.append(rec)
-            extra = (f", new joint {rec['new_concept']['joint']:.2f}" if "new_concept" in rec else "")
+            extra = (f", pool {rec['pool']['joint']:.2f} -> new {rec['new_concept']['joint']:.2f}"
+                     if "new_concept" in rec else f", pool {rec['pool']['joint']:.2f}")
             print(f"[e3:{strat}] step {k} (+{rec['name']}): drift loglik {rec['drift_loglik']:+.2f}, "
                   f"drift R2 {rec['drift_r2']:+.4f}, valid {rec['valid_rate']:.2f}{extra}", flush=True)
         results[strat] = steps

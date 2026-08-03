@@ -114,6 +114,7 @@ def main():
                        new_acc=composition_accuracy(probes, S, q["d"], q["f"], q["b"]),
                        geometry=sample_geometry(S, xq01, data["X"][q["rest"][:100]]))
             rec["base_drift"] = rec["base_err"] - e0
+            rec["distil"] = L.last_curve                 # first/final loss: the transfer signal
             # the strong no-forgetting test: are earlier concepts' functions untouched?
             exact, accs = [], []
             for pname, pq in learned[:-1]:
@@ -136,8 +137,22 @@ def main():
             print(f"[n3:{arm}] step {k} (+{rec['name']}): new {rec['new_acc']['joint']:.2f}, "
                   f"retention exact {rec['retention_exact']:.2f} acc {ra}, "
                   f"base drift {rec['base_drift']:+.5f}, depth {rec['depth']}, "
+                  f"distil {rec['distil']['first']:.4f}->{rec['distil']['final']:.4f}, "
                   f"params {rec['params'] / 1e6:.2f}M", flush=True)
-        results[arm] = dict(steps=steps, bank=L.bank.summary())
+        # transfer: do LATER concepts start and finish cheaper than earlier ones?  Compared across
+        # arms, this is the test for whether the hierarchy shares anything useful.
+        cur = [s["distil"] for s in steps if "distil" in s]
+        half = max(1, len(cur) // 2)
+        results[arm] = dict(steps=steps, bank=L.bank.summary(),
+                            transfer=dict(
+                                early_first=float(np.mean([c["first"] for c in cur[:half]])),
+                                late_first=float(np.mean([c["first"] for c in cur[half:]])),
+                                early_final=float(np.mean([c["final"] for c in cur[:half]])),
+                                late_final=float(np.mean([c["final"] for c in cur[half:]]))))
+        t = results[arm]["transfer"]
+        print(f"[n3:{arm}] transfer: first-epoch loss {t['early_first']:.4f} (early) -> "
+              f"{t['late_first']:.4f} (late); final {t['early_final']:.4f} -> {t['late_final']:.4f}",
+              flush=True)
 
     save_json(results, os.path.join(RESULTS, "n3_lifelong.json"))
 
@@ -162,12 +177,20 @@ def main():
     fig.savefig(os.path.join(RESULTS, "n3_lifelong.png"), dpi=140)
 
     print("\n[n3] summary after the full stream:")
+    print(f"    {'arm':9s} {'ret_exact':>9s} {'ret_acc':>8s} {'new_acc':>8s} {'base_drift':>11s} "
+          f"{'adapter':>8s} {'shared':>7s} {'transfer':>9s}")
     for arm, r in results.items():
         last = r["steps"][-1]
-        print(f"    {arm:9s} retention_exact {last['retention_exact']:.2f}  "
-              f"retention_acc {last['retention_acc'] if last['retention_acc'] is not None else float('nan'):.2f}  "
-              f"base_drift {last['base_drift']:+.5f}  adapter {last['params'] / 1e6:.2f}M  "
-              f"shared ancestors {len(r['bank']['shared_ancestors'])}")
+        news = [s["new_acc"]["joint"] for s in r["steps"] if "new_acc" in s]
+        ra = last["retention_acc"]
+        t = r["transfer"]
+        print(f"    {arm:9s} {last['retention_exact']:9.2f} "
+              f"{(float('nan') if ra is None else ra):8.2f} {np.mean(news):8.2f} "
+              f"{last['base_drift']:+11.5f} {last['params'] / 1e6:7.2f}M "
+              f"{len(r['bank']['shared_ancestors']):7d} "
+              f"{t['late_final'] - t['early_final']:+9.4f}")
+    print("    (transfer = late-minus-early final distillation loss; negative means later concepts "
+          "were cheaper to learn)")
     print(f"[n3] wrote {RESULTS}/n3_lifelong.json and n3_lifelong.png")
 
 
