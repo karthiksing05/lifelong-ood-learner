@@ -80,6 +80,13 @@ one — see below.
 
 ## Results
 
+![forgetting matrix](figures/n5_forgetting_matrix.png)
+
+*Accuracy of every task after every step, on a class-incremental stream of real held-out images.
+Every row is constant left-to-right for ours; rows visibly fade for sequential fine-tuning. A row
+that darkens is a task being forgotten.* Full figure set and analysis in
+[`RESULTS.md`](RESULTS.md).
+
 ColorMNIST, 120 seen / 40 held-out compositional slots. Benchmark, palette and splits are identical
 to [cobweb-poincare]'s reconstruction of the paper's Appendix B, so numbers are comparable
 slot-for-slot across the two repositories. Every table reports the **probe ceiling** — the same
@@ -229,6 +236,13 @@ replay does not help** (0.589 < 0.651, at 1.8x the wall clock -- replayed pools 
 that are themselves drifting, so replay reinforces the drift), and **`independent` beats `ours` on
 final accuracy** with fewer parameters. That sharpens the attribution: freezing delivers the
 no-forgetting result; the hierarchy buys the warm start and the batch speedup, not final quality.
+
+**But the samples are near-copies of the query, and that is the main open defect.** Vetting the
+case-study grids (`figures/case_studies_neural.png`) showed every sample in a row as the same digit
+instance varying only by speckle. Two checks confirm it: `diversity / novelty = 1.04`, where
+independent draws around the query would give 1.41, and content diversity after a low-pass is
+**0.45x** the real class's spread against the 0.61x raw pixels implied. This is the same defect
+behind `query_only` beating PoE -- both are copying the query.
 
 **And the mechanism does not degrade with scale.** `tests/test_unbounded.py` adds 40 concepts in
 mixed batch sizes and asserts every earlier concept stays bit-identical at every step, the frozen

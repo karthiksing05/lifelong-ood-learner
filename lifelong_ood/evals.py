@@ -89,6 +89,27 @@ def _rmse(A, B):
     return float(np.sqrt(np.mean((np.asarray(A, np.float64) - np.asarray(B, np.float64)) ** 2)))
 
 
+def _content_rmse(X, img=IMG):
+    """Mean pairwise RMSE after a 2x2 box downsample -- a crude low-pass.
+
+    Raw pixel diversity cannot distinguish "a different instance of the class" from "the same image
+    plus salt-and-pepper".  Inspecting the case-study panels made that concrete: rows whose measured
+    diversity looked respectable were visibly the same digit eight times over, varying only in
+    speckle.  Averaging 2x2 blocks destroys per-pixel noise while leaving stroke shape and colour
+    intact, so comparing this against the raw number says how much of the apparent variety is
+    CONTENT.  Measured on the neural PoE: raw diversity 0.61x the class spread, content 0.45x.
+    """
+    X = np.asarray(X, np.float64)
+    n, d = X.shape[0], X.shape[1]
+    ch = d // (img * img)
+    A = X.reshape(n, img, img, ch)
+    A = A.reshape(n, img // 2, 2, img // 2, 2, ch).mean((2, 4)).reshape(n, -1)
+    if n < 2:
+        return 0.0
+    D = np.sqrt(((A[:, None] - A[None]) ** 2).mean(2))
+    return float(D[np.triu_indices(n, 1)].mean())
+
+
 def sample_geometry(samples, xq, reference=None):
     """The faithfulness/generalization split the accuracy metric cannot see.
 
@@ -112,6 +133,12 @@ def sample_geometry(samples, xq, reference=None):
         out["diversity"] = float(d[np.triu_indices(len(S), 1)].mean())
     else:
         out["diversity"] = 0.0
+    out["content_diversity"] = _content_rmse(S)
+    # diversity / novelty separates "independent draws around the query" from "one rendering of it".
+    # For samples = query + iid noise the ratio is sqrt(2) ~ 1.41; measured at ~1.04, which means the
+    # samples share a common offset from the query and are near-copies of each other, not of a
+    # distribution around it.  This number is what turned a plausible-looking grid into a red flag.
+    out["div_over_nov"] = out["diversity"] / max(out["novelty"], 1e-9)
     if reference is not None and len(reference):
         R = np.asarray(reference, np.float64)
         dm = np.sqrt(((S[:, None] - R[None]) ** 2).mean(2))
@@ -119,6 +146,9 @@ def sample_geometry(samples, xq, reference=None):
         if len(R) > 1:
             dr = np.sqrt(((R[:, None] - R[None]) ** 2).mean(2))
             out["ref_spread"] = float(dr[np.triu_indices(len(R), 1)].mean())
+            out["content_ref_spread"] = _content_rmse(R)
+            out["content_ratio"] = (out["content_diversity"]
+                                    / max(out["content_ref_spread"], 1e-9))
     return out
 
 
