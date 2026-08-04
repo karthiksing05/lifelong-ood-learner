@@ -42,6 +42,8 @@ from lifelong_ood.evals import (composition_accuracy, fit_probes, precision_reca
 from lifelong_ood.neural import (NeuralLifelongLearner, learn_embedding,  # noqa: E402
                                  load_field, sample_embedding, teacher_init_alpha,
                                  to_data, to_model)
+from lifelong_ood.neural.inversion import (learn_region_embeddings,  # noqa: E402
+                                           sample_region_composed)
 
 FIG = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "figures")
 
@@ -164,6 +166,15 @@ def main():
                         sample_embedding(field, c_new, n=args.n_samples, steps=args.steps,
                                          seed=args.seed + qi, guidance=gw)).astype(np.float32)
 
+        # PER-REGION COMPOSITION: one conditional per factor, each pixel taking its epsilon from
+        # the factor that owns it.  Diversity comes from sampling conditionals; fidelity from
+        # composing them per region -- the two halves that neither approach had together.
+        embs, masks, _ = learn_region_embeddings(field, xq, t["mu"], n_steps=args.inv_steps,
+                                                 lr=args.inv_lr, seed=args.seed)
+        got["region-composed"] = to_data(sample_region_composed(
+            field, embs, masks, n=args.n_samples, steps=args.steps,
+            seed=args.seed + qi)).astype(np.float32)
+
         best_cid = int(np.argmax(a0))
         got["nearest-class"] = to_data(field.sample(n=args.n_samples, steps=args.steps,
                                                     seed=args.seed + qi, clip=(-1, 1),
@@ -187,7 +198,7 @@ def main():
             + ["inv@muT"] + [f"inv@muT rw={r}" for r in args.region_weight[:1]]
             + ["inv long"]
             + [f"inv rw={args.region_weight[0]} w={g}" for g in args.guidance]
-            + ["nearest-class"])
+            + ["region-composed", "nearest-class"])
     summary = {}
     for a in arms:
         rs = [r for r in rows if r["arm"] == a]

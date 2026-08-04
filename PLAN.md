@@ -182,11 +182,25 @@ seeds to fall inside plain inversion's error bars or below -- a region-weighted 
 (0.252±0.031), inverting on mu_T (0.291±0.050), 3x longer optimization (0.232±0.060), and CFG on the
 learned embedding (0.274±0.028). Those four were tuned on single-seed noise before the seeds existed.
 
-**Untried:** the failure is specifically background, and every attempt so far has worked on the
-OBJECTIVE or the PRIOR. What has not been tried is changing the PARAMETERIZATION -- e.g. a separate
-alpha per region (one mixture for the stroke, one for the background) so the two factors are
-composed in class space rather than being forced through a single shared vector. That mirrors the
-per-dimension PoE that already works in pixel space and is the natural next step.
+**CLOSED by the span oracle (RESULTS 5h).** Fitting alpha on 64 REAL held-out images of the target
+slot -- data the method never gets -- reaches acc 0.19, no better than inverting from one query
+(0.23), and the breakdown is decisive: the oracle gets background right (0.82) and foreground wrong
+(0.42) while single-query inversion does the reverse. **The class-embedding span can express one
+factor or the other, never both**, so no combination of these trained embeddings represents the
+held-out pairings. The limit is the conditioning space, not the optimizer, objective, prior or
+sampler -- which is why thirteen interventions on those could not move it. Per-region composition of
+the model's conditionals was also tried and is subject to the same limit (acc 0.12).
+
+**Do not keep tuning this.** The two operating points are certified and complementary: teacher-guided
+for fidelity (acc 0.585+/-0.081, recall 0.06), inversion for coverage (recall 0.649+/-0.066, div
+1.166+/-0.033, acc 0.234). Inversion is the right lifelong default because a collapsed pool teaches
+an adapter one image.
+
+**The one untested hypothesis is backbone capacity.** Ours is 6.8M params on 24k images against the
+paper's ~35M on 120k. Retrain the backbone larger and rerun `tests/diag_span_oracle.py` -- if the
+oracle rises, the span was the bottleneck and inversion inherits the gain for free; if it does not,
+conditioning in a class-embedding span is the wrong vehicle for OOD composition at any scale, which
+would itself be worth reporting.
 Coverage is done and measured: F1 0.00 -> 0.48, recall 0.02 -> 0.88, content diversity 0.72 -> 1.16x
 real (RESULTS 5f). The open gap is composition accuracy, 0.56 (teacher-guided) -> 0.33 (inversion),
 concentrated in BACKGROUND (0.76 -> 0.56) while foreground improves (0.93 -> 0.96).

@@ -44,7 +44,8 @@ def _basis(model, ids=None):
 
 def learn_embedding(field, targets, n_steps=300, lr=0.05, batch=8, seed=0, init_alpha=None,
                     weight_decay=1e-3, simplex=False, u_range=(0.05, 0.95), verbose=False,
-                    ids=None, log_every=0, anchor=0.0, anchor_alpha=None, region_weight=None):
+                    ids=None, log_every=0, anchor=0.0, anchor_alpha=None, region_weight=None,
+                    region_mask=None):
     """Fit `c_new = sum_k alpha_k c_k` so the model explains `targets` when conditioned on it.
 
     `targets`: [N, D] images in the model's [-1, 1] space.  One image is the intended setting (a
@@ -99,6 +100,11 @@ def learn_embedding(field, targets, n_steps=300, lr=0.05, batch=8, seed=0, init_
     opt = torch.optim.Adam([a], lr=lr, weight_decay=(0.0 if simplex else weight_decay))
 
     X = torch.from_numpy(np.asarray(targets, np.float32)).to(dev).reshape(-1, CH, IMG, IMG)
+    only = None
+    if region_mask is not None:
+        # fit this embedding ONLY on the pixels it is responsible for
+        only = torch.from_numpy(np.asarray(region_mask, bool).reshape(IMG, IMG, CH)
+                                .transpose(2, 0, 1).copy()).to(dev)
     mask_fg = None
     if region_weight is not None:
         fg, _ = _region_masks(np.asarray(targets, np.float64).reshape(-1, CH * IMG * IMG)[0])
@@ -119,7 +125,11 @@ def learn_embedding(field, targets, n_steps=300, lr=0.05, batch=8, seed=0, init_
         w = torch.softmax(a, 0) if simplex else a
         c_new = w @ C
         pred = model(xt, u, emb_override=c_new)
-        if mask_fg is not None:
+        if only is not None:
+            err = (pred - e) ** 2
+            mm = only.unsqueeze(0).expand_as(err)
+            loss = err[mm].mean() if mm.any() else err.mean()
+        elif mask_fg is not None:
             err = (pred - e) ** 2
             m = mask_fg.unsqueeze(0).expand_as(err)
             l_fg = err[m].mean() if m.any() else err.mean() * 0
@@ -244,3 +254,57 @@ def sample_embedding(field, c_new, n=32, steps=50, seed=0, guidance=1.0, eta=0.0
                             guide_eps=cond, guide_w=lambda u: 1.0)
     return field.sample(n=n, steps=steps, seed=seed, clip=clip, eta=eta,
                         guide_eps=cond, guide_w=lambda u: guidance)
+
+
+# ── composing the MODEL's conditionals, one per factor ───────────────────────
+def region_composed_eps(field, embs, masks):
+    """-> eps(x, u) assembled from several conditionals, each owning a region of the image.
+
+    The per-dimension product of experts (poe-diffusion Eq. 7) composes GAUSSIANS pixel by pixel.
+    This composes the model's own CONDITIONALS the same way: each factor gets the embedding that
+    expresses it, and each pixel takes its epsilon from the factor that owns it.
+
+    That combination is what the two halves of this project have separately shown to be necessary.
+    Sampling a conditional is what produces diversity (a single conditional reaches recall 0.90,
+    a guided Gaussian 0.00).  Composing per region is what produces fidelity (a single embedding
+    has to carry both factors through one vector and measurably drops the background, 0.88 -> 0.49;
+    the per-dimension PoE has always handled that correctly in pixel space).  Neither alone is
+    enough, and this is the operator that has both.
+
+    `masks` are boolean over flattened pixels and should partition the image; they come from mu_T,
+    which is fixed for the whole trajectory, so no mask has to be estimated from a noisy x_t.
+    """
+    def _eps(x, u):
+        X = np.atleast_2d(x)
+        out = np.zeros_like(X)
+        for c, m in zip(embs, masks):
+            if not m.any():
+                continue
+            out[:, m] = field.eps(X, u, None, emb=c)[:, m]
+        return out
+    return _eps
+
+
+def learn_region_embeddings(field, target, teacher_mu, n_steps=300, lr=0.05, seed=0, ids=None,
+                            simplex=False, **kw):
+    """One embedding per region, each fitted on the pixels it owns.  -> (embs, masks, alphas).
+
+    Each region's alpha is optimized against the epsilon error restricted to that region, so the
+    factor that owns the background is chosen by how well it explains the background -- the exact
+    signal a whole-image objective drowns out.
+    """
+    fg, bg = _region_masks(np.ravel(teacher_mu))
+    embs, alphas = [], []
+    for i, m in enumerate((fg, bg)):
+        c, a, _ = learn_embedding(field, target, n_steps=n_steps, lr=lr, seed=seed + i,
+                                  simplex=simplex, region_mask=m, ids=ids, **kw)
+        embs.append(c); alphas.append(a)
+    return embs, [fg, bg], alphas
+
+
+@torch.no_grad()
+def sample_region_composed(field, embs, masks, n=32, steps=50, seed=0, eta=0.0, clip=(-1, 1)):
+    """Sample with the per-region composition of conditionals as the epsilon."""
+    return field.sample(n=n, steps=steps, seed=seed, clip=clip, eta=eta,
+                        guide_eps=region_composed_eps(field, embs, masks),
+                        guide_w=lambda u: 1.0)

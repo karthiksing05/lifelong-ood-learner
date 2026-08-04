@@ -513,6 +513,54 @@ shared ancestors are tiny. If that is right it is a real side effect worth knowi
 reduce interference even without freezing) but **it is not verified**, and until it is, the
 no-forgetting claim should rest on the teacher-mode N3 run and N5, where the control does separate.
 
+
+## 5h. The fidelity limit is architectural, not a tuning failure (the oracle)
+
+Thirteen routes were tried to recover composition fidelity under conditioning, and all failed:
+guidance schedules (7), teacher covariance (product / mixture / 3 scales), pooling across queries,
+ancestral sampling, distillation, anchoring α to the teacher, a region-weighted inversion loss,
+inverting on μ_T, 3× longer optimization, CFG on the learned embedding, per-region composition of
+the model's conditionals, and nearest-class. Background never moved off 0.39–0.55.
+
+So rather than try a fourteenth, **measure the ceiling**: fit α on **64 real held-out images of the
+target slot** — data the method never receives — and see what the span itself can do.
+
+| | acc | digit | fg | bg | recall | F1 | content div ÷ real |
+|---|---|---|---|---|---|---|---|
+| inversion from ONE query | 0.23 | 0.63 | 0.81 | 0.49 | 0.65 | 0.32 | 1.17 |
+| **ORACLE: α fitted on 64 REAL images** | **0.19** | 0.73 | 0.42 | 0.82 | 0.64 | 0.31 | 1.09 |
+| base model on a SEEN class | 0.97 | 0.97 | 1.00 | 1.00 | 0.95 | 0.96 | 1.01 |
+
+**The oracle is no better than inverting from a single query.** Given perfect data it still cannot
+place the composition. And the per-factor breakdown shows why in the sharpest possible way: the
+oracle gets **background right (0.82) and foreground wrong (0.42)**, while single-query inversion
+gets **foreground right (0.81) and background wrong (0.49)**. The span can express one factor or the
+other — never both at once.
+
+**Conclusion: no combination of this model's trained class embeddings represents these held-out
+(fg, bg) pairings.** The limit is the conditioning space, not the optimizer, the objective, the
+prior or the sampler — which is why thirteen interventions on those could not move it. This is the
+paper's own stated limitation in a measurable form: *"can compose new primitives that interpolate
+between seen ones, but cannot fabricate primitives that extrapolate beyond the training support"*
+(their Appendix H).
+
+### What that leaves: two certified operating points, and the real fix
+
+| | composition fidelity | coverage / diversity |
+|---|---|---|
+| **teacher-guided** (guide toward the PoE Gaussian) | **acc 0.585 ± 0.081** | recall 0.062, div 0.77 |
+| **inversion** (condition the manifold) | acc 0.234 ± 0.040 | **recall 0.649 ± 0.066, div 1.166 ± 0.033** |
+| *base model, seen class* | *0.97* | *0.95 / 1.01* |
+
+Both are certified over 3 seeds and they are complementary, not ordered: use teacher-guided when the
+composition must be right, inversion when the pool must cover the class. For the lifelong loop
+inversion is the correct default, because a collapsed pool teaches an adapter a single image.
+
+**The real fix is backbone capacity, and §6.5 already pointed at it.** Our UNet is 6.8M parameters
+trained on 24k images; the paper's is ~35M on 120k. A conditioning space learned from 5× the data is
+the one plausible way to make these combinations representable, and it is the only remaining
+hypothesis this investigation has not been able to test on the hardware available.
+
 ## 6. Why we are *not* replicating the paper's diffusion results
 
 Side by side on ColorMNIST — their F1 (harmonic mean of precision and recall in Inception feature
