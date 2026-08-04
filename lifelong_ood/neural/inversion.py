@@ -99,11 +99,11 @@ def learn_embedding(field, targets, n_steps=300, lr=0.05, batch=8, seed=0, init_
     a.requires_grad_(True)
     opt = torch.optim.Adam([a], lr=lr, weight_decay=(0.0 if simplex else weight_decay))
 
-    X = torch.from_numpy(np.asarray(targets, np.float32)).to(dev).reshape(-1, CH, IMG, IMG)
+    X = torch.from_numpy(np.asarray(targets, np.float32)).to(dev).reshape(-1, CH, field.img, field.img)
     only = None
     if region_mask is not None:
         # fit this embedding ONLY on the pixels it is responsible for
-        only = torch.from_numpy(np.asarray(region_mask, bool).reshape(IMG, IMG, CH)
+        only = torch.from_numpy(np.asarray(region_mask, bool).reshape(field.img, field.img, CH)
                                 .transpose(2, 0, 1).copy()).to(dev)
     mask_fg = None
     if region_weight is not None:

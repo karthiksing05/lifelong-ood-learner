@@ -68,7 +68,11 @@ class UNet(nn.Module):
     as the last row of the embedding table (index `n_classes`), exactly as the paper describes."""
 
     def __init__(self, n_classes, base=64, mults=(1, 2, 2), edim=256, attn=(16, 8), dropout=0.1,
-                 in_ch=3):
+                 in_ch=3, img=32):
+        # `img` is the input resolution the level bookkeeping starts from.  It was hardcoded to 32,
+        # which silently placed attention at the wrong levels for any other size -- at 64x64 the
+        # first level then ran full attention over 4096 tokens and ran out of memory.  Attention
+        # levels are named in PIXELS (`attn=(16, 8)`), so they stay meaningful across resolutions.
         super().__init__()
         self.n_classes = n_classes
         self.null_id = n_classes
@@ -80,9 +84,10 @@ class UNet(nn.Module):
             self.cemb.weight[self.null_id].zero_()       # null token = no class signal
 
         chs = [base * m for m in mults]
+        self.img = int(img)
         self.stem = nn.Conv2d(in_ch, base, 3, padding=1)
         self.down, self.downsample = nn.ModuleList(), nn.ModuleList()
-        skip_ch, cur, res = [base], base, 32
+        skip_ch, cur, res = [base], base, int(img)
         for i, c in enumerate(chs):
             blocks = nn.ModuleList()
             for _ in range(2):

@@ -29,18 +29,20 @@ DIM = CH * IMG * IMG
 
 
 def to_model(x01):
-    """[0,1] pixels, flat or image-shaped -> [-1,1] flat."""
-    return 2.0 * np.asarray(x01, np.float64).reshape(-1, DIM) - 1.0
+    """[0,1] pixels, flat or image-shaped -> [-1,1] flat.  Resolution-agnostic."""
+    x = np.asarray(x01, np.float64)
+    return 2.0 * x.reshape(len(x) if x.ndim > 1 else 1, -1) - 1.0
 
 
 def to_data(xm):
-    """[-1,1] flat -> [0,1] flat, clipped."""
-    return np.clip((np.asarray(xm, np.float64).reshape(-1, DIM) + 1.0) / 2.0, 0.0, 1.0)
+    """[-1,1] flat -> [0,1] flat, clipped.  Resolution-agnostic."""
+    x = np.asarray(xm, np.float64)
+    return np.clip((x.reshape(len(x) if x.ndim > 1 else 1, -1) + 1.0) / 2.0, 0.0, 1.0)
 
 
-def _as_img(X, device):
+def _as_img(X, device, img=IMG):
     X = np.atleast_2d(np.asarray(X, np.float32))
-    return torch.from_numpy(X).to(device).reshape(-1, CH, IMG, IMG)
+    return torch.from_numpy(X).to(device).reshape(-1, CH, img, img)
 
 
 # ── training ─────────────────────────────────────────────────────────────────
@@ -64,7 +66,8 @@ def train_ddpm(model, X01, labels, epochs=60, batch=128, lr=2e-4, wd=1e-6, p_dro
     fkeys = [k for k, v in sd.items() if v.dtype.is_floating_point]
     ema_f = [ema[k] for k in fkeys]
     mod_f = [sd[k] for k in fkeys]
-    Xt = torch.from_numpy(to_model(X01).astype(np.float32)).reshape(-1, CH, IMG, IMG)
+    img = int(getattr(model, 'img', IMG))
+    Xt = torch.from_numpy(to_model(X01).astype(np.float32)).reshape(-1, CH, img, img)
     Y = torch.from_numpy(np.asarray(labels, np.int64))
     n = len(Xt)
     g = torch.Generator().manual_seed(seed)
@@ -112,6 +115,10 @@ class NeuralScoreField(BaseScoreField):
 
     def __init__(self, model, device="cuda", batch=256, concepts=None, bank=None):
         self.model = model.to(device).eval()
+        # resolution comes from the MODEL, not a module constant -- CelebA runs at 64x64 and a
+        # class-level DIM bound at import time silently kept the sampler at 32x32
+        self.img = int(getattr(model, "img", IMG))
+        self.dim = CH * self.img * self.img
         self.device = device
         self.batch = int(batch)
         self.concepts = dict(concepts or {})     # name -> class id
@@ -157,7 +164,7 @@ class NeuralScoreField(BaseScoreField):
         emb = self._emb(branch) if emb is None else emb
         with ctx:
             for i0 in range(0, len(X), self.batch):
-                xb = _as_img(X[i0:i0 + self.batch], self.device)
+                xb = _as_img(X[i0:i0 + self.batch], self.device, self.img)
                 ub = torch.full((len(xb),), float(u), device=self.device)
                 e = self.model(xb, ub, self._cond(len(xb), branch), emb_override=emb)
                 out[i0:i0 + self.batch] = e.reshape(len(xb), -1).double().cpu().numpy()

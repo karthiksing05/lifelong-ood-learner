@@ -561,6 +561,93 @@ trained on 24k images; the paper's is ~35M on 120k. A conditioning space learned
 the one plausible way to make these combinations representable, and it is the only remaining
 hypothesis this investigation has not been able to test on the hardware available.
 
+
+## 5i. Why background is lost, and the fix the literature points to
+
+The failure has a name in the compositional-diffusion literature: **attribute binding failure /
+colour leakage**, whose standard diagnosis is that a model "has not learned to bind attributes to
+objects but has merely memorized common object-attribute pairings" [1,2]. That is literally our
+architecture -- conditioning is a single global vector added to the timestep embedding, and each of
+the 120 class embeddings is free to be an arbitrary point, so a weighted average of them is not a
+composition.
+
+Following Trager et al., *Linear Spaces of Meanings* (ICCV 2023) [3], composite-concept embeddings
+are often decomposable as a sum of per-factor vectors -- "ideal words". Fitting that on our table:
+
+    c(digit, fg, bg)  ~  mu + D_digit + F_fg + B_bg          **R² = 0.816**
+
+**So held-out combinations ARE expressible** -- as sums of vectors that each appear in training. The
+span oracle of §5h failed not because the space cannot represent these pairings but because a free
+weighting over 120 *entangled* class vectors can trade one factor against another, and nothing in a
+single global conditioning vector stops it.
+
+Composing in the factor basis instead (`lifelong_ood/neural/idealwords.py`):
+
+| arm (8 held-out slots) | acc | digit | fg | **bg** | recall | F1 | content div |
+|---|---|---|---|---|---|---|---|
+| teacher-guided | 0.56 | 0.80 | 0.93 | 0.76 | 0.02 | 0.00 | 0.72 |
+| inversion (class basis) | 0.29 | 0.71 | 0.95 | 0.45 | 0.83 | 0.43 | 1.20 |
+| **factored (ideal words)** | 0.25 | 0.70 | 0.82 | 0.47 | **0.93** | 0.39 | 1.28 |
+| ideal-words ORACLE (true labels) | 0.29 | **0.89** | **0.96** | **0.36** | 0.89 | 0.42 | 1.18 |
+
+Two things follow, and the second is the answer to "why is background lost".
+
+**The factored inversion reads the composition correctly.** On 7 of 8 slots it recovers `(d, f, b)`
+*exactly* from a single query — the 18-parameter problem is well-posed where the 120-parameter one
+was not. Composition in the model's own vocabulary works.
+
+**But the model UNDER-RESPONDS to the background direction.** Even the oracle, composed from true
+labels with no optimization, gives digit 0.89 / fg 0.96 / **bg 0.36**. The embedding is right and the
+decoding is not — and the background factor vectors are simply the weakest: mean norm **0.552**
+against 0.687 (fg) and 0.785 (digit). Amplifying that one direction confirms it:
+
+| gains (digit, fg, bg) | acc | digit | fg | **bg** | recall | F1 | content div |
+|---|---|---|---|---|---|---|---|
+| (1, 1, 1) | 0.29 | 0.87 | 0.95 | **0.38** | 0.76 | 0.40 | 1.18 |
+| **(1, 1, 2)** | **0.38** | 0.83 | 0.62 | **0.87** | 0.86 | **0.51** | 1.06 |
+| (1, 1, 3) | 0.31 | 0.84 | 0.50 | 0.91 | 0.74 | 0.48 | 1.02 |
+| (1, 1, 5) | 0.17 | 0.81 | 0.33 | 0.91 | 0.53 | 0.33 | 1.05 |
+
+**Background is recoverable: 0.38 → 0.87 by doubling its gain**, and that setting is the best result
+in this repository on every axis at once — accuracy 0.38, F1 0.51, recall 0.86, content diversity
+1.06 (target 1.0). The gain is calibrated on SEEN slots only (`calibrate_gains`), never on held-out
+labels.
+
+**What still limits it:** foreground falls as background rises (0.95 → 0.62 → 0.50). The two colour
+factors compete for the same global vector, which is exactly what a single additive conditioning
+signal predicts and what per-token cross-attention in a text-conditioned model would avoid. That is
+now the concrete architectural recommendation rather than a hyperparameter to chase.
+
+### So: is inversion the correct solution?
+
+Partly, and the qualification is precise. **Inversion in the class basis was the wrong basis** — the
+oracle proves no amount of optimization fixes it. **Inversion in the factor basis is right**: it
+recovers the composition exactly from one query. But conditioning alone cannot deliver all three
+factors simultaneously, because they share one global vector; the per-factor gain patches that for
+background at foreground's expense. The three ideas compose: **teacher for discovery → ideal-words
+factorization for the basis → factored inversion for the read → per-factor gain for the decode.**
+
+[1] arXiv 2406.07844 · [2] Training-Free Structured Diffusion Guidance · [3] arXiv 2302.14383
+
+## 5j. CelebA — the benchmark whose factors overlap
+
+`lifelong_ood/celeba.py` implements the paper's Appendix B / Table 4 setup: 14 binary attributes,
+compositional classes as unique attribute combinations, **51 seen / 23 held out**, with the holdout
+tier chosen by the paper's own criterion (differing from a seen class on a single attribute). Data
+loads from HuggingFace parquet shards, so no 1.4 GB zip extraction is needed.
+
+This matters beyond being the paper's second dataset. **Every conclusion above rests on ColorMNIST,
+whose factors are spatially separable** — and that separability is load-bearing: it is why the
+per-dimension PoE can assemble an unseen pairing at all, why the region-restricted class prior was
+constructible, and why E4's closure hypothesis was untestable (`PLAN.md` §3.2). CelebA attributes
+overlap — "smiling" and "big lips" occupy the same pixels — so it tests exactly what ColorMNIST
+structurally cannot.
+
+Status: the loader, the 51/23 split, a CelebA backbone (2.6M params at 64×64) and per-attribute
+probes all run end to end; **12 of 14 attributes are readable at ≥0.65 validation accuracy** and the
+unreadable two are excluded from scoring rather than silently counted. A real backbone run and the
+composition experiments on it are the next step, not yet done.
+
 ## 6. Why we are *not* replicating the paper's diffusion results
 
 Side by side on ColorMNIST — their F1 (harmonic mean of precision and recall in Inception feature

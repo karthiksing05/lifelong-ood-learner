@@ -223,6 +223,13 @@ def field_abar(u):
 
 
 # ── figures ──────────────────────────────────────────────────────────────────
+def _auto_img(vec):
+    """Infer the side length of a flat RGB image so figure helpers work at any resolution."""
+    n = int(np.asarray(vec).size)
+    side = int(round((n / 3) ** 0.5))
+    return side if side * side * 3 == n else IMG
+
+
 def save_grid(images, path, ncol=8, title=None):
     import matplotlib
     matplotlib.use("Agg")
@@ -236,7 +243,8 @@ def save_grid(images, path, ncol=8, title=None):
         ax = axes.flat[i]
         ax.axis("off")
         if i < n:
-            ax.imshow(rgb_img(images[i]))
+            side = _auto_img(images[i])
+            ax.imshow(np.clip(np.asarray(images[i], np.float32).reshape(side, side, 3), 0, 1))
     if title:
         fig.suptitle(title, fontsize=9)
     fig.tight_layout()
@@ -274,3 +282,54 @@ def save_json(obj, path, seed=None):
         stem = path[:-5] if path.endswith(".json") else path
         with open(f"{stem}__seed{int(seed)}.json", "w") as fh:
             json.dump(payload, fh, indent=1)
+
+
+# ── CelebA: one binary probe per attribute ───────────────────────────────────
+def fit_attr_probes(data, n_train=None, seed=0, epochs=30, attrs=None):
+    """Train one binary probe per CelebA attribute on the SEEN classes only.
+
+    ColorMNIST has three categorical factors and a natural "joint = all three correct".  CelebA has
+    14 BINARY attributes that overlap spatially, so the analogue is one probe per attribute and a
+    joint score over them.  Reporting the per-attribute validation accuracy alongside matters more
+    here than it did there: several CelebA attributes are close to unlearnable at 64x64 from a few
+    hundred examples, and an attribute the probe cannot read is not evidence about the generator.
+    """
+    from .celeba import ATTRS
+    attrs = attrs or ATTRS
+    seen = np.where(data["seen"])[0]
+    rng = np.random.default_rng(seed)
+    rng.shuffle(seen)
+    if n_train:
+        seen = seen[:n_train]
+    cut = int(0.9 * len(seen))
+    tr, va = seen[:cut], seen[cut:]
+    X, A = data["X"], data["attrs"]
+    out = {}
+    for k, a in enumerate(attrs):
+        pr = SoftmaxProbe(2, seed=seed, epochs=epochs).fit(X[tr], A[tr, k].astype(int))
+        out[a] = pr
+        out[f"{a}_val_acc"] = pr.acc(X[va], A[va, k].astype(int))
+    out["_attrs"] = list(attrs)
+    return out
+
+
+def attr_accuracy(probes, samples, combo, attrs=None, min_val_acc=0.65):
+    """Per-attribute and joint accuracy of samples against a target attribute combination.
+
+    Attributes whose own probe cannot clear `min_val_acc` on real held-out data are EXCLUDED from
+    the joint score and reported separately -- scoring a generator on an attribute no probe can read
+    measures the probe, not the generator.
+    """
+    attrs = attrs or probes["_attrs"]
+    per, usable = {}, []
+    for k, a in enumerate(attrs):
+        if probes.get(f"{a}_val_acc", 0.0) < min_val_acc:
+            continue
+        hit = probes[a].predict(np.asarray(samples, np.float32)) == int(combo[k])
+        per[a] = float(hit.mean())
+        usable.append(hit)
+    if not usable:
+        return dict(joint=float("nan"), per_attr=per, n_scored=0)
+    U = np.stack(usable)
+    return dict(joint=float(U.all(0).mean()), mean_attr=float(U.mean()),
+                per_attr=per, n_scored=len(usable))

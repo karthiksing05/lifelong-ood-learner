@@ -34,6 +34,11 @@ def main():
     p.add_argument("--base", type=int, default=64)
     p.add_argument("--seed", type=int, default=0)
     p.add_argument("--out", default=os.path.join(CACHE, "ddpm_colormnist.pt"))
+    p.add_argument("--dataset", choices=["colormnist", "celeba"], default="colormnist",
+                   help="celeba is the paper's second benchmark, and the one whose attributes "
+                        "OVERLAP spatially -- ColorMNIST's separability is load-bearing in several "
+                        "of this repo's conclusions and CelebA is how they get tested")
+    p.add_argument("--img", type=int, default=None)
     p.add_argument("--quick", action="store_true")
     args = p.parse_args()
     if args.quick:
@@ -42,7 +47,15 @@ def main():
     print(f"[n1] device {dev}"
           f"{' (' + torch.cuda.get_device_name(0) + ')' if dev == 'cuda' else ''}", flush=True)
 
-    data = load_colormnist(n_per_slot=args.n_per_slot, seed=args.seed)
+    if args.dataset == "celeba":
+        from lifelong_ood.celeba import IMG_CELEBA, load_celeba
+        img = args.img or IMG_CELEBA
+        data = load_celeba(n_per_class=args.n_per_slot, img=img, seed=args.seed,
+                           min_count=25, max_rows=25000)
+        data["slot"] = data["cls"]
+        globals()["_IMG"] = img
+    else:
+        data = load_colormnist(n_per_slot=args.n_per_slot, seed=args.seed)
     seen = data["seen"]
     Xs, slots = data["X"][seen], data["slot"][seen]
     uniq = np.unique(slots)
@@ -51,7 +64,19 @@ def main():
     print(f"[n1] {len(Xs)} images, {len(uniq)} seen classes, {int((~seen).sum())} held-out images "
           f"never shown", flush=True)
 
-    model = UNet(n_classes=len(uniq), base=args.base)
+    img = data.get("img", 32)
+    # deeper stack at higher resolution so the spatial size still reaches the attention levels
+    arch = dict(base=args.base, img=img)
+    if img >= 64:
+        arch["mults"] = (1, 2, 2, 2)
+    model = UNet(n_classes=len(uniq), **arch)
+    if img != 32:
+        # CelebA runs at a larger resolution; the score field and UNet are resolution-agnostic
+        # except for these two module-level constants, which the loaders set.
+        import lifelong_ood.neural.ddpm as _d
+        _d.IMG, _d.DIM = img, 3 * img * img
+        import lifelong_ood.neural.unet as _u
+        _u.IMG = img
     nparam = sum(p.numel() for p in model.parameters())
     print(f"[n1] UNet {nparam / 1e6:.1f}M params, {args.epochs} epochs", flush=True)
     t0 = time.time()
@@ -59,43 +84,60 @@ def main():
                      device=dev, seed=args.seed)
     mins = (time.time() - t0) / 60
     os.makedirs(os.path.dirname(args.out), exist_ok=True)
-    torch.save(dict(ema=ema, n_classes=len(uniq), arch=dict(base=args.base),
-                    remap=remap, concepts={}, n_per_slot=args.n_per_slot), args.out)
+    torch.save(dict(ema=ema, n_classes=len(uniq), arch=arch,
+                    remap=remap, concepts={}, n_per_slot=args.n_per_slot,
+                    dataset=args.dataset, img=img), args.out)
     print(f"[n1] trained in {mins:.1f} min -> {args.out}", flush=True)
 
     # ── sanity: does it generate valid compositions? ─────────────────────────
     model.load_state_dict(ema)
     field = NeuralScoreField(model, device=dev)
-    probes = fit_probes(data, seed=args.seed, epochs=8 if args.quick else 30)
     n = 16 if args.quick else 64
     S = to_data(field.sample(n=n, steps=50, seed=args.seed, clip=(-1, 1)))
-    pd_, pf_, pb_ = (probes["digit"].predict(S.astype(np.float32)),
-                     probes["fg"].predict(S.astype(np.float32)),
-                     probes["bg"].predict(S.astype(np.float32)))
-    sl = np.array([slot_id(d, f, b) for d, f, b in zip(pd_, pf_, pb_)])
-    valid = float(np.isin(sl, uniq).mean())
-    save_grid(S[:32], os.path.join(RESULTS, "n1_uncond_samples.png"),
-              title="DDPM unconditional samples (neural backbone)")
-
-    # conditional: ask for specific seen slots and check the probes agree
+    save_grid(S[:32], os.path.join(RESULTS, f"n1_uncond_{args.dataset}.png"),
+              title=f"DDPM unconditional samples ({args.dataset})")
     rng = np.random.default_rng(args.seed)
     picks = rng.choice(uniq, 8 if args.quick else 16, replace=False)
-    hits, grids = [], []
-    for s in picks:
-        d, f, b = int(s) // 16, (int(s) % 16) // 4, int(s) % 4
-        Sc = to_data(field.sample(n=8, steps=50, seed=args.seed, clip=(-1, 1),
-                                  branch=remap[int(s)])).astype(np.float32)
-        ok = ((probes["digit"].predict(Sc) == d) & (probes["fg"].predict(Sc) == f)
-              & (probes["bg"].predict(Sc) == b))
-        hits.append(float(ok.mean()))
-        grids.extend(list(Sc[:4]))
-    save_grid(grids, os.path.join(RESULTS, "n1_cond_samples.png"), ncol=4,
-              title="DDPM conditional samples, 4 per requested seen slot")
-    out = dict(train_minutes=mins, params=int(nparam), n_classes=len(uniq),
-               epochs=args.epochs, n_per_slot=args.n_per_slot,
-               uncond_valid_rate=valid, cond_joint_acc=float(np.mean(hits)),
-               probe_val=dict(digit=probes["digit_val_acc"], fg=probes["fg_val_acc"],
-                              bg=probes["bg_val_acc"]))
+    hits, grids, probe_val = [], [], {}
+
+    if args.dataset == "celeba":
+        from lifelong_ood.celeba import class_name
+        from lifelong_ood.evals import attr_accuracy, fit_attr_probes
+        probes = fit_attr_probes(data, seed=args.seed, epochs=8 if args.quick else 30)
+        probe_val = {a: probes[f"{a}_val_acc"] for a in probes["_attrs"]}
+        usable = [a for a, v in probe_val.items() if v >= 0.65]
+        print(f"[n1] attribute probes readable at >=0.65: {len(usable)}/{len(probe_val)} "
+              f"({', '.join(usable[:6])}{'...' if len(usable) > 6 else ''})", flush=True)
+        for s in picks:
+            combo = data["combos"][int(s)]
+            Sc = to_data(field.sample(n=8, steps=50, seed=args.seed, clip=(-1, 1),
+                                      branch=remap[int(s)])).astype(np.float32)
+            a = attr_accuracy(probes, Sc, combo)
+            hits.append(a["joint"] if a["joint"] == a["joint"] else 0.0)
+            grids.extend(list(Sc[:4]))
+        valid = float("nan")
+    else:
+        probes = fit_probes(data, seed=args.seed, epochs=8 if args.quick else 30)
+        probe_val = dict(digit=probes["digit_val_acc"], fg=probes["fg_val_acc"],
+                         bg=probes["bg_val_acc"])
+        pd_, pf_, pb_ = (probes["digit"].predict(S.astype(np.float32)),
+                         probes["fg"].predict(S.astype(np.float32)),
+                         probes["bg"].predict(S.astype(np.float32)))
+        sl = np.array([slot_id(d, f, b) for d, f, b in zip(pd_, pf_, pb_)])
+        valid = float(np.isin(sl, uniq).mean())
+        for s in picks:
+            d, f, b = int(s) // 16, (int(s) % 16) // 4, int(s) % 4
+            Sc = to_data(field.sample(n=8, steps=50, seed=args.seed, clip=(-1, 1),
+                                      branch=remap[int(s)])).astype(np.float32)
+            ok = ((probes["digit"].predict(Sc) == d) & (probes["fg"].predict(Sc) == f)
+                  & (probes["bg"].predict(Sc) == b))
+            hits.append(float(ok.mean()))
+            grids.extend(list(Sc[:4]))
+    save_grid(grids, os.path.join(RESULTS, f"n1_cond_{args.dataset}.png"), ncol=4,
+              title=f"DDPM conditional samples, 4 per requested seen class ({args.dataset})")
+    out = dict(train_minutes=mins, params=int(nparam), n_classes=len(uniq), dataset=args.dataset,
+               epochs=args.epochs, n_per_slot=args.n_per_slot, img=img,
+               uncond_valid_rate=valid, cond_joint_acc=float(np.mean(hits)), probe_val=probe_val)
     save_json(out, os.path.join(RESULTS, "n1_train.json"))
     print(f"[n1] unconditional valid-composition rate {valid:.3f}")
     print(f"[n1] conditional joint accuracy on requested seen slots {np.mean(hits):.3f}")

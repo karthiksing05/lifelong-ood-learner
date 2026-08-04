@@ -136,7 +136,7 @@ class NeuralLifelongLearner:
         params = self.bank.trainable(name)
         opt = torch.optim.Adam(params, lr=lr)
         X = torch.from_numpy(np.asarray(pool, np.float32)).to(self.device)
-        X = X.reshape(-1, CH, IMG, IMG)
+        X = X.reshape(-1, CH, self.field.img, self.field.img)
         model = self.field.model
         model.train()
         n = len(X)
@@ -209,9 +209,9 @@ class NeuralLifelongLearner:
             if id(p) not in seen_ids:
                 seen_ids.add(id(p)); params.append(p)
         opt = torch.optim.Adam(params, lr=lr)
-        pools = [torch.from_numpy(np.asarray(p, np.float32)).to(self.device).reshape(-1, CH, IMG, IMG)
+        pools = [torch.from_numpy(np.asarray(p, np.float32)).to(self.device).reshape(-1, CH, self.field.img, self.field.img)
                  for _, p, _ in items]
-        pools += [torch.from_numpy(np.asarray(p, np.float32)).to(self.device).reshape(-1, CH, IMG, IMG)
+        pools += [torch.from_numpy(np.asarray(p, np.float32)).to(self.device).reshape(-1, CH, self.field.img, self.field.img)
                   for _, p in replay]
         model = self.field.model
         model.train()
