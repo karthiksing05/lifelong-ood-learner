@@ -170,7 +170,34 @@ Reproduce the per-concept analysis with `python experiments/analyze_n3.py`.
 
 ## 3. Open work, in priority order
 
-### 3.0 Finish the fidelity half of the inversion fix (IMPLEMENTED, NOT YET MEASURED)
+### 3.0 Fidelity of the inverted concept — coverage is solved, precision is not
+Coverage is done and measured: F1 0.00 -> 0.48, recall 0.02 -> 0.88, content diversity 0.72 -> 1.16x
+real (RESULTS 5f). The open gap is composition accuracy, 0.56 (teacher-guided) -> 0.33 (inversion),
+concentrated in BACKGROUND (0.76 -> 0.56) while foreground improves (0.93 -> 0.96).
+
+**Do not retry these -- all measured and all failed:**
+- anchoring alpha to the teacher (`anchor=`): F1 0.01-0.03 at every strength and with every prior
+- inverting on the teacher's POOL: recall 0.19, the pool is collapsed so it teaches one image
+- `nearest-class` conditioning: F1 0.01
+- a per-factor PRODUCT prior: drives background mass to 0.00, because the benchmark holds out
+  (fg, bg) PAIRS so no trained class satisfies both constraints -- the union is the only operator
+  that can work, and `teacher_init_alpha(combine="mixture")` is now the default
+- teacher initialization at all: with the fixed prior it HURTS (F1 0.36 vs 0.48 free). The query is
+  itself an image of the target composition, so it already carries what the teacher was to supply.
+
+**Untried, in order of promise:**
+- **A background-weighted inversion loss.** The error is concentrated in one region and the loss
+  currently weights all pixels equally; a diffusion model's epsilon error concentrates on structure,
+  so flat background is under-represented in the gradient exactly as it was in the class ranking
+  (which is why that ranking scored below chance on background). Reweighting by region is the same
+  fix that repaired the prior, applied to the objective.
+- **Invert on mu_T rather than the raw query.** mu_T probe-reads correctly at 0.800 and carries no
+  idiosyncratic instance detail for 120 parameters to chase.
+- **More inversion steps / lower lr.** 400 steps was never swept; the loss may simply not be converged.
+- **A free embedding vector with the class-span solution as initialization**, once fidelity is
+  adequate -- the span restriction buys diversity but may cap precision.
+
+### 3.0z Superseded: finish the fidelity half (the anchor route -- CLOSED, see above)
 The coverage half is done and measured (N7: F1 0.00 -> 0.45, recall 0.03 -> 0.83, content diversity
 0.74 -> 1.21x real; RESULTS 5f). The remaining gap is fidelity: composition accuracy fell 0.58 ->
 0.29, almost entirely on BACKGROUND (0.84 -> 0.60) while foreground held (0.83-0.94). Run this the

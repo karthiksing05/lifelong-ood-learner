@@ -413,7 +413,7 @@ one is built from, in the model's own vocabulary.
 | `nearest-class` | 0.00 | 0.14 | 0.49 | 0.00 | 0.00 | 0.27 | 0.00 | 1.14 |
 | *ceiling: base model on a SEEN class* | *0.97* | | | | *0.97* | *0.95* | *0.96* | *1.01* |
 
-- **F1 goes 0.00 → 0.45 and recall 0.03 → 0.83**, with content diversity restored from 0.74 to 1.21×
+- **F1 goes 0.00 → 0.48 and recall 0.02 → 0.88**, with content diversity restored from 0.72 to 1.16×
   the real class. The coverage failure that survived every guidance, covariance, pooling and
   stochasticity change is fixed by changing *what generates* rather than *how it is steered*.
 - **Teacher seeding helps** (`inversion+init` beats `inversion` on precision 0.39 vs 0.33 and F1
@@ -425,14 +425,61 @@ one is built from, in the model's own vocabulary.
   distillation from rescuing diversity in §5e. **The teacher has to constrain through α, not through
   pixels.**
 
-**The honest remainder.** Fidelity has not caught up: composition accuracy falls 0.58 → 0.29, driven
-almost entirely by background (0.84 → 0.60) while foreground stays high (0.83–0.94). We have moved
-from *accurate but collapsed* to *diverse but imprecise*, and neither end is the ceiling (0.97 acc,
-0.96 F1). The two mechanisms are now cleanly separated, though: guidance controlled fidelity and
-could not buy coverage; conditioning buys coverage and needs a fidelity term. The implemented but
-not-yet-measured candidate is an **anchor** — penalizing `‖α − α_teacher‖²` so the teacher acts as a
-prior on the composition throughout, rather than only as a starting point, with the anchor strength
-dialing between "what the teacher composed" and "what this query looks like".
+**Final numbers, 8 held-out compositions:**
+
+| arm | acc | digit | fg | bg | precision | **recall** | **F1** | content div ÷ real |
+|---|---|---|---|---|---|---|---|---|
+| `teacher-guided` (what we shipped) | **0.56** | 0.80 | 0.93 | **0.76** | 0.00 | 0.02 | **0.00** | 0.72 |
+| **`inversion`** | 0.33 | 0.65 | 0.96 | 0.56 | **0.42** | **0.88** | **0.48** | 1.16 |
+| `inversion+init` (teacher-seeded) | 0.25 | 0.61 | 0.85 | 0.56 | 0.32 | 0.64 | 0.36 | 1.15 |
+| `inversion+anchor` (teacher as prior) | 0.00 | 0.12 | 0.26 | 0.34 | 0.00 | 0.63 | 0.01 | 1.34 |
+| `nearest-class` | 0.00 | 0.25 | 0.50 | 0.00 | 0.01 | 0.07 | 0.01 | 1.15 |
+| *ceiling: base model, SEEN class* | *0.97* | | | | *0.97* | *0.95* | *0.96* | *1.01* |
+
+**F1 0.00 → 0.48, recall 0.02 → 0.88.**
+
+**Two things that did not work, and one that reframes the architecture.**
+
+*The anchor is a dead end.* Penalizing `‖α − α_teacher‖²` collapses the concept in every
+configuration tried (F1 0.01–0.03, accuracy 0.00) regardless of anchor strength or which prior is
+anchored to. Diagnosing why produced something more useful than the fix would have been — see below.
+
+*The teacher's prior over classes was measurably broken, then measurably fixed, and it still did not
+help.* Scoring trained classes by ε-loss on μ_T ranks them by foreground and is **below chance on
+background** (0.10 against 0.25). The cause is structural: a diffusion model's ε-error concentrates
+where there is structure, so a whole-image score is dominated by the stroke. Scoring the foreground
+and background regions separately and combining them fixes the coverage — but only as a **mixture**,
+never a product:
+
+| prior | mass on fg-constituent | mass on bg-constituent | balance |
+|---|---|---|---|
+| chance | 0.25 | 0.25 | 1.00 |
+| global, whole image | 0.32 | 0.24 | 0.75 |
+| per-factor **product** | 0.78 | **0.00** | 0.01 |
+| per-factor **mixture** (default) | **0.52** | **0.31** | 0.60 |
+
+The product is empty *by construction*: the benchmark holds out `(fg, bg)` **pairs**, so a class
+matching the target's foreground necessarily has a different background and no trained class
+satisfies both constraints. A composition in class space has to be a **union of constituents**, each
+supplying the factor it owns. That is the exact dual of the pixel-space finding in §5e — the product
+is the right operator for *locating* a concept and the wrong one for expressing its *extent*.
+
+*And the teacher turns out to be redundant for this step.* With the improved prior, teacher
+initialization **hurts** (F1 0.36 vs 0.48 for free inversion). Plain inversion on the query alone is
+the best arm. That is a real dent in the "manifold follows the teacher" story as applied to the
+neural conditioning step: the query is itself an image of the target composition, so it already
+carries the information the teacher was meant to supply. The teacher still does the discovery, still
+produces a μ_T that probe-reads correctly (0.800 against a 0.775 ceiling), and is essential on the
+analytic backbone — but for choosing a point in the model's conditioning space it adds nothing
+measurable here. Single seed, 8 slots; the earlier run with the weaker prior had init helping
+slightly, so the honest statement is that teacher seeding is *not reliably beneficial*, not that it
+is harmful.
+
+**The honest remainder.** Fidelity has not caught up: accuracy 0.56 → 0.33, concentrated in
+background (0.76 → 0.56) while foreground *improves* (0.93 → 0.96). Neither end is the ceiling
+(0.97 acc, 0.96 F1). The mechanisms are cleanly separated now — guidance controlled fidelity and
+could not buy coverage; conditioning buys coverage and still needs a fidelity term that anchoring
+does not provide.
 
 ## 6. Why we are *not* replicating the paper's diffusion results
 
