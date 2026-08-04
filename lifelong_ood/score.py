@@ -71,13 +71,20 @@ class BaseScoreField:
 
     # ── reverse-diffusion sampling (DDIM), with optional analytic guidance ───
     def sample(self, n=16, steps=50, seed=0, u_start=1.0, x_init=None,
-               guide_eps=None, guide_w=None, branch=None, clip=(-0.2, 1.2)):
-        """DDIM sampler.
+               guide_eps=None, guide_w=None, branch=None, clip=(-0.2, 1.2), eta=0.0):
+        """DDIM sampler, with `eta` interpolating to ancestral (stochastic) sampling.
 
         guide_eps(x, u) -> conditional epsilon (e.g. the PoE teacher of compose.py, their Eq. 12);
         guide_w(u) -> guidance weight.  Composed as classifier-free guidance, their Eq. 13:
         eps_hat = eps_uncond + w(u) * (eps_cond - eps_uncond).  `branch` selects a conditional
         branch of the unconditional model itself (a consolidated concept).
+
+        `eta=0` (the paper's setting, and the default) is fully deterministic: the ONLY randomness in
+        a trajectory is its starting noise.  That matters here because guidance strong enough to hold
+        a composition also contracts trajectories, so different starting points can be funnelled to
+        the same output and the pool collapses -- which is what our diversity investigation kept
+        running into.  `eta>0` re-injects noise at every step, so variety no longer has to survive
+        the whole trajectory from x_T alone.
         """
         rng = np.random.default_rng(seed)
         D = self.dim
@@ -92,10 +99,19 @@ class BaseScoreField:
             a, an = float(cosine_abar(u)), float(cosine_abar(un))
             e = self.eps(x, u, branch)
             if guide_eps is not None:
-                w = float(guide_w(u)) if guide_w is not None else 1.0
+                # guide_w may return a scalar OR a [N, 1] column -- the paper's Eq. 14 makes the
+                # weight a function of the teacher's covariance, so a batched run with one teacher
+                # per block of rows needs one weight per row.  Keep it as an array either way.
+                w = 1.0 if guide_w is None else np.asarray(guide_w(u), dtype=np.float64)
                 e = e + w * (guide_eps(x, u) - e)
             x0 = np.clip((x - np.sqrt(1 - a) * e) / np.sqrt(a), *clip)
-            x = np.sqrt(an) * x0 + np.sqrt(1 - an) * e
+            if eta > 0.0 and un > 0.0:
+                sig = eta * np.sqrt(max(1 - an, 0) / max(1 - a, 1e-12)) * np.sqrt(max(1 - a / an, 0)) \
+                    if an > a else 0.0
+                x = (np.sqrt(an) * x0 + np.sqrt(max(1 - an - sig ** 2, 0.0)) * e
+                     + sig * rng.standard_normal(x.shape))
+            else:
+                x = np.sqrt(an) * x0 + np.sqrt(1 - an) * e
         return np.clip(x, clip[0], clip[1])
 
     # ── mode ascent on p_t (the paper's Eq. 4) ──────────────────────────────

@@ -16,15 +16,16 @@ import numpy as np
 import torch
 
 from ..compose import (candidates_ascent, candidates_ascent_batch, cfg_weight, poe_teacher,
-                       query_only_teacher, stacked_teacher_eps, teacher_eps)
+                       query_only_teacher, stacked_cfg_weight, stacked_teacher_eps, teacher_eps)
 from ..score import cosine_abar
 from .adapters import HierarchicalAdapterBank
 from .ddpm import CH, IMG
 
 
 class NeuralLifelongLearner:
-    def __init__(self, field, rank=8, K=3, tau=0.05, wmin=0.8, wmax=2.0, schedule="anneal",
-                 u_start=1.0, teacher_var_scale=30.0, steps=50, seed=0, device="cuda", flat=False,
+    def __init__(self, field, rank=8, K=3, tau=0.05, wmin=0.8, wmax=2.0, w0=1.2,
+                 schedule="anneal", u_start=1.0, teacher_var_scale=30.0,
+                 steps=50, seed=0, device="cuda", flat=False,
                  freeze_ancestors=True, var=0.1, branch_max=4, max_depth=3):
         # teacher_var_scale corrects a systematic bias, measured in experiments/n0_tune.py.  The PoE
         # covariance is built from LAPLACE estimates at modes, which measure local curvature rather
@@ -41,7 +42,7 @@ class NeuralLifelongLearner:
                                             freeze_ancestors=freeze_ancestors, var=var,
                                             branch_max=branch_max, max_depth=max_depth)
         field.bank = self.bank
-        self.cfg = dict(K=K, tau=tau, wmin=wmin, wmax=wmax, schedule=schedule,
+        self.cfg = dict(K=K, tau=tau, wmin=wmin, wmax=wmax, w0=w0, schedule=schedule,
                         u_start=u_start, teacher_var_scale=teacher_var_scale,
                         steps=steps, seed=seed)
         self.history = []
@@ -83,7 +84,8 @@ class NeuralLifelongLearner:
             vs = 1.0
         teacher = dict(teacher, var=teacher["var"] * float(vs))
         x0 = teacher["mu"] + np.sqrt(teacher["var"]) * rng.standard_normal((n, len(teacher["mu"])))
-        gw = cfg_weight(teacher, wmin=kw.get("wmin", c["wmin"]), wmax=kw.get("wmax", c["wmax"]),
+        gw = cfg_weight(teacher, w0=kw.get("w0", c["w0"]), wmin=kw.get("wmin", c["wmin"]),
+                        wmax=kw.get("wmax", c["wmax"]),
                         schedule=kw.get("schedule", c["schedule"]))
         return self.field.sample(n=n, steps=steps or c["steps"], seed=seed,
                                  u_start=c["u_start"] if u_start is None else u_start,
@@ -110,12 +112,13 @@ class NeuralLifelongLearner:
             VAR.append(np.tile(t["var"] * s, (n, 1)))
         MU, VAR = np.concatenate(MU), np.concatenate(VAR)
         x0 = np.clip(MU + np.sqrt(VAR) * rng.standard_normal(MU.shape), -1, 1)
-        gw = cfg_weight(teachers[0], wmin=kw.get("wmin", c["wmin"]),
-                        wmax=kw.get("wmax", c["wmax"]),
-                        schedule=kw.get("schedule", c["schedule"]))
+        gw = stacked_cfg_weight(VAR, w0=kw.get("w0", c["w0"]),
+                                wmin=kw.get("wmin", c["wmin"]),
+                                wmax=kw.get("wmax", c["wmax"]),
+                                schedule=kw.get("schedule", c["schedule"]))
         S = self.field.sample(n=len(MU), steps=steps or c["steps"], seed=seed,
                               u_start=c["u_start"] if u_start is None else u_start,
-                              x_init=x0, clip=(-1, 1),
+                              x_init=x0, clip=(-1, 1), eta=kw.get("eta", c.get("eta", 0.0)),
                               guide_eps=stacked_teacher_eps(MU, VAR), guide_w=gw)
         return [S[i * n:(i + 1) * n] for i in range(len(teachers))]
 

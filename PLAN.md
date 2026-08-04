@@ -170,7 +170,38 @@ Reproduce the per-concept analysis with `python experiments/analyze_n3.py`.
 
 ## 3. Open work, in priority order
 
-### 3.0 Sample diversity — now the single biggest defect
+### 3.0 Replace Gaussian-teacher sampling with model conditioning — THE fix
+The diversity investigation (RESULTS 5e) is finished and the answer is not a hyperparameter.
+Measured: the base DDPM sampled class-conditionally reaches precision 0.89 / recall 0.90 / content
+diversity 0.97x real -- the ceiling. Every teacher-guided configuration reaches recall 0.00. Ruled
+out by direct test: guidance schedule (7 variants incl. the paper's Eq. 14), teacher covariance
+(product vs mixture, 3 scales), pooling across queries as the paper does, ancestral sampling
+(eta 0.5/1.0), and distillation.
+
+The cause is structural: CFG toward a UNIMODAL analytic Gaussian contracts every trajectory to its
+mean, and the guidance knobs only trade collapse against divergence. The base model is diverse
+because its class embedding conditions a LEARNED MULTIMODAL conditional -- a different mechanism
+entirely.
+
+So: keep the PoE for locating the concept (mu_T probe-reads correctly, 0.800 vs a 0.775 ceiling) and
+stop using it as the sampling distribution.
+- **Learn `c_new` directly from the query + mu_T** (textual inversion, Gal et al.), then sample the
+  model conditioned on it. `HierarchicalAdapterBank` already holds a per-concept embedding and
+  `UNet.forward(emb_override=)` already routes it -- the plumbing exists; only the objective changes.
+- Seed the embedding from the nearest trained class embeddings weighted by the same per-dimension
+  PoE weights, so composition still determines what is learned.
+- Validate with `tests/diag_base_diversity.py` as the ceiling and `experiments/n6_diversity.py` as
+  the harness; the target is recall approaching 0.90, not merely above 0.
+
+### 3.0aa Also worth fixing: the Laplace floor
+99% of `laplace_diag` variances sit exactly on `var_floor=1e-4`, so Sigma_T is a constant rather
+than a shape, and the anisotropy the PoE needs (stroke uncertain, background certain) is mostly
+clipped away -- measured stroke/background ratio 1.91 against the real class's 3.87. Raising `delta`
+does not help (99.0% -> 96.4% across 0.005-0.2). This is not what is capping diversity, but it does
+mean the covariance carries almost no information and the per-dimension weighting is running on
+less signal than it appears to.
+
+### 3.0a Compress the adapter bank — the real scaling limit
 Vetting the case-study figures showed PoE samples are near-copies of the query: `div/novelty` 1.04
 (independent draws would give 1.41) and content diversity 0.45x the real class spread. Everything
 else in the pipeline is healthier than this. Three leads, and the first is nearly free:

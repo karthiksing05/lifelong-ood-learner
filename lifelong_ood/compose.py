@@ -104,7 +104,7 @@ def submodular_select(L, K=3):
     return np.array(sel)
 
 
-def poe_teacher(xq, M, V, K=3, tau=0.05, adaptive_tau=True):
+def poe_teacher(xq, M, V, K=3, tau=0.05, adaptive_tau=True, extent="mixture"):
     """Select + weigh + multiply.  -> dict(mu, var, sel, w) with mu, var [D].
 
     ADAPTIVE TEMPERATURE is a documented deviation from the paper's Eq. 10, and it is the single
@@ -132,7 +132,30 @@ def poe_teacher(xq, M, V, K=3, tau=0.05, adaptive_tau=True):
     w /= w.sum(0, keepdims=True)                     # their Eq. 10, per-dimension
     prec = (w / V[sel]).sum(0)                       # their Eq. 7
     mu = (w * M[sel] / V[sel]).sum(0) / prec
-    return dict(mu=mu, var=1.0 / prec, sel=sel, w=w, temperature=T)
+    var_poe = 1.0 / prec
+
+    # EXTENT vs PRECISION -- the distinction that decides whether samples are diverse.
+    #
+    # Sigma_T from Eq. 7 is a PRODUCT of experts, so it is deliberately sharper than any factor: it
+    # answers "how precisely do I know WHERE the concept sits".  Sampling treats it as if it answered
+    # "how much does the concept VARY", and those are different quantities -- the variance of an
+    # estimator versus the variance of a population.  Measured on ColorMNIST: the product covariance
+    # gives sigma 0.019 while the real class varies by 0.120, and 99% of its coordinates are pinned
+    # at the Laplace floor, so as a description of extent it is a point mass.  Sampling it therefore
+    # returns near-copies of mu_T, which is exactly what the case studies showed.
+    #
+    # The extent of a concept assembled from K prototypes is the variance of the MIXTURE over them,
+    # by the law of total variance:  Var = sum_j w_j [ Sigma_j + (mu_j - mu_T)^2 ]  -- within-expert
+    # spread plus between-expert spread, with the same per-dimension weights.  The between term is
+    # the one that was missing, and it is the larger of the two by an order of magnitude.
+    #
+    # `mu` is unchanged: the product is the right operator for locating the concept, and mu_T already
+    # probe-reads the correct composition. Only the covariance used for sampling changes.
+    between = ((M[sel] - mu[None]) ** 2 * w).sum(0)
+    var_mix = (w * V[sel]).sum(0) + between
+    var = var_mix if extent == "mixture" else var_poe
+    return dict(mu=mu, var=var, var_poe=var_poe, var_mixture=var_mix, between=between,
+                sel=sel, w=w, temperature=T)
 
 
 # ── the analytic teacher inside classifier-free guidance ─────────────────────
@@ -163,6 +186,29 @@ def stacked_teacher_eps(MU, VAR):
         s = a * VAR + (1.0 - a)
         return np.sqrt(1.0 - a) * (np.atleast_2d(x) - np.sqrt(a) * MU) / s
     return _eps
+
+
+def stacked_cfg_weight(VAR, w0=1.2, wmax=2.0, wmin=0.0, schedule="variance"):
+    """-> guide_w(u) returning a COLUMN of weights, one per sample row.
+
+    Eq. 14 makes the guidance weight a function of the teacher's own covariance, so in a batched run
+    where each block of rows has a different teacher the weight differs per row.  Collapsing that to
+    one scalar (e.g. the first teacher's) would silently apply one concept's geometry to all of them
+    -- and since the whole point of Eq. 14 is that a sharper teacher hands off earlier, that
+    collapse would destroy exactly the property being tested.  The returned array is [N, 1], which
+    broadcasts against the [N, D] epsilon in the sampler.
+    """
+    VAR = np.atleast_2d(VAR)
+
+    def _w(u):
+        u = float(np.clip(u, 0.0, 1.0))
+        if schedule == "const":
+            return float(wmax)
+        if schedule == "anneal":
+            return float(wmin + (wmax - wmin) * (1.0 - u))
+        a = float(cosine_abar(u))
+        return np.clip(w0 * (a * VAR + (1.0 - a)).mean(1, keepdims=True), wmin, wmax)
+    return _w
 
 
 def candidates_ascent_batch(field, xqs, u_grid=(0.05, 0.1, 0.15, 0.2, 0.3, 0.4), n_starts=16,

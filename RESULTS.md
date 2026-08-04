@@ -333,6 +333,62 @@ same thing.**
 `evals.sample_geometry` now returns `content_diversity`, `content_ratio` and `div_over_nov` on every
 call, so this cannot go unmeasured again.
 
+### 5e. Chasing the diversity gap — what it is not, and what it is
+
+The paper reports **PoE recall 80.7%** on ColorMNIST against query-only's **2.5%**, and describes
+query-only as the arm that "repeats near copies of x_q". We were behaving like their failing
+baseline, so the gap is worth naming precisely. `evals.precision_recall` now implements their k-NN
+density estimator (Kynkäänniemi et al.), and `experiments/n6_diversity.py` runs the search.
+
+**Ruled out, each by measurement:**
+
+| hypothesis | test | result |
+|---|---|---|
+| we replaced their guidance schedule | 7 schedules incl. their Eq. 14 | content div 0.17–0.39, recall **0.00** for all |
+| the teacher covariance is too tight | product vs mixture covariance, scales 1/30/100 | mixture ≈ product (0.23 vs 0.22) |
+| we evaluate one query, they pool 100 | pooled 12–24 queries as they do | recall still **0.00** |
+| our sampler is deterministic | ancestral sampling, η = 0.5, 1.0 | 0.24, 0.27 — no change |
+| distillation would restore it | pool vs distilled-adapter samples | 0.84 → 0.82, accuracy 0.51 → 0.38 |
+
+There is a genuine mechanism behind the teacher's sharpness — **99% of the Laplace variances sit
+exactly on `laplace_diag`'s floor**, so Σ_T is a point mass rather than a shape, and raising the
+finite-difference `delta` from 0.005 to 0.2 barely moves it (99.0% → 96.4% clipped). But fixing it
+did not fix the samples, so it is not the binding constraint.
+
+**The control that settles it.** Sampling the base DDPM class-conditionally — no composition, no
+teacher, no guidance — gives:
+
+| | precision | recall | content div ÷ real |
+|---|---|---|---|
+| base model, class-conditional | **0.89** | **0.90** | **0.97** |
+| real images vs themselves (ceiling) | 0.92 | 0.86 | 1.00 |
+| any teacher-guided configuration | 0.00–0.83 | 0.00 | 0.17–1.64 |
+
+**The backbone is fully diverse — it sits at the real-data ceiling. Our composition-and-guidance step
+is what destroys that.** And every teacher-guided setting lands somewhere on a single bad tradeoff
+curve: tight and on-manifold (precision 0.83, content 0.22, recall 0) or spread and off-manifold
+(precision 0.00, content 1.64). Never both.
+
+**Why, mechanically.** The teacher is a *unimodal analytic Gaussian*. Classifier-free guidance toward
+it pulls every trajectory to its single mean, and the strength of that pull is the only thing the
+guidance knobs control — so they trade collapse against divergence and cannot produce coverage. The
+base model is diverse for a completely different reason: its class embedding conditions a *learned,
+multimodal* conditional. No amount of guiding toward a Gaussian reproduces that.
+
+**So what should replace it.** The base-model control points at the fix: use the analytic teacher to
+identify the concept (μ_T already probe-reads the right composition, 0.800 against a 0.775 ceiling)
+but let the MODEL's own conditional generate it — learn `c_new` directly, textual-inversion style,
+rather than sampling a Gaussian. The paper's own table hints the same way: their `+LoRA` recall
+(88.0) exceeds their PoE recall (80.7), i.e. their *distilled model* covers better than their
+analytic teacher does. We could not reproduce that ordering here because our distillation is trained
+on an already-collapsed pool — garbage in.
+
+**What this does and does not touch.** The lifelong machinery is unaffected: it consolidates
+faithfully whatever it is given (98% retention, bit-identical preservation). What is undermined is
+the *value* of consolidating, since a collapsed pool teaches an adapter one image. Composition gets
+the concept's **location** right and its **extent** wrong, and extent is what a generative concept
+needs.
+
 ## 6. Why we are *not* replicating the paper's diffusion results
 
 Side by side on ColorMNIST — their F1 (harmonic mean of precision and recall in Inception feature

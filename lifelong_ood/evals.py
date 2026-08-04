@@ -89,6 +89,54 @@ def _rmse(A, B):
     return float(np.sqrt(np.mean((np.asarray(A, np.float64) - np.asarray(B, np.float64)) ** 2)))
 
 
+def _feat(X, img=IMG):
+    """A cheap feature space for the k-NN density metrics: 2x downsample, unit-normalized.
+
+    The paper uses Inception-V3 features. We have no Inception here and it would be the wrong
+    detector for 32x32 recoloured MNIST anyway; what matters for these metrics is a space where
+    "same digit, same colours, different instance" is near and "different digit" is far, and a mild
+    low-pass over pixels does that on this dataset while ignoring the speckle that raw pixels count
+    as variety. Absolute values are therefore NOT comparable to the paper's; the ordering between
+    methods, which is what the comparison rests on, is.
+    """
+    X = np.asarray(X, np.float64)
+    n, d = X.shape[0], X.shape[1]
+    ch = d // (img * img)
+    A = X.reshape(n, img, img, ch)
+    A = A.reshape(n, img // 2, 2, img // 2, 2, ch).mean((2, 4)).reshape(n, -1)
+    return A / (np.linalg.norm(A, axis=1, keepdims=True) + 1e-9)
+
+
+def _knn_radius(F, k):
+    D = np.sqrt(((F[:, None] - F[None]) ** 2).sum(2))
+    np.fill_diagonal(D, np.inf)
+    return np.sort(D, 1)[:, min(k, D.shape[1] - 1) - 1]
+
+
+def precision_recall(samples, reference, k=3):
+    """Improved precision & recall (Kynkaanniemi et al. 2019) -- the paper's coverage metric.
+
+    PRECISION = fraction of generated samples that fall inside the reference manifold (are they
+    plausible members of the class?).  RECALL = fraction of REFERENCE images that fall inside the
+    generated manifold (does the generation cover the class, or only one corner of it?).
+
+    Recall is the number our composition-accuracy metric structurally cannot express, and it is the
+    one that separates the paper's PoE (80.7%) from its query-only baseline (2.5%).  A method that
+    emits near-copies of one image can score high precision and essentially zero recall -- which is
+    exactly the diagnosis the case studies suggested for us.
+    """
+    S, R = np.asarray(samples, np.float64), np.asarray(reference, np.float64)
+    if len(S) < 2 or len(R) < 2:
+        return dict(precision=float("nan"), recall=float("nan"), f1=float("nan"))
+    FS, FR = _feat(S), _feat(R)
+    rR, rS = _knn_radius(FR, k), _knn_radius(FS, k)
+    D = np.sqrt(((FS[:, None] - FR[None]) ** 2).sum(2))          # [n_samples, n_ref]
+    precision = float((D <= rR[None, :]).any(1).mean())          # sample inside SOME ref ball
+    recall = float((D.T <= rS[None, :]).any(1).mean())           # ref inside SOME sample ball
+    f1 = 0.0 if (precision + recall) == 0 else 2 * precision * recall / (precision + recall)
+    return dict(precision=precision, recall=recall, f1=float(f1))
+
+
 def _content_rmse(X, img=IMG):
     """Mean pairwise RMSE after a 2x2 box downsample -- a crude low-pass.
 
