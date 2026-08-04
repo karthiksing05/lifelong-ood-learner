@@ -142,8 +142,49 @@ def agg_n7(runs):
     return dict(table=table, ceiling=ceil, n_seeds=len(runs))
 
 
+def agg_n5(runs):
+    """N5 / N9: one row per method, the standard CL metrics plus what each one costs."""
+    arms, keys = [], ("ACC", "BWT", "FGT", "retention_exact", "params", "wall_seconds")
+    for _, r in runs:
+        arms += [x["arm"] for x in r.get("rows", []) if x["arm"] not in arms]
+    table = {}
+    for a in arms:
+        vals = {k: [] for k in keys}
+        for _, r in runs:
+            row = next((x for x in r.get("rows", []) if x["arm"] == a), None)
+            if row is None:
+                continue
+            for k in keys:
+                if k in row:
+                    vals[k].append(row[k])
+        table[a] = {k: stat(v) for k, v in vals.items()}
+    print(f"    {'arm':13s}{'ACC':>13s}{'BWT':>14s}{'FGT':>13s}{'bit-identical':>15s}"
+          f"{'params':>12s}{'wall(s)':>11s}")
+    for a, row in table.items():
+        pm = f"{row['params']['mean'] / 1e6:.2f}M" if row['params'] else "--"
+        ws = f"{row['wall_seconds']['mean']:.0f}" if row['wall_seconds'] else "--"
+        print(f"    {a:13s}{fmt(row['ACC']):>13s}{fmt(row['BWT']):>14s}{fmt(row['FGT']):>13s}"
+              f"{fmt(row['retention_exact']):>15s}{pm:>12s}{ws:>11s}")
+    return dict(table=table, n_seeds=len(runs))
+
+
+def agg_n9(runs):
+    """N9 showdown: method x composition-quality metrics."""
+    arms, keys = [], ("joint", "digit", "fg", "bg", "precision", "recall", "f1", "content_ratio")
+    for _, r in runs:
+        arms += [a for a in r.get("summary", {}) if a not in arms]
+    table = {a: {k: stat([r["summary"][a][k] for _, r in runs
+                          if a in r.get("summary", {}) and k in r["summary"][a]])
+                 for k in keys} for a in arms}
+    print(f"    {'method':18s}" + "".join(f"{k:>13s}" for k in keys))
+    for a, row in table.items():
+        print(f"    {a:18s}" + "".join(f"{fmt(row[k]):>13s}" for k in keys))
+    return dict(table=table, n_seeds=len(runs))
+
+
 AGG = {"e2_composition": agg_e2, "n2_composition": agg_e2,
-       "e3_lifelong": agg_e3, "n3_lifelong": agg_n3, "n7_inversion": agg_n7}
+       "e3_lifelong": agg_e3, "n3_lifelong": agg_n3, "n7_inversion": agg_n7,
+       "n5_classinc": agg_n5, "n9_showdown": agg_n9, "n8_idealwords": agg_n7}
 
 
 def main():
