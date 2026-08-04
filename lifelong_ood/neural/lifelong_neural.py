@@ -252,6 +252,36 @@ class NeuralLifelongLearner:
         self.last_curve = self.last_batch_curves[new_names[-1]]
         return self
 
+    def learn_concept_inverted(self, xq, name, n_pool=64, epochs=10, inv_steps=400, inv_lr=0.05,
+                               anchor=0.0, init_from_teacher=True, seed=None, **kw):
+        """The loop with the manifold generating: compose -> INVERT -> sample -> consolidate.
+
+        The difference from `learn_concept` is step 3.  There, the pool is drawn by guiding the
+        sampler toward the analytic teacher, which RESULTS 5e showed collapses to near-copies of
+        mu_T (recall 0.00).  Here the teacher instead determines a point in the model's own
+        conditioning space (`inversion.learn_embedding`), and the pool is drawn from the model
+        conditioned on it -- so the pool inherits the conditional's diversity (N7: recall 0.83,
+        content diversity 1.21x real) and the concept that gets consolidated is a region rather
+        than a point.
+
+        Consolidation is unchanged, so every preservation guarantee carries over untouched: this
+        changes what is handed to `consolidate`, not what `consolidate` does.
+        """
+        from .inversion import learn_embedding, sample_embedding, teacher_init_alpha
+        c = self.cfg
+        seed = c["seed"] if seed is None else seed
+        teacher = self.compose(xq, **kw.pop("disc", {}) or {})
+        a0 = teacher_init_alpha(self.field, teacher, xq, seed=seed) if init_from_teacher else None
+        c_new, alpha, hist = learn_embedding(self.field, np.atleast_2d(xq), n_steps=inv_steps,
+                                             lr=inv_lr, seed=seed, init_alpha=a0,
+                                             anchor=anchor, anchor_alpha=a0)
+        pool = sample_embedding(self.field, c_new, n=n_pool, steps=c["steps"], seed=seed,
+                                guidance=kw.pop("guidance", 1.0))
+        self.consolidate(pool, name, mu=teacher["mu"], epochs=epochs)
+        self.bank._emb_extra[name].data = c_new.detach().clone()   # start the adapter AT the concept
+        self.last_inversion = dict(alpha=alpha, final_loss=float(np.mean(hist[-20:])) if hist else None)
+        return teacher, pool
+
     def learn_concept(self, xq, name, n_pool=64, epochs=10, **kw):
         teacher = self.compose(xq)
         pool = self.sample_teacher(teacher, n=n_pool, **kw)

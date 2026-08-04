@@ -105,12 +105,36 @@ def main():
     s3 = L3.bank.summary()
     grouped = len(s3["shared_ancestors"])
 
+    # 6. the inversion path: a concept learned in conditioning space, then consolidated.
+    #    Preservation must be untouched by it -- inversion changes WHAT is consolidated, not what
+    #    consolidation does, and that separation is the whole reason the fix is safe to adopt.
+    from lifelong_ood.neural.inversion import learn_embedding, sample_embedding
+    f4 = build()
+    L4 = NeuralLifelongLearner(f4, rank=4, device=dev, steps=4)
+    tgt = np.clip(rng.standard_normal((1, f4.dim)) * 0.3, -1, 1)
+    c_new, alpha, hist = learn_embedding(f4, tgt, n_steps=8, lr=0.05, seed=0)
+    assert c_new.shape[0] == f4.model.cemb.embedding_dim
+    assert np.isfinite(alpha).all() and len(alpha) == f4.model.n_classes
+    S_inv = sample_embedding(f4, c_new, n=4, steps=4, seed=0)
+    assert S_inv.shape == (4, f4.dim) and np.isfinite(S_inv).all()
+    base4 = fingerprint(f4, None, seed=1)
+    L4.consolidate(S_inv, "inv", mu=S_inv.mean(0), epochs=1, batch=2)
+    fp_inv = fingerprint(f4, "inv", seed=1)
+    assert np.array_equal(fingerprint(f4, None, seed=1), base4), \
+        "the inversion path must leave the frozen base bit-identical too"
+    L4.consolidate(np.clip(rng.standard_normal((4, f4.dim)) * 0.3, -1, 1), "inv2",
+                   mu=None, epochs=1, batch=2)
+    assert np.array_equal(fingerprint(f4, "inv", seed=1), fp_inv), \
+        "a concept consolidated via inversion must still be preserved by later consolidations"
+
     s = L.bank.summary()
     print(f"neural smoke: ok  (adapter {s['adapter_params'] / 1e3:.0f}K params, "
           f"{s['n_concepts']} concepts, depths {list(s['depths'].values())}, "
           f"unfrozen-ablation perturbed={moved}, shared-path={shared})")
     print(f"  batch: 5 concepts over 2 batches, {grouped} shared node(s), "
           f"all earlier concepts bit-identical after the later batch")
+    print(f"  inversion: c_new learned over {len(alpha)} class embeddings, consolidated, "
+          f"and still bit-identical after a later consolidation")
 
 
 if __name__ == "__main__":
