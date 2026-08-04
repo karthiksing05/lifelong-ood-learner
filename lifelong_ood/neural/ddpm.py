@@ -144,11 +144,17 @@ class NeuralScoreField(BaseScoreField):
         return self.bank.embedding(branch) if branch in self.bank.concepts else None
 
     @torch.no_grad()
-    def eps(self, X, u, branch=None):
+    def eps(self, X, u, branch=None, emb=None):
+        """`emb` conditions on a raw embedding vector directly, bypassing the class table.
+
+        That is how a concept learned by inversion is used: it lives in embedding space rather than
+        as a table row, and conditioning on it is what lets the MODEL generate the concept instead of
+        the sampler being steered toward an analytic distribution.
+        """
         X = np.atleast_2d(np.asarray(X, np.float64))
         out = np.empty_like(X)
         ctx = self.bank.activate(branch) if (self.bank is not None) else _null_ctx()
-        emb = self._emb(branch)
+        emb = self._emb(branch) if emb is None else emb
         with ctx:
             for i0 in range(0, len(X), self.batch):
                 xb = _as_img(X[i0:i0 + self.batch], self.device)

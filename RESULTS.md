@@ -389,6 +389,51 @@ the *value* of consolidating, since a collapsed pool teaches an adapter one imag
 the concept's **location** right and its **extent** wrong, and extent is what a generative concept
 needs.
 
+## 5f. N7 — conditioning the manifold instead of guiding it (the fix)
+
+The architecture: **the manifold follows the teacher, and sampling follows the manifold.** The PoE
+teacher locates the concept and never generates; the model's own class conditional — the part
+measured at the ceiling — does the generating. A concept becomes a point in the model's conditioning
+space, learned by textual inversion restricted to the span of the trained class embeddings,
+`c_new = Σ_k α_k c_k` (`lifelong_ood/neural/inversion.py`).
+
+Restricting to that span does three things at once: ~120 parameters cannot memorize one 3072-dim
+image; every point in the span is known to decode to a diverse conditional, so diversity is inherited
+rather than hoped for; and `α` is itself a composition statement — which seen compositions the unseen
+one is built from, in the model's own vocabulary.
+
+8 held-out compositions, 32 samples each, scored with the paper's metric set:
+
+| arm | acc | digit | fg | bg | precision | **recall** | **F1** | content div ÷ real |
+|---|---|---|---|---|---|---|---|---|
+| `teacher-guided` (what we shipped) | **0.58** | 0.80 | 0.90 | **0.84** | 0.01 | 0.03 | **0.00** | 0.74 |
+| `inversion` | 0.32 | 0.78 | 0.94 | 0.48 | 0.33 | 0.85 | 0.42 | 1.16 |
+| **`inversion+init`** (teacher-seeded) | 0.29 | 0.66 | 0.83 | 0.60 | **0.39** | 0.83 | **0.45** | 1.21 |
+| `inversion@pool` | 0.01 | 0.15 | 0.80 | 0.26 | 0.02 | 0.19 | 0.02 | 1.09 |
+| `nearest-class` | 0.00 | 0.14 | 0.49 | 0.00 | 0.00 | 0.27 | 0.00 | 1.14 |
+| *ceiling: base model on a SEEN class* | *0.97* | | | | *0.97* | *0.95* | *0.96* | *1.01* |
+
+- **F1 goes 0.00 → 0.45 and recall 0.03 → 0.83**, with content diversity restored from 0.74 to 1.21×
+  the real class. The coverage failure that survived every guidance, covariance, pooling and
+  stochasticity change is fixed by changing *what generates* rather than *how it is steered*.
+- **Teacher seeding helps** (`inversion+init` beats `inversion` on precision 0.39 vs 0.33 and F1
+  0.45 vs 0.42), which is the "manifold follows teacher" half doing work.
+- **`nearest-class` is not a substitute** (F1 0.00): conditioning on the single best trained class
+  does not recover the composition, so the learned α is doing something a lookup cannot.
+- **Using the teacher's POOL as the inversion target fails** (recall 0.19). The pool is collapsed, so
+  inverting on it teaches the embedding one image — the same garbage-in problem that stopped
+  distillation from rescuing diversity in §5e. **The teacher has to constrain through α, not through
+  pixels.**
+
+**The honest remainder.** Fidelity has not caught up: composition accuracy falls 0.58 → 0.29, driven
+almost entirely by background (0.84 → 0.60) while foreground stays high (0.83–0.94). We have moved
+from *accurate but collapsed* to *diverse but imprecise*, and neither end is the ceiling (0.97 acc,
+0.96 F1). The two mechanisms are now cleanly separated, though: guidance controlled fidelity and
+could not buy coverage; conditioning buys coverage and needs a fidelity term. The implemented but
+not-yet-measured candidate is an **anchor** — penalizing `‖α − α_teacher‖²` so the teacher acts as a
+prior on the composition throughout, rather than only as a starting point, with the anchor strength
+dialing between "what the teacher composed" and "what this query looks like".
+
 ## 6. Why we are *not* replicating the paper's diffusion results
 
 Side by side on ColorMNIST — their F1 (harmonic mean of precision and recall in Inception feature
