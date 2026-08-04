@@ -1,7 +1,8 @@
 # Results, and an honest account of the replication gap
 
-Every number here is from a single seed at the scale stated. `experiments/aggregate.py` pools seeds
-into mean ± SE once multi-seed runs exist; none do yet. See §7.
+Numbers written as `x ± y` are **mean ± SE over 3 seeds** (`experiments/aggregate.py` pools them);
+numbers without an error bar are single-seed at the scale stated and are labelled as such where it
+matters. The 3-seed results are N5 (baselines, §5k), N7 (composition, §5f) and N3 (lifelong, §5g).
 
 ---
 
