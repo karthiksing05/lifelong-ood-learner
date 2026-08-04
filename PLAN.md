@@ -170,7 +170,23 @@ Reproduce the per-concept analysis with `python experiments/analyze_n3.py`.
 
 ## 3. Open work, in priority order
 
-### 3.0 Fidelity of the inverted concept — coverage is solved, precision is not
+### 3.0 Fidelity of the inverted concept — coverage is SOLVED AND CERTIFIED, precision is not
+Over 3 seeds: F1 0.003±0.003 -> 0.323±0.057, recall 0.062 -> 0.649, content diversity 1.166±0.033
+(target 1.0). Accuracy 0.585±0.081 -> 0.234±0.040, concentrated in background.
+
+**Ruled out by measurement -- do not retry:** anchoring alpha to the teacher (F1 0.01-0.03 at every
+strength and prior); inverting on the teacher's POOL (recall 0.19, the pool is collapsed); a
+per-factor PRODUCT class prior (background mass -> 0.00, empty by construction since the benchmark
+holds out fg/bg PAIRS); nearest-class conditioning (F1 0.002±0.002); and -- all confirmed over 3
+seeds to fall inside plain inversion's error bars or below -- a region-weighted inversion loss
+(0.252±0.031), inverting on mu_T (0.291±0.050), 3x longer optimization (0.232±0.060), and CFG on the
+learned embedding (0.274±0.028). Those four were tuned on single-seed noise before the seeds existed.
+
+**Untried:** the failure is specifically background, and every attempt so far has worked on the
+OBJECTIVE or the PRIOR. What has not been tried is changing the PARAMETERIZATION -- e.g. a separate
+alpha per region (one mixture for the stroke, one for the background) so the two factors are
+composed in class space rather than being forced through a single shared vector. That mirrors the
+per-dimension PoE that already works in pixel space and is the natural next step.
 Coverage is done and measured: F1 0.00 -> 0.48, recall 0.02 -> 0.88, content diversity 0.72 -> 1.16x
 real (RESULTS 5f). The open gap is composition accuracy, 0.56 (teacher-guided) -> 0.33 (inversion),
 concentrated in BACKGROUND (0.76 -> 0.56) while foreground improves (0.93 -> 0.96).

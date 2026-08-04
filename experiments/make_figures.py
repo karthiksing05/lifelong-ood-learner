@@ -59,6 +59,28 @@ def load(name):
     return json.load(open(p)) if os.path.exists(p) else None
 
 
+def load_all_seeds(name):
+    """Every seed's result for `name`, so curves can be drawn as mean +/- SE rather than one run."""
+    import glob
+    out = [json.load(open(p)) for p in sorted(glob.glob(os.path.join(RES, f"{name}__seed*.json")))]
+    if not out:
+        r = load(name)
+        out = [r] if r else []
+    return out
+
+
+def band(ax, xs, series, **style):
+    """Plot the mean of several seeds with a +/- SE band.  A single seed draws as a plain line, so a
+    one-seed figure never acquires a band it has not earned."""
+    A = np.array(series, dtype=float)
+    m = A.mean(0)
+    ax.plot(xs, m, **style)
+    if len(A) > 1:
+        se = A.std(0, ddof=1) / np.sqrt(len(A))
+        ax.fill_between(xs, m - se, m + se, color=style.get("color"), alpha=.18, lw=0)
+    return len(A)
+
+
 def style(arm):
     return ARM_STYLE.get(arm, dict(color="grey", marker="x", label=arm))
 
@@ -66,22 +88,28 @@ def style(arm):
 # ── curves ───────────────────────────────────────────────────────────────────
 def fig_lifelong_curves():
     """N3: what happens to the manifold as concepts are added, one panel per thing at risk."""
-    r = load("n3_lifelong")
-    if not r:
+    runs = load_all_seeds("n3_lifelong")
+    if not runs:
         return None
     fig, ax = plt.subplots(1, 4, figsize=(17, 3.6))
-    for arm, blob in r.items():
-        st = blob["steps"]
-        ks = [s["step"] for s in st]
+    arms = sorted({a for r in runs for a in r})
+    nseed = 1
+    for arm in arms:
+        blobs = [r[arm]["steps"] for r in runs if arm in r]
+        if not blobs:
+            continue
+        n = min(len(b) for b in blobs)
         s_ = style(arm)
-        ax[0].plot(ks, [s["base_drift"] for s in st], **s_)
-        ax[1].plot(ks, [s["retention_exact"] for s in st], **s_)
-        ka = [s["step"] for s in st if s.get("retention_acc") is not None]
-        va = [s["retention_acc"] for s in st if s.get("retention_acc") is not None]
-        ax[2].plot(ka, va, **s_)
-        kn = [s["step"] for s in st if "new_acc" in s]
-        vn = [s["new_acc"]["joint"] for s in st if "new_acc" in s]
-        ax[3].plot(kn, vn, **s_)
+        ks = [b["step"] for b in blobs[0][:n]]
+        nseed = band(ax[0], ks, [[s["base_drift"] for s in b[:n]] for b in blobs], **s_)
+        band(ax[1], ks, [[s["retention_exact"] for s in b[:n]] for b in blobs], **s_)
+        ka = [s["step"] for s in blobs[0][:n] if s.get("retention_acc") is not None]
+        if ka:
+            band(ax[2], ka, [[s["retention_acc"] for s in b[:n]
+                              if s.get("retention_acc") is not None] for b in blobs], **s_)
+        kn = [s["step"] for s in blobs[0][:n] if "new_acc" in s]
+        band(ax[3], kn, [[s["new_acc"]["joint"] for s in b[:n] if "new_acc" in s]
+                         for b in blobs], **s_)
     for a, t, yl in zip(ax,
                         ("frozen base: drift (want 0)",
                          "retention: fraction bit-identical",
@@ -103,46 +131,60 @@ def fig_lifelong_curves():
         a.set_ylim(-.34, 1.05)
         a.axhline(0, color="k", lw=.6, alpha=.4)
         a.text(.5, .02, note, transform=a.transAxes, fontsize=6.5, ha="center", alpha=.8)
-    fig.suptitle("N3 — adding 10 out-of-distribution concepts one at a time", fontsize=11)
+    fig.suptitle(f"N3 — adding 10 out-of-distribution concepts one at a time "
+                 f"({nseed} seed{'s' if nseed > 1 else ''}, band = ±SE)", fontsize=11)
     fig.tight_layout()
     return save(fig, "n3_curves.png")
 
 
 def fig_classinc():
     """N5: the standard class-incremental picture -- average accuracy over the seen tasks."""
-    r = load("n5_classinc")
-    if not r:
+    runs = load_all_seeds("n5_classinc")
+    if not runs:
         return None
-    rows = r["rows"]
+    rows = runs[0]["rows"]
     fig, ax = plt.subplots(1, 3, figsize=(14, 3.8))
-    for row in rows:
-        acc = np.array(row["acc_matrix"], dtype=object)
-        T = max(len(a) for a in acc)
-        # average accuracy over tasks learned so far, after each step
-        avg = []
-        for t in range(T):
-            vals = [a[t] for a in acc if len(a) > t]
-            avg.append(np.mean(vals))
-        s_ = style(row["arm"])
-        ax[0].plot(range(1, T + 1), avg, **s_)
-        first = [a[0] for a in acc]
-        last = [a[-1] for a in acc]
-        ax[1].plot(range(1, len(acc) + 1), np.array(last) - np.array(first), **s_)
+    arms = [r_["arm"] for r_ in rows]
+    nseed = len(runs)
+    for arm in arms:
+        curves, deltas = [], []
+        for r in runs:
+            row = next((x for x in r["rows"] if x["arm"] == arm), None)
+            if row is None:
+                continue
+            acc = row["acc_matrix"]
+            T = max(len(a) for a in acc)
+            curves.append([float(np.mean([a[t] for a in acc if len(a) > t])) for t in range(T)])
+            deltas.append([a[-1] - a[0] for a in acc])
+        if not curves:
+            continue
+        n = min(len(c) for c in curves)
+        s_ = style(arm)
+        band(ax[0], range(1, n + 1), [c[:n] for c in curves], **s_)
+        nd = min(len(d) for d in deltas)
+        band(ax[1], range(1, nd + 1), [d[:nd] for d in deltas], **s_)
     ax[0].set_title("average accuracy over all tasks seen so far", fontsize=10)
     ax[0].set_xlabel("evaluation step"); ax[0].set_ylabel("mean joint accuracy", fontsize=9)
     ax[0].legend(fontsize=8); ax[0].grid(alpha=.25); ax[0].set_ylim(-.05, 1.05)
     ax[1].set_title("per-task change since it was learned\n(0 = no forgetting)", fontsize=10)
     ax[1].set_xlabel("task index"); ax[1].set_ylabel("Δ accuracy", fontsize=9)
     ax[1].axhline(0, color="k", lw=.8); ax[1].grid(alpha=.25); ax[1].legend(fontsize=8)
-    names = [r_["arm"] for r_ in rows]
+    names = arms
     xs = np.arange(len(names))
-    ax[2].bar(xs - .2, [r_["ACC"] for r_ in rows], .38, label="ACC (higher better)",
-              color="#1f77b4")
-    ax[2].bar(xs + .2, [-r_["BWT"] for r_ in rows], .38, label="forgetting (−BWT, lower better)",
-              color="#d62728")
+    accs = [[next(x["ACC"] for x in r["rows"] if x["arm"] == a) for r in runs] for a in names]
+    bwts = [[-next(x["BWT"] for x in r["rows"] if x["arm"] == a) for r in runs] for a in names]
+    ax[2].bar(xs - .2, [np.mean(v) for v in accs], .38, label="ACC (higher better)",
+              color="#1f77b4",
+              yerr=[np.std(v, ddof=1) / np.sqrt(len(v)) if len(v) > 1 else 0 for v in accs],
+              capsize=3)
+    ax[2].bar(xs + .2, [np.mean(v) for v in bwts], .38, label="forgetting (−BWT, lower better)",
+              color="#d62728",
+              yerr=[np.std(v, ddof=1) / np.sqrt(len(v)) if len(v) > 1 else 0 for v in bwts],
+              capsize=3)
     ax[2].set_xticks(xs); ax[2].set_xticklabels(names, fontsize=8, rotation=15)
     ax[2].set_title("final scores", fontsize=10); ax[2].legend(fontsize=8); ax[2].grid(alpha=.25)
-    fig.suptitle("N5 — Split-ColorMNIST class-incremental on REAL held-out images", fontsize=11)
+    fig.suptitle(f"N5 — Split-ColorMNIST class-incremental on REAL held-out images "
+                 f"({nseed} seed{'s' if nseed > 1 else ''}, band/bars = ±SE)", fontsize=11)
     fig.tight_layout()
     return save(fig, "n5_classinc.png")
 

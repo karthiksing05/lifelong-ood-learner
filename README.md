@@ -237,7 +237,25 @@ that are themselves drifting, so replay reinforces the drift), and **`independen
 final accuracy** with fewer parameters. That sharpens the attribution: freezing delivers the
 no-forgetting result; the hierarchy buys the warm start and the batch speedup, not final quality.
 
-**But the samples are near-copies of the query, and that is the main open defect.** Vetting the
+**Sampling was collapsing, and fixing it needed an architectural change, not a knob.** Guiding the
+sampler toward the analytic PoE Gaussian produces near-copies of the query -- recall ~0, content
+diversity 0.45x the real class -- and guidance schedule, teacher covariance, query pooling and
+stochastic sampling all fail to fix it, because CFG toward a *unimodal* Gaussian contracts every
+trajectory to its mean. The fix is to **condition the manifold instead of guiding it**: learn the
+concept as a point in the model's own conditioning space, `c_new = sum_k alpha_k c_k` over the
+trained class embeddings, and sample the model's conditional. Over 3 seeds:
+
+| | F1 | recall | content div / real | accuracy |
+|---|---|---|---|---|
+| teacher-guided | 0.003 ± 0.003 | 0.062 ± 0.026 | 0.774 | **0.585 ± 0.081** |
+| **inversion** | **0.323 ± 0.057** | **0.649 ± 0.066** | **1.166 ± 0.033** | 0.234 ± 0.040 |
+| *ceiling (base model, seen class)* | *0.96* | *0.95* | *1.01* | *0.97* |
+
+Coverage is solved and certified; **fidelity is the open problem** -- accuracy 0.585 -> 0.234,
+concentrated in background. `RESULTS.md` §5e-§5g has the full elimination and what is already ruled
+out.
+
+**The older defect, for the record:** Vetting the
 case-study grids (`figures/case_studies_neural.png`) showed every sample in a row as the same digit
 instance varying only by speckle. Two checks confirm it: `diversity / novelty = 1.04`, where
 independent draws around the query would give 1.41, and content diversity after a low-pass is
