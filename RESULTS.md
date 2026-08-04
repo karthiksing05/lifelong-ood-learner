@@ -490,30 +490,28 @@ could not buy coverage; conditioning buys coverage and still needs a fidelity te
 does not provide.
 
 
-## 5g. Lifelong with the fixed sampler (N3, 3 seeds)
+## 5g. Lifelong with the best composer (N3, 3 seeds)
 
-Running the full lifelong loop with `--concept-mode inversion` — so what gets consolidated is a
-diverse pool from the model's own conditional rather than a collapsed one:
+The full loop with `--concept-mode factored`, so what gets consolidated is a pool drawn from the
+model's own conditional at a concept read in the ideal-words basis with the per-factor gain:
 
 | arm (3 seeds, 10 concepts) | bit-identical retention | new-concept accuracy | **pool coverage (recall)** | frozen-base drift |
 |---|---|---|---|---|
-| `hier` | **1.000 ± 0.000** | 0.258 ± 0.030 | 0.411 ± 0.059 | **0.00000 ± 0.00000** |
-| `unfrozen` | 1.000 ± 0.000 | 0.212 ± 0.030 | 0.399 ± 0.046 | 0.00000 ± 0.00000 |
+| `hier` | **1.000 ± 0.000** | 0.358 ± 0.027 | **0.750 ± 0.032** | **0.00000 ± 0.00000** |
+| `unfrozen` | 1.000 ± 0.000 | 0.342 ± 0.022 | 0.723 ± 0.030 | 0.00000 ± 0.00000 |
 
-Preservation and zero base drift hold exactly, across every seed, with the new sampler — the fix to
-*what* gets consolidated left the guarantees on *how* it is consolidated untouched, which is the
-property that made it safe to adopt.
+**The composer improvements carry into the lifelong loop.** Against the same experiment run with the
+class-basis inversion, pool coverage rises **0.411 ± 0.059 → 0.750 ± 0.032** and new-concept accuracy
+**0.258 ± 0.030 → 0.358 ± 0.027**, while retention and base drift stay exactly where they were. That
+is the division of labour working as intended: fixing *what* is composed and *what generates* changed
+the quality of what enters the manifold, and changed nothing about the guarantees on entering it.
 
-⚠️ **One anomaly, unexplained.** The `unfrozen` ablation, which collapsed to 0.00 retention under
-teacher-guided pools, now also scores 1.000. The concepts do share ancestors (node 0 shared by all
-10, node 1 by 9), so the mechanism is present, and `tests/test_neural.py` still asserts and passes
-the perturbation property on synthetic data. The most likely explanation is visible in the
-distillation losses — inversion pools start at ~0.015 against ~0.09 for teacher pools, because a pool
-drawn from the model's own conditional is already easy for the model to fit, so gradients into the
-shared ancestors are tiny. If that is right it is a real side effect worth knowing (on-manifold pools
-reduce interference even without freezing) but **it is not verified**, and until it is, the
-no-forgetting claim should rest on the teacher-mode N3 run and N5, where the control does separate.
-
+⚠️ **The `unfrozen` anomaly persists and remains unexplained.** It scores the same retention as
+`hier` here, though the concepts do share ancestors and `tests/test_neural.py` still asserts and
+passes the perturbation property on synthetic data. The plausible cause is visible in the
+distillation losses — pools drawn from the model's own conditional start at ~0.02–0.03, so gradients
+into shared ancestors are tiny — but this is **not verified**. The no-forgetting claim rests on N5
+(§5k), where the controls separate cleanly and by large margins.
 
 ## 5h. The fidelity limit is architectural, not a tuning failure (the oracle)
 
