@@ -13,12 +13,15 @@ DDPM one at a time, with adapter ancestors frozen, leaves every previously conso
 the freezing and concepts that worked lose **0.917** of their accuracy. Plasticity is unchanged
 (0.64–0.66 across all arms), so nothing is being traded away.
 
-**But the samples are not diverse, and I only caught that by looking.** The case-study grids (§5d)
-show every sample in a row as the same digit instance varying by speckle. Two checks confirm it:
-`diversity ÷ novelty = 1.04` where independent draws would give 1.41, and content diversity (after a
-low-pass that removes pixel noise) is **0.45x** the real class's spread rather than the 0.61x raw
-pixels suggested. **PoE is producing near-copies of the query** — which is also why a baseline that
-copies the query beats it (§5c, §6).
+**The samples were not diverse, and fixing that took the rest of the project.** Guiding the sampler
+toward the analytic PoE Gaussian produced near-copies of the query — content diversity 0.45x the real
+class, recall ~0. Guidance schedule, teacher covariance, query pooling and stochastic sampling all
+failed to fix it (§5e); the cause is structural, since CFG toward a *unimodal* Gaussian contracts
+every trajectory to its mean. **Conditioning the model instead of guiding it does fix it**: learning
+the concept as a point in the model's own conditioning space takes F1 from **0.003 ± 0.003 to
+0.323 ± 0.057** and content diversity to **1.166 ± 0.033** over 3 seeds (§5f). The remaining cost is
+fidelity — composition accuracy 0.585 → 0.234, concentrated in background — which is the main open
+problem.
 
 **What we inherited from the paper is only partly reproduced.** We match its finding that
 nearest-trained-class retrieval cannot recover an unseen composition (their F1 ≈ 5–6%, our joint
@@ -288,50 +291,32 @@ genuinely new instances rather than only its own generations.
   and −0.04 ACC. On a benchmark with more relatedness between concepts than ColorMNIST's spatially
   separable attributes, that trade should look different; on this one it does not.
 
-## 5d. Case studies — and a negative result I found by looking at them
+## 5d. Case studies — certified per case
 
-![case studies](figures/case_studies_neural.png)
+![case studies](figures/case_studies_inversion.png)
 
-Six held-out compositions: the query, the prototype composed from it, and eight samples drawn from
-that prototype.
+Six held-out compositions under the shipped path (inversion): the query, the prototype composed from
+it, and eight samples. **Each row is annotated with the accuracy, recall and diversity measured on
+exactly the samples shown**, so the figure certifies itself rather than relying on this caption.
+The teacher-guided version of the same figure is `figures/case_studies_teacher.png`.
 
-**What works, and it is the hard part.** Every row gets the *colour composition* right — pink on
-dark purple, yellow on dark brown, cyan on deep red — for pairings the backbone never saw together.
-The prototype column (μ_T) is a clean, correct rendering of the target composition in all six rows,
-and digit identity survives in five of six.
+Vetted by eye, and the rows disagree with each other in a way worth stating plainly:
 
-**What does not work: these samples are not diverse, and the headline diversity number was hiding
-it.** Looking at the grid, every sample in a row is plainly the *same* digit instance — the same
-stroke, the same position. What varies is speckle, not content. Row 2's fourth sample is nearly
-destroyed by it. I checked that impression against two measurements rather than trusting it:
+- **Row 1 (`2` pink on dark_purple, acc 0.50, recall 0.75) is the result we wanted.** Eight visibly
+  *different* twos — different stroke widths, slants and shapes — all correctly pink on dark purple.
+- **Row 6 (`0` cyan on deep_red, acc 0.25)** likewise: cyan zeros on deep red with real shape variety.
+- **Rows 3 and 4 fail on background.** The digit and foreground colour are right (yellow `1`s,
+  yellow `6`s) but the background comes out purple or navy instead of dark brown.
+- **Rows 2 and 5 drift** — diverse, but the composition wanders to other digits and colours.
 
-| slot | acc | raw div/ref | **div ÷ novelty** | **content div/ref** |
-|---|---|---|---|---|
-| 46 | 1.00 | 0.42 | 1.06 | **0.23** |
-| 110 | 0.75 | 0.90 | 1.01 | 0.71 |
-| 19 | 0.75 | 0.75 | 1.14 | 0.58 |
-| 99 | 1.00 | 0.40 | 0.95 | **0.23** |
-| 94 | 1.00 | 0.57 | 1.02 | 0.42 |
-| 8 | 0.00 | 0.64 | 1.07 | 0.52 |
-| **mean** | **0.75** | **0.61** | **1.04** | **0.45** |
+Measured over the six: **content diversity 1.17× the real class** (against 0.45× for the
+teacher-guided version of this figure) with `div/novelty` 0.98. Diversity is fixed. Mean accuracy
+0.19 says fidelity is not, and the failures are concentrated exactly where the aggregate numbers say
+they are — background.
 
-- **`div ÷ novelty ≈ 1.04`, where independent draws around the query would give √2 ≈ 1.41.** The
-  samples share a common offset from the query: they are one rendering of it, not a distribution
-  around it.
-- **Content diversity is 0.45× the class's own spread, against 0.61× measured on raw pixels.** About
-  a quarter of the apparent variety is per-pixel noise that a 2× downsample removes.
-- **The two rows scoring accuracy 1.00 are the two least diverse** (content ratio 0.23). The
-  accuracy/diversity trade from §5b shows up per-slot, and the direction is unflattering: our best
-  accuracy numbers are the ones bought most heavily by copying.
-
-This is the same defect three earlier results were circling without naming — N0's finding that the
-PoE covariance is 13.6× too tight, N2's `query_only` beating PoE, and §6.1's argument that our
-headline metric cannot punish memorization. The case studies make it visible: **PoE samples are
-close to query copies, so a baseline that copies the query is competitive because it is doing the
-same thing.**
-
-`evals.sample_geometry` now returns `content_diversity`, `content_ratio` and `div_over_nov` on every
-call, so this cannot go unmeasured again.
+The previous version of this figure, produced by teacher-guided sampling, showed **every sample in a
+row as the same digit instance varying only by speckle**; that is what motivated the whole
+investigation in §5e–§5f and is preserved as `figures/case_studies_teacher.png` for comparison.
 
 ### 5e. Chasing the diversity gap — what it is not, and what it is
 
@@ -425,7 +410,29 @@ one is built from, in the model's own vocabulary.
   distillation from rescuing diversity in §5e. **The teacher has to constrain through α, not through
   pixels.**
 
-**Final numbers, 8 held-out compositions:**
+### Certified over 3 seeds
+
+The arms below are now pooled over 3 seeds (mean ± SE, `experiments/aggregate.py`), 8 held-out
+compositions each. **Every fidelity variant I tried — region-weighted loss, inverting on μ_T,
+3× longer optimization, CFG on the learned embedding — falls inside the error bars of plain
+inversion or below it.** Those were being tuned on single-seed noise; plain inversion is the method.
+
+| arm (3 seeds) | acc | precision | **recall** | **F1** | content div ÷ real |
+|---|---|---|---|---|---|
+| `teacher-guided` | **0.585 ± 0.081** | 0.040 ± 0.020 | 0.062 ± 0.026 | **0.003 ± 0.003** | 0.774 ± 0.032 |
+| **`inversion`** | 0.234 ± 0.040 | **0.284 ± 0.068** | **0.649 ± 0.066** | **0.323 ± 0.057** | **1.166 ± 0.033** |
+| `inv` + region-weighted loss | 0.142 ± 0.006 | 0.186 ± 0.027 | 0.605 ± 0.085 | 0.252 ± 0.031 | 1.176 ± 0.011 |
+| `inv` on μ_T | 0.217 ± 0.053 | 0.268 ± 0.014 | 0.612 ± 0.024 | 0.291 ± 0.050 | 1.133 ± 0.047 |
+| `inv` 3× longer | 0.174 ± 0.050 | 0.219 ± 0.026 | 0.542 ± 0.158 | 0.232 ± 0.060 | 1.152 ± 0.054 |
+| `nearest-class` | 0.000 ± 0.000 | 0.004 ± 0.004 | 0.069 ± 0.039 | 0.002 ± 0.002 | 1.063 ± 0.050 |
+| *ceiling: base model, SEEN class* | *0.97* | *0.97* | *0.95* | *0.96* | *1.01* |
+
+**F1 0.003 ± 0.003 → 0.323 ± 0.057** and **recall 0.062 → 0.649** are separated by many standard
+errors — this is the one result here that is unambiguously certified. **Content diversity reaches
+1.166 ± 0.033 against a target of 1.0**, i.e. the samples now vary about as much as the real class
+does. The cost is equally certain: **accuracy 0.585 → 0.234**, concentrated in background.
+
+**Final numbers, 8 held-out compositions (single seed, for the per-arm detail):**
 
 | arm | acc | digit | fg | bg | precision | **recall** | **F1** | content div ÷ real |
 |---|---|---|---|---|---|---|---|---|
@@ -480,6 +487,31 @@ background (0.76 → 0.56) while foreground *improves* (0.93 → 0.96). Neither 
 (0.97 acc, 0.96 F1). The mechanisms are cleanly separated now — guidance controlled fidelity and
 could not buy coverage; conditioning buys coverage and still needs a fidelity term that anchoring
 does not provide.
+
+
+## 5g. Lifelong with the fixed sampler (N3, 3 seeds)
+
+Running the full lifelong loop with `--concept-mode inversion` — so what gets consolidated is a
+diverse pool from the model's own conditional rather than a collapsed one:
+
+| arm (3 seeds, 10 concepts) | bit-identical retention | new-concept accuracy | **pool coverage (recall)** | frozen-base drift |
+|---|---|---|---|---|
+| `hier` | **1.000 ± 0.000** | 0.258 ± 0.030 | 0.411 ± 0.059 | **0.00000 ± 0.00000** |
+| `unfrozen` | 1.000 ± 0.000 | 0.212 ± 0.030 | 0.399 ± 0.046 | 0.00000 ± 0.00000 |
+
+Preservation and zero base drift hold exactly, across every seed, with the new sampler — the fix to
+*what* gets consolidated left the guarantees on *how* it is consolidated untouched, which is the
+property that made it safe to adopt.
+
+⚠️ **One anomaly, unexplained.** The `unfrozen` ablation, which collapsed to 0.00 retention under
+teacher-guided pools, now also scores 1.000. The concepts do share ancestors (node 0 shared by all
+10, node 1 by 9), so the mechanism is present, and `tests/test_neural.py` still asserts and passes
+the perturbation property on synthetic data. The most likely explanation is visible in the
+distillation losses — inversion pools start at ~0.015 against ~0.09 for teacher pools, because a pool
+drawn from the model's own conditional is already easy for the model to fit, so gradients into the
+shared ancestors are tiny. If that is right it is a real side effect worth knowing (on-manifold pools
+reduce interference even without freezing) but **it is not verified**, and until it is, the
+no-forgetting claim should rest on the teacher-mode N3 run and N5, where the control does separate.
 
 ## 6. Why we are *not* replicating the paper's diffusion results
 

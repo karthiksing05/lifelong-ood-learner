@@ -44,7 +44,7 @@ def _basis(model, ids=None):
 
 def learn_embedding(field, targets, n_steps=300, lr=0.05, batch=8, seed=0, init_alpha=None,
                     weight_decay=1e-3, simplex=False, u_range=(0.05, 0.95), verbose=False,
-                    ids=None, log_every=0, anchor=0.0, anchor_alpha=None):
+                    ids=None, log_every=0, anchor=0.0, anchor_alpha=None, region_weight=None):
     """Fit `c_new = sum_k alpha_k c_k` so the model explains `targets` when conditioned on it.
 
     `targets`: [N, D] images in the model's [-1, 1] space.  One image is the intended setting (a
@@ -65,6 +65,15 @@ def learn_embedding(field, targets, n_steps=300, lr=0.05, batch=8, seed=0, init_
     not work: the pool is collapsed, so inverting on it teaches the embedding one image (measured
     recall 0.02 against 0.89 for the query).  The teacher has to constrain through alpha, not
     through pixels.
+
+    `region_weight` equalizes the two spatial factors in the objective.  The plain DDPM loss averages
+    the epsilon error over all pixels, and a diffusion model's error concentrates where there is
+    STRUCTURE -- so the ~11% of pixels carrying the stroke dominate the gradient and the ~89%
+    carrying the background barely enter it.  That is the same imbalance that made the class prior
+    score below chance on background, and it shows up again downstream: inversion improves foreground
+    accuracy (0.93 -> 0.96) while background falls (0.76 -> 0.56).  With `region_weight=w`, the loss
+    becomes `(1-w) * mean_stroke(err) + w * mean_background(err)`, so each region contributes on its
+    own terms rather than in proportion to how hard it is.  `None` keeps the plain mean.
 
     Returns (c_new [d_emb], alpha [K], history).
     """
@@ -90,6 +99,10 @@ def learn_embedding(field, targets, n_steps=300, lr=0.05, batch=8, seed=0, init_
     opt = torch.optim.Adam([a], lr=lr, weight_decay=(0.0 if simplex else weight_decay))
 
     X = torch.from_numpy(np.asarray(targets, np.float32)).to(dev).reshape(-1, CH, IMG, IMG)
+    mask_fg = None
+    if region_weight is not None:
+        fg, _ = _region_masks(np.asarray(targets, np.float64).reshape(-1, CH * IMG * IMG)[0])
+        mask_fg = torch.from_numpy(fg.reshape(IMG, IMG, CH).transpose(2, 0, 1).copy()).to(dev)
     was_training = model.training
     model.eval()
     for p in model.parameters():
@@ -105,7 +118,15 @@ def learn_embedding(field, targets, n_steps=300, lr=0.05, batch=8, seed=0, init_
         xt = ab.sqrt() * x0 + (1 - ab).sqrt() * e
         w = torch.softmax(a, 0) if simplex else a
         c_new = w @ C
-        loss = torch.nn.functional.mse_loss(model(xt, u, emb_override=c_new), e)
+        pred = model(xt, u, emb_override=c_new)
+        if mask_fg is not None:
+            err = (pred - e) ** 2
+            m = mask_fg.unsqueeze(0).expand_as(err)
+            l_fg = err[m].mean() if m.any() else err.mean() * 0
+            l_bg = err[~m].mean() if (~m).any() else err.mean() * 0
+            loss = (1.0 - region_weight) * l_fg + region_weight * l_bg
+        else:
+            loss = torch.nn.functional.mse_loss(pred, e)
         if anchor > 0.0 and a_ref is not None:
             loss = loss + anchor * ((w - a_ref) ** 2).sum()
         opt.zero_grad(set_to_none=True)

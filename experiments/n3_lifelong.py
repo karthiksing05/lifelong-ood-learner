@@ -41,8 +41,8 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from common import CACHE, RESULTS, ood_queries                         # noqa: E402
 
 from lifelong_ood.datasets import load_colormnist, slot_name           # noqa: E402
-from lifelong_ood.evals import (composition_accuracy, fit_probes, sample_geometry,  # noqa: E402
-                                save_grid, save_json)
+from lifelong_ood.evals import (composition_accuracy, fit_probes, precision_recall,  # noqa: E402
+                                sample_geometry, save_grid, save_json)
 from lifelong_ood.neural import (NeuralLifelongLearner, fingerprint, load_field,  # noqa: E402
                                  to_data, to_model)
 
@@ -76,11 +76,18 @@ def main():
     p.add_argument("--retention-probe", type=int, default=3,
                    help="most-recent earlier concepts re-sampled for behavioural retention "
                         "(the oldest is always included; the exact test always covers all)")
+    p.add_argument("--concept-mode", choices=["teacher", "inversion"], default="inversion",
+                   help="how the pool that gets consolidated is produced.  'teacher' guides the "
+                        "sampler toward the analytic PoE Gaussian (collapses, recall 0.00); "
+                        "'inversion' learns a point in the model's conditioning space and samples "
+                        "the model's own conditional (N7: F1 0.00 -> ~0.46)")
+    p.add_argument("--inv-steps", type=int, default=400)
     p.add_argument("--quick", action="store_true")
     args = p.parse_args()
     if args.quick:
         args.n_concepts, args.n_pool, args.n_samples = 3, 16, 8
         args.n_per_slot, args.epochs, args.n_eval = 20, 3, 32
+        args.inv_steps = 60
     dev = "cuda" if torch.cuda.is_available() else "cpu"
 
     data = load_colormnist(n_per_slot=args.n_per_slot, seed=args.seed)
@@ -105,8 +112,14 @@ def main():
         for k, q in enumerate(qs, 1):
             name = f"ood_{q['slot']}"
             xq01 = data["X"][q["query"]]
-            teacher, pool = L.learn_concept(to_model(xq01).ravel(), name, n_pool=args.n_pool,
-                                            epochs=args.epochs, seed=args.seed + k)
+            if args.concept_mode == "inversion":
+                teacher, pool = L.learn_concept_inverted(
+                    to_model(xq01).ravel(), name, n_pool=args.n_pool, epochs=args.epochs,
+                    inv_steps=args.inv_steps, init_from_teacher=False, seed=args.seed + k,
+                    disc=dict(u_grid=(0.1, 0.2, 0.3, 0.4), n_starts=16, iters=120))
+            else:
+                teacher, pool = L.learn_concept(to_model(xq01).ravel(), name, n_pool=args.n_pool,
+                                                epochs=args.epochs, seed=args.seed + k)
             marks[name] = fingerprint(field, name, seed=args.seed)
             marks_seed[name] = k          # pin this concept's eval seed for the rest of the run
             learned.append((name, q))
@@ -121,7 +134,9 @@ def main():
                        pool_acc=composition_accuracy(probes, pool01, q["d"], q["f"], q["b"]),
                        pool_geometry=sample_geometry(pool01, xq01),
                        new_acc=composition_accuracy(probes, S, q["d"], q["f"], q["b"]),
-                       geometry=sample_geometry(S, xq01, data["X"][q["rest"][:100]]))
+                       geometry=sample_geometry(S, xq01, data["X"][q["rest"][:100]]),
+                       coverage=precision_recall(S, data["X"][q["rest"][:100]]),
+                       pool_coverage=precision_recall(pool01, data["X"][q["rest"][:100]]))
             rec["base_drift"] = rec["base_err"] - e0
             rec["distil"] = L.last_curve                 # first/final loss: the transfer signal
             # The strong no-forgetting test runs over EVERY earlier concept, because it is cheap: a

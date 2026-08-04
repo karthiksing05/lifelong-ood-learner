@@ -243,6 +243,8 @@ def case_studies(args):
     from lifelong_ood.evals import composition_accuracy, fit_probes, sample_geometry
     from lifelong_ood.neural import NeuralLifelongLearner, load_field, to_data, to_model
 
+    from lifelong_ood.evals import precision_recall
+    from lifelong_ood.neural import learn_embedding, sample_embedding
     dev = "cuda" if torch.cuda.is_available() else "cpu"
     data = load_colormnist(n_per_slot=args.n_per_slot, seed=args.seed)
     probes = fit_probes(data, seed=args.seed, epochs=30)
@@ -252,7 +254,18 @@ def case_studies(args):
 
     xqs = [to_model(data["X"][q["query"]]).ravel() for q in qs]
     teachers = L.compose_batch(xqs, u_grid=(0.1, 0.2, 0.3, 0.4), n_starts=16, iters=120)
-    pools = L.sample_teacher_batch(teachers, n=args.n_show, seed=args.seed)
+    if args.mode == "teacher":
+        pools = L.sample_teacher_batch(teachers, n=args.n_show, seed=args.seed)
+    else:
+        # the shipped path: a concept learned in the model's conditioning space, then sampled from
+        # the model's own conditional.  Each panel below carries the coverage measured on exactly
+        # the samples shown, so the figure certifies itself rather than relying on its caption.
+        pools = []
+        for xq in xqs:
+            c_new, _, _ = learn_embedding(field, np.atleast_2d(xq), n_steps=args.inv_steps,
+                                          lr=0.05, seed=args.seed)
+            pools.append(sample_embedding(field, c_new, n=args.n_show, steps=args.steps,
+                                          seed=args.seed))
 
     ncol = args.n_show + 2
     fig, axes = plt.subplots(len(qs), ncol, figsize=(1.05 * ncol, 1.25 * len(qs)))
@@ -270,17 +283,19 @@ def case_studies(args):
         axes[r, 1].imshow(rgb_img(np.clip((t["mu"] + 1) / 2, 0, 1)))
         for c in range(args.n_show):
             axes[r, 2 + c].imshow(rgb_img(S[c]))
+        pr = precision_recall(S, ref)
         axes[r, ncol - 1].set_title(
-            f"acc {acc['joint']:.2f} | div/ref {ratio:.2f}", fontsize=6, loc="right")
+            f"acc {acc['joint']:.2f} | recall {pr['recall']:.2f} | div/ref {ratio:.2f}",
+            fontsize=5.5, loc="right")
         for c in range(ncol):
             axes[r, c].set_xticks([]); axes[r, c].set_yticks([])
     for c, lab in enumerate(["query", "prototype μ_T"] + [f"sample {i+1}" for i in range(args.n_show)]):
         axes[0, c].set_title(lab, fontsize=7)
-    fig.suptitle("Case studies — one OOD query, the prototype composed from it, and samples drawn "
-                 "from that prototype\n(div/ref = sample diversity ÷ the real class's own spread; "
-                 "1.0 is the target)", fontsize=9)
+    fig.suptitle(f"Case studies ({args.mode}) — one OOD query, the composed prototype, and samples\n"
+                 "each row annotated with the accuracy, RECALL and diversity measured on exactly "
+                 "those samples (recall/div-ratio target 1.0)", fontsize=8.5)
     fig.tight_layout()
-    p = save(fig, "case_studies_neural.png")
+    p = save(fig, f"case_studies_{args.mode}.png")
 
     def content_diversity(X):
         """Pairwise RMSE after a 2x downsample -- a crude low-pass.
@@ -303,13 +318,14 @@ def case_studies(args):
         geo = sample_geometry(S, data["X"][q["query"]], ref)
         acc = composition_accuracy(probes, S, q["d"], q["f"], q["b"])
         cs, cr = content_diversity(S), content_diversity(ref)
-        stats.append(dict(slot=q["slot"], joint=acc["joint"], diversity=geo["diversity"],
+        stats.append(dict(slot=q["slot"], **precision_recall(S, data["X"][q["rest"][:100]]),
+                          joint=acc["joint"], diversity=geo["diversity"],
                           ref_spread=geo["ref_spread"], novelty=geo["novelty"],
                           div_ratio=geo["diversity"] / max(geo["ref_spread"], 1e-9),
                           content_div=cs, content_ref=cr,
                           content_ratio=cs / max(cr, 1e-9),
                           div_over_nov=geo["diversity"] / max(geo["novelty"], 1e-9)))
-    with open(os.path.join(FIG, "case_studies.json"), "w") as fh:
+    with open(os.path.join(FIG, f"case_studies_{args.mode}.json"), "w") as fh:
         json.dump(stats, fh, indent=1)
     print("  case-study stats:")
     print(f"    {'slot':>5s}{'acc':>6s}{'div':>7s}{'ref':>7s}{'div/ref':>9s}"
@@ -335,6 +351,8 @@ def main():
     p.add_argument("--n-per-slot", type=int, default=100)
     p.add_argument("--steps", type=int, default=50)
     p.add_argument("--seed", type=int, default=0)
+    p.add_argument("--mode", choices=["inversion", "teacher"], default="inversion")
+    p.add_argument("--inv-steps", type=int, default=400)
     args = p.parse_args()
     os.makedirs(FIG, exist_ok=True)
     print("curves:")

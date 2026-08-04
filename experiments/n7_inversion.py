@@ -69,7 +69,8 @@ def main():
     p.add_argument("--guidance", type=float, nargs="+", default=[1.5, 2.5])
     p.add_argument("--init-temp", type=float, default=0.02)
     p.add_argument("--pool-n", type=int, default=64)
-    p.add_argument("--anchor", type=float, nargs="+", default=[0.5, 2.0, 10.0])
+    p.add_argument("--anchor", type=float, nargs="+", default=[0.5])
+    p.add_argument("--region-weight", type=float, nargs="+", default=[0.5, 0.8])
     p.add_argument("--quick", action="store_true")
     args = p.parse_args()
     if args.quick:
@@ -123,21 +124,34 @@ def main():
         # -- which is the division of labour intended here.  The teacher constrains the manifold;
         # the manifold, being a learned multimodal conditional, supplies the diversity the pool lacks.
         pool_m = L.sample_teacher(t, n=args.pool_n, seed=args.seed + qi)
-        targets = {"inversion": xq, "inversion+init": xq, "inversion@pool": pool_m}
-        specs = [("inversion", dict()), ("inversion+init", dict(init_alpha=a0)),
-                 ("inversion@pool", dict())]
-        # the teacher as a PRIOR on alpha, not just a starting point: `anchor` dials between what
-        # the teacher composed and what this one query happens to look like
-        for anc in args.anchor:
-            tag = f"inversion+anchor {anc}"
+        mu_img = np.atleast_2d(t["mu"])
+        targets = {"inversion": xq}
+        specs = [("inversion", dict())]
+        # FIDELITY CANDIDATES.  The plain objective averages epsilon error over all pixels, so the
+        # ~11% carrying the stroke dominate the gradient and background is barely optimized -- the
+        # same imbalance that made the class prior score below chance on background, and visible
+        # downstream as fg 0.96 / bg 0.56.  region_weight rebalances the two.  Inverting on mu_T
+        # instead of the raw query is the other candidate: mu_T is the COMPOSED image, probe-reads
+        # at 0.800, and carries no idiosyncratic instance detail for 120 parameters to chase.
+        for rw in args.region_weight:
+            tag = f"inv rw={rw}"
             targets[tag] = xq
-            specs.append((tag, dict(init_alpha=a0, anchor=anc, anchor_alpha=a0)))
+            specs.append((tag, dict(region_weight=rw)))
+        targets["inv@muT"] = mu_img
+        specs.append(("inv@muT", dict()))
+        for rw in args.region_weight[:1]:
+            tag = f"inv@muT rw={rw}"
+            targets[tag] = mu_img
+            specs.append((tag, dict(region_weight=rw)))
+        targets["inv long"] = xq
+        specs.append(("inv long", dict(n_steps_override=args.inv_steps * 3)))
         for tag, kw in specs:
-            c_new, alpha, hist = learn_embedding(field, targets[tag], n_steps=args.inv_steps,
+            ns = kw.pop("n_steps_override", args.inv_steps)
+            c_new, alpha, hist = learn_embedding(field, targets[tag], n_steps=ns,
                                                  lr=args.inv_lr, seed=args.seed, **kw)
             got[tag] = to_data(sample_embedding(field, c_new, n=args.n_samples, steps=args.steps,
                                                 seed=args.seed + qi)).astype(np.float32)
-            if tag == f"inversion+anchor {args.anchor[0]}":
+            if tag == f"inv rw={args.region_weight[0]}":
                 top = np.argsort(-alpha)[:3]
                 per_slot.append(dict(slot=q["slot"], top_classes=[int(sorted(remap)[i]) for i in top],
                                      weights=[float(alpha[i]) for i in top],
@@ -146,7 +160,7 @@ def main():
                 # provide.  Both branches are now the model's own conditional, so sharpening moves
                 # along the learned manifold instead of off it toward an analytic mean.
                 for gw in args.guidance:
-                    got[f"inversion+anchor {args.anchor[0]} w={gw}"] = to_data(
+                    got[f"inv rw={args.region_weight[0]} w={gw}"] = to_data(
                         sample_embedding(field, c_new, n=args.n_samples, steps=args.steps,
                                          seed=args.seed + qi, guidance=gw)).astype(np.float32)
 
@@ -159,7 +173,7 @@ def main():
             rows.append(dict(score(probes, S, q, R, tag), slot=q["slot"]))
         if qi < 3:
             grid = [xq01]
-            for tag in ("teacher-guided", f"inversion+anchor {args.anchor[0]}"):
+            for tag in ("teacher-guided", f"inv rw={args.region_weight[0]}"):
                 grid += list(got[tag][:7])
             save_grid(grid, os.path.join(FIG, f"n7_slot{q['slot']}.png"), ncol=8,
                       title=f"{slot_name(q['d'], q['f'], q['b'])}: query | 7 teacher-guided "
@@ -168,9 +182,11 @@ def main():
             f"{k}={[r for r in rows if r['slot'] == q['slot'] and r['arm'] == k][0]['recall']:.2f}"
             for k in got), flush=True)
 
-    arms = (["teacher-guided", "inversion", "inversion+init", "inversion@pool"]
-            + [f"inversion+anchor {a}" for a in args.anchor]
-            + [f"inversion+anchor {args.anchor[0]} w={g}" for g in args.guidance]
+    arms = (["teacher-guided", "inversion"]
+            + [f"inv rw={r}" for r in args.region_weight]
+            + ["inv@muT"] + [f"inv@muT rw={r}" for r in args.region_weight[:1]]
+            + ["inv long"]
+            + [f"inv rw={args.region_weight[0]} w={g}" for g in args.guidance]
             + ["nearest-class"])
     summary = {}
     for a in arms:

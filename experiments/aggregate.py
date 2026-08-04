@@ -95,7 +95,7 @@ def agg_n3(runs):
     """N3: per-arm retention / plasticity / transfer."""
     arms = sorted({a for _, r in runs for a in r})
     print(f"    {'arm':10s}{'ret_exact':>12s}{'ret_acc':>12s}{'new_acc':>12s}"
-          f"{'base_drift':>13s}{'transfer':>12s}")
+          f"{'base_drift':>13s}{'transfer':>12s}{'coverage':>12s}")
     out = {}
     for a in arms:
         re_, ra, na, bd, tr = [], [], [], [], []
@@ -109,16 +109,41 @@ def agg_n3(runs):
             bd.append(steps[-1].get("base_drift"))
             t = r[a].get("transfer")
             tr.append(t["late_final"] - t["early_final"] if t else None)
+        cov = []
+        for _, r in runs:
+            steps = r.get(a, {}).get("steps", [])
+            v = [s_["coverage"]["recall"] for s_ in steps
+                 if isinstance(s_.get("coverage"), dict) and s_["coverage"].get("recall") == s_["coverage"].get("recall")]
+            if v:
+                cov.append(float(np.mean(v)))
         out[a] = dict(retention_exact=stat(re_), retention_acc=stat(ra), new_acc=stat(na),
-                      base_drift=stat(bd), transfer=stat(tr))
+                      base_drift=stat(bd), transfer=stat(tr), coverage_recall=stat(cov))
         print(f"    {a:10s}{fmt(out[a]['retention_exact']):>12s}{fmt(out[a]['retention_acc']):>12s}"
               f"{fmt(out[a]['new_acc']):>12s}{fmt(out[a]['base_drift'], 5):>13s}"
-              f"{fmt(out[a]['transfer'], 4):>12s}")
+              f"{fmt(out[a]['transfer'], 4):>12s}{fmt(out[a]['coverage_recall']):>12s}")
     return dict(table=out, n_seeds=len(runs))
 
 
+def agg_n7(runs):
+    """N7: composition arms scored with the paper's coverage metrics."""
+    arms, keys = [], ("joint", "digit", "fg", "bg", "precision", "recall", "f1", "content_ratio")
+    for _, r in runs:
+        arms += [a for a in r.get("summary", {}) if a not in arms]
+    table = {a: {k: stat([r["summary"][a][k] for _, r in runs
+                          if a in r.get("summary", {}) and k in r["summary"][a]])
+                 for k in keys} for a in arms}
+    ceil = runs[0][1].get("ceiling_model", {})
+    print(f"    {'arm':22s}" + "".join(f"{k:>13s}" for k in keys))
+    for a, row in table.items():
+        print(f"    {a:22s}" + "".join(f"{fmt(row[k]):>13s}" for k in keys))
+    if ceil:
+        print(f"    {'-- ceiling (base, seen)':22s}"
+              + "".join(f"{ceil.get(k, float('nan')):13.2f}" for k in keys))
+    return dict(table=table, ceiling=ceil, n_seeds=len(runs))
+
+
 AGG = {"e2_composition": agg_e2, "n2_composition": agg_e2,
-       "e3_lifelong": agg_e3, "n3_lifelong": agg_n3}
+       "e3_lifelong": agg_e3, "n3_lifelong": agg_n3, "n7_inversion": agg_n7}
 
 
 def main():
