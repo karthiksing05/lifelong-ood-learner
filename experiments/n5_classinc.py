@@ -41,13 +41,16 @@ from lifelong_ood.datasets import load_colormnist                      # noqa: E
 from lifelong_ood.evals import composition_accuracy, fit_probes, save_grid, save_json  # noqa: E402
 from lifelong_ood.neural import (NeuralLifelongLearner, fingerprint, load_field,  # noqa: E402
                                  to_data, to_model)
+from lifelong_ood.neural.baselines import EWC, test_time_train          # noqa: E402
 
+# arm -> (flat topology, freeze ancestors, generative replay, EWC, test-time only)
 ARMS = {
-    # arm          flat   freeze_ancestors  replay
-    "ours":        (False, True,  False),
-    "independent": (True,  True,  False),
-    "finetune":    (True,  False, False),
-    "replay":      (True,  False, True),
+    "ours":        (False, True,  False, False, False),
+    "independent": (True,  True,  False, False, False),
+    "finetune":    (True,  False, False, False, False),
+    "replay":      (True,  False, True,  False, False),
+    "ewc":         (True,  False, False, True,  False),
+    "ttt":         (True,  False, False, False, True),
 }
 
 
@@ -65,6 +68,7 @@ def main():
     p.add_argument("--steps", type=int, default=50)
     p.add_argument("--seed", type=int, default=0)
     p.add_argument("--arms", nargs="+", default=list(ARMS))
+    p.add_argument("--ewc-lambda", type=float, default=5000.0)
     p.add_argument("--quick", action="store_true")
     args = p.parse_args()
     if args.quick:
@@ -89,10 +93,11 @@ def main():
 
     rows = []
     for arm in args.arms:
-        flat, freeze, use_replay = ARMS[arm]
+        flat, freeze, use_replay, use_ewc, is_ttt = ARMS[arm]
         field = load_field(args.ckpt, device=dev)
         L = NeuralLifelongLearner(field, rank=args.rank, steps=args.steps, seed=args.seed,
                                   device=dev, flat=flat, freeze_ancestors=freeze)
+        ewc = EWC(lam=args.ewc_lambda) if use_ewc else None
         acc_rows = {t["name"]: [] for t in tasks}
         marks, learned = {}, []
         t0 = time.time()
@@ -103,14 +108,29 @@ def main():
                 # sample from the model's OWN earlier concepts -- no stored data
                 replay = [(nm, L.sample_concept(nm, n=args.replay_n, seed=args.seed + 900))
                           for nm, _ in learned]
+            # TTT keeps NO cross-task state, so the stream only REGISTERS each concept (epochs=0
+            # leaves the adapter at its zero-initialized no-op); all fitting happens at eval time
+            # and is undone afterwards.  Training here as well would make it finetune+TTT, not TTT.
             L.consolidate_batch([(t["name"], t["X"], None) for t in grp],
-                                epochs=args.epochs, replay=replay)
+                                epochs=(0 if is_ttt else args.epochs),
+                                replay=replay, ewc=ewc)
             for t in grp:
                 learned.append((t["name"], t["q"]))
                 marks[t["name"]] = fingerprint(field, t["name"], seed=args.seed)
             for si, (nm, q) in enumerate(learned):
-                S = to_data(L.sample_concept(nm, n=args.n_samples,
-                                             seed=args.seed + 500 + si)).astype(np.float32)
+                if is_ttt:
+                    # test-time training keeps NO cross-task state: re-fit this task from its own
+                    # data at evaluation time and throw the adapter away afterwards.  It therefore
+                    # cannot forget -- and cannot accumulate -- which is exactly what makes it the
+                    # control for whether retention is doing any work.
+                    tk = next(t for t in tasks if t["name"] == nm)
+                    restore = test_time_train(L, tk["X"], nm, epochs=args.epochs, seed=args.seed)
+                    S = to_data(L.sample_concept(nm, n=args.n_samples,
+                                                 seed=args.seed + 500 + si)).astype(np.float32)
+                    restore()
+                else:
+                    S = to_data(L.sample_concept(nm, n=args.n_samples,
+                                                 seed=args.seed + 500 + si)).astype(np.float32)
                 acc_rows[nm].append(composition_accuracy(probes, S, q["d"], q["f"], q["b"])["joint"])
             exact = float(np.mean([float(np.array_equal(fingerprint(field, nm, seed=args.seed),
                                                         marks[nm])) for nm, _ in learned]))

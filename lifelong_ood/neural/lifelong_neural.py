@@ -179,7 +179,7 @@ class NeuralLifelongLearner:
         return self
 
     def consolidate_batch(self, items, epochs=10, batch=16, lr=1e-3, seed=None, group=True,
-                          replay=None, verbose=False):
+                          replay=None, verbose=False, ewc=None):
         """Add K concepts to the manifold in ONE consolidation.  `items` = [(name, pool, mu), ...].
 
         All K leaves and any shared group node they were given are optimized TOGETHER: one Adam over
@@ -217,7 +217,7 @@ class NeuralLifelongLearner:
         model.train()
         g = torch.Generator(device="cpu").manual_seed(seed)
         curves = {n: [] for n in names}
-        for ep in range(epochs):
+        for ep in range(max(int(epochs), 0)):
             # one pass over every concept's pool per epoch, concepts interleaved
             order = []
             for j, P in enumerate(pools):
@@ -234,6 +234,10 @@ class NeuralLifelongLearner:
                 with self.bank.activate(names[j]):
                     loss = torch.nn.functional.mse_loss(
                         model(xt, u, emb_override=self.bank.embedding(names[j])), e)
+                if ewc is not None:
+                    pen = ewc.penalty(params)
+                    if pen is not None:
+                        loss = loss + pen
                 opt.zero_grad(set_to_none=True)
                 loss.backward()
                 opt.step()
@@ -242,6 +246,10 @@ class NeuralLifelongLearner:
                 last = {n: (np.mean(v[-4:]) if v else float("nan")) for n, v in curves.items()}
                 print(f"      batch distil ep {ep + 1}/{epochs}: "
                       f"mean {np.mean(list(last.values())):.4f}", flush=True)
+        if ewc is not None:
+            for j, nm in enumerate(new_names):
+                ewc.consolidate(model, self.bank, nm, pools[j], params, self.device,
+                                self.field.img, seed=seed)
         model.eval()
         self.history += new_names            # replayed concepts were already in the history
         self.last_batch_curves = {
@@ -281,6 +289,60 @@ class NeuralLifelongLearner:
         self.bank._emb_extra[name].data = c_new.detach().clone()   # start the adapter AT the concept
         self.last_inversion = dict(alpha=alpha, final_loss=float(np.mean(hist[-20:])) if hist else None)
         return teacher, pool
+
+    # ── the composer that works: factor basis + calibrated per-factor gain ───
+    def attach_factorization(self, C, labels, gains=None):
+        """Fit the ideal-words decomposition of the class-embedding table and keep it.
+
+        `C` are the trained class embeddings and `labels` their factor values (both from SEEN data
+        only).  Held-out combinations then become sums of vectors the model has already learned --
+        measured R^2 = 0.816 on ColorMNIST, i.e. the table really is approximately additive.
+        """
+        from .idealwords import factorize
+        self.fac = factorize(np.asarray(C), np.asarray(labels))
+        self.fac_gains = list(gains) if gains is not None else [1.0] * len(self.fac["V"])
+        return self.fac
+
+    def compose_factored(self, xq, inv_steps=400, inv_lr=0.05, seed=None, gains=None):
+        """Read the composition off a single query IN THE FACTOR BASIS, then build the concept.
+
+        This is the composer the investigation converged on, and each part is there for a measured
+        reason.  The factor basis, because a free weighting over entangled class embeddings cannot
+        place a held-out pairing even given 64 real images of it, while ~18 factor weights recover
+        (digit, fg, bg) exactly on 7 of 8 slots from ONE query.  The per-factor gain, because the
+        model under-responds to its weakest factor direction -- unit gain gives bg 0.38 where
+        doubling that one gain gives 0.87.
+
+        -> (c_new, per-factor weights, the argmax read of the composition).
+        """
+        from .idealwords import learn_factored
+        if not hasattr(self, "fac"):
+            raise RuntimeError("call attach_factorization() first")
+        seed = self.cfg["seed"] if seed is None else seed
+        c_new, ws, hist = learn_factored(self.field, np.atleast_2d(xq), self.fac,
+                                         n_steps=inv_steps, lr=inv_lr, seed=seed,
+                                         gains=gains if gains is not None else self.fac_gains)
+        return c_new, ws, [int(np.argmax(w)) for w in ws]
+
+    def learn_concept_factored(self, xq, name, n_pool=64, epochs=10, inv_steps=400, inv_lr=0.05,
+                               seed=None, gains=None, guidance=1.0, **kw):
+        """The full loop with the best composer: read -> compose -> sample the manifold -> consolidate.
+
+        The teacher still discovers (mode ascent supplies the prototypes the factorization is read
+        against); the manifold generates, so the pool inherits the model conditional's diversity
+        rather than the teacher Gaussian's collapse; and consolidation is untouched, so every
+        preservation guarantee carries over.
+        """
+        from .idealwords import sample_factored_pool
+        c_new, ws, read = self.compose_factored(xq, inv_steps=inv_steps, inv_lr=inv_lr,
+                                                seed=seed, gains=gains)
+        pool = sample_factored_pool(self.field, c_new, n=n_pool, steps=self.cfg["steps"],
+                                    seed=self.cfg["seed"] if seed is None else seed,
+                                    guidance=guidance)
+        self.consolidate(pool, name, mu=np.asarray(pool).mean(0), epochs=epochs)
+        self.bank._emb_extra[name].data = c_new.detach().clone()
+        self.last_read = read
+        return c_new, pool
 
     def learn_concept(self, xq, name, n_pool=64, epochs=10, **kw):
         teacher = self.compose(xq)

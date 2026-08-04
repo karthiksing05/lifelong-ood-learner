@@ -191,3 +191,10 @@ def calibrate_gains(field, fac, probes, data, seen_slots, grid=(1.0, 1.5, 2.0, 3
         if best is None or m > best:
             best, best_g = m, g
     return best_g, best
+
+
+@torch.no_grad()
+def sample_factored_pool(field, c_new, n=64, steps=50, seed=0, guidance=1.0, eta=0.0):
+    """Sample the model conditioned on a composed concept vector -- the manifold generating."""
+    from .inversion import sample_embedding
+    return sample_embedding(field, c_new, n=n, steps=steps, seed=seed, guidance=guidance, eta=eta)

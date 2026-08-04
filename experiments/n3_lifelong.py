@@ -45,6 +45,7 @@ from lifelong_ood.evals import (composition_accuracy, fit_probes, precision_reca
                                 sample_geometry, save_grid, save_json)
 from lifelong_ood.neural import (NeuralLifelongLearner, fingerprint, load_field,  # noqa: E402
                                  to_data, to_model)
+from lifelong_ood.neural.idealwords import slot_factors                # noqa: E402
 
 
 def base_error(field, Xm, u_grid=(0.2, 0.5), seed=0):
@@ -76,12 +77,19 @@ def main():
     p.add_argument("--retention-probe", type=int, default=3,
                    help="most-recent earlier concepts re-sampled for behavioural retention "
                         "(the oldest is always included; the exact test always covers all)")
-    p.add_argument("--concept-mode", choices=["teacher", "inversion"], default="inversion",
+    p.add_argument("--concept-mode", choices=["teacher", "inversion", "factored"],
+                   default="factored",
                    help="how the pool that gets consolidated is produced.  'teacher' guides the "
                         "sampler toward the analytic PoE Gaussian (collapses, recall 0.00); "
                         "'inversion' learns a point in the model's conditioning space and samples "
-                        "the model's own conditional (N7: F1 0.00 -> ~0.46)")
+                        "the model's own conditional (N7: F1 0.00 -> ~0.46); 'factored' does that in "
+                        "the IDEAL-WORDS basis with a per-factor gain, which reads the composition "
+                        "exactly on 7/8 slots and is the best arm measured (N8: F1 0.51, "
+                        "content diversity 1.06)")
     p.add_argument("--inv-steps", type=int, default=400)
+    p.add_argument("--bg-gain", type=float, default=2.0,
+                   help="per-factor gain on the weakest factor direction; 2.0 was selected on SEEN "
+                        "slots (tests/diag_factor_gain.py) and takes bg accuracy 0.38 -> 0.87")
     p.add_argument("--quick", action="store_true")
     args = p.parse_args()
     if args.quick:
@@ -90,6 +98,9 @@ def main():
         args.inv_steps = 60
     dev = "cuda" if torch.cuda.is_available() else "cpu"
 
+    ck = torch.load(args.ckpt, map_location="cpu", weights_only=False)
+    remap = ck["remap"]
+    gains = [1.0, 1.0, args.bg_gain]
     data = load_colormnist(n_per_slot=args.n_per_slot, seed=args.seed)
     probes = fit_probes(data, seed=args.seed, epochs=8 if args.quick else 30)
     qs = ood_queries(data, n_slots=args.n_concepts, seed=args.seed)
@@ -104,6 +115,10 @@ def main():
         L = NeuralLifelongLearner(field, rank=args.rank, steps=args.steps, seed=args.seed,
                                   device=dev, flat=(arm == "flat"),
                                   freeze_ancestors=(arm != "unfrozen"))
+        if args.concept_mode == "factored":
+            slots_seen = np.array(sorted(remap))
+            C = ck["ema"]["cemb.weight"].numpy()[[remap[int(x)] for x in slots_seen]]
+            L.attach_factorization(C, slot_factors(slots_seen), gains=gains)
         e0 = base_error(field, Xev, seed=args.seed)
         steps = [dict(step=0, base_err=e0, base_drift=0.0, params=0,
                       retention_exact=1.0, retention_acc=None)]
@@ -112,7 +127,12 @@ def main():
         for k, q in enumerate(qs, 1):
             name = f"ood_{q['slot']}"
             xq01 = data["X"][q["query"]]
-            if args.concept_mode == "inversion":
+            if args.concept_mode == "factored":
+                teacher = None
+                _, pool = L.learn_concept_factored(
+                    to_model(xq01).ravel(), name, n_pool=args.n_pool, epochs=args.epochs,
+                    inv_steps=args.inv_steps, seed=args.seed + k, gains=gains)
+            elif args.concept_mode == "inversion":
                 teacher, pool = L.learn_concept_inverted(
                     to_model(xq01).ravel(), name, n_pool=args.n_pool, epochs=args.epochs,
                     inv_steps=args.inv_steps, init_from_teacher=False, seed=args.seed + k,
