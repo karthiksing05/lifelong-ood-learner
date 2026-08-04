@@ -170,7 +170,35 @@ Reproduce the per-concept analysis with `python experiments/analyze_n3.py`.
 
 ## 3. Open work, in priority order
 
-### 3.0 Replace Gaussian-teacher sampling with model conditioning — THE fix
+### 3.0 Finish the fidelity half of the inversion fix (IMPLEMENTED, NOT YET MEASURED)
+The coverage half is done and measured (N7: F1 0.00 -> 0.45, recall 0.03 -> 0.83, content diversity
+0.74 -> 1.21x real; RESULTS 5f). The remaining gap is fidelity: composition accuracy fell 0.58 ->
+0.29, almost entirely on BACKGROUND (0.84 -> 0.60) while foreground held (0.83-0.94). Run this the
+moment the cluster is back:
+
+```
+sbatch --export=ALL,SCRIPT="experiments/n7_inversion.py --n-slots 8 --n-samples 32 --inv-steps 400" \
+       experiments/run_gpu.sh
+```
+It sweeps `--anchor 0.5 2.0 10.0` (penalty `anchor * ||alpha - alpha_teacher||^2`, already
+implemented in `inversion.learn_embedding`) crossed with `--guidance 1.5 2.5`. The hypothesis: 120
+free parameters are underdetermined by one query, so the teacher must act as a PRIOR throughout
+rather than only as an initialization, and the anchor strength is the dial between "what the teacher
+composed" and "what this query looks like". Target: accuracy back toward 0.58 without losing the
+recall.
+
+Already ruled out for this, so do not retry them: using the teacher's POOL as the inversion target
+(recall 0.19 -- the pool is collapsed, so inverting on it teaches one image), and `nearest-class`
+conditioning (F1 0.00).
+
+If the anchor is not enough, the next candidates in order are: (a) invert on mu_T rather than the raw
+query, since mu_T is the COMPOSED image and probe-reads correctly at 0.800 while the query carries
+idiosyncratic detail; (b) add the K selected expert means as extra inversion targets -- they are
+clean, on-composition, and genuinely different from each other, which is the diverse on-composition
+set the pool failed to be; (c) a per-factor loss that weights background pixels, since that is
+where the error concentrates.
+
+### 3.0z Superseded: replace Gaussian-teacher sampling with model conditioning — DONE
 The diversity investigation (RESULTS 5e) is finished and the answer is not a hyperparameter.
 Measured: the base DDPM sampled class-conditionally reaches precision 0.89 / recall 0.90 / content
 diversity 0.97x real -- the ceiling. Every teacher-guided configuration reaches recall 0.00. Ruled
