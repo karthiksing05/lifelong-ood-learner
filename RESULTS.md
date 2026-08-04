@@ -648,6 +648,47 @@ probes all run end to end; **12 of 14 attributes are readable at ≥0.65 validat
 unreadable two are excluded from scoring rather than silently counted. A real backbone run and the
 composition experiments on it are the next step, not yet done.
 
+
+## 5k. Baselines — structural isolation vs. learned protection (N5, 3 seeds)
+
+Six methods on the same backbone, the same adapter parameterization and the same optimizer budget;
+only the retention mechanism differs. 12 tasks of real held-out images, class-incremental.
+
+| method | ACC | **BWT** | FGT | bit-identical | wall (s) |
+|---|---|---|---|---|---|
+| `ttt` (test-time training) | **0.844 ± 0.011** | +0.008 ± 0.010 | 0.004 | 1.000 | **1025** |
+| `independent` (parameter isolation) | 0.821 ± 0.011 | **0.000 ± 0.000** | **0.000** | **1.000** | 260 |
+| **`ours`** (frozen hierarchy) | 0.818 ± 0.025 | **0.000 ± 0.000** | **0.000** | **1.000** | 396 |
+| `ewc` (Kirkpatrick et al.) | 0.720 ± 0.024 | −0.112 ± 0.011 | 0.116 | 0.250 | 358 |
+| `finetune` (no protection) | 0.701 ± 0.036 | −0.134 ± 0.023 | 0.140 | 0.250 | 264 |
+| `replay` (Shin et al.) | 0.658 ± 0.077 | −0.174 ± 0.071 | 0.189 | 0.250 | 479 |
+
+**The clean split is isolation vs protection, and it is not close.** Every method that *removes*
+shared parameters from the optimizer — ours, independent, TTT — reaches BWT exactly 0.000 with every
+concept bit-identical. Every method that tries to *protect* shared parameters while still training
+them — EWC, replay, plain finetune — sits between −0.11 and −0.17 with only a quarter of concepts
+preserved. EWC is doing real work (−0.112 vs finetune's −0.134, and +0.019 ACC) but a soft quadratic
+penalty cannot deliver what removing the parameter does, and it costs 36% more wall clock to get
+there.
+
+**Generative replay is worse than no protection at all** (−0.174 vs −0.134), reproducibly, at 1.8×
+the wall clock. The mechanism is self-poisoning: replayed pools are sampled from concepts that are
+themselves already drifting, so replay rehearses the drift it exists to prevent. Replay assumes a
+stable generator, which a forgetting generative model is precisely not.
+
+**TTT is the strongest baseline on accuracy and the weakest claim to being a lifelong learner.** It
+wins ACC (0.844 vs our 0.818) and cannot forget — because it retains nothing. What the table shows
+that the accuracy column alone does not: it needs **2.6× the wall clock** (1025s vs 396s), and it
+must **keep every task's data forever** and re-run an optimization each time a task is queried. A
+consolidated concept here is a fixed set of weights that is simply read. TTT is the right control
+for "is retention doing any work?", and the answer it gives is that retention buys a 2.6× compute
+reduction and the ability to discard the data — not raw accuracy.
+
+**Honest note on our own arm:** `independent` matches us (0.821 vs 0.818, inside the error bars) with
+19% fewer parameters. Freezing is what delivers zero forgetting; the hierarchy buys the warm start
+and the batch speedup (§5b), not final accuracy. That was true before the baselines and the
+baselines do not change it.
+
 ## 6. Why we are *not* replicating the paper's diffusion results
 
 Side by side on ColorMNIST — their F1 (harmonic mean of precision and recall in Inception feature
