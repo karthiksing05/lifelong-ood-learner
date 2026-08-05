@@ -774,6 +774,43 @@ order the learning rate, so this points at the gradient being identically zero r
 size of the residual. This does not affect the conclusion above, which rests on the contrast between
 the two rows.
 
+## 5n. Two preservation mechanisms, not one (and which one does the work)
+
+Fixing 5m raised a sharper question. N9's interference stream now uses REAL images, which do move
+the shared adapter path — and `finetune-stream` *still* matches us: 0.42 accuracy / F1 0.59 against
+our 0.42 / 0.57. Unprotected fine-tuning is not losing the composition even when the shared path is
+demonstrably being overwritten. `tests/diag_embedding_carries.py` measures why, on one case in the
+fully unprotected configuration, before and after six real-image concepts:
+
+| | shared ‖B@A‖ | fingerprint drift | joint accuracy |
+|---|---|---|---|
+| before the stream | 7.49 | — | 0.46 |
+| after 6 real concepts | **22.28** (moved 14.79) | 5.87e−01 | 0.38 |
+| after, private embedding **zeroed** | 22.28 | — | **0.04** |
+
+The shared path tripled and the concept's function drifted by 0.59, yet the composition survived
+almost intact. Blanking one private tensor destroys it. So for a *composed* concept the semantics
+live in `_emb_extra[name]` — the per-concept embedding written by the ideal-words read — which is
+private to that concept and on no other concept's path. Only the LoRA path is shared, and the LoRA
+path is not what is holding the composition.
+
+**This means the system has two preservation mechanisms, and they cover different things:**
+
+1. **Embedding isolation** preserves *compositions*. It is structural and needs no protection at
+   all: a later concept cannot write to an earlier concept's embedding because it never has it in
+   its optimizer. This is why every arm in N3/N9 retains compositions, ours included.
+2. **Path freezing** preserves *absorbed real data*. When a concept is learned from real images the
+   adapter carries the content, the shared path is what encodes it, and protection is then the whole
+   story — which is what N5 measures: BWT 0.000 for the arms that remove shared parameters against
+   −0.112 / −0.134 / −0.174 for EWC / finetune / replay.
+
+The honest consequence for the headline claim: **our hierarchical freezing is not what preserves the
+OOD compositions** — the conditioning design does that, for every arm — and it *is* what preserves
+concepts absorbed from real instances. The lifelong claim needs both, because the pipeline does
+both: compose an OOD prototype (preserved by isolation), then add real instances of it to the
+manifold (preserved by freezing). Reporting only N5 would overstate the first; reporting only N3/N9
+would overstate the second.
+
 ## 6. Why we are *not* replicating the paper's diffusion results
 
 Side by side on ColorMNIST — their F1 (harmonic mean of precision and recall in Inception feature

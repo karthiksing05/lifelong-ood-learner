@@ -16,6 +16,9 @@ Methods, and what each is a fair test of:
   `finetune-stream`  a shared adapter after the SAME concept has been learned and then followed by
                      others -- i.e. what the composition looks like once catastrophic forgetting has
                      had its turn.  This is the row that shows what a lifelong method has to prevent.
+                     The follow-on stream is REAL held-out images, not composed pools: see 5m in
+                     RESULTS.md, a composed pool delivers no gradient to the shared path, so a
+                     composed stream leaves every arm untouched and tests nothing.
   `ttt-stream`       test-time training on the same stream: re-fits from stored data on demand.
 
 The last two are the point of putting baselines in a CASE-STUDY figure rather than only in a table.
@@ -65,12 +68,16 @@ def main():
     p.add_argument("--bg-gain", type=float, default=2.0)
     p.add_argument("--stream-len", type=int, default=6,
                    help="concepts learned AFTER the case, so the forgetting arms have forgotten")
+    p.add_argument("--stream-source", choices=("real", "factored"), default="real",
+                   help="real held-out images actually move the shared path; composed pools do not")
+    p.add_argument("--stream-train", type=int, default=64, help="real images per follow-on concept")
     p.add_argument("--seed", type=int, default=0)
     p.add_argument("--quick", action="store_true")
     args = p.parse_args()
     if args.quick:
         args.n_cases, args.n_samples, args.n_per_slot = 2, 12, 20
         args.steps, args.inv_steps, args.epochs, args.stream_len = 20, 60, 4, 2
+        args.stream_train = 16
     dev = "cuda" if torch.cuda.is_available() else "cpu"
 
     data = load_colormnist(n_per_slot=args.n_per_slot, seed=args.seed)
@@ -87,6 +94,27 @@ def main():
 
     rows, panels = [], {}
 
+    def run_stream(L, tag):
+        """The interference every retention claim has to survive.
+
+        With `--stream-source real` this consolidates real held-out images, which is what actually
+        moves the shared adapter path (RESULTS 5m).  The earlier composed-pool version of this loop
+        left the shared path bit-identical, so `finetune-stream` was never under any threat and the
+        row could not show what it exists to show.
+        """
+        for si, q in enumerate(stream):
+            nm = f"s{q['slot']}"
+            if args.stream_source == "real":
+                idx = np.concatenate([[q["query"]], q["rest"]])[:args.stream_train]
+                X = to_model(data["X"][idx]).reshape(len(idx), -1)
+                L.consolidate(X, nm, mu=X.mean(0), epochs=args.epochs)
+            else:
+                L.learn_concept_factored(to_model(data["X"][q["query"]]).ravel(), nm,
+                                         n_pool=48, epochs=args.epochs, inv_steps=args.inv_steps,
+                                         seed=args.seed + 100 + si)
+        print(f"[n9] {tag}: absorbed {len(stream)} follow-on concepts "
+              f"({args.stream_source})", flush=True)
+
     def fresh():
         f = load_field(args.ckpt, device=dev)
         L = NeuralLifelongLearner(f, steps=args.steps, seed=args.seed, device=dev)
@@ -99,10 +127,7 @@ def main():
         L.learn_concept_factored(to_model(data["X"][q["query"]]).ravel(), f"c{q['slot']}",
                                  n_pool=48, epochs=args.epochs, inv_steps=args.inv_steps,
                                  seed=args.seed + qi)
-    for si, q in enumerate(stream):                       # the interference the method must survive
-        L.learn_concept_factored(to_model(data["X"][q["query"]]).ravel(), f"s{q['slot']}",
-                                 n_pool=48, epochs=args.epochs, inv_steps=args.inv_steps,
-                                 seed=args.seed + 100 + si)
+    run_stream(L, "ours")                     # the interference the method must survive
     for q in cases:
         S = to_data(L.sample_concept(f"c{q['slot']}", n=args.n_samples,
                                      seed=args.seed)).astype(np.float32)
@@ -120,10 +145,7 @@ def main():
             L2.learn_concept_factored(to_model(data["X"][q["query"]]).ravel(), f"c{q['slot']}",
                                       n_pool=48, epochs=args.epochs, inv_steps=args.inv_steps,
                                       seed=args.seed + qi)
-        for si, q in enumerate(stream):
-            L2.learn_concept_factored(to_model(data["X"][q["query"]]).ravel(), f"s{q['slot']}",
-                                      n_pool=48, epochs=args.epochs, inv_steps=args.inv_steps,
-                                      seed=args.seed + 100 + si)
+        run_stream(L2, arm)
         for q in cases:
             S = to_data(L2.sample_concept(f"c{q['slot']}", n=args.n_samples,
                                           seed=args.seed)).astype(np.float32)
