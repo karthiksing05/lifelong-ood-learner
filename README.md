@@ -328,7 +328,41 @@ tuning-of-record: it chose τ, K and the guidance schedule, and reports each aga
 | `n2_composition` | E2 on the neural backbone |
 | `n3_lifelong` | **the headline**: hierarchical consolidation vs `flat` and `unfrozen` ablations |
 | `n4_batch` | batch vs sequential addition: speedup, and CL metrics (ACC/BWT/FGT) |
-| `n5_classinc` | Split-ColorMNIST class-incremental on **real** data vs finetune / replay / isolation |
+| `n5_classinc` | Split-ColorMNIST class-incremental on **real** data vs finetune / replay / EWC / TTT / isolation |
+| `n8_idealwords` | the ideal-words factorization: is a composition expressible as a sum of factor directions? |
+| `n9_showdown` | **the case-study figure**: every method on the same OOD composition, annotated |
+
+## Results, in one table
+
+Split-ColorMNIST class-incremental, 12 tasks of **real** held-out images, 3 seeds (`n5_classinc`).
+ACC is final mean joint accuracy; forgetting is −BWT, where 0 means none.
+
+| method | ACC | forgetting | wall (s) | keeps data? |
+|---|---|---|---|---|
+| test-time training | **0.844 ± 0.011** | −0.008 | 1025 | yes — all of it, forever |
+| parameter isolation | 0.821 ± 0.011 | **0.000** | 260 | no |
+| **ours** (hierarchical, frozen ancestors) | 0.818 ± 0.025 | **0.000** | 396 | no |
+| EWC | 0.720 ± 0.024 | 0.112 | 358 | no |
+| finetune | 0.701 ± 0.036 | 0.134 | 264 | no |
+| generative replay | 0.658 ± 0.077 | 0.174 | 479 | no (samples itself) |
+
+Read this honestly: **TTT is the most accurate method here**, and it should be — it re-fits each task
+from that task's own stored data at query time, so it cannot forget and cannot accumulate. It pays
+2.6× our wall clock and must retain every task's data forever. Among the methods that keep a fixed
+set of weights and no data, ours and parameter isolation are tied at zero forgetting, and the three
+that protect shared parameters rather than removing them all forget measurably.
+
+Two further findings that qualify the headline, both in `RESULTS.md`:
+
+- **§5m** — a composed-pool stream delivers *no gradient* to the shared adapter path (Δ‖B@A‖ = 0.000
+  against 7.219 for real images), so composed-pool experiments cannot test forgetting at all. N3's
+  and N9's no-forgetting numbers show that nothing was at stake, not that the method protected
+  anything.
+- **§5n** — for a *composed* concept the semantics live in a private per-concept embedding, not in
+  the shared path. The shared path can triple (‖B@A‖ 7.49 → 22.28) with accuracy going only
+  0.46 → 0.38, while zeroing that one embedding drops it to 0.04. So compositions are preserved by
+  **isolation of the conditioning**, and absorbed real instances are preserved by **freezing the
+  path** — two mechanisms, covering different halves of the pipeline.
 
 ## What this is not
 

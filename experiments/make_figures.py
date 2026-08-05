@@ -342,7 +342,24 @@ def case_studies(args):
 
     xqs = [to_model(data["X"][q["query"]]).ravel() for q in qs]
     teachers = L.compose_batch(xqs, u_grid=(0.1, 0.2, 0.3, 0.4), n_starts=16, iters=120)
-    if args.mode == "teacher":
+    if args.mode == "factored":
+        # the SHIPPED path: the teacher discovers, the ideal-words basis reads the composition off
+        # the query, the per-factor gain corrects the model's under-response to background, and the
+        # MANIFOLD generates.  `inversion` below is the earlier entangled-class-basis method, kept so
+        # the two can be compared in the same figure -- it is not what the system ships.
+        import torch as _t
+        from lifelong_ood.neural.idealwords import sample_factored_pool, slot_factors
+        _ck = _t.load(args.ckpt, map_location="cpu", weights_only=False)
+        _remap = _ck["remap"]
+        _slots = np.array(sorted(_remap))
+        _C = _ck["ema"]["cemb.weight"].numpy()[[_remap[int(x)] for x in _slots]]
+        L.attach_factorization(_C, slot_factors(_slots), gains=[1.0, 1.0, args.bg_gain])
+        pools = []
+        for xq in xqs:
+            c_new, _, _ = L.compose_factored(xq, inv_steps=args.inv_steps, seed=args.seed)
+            pools.append(sample_factored_pool(field, c_new, n=args.n_show, steps=args.steps,
+                                              seed=args.seed))
+    elif args.mode == "teacher":
         pools = L.sample_teacher_batch(teachers, n=args.n_show, seed=args.seed)
     else:
         # the shipped path: a concept learned in the model's conditioning space, then sampled from
@@ -439,7 +456,8 @@ def main():
     p.add_argument("--n-per-slot", type=int, default=100)
     p.add_argument("--steps", type=int, default=50)
     p.add_argument("--seed", type=int, default=0)
-    p.add_argument("--mode", choices=["inversion", "teacher"], default="inversion")
+    p.add_argument("--mode", choices=["factored", "inversion", "teacher"], default="factored")
+    p.add_argument("--bg-gain", type=float, default=2.0)
     p.add_argument("--inv-steps", type=int, default=400)
     args = p.parse_args()
     os.makedirs(FIG, exist_ok=True)

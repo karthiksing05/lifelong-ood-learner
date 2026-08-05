@@ -294,7 +294,9 @@ genuinely new instances rather than only its own generations.
 
 ## 5d. Case studies — certified per case
 
-![case studies](figures/case_studies_inversion.png)
+![case studies](figures/case_studies_factored.png)
+
+*The shipped composer: teacher discovers, the ideal-words basis reads the composition, the per-factor gain corrects the background under-response, and the manifold generates. On the same six held-out compositions the earlier entangled class basis (`figures/case_studies_inversion.png`) scores 0.12 mean accuracy at content diversity 1.09; this scores **0.25 at 1.22**. Consolidation then raises it further -- N9 measures 0.42 for the same method sampled after the concept has been added to the manifold.*
 
 Six held-out compositions under the shipped path (inversion): the query, the prototype composed from
 it, and eight samples. **Each row is annotated with the accuracy, recall and diversity measured on
