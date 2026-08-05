@@ -33,7 +33,9 @@ def main():
     p.add_argument("--lr", type=float, default=2e-4)
     p.add_argument("--base", type=int, default=64)
     p.add_argument("--seed", type=int, default=0)
-    p.add_argument("--out", default=os.path.join(CACHE, "ddpm_colormnist.pt"))
+    p.add_argument("--out", default=None,
+                   help="defaults to results/cache/ddpm_<dataset>.pt -- do NOT default this "
+                        "to a fixed name, a celeba run once overwrote the colormnist backbone")
     p.add_argument("--dataset", choices=["colormnist", "celeba"], default="colormnist",
                    help="celeba is the paper's second benchmark, and the one whose attributes "
                         "OVERLAP spatially -- ColorMNIST's separability is load-bearing in several "
@@ -43,6 +45,8 @@ def main():
     args = p.parse_args()
     if args.quick:
         args.n_per_slot, args.epochs, args.base = 10, 2, 32
+    if args.out is None:
+        args.out = os.path.join(CACHE, f"ddpm_{args.dataset}.pt")
     dev = "cuda" if torch.cuda.is_available() else "cpu"
     print(f"[n1] device {dev}"
           f"{' (' + torch.cuda.get_device_name(0) + ')' if dev == 'cuda' else ''}", flush=True)
