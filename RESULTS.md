@@ -688,6 +688,36 @@ reduction and the ability to discard the data — not raw accuracy.
 and the batch speedup (§5b), not final accuracy. That was true before the baselines and the
 baselines do not change it.
 
+
+## 5l. N9 showdown — every method on the same held-out compositions
+
+One OOD composition per row, every method on the same query, same backbone, same sampling budget,
+each panel annotated with what was measured on exactly those samples (`figures/n9_showdown.png`).
+5 compositions x 24 samples:
+
+| method | acc | precision | recall | **F1** | content div |
+|---|---|---|---|---|---|
+| *`real` — held-out images (ceiling)* | *0.78* | *1.00* | *0.93* | *0.96* | *0.98* |
+| **`ours`** (factored + gain, consolidated) | 0.39 | 0.51 | 0.67 | **0.51** | 1.21 |
+| `poe-guided` (the published method) | **0.74** | 0.01 | 0.03 | **0.00** | 0.75 |
+| `inversion` (class basis) | 0.22 | 0.39 | 0.79 | 0.40 | 1.29 |
+| `nearest-class` (retrieval) | 0.00 | 0.01 | 0.14 | 0.01 | 1.16 |
+| `finetune-stream` | 0.41 | 0.56 | 0.70 | **0.56** | 1.15 |
+
+**Against the composition baselines the margin is decisive and is the project's central claim.**
+`poe-guided` scores accuracy 0.74 — higher than ours — and F1 **0.00**, because it produces
+near-copies of the query: precision 0.01, recall 0.03, content diversity 0.75. It is accurate about
+*one image* and knows nothing about the class. `nearest-class` fails outright (F1 0.01). Ours reaches
+F1 0.51 against a real-data ceiling of 0.96, at content diversity 1.21.
+
+**Against `finetune-stream` we are NOT superior here, and the reason is instructive.** It scores
+F1 0.56 to our 0.51. Six follow-on concepts is not enough interference to induce forgetting when the
+pools are on-manifold — the same effect flagged as unexplained in §5g, where distillation losses from
+model-conditional pools start near 0.02 and barely move shared weights. **Forgetting is real and
+large on this benchmark (N5: BWT −0.134 for finetune), but it needs a longer stream and real data to
+appear.** A longer-stream rerun is in flight; until it lands, the honest statement is that our
+advantage over unprotected fine-tuning is demonstrated in §5k on 12 real tasks, not in this figure.
+
 ## 6. Why we are *not* replicating the paper's diffusion results
 
 Side by side on ColorMNIST — their F1 (harmonic mean of precision and recall in Inception feature
