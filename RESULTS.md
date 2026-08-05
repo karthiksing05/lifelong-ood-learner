@@ -695,33 +695,38 @@ baselines do not change it.
 
 One OOD composition per row, every method on the same query, same backbone, same sampling budget,
 each panel annotated with what was measured on exactly those samples (`figures/n9_showdown.png`).
-5 compositions x 24 samples:
+5 compositions × 24 samples, with an interference stream of **8 real-image concepts** run over the
+retention arms (real images, not composed pools — §5m explains why that distinction decides whether
+the stream tests anything at all):
 
 | method | acc | precision | recall | **F1** | content div |
 |---|---|---|---|---|---|
-| *`real` — held-out images (ceiling)* | *0.78* | *1.00* | *0.93* | *0.96* | *0.98* |
-| **`ours`** (factored + gain, consolidated) | 0.39 | 0.51 | 0.67 | **0.51** | 1.21 |
-| `poe-guided` (the published method) | **0.74** | 0.01 | 0.03 | **0.00** | 0.75 |
-| `inversion` (class basis) | 0.22 | 0.39 | 0.79 | 0.40 | 1.29 |
+| *`real` — held-out images (ceiling)* | *0.82* | *1.00* | *0.93* | *0.96* | *0.98* |
+| **`ours`** (factored + gain, consolidated) | 0.42 | 0.53 | 0.74 | **0.57** | 1.20 |
+| `poe-guided` (the published method) | **0.71** | 0.01 | 0.03 | **0.00** | 0.75 |
+| `inversion` (class basis) | 0.23 | 0.40 | 0.39 | 0.35 | 1.22 |
 | `nearest-class` (retrieval) | 0.00 | 0.01 | 0.14 | 0.01 | 1.16 |
-| `finetune-stream` | 0.41 | 0.56 | 0.70 | **0.56** | 1.15 |
+| `finetune-stream` (unprotected shared adapter) | 0.42 | 0.53 | 0.80 | **0.59** | 1.18 |
 
-**Against the composition baselines the margin is decisive and is the project's central claim.**
-`poe-guided` scores accuracy 0.74 — higher than ours — and F1 **0.00**, because it produces
-near-copies of the query: precision 0.01, recall 0.03, content diversity 0.75. It is accurate about
-*one image* and knows nothing about the class. `nearest-class` fails outright (F1 0.01). Ours reaches
-F1 0.51 against a real-data ceiling of 0.96, at content diversity 1.21.
+**Against the composition baselines the margin is decisive, and it is the project's central claim.**
+`poe-guided` scores accuracy 0.71 — *higher than ours* — and F1 **0.00**. That is not a contradiction:
+it produces near-copies of the query, so the attribute probes read the right digit, foreground and
+background off every sample while precision is 0.01, recall 0.03 and content diversity 0.75 (below
+real data's 0.98). It is accurate about *one image* and knows nothing about the class. `nearest-class`
+fails outright (F1 0.01). Ours reaches F1 0.57 against a real-data ceiling of 0.96, at content
+diversity 1.20 — i.e. samples at least as varied as real held-out images of the same composition,
+which is the qualitative property the case studies were supposed to demonstrate.
 
-**Against `finetune-stream` we are NOT superior here, and the reason is instructive.** It scores
-F1 0.56 to our 0.51. Six follow-on concepts is not enough interference to induce forgetting when the
-pools are on-manifold — the same effect flagged as unexplained in §5g, where distillation losses from
-model-conditional pools start near 0.02 and barely move shared weights. **Forgetting is real and
-large on this benchmark (N5: BWT −0.134 for finetune), but it needs a longer stream and real data to
-appear.** The longer-stream rerun (16 follow-on concepts, 4 cases) did not change this: F1 0.54 for
-`finetune-stream` against 0.52 for ours, with `poe-guided` still at 0.00. So our advantage over
-unprotected fine-tuning is demonstrated in §5k on 12 real tasks, **not** in this figure, and §5m
-records why that discrepancy is still open.
+The accuracy gap to `real` (0.42 vs 0.82) is the honest limit: we cover the distribution but land the
+exact three-attribute conjunction about half as often as real data does.
 
+**Against `finetune-stream` we are not superior here (F1 0.59 to our 0.57), and that is now explained
+rather than open.** The stream *does* move the shared adapter path — §5n measures ‖B@A‖ tripling from
+7.49 to 22.28 under exactly this configuration. The composition survives anyway because a factored
+concept's semantics live in a private per-concept embedding that no later concept can write to. So
+this row is evidence for §5n's isolation finding, **not** a forgetting demonstration. Forgetting is
+measured in §5k (N5), where concepts are learned from real images, the adapter carries the content,
+and the arms separate cleanly.
 
 ## 5m. Why composed-pool streams cannot test forgetting (resolved)
 
