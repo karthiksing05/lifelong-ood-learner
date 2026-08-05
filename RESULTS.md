@@ -715,8 +715,45 @@ F1 0.56 to our 0.51. Six follow-on concepts is not enough interference to induce
 pools are on-manifold — the same effect flagged as unexplained in §5g, where distillation losses from
 model-conditional pools start near 0.02 and barely move shared weights. **Forgetting is real and
 large on this benchmark (N5: BWT −0.134 for finetune), but it needs a longer stream and real data to
-appear.** A longer-stream rerun is in flight; until it lands, the honest statement is that our
-advantage over unprotected fine-tuning is demonstrated in §5k on 12 real tasks, not in this figure.
+appear.** The longer-stream rerun (16 follow-on concepts, 4 cases) did not change this: F1 0.54 for
+`finetune-stream` against 0.52 for ours, with `poe-guided` still at 0.00. So our advantage over
+unprotected fine-tuning is demonstrated in §5k on 12 real tasks, **not** in this figure, and §5m
+records why that discrepancy is still open.
+
+
+## 5m. An open contradiction, stated rather than explained away
+
+Three experiments show no forgetting for ANY arm when pools are composed (N3 `unfrozen` retains
+bit-identically; N9 `finetune-stream` matches us at F1 0.54 vs 0.52 even after a **16-concept**
+interference stream), while N5 on real held-out images shows large, reproducible forgetting
+(BWT −0.134 ± 0.023 for the same unprotected configuration). Both cannot be right about "how much
+interference there is".
+
+**The obvious hypothesis is now disproved.** I expected model-conditional pools to be nearly
+on-manifold and therefore to move weights very little, with real data moving them a lot. Measured
+(`tests/diag_interference_regime.py`), consolidating the same concept from each source:
+
+| pool source | first loss | final loss | ‖Δ shared params‖ |
+|---|---|---|---|
+| model-conditional | 0.0445 | 0.0264 | **10.48** |
+| REAL held-out images | 0.0183 | 0.0125 | **9.11** |
+
+Real data moves the shared parameters **0.9×** as far — the same, not more. And it starts at a
+*lower* loss, the opposite of the prediction.
+
+**Two things I can say, and one I cannot.** The displacement metric above is itself weak: it includes
+the LoRA `A` factor, which can move freely without changing the module's output while `B` is near
+zero, so a large ‖Δ‖ does not imply a large functional change. And there is a genuine contradiction
+in the measurements — N3 reports the unfrozen arm's concepts as *bit-identical* while its shared node
+is in the optimizer and demonstrably moves, which cannot both be true unless that node's output
+contribution stays ~zero. `tests/test_neural.py` asserts and passes the perturbation property on
+synthetic data, so the mechanism is not simply broken.
+
+What I cannot say is why. **The next check is specific**: after two consolidations in the unfrozen
+configuration, inspect whether the shared node's `B` factor is still ~0 (so its `B@A` contribution
+never becomes real) and whether the leaf absorbs everything. Until that is run, **the no-forgetting
+claim rests on N5 (§5k)**, where six methods separate cleanly by large margins on real data, and not
+on the composed-pool experiments.
 
 ## 6. Why we are *not* replicating the paper's diffusion results
 

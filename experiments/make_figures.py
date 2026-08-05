@@ -37,6 +37,10 @@ FIG = os.path.join(ROOT, "figures")
 # frozen arms are drawn with different linestyles and marker sizes, otherwise one hides the other
 # and the figure silently shows two curves as one.
 ARM_STYLE = {
+    "ewc": dict(color="#9467bd", marker="D", ms=5, lw=1.8, ls="-.",
+                label="EWC (Fisher penalty)"),
+    "ttt": dict(color="#8c564b", marker="P", ms=6, lw=1.8, ls=":",
+                label="test-time training"),
     "hier": dict(color="#1f77b4", marker="o", ms=7, lw=2.4,
                  label="ours (hierarchical, frozen)"),
     "ours": dict(color="#1f77b4", marker="o", ms=7, lw=2.4,
@@ -243,6 +247,48 @@ def fig_batch():
     return save(fig, "n4_batch.png")
 
 
+def fig_baselines():
+    """N5: the six-method comparison, the figure the baseline claim rests on."""
+    runs = load_all_seeds("n5_classinc")
+    if not runs:
+        return None
+    arms = [r["arm"] for r in runs[0]["rows"]]
+    def col(a, k):
+        return [next((x[k] for x in r["rows"] if x["arm"] == a), np.nan) for r in runs]
+    order = sorted(arms, key=lambda a: -np.nanmean(col(a, "ACC")))
+    fig, ax = plt.subplots(1, 3, figsize=(14.5, 3.9))
+    xs = np.arange(len(order))
+    cols = [style(a).get("color", "grey") for a in order]
+
+    def bars(a_, key, sign=1, ylab=""):
+        m = [sign * np.nanmean(col(a, key)) for a in order]
+        e = [np.nanstd(col(a, key), ddof=1) / np.sqrt(max(len(runs), 1)) if len(runs) > 1 else 0
+             for a in order]
+        a_.bar(xs, m, .68, yerr=e, capsize=3, color=cols)
+        a_.set_xticks(xs); a_.set_xticklabels(order, fontsize=7.5, rotation=18)
+        a_.set_ylabel(ylab, fontsize=9); a_.grid(alpha=.25, axis="y")
+
+    bars(ax[0], "ACC", 1, "mean joint accuracy")
+    ax[0].set_title("final accuracy (higher better)", fontsize=10)
+    bars(ax[1], "BWT", -1, "forgetting")
+    ax[1].set_title("forgetting, −BWT (0 = none)", fontsize=10)
+    ax[1].axhline(0, color="k", lw=.8)
+    bars(ax[2], "wall_seconds", 1, "seconds")
+    ax[2].set_title("wall clock", fontsize=10)
+    # mark which arms remove shared parameters rather than protecting them
+    for i, a in enumerate(order):
+        if a in ("ours", "independent", "ttt"):
+            ax[1].text(i, 0.004, "isolation", fontsize=6, ha="center", color="#1f77b4")
+        else:
+            ax[1].text(i, 0.004, "protection", fontsize=6, ha="center", color="#d62728")
+    fig.suptitle(f"N5 — six continual-learning methods, same backbone and budget "
+                 f"({len(runs)} seed{'s' if len(runs) > 1 else ''}, bars = ±SE).  "
+                 f"Everything that REMOVES shared parameters reaches zero forgetting; "
+                 f"everything that PROTECTS them does not.", fontsize=9)
+    fig.tight_layout()
+    return save(fig, "n5_baselines.png")
+
+
 def fig_mode_hierarchy():
     """E1: the claim that the tree's own nodes ARE the modes of the noisy marginals."""
     r = load("e1_manifold")
@@ -399,7 +445,7 @@ def main():
     os.makedirs(FIG, exist_ok=True)
     print("curves:")
     for fn in (fig_lifelong_curves, fig_classinc, fig_forgetting_matrix, fig_batch,
-               fig_mode_hierarchy):
+               fig_baselines, fig_mode_hierarchy):
         try:
             fn()
         except Exception as e:                                          # noqa: BLE001
