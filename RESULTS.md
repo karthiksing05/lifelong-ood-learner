@@ -721,39 +721,58 @@ unprotected fine-tuning is demonstrated in §5k on 12 real tasks, **not** in thi
 records why that discrepancy is still open.
 
 
-## 5m. An open contradiction, stated rather than explained away
+## 5m. Why composed-pool streams cannot test forgetting (resolved)
 
-Three experiments show no forgetting for ANY arm when pools are composed (N3 `unfrozen` retains
-bit-identically; N9 `finetune-stream` matches us at F1 0.54 vs 0.52 even after a **16-concept**
-interference stream), while N5 on real held-out images shows large, reproducible forgetting
-(BWT −0.134 ± 0.023 for the same unprotected configuration). Both cannot be right about "how much
-interference there is".
+Three experiments showed no forgetting for ANY arm when pools are composed (N3's `unfrozen` retains
+bit-identically; N9's `finetune-stream` matches us at F1 0.54 vs 0.52 even after a **16-concept**
+stream), while N5 on real held-out images shows large, reproducible forgetting (BWT −0.134 ± 0.023
+for the same unprotected configuration). This is now explained, and the explanation is a
+methodological result rather than a property of our method.
 
-**The obvious hypothesis is now disproved.** I expected model-conditional pools to be nearly
-on-manifold and therefore to move weights very little, with real data moving them a lot. Measured
-(`tests/diag_interference_regime.py`), consolidating the same concept from each source:
+**The measurement.** `tests/diag_pool_source.py` runs the identical code path four concepts deep in
+the `unfrozen` configuration (`flat=False, freeze_ancestors=False`, where interference is possible)
+and varies only where the pool comes from:
 
-| pool source | first loss | final loss | ‖Δ shared params‖ |
+| pool source | shared ‖B@A‖ over 4 concepts | Δ shared | drift of concept 1 |
 |---|---|---|---|
-| model-conditional | 0.0445 | 0.0264 | **10.48** |
-| REAL held-out images | 0.0183 | 0.0125 | **9.11** |
+| factored pool (what N3/N9 use) | 7.49 → 7.49 → 7.49 → 7.49 | **0.000** | **0.0e+00** |
+| REAL held-out images (what N5 uses) | 7.41 → 9.78 → 10.83 → 12.48 | **7.219** | **8.0e−01** |
 
-Real data moves the shared parameters **0.9×** as far — the same, not more. And it starts at a
-*lower* loss, the opposite of the prediction.
+`tests/diag_paths.py` rules out the alternative explanation: in *both* runs every concept shares
+nodes `[0, 1]` with the first, and in both the shared nodes are in the optimizer (547 trainable
+tensors against 365 for the first concept). The sharing is real and the parameters are trainable.
+What differs is that the composed pool delivers **no gradient** to them.
 
-**Two things I can say, and one I cannot.** The displacement metric above is itself weak: it includes
-the LoRA `A` factor, which can move freely without changing the module's output while `B` is near
-zero, so a large ‖Δ‖ does not imply a large functional change. And there is a genuine contradiction
-in the measurements — N3 reports the unfrozen arm's concepts as *bit-identical* while its shared node
-is in the optimizer and demonstrably moves, which cannot both be true unless that node's output
-contribution stays ~zero. `tests/test_neural.py` asserts and passes the perturbation property on
-synthetic data, so the mechanism is not simply broken.
+**Why.** Consolidating a factored pool is self-distillation onto a target the model already
+generates: the pool is sampled from the model under `c_new`, and consolidation then conditions on
+that same embedding. There is nothing to fit, so the shared path does not move, so nothing is
+overwritten — for *any* arm. `unfrozen` is unfrozen in name only on that data, which is exactly why
+N3's `hier` and `unfrozen` loss curves are near-identical at every step (step 1: 0.014479 vs
+0.014501; step 10: 0.015651 vs 0.015642).
 
-What I cannot say is why. **The next check is specific**: after two consolidations in the unfrozen
-configuration, inspect whether the shared node's `B` factor is still ~0 (so its `B@A` contribution
-never becomes real) and whether the leaf absorbs everything. Until that is run, **the no-forgetting
-claim rests on N5 (§5k)**, where six methods separate cleanly by large margins on real data, and not
-on the composed-pool experiments.
+**Consequence, stated plainly: a composed-pool stream is not a valid forgetting benchmark**, and
+N3's and N9's no-forgetting numbers should not be read as evidence for our mechanism. They show
+that nothing was at stake. The no-forgetting claim rests on **N5 (§5k)**, where the stream is real
+held-out images, the shared path genuinely moves, and the six methods separate cleanly (BWT 0.000
+for isolation against −0.112/−0.134/−0.174 for EWC/finetune/replay over 3 seeds), with
+`retention_exact` at 1.00 for the protected arms and 0.25 for the unprotected ones — 0.25 being
+exactly the 3 of 12 tasks in the final batch that nothing has yet had a chance to overwrite.
+
+**Correction.** An earlier version of this section reported that the on-manifold hypothesis had been
+*refuted*, on the strength of `tests/diag_interference_regime.py` measuring displacement 10.48 for a
+"model-conditional" pool against 9.11 for real data. That diagnostic was measuring the wrong thing:
+it drew its pool from a class branch and then consolidated under a *fresh* concept embedding, so the
+model did not already fit it — its first loss was 0.0445, *higher* than real data's 0.0183, which is
+the opposite of on-manifold. It also measured ‖Δ‖ over the raw LoRA factors, which includes `A`;
+`A` can move freely without changing the module's output while `B` is near zero, so that number was
+not a functional displacement at all. Both flaws are fixed above by measuring ‖B@A‖.
+
+**One sub-question remains open**, and it is narrower than the one it replaces: the factored pool's
+movement is *bit-exactly* zero, not merely small. With Adam a tiny gradient still produces a step of
+order the learning rate, so this points at the gradient being identically zero rather than negligible
+— i.e. at how the forward pass routes through the shared nodes during consolidation, not at the
+size of the residual. This does not affect the conclusion above, which rests on the contrast between
+the two rows.
 
 ## 6. Why we are *not* replicating the paper's diffusion results
 
