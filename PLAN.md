@@ -85,7 +85,11 @@ tree in `tree.py` is only a portability fallback).
 | N1/N2/N3 neural experiments | `experiments/n{1,2,3}_*.py` | ✅ **all complete** (N1 trained 146 min; N3 10 concepts × 3 arms) |
 | N0 neural sampler diagnosis | `experiments/n0_tune.py` | ✅ found the teacher-covariance bias |
 | per-concept retention analysis | `experiments/analyze_n3.py` | ✅ |
-| multi-seed pooling | `experiments/aggregate.py` | ✅ (no multi-seed runs yet — see §3.0) |
+| multi-seed pooling | `experiments/aggregate.py` | ✅ 4 seeds on N5, 3 on N3/N9 |
+| N5 class-incremental vs 6 CL baselines | `experiments/n5_classinc.py`, `neural/baselines.py` | ✅ 4 seeds; EWC + generative replay + TTT + isolation |
+| N9 showdown case-study figure | `experiments/n9_showdown.py` | ✅ 6 methods, annotated per panel |
+| N10 CelebA against the real-data ceiling | `experiments/n10_celeba.py` | ⚠️ runs; backbone conditioning too weak to compose on (RESULTS §5o) |
+| per-backbone gain calibration | `experiments/common.py:backbone_gains` | ✅ replaces a constant tuned to one checkpoint (§5p) |
 
 ### Headline numbers so far
 
@@ -167,6 +171,19 @@ distillation loss 0.113 (`hier`) vs 0.160 (`flat`), 30% lower — but converges 
 (0.0495 vs 0.0499). Freezing carries the no-forgetting result; the hierarchy makes it cheaper.
 
 Reproduce the per-concept analysis with `python experiments/analyze_n3.py`.
+
+### Open, as of 2026-08-04 23:15
+
+1. **Re-verify every ColorMNIST number on the correctly-retrained backbone.** I overwrote the
+   original checkpoint (RESULTS §5p) and my first retrain used 60 epochs / 100 per slot instead of
+   200 / 200. The correct retrain and a dependent re-run of N3, N5 ×3 seeds, N8 and N9 are queued.
+   The undertrained backbone collapses the method (N9 `ours` 0.42 → 0.10 accuracy) so nothing should
+   be read off runs made against it.
+2. **CelebA needs a stronger backbone before any composition claim.** §5o: conditional 0.083 against
+   an unconditional floor of 0.049. A 140-epoch / 400-per-slot / 70k-row run is training.
+3. **One narrow mechanism question stays open** (§5m): the composed-pool gradient at shared nodes is
+   *bit-exactly* zero rather than merely small, which points at forward-pass routing rather than at
+   residual size. It does not affect any conclusion.
 
 ## 3. Open work, in priority order
 
