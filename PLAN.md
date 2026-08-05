@@ -405,6 +405,30 @@ setup. **Try `guidance=1.0` first**; it is a one-line change and likely most of 
 - Cap total adapter mass (weight anchoring) vs count-proportional, on the analytic side.
 - Second dataset: the union stream (mnist/fashion/kmnist) from cobweb-poincare.
 
+## 4b. Three results worth not re-deriving (measured 2026-08-04, late)
+
+**A composed-pool stream cannot test forgetting.** Consolidating a factored pool delivers *no
+gradient* to the shared adapter path — Δ‖B@A‖ = 0.000 across four concepts, against 7.219 for real
+images — because it is self-distillation onto a target the model already generates. `diag_paths.py`
+rules out the alternative: in both cases every concept shares nodes `[0, 1]` and those nodes are in
+the optimizer (547 trainable tensors vs 365). Do not read N3's or N9's no-forgetting numbers as
+evidence for the mechanism; nothing was at stake. Use N5 (real held-out images) for any retention
+claim. See RESULTS §5m.
+
+**Compositions are preserved by embedding isolation, not by freezing.** For a factored concept the
+semantics live in `_emb_extra[name]`, private to that concept and on no other concept's path. The
+shared path can triple (‖B@A‖ 7.49 → 22.28, drift 0.59) with accuracy going only 0.46 → 0.38; zero
+that one tensor and it drops to 0.04. Freezing is what preserves concepts absorbed from *real*
+instances. Two mechanisms, two halves of the pipeline — claiming either alone overstates. RESULTS §5n.
+
+**Two diagnostics that were wrong, and why** (so the mistakes are not repeated):
+- `diag_interference_regime.py` "refuted" the on-manifold hypothesis by drawing its pool from a class
+  branch and then consolidating under a *fresh* embedding — so its "model-conditional" pool was not
+  one (first loss 0.0445, higher than real data's 0.0183). Always sample the pool from the same
+  embedding consolidation will condition on.
+- It also measured ‖Δ‖ over raw LoRA factors. `A` moves freely without changing the module's output
+  while `B` is near zero, so that is not a functional displacement. **Measure ‖B@A‖.**
+
 ## 4. Two results worth not re-deriving
 
 **Adaptive PoE temperature.** The paper's τ=0.5 does not port. Their experts are DDPM modes with
