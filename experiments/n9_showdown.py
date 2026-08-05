@@ -39,7 +39,7 @@ import torch
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from common import CACHE, RESULTS, ood_queries                         # noqa: E402
+from common import CACHE, RESULTS, backbone_gains, ood_queries         # noqa: E402
 
 from lifelong_ood.datasets import load_colormnist, slot_name           # noqa: E402
 from lifelong_ood.evals import (composition_accuracy, fit_probes, precision_recall,  # noqa: E402
@@ -70,7 +70,8 @@ def main():
     p.add_argument("--steps", type=int, default=50)
     p.add_argument("--inv-steps", type=int, default=400)
     p.add_argument("--epochs", type=int, default=40)
-    p.add_argument("--bg-gain", type=float, default=2.0)
+    p.add_argument("--bg-gain", type=float, default=-1.0,
+                   help="fixed background gain; <=0 calibrates it on this backbone")
     p.add_argument("--stream-len", type=int, default=6,
                    help="concepts learned AFTER the case, so the forgetting arms have forgotten")
     p.add_argument("--stream-source", choices=("real", "factored"), default="real",
@@ -91,7 +92,12 @@ def main():
     remap = ck["remap"]
     slots_seen = np.array(sorted(remap))
     C = ck["ema"]["cemb.weight"].numpy()[[remap[int(x)] for x in slots_seen]]
-    gains = [1.0, 1.0, args.bg_gain]
+    # calibrated on THIS backbone from seen slots, not hardcoded: the constant 2.0 was tuned
+    # against one checkpoint and does not transfer to a retrained one (RESULTS 5p).
+    field0 = load_field(args.ckpt, device=dev)
+    gains = ([1.0, 1.0, args.bg_gain] if args.bg_gain > 0 else
+             backbone_gains(field0, C, slots_seen, probes, data, seed=args.seed,
+                            steps=args.steps, n=8 if args.quick else 16))
 
     qs = ood_queries(data, n_slots=args.n_cases + args.stream_len, seed=args.seed)
     cases, stream = qs[:args.n_cases], qs[args.n_cases:]

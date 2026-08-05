@@ -102,3 +102,34 @@ def ood_queries(data, n_slots=None, seed=0):
         out.append(dict(slot=int(s), query=q, rest=idx[idx != q],
                         d=int(data["digit"][q]), f=int(data["fg"][q]), b=int(data["bg"][q])))
     return out
+
+
+def backbone_gains(field, C, slots_seen, probes, data, factor=2, grid=(1.0, 1.5, 2.0, 2.5, 3.0),
+                   n_slots=6, n=16, steps=50, seed=0, verbose=True):
+    """Per-factor gain calibrated on THIS backbone, using seen slots only.
+
+    The gain corrects the model's under-response to a factor -- background, in ColorMNIST.  It was
+    previously hardcoded to 2.0, which was tuned against one checkpoint; a retrained backbone has a
+    different embedding table (ideal-words R^2 0.816 -> 0.746 across two runs of the same command)
+    and the constant does not transfer.  Calibrating here makes the composer a function of the
+    backbone it is given rather than of a checkpoint that happened to exist.
+
+    Only SEEN slots are used, so no held-out label is touched: composing a training slot from the
+    factorization and asking whether the model reproduces it is label-free.
+    """
+    from lifelong_ood.evals import composition_accuracy
+    from lifelong_ood.neural.idealwords import calibrate_gains, slot_factors
+
+    def score_fn(S, d, f, b):
+        return composition_accuracy(probes, S, d, f, b)["joint"]
+
+    from lifelong_ood.neural.idealwords import factorize
+    fac = factorize(C, slot_factors(slots_seen))
+    g, sc = calibrate_gains(field, fac, probes, data, slots_seen, grid=grid, factor=factor,
+                            n_slots=n_slots, n=n, steps=steps, seed=seed, score_fn=score_fn)
+    gains = [1.0] * len(fac["V"])
+    gains[factor] = g
+    if verbose:
+        print(f"[calib] ideal-words R^2 {fac['r2']:.3f}; factor-{factor} gain {g} "
+              f"(seen-slot joint accuracy {sc:.2f}) -> gains {gains}", flush=True)
+    return gains

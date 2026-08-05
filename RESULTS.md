@@ -858,6 +858,34 @@ What it would take: the ColorMNIST backbone gets 12000 images over 120 classes; 
 hold far more than the 25000 rows currently scanned) and longer training are the first things to try,
 before anything about the method is questioned.
 
+## 5p. A reproducibility failure of mine, and what it exposed
+
+While setting up CelebA I destroyed the ColorMNIST backbone. `n1_train.py`'s `--out` defaulted to
+`ddpm_colormnist.pt` regardless of `--dataset`, so training the CelebA model wrote over it. The
+default now follows the dataset (`ddpm_<dataset>.pt`), but the checkpoint that produced every
+ColorMNIST number above no longer exists, and retraining exposed two things worth reporting.
+
+**First, my retrain was not the original run.** I retrained at 60 epochs / 100 images per slot; the
+original was **200 epochs / 200 per slot** (recorded in §8's run table, which is how I found the
+discrepancy). On the undertrained backbone the whole method collapses — N9 `ours` falls from
+accuracy 0.42 / F1 0.57 to 0.10 / 0.05, while `real` is unchanged at 0.82 / 0.96 because it is data,
+not model. A correct retrain is running.
+
+**Second, and more usefully: the composer's gain was a constant tuned to one checkpoint.** Two runs
+of the *same* training command give measurably different embedding tables — ideal-words R² **0.816
+against 0.746** — and the hardcoded background gain of 2.0 did not transfer: on the retrained
+backbone the calibrator picks 3.0, at the top of its grid. That constant was a hidden dependency on
+a specific set of weights, and it is now removed: `experiments/common.py:backbone_gains` calibrates
+the per-factor gain on whatever backbone it is handed, using **seen slots only**, so no held-out
+label is touched (composing a training slot and asking whether the model reproduces it is
+label-free). Every experiment now takes its gain from the backbone rather than from a literal.
+
+The honest status of the numbers above: they were measured on a checkpoint I cannot reproduce
+bit-for-bit, and they should be treated as pending re-verification on the correctly-retrained
+backbone. The *relative* orderings — ours against the composition baselines, the six-way baseline
+table on real data — are what the claims rest on, and those come from within-run comparisons where
+every arm shares the same backbone.
+
 ## 6. Why we are *not* replicating the paper's diffusion results
 
 Side by side on ColorMNIST — their F1 (harmonic mean of precision and recall in Inception feature

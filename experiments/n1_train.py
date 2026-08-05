@@ -41,6 +41,9 @@ def main():
                         "OVERLAP spatially -- ColorMNIST's separability is load-bearing in several "
                         "of this repo's conclusions and CelebA is how they get tested")
     p.add_argument("--img", type=int, default=None)
+    p.add_argument("--max-rows", type=int, default=25000,
+                   help="celeba parquet rows to scan; more rows -> more images per class, "
+                        "which is the first thing to raise when conditioning is weak (5o)")
     p.add_argument("--quick", action="store_true")
     args = p.parse_args()
     if args.quick:
@@ -55,7 +58,7 @@ def main():
         from lifelong_ood.celeba import IMG_CELEBA, load_celeba
         img = args.img or IMG_CELEBA
         data = load_celeba(n_per_class=args.n_per_slot, img=img, seed=args.seed,
-                           min_count=25, max_rows=25000)
+                           min_count=25, max_rows=args.max_rows)
         data["slot"] = data["cls"]
         globals()["_IMG"] = img
     else:
