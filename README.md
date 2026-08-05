@@ -334,23 +334,24 @@ tuning-of-record: it chose τ, K and the guidance schedule, and reports each aga
 
 ## Results, in one table
 
-Split-ColorMNIST class-incremental, 12 tasks of **real** held-out images, 3 seeds (`n5_classinc`).
+Split-ColorMNIST class-incremental, 12 tasks of **real** held-out images, 4 seeds (`n5_classinc`).
 ACC is final mean joint accuracy; forgetting is −BWT, where 0 means none.
 
 | method | ACC | forgetting | wall (s) | keeps data? |
 |---|---|---|---|---|
-| test-time training | **0.844 ± 0.011** | −0.008 | 1025 | yes — all of it, forever |
-| parameter isolation | 0.821 ± 0.011 | **0.000** | 260 | no |
-| **ours** (hierarchical, frozen ancestors) | 0.818 ± 0.025 | **0.000** | 396 | no |
-| EWC | 0.720 ± 0.024 | 0.112 | 358 | no |
-| finetune | 0.701 ± 0.036 | 0.134 | 264 | no |
-| generative replay | 0.658 ± 0.077 | 0.174 | 479 | no (samples itself) |
+| test-time training | **0.828 ± 0.017** | −0.004 | 961 | yes — all of it, forever |
+| parameter isolation | 0.799 ± 0.023 | **0.000** | 245 | no |
+| **ours** (hierarchical, frozen ancestors) | 0.797 ± 0.027 | **0.000** | 372 | no |
+| EWC | 0.711 ± 0.020 | 0.115 ± 0.008 | 336 | no |
+| finetune | 0.689 ± 0.029 | 0.139 ± 0.017 | 248 | no |
+| generative replay | 0.658 ± 0.055 | 0.161 ± 0.052 | 450 | no (samples itself) |
 
 Read this honestly: **TTT is the most accurate method here**, and it should be — it re-fits each task
 from that task's own stored data at query time, so it cannot forget and cannot accumulate. It pays
 2.6× our wall clock and must retain every task's data forever. Among the methods that keep a fixed
-set of weights and no data, ours and parameter isolation are tied at zero forgetting, and the three
-that protect shared parameters rather than removing them all forget measurably.
+set of weights and no data, ours and parameter isolation are tied at zero forgetting (they are within
+0.002 ACC of each other, well inside the seed spread), and the three that *protect* shared parameters
+rather than removing them all forget measurably.
 
 Two further findings that qualify the headline, both in `RESULTS.md`:
 

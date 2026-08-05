@@ -13,12 +13,17 @@ Methods, and what each is a fair test of:
   `poe-guided`       the published method: CFG toward the analytic PoE Gaussian.
   `inversion`        conditioning learned in the entangled class basis (our previous best).
   `nearest-class`    condition on the single closest trained class.  The retrieval control.
-  `finetune-stream`  a shared adapter after the SAME concept has been learned and then followed by
-                     others -- i.e. what the composition looks like once catastrophic forgetting has
-                     had its turn.  This is the row that shows what a lifelong method has to prevent.
-                     The follow-on stream is REAL held-out images, not composed pools: see 5m in
-                     RESULTS.md, a composed pool delivers no gradient to the shared path, so a
-                     composed stream leaves every arm untouched and tests nothing.
+  `finetune-stream`  the same concept, but with the shared adapter left unprotected while REAL
+                     held-out images of other concepts stream past it.  Real images are used
+                     deliberately: a composed pool delivers no gradient to the shared path
+                     (RESULTS 5m), so a composed stream would leave every arm untouched and test
+                     nothing.  With real images the shared path genuinely moves -- and this row
+                     STILL matches ours, which is the measurement behind RESULTS 5n: a factored
+                     concept's semantics live in its private embedding, which no later concept can
+                     write to, so the composition is preserved by isolation of the conditioning
+                     rather than by protecting the adapter.  Read this row as evidence for that,
+                     not as a forgetting demonstration -- forgetting is measured in n5_classinc,
+                     where the adapter carries the content and protection is the whole story.
   `ttt-stream`       test-time training on the same stream: re-fits from stored data on demand.
 
 The last two are the point of putting baselines in a CASE-STUDY figure rather than only in a table.
@@ -207,7 +212,9 @@ def main():
     axes[0, 0].set_title("query", fontsize=6)
     fig.suptitle("N9 — the same OOD composition, every method, annotated with what was measured on "
                  "exactly these samples\n(`real` is the ceiling; `finetune-stream` is the same "
-                 "concept after later concepts overwrote it)", fontsize=8)
+                 "concept after a real-image stream ran over an unprotected shared adapter — it "
+                 "holds, because the composition lives in a private embedding: RESULTS §5n)",
+                 fontsize=8)
     fig.tight_layout()
     os.makedirs(FIG, exist_ok=True)
     fig.savefig(os.path.join(FIG, "n9_showdown.png"), dpi=140, bbox_inches="tight")
