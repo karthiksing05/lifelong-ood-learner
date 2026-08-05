@@ -818,6 +818,46 @@ both: compose an OOD prototype (preserved by isolation), then add real instances
 manifold (preserved by freezing). Reporting only N5 would overstate the first; reporting only N3/N9
 would overstate the second.
 
+## 5o. CelebA — set up, trained, measured, and honestly not ready to compose on
+
+CelebA is the paper's second benchmark and the one that matters most for this repo's threats to
+validity: its attributes **overlap spatially**, where ColorMNIST's digit / foreground / background do
+not, and that separability is load-bearing in several conclusions above (§5h's factor basis in
+particular assumes the factors are close to independent).
+
+**Setup** (`lifelong_ood/celeba.py`, `experiments/n1_train.py --dataset celeba`). 14 binary
+attributes; classes are attribute combinations with ≥25 examples, split 51 seen / 23 held-out, loaded
+from the HuggingFace `flwrlabs/celeba` parquet shards at 64×64. Backbone: 9.3M-parameter UNet, 60
+epochs, 21 minutes, 5051 images over 51 seen classes. 12 of the 14 attribute probes clear 0.65 on
+real held-out data and are used for scoring; `Brown_Hair` (0.51) and `Big_Lips` (0.48) are at chance
+and are excluded — scoring a generator on an attribute no probe can read measures the probe.
+
+**The result, with the ceiling next to it** (`n10_celeba`, 12 seen classes × 24 samples, joint =
+conjunction over all 12 readable attributes):
+
+| source | joint | per-attribute |
+|---|---|---|
+| real held-out images (ceiling) | **0.247** | 0.905 |
+| conditioned on the class | 0.083 | 0.814 |
+| unconditional (floor) | 0.049 | 0.766 |
+
+Reporting the ceiling is what makes this readable. `n1_train` printed conditional joint accuracy
+0.0625 in isolation, which looks like total failure; against a real-data ceiling of 0.247 it is 34%
+of achievable, because a conjunction over 12 imperfectly-read attributes caps everything.
+
+**But the honest conclusion is negative: this backbone's conditioning is too weak to run the
+composition study on.** Conditional 0.083 against an unconditional floor of 0.049 is a small margin,
+and per-attribute the conditional adds only 0.048 over unconditional (0.814 vs 0.766). Composition
+experiments here would be measuring a barely-functional conditional, and any result — good or bad —
+would say more about the backbone than about the composer. **The ColorMNIST conclusions therefore
+have not yet been tested on spatially-overlapping attributes**, and §7's threat about separability
+stands unaddressed rather than resolved.
+
+What it would take: the ColorMNIST backbone gets 12000 images over 120 classes; this gets 5051 over
+51, at four times the pixel count, in the same 60 epochs. More data per class (the parquet shards
+hold far more than the 25000 rows currently scanned) and longer training are the first things to try,
+before anything about the method is questioned.
+
 ## 6. Why we are *not* replicating the paper's diffusion results
 
 Side by side on ColorMNIST — their F1 (harmonic mean of precision and recall in Inception feature

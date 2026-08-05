@@ -53,7 +53,7 @@ def main():
 
     rows = []
     for c in classes:
-        combo = data["combo"][data["cls"] == c][0]
+        combo = data["combos"][int(c)]        # class id -> its attribute combination
         R = data["X"][seen][data["cls"][seen] == c][:args.n_samples]
         S = to_data(field.sample(n=args.n_samples, steps=args.steps, seed=args.seed,
                                  clip=(-1, 1), branch=int(remap[int(c)]))).astype(np.float32)
