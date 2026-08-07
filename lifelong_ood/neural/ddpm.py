@@ -47,7 +47,7 @@ def _as_img(X, device, img=IMG):
 
 # ── training ─────────────────────────────────────────────────────────────────
 def train_ddpm(model, X01, labels, epochs=60, batch=128, lr=2e-4, wd=1e-6, p_drop=0.1,
-               device="cuda", ema_decay=0.999, seed=0, log_every=200, u_min=1e-3):
+               device="cuda", ema_decay=0.999, seed=0, log_every=200, u_min=1e-3, tf32=False):
     """Standard epsilon-prediction training with classifier-free-guidance dropout.
 
     Matches the paper's backbone recipe (AdamW, lr 2e-4, weight decay 1e-6, grad clip 1.0, null-token
@@ -55,6 +55,15 @@ def train_ddpm(model, X01, labels, epochs=60, batch=128, lr=2e-4, wd=1e-6, p_dro
     `u ~ U(0,1)` standing in for their discrete t ~ U{1..T}.  Returns the EMA weights, which are what
     every downstream field is built from.
     """
+    if tf32:
+        # Ampere-class tensor cores for conv/matmul: ~2x on the CelebA backbone, which trains on 96k
+        # 64x64 images.  OFF by default so the ColorMNIST numbers already in RESULTS keep their
+        # exact arithmetic; the CelebA runs opt in.  The precision change is far inside the
+        # backbone-to-backbone spread RESULTS 5p measured (up to 0.07 F1 between two runs of the
+        # SAME command), so it is a speed knob, not a silent change of method.
+        torch.backends.cuda.matmul.allow_tf32 = True
+        torch.backends.cudnn.allow_tf32 = True
+        torch.backends.cudnn.benchmark = True
     torch.manual_seed(seed)
     model.to(device).train()
     opt = torch.optim.AdamW(model.parameters(), lr=lr, weight_decay=wd)
@@ -67,7 +76,15 @@ def train_ddpm(model, X01, labels, epochs=60, batch=128, lr=2e-4, wd=1e-6, p_dro
     ema_f = [ema[k] for k in fkeys]
     mod_f = [sd[k] for k in fkeys]
     img = int(getattr(model, 'img', IMG))
-    Xt = torch.from_numpy(to_model(X01).astype(np.float32)).reshape(-1, CH, img, img)
+    # uint8 input is kept uint8 and converted per batch: the CelebA run trains on ~100k 64x64 images
+    # and the float32 copy of that is 5 GB of host RAM, against 1.2 GB as uint8.
+    u8 = np.asarray(X01).dtype == np.uint8
+    if u8:
+        # flat rows are HWC (that is how the loaders ravel them), so go through HWC before NCHW
+        Xt = torch.from_numpy(np.ascontiguousarray(
+            np.asarray(X01).reshape(-1, img, img, CH).transpose(0, 3, 1, 2)))
+    else:
+        Xt = torch.from_numpy(to_model(X01).astype(np.float32)).reshape(-1, CH, img, img)
     Y = torch.from_numpy(np.asarray(labels, np.int64))
     n = len(Xt)
     g = torch.Generator().manual_seed(seed)
@@ -78,6 +95,8 @@ def train_ddpm(model, X01, labels, epochs=60, batch=128, lr=2e-4, wd=1e-6, p_dro
         for i0 in range(0, n, batch):
             idx = perm[i0:i0 + batch]
             x0 = Xt[idx].to(device)
+            if u8:
+                x0 = x0.float().div_(127.5).sub_(1.0)          # uint8 [0,255] -> [-1,1]
             c = Y[idx].to(device).clone()
             drop = torch.rand(len(c), device=device, generator=None) < p_drop
             c[drop] = model.null_id

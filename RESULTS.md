@@ -1483,6 +1483,88 @@ pass with a fingerprint check to keep the guarantee auditable).
   PoE can always assemble an unseen pair from base concepts, and having the combination pre-learned
   buys nothing. Closure cannot be demonstrated on this benchmark; see `PLAN.md` §3.2.
 
+## 5x. Choosing the router's signal by measuring, not by reasoning
+
+The routing rule of 5q -- new COMBINATION is free, new VOCABULARY needs real data -- has always been
+applied by me, not by the system. N18 closes that, and the first thing it needed was a signal. The
+first candidate was wrong in an instructive way, so both are recorded.
+
+**The reasoning that failed.** Score the query by the best epsilon-prediction loss over every trained
+class conditioning, then divide by the loss under NO conditioning, so that per-image denoising
+difficulty cancels. Measured over 110 queries on the `nobg3` backbone
+(`tests/diag_router_signals.py`), that ratio scores AUROC **0.199** for "is this novel" -- not weak,
+**reversed**.
+
+The cause is that the normaliser is not neutral. On a query carrying a factor value the backbone
+never saw, the unconditional branch is ALSO bad at it, and it degrades by MORE than the conditional
+numerator does, so the ratio falls exactly where it was supposed to rise. *A ratio to a quantity that
+itself responds to novelty cannot measure novelty.*
+
+**What works is the raw quantity.** The absolute denoising error under the best available
+conditioning is monotone in novelty, and one signal at two noise levels decides all three routes:
+
+| noise | in-distribution | new-combination | new-vocabulary |
+|---|---|---|---|
+| u = 0.20 | 0.0147 | 0.0256 | 0.0666 |
+| u = 0.45 | 0.0078 | 0.0103 | 0.0255 |
+
+| decision | signal | AUROC |
+|---|---|---|
+| novel vs in-distribution | best conditional error, u = 0.10 | **0.985** |
+| new-vocabulary vs new-combination | best conditional error, u = 0.45 | **0.995** |
+
+Low noise reads fine detail (the exact colour), mid noise reads global structure, and the two
+decisions want different ones -- which is why the two thresholds sit at different `u` rather than
+being two quantiles of one score.
+
+**The negative result that must travel with it.** The *unconditional* error -- using no class, no
+basis and no conditioning at all -- scores **0.985** and **0.998** on the same two decisions. So the
+conditioning is not what makes the decision, and the router is an out-of-distribution detector on the
+model's own density. It is a working detector and it closes the loop, but it is **not** evidence that
+the factor basis is what recognises a new combination, and N18 runs it as an explicit ablation row so
+the two cannot be conflated. Any future claim of the form "the basis knows what it can express" needs
+a signal that beats this ablation, and none of the ten candidates measured here does.
+
+**A calibration honesty note.** `t_novel` is a quantile of the signal over TRAINED slots, which is
+label-free. `t_vocab` cannot be, because it separates two categories that are both absent from
+training. It is calibrated instead against the model's own samples from basis combinations it was
+never trained on -- the closest thing to a new-combination example the system can manufacture unaided
+-- and that substitution is an assumption, stated at the call site and swept in N18 rather than
+asserted.
+
+
+## 5y. Closure by COST: does an accumulated bank make the next concept cheaper? (no)
+
+E4 asked whether a consolidated concept gets *reused* by later compositions and measured
+`adapter_expert_frac = 0.00`. PLAN 3.2 argued the benchmark was at fault rather than the mechanism --
+ColorMNIST's attributes are spatially separable, so a per-dimension PoE can always assemble an unseen
+(fg, bg) pair from base concepts and having the combination pre-learned in one expert buys nothing --
+and recommended testing closure by **cost** instead: does consolidating concept `k` get cheaper when
+relatives are already in the bank? N3 already records the quantity, so this needs no new run.
+
+Distillation loss at the first epoch, early concepts vs late ones, 3 seeds:
+
+| arm | early_first | late_first | late - early | early_final | late_final |
+|---|---|---|---|---|---|
+| `hier` (frozen ancestors) | 0.0234 | 0.0264 | **+0.0030 +/- 0.0032** | 0.0222 | 0.0203 |
+| `unfrozen` | 0.0236 | 0.0266 | +0.0030 +/- 0.0034 | 0.0221 | 0.0203 |
+
+**Two readings, and the second is the one that settles it.** Late concepts start *more* expensive, not
+less -- the wrong sign for closure -- but the effect is within one seed standard deviation of zero, so
+on its own it says nothing. The decisive comparison is `hier` against `unfrozen`: they differ by
+**-0.00018 on late_first against a seed spread of 0.0053**, a factor of thirty smaller than the noise.
+Whatever makes later concepts slightly costlier is a property of *which slots arrive late*, not of the
+bank that has accumulated behind them.
+
+So closure does not show up in accuracy (E4) and does not show up in cost either. Together with N14
+(hierarchical placement loses to flat) and N3's transfer of +0.0013, three independent measurements
+now say the same thing: **on ColorMNIST, consolidated concepts do not make later learning easier.**
+The most likely reason remains the one PLAN 3.2 gave -- separable factors make a pre-learned
+combination redundant -- which is a hypothesis about the benchmark and is exactly what CelebA is for.
+It is stated as an open question rather than a refutation of closure in general, because the
+experiment that could refute it has not been run on a benchmark where closure could pay.
+
+
 ---
 
 ## 8. Where the numbers come from

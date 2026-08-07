@@ -55,12 +55,21 @@ def main():
                    help="hold out entire DIGIT values.  Several held-out values give n12 a STREAM "
                         "of new vocabulary to absorb, which is what measuring cumulative drift "
                         "under weight reconsolidation needs")
+    p.add_argument("--all-slots", action="store_true",
+                   help="train on ALL 160 slots including the held-out ones.  This is not a "
+                        "method -- it is the NATIVE ORACLE for the parity evaluation (n23): the "
+                        "backbone a slot would have had if it had never been held out.  The whole "
+                        "claim 'a consolidated concept behaves as if it had been learned natively' "
+                        "is unmeasurable without it.  Never use this checkpoint as a method's "
+                        "backbone; its filename carries `_oracle` so a mix-up is visible.")
     p.add_argument("--quick", action="store_true")
     args = p.parse_args()
     if args.quick:
         args.n_per_slot, args.epochs, args.base = 10, 2, 32
     if args.out is None:
-        args.out = os.path.join(CACHE, f"ddpm_{args.dataset}.pt")
+        suffix = "_oracle" if args.all_slots else ""
+        suffix += "_smoke" if args.quick else ""
+        args.out = os.path.join(CACHE, f"ddpm_{args.dataset}{suffix}.pt")
     dev = "cuda" if torch.cuda.is_available() else "cpu"
     print(f"[n1] device {dev}"
           f"{' (' + torch.cuda.get_device_name(0) + ')' if dev == 'cuda' else ''}", flush=True)
@@ -75,6 +84,11 @@ def main():
     else:
         data = load_colormnist(n_per_slot=args.n_per_slot, seed=args.seed)
     seen = data["seen"]
+    if args.all_slots:
+        seen = np.ones(len(data["slot"]), bool)
+        data["seen"] = seen
+        print(f"[n1] ORACLE: training on ALL {len(np.unique(data['slot']))} slots — this is the "
+              f"native-parity reference, not a method", flush=True)
     if args.holdout_bg is not None and args.dataset == "colormnist":
         seen = seen & (data["bg"] != args.holdout_bg)
         print(f"[n1] holding out background value {args.holdout_bg} ENTIRELY: "

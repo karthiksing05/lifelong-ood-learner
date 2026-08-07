@@ -278,7 +278,7 @@ class HierarchicalAdapterBank:
         for nid in path:
             for w in self.wrapped:
                 w.add_node(nid, self.device)
-        emb = torch.zeros(self.model.cemb.embedding_dim, device=self.device)
+        emb = torch.zeros(self.model.emb_dim, device=self.device)
         emb.normal_(0, 0.01)
         self._emb_extra[name] = nn.Parameter(emb)
         self.concepts[name] = dict(path=path, leaf=leaf)

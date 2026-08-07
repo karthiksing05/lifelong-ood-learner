@@ -281,6 +281,97 @@ def extend_basis(field, targets, labels, fac, factor, n_steps=400, lr=0.05, batc
                                           norm=float(v.detach().norm()))
 
 
+def learn_attr_value(field, targets, combos, attr_idx, value=1, n_steps=400, lr=0.05, batch=8,
+                     seed=0, u_range=(0.05, 0.95), log_every=0, norm_match=True):
+    """`extend_basis` for a FACTORED conditioning head (unet.py `cond_mode='factored'`).
+
+    Same claim, different substrate.  There the basis is a matrix recovered by ideal-words regression
+    from an entangled class-embedding table, and a new factor value is a vector appended to it.  Here
+    the head already IS a factor basis: the slot `attr[attr_idx, value]` exists but has never
+    received a gradient, because no training image carried that attribute value.  Learning the new
+    vocabulary item is therefore optimizing exactly one `edim` vector while every other parameter --
+    the UNet and the other 27 attribute vectors -- stays frozen.
+
+    Two consequences follow structurally rather than by engineering, and both are the point:
+      * cost is one `edim` vector for the value, not one adapter per combination that uses it;
+      * every composition NOT involving this attribute value is bit-identical afterwards, because
+        nothing it reads was written.
+
+    `targets` [N, D] real instances carrying the new value, in the model's [-1, 1] space.
+    `combos`  [N, n_attrs] their FULL attribute rows, so the vector is learned under many different
+              contexts at once.  (n11's lesson: teach a direction against varied everything-else or
+              it absorbs whatever the teaching set held constant.)
+    -> (v [edim], history)
+    """
+    model, dev = field.model, field.device
+    if getattr(model, "cond_mode", "class") != "factored":
+        raise RuntimeError("learn_attr_value needs a factored-conditioning backbone")
+    model.eval()
+    for p in model.parameters():
+        p.requires_grad_(False)
+
+    with torch.no_grad():
+        others = model.attr[[k for k in range(model.n_attrs) if k != attr_idx]]
+        target_norm = float(others.reshape(-1, model.edim).norm(dim=1).mean())
+        v = model.attr[attr_idx, value].detach().clone()
+    v.requires_grad_(True)
+    opt = torch.optim.Adam([v], lr=lr)
+
+    X = torch.from_numpy(np.asarray(targets, np.float32)).to(dev)
+    X = X.reshape(-1, CH, field.img, field.img)
+    Cb = torch.as_tensor(np.asarray(combos, int), device=dev)
+    g = torch.Generator(device="cpu").manual_seed(seed)
+    torch.manual_seed(seed)
+
+    hist = []
+    for it in range(n_steps):
+        idx = torch.randint(0, len(X), (min(batch, len(X)),), generator=g).to(dev)
+        x0, lab = X[idx], Cb[idx]
+        u = torch.rand(len(x0), device=dev) * (u_range[1] - u_range[0]) + u_range[0]
+        ab = torch.from_numpy(cosine_abar(u.detach().cpu().numpy())).to(dev).float()
+        ab = ab.view(-1, 1, 1, 1)
+        e = torch.randn_like(x0)
+        xt = ab.sqrt() * x0 + (1 - ab).sqrt() * e
+        # conditioning = frozen vectors for the other attributes + the one being learned, so the
+        # gradient sees `v` under every context the teaching instances happen to carry
+        c = torch.zeros(len(x0), model.edim, device=dev)
+        for k in range(model.n_attrs):
+            if k == attr_idx:
+                c = c + torch.where((lab[:, k] == value).unsqueeze(1), v.unsqueeze(0),
+                                    model.attr[k, 0].unsqueeze(0))
+            else:
+                c = c + model.attr[k, lab[:, k]]
+        loss = torch.nn.functional.mse_loss(model(xt, u, emb_override=c), e)
+        opt.zero_grad(set_to_none=True)
+        loss.backward()
+        opt.step()
+        if norm_match:
+            with torch.no_grad():
+                nv = v.norm()
+                if float(nv) > 0:
+                    v.mul_(target_norm / nv)
+        hist.append(float(loss))
+        if log_every and (it + 1) % log_every == 0:
+            print(f"      attr-value extension {it + 1}/{n_steps}: "
+                  f"{np.mean(hist[-log_every:]):.4f}", flush=True)
+    return v.detach(), dict(first=hist[0], final=float(np.mean(hist[-20:])), curve=hist,
+                            target_norm=target_norm, norm=float(v.detach().norm()))
+
+
+def compose_attr(model, combo, overrides=None):
+    """Attribute row -> conditioning vector, with optional per-(attr, value) vector substitutions.
+
+    `overrides` maps `(attr_idx, value) -> tensor[edim]`, which is how a newly learned vocabulary
+    item is used before (or instead of) being written back into the model.
+    """
+    overrides = overrides or {}
+    c = torch.zeros(model.edim, device=model.attr.device)
+    for k in range(model.n_attrs):
+        val = int(combo[k])
+        c = c + overrides.get((k, val), model.attr[k, val])
+    return c
+
+
 def compose_with(fac, assignment, factor, v, gains=None):
     """`compose`, but substituting a learned direction `v` for one factor's value.
 
@@ -317,7 +408,7 @@ def learn_attribute_basis(field, groups, n_steps=400, lr=0.05, batch=2, seed=0,
     """
     out = {}
     for i, (name, X) in enumerate(groups.items()):
-        d = field.emb_dim if hasattr(field, "emb_dim") else field.model.cemb.weight.shape[1]
+        d = field.emb_dim if hasattr(field, "emb_dim") else field.model.emb_dim
         v = torch.zeros(d, device=field.device, requires_grad=True)
         opt = torch.optim.Adam([v], lr=lr)
         Xt = torch.from_numpy(np.asarray(X, np.float32)).to(field.device)

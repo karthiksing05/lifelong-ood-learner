@@ -37,7 +37,7 @@ from .ddpm import CH, IMG
 
 def _basis(model, ids=None):
     """The trained class embeddings, excluding the null row (which is 'no class', not a class)."""
-    W = model.cemb.weight.detach()
+    W = model.class_embeddings()          # works in both conditioning modes (see unet.py)
     keep = [i for i in range(model.n_classes)] if ids is None else list(ids)
     return W[keep], keep
 

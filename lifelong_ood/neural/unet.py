@@ -65,10 +65,31 @@ class Attention(nn.Module):
 
 class UNet(nn.Module):
     """Class-conditional epsilon-predictor.  `n_classes` EXCLUDES the null token, which is appended
-    as the last row of the embedding table (index `n_classes`), exactly as the paper describes."""
+    as the last row of the embedding table (index `n_classes`), exactly as the paper describes.
+
+    TWO CONDITIONING MODES, and the second exists because the first is untrainable on CelebA.
+
+    * `cond_mode="class"` (default, ColorMNIST) — one free embedding row per compositional class.
+      This is the paper's setup and the one that makes the ideal-words result meaningful: the factor
+      structure is *discovered* in an entangled space (R^2 0.826), not built in.
+    * `cond_mode="factored"` (CelebA) — the conditioning vector is the SUM of one learned embedding
+      per (attribute, value) pair: `e_c = sum_k attr[k, v_k]`.  RESULTS 5o measured why this is
+      needed: a per-class row on CelebA is estimated from as few as 25 images and 2.3x the data with
+      140 epochs moved conditional/ceiling 34% -> 33%, so the weakness is the conditioning design,
+      not the compute.  Under factoring every attribute embedding is estimated from *every* image
+      carrying that value — tens of thousands rather than tens.
+
+      The honest consequence, stated at the point where it is created: on CelebA the factor basis is
+      ARCHITECTURAL, not discovered, so a held-out combination is expressible in conditioning space
+      by construction.  What CelebA then tests is the thing ColorMNIST structurally cannot — whether
+      composing known factor values *renders correctly* when the factors overlap the same pixels.
+
+    Both modes resolve a class id to ONE embedding vector added to the time embedding, so every
+    downstream consumer (adapter bank, inversion, ideal-words, the score field) is unchanged.
+    """
 
     def __init__(self, n_classes, base=64, mults=(1, 2, 2), edim=256, attn=(16, 8), dropout=0.1,
-                 in_ch=3, img=32):
+                 in_ch=3, img=32, cond_mode="class", class_attrs=None, n_attr_vals=2):
         # `img` is the input resolution the level bookkeeping starts from.  It was hardcoded to 32,
         # which silently placed attention at the wrong levels for any other size -- at 64x64 the
         # first level then ran full attention over 4096 tokens and ran out of memory.  Attention
@@ -78,10 +99,22 @@ class UNet(nn.Module):
         self.null_id = n_classes
         self.temb = nn.Sequential(nn.Linear(base, edim), nn.SiLU(), nn.Linear(edim, edim))
         self.base = base
-        self.cemb = nn.Embedding(n_classes + 1, edim)
-        nn.init.normal_(self.cemb.weight, std=0.02)
-        with torch.no_grad():
-            self.cemb.weight[self.null_id].zero_()       # null token = no class signal
+        self.edim = edim
+        self.cond_mode = cond_mode
+        if cond_mode == "factored":
+            if class_attrs is None:
+                raise ValueError("cond_mode='factored' needs class_attrs [n_classes, n_attrs]")
+            ca = torch.as_tensor(class_attrs, dtype=torch.long)
+            self.n_attrs = int(ca.shape[1])
+            self.n_attr_vals = int(n_attr_vals)
+            self.register_buffer("class_attrs", ca)
+            self.attr = nn.Parameter(torch.empty(self.n_attrs, self.n_attr_vals, edim))
+            nn.init.normal_(self.attr, std=0.02)
+        else:
+            self.cemb = nn.Embedding(n_classes + 1, edim)
+            nn.init.normal_(self.cemb.weight, std=0.02)
+            with torch.no_grad():
+                self.cemb.weight[self.null_id].zero_()   # null token = no class signal
 
         chs = [base * m for m in mults]
         self.img = int(img)
@@ -118,6 +151,39 @@ class UNet(nn.Module):
                                  nn.Conv2d(cur, in_ch, 3, padding=1))
         nn.init.zeros_(self.out[-1].weight); nn.init.zeros_(self.out[-1].bias)
 
+    @property
+    def emb_dim(self):
+        return self.edim
+
+    def attr_embedding(self, v):
+        """Attribute-value vector(s) -> conditioning embedding, `sum_k attr[k, v_k]`.
+
+        This is basis composition made architectural: an unseen combination of *known* attribute
+        values costs zero new parameters, which is the CelebA analogue of `extend_basis` (n11).
+        Accepts one row `[n_attrs]` or a batch `[B, n_attrs]`.
+        """
+        if self.cond_mode != "factored":
+            raise RuntimeError("attr_embedding needs cond_mode='factored'")
+        v = torch.as_tensor(v, dtype=torch.long, device=self.attr.device)
+        one = v.dim() == 1
+        v = v.reshape(1, -1) if one else v
+        idx = torch.arange(self.n_attrs, device=v.device)
+        e = self.attr[idx[None].expand(len(v), -1), v].sum(1)      # [B, edim]
+        return e[0] if one else e
+
+    def class_embeddings(self):
+        """-> [n_classes, edim], the conditioning vector of every trained class, in either mode.
+
+        Experiments that factorize the conditioning space (ideal-words) read this rather than
+        `cemb.weight`, so they work on both backbones.  In `factored` mode the returned matrix is by
+        construction a sum of attribute vectors, so factorizing it recovers R^2 = 1 trivially — a
+        CelebA experiment should use `attr` directly and say so, not report that R^2.
+        """
+        if self.cond_mode == "factored":
+            with torch.no_grad():
+                return self.attr_embedding(self.class_attrs)
+        return self.cemb.weight[:self.n_classes].detach()
+
     def forward(self, x, u, c=None, emb_override=None):
         """`emb_override` supplies the class embedding directly instead of looking it up.
 
@@ -139,7 +205,17 @@ class UNet(nn.Module):
         else:
             if c is None:
                 c = torch.full((x.shape[0],), self.null_id, device=x.device, dtype=torch.long)
-            e = e + self.cemb(torch.as_tensor(c, device=x.device, dtype=torch.long))
+            c = torch.as_tensor(c, device=x.device, dtype=torch.long)
+            if self.cond_mode == "factored":
+                # null id has no attribute row; it conditions on the ZERO vector, which is what CFG
+                # needs ("no class signal") and is distinct from every realisable attribute sum.
+                live = c != self.null_id
+                ce = torch.zeros(len(c), self.edim, device=x.device, dtype=e.dtype)
+                if bool(live.any()):
+                    ce[live] = self.attr_embedding(self.class_attrs[c[live]]).to(e.dtype)
+                e = e + ce
+            else:
+                e = e + self.cemb(c)
         h = self.stem(x)
         hs = [h]
         for i, blocks in enumerate(self.down):

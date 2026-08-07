@@ -205,6 +205,130 @@ def load_celeba(n_per_class=200, img=IMG_CELEBA, seed=0, root=None, min_count=12
                 img=img)
 
 
+def build_comp_split(A, min_count=60, n_holdout=24, holdout_attr=None, seed=0):
+    """Compositional split for the FACTORED backbone: hold out whole attribute COMBINATIONS.
+
+    Differs from `build_classes` in what it is allowed to train on.  `build_classes` exists for a
+    per-class embedding table, so it keeps only combinations with enough support to estimate a row
+    (>=120 images) and discards the other ~85% of the data.  A factored conditioning head has no
+    per-combination parameters -- it learns one vector per (attribute, value) -- so it can train on
+    EVERY image whose combination is not held out, which is what makes CelebA trainable at all
+    (RESULTS 5o: per-class conditioning reached 34% of ceiling and 2.3x data did not move it).
+
+    Held-out combinations are chosen to differ from a retained one on a SINGLE attribute, which is
+    the paper's own criterion (App. B) and makes the test compositional rather than a novel-attribute
+    test.  `holdout_attr` runs the OTHER regime -- an attribute whose ON value is withheld
+    ENTIRELY, so the backbone has never seen that vocabulary item in any combination.  That is the
+    CelebA analogue of `n1_train --holdout-bg` and is what separates "new combination" (free) from
+    "new vocabulary" (needs real data) on spatially overlapping attributes.
+    """
+    rng = np.random.default_rng(seed)
+    keys, inv, counts = np.unique(A, axis=0, return_inverse=True, return_counts=True)
+    cand = np.where(counts >= min_count)[0]
+    if len(cand) < n_holdout + 2:
+        raise ValueError(f"only {len(cand)} combos with >={min_count} support")
+
+    hold_ids = []
+    for i in rng.permutation(cand):
+        if len(hold_ids) >= n_holdout:
+            break
+        rest = np.setdiff1d(cand, np.array(hold_ids + [i], dtype=int))
+        if len(rest) and (keys[i][None] != keys[rest]).sum(1).min() == 1:
+            hold_ids.append(int(i))
+    hold_ids = np.array(sorted(hold_ids), dtype=int)
+
+    train_mask = ~np.isin(inv, hold_ids)
+    attr_idx = None
+    if holdout_attr is not None:
+        attr_idx = ATTRS.index(holdout_attr) if isinstance(holdout_attr, str) else int(holdout_attr)
+        train_mask = train_mask & (A[:, attr_idx] == 0)
+
+    return dict(all_combos=keys, counts=counts, combo_of=inv, hold_ids=hold_ids,
+                hold_combos=keys[hold_ids], train_mask=train_mask,
+                holdout_attr=(ATTRS[attr_idx] if attr_idx is not None else None),
+                holdout_attr_idx=attr_idx)
+
+
+def nearest_seen(combo, split):
+    """-> (index into all_combos, differing attribute indices) of the closest TRAINED combination.
+
+    Held-out combinations differ from this neighbour on exactly one attribute by construction, so
+    the differing index is the attribute a compositional generator has to get right *while holding
+    the other thirteen* -- a far sharper test than a 14-way conjunction whose ceiling is 0.25.
+    """
+    keys, counts = split["all_combos"], split["counts"]
+    ok = np.ones(len(keys), bool)
+    ok[split["hold_ids"]] = False
+    if split.get("holdout_attr_idx") is not None:
+        ok &= keys[:, split["holdout_attr_idx"]] == 0
+    ok &= counts >= 25
+    d = (np.asarray(combo)[None] != keys).sum(1)
+    d = np.where(ok, d, 10 ** 6)
+    j = int(np.argmin(d))
+    return j, np.where(np.asarray(combo) != keys[j])[0]
+
+
+def load_celeba_comp(img=IMG_CELEBA, root=None, max_rows=None, min_count=60, n_holdout=24,
+                     holdout_attr=None, seed=0, cache_dir=None, n_test_per_combo=64,
+                     verify_hold_ids=None):
+    """Full compositional CelebA: every usable image, split by held-out COMBINATION.
+
+    Decoding ~80k JPEGs takes minutes, so the decoded array is cached to `cache_dir` keyed by
+    (img, max_rows) and reused by every experiment.  Images are kept as uint8 -- at 64x64x3 the
+    float32 copy of 80k images is 3.8 GB and the uint8 one is 0.95 GB.
+    """
+    root = root or find_celeba()
+    cache = None
+    if cache_dir:
+        os.makedirs(cache_dir, exist_ok=True)
+        cache = os.path.join(cache_dir, f"celeba_raw_img{img}_n{max_rows or 0}.npz")
+    if cache and os.path.exists(cache):
+        z = np.load(cache)
+        X8, A = z["X"], z["A"]
+    else:
+        Xf, A = load_from_parquet(root, img=img, max_rows=max_rows)
+        X8 = np.clip(Xf * 255.0, 0, 255).astype(np.uint8)
+        del Xf
+        if cache:
+            # write-then-rename: several experiments start at once and a reader must never see a
+            # half-written array.  Uncompressed on purpose -- deflating ~1.2 GB of uint8 costs
+            # minutes per run and buys nothing on a filesystem with terabytes free.
+            tmp = f"{cache}.tmp{os.getpid()}.npz"
+            np.savez(tmp, X=X8, A=A)
+            os.replace(tmp, cache)
+    split = build_comp_split(A, min_count=min_count, n_holdout=n_holdout,
+                             holdout_attr=holdout_attr, seed=seed)
+    if verify_hold_ids is not None:
+        # An evaluation that recomputes the split with any argument different from training would
+        # silently score against a DIFFERENT set of held-out combinations -- images the backbone had
+        # actually trained on -- and every CelebA number would be quietly wrong with nothing raised.
+        got, want = np.asarray(split["hold_ids"]), np.asarray(verify_hold_ids)
+        if got.shape != want.shape or not np.array_equal(got, want):
+            raise ValueError(
+                f"split mismatch: recomputed hold_ids {got[:6]}... do not match the checkpoint's "
+                f"{want[:6]}...  min_count/n_holdout/holdout_attr/seed/max_rows must match training")
+    rng = np.random.default_rng(seed)
+    tests = {}
+    if holdout_attr is None:
+        targets = list(split["hold_ids"])
+        for j in targets:
+            idx = np.where(split["combo_of"] == j)[0]
+            rng.shuffle(idx)
+            tests[int(j)] = idx[:n_test_per_combo]
+    else:
+        k = split["holdout_attr_idx"]
+        idx = np.where(A[:, k] == 1)[0]
+        rng.shuffle(idx)
+        tests["attr"] = idx[:n_test_per_combo * 8]
+    return dict(X8=X8, attrs=A, img=img, split=split, tests=tests,
+                train_idx=np.where(split["train_mask"])[0])
+
+
+def as_float(X8):
+    """uint8 image store -> [0,1] float32, the space every probe and metric in this repo uses."""
+    return np.asarray(X8, np.float32) / 255.0
+
+
 def class_name(combo):
     on = [a for a, v in zip(ATTRS, combo) if v]
     return ", ".join(on) if on else "(none)"
