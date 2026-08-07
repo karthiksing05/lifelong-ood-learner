@@ -4,9 +4,19 @@
 right axis, and a silent error there would show up later as "orthogonal deltas merge badly" when the
 real fault was the fold.  This checks the function against its own definition before any experiment
 relies on it.
+
+TF32 IS DISABLED BELOW, and the test fails without that line on any Ampere-class GPU.  cuDNN enables
+TF32 for convolutions by default, which costs about three decimal digits, so the two sides of an
+identity that holds EXACTLY in real arithmetic differ by ~1e-3 relative -- ten times the tolerance
+here.  This test asserts an algebraic property of the fold, so it has to be run in a precision where
+a failure means the algebra is wrong rather than that the hardware has tensor cores.  (Discovered
+when the suite was first run on an A40; it had only ever run on 2080 Ti and TITAN Xp before, which
+have no TF32 path, so the same code passed.)
 """
 import os, sys
 import numpy as np, torch
+torch.backends.cudnn.allow_tf32 = False
+torch.backends.cuda.matmul.allow_tf32 = False
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "experiments"))
 from common import CACHE
