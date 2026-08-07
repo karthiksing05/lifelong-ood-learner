@@ -845,18 +845,34 @@ Reporting the ceiling is what makes this readable. `n1_train` printed conditiona
 0.0625 in isolation, which looks like total failure; against a real-data ceiling of 0.247 it is 34%
 of achievable, because a conjunction over 12 imperfectly-read attributes caps everything.
 
-**But the honest conclusion is negative: this backbone's conditioning is too weak to run the
-composition study on.** Conditional 0.083 against an unconditional floor of 0.049 is a small margin,
-and per-attribute the conditional adds only 0.048 over unconditional (0.814 vs 0.766). Composition
-experiments here would be measuring a barely-functional conditional, and any result — good or bad —
-would say more about the backbone than about the composer. **The ColorMNIST conclusions therefore
-have not yet been tested on spatially-overlapping attributes**, and §7's threat about separability
-stands unaddressed rather than resolved.
+**The honest conclusion is negative, and scaling did not fix it.** Conditional 0.083 against an
+unconditional floor of 0.049 is a small margin. The obvious diagnosis was undertraining — this
+backbone saw 5051 images over 51 classes at four times ColorMNIST's pixel count in the same 60
+epochs ColorMNIST used for 12000 over 120 — so a second backbone was trained with **2.3× the data
+and 140 epochs** (400 per class, 70k parquet rows scanned, 103 min). It did not help:
 
-What it would take: the ColorMNIST backbone gets 12000 images over 120 classes; this gets 5051 over
-51, at four times the pixel count, in the same 60 epochs. More data per class (the parquet shards
-hold far more than the 25000 rows currently scanned) and longer training are the first things to try,
-before anything about the method is questioned.
+| | v1 (60 ep, 100/class) | v2 (140 ep, 400/class) |
+|---|---|---|
+| real (ceiling) | 0.247 | 0.170 |
+| conditional | 0.083 | 0.056 |
+| unconditional (floor) | 0.049 | 0.035 |
+| **conditional as % of ceiling** | **34%** | **33%** |
+| per-attribute margin over unconditional | +0.048 | +0.040 |
+
+(v2's absolutes are lower only because all 14 probes became readable, so the conjunction is over 14
+attributes rather than 12 — the *ratios* are the comparable quantities, and they are flat.)
+
+So the weak conditioning is **not** an undertraining artifact. The likely cause is structural: CelebA
+classes here are 14-attribute combinations with as few as 25 examples each, and the attributes
+overlap spatially, so a per-class embedding has little to latch onto that a per-attribute
+representation would not capture better. That is a conditioning-design problem, not a compute one,
+and it is the next thing to try — but it is not the composer, and running composition experiments on
+this backbone would measure the wrong thing.
+
+**Consequence for the paper: the ColorMNIST conclusions have not been tested on spatially-overlapping
+attributes, and §7's separability threat stands unaddressed rather than resolved.** §5h's factor
+basis assumes the factors are close to independent, and CelebA is precisely the case where that
+assumption is not safe.
 
 ## 5p. A reproducibility failure of mine, and what it exposed
 
