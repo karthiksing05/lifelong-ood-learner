@@ -145,7 +145,12 @@ def main():
         tr_combos = np.array(sorted(ck["remap"], key=lambda z: ck["remap"][z]))
         probe_js = rng.permutation(tr_combos)[:2 if args.quick else 5]
         best_g, best_s = 1.0, -1.0
-        for g in ([1.0] if args.quick else [1.0, 1.5, 2.0]):
+        # grid extended to 6.0 on the evidence of tests/diag_celeba_guidance.py: on this backbone
+        # the conditional margin over unconditional RISES monotonically with guidance (7% -> 17% of
+        # the real-vs-unconditional headroom from 1.0 to 6.0) while pixel diversity falls only
+        # 0.271 -> 0.255, i.e. the attribute direction is learned but weak and amplification is not
+        # yet trading against collapse.  Stopping the grid at 2.0 would have under-read the method.
+        for g in ([1.0] if args.quick else [1.0, 1.5, 2.0, 3.0, 4.0, 6.0]):
             sc = []
             for j in probe_js:
                 cb = sp["all_combos"][int(j)]
