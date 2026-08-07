@@ -204,7 +204,8 @@ def agg_n18(runs):
 
 def agg_n20(runs):
     """N20 / N21: CelebA composition arms.  `target` is the discriminative column."""
-    arms, keys = [], ("target", "joint", "mean_attr", "precision", "recall", "f1", "content_ratio")
+    arms, keys = [], ("pair", "target", "joint", "mean_attr", "precision", "recall", "f1",
+                      "content_ratio")
     for _, r in runs:
         arms += [a for a in r.get("summary", {}) if a not in arms]
     table = {a: {k: stat([r["summary"][a][k] for _, r in runs

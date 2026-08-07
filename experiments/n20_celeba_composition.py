@@ -48,8 +48,24 @@ from lifelong_ood.neural import (NeuralLifelongLearner, load_field, sample_embed
 FIG = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "figures")
 
 
-def score(probes, S01, combo, R01, target_idx):
-    """-> joint / mean-attribute / TARGET-attribute accuracy + coverage geometry."""
+def attr_hits(probes, S01, combo, idx):
+    """Fraction of samples getting EVERY attribute in `idx` right at once (NaN if unreadable)."""
+    hits = []
+    for k in idx:
+        a_k = ATTRS[k]
+        if probes.get(f"{a_k}_val_acc", 0.0) >= 0.65:
+            hits.append(probes[a_k].predict(np.asarray(S01, np.float32)) == int(combo[k]))
+    return float(np.stack(hits).all(0).mean()) if hits else float("nan")
+
+
+def score(probes, S01, combo, R01, target_idx, pair_idx=None):
+    """-> joint / mean-attribute / TARGET / PAIR accuracy + coverage geometry.
+
+    `pair` is the metric for the strong split: both withheld attributes correct AT ONCE.  It is
+    reported separately from `target` because `target` is defined relative to the nearest trained
+    neighbour, which may differ on only one of the two, whereas the co-occurrence is what was never
+    observed and is what the method is being asked to produce.
+    """
     a = attr_accuracy(probes, np.asarray(S01, np.float32), combo)
     pr = precision_recall(np.asarray(S01, np.float32), np.asarray(R01, np.float32))
     g = sample_geometry(np.asarray(S01, np.float32), np.asarray(R01, np.float32)[0],
@@ -64,6 +80,8 @@ def score(probes, S01, combo, R01, target_idx):
         if hits:
             tgt = float(np.stack(hits).all(0).mean())
     return dict(joint=a["joint"], mean_attr=a.get("mean_attr", float("nan")), target=tgt,
+                pair=(attr_hits(probes, S01, combo, pair_idx) if pair_idx is not None
+                      else float("nan")),
                 precision=pr["precision"], recall=pr["recall"], f1=pr["f1"],
                 content_ratio=g.get("content_ratio", float("nan")))
 
@@ -106,6 +124,10 @@ def main():
     print(f"[n20] backbone {os.path.basename(args.ckpt)} | {len(sp['hold_ids'])} held-out combos "
           f"| device {dev}", flush=True)
 
+    pair_idx = sp.get("holdout_pair_idx")
+    if pair_idx is not None:
+        print(f"[n20] STRONG SPLIT: {sp['holdout_pair'][0]} x {sp['holdout_pair'][1]} never "
+              f"co-occurred in training; `pair` = both correct at once", flush=True)
     rng = np.random.default_rng(args.seed)
     cases = list(rng.permutation(sp["hold_ids"])[:args.n_cases])
     L = NeuralLifelongLearner(field, steps=args.steps, seed=args.seed, device=dev)
@@ -178,7 +200,7 @@ def main():
         for arm, S in got.items():
             ref = R[1:] if arm == "real" else R
             rows.append(dict(arm=arm, combo=int(j), n_diff=int(len(diff)),
-                             **score(probes, S, combo, ref, diff)))
+                             **score(probes, S, combo, ref, diff, pair_idx=pair_idx)))
         panels[int(j)] = got
         m = [x for x in rows if x["combo"] == int(j) and x["arm"] == "ours"][0]
         print(f"[n20] case {ci + 1}/{len(cases)} combo {int(j)} "
@@ -223,19 +245,20 @@ def main():
     fig.savefig(os.path.join(FIG, "n20_celeba_composition.png"), dpi=140, bbox_inches="tight")
     plt.close(fig)
 
-    keys = ("target", "joint", "mean_attr", "precision", "recall", "f1", "content_ratio")
+    keys = ("pair", "target", "joint", "mean_attr", "precision", "recall", "f1", "content_ratio")
     summary = {a: {k: float(np.nanmean([x[k] for x in rows if x["arm"] == a])) for k in keys}
                for a in order}
     save_json(dict(rows=rows, summary=summary, n_cases=len(cases), guidance=args.guidance,
                    ckpt=os.path.basename(args.ckpt)),
               os.path.join(RESULTS, "n20_celeba_composition.json"), seed=args.seed)
     print(f"\n[n20] {len(cases)} held-out CelebA combinations, {args.n_samples} samples each")
-    print(f"    {'method':16s}{'target':>8s}{'joint':>7s}{'mean_at':>9s}"
+    print(f"    {'method':16s}{'pair':>7s}{'target':>8s}{'joint':>7s}{'mean_at':>9s}"
           f"{'prec':>7s}{'recall':>8s}{'F1':>7s}{'div':>7s}")
     for a in order:
         v = summary[a]
-        print(f"    {a:16s}{v['target']:8.2f}{v['joint']:7.2f}{v['mean_attr']:9.2f}"
-              f"{v['precision']:7.2f}{v['recall']:8.2f}{v['f1']:7.2f}{v['content_ratio']:7.2f}")
+        print(f"    {a:16s}{v['pair']:7.2f}{v['target']:8.2f}{v['joint']:7.2f}"
+              f"{v['mean_attr']:9.2f}{v['precision']:7.2f}{v['recall']:8.2f}{v['f1']:7.2f}"
+              f"{v['content_ratio']:7.2f}")
     print(f"[n20] wrote figures/n20_celeba_composition.png")
 
 
