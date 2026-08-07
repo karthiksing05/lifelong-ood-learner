@@ -702,11 +702,11 @@ the stream tests anything at all):
 | method | acc | precision | recall | **F1** | content div |
 |---|---|---|---|---|---|
 | *`real` — held-out images (ceiling)* | *0.82* | *1.00* | *0.93* | *0.96* | *0.98* |
-| **`ours`** (factored + gain, consolidated) | 0.42 | 0.53 | 0.74 | **0.57** | 1.20 |
-| `poe-guided` (the published method) | **0.71** | 0.01 | 0.03 | **0.00** | 0.75 |
-| `inversion` (class basis) | 0.23 | 0.40 | 0.39 | 0.35 | 1.22 |
-| `nearest-class` (retrieval) | 0.00 | 0.01 | 0.14 | 0.01 | 1.16 |
-| `finetune-stream` (unprotected shared adapter) | 0.42 | 0.53 | 0.80 | **0.59** | 1.18 |
+| **`ours`** (factored + calibrated gain, consolidated) | 0.41 | 0.52 | 0.61 | **0.50** | 1.11 |
+| `poe-guided` (the published method) | **0.57** | 0.07 | 0.01 | **0.00** | 0.77 |
+| `inversion` (class basis) | 0.27 | 0.40 | 0.79 | 0.46 | 1.18 |
+| `nearest-class` (retrieval) | 0.00 | 0.03 | 0.25 | 0.01 | 1.20 |
+| `finetune-stream` (unprotected shared adapter) | 0.46 | 0.63 | 0.65 | **0.60** | 1.02 |
 
 **Against the composition baselines the margin is decisive, and it is the project's central claim.**
 `poe-guided` scores accuracy 0.71 — *higher than ours* — and F1 **0.00**. That is not a contradiction:
@@ -880,11 +880,39 @@ the per-factor gain on whatever backbone it is handed, using **seen slots only**
 label is touched (composing a training slot and asking whether the model reproduces it is
 label-free). Every experiment now takes its gain from the backbone rather than from a literal.
 
-The honest status of the numbers above: they were measured on a checkpoint I cannot reproduce
-bit-for-bit, and they should be treated as pending re-verification on the correctly-retrained
-backbone. The *relative* orderings — ours against the composition baselines, the six-way baseline
-table on real data — are what the claims rest on, and those come from within-run comparisons where
-every arm shares the same backbone.
+**Re-verified.** The correct retrain (200 epochs / 200 per slot, 105 min) restores the backbone —
+conditional joint accuracy **0.891** against the undertrained retrain's 0.141, and ideal-words
+**R² 0.826** against the original's 0.816. Every ColorMNIST experiment was then re-run on it, and the
+claims hold:
+
+| | original checkpoint | re-verified |
+|---|---|---|
+| N9 `ours` F1 | 0.57 | 0.50 |
+| N9 `poe-guided` F1 | 0.00 | 0.00 |
+| N9 `nearest-class` F1 | 0.01 | 0.01 |
+| N8 factorization R² | 0.816 | 0.826 |
+| N8 factored vs inversion F1 | 0.391 / 0.426 (**inversion ahead**) | 0.57 / 0.55 (**factored ahead**) |
+| N5 forgetting, ours / finetune | 0.000 / 0.134 | 0.000 / 0.089 |
+
+The absolute numbers move by up to 0.07 F1 between two runs of the same training command — worth
+stating on its own as the scale of backbone-to-backbone variation on this benchmark. The orderings
+that the main claims rest on are unchanged: ours far above `poe-guided` (F1 0.00) and
+`nearest-class` (0.01) in §5l, and the three-way separation in §5k between protected arms at exactly
+zero forgetting and unprotected arms measurably above it.
+
+**One ordering did flip, and it happens to flip in our favour, which is exactly why it needs saying.**
+On the original checkpoint the factored composer was *behind* the entangled class basis on F1
+(0.391 against 0.426); on the re-verified backbone it is ahead (0.57 against 0.55). Both gaps are
+small and they point opposite ways, so the honest reading is that **factored and inversion are not
+separated by these experiments** — the factored basis's real advantages are the ones that do
+reproduce: it reads (d, f, b) correctly, it needs ~18 factor weights instead of 120 entangled class
+weights, and it carries higher content diversity (1.11 against 1.05 in §5h). Any claim that it beats
+inversion on coverage is currently unsupported.
+
+One number *improved* on re-verification and is worth flagging rather than quietly banking: on the
+restored backbone `ours` is the top method in §5k at 0.849 ACC, above TTT (0.835) and parameter
+isolation (0.833) — but those three are within 0.016 against a ±0.013–0.021 seed spread, so they are
+tied on accuracy and separated by cost and by what they retain, not by quality.
 
 ## 6. Why we are *not* replicating the paper's diffusion results
 

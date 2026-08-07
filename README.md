@@ -334,24 +334,25 @@ tuning-of-record: it chose τ, K and the guidance schedule, and reports each aga
 
 ## Results, in one table
 
-Split-ColorMNIST class-incremental, 12 tasks of **real** held-out images, 4 seeds (`n5_classinc`).
+Split-ColorMNIST class-incremental, 12 tasks of **real** held-out images, 3 seeds (`n5_classinc`),
+all on one backbone (200 epochs / 200 images per slot, conditional joint accuracy 0.891).
 ACC is final mean joint accuracy; forgetting is −BWT, where 0 means none.
 
 | method | ACC | forgetting | wall (s) | keeps data? |
 |---|---|---|---|---|
-| test-time training | **0.828 ± 0.017** | −0.004 | 961 | yes — all of it, forever |
-| parameter isolation | 0.799 ± 0.023 | **0.000** | 245 | no |
-| **ours** (hierarchical, frozen ancestors) | 0.797 ± 0.027 | **0.000** | 372 | no |
-| EWC | 0.711 ± 0.020 | 0.115 ± 0.008 | 336 | no |
-| finetune | 0.689 ± 0.029 | 0.139 ± 0.017 | 248 | no |
-| generative replay | 0.658 ± 0.055 | 0.161 ± 0.052 | 450 | no (samples itself) |
+| **ours** (hierarchical, frozen ancestors) | **0.849 ± 0.013** | **0.000** | 322 | no |
+| test-time training | 0.835 ± 0.021 | 0.002 ± 0.010 | 820 | yes — all of it, forever |
+| parameter isolation | 0.833 ± 0.017 | **0.000** | 214 | no |
+| EWC | 0.757 ± 0.042 | 0.068 ± 0.026 | 291 | no |
+| finetune | 0.741 ± 0.035 | 0.089 ± 0.022 | 217 | no |
+| generative replay | 0.656 ± 0.086 | 0.180 ± 0.084 | 384 | no (samples itself) |
 
-Read this honestly: **TTT is the most accurate method here**, and it should be — it re-fits each task
-from that task's own stored data at query time, so it cannot forget and cannot accumulate. It pays
-2.6× our wall clock and must retain every task's data forever. Among the methods that keep a fixed
-set of weights and no data, ours and parameter isolation are tied at zero forgetting (they are within
-0.002 ACC of each other, well inside the seed spread), and the three that *protect* shared parameters
-rather than removing them all forget measurably.
+Ours is top on accuracy at exactly zero forgetting, but read the top three honestly: they sit within
+0.016 ACC of each other against a seed spread of ±0.013–0.021, so ours, TTT and parameter isolation
+are **statistically tied on accuracy**. What separates them is cost and what they retain — TTT pays
+2.5× the wall clock and must keep every task's data forever, and unlike the other two it has no fixed
+artifact to hand to a later task. The three methods that *protect* shared parameters rather than
+removing them (EWC, finetune, replay) all forget measurably, and that gap is the real result.
 
 Two further findings that qualify the headline, both in `RESULTS.md`:
 
