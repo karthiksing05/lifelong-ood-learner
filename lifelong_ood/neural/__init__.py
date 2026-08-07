@@ -5,10 +5,12 @@ needs it.
 """
 from .unet import UNet
 from .ddpm import NeuralScoreField, train_ddpm, load_field, to_model, to_data, DIM
-from .adapters import HierarchicalAdapterBank, ConceptTree, fingerprint
+from .adapters import (HierarchicalAdapterBank, ConceptTree, activation_subspace,
+                       fingerprint, project_out)
 from .inversion import learn_embedding, sample_embedding, teacher_init_alpha
 from .lifelong_neural import NeuralLifelongLearner
 
 __all__ = ["UNet", "NeuralScoreField", "train_ddpm", "load_field", "to_model", "to_data", "DIM",
            "HierarchicalAdapterBank", "ConceptTree", "fingerprint", "NeuralLifelongLearner",
+           "activation_subspace", "project_out",
            "learn_embedding", "sample_embedding", "teacher_init_alpha"]

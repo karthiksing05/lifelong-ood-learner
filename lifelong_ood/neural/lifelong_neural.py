@@ -124,11 +124,25 @@ class NeuralLifelongLearner:
 
     # ── step 4: distil the pool into a new hierarchical adapter ──────────────
     def consolidate(self, pool, name, mu=None, epochs=10, batch=16, lr=1e-3, p_drop=0.1,
-                    seed=None, verbose=False):
+                    seed=None, verbose=False, project=None, rehearse=None):
         """The paper's Eq. 15 loss, optimizing ONLY this concept's leaf delta and class embedding.
 
         `mu` (the teacher mean) is what places the concept in the hierarchy; pass it so related
         concepts land near each other and can share ancestors.
+
+        `rehearse` = dict(x0, conds, w) trains the delta to be a NO-OP off-concept.  A LoRA delta is
+        conditional by construction: it only applies while this concept's path is active, so it is
+        never asked what it does to other conditionings.  Merging it into the base makes it
+        unconditionally on, which is why a naive fold collapses the model (n12: ACC 0.818 -> 0.062).
+        With this, each step also sees known compositions under their own conditionings and is
+        penalized for changing what the model predicted for them BEFORE this concept began -- so the
+        delta is trained for the always-on job it is about to be given.
+
+        `project` is a {layer: P} map from `activation_subspace`.  When given, the update's
+        input-side factor is projected onto the complement of the activations that already-known
+        conditionings produce, after every step.  That is what allows the delta to be MERGED into
+        the base weights afterwards instead of being carried as a private adapter: the write lands
+        where nothing already known reads.
         """
         seed = self.cfg["seed"] if seed is None else seed
         torch.manual_seed(seed)
@@ -142,6 +156,13 @@ class NeuralLifelongLearner:
         n = len(X)
         g = torch.Generator(device="cpu").manual_seed(seed)
         curve = []
+        reh = None
+        if rehearse is not None:
+            Xr = torch.from_numpy(np.asarray(rehearse["x0"], np.float32)).to(self.device)
+            Xr = Xr.reshape(-1, CH, self.field.img, self.field.img)
+            Cr = [torch.as_tensor(np.asarray(c, np.float32), device=self.device)
+                  for c in rehearse["conds"]]
+            reh = dict(X=Xr, C=Cr, w=float(rehearse.get("w", 1.0)))
         with self.bank.activate(name):
             for ep in range(epochs):
                 tot, nb = 0.0, 0
@@ -160,9 +181,31 @@ class NeuralLifelongLearner:
                     # optimization -- so it stays exactly usable with no dropout at all.
                     loss = torch.nn.functional.mse_loss(
                         model(xt, u, emb_override=self.bank.embedding(name)), e)
+                    if reh is not None:
+                        # what does this delta do to conditionings it is not for?  It should do
+                        # nothing, and the reference is the FROZEN BASE -- reachable by simply
+                        # deactivating the path, so no teacher copy of the model is needed.
+                        j = torch.randint(0, len(reh["X"]), (min(batch, len(reh["X"])),),
+                                          generator=g).to(self.device)
+                        xr0 = reh["X"][j]
+                        cr = reh["C"][int(torch.randint(0, len(reh["C"]), (1,), generator=g))]
+                        ur = torch.rand(len(xr0), device=self.device).clamp_(1e-3, 1.0)
+                        ar = torch.from_numpy(cosine_abar(ur.detach().cpu().numpy())).to(self.device)
+                        ar = ar.float().view(-1, 1, 1, 1)
+                        er = torch.randn_like(xr0)
+                        xrt = ar.sqrt() * xr0 + (1 - ar).sqrt() * er
+                        with torch.no_grad(), self.bank.activate(None):
+                            ref = model(xrt, ur, emb_override=cr)
+                        loss = loss + reh["w"] * torch.nn.functional.mse_loss(
+                            model(xrt, ur, emb_override=cr), ref)
                     opt.zero_grad(set_to_none=True)
                     loss.backward()
                     opt.step()
+                    if project:
+                        # keep the update out of the directions old conditionings read, so the
+                        # delta can be folded into the base weights without overwriting them
+                        from .adapters import project_out
+                        project_out(self.bank, self.bank.concepts[name]["path"], project)
                     tot += float(loss); nb += 1
                 curve.append(tot / max(nb, 1))
                 if verbose:

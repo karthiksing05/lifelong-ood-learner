@@ -36,6 +36,8 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+from ..score import cosine_abar
+
 
 # ── LoRA modules that sum a PATH of deltas ───────────────────────────────────
 class PathLoRA(nn.Module):
@@ -85,6 +87,33 @@ class PathLoRA(nn.Module):
             else:
                 out = out + F.linear(F.linear(x, self.A[nid]), self.B[nid])
         return out
+
+
+    @torch.no_grad()
+    def merge_node(self, nid):
+        """Fold node `nid`'s delta into the base weight and delete the node.
+
+        This is what lets the adapter be SCAFFOLDING rather than storage: the update is learned in a
+        low-rank subspace, then absorbed, so the parameter count returns to the base model's and the
+        next concept starts from a clean slate.  Nothing accumulates.
+
+        The fold is exact for both layer types.  For Linear the delta is `B @ A`.  For Conv2d the
+        path is `conv(x, A, stride, padding, dilation)` followed by a 1x1 `conv(h, B)`; convolution
+        is linear in the kernel and a 1x1 only mixes output channels, so the single equivalent kernel
+        is `W[o,i,:,:] = sum_r B[o,r] * A[r,i,:,:]`, applied with the base's own stride/padding.
+        """
+        nid = str(nid)
+        if nid not in self.A:
+            return False
+        A, B = self.A[nid].detach(), self.B[nid].detach()
+        if self.is_conv:
+            delta = torch.einsum("or,rikl->oikl", B[:, :, 0, 0], A)
+        else:
+            delta = B @ A
+        self.base.weight.data.add_(delta.to(self.base.weight.dtype))
+        del self.A[nid]
+        del self.B[nid]
+        return True
 
 
 def inject(model, rank, state, targets=("conv", "linear")):
@@ -304,6 +333,34 @@ class HierarchicalAdapterBank:
                     ps += [w.A[nid], w.B[nid]]
         return ps
 
+    @torch.no_grad()
+    def merge_concept(self, name, keep_embedding=True):
+        """Absorb `name`'s adapter into the base weights and drop the adapter.
+
+        The alternative to accumulating a private function per concept.  After this the model IS the
+        manifold -- there is no side structure to carry, no path to activate, and the parameter count
+        is the base model's regardless of how many concepts have been absorbed.
+
+        `keep_embedding` retains the concept's conditioning vector, which is 256 floats rather than
+        45K-550K parameters and is what actually names the concept (RESULTS 5n).  The weights learn
+        HOW to render; the embedding says WHAT to render.  Only the first needs merging.
+
+        Returns the number of adapter parameters reclaimed.
+        """
+        c = self.concepts[name]
+        freed = 0
+        for nid in c["path"]:
+            for w in self.wrapped:
+                k = str(nid)
+                if k in w.A:
+                    freed += w.A[k].numel() + w.B[k].numel()
+                    w.merge_node(k)
+        c["path"] = []                          # nothing left to activate; the base carries it now
+        self.frozen.discard(*(c["path"] or [-1])) if c["path"] else None
+        if not keep_embedding:
+            self._emb_extra.pop(name, None)
+        return freed
+
     # -- activation -----------------------------------------------------------
     def activate(self, name):
         """Context manager setting the active adapter path.
@@ -362,3 +419,112 @@ def fingerprint(field, name, seed=0, n=4, u_grid=(0.2, 0.5, 0.8)):
     rng = np.random.default_rng(seed)
     x = rng.standard_normal((n, field.dim))
     return np.concatenate([field.eps(x, u, name).ravel() for u in u_grid])
+
+
+@torch.no_grad()
+def activation_subspace(bank, field, conds, n=4, u_grid=(0.2, 0.5, 0.8), energy=0.97,
+                        max_dim=None, seed=0, x0=None):
+    """The input-activation subspace each wrapped layer sees on conditionings we already know.
+
+    This is what makes "reconsolidate into the existing weights" survivable.  Merging a delta into
+    the base is exact for the concept just learned (`tests/test_merge.py`: relative error 1.1e-06),
+    but the NEXT concept's update then lands on shared weights and overwrites it -- measured drift
+    1.086 after a single further merge.  Freezing an adapter avoids that by never touching the
+    shared weights again, at the cost of carrying a private function per concept forever.
+
+    The alternative is to leave the weights writable but constrain WHERE they may be written: if the
+    update's input-side factor is orthogonal to the activations that old conditionings produce, then
+    the delta is ~0 on everything already known and free on everything new.  Same guarantee, no
+    accumulation.
+
+    We have an unusual advantage in estimating that subspace.  The factor basis is a generator for
+    every composition the model knows, so the "old activations" can be SAMPLED rather than stored --
+    no exemplars, no replay buffer.
+
+    For Conv2d the input is [B, C, H, W] and is treated as B*H*W observations of a C-vector, so the
+    subspace is over channels and ignores spatial structure.  That is an approximation: it constrains
+    which channel mixtures the update may read, not which spatial patterns.
+
+    `x0` should be REAL images of known compositions.  The activations are then collected on
+    `sqrt(abar) x0 + sqrt(1-abar) eps`, which is the distribution the model actually sees.  Estimating
+    the subspace on pure Gaussian input instead measures the wrong thing and roughly halves the
+    protection it buys.
+
+    -> {layer_index: P} where P projects OUT the known-activation subspace.
+    """
+    feats = {}
+    handles = []
+
+    def hook(i):
+        def fn(mod, inp, out):
+            x = inp[0].detach()
+            v = (x.permute(0, 2, 3, 1).reshape(-1, x.shape[1]) if x.dim() == 4
+                 else x.reshape(-1, x.shape[-1]))
+            if len(v) > 4096:                      # cap the per-batch contribution
+                v = v[torch.randperm(len(v), device=v.device)[:4096]]
+            c = (v.T @ v).double()
+            feats[i] = c if i not in feats else feats[i] + c
+        return fn
+
+    for i, w in enumerate(bank.wrapped):
+        handles.append(w.register_forward_hook(hook(i)))
+    try:
+        rng = np.random.default_rng(seed)
+        base = (rng.standard_normal((n, field.dim)) * 0.5 if x0 is None
+                else np.asarray(x0, np.float32))
+        for ci, c in enumerate(conds):
+            emb = (torch.as_tensor(np.asarray(c, np.float32), device=field.device)
+                   if not torch.is_tensor(c) else c)
+            for u in u_grid:
+                if x0 is None:
+                    Xu = base
+                else:                              # the distribution the model is actually trained on
+                    take = base[(ci * n) % len(base):(ci * n) % len(base) + n]
+                    if len(take) < n:
+                        take = base[:n]
+                    ab = float(cosine_abar(np.array([u]))[0])
+                    Xu = (ab ** 0.5) * take + ((1 - ab) ** 0.5) * rng.standard_normal(take.shape)
+                field.eps(Xu, u, emb=emb)
+    finally:
+        for h in handles:
+            h.remove()
+
+    P = {}
+    for i, cov in feats.items():
+        evals, evecs = torch.linalg.eigh(cov)
+        evals = torch.clamp(evals.flip(0), min=0)
+        evecs = evecs.flip(1)
+        tot = float(evals.sum())
+        if tot <= 0:
+            continue
+        frac = torch.cumsum(evals, 0) / tot
+        k = int((frac < energy).sum().item()) + 1
+        if max_dim:
+            k = min(k, int(max_dim))
+        k = max(1, min(k, evecs.shape[1] - 1))     # always leave at least one free direction
+        U = evecs[:, :k].float()
+        P[i] = (torch.eye(U.shape[0], device=U.device) - U @ U.T)
+    return P
+
+
+@torch.no_grad()
+def project_out(bank, node_ids, P):
+    """Constrain each node's input-side factor `A` to the complement of the known subspace.
+
+    Applied after every optimizer step, so the update can only read directions that old conditionings
+    do not use.  `B` is left alone: it decides how much of an already-orthogonal read to write.
+    """
+    ids = {str(n) for n in node_ids}
+    for i, w in enumerate(bank.wrapped):
+        if i not in P:
+            continue
+        for nid in ids:
+            if nid not in w.A:
+                continue
+            A = w.A[nid]
+            if A.dim() == 4:                       # [rank, C, k, k] -> project the channel axis
+                r, C, kh, kw = A.shape
+                flat = A.permute(0, 2, 3, 1).reshape(-1, C)
+                A.data.copy_((flat @ P[i]).reshape(r, kh, kw, C).permute(0, 3, 1, 2))
+            else:
+                A.data.copy_(A @ P[i])

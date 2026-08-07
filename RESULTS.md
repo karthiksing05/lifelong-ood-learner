@@ -1046,6 +1046,69 @@ factors* only. A genuinely new factor, or a concept with no factored description
 in this scheme, and §5o's CelebA result means none of this is yet tested where the factors overlap
 spatially.
 
+## 5r. Can the weights be reconsolidated instead of accumulated? (N12)
+
+An adapter per concept is storage that grows forever, and the natural objection is that a lifelong
+learner should fold new knowledge into the weights it already has. This tests that directly, on the
+N5 protocol (12 tasks of real held-out images) so the numbers sit beside §5k.
+
+Folding itself is not the problem. `tests/test_merge.py` shows a LoRA delta merges into the base
+weights exactly — relative error **1.1e-06**, 1102K adapter parameters reclaimed to zero — for the
+concept just learned. The problem is what happens next.
+
+| arm | ACC | forgetting | **carried params** |
+|---|---|---|---|
+| `adapter-keep` (frozen adapter per concept) | **0.837 ± 0.012** | **0.000** | 7.16M |
+| `merge+rehearse` | 0.380 ± 0.050 | 0.123 ± 0.035 | **0.00M** |
+| `merge+project` | 0.104 ± 0.011 | 0.165 ± 0.003 | **0.00M** |
+| `merge` (plain fold) | 0.073 ± 0.006 | 0.229 ± 0.005 | **0.00M** |
+| `finetune-direct` (no adapter at all) | 0.068 ± 0.003 | 0.227 ± 0.009 | **0.00M** |
+
+**Why the plain fold collapses, and it is not ordinary forgetting.** A LoRA delta is *conditional by
+construction* — it is only ever applied while its concept's path is active, so it is never asked what
+it does to anything else. Merging makes it **unconditionally on**, a job it was not trained for.
+After twelve successive folds the base carries twelve always-on deltas and even the most recent
+concept fails to render (ACC 0.073, and `retention_exact` 0.08 = 1 of 12).
+
+**Three fixes, in increasing order of how much they help.**
+
+*Null-space projection* — constrain the update's input-side factor to the complement of the
+activations that known conditionings produce, so the write lands where nothing already known reads.
+The subspace is **sampled from the model**, not stored, which the factor basis makes free. On an
+isolated pair this cut drift from 1.086 to **0.237** (`tests/diag_merge_nullspace.py`), and the
+estimate matters: computing the subspace on Gaussian noise instead of the noised-image distribution
+the model actually sees roughly halves the protection. On the full stream it is not enough (0.104).
+
+*Rehearsal against the frozen base* — at every step, also show the delta known compositions under
+their own conditionings and penalize changing what the model predicted for them before this concept
+began. No teacher copy is needed: deactivating the path *is* the reference. This is the one that
+works, and it exposed a real hole on the way — protecting only the base classes while leaving the
+*already-absorbed concepts* undefended gave ACC 0.094; adding their embeddings to the rehearsal set
+took the same configuration to **0.339**, and tuning the weight to 5 reached 0.479 at a single seed.
+The weight is a clean stability–plasticity curve: ACC / forgetting of 0.339 / 0.244 at w=1,
+**0.479 / 0.085** at w=5, 0.375 / 0.068 at w=15, 0.245 / 0.097 at w=50.
+
+*Full-rank direct fine-tuning* is the worst option (0.068), which is itself informative: N5's
+`finetune` reaches 0.725 while updating a **low-rank** delta on a shared node. The low-rank
+constraint, not the freezing, is doing much of the protective work there.
+
+### The verdict, stated as a cost rather than a preference
+
+Reconsolidation is **possible but expensive**: 0.380 ± 0.050 against 0.837 ± 0.012, i.e. **45% of the
+frozen-adapter accuracy**, in exchange for carrying nothing at all. Nothing tested here closes that
+gap, and the ordering was stable across all three seeds.
+
+What the experiment actually establishes is *why* the adapter earns its place, which is a better
+reason to keep it than inertia: **conditionality is what makes exact preservation possible.** A
+frozen adapter is not merely stored knowledge, it is knowledge with a guard on it — the delta cannot
+affect a conditioning it was not activated for. Every zero-growth arm here works by trying to
+reconstruct that guarantee statistically (project the update, or rehearse against the old behaviour)
+and every one of them lands well short of a structural guarantee that costs nothing to enforce.
+
+The honest caveat: this searched three mechanisms, not the space. Rehearsal was still improving
+sharply when tuned (0.094 → 0.339 → 0.479 from two changes), so the gap is a measured result for
+*these* methods, not a proof that folding cannot be made to work.
+
 ## 6. Why we are *not* replicating the paper's diffusion results
 
 Side by side on ColorMNIST — their F1 (harmonic mean of precision and recall in Inception feature

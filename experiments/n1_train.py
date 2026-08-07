@@ -49,6 +49,12 @@ def main():
                         "(fg,bg) pairs.  The backbone then has never seen that factor value at all, "
                         "which is what makes basis extension (n11) a real test rather than a "
                         "re-derivation of something the embedding space already encodes")
+    p.add_argument("--holdout-fg", type=int, default=None,
+                   help="hold out an entire FOREGROUND value, same idea as --holdout-bg")
+    p.add_argument("--holdout-digits", type=int, nargs="*", default=None,
+                   help="hold out entire DIGIT values.  Several held-out values give n12 a STREAM "
+                        "of new vocabulary to absorb, which is what measuring cumulative drift "
+                        "under weight reconsolidation needs")
     p.add_argument("--quick", action="store_true")
     args = p.parse_args()
     if args.quick:
@@ -75,6 +81,14 @@ def main():
               f"{int((data['bg'] == args.holdout_bg).sum())} images, "
               f"{len(np.unique(data['slot'][data['bg'] == args.holdout_bg]))} slots never shown",
               flush=True)
+        data["seen"] = seen
+    if args.holdout_fg is not None and args.dataset == "colormnist":
+        seen = seen & (data["fg"] != args.holdout_fg)
+        print(f"[n1] holding out foreground value {args.holdout_fg} ENTIRELY", flush=True)
+        data["seen"] = seen
+    if args.holdout_digits and args.dataset == "colormnist":
+        seen = seen & ~np.isin(data["digit"], np.asarray(args.holdout_digits))
+        print(f"[n1] holding out digits {args.holdout_digits} ENTIRELY", flush=True)
         data["seen"] = seen
     Xs, slots = data["X"][seen], data["slot"][seen]
     uniq = np.unique(slots)
