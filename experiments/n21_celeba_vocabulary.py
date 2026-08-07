@@ -79,7 +79,8 @@ def main():
     _d.IMG, _d.DIM = img, 3 * img * img
     assert ck.get("holdout_attr") == args.attr, \
         f"backbone withheld {ck.get('holdout_attr')!r}, not {args.attr!r}"
-    data = load_celeba_comp(img=img, min_count=60, n_holdout=len(ck["hold_ids"]),
+    data = load_celeba_comp(img=img, min_count=ck.get("min_count", 60),
+                            n_holdout=ck.get("n_holdout", len(ck["hold_ids"])),
                             holdout_attr=args.attr, seed=ck.get("seed", 0), cache_dir=CACHE,
                             verify_hold_ids=ck["hold_ids"])
     sp = data["split"]

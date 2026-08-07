@@ -78,8 +78,11 @@ def main():
     p.add_argument("--min-count", type=int, default=60)
     p.add_argument("--n-holdout", type=int, default=24)
     p.add_argument("--holdout-attr", default=None, choices=[None] + ATTRS)
-    p.add_argument("--holdout-pair", default=None,
-                   help="two attribute names, comma separated (e.g. Wavy_Hair,Blond_Hair).  "
+    p.add_argument("--holdout-pair", nargs=2, default=None, metavar=("ATTR_A", "ATTR_B"),
+                   help="two attribute names, SPACE separated (e.g. --holdout-pair Wavy_Hair "
+                        "Blond_Hair).  Space, not comma: `sbatch --export=ALL,SCRIPT=...` splits "
+                        "its value on commas, so a comma-separated pair silently arrives truncated "
+                        "to one name.  "
                         "Withholds every combination in which BOTH are on, so each attribute is "
                         "still seen thousands of times alone and only the CO-OCCURRENCE is novel. "
                         "This is the direct analogue of ColorMNIST's held-out (fg, bg) pairs and is "
@@ -95,7 +98,7 @@ def main():
     # NEVER default to a name another run owns.  RESULTS 5p is the story of a celeba run silently
     # overwriting the colormnist backbone; the smoke run of THIS script then did it again to
     # ddpm_celeba.pt.  Every distinguishing flag goes in the filename, and --quick gets its own.
-    pair = tuple(args.holdout_pair.split(",")) if args.holdout_pair else None
+    pair = tuple(args.holdout_pair) if args.holdout_pair else None
     tag = "celeba_factored" if args.cond == "factored" else "celeba_classcond"
     if args.holdout_attr is not None:
         tag += f"_no{args.holdout_attr}"

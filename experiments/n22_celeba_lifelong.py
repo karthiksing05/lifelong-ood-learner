@@ -73,7 +73,13 @@ def main():
     img = ck["img"]
     import lifelong_ood.neural.ddpm as _d
     _d.IMG, _d.DIM = img, 3 * img * img
-    data = load_celeba_comp(img=img, min_count=60, n_holdout=len(ck["hold_ids"]),
+    # every split argument comes FROM the checkpoint, and verify_hold_ids then fails loudly if the
+    # recomputed split differs -- an evaluation scoring against combinations the backbone actually
+    # trained on would otherwise look like a very good result
+    data = load_celeba_comp(img=img, min_count=ck.get("min_count", 60),
+                            n_holdout=ck.get("n_holdout", len(ck["hold_ids"])),
+                            holdout_pair=ck.get("holdout_pair"),
+                            holdout_attr=ck.get("holdout_attr"),
                             seed=ck.get("seed", 0), cache_dir=CACHE,
                             verify_hold_ids=ck["hold_ids"])
     sp = data["split"]
