@@ -143,11 +143,6 @@ def learn_factored(field, targets, fac, n_steps=300, lr=0.05, batch=8, seed=0, i
         opt.zero_grad(set_to_none=True)
         loss.backward()
         opt.step()
-        if norm_match:
-            with torch.no_grad():
-                n = v.norm()
-                if float(n) > 0:
-                    v.mul_(target_norm / n)
         hist.append(float(loss))
         if log_every and (it + 1) % log_every == 0:
             print(f"      factored inversion {it + 1}/{n_steps}: "

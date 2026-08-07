@@ -68,6 +68,8 @@ def main():
     p.add_argument("--seed", type=int, default=0)
     p.add_argument("--tag", default="", help="suffix for the output file, so a sweep over "
                                              "--n-train-combos does not overwrite itself")
+    p.add_argument("--n-real-arm", type=int, default=4,
+                   help="combinations to consolidate from REAL images (weights change)")
     p.add_argument("--norm-match", action="store_true",
                    help="hold the new direction at the scale of the factor's existing ones")
     p.add_argument("--skip-adapter", action="store_true")
@@ -76,6 +78,7 @@ def main():
     if args.quick:
         args.n_train_combos, args.n_eval_combos, args.n_samples = 2, 3, 8
         args.ext_steps, args.steps, args.n_per_slot, args.epochs = 60, 20, 20, 4
+        args.n_real_arm = 2
     dev = "cuda" if torch.cuda.is_available() else "cpu"
 
     data = load_colormnist(n_per_slot=args.n_per_slot, seed=args.seed)
@@ -205,6 +208,31 @@ def main():
               f"{len(eval_combos)} concepts, marginal {marginal / 1e3:.0f}K per concept",
               flush=True)
 
+    # ── the arm that changes WEIGHTS from REAL data ──────────────────────────
+    # Phase B showed conditioning cannot render a factor value the backbone has never generated:
+    # background accuracy is 0.00 for basis extension AND for the adapter path.  The adapter fails
+    # for a specific reason worth isolating -- `learn_concept_factored` distills a pool sampled from
+    # the model's OWN conditional, so when the composer cannot express the value the adapter is
+    # distilling its own failure.  This arm consolidates the REAL images instead, which is what N5
+    # does, and it is the test of whether the ceiling is the pipeline or the model.
+    if not args.skip_adapter:
+        L2 = NeuralLifelongLearner(field, steps=args.steps, seed=args.seed, device=dev)
+        for i, (d, f) in enumerate(eval_combos[:args.n_real_arm]):
+            Xr = to_model(combo_images(d, f, 64)).reshape(-1, field.dim)
+            L2.consolidate(Xr, f"r{d}_{f}", mu=Xr.mean(0), epochs=args.epochs)
+            S = to_data(L2.sample_concept(f"r{d}_{f}", n=args.n_samples,
+                                          seed=args.seed)).astype(np.float32)
+            R = combo_images(d, f, 100)
+            a = composition_accuracy(probes, S, d, f, K)
+            pr = precision_recall(S, R)
+            g = sample_geometry(S, R[0], R)
+            rows.append(dict(tag="adapter on REAL images", d=int(d), f=int(f), joint=a["joint"],
+                             digit=a["digit"], fg=a["fg"], bg=a["bg"], f1=pr["f1"],
+                             precision=pr["precision"], recall=pr["recall"],
+                             content_ratio=g.get("content_ratio", float("nan"))))
+            print(f"[n11]   REAL-data adapter (d{d}, f{f}): acc {a['joint']:.2f} "
+                  f"bg {a['bg']:.2f} F1 {pr['f1']:.2f}", flush=True)
+
     # ── preservation: is anything that existed before affected? ──────────────
     # The basis is read-only during extension, so compositions that did NOT use the new value must be
     # bit-identical.  This is the property the adapter path needs freezing and path bookkeeping for.
@@ -253,7 +281,8 @@ def main():
                 bbox_inches="tight")
     plt.close(fig)
 
-    tags = ["train combo", "UNSEEN combo", "adapter (per concept)", "real (ceiling)"]
+    tags = ["train combo", "UNSEEN combo", "adapter (per concept)",
+            "adapter on REAL images", "real (ceiling)"]
     summary = {t: {k: float(np.nanmean([x[k] for x in rows if x["tag"] == t]))
                    for k in ("joint", "digit", "fg", "bg", "precision", "recall", "f1",
                              "content_ratio")}

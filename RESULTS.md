@@ -994,13 +994,57 @@ the failing seed had the largest norm. Holding ‖v‖ at the mean norm of that 
 directions raises the mean to 0.755 and cuts the spread by 3× (±0.109 → ±0.037); the failing seed
 goes 0.35 → 0.76.
 
-### What this does not show
+### The decisive test: a backbone that has never seen the value
 
-The backbone here **has** seen this background value, just not these combinations, so this
-establishes the mechanism rather than the full claim. A backbone trained with the value withheld
-entirely is the decisive test and is running. And basis extension only adds new *values of existing
-factors* — a genuinely new factor, or a concept with no factored description, still has no home in
-this scheme, and that is where per-concept parameters would still be needed.
+Phase A withheld the value from the *basis fit*, but the backbone had still been trained on it, so
+it only established the mechanism. Phase B trains a backbone with background 3 **withheld entirely**
+— 8000 images across 40 slots never shown, 90 seen classes, conditional accuracy 0.883, basis
+R² 0.870 — and repeats everything. 3 seeds:
+
+| arm | acc | **F1** | **bg** |
+|---|---|---|---|
+| basis extension, taught combos | 0.000 | 0.087 ± 0.020 | **0.000** |
+| basis extension, unseen combos | 0.000 | 0.087 ± 0.030 | **0.000** |
+| adapter distilled from the composed pool | 0.001 | 0.000 | **0.002** |
+| **adapter consolidated on REAL images** | **0.833 ± 0.032** | **0.862 ± 0.004** | **0.997** |
+| *real held-out images (ceiling)* | *0.906 ± 0.020* | *0.911 ± 0.009* | *1.000* |
+
+**Conditioning cannot invent a colour the model has never generated.** Background accuracy is exactly
+0.000 — not degraded, absent — while digit (0.77–0.91) and foreground (0.88–0.96) still come out
+fine. The basis direction faithfully places the concept where the other factors say it should go and
+the model renders everything except the one thing it was never taught.
+
+**The adapter path fails too, and for a reason worth isolating.** It also lands at bg 0.002, *and*
+wrecks digit (0.34) and foreground (0.20) on the way. The cause is a pipeline defect, not capacity:
+`learn_concept_factored` distills a pool sampled from the model's **own conditional**, so when the
+composer cannot express the target the adapter is faithfully distilling its own failure. Any
+self-distillation loop inherits the ceiling of whatever generated the pool — the same property that
+made composed-pool streams untestable for forgetting in §5m, biting in a different place.
+
+**Consolidating the same concepts from REAL images works**: 0.833 accuracy at bg 0.997, against a
+real-data ceiling of 0.906. So the model has the capacity; only real data can deliver the new value
+into it.
+
+### What this settles, and the architecture it implies
+
+The two regimes are cleanly separated by measurement, not by argument:
+
+| what is being added | method that works | evidence |
+|---|---|---|
+| a new **combination** of known factor values | **basis extension** | F1 0.755 ± 0.037 vs 0.658 ± 0.017 for per-concept adapters, at **zero** parameters per concept (one 256-float direction covers all 40 combinations using that value) |
+| a new **value** of a factor | **weights, driven by real instances** | 0.833 accuracy vs **0.000** for any conditioning-only route |
+
+That is a routing rule the system can apply itself: if the target decomposes into values already in
+the basis, compose it for free and add nothing; if it needs a value the basis lacks, spend
+parameters, and **make sure the pool is real data rather than the model's own samples**. It also
+answers the original objection directly — LoRA is a one-off because it is a private function, and
+the combinatorial case, which is the overwhelming majority of a lifelong stream over a factored
+domain, does not need one at all.
+
+The honest limit is unchanged and now quantified: basis extension covers new *values of existing
+factors* only. A genuinely new factor, or a concept with no factored description, still has no home
+in this scheme, and §5o's CelebA result means none of this is yet tested where the factors overlap
+spatially.
 
 ## 6. Why we are *not* replicating the paper's diffusion results
 
