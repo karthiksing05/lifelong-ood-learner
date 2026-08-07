@@ -198,3 +198,82 @@ def sample_factored_pool(field, c_new, n=64, steps=50, seed=0, guidance=1.0, eta
     """Sample the model conditioned on a composed concept vector -- the manifold generating."""
     from .inversion import sample_embedding
     return sample_embedding(field, c_new, n=n, steps=steps, seed=seed, guidance=guidance, eta=eta)
+
+
+def extend_basis(field, targets, labels, fac, factor, n_steps=400, lr=0.05, batch=8, seed=0,
+                 gains=None, u_range=(0.05, 0.95), init=None, log_every=0):
+    """Learn ONE new direction for a new value of `factor`, shared across all its instances.
+
+    This is the alternative to giving every concept its own adapter.  A LoRA adapter is a private
+    function: concept 41 gains nothing from concepts 1-40, which is why N3 measures transfer at
+    +0.0013 and why `independent` ties the hierarchy.  A basis direction is shared vocabulary --
+    learn "deep_red background" once from a handful of OOD instances and every (digit, foreground)
+    combination with it becomes expressible immediately, none of which were trained.
+
+    `targets` [N, D] instances that all share the NEW factor value.
+    `labels`  [N, F] their values on the OTHER factors (the entry for `factor` is ignored).
+    Only the new vector is optimized; the existing basis is read-only, so every previously
+    expressible composition is bit-identical afterwards by construction rather than by freezing.
+
+    -> (v [d], history)
+    """
+    model = field.model
+    dev = field.device
+    F = len(fac["V"])
+    Vt = [torch.as_tensor(np.asarray(v, np.float32), device=dev) for v in fac["V"]]
+    mu = torch.as_tensor(np.asarray(fac["mu"], np.float32), device=dev)
+    gain = [1.0] * F if gains is None else [float(x) for x in gains]
+
+    d = Vt[0].shape[1]
+    v = (torch.zeros(d, device=dev) if init is None
+         else torch.as_tensor(np.asarray(init, np.float32), device=dev).clone())
+    v.requires_grad_(True)
+    opt = torch.optim.Adam([v], lr=lr)
+
+    X = torch.from_numpy(np.asarray(targets, np.float32)).to(dev).reshape(-1, CH, field.img, field.img)
+    L = torch.as_tensor(np.asarray(labels, int), device=dev)
+    g = torch.Generator(device="cpu").manual_seed(seed)
+    torch.manual_seed(seed)
+    model.eval()
+    for p in model.parameters():
+        p.requires_grad_(False)
+
+    hist = []
+    for it in range(n_steps):
+        idx = torch.randint(0, len(X), (min(batch, len(X)),), generator=g).to(dev)
+        x0, lab = X[idx], L[idx]
+        u = torch.rand(len(x0), device=dev) * (u_range[1] - u_range[0]) + u_range[0]
+        ab = torch.from_numpy(cosine_abar(u.detach().cpu().numpy())).to(dev).float().view(-1, 1, 1, 1)
+        e = torch.randn_like(x0)
+        xt = ab.sqrt() * x0 + (1 - ab).sqrt() * e
+        # per-instance conditioning: the KNOWN factors come from the frozen basis, the new value is
+        # the single vector being learned, so the gradient sees it under many different contexts
+        c = mu.unsqueeze(0).repeat(len(x0), 1)
+        for f in range(F):
+            if f == factor:
+                c = c + gain[f] * v.unsqueeze(0)
+            else:
+                c = c + gain[f] * Vt[f][lab[:, f]]
+        loss = torch.nn.functional.mse_loss(model(xt, u, emb_override=c), e)
+        opt.zero_grad(set_to_none=True)
+        loss.backward()
+        opt.step()
+        hist.append(float(loss))
+        if log_every and (it + 1) % log_every == 0:
+            print(f"      basis extension {it + 1}/{n_steps}: "
+                  f"{np.mean(hist[-log_every:]):.4f}", flush=True)
+    return v.detach().cpu().numpy(), dict(first=hist[0], final=float(np.mean(hist[-20:])), curve=hist)
+
+
+def compose_with(fac, assignment, factor, v, gains=None):
+    """`compose`, but substituting a learned direction `v` for one factor's value.
+
+    Used to render combinations of a NEWLY added factor value with existing ones -- none of which
+    were trained, and none of which need their own parameters.
+    """
+    gain = [1.0] * len(fac["V"]) if gains is None else [float(x) for x in gains]
+    c = np.asarray(fac["mu"], np.float64).copy()
+    for f, a in enumerate(assignment):
+        c = c + gain[f] * (np.asarray(v, np.float64) if f == factor
+                           else np.asarray(fac["V"][f][int(a)], np.float64))
+    return c

@@ -124,12 +124,18 @@ class UNet(nn.Module):
         The lifelong adapter bank uses it to condition on a concept whose embedding is a trainable
         parameter living outside this module's table: passing the tensor through keeps it in the
         autograd graph, which writing it into `cemb.weight` would not.
+
+        Accepts either one vector `[d]`, shared by the whole batch, or a per-instance batch `[B, d]`.
+        The per-instance form is what basis extension needs (n11): one new factor direction is
+        learned under many different contexts at once, so every element of the batch carries a
+        different combination of the frozen factor vectors plus the single vector being learned.
         """
         e = self.temb(timestep_embedding(u, self.base).to(x.device))
         if e.shape[0] == 1 and x.shape[0] > 1:
             e = e.expand(x.shape[0], -1)
         if emb_override is not None:
-            e = e + emb_override.reshape(1, -1).to(e.dtype)
+            eo = emb_override.to(e.dtype)
+            e = e + (eo.reshape(1, -1) if eo.dim() == 1 else eo.reshape(x.shape[0], -1))
         else:
             if c is None:
                 c = torch.full((x.shape[0],), self.null_id, device=x.device, dtype=torch.long)

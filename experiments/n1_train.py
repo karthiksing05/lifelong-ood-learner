@@ -44,6 +44,11 @@ def main():
     p.add_argument("--max-rows", type=int, default=25000,
                    help="celeba parquet rows to scan; more rows -> more images per class, "
                         "which is the first thing to raise when conditioning is weak (5o)")
+    p.add_argument("--holdout-bg", type=int, default=None,
+                   help="colormnist: hold out an entire BACKGROUND VALUE from training, not just "
+                        "(fg,bg) pairs.  The backbone then has never seen that factor value at all, "
+                        "which is what makes basis extension (n11) a real test rather than a "
+                        "re-derivation of something the embedding space already encodes")
     p.add_argument("--quick", action="store_true")
     args = p.parse_args()
     if args.quick:
@@ -64,6 +69,13 @@ def main():
     else:
         data = load_colormnist(n_per_slot=args.n_per_slot, seed=args.seed)
     seen = data["seen"]
+    if args.holdout_bg is not None and args.dataset == "colormnist":
+        seen = seen & (data["bg"] != args.holdout_bg)
+        print(f"[n1] holding out background value {args.holdout_bg} ENTIRELY: "
+              f"{int((data['bg'] == args.holdout_bg).sum())} images, "
+              f"{len(np.unique(data['slot'][data['bg'] == args.holdout_bg]))} slots never shown",
+              flush=True)
+        data["seen"] = seen
     Xs, slots = data["X"][seen], data["slot"][seen]
     uniq = np.unique(slots)
     remap = {int(s): i for i, s in enumerate(uniq)}          # 120 seen slots -> 0..119
