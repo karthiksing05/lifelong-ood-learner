@@ -78,6 +78,13 @@ def main():
     p.add_argument("--min-count", type=int, default=60)
     p.add_argument("--n-holdout", type=int, default=24)
     p.add_argument("--holdout-attr", default=None, choices=[None] + ATTRS)
+    p.add_argument("--holdout-pair", default=None,
+                   help="two attribute names, comma separated (e.g. Wavy_Hair,Blond_Hair).  "
+                        "Withholds every combination in which BOTH are on, so each attribute is "
+                        "still seen thousands of times alone and only the CO-OCCURRENCE is novel. "
+                        "This is the direct analogue of ColorMNIST's held-out (fg, bg) pairs and is "
+                        "a far stronger compositional demand than holding out 24 of ~1200 "
+                        "combinations individually.")
     p.add_argument("--cond", choices=["factored", "class"], default="factored")
     p.add_argument("--out", default=None)
     p.add_argument("--quick", action="store_true")
@@ -88,9 +95,12 @@ def main():
     # NEVER default to a name another run owns.  RESULTS 5p is the story of a celeba run silently
     # overwriting the colormnist backbone; the smoke run of THIS script then did it again to
     # ddpm_celeba.pt.  Every distinguishing flag goes in the filename, and --quick gets its own.
+    pair = tuple(args.holdout_pair.split(",")) if args.holdout_pair else None
     tag = "celeba_factored" if args.cond == "factored" else "celeba_classcond"
     if args.holdout_attr is not None:
         tag += f"_no{args.holdout_attr}"
+    if pair:
+        tag += f"_nopair{pair[0]}-{pair[1]}"
     if args.quick:
         tag += "_smoke"
     args.out = args.out or os.path.join(CACHE, f"ddpm_{tag}.pt")
@@ -99,7 +109,7 @@ def main():
 
     data = load_celeba_comp(img=args.img, max_rows=args.max_rows, min_count=args.min_count,
                             n_holdout=args.n_holdout, holdout_attr=args.holdout_attr,
-                            seed=args.seed, cache_dir=CACHE)
+                            holdout_pair=pair, seed=args.seed, cache_dir=CACHE)
     sp = data["split"]
     tr = data["train_idx"]
     if args.max_train and len(tr) > args.max_train:
@@ -118,6 +128,12 @@ def main():
         k = sp["holdout_attr_idx"]
         print(f"[n19] attribute {args.holdout_attr} held out ENTIRELY: "
               f"{int((A[:, k] == 1).sum())} images never shown", flush=True)
+    if pair:
+        ka, kb = sp["holdout_pair_idx"]
+        print(f"[n19] PAIR {pair[0]} x {pair[1]} never co-occur in training: "
+              f"{int(((A[:, ka] == 1) & (A[:, kb] == 1)).sum())} images withheld, but "
+              f"{int((A[:, ka] == 1).sum())} and {int((A[:, kb] == 1).sum())} images carry each "
+              f"attribute alone", flush=True)
 
     arch = dict(base=args.base, img=args.img, mults=(1, 2, 2, 2), cond_mode=args.cond)
     if args.cond == "factored":
@@ -138,7 +154,8 @@ def main():
     torch.save(dict(ema=ema, n_classes=len(tr_combos), arch=arch, remap=remap,
                     class_attrs=class_attrs, concepts={}, dataset="celeba", img=args.img,
                     hold_ids=sp["hold_ids"], hold_combos=sp["hold_combos"],
-                    holdout_attr=args.holdout_attr, seed=args.seed), args.out)
+                    holdout_attr=args.holdout_attr, holdout_pair=pair,
+                    min_count=args.min_count, n_holdout=args.n_holdout, seed=args.seed), args.out)
     print(f"[n19] trained in {mins:.1f} min -> {args.out}", flush=True)
 
     # ── evaluation: conditional accuracy against the REAL-DATA ceiling ───────

@@ -205,7 +205,7 @@ def load_celeba(n_per_class=200, img=IMG_CELEBA, seed=0, root=None, min_count=12
                 img=img)
 
 
-def build_comp_split(A, min_count=60, n_holdout=24, holdout_attr=None, seed=0):
+def build_comp_split(A, min_count=60, n_holdout=24, holdout_attr=None, holdout_pair=None, seed=0):
     """Compositional split for the FACTORED backbone: hold out whole attribute COMBINATIONS.
 
     Differs from `build_classes` in what it is allowed to train on.  `build_classes` exists for a
@@ -227,6 +227,26 @@ def build_comp_split(A, min_count=60, n_holdout=24, holdout_attr=None, seed=0):
     cand = np.where(counts >= min_count)[0]
     if len(cand) < n_holdout + 2:
         raise ValueError(f"only {len(cand)} combos with >={min_count} support")
+
+    if holdout_pair is not None:
+        # THE STRONG COMPOSITIONAL SPLIT, and the direct analogue of ColorMNIST's held-out (fg, bg)
+        # pairs: withhold every combination in which two attributes are ON TOGETHER.  Each attribute
+        # is still seen thousands of times on its own, so only their CO-OCCURRENCE is novel -- which
+        # is what "compositional generalisation" is supposed to mean, and is a far stronger demand
+        # than holding out 24 combinations out of ~1200 individually.
+        #
+        # Choose a pair that occupies the SAME PIXELS (Wavy_Hair x Blond_Hair is shape and colour of
+        # the same hair) and the split also stops being separable, which is the whole reason CelebA
+        # is in this repository.
+        ka, kb = [ATTRS.index(a) if isinstance(a, str) else int(a) for a in holdout_pair]
+        both = (keys[:, ka] == 1) & (keys[:, kb] == 1)
+        hold_ids = np.where(both & (counts >= 25))[0]
+        train_mask = ~((A[:, ka] == 1) & (A[:, kb] == 1))
+        return dict(all_combos=keys, counts=counts, combo_of=inv,
+                    hold_ids=np.array(sorted(hold_ids), dtype=int),
+                    hold_combos=keys[sorted(hold_ids)], train_mask=train_mask,
+                    holdout_attr=None, holdout_attr_idx=None,
+                    holdout_pair=(ATTRS[ka], ATTRS[kb]), holdout_pair_idx=(ka, kb))
 
     hold_ids = []
     for i in rng.permutation(cand):
@@ -261,6 +281,9 @@ def nearest_seen(combo, split):
     ok[split["hold_ids"]] = False
     if split.get("holdout_attr_idx") is not None:
         ok &= keys[:, split["holdout_attr_idx"]] == 0
+    if split.get("holdout_pair_idx") is not None:
+        ka, kb = split["holdout_pair_idx"]
+        ok &= ~((keys[:, ka] == 1) & (keys[:, kb] == 1))
     ok &= counts >= 25
     d = (np.asarray(combo)[None] != keys).sum(1)
     d = np.where(ok, d, 10 ** 6)
@@ -269,8 +292,8 @@ def nearest_seen(combo, split):
 
 
 def load_celeba_comp(img=IMG_CELEBA, root=None, max_rows=None, min_count=60, n_holdout=24,
-                     holdout_attr=None, seed=0, cache_dir=None, n_test_per_combo=64,
-                     verify_hold_ids=None):
+                     holdout_attr=None, holdout_pair=None, seed=0, cache_dir=None,
+                     n_test_per_combo=64, verify_hold_ids=None):
     """Full compositional CelebA: every usable image, split by held-out COMBINATION.
 
     Decoding ~80k JPEGs takes minutes, so the decoded array is cached to `cache_dir` keyed by
@@ -297,7 +320,7 @@ def load_celeba_comp(img=IMG_CELEBA, root=None, max_rows=None, min_count=60, n_h
             np.savez(tmp, X=X8, A=A)
             os.replace(tmp, cache)
     split = build_comp_split(A, min_count=min_count, n_holdout=n_holdout,
-                             holdout_attr=holdout_attr, seed=seed)
+                             holdout_attr=holdout_attr, holdout_pair=holdout_pair, seed=seed)
     if verify_hold_ids is not None:
         # An evaluation that recomputes the split with any argument different from training would
         # silently score against a DIFFERENT set of held-out combinations -- images the backbone had
