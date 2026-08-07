@@ -28,7 +28,11 @@ case "$MODE" in
   smoke|full)
     if need ddpm_celeba_factored.pt; then
       go "experiments/n20_celeba_composition.py --seed 0$Q"
-      go "experiments/n22_celeba_lifelong.py --seed 0$Q"
+      # TTT re-fits from stored data at every evaluation and cost 892s of n5's 46 min on
+      # ColorMNIST; at 4x the pixels it would dominate this run.  Its role is a control
+      # that already reproduced there, so the CelebA table runs the five arms that
+      # carry the forgetting claim.
+      go "experiments/n22_celeba_lifelong.py --seed 0 --arms ours independent finetune replay ewc$Q"
     fi
     if need ddpm_celeba_factored_nopairSmiling-Big_Nose.pt; then
       go "experiments/n20_celeba_composition.py --ckpt $CACHE/ddpm_celeba_factored_nopairSmiling-Big_Nose.pt --tag _pair --seed 0$Q"
@@ -47,7 +51,7 @@ case "$MODE" in
         go "experiments/n20_celeba_composition.py --ckpt $CACHE/ddpm_celeba_factored_nopairSmiling-Big_Nose.pt --tag _pair --seed $s"
       need ddpm_celeba_factored_noGray_Hair.pt && go "experiments/n21_celeba_vocabulary.py --attr Gray_Hair --seed $s"
       need ddpm_colormnist_oracle.pt && go "experiments/n23_native_parity.py --seed $s"
-      need ddpm_celeba_factored.pt && go "experiments/n22_celeba_lifelong.py --seed $s"
+      need ddpm_celeba_factored.pt && go "experiments/n22_celeba_lifelong.py --seed $s --arms ours independent finetune replay ewc"
     done
     ;;
   *) echo "usage: $0 {smoke|full|seeds}"; exit 1;;
