@@ -272,7 +272,8 @@ AGG = {"e2_composition": agg_e2, "n2_composition": agg_e2,
        "n5_classinc": agg_n5, "n9_showdown": agg_n9, "n8_idealwords": agg_n7,
        "n18_router": agg_n18, "n20_celeba_composition": agg_n20,
        "n22_celeba_lifelong": agg_n22, "n23_native_parity": agg_n23,
-       "n21_celeba_vocabulary_Gray_Hair": agg_n20}
+       "n21_celeba_vocabulary_Gray_Hair": agg_n20,
+       "n20_celeba_composition_pair": agg_n20}
 
 
 def main():

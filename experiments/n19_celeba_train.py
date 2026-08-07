@@ -59,9 +59,14 @@ def build_probes(data, seed, epochs, cache=True):
              seen=np.ones(len(idx), bool))     # probes are fit on real images, all of them
     probes = fit_attr_probes(d, seed=seed, epochs=epochs)
     if cache:
+        # write-then-rename: several CelebA backbones finish within minutes of each other and every
+        # one of them reaches this line with the same cache key, so a plain open(..., "wb") would
+        # let one job read another's half-written pickle
         import pickle
-        with open(path, "wb") as fh:
+        tmp = f"{path}.tmp{os.getpid()}"
+        with open(tmp, "wb") as fh:
             pickle.dump(probes, fh)
+        os.replace(tmp, path)
     return probes
 
 

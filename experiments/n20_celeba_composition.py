@@ -97,6 +97,8 @@ def main():
     p.add_argument("--guidance", type=float, default=-1.0,
                    help="CFG scale for the composed conditioning; <=0 calibrates it on TRAINED "
                         "combinations, which uses no held-out label")
+    p.add_argument("--tag", default="", help="suffix for the output file, so the pair-holdout run "
+                                             "does not overwrite the combination-holdout one")
     p.add_argument("--skip-poe", action="store_true", help="mode ascent is the expensive arm")
     p.add_argument("--quick", action="store_true")
     args = p.parse_args()
@@ -242,7 +244,8 @@ def main():
                  "flipping it while holding the other thirteen.", fontsize=8)
     fig.tight_layout()
     os.makedirs(FIG, exist_ok=True)
-    fig.savefig(os.path.join(FIG, "n20_celeba_composition.png"), dpi=140, bbox_inches="tight")
+    fig.savefig(os.path.join(FIG, f"n20_celeba_composition{args.tag}.png"), dpi=140,
+                bbox_inches="tight")
     plt.close(fig)
 
     keys = ("pair", "target", "joint", "mean_attr", "precision", "recall", "f1", "content_ratio")
@@ -250,7 +253,7 @@ def main():
                for a in order}
     save_json(dict(rows=rows, summary=summary, n_cases=len(cases), guidance=args.guidance,
                    ckpt=os.path.basename(args.ckpt)),
-              os.path.join(RESULTS, "n20_celeba_composition.json"), seed=args.seed)
+              os.path.join(RESULTS, f"n20_celeba_composition{args.tag}.json"), seed=args.seed)
     print(f"\n[n20] {len(cases)} held-out CelebA combinations, {args.n_samples} samples each")
     print(f"    {'method':16s}{'pair':>7s}{'target':>8s}{'joint':>7s}{'mean_at':>9s}"
           f"{'prec':>7s}{'recall':>8s}{'F1':>7s}{'div':>7s}")
@@ -259,7 +262,7 @@ def main():
         print(f"    {a:16s}{v['pair']:7.2f}{v['target']:8.2f}{v['joint']:7.2f}"
               f"{v['mean_attr']:9.2f}{v['precision']:7.2f}{v['recall']:8.2f}{v['f1']:7.2f}"
               f"{v['content_ratio']:7.2f}")
-    print(f"[n20] wrote figures/n20_celeba_composition.png")
+    print(f"[n20] wrote figures/n20_celeba_composition{args.tag}.png")
 
 
 if __name__ == "__main__":
