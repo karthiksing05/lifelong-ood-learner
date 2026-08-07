@@ -143,6 +143,11 @@ def learn_factored(field, targets, fac, n_steps=300, lr=0.05, batch=8, seed=0, i
         opt.zero_grad(set_to_none=True)
         loss.backward()
         opt.step()
+        if norm_match:
+            with torch.no_grad():
+                n = v.norm()
+                if float(n) > 0:
+                    v.mul_(target_norm / n)
         hist.append(float(loss))
         if log_every and (it + 1) % log_every == 0:
             print(f"      factored inversion {it + 1}/{n_steps}: "
@@ -201,7 +206,8 @@ def sample_factored_pool(field, c_new, n=64, steps=50, seed=0, guidance=1.0, eta
 
 
 def extend_basis(field, targets, labels, fac, factor, n_steps=400, lr=0.05, batch=8, seed=0,
-                 gains=None, u_range=(0.05, 0.95), init=None, log_every=0):
+                 gains=None, u_range=(0.05, 0.95), init=None, log_every=0,
+                 norm_match=False):
     """Learn ONE new direction for a new value of `factor`, shared across all its instances.
 
     This is the alternative to giving every concept its own adapter.  A LoRA adapter is a private
@@ -214,6 +220,13 @@ def extend_basis(field, targets, labels, fac, factor, n_steps=400, lr=0.05, batc
     `labels`  [N, F] their values on the OTHER factors (the entry for `factor` is ignored).
     Only the new vector is optimized; the existing basis is read-only, so every previously
     expressible composition is bit-identical afterwards by construction rather than by freezing.
+
+    `norm_match` holds ‖v‖ at the mean norm of the factor's EXISTING directions.  Left free, the
+    optimizer returns a vector 15-20x larger than the basis it is joining (‖v‖ 4.7-5.4 against 0.26-
+    0.33 for the trained directions), which is then multiplied by the gain on top; across three seeds
+    that produced unseen-combination F1 of 0.65 / 0.35 / 0.71, and the failing seed was the one with
+    the largest norm. A new value of a factor should live at the same scale as that factor's other
+    values, so this makes the constraint explicit rather than hoping the loss enforces it.
 
     -> (v [d], history)
     """
@@ -229,6 +242,7 @@ def extend_basis(field, targets, labels, fac, factor, n_steps=400, lr=0.05, batc
          else torch.as_tensor(np.asarray(init, np.float32), device=dev).clone())
     v.requires_grad_(True)
     opt = torch.optim.Adam([v], lr=lr)
+    target_norm = float(np.linalg.norm(np.asarray(fac["V"][factor], np.float64), axis=1).mean())
 
     X = torch.from_numpy(np.asarray(targets, np.float32)).to(dev).reshape(-1, CH, field.img, field.img)
     L = torch.as_tensor(np.asarray(labels, int), device=dev)
@@ -258,11 +272,18 @@ def extend_basis(field, targets, labels, fac, factor, n_steps=400, lr=0.05, batc
         opt.zero_grad(set_to_none=True)
         loss.backward()
         opt.step()
+        if norm_match:
+            with torch.no_grad():
+                n = v.norm()
+                if float(n) > 0:
+                    v.mul_(target_norm / n)
         hist.append(float(loss))
         if log_every and (it + 1) % log_every == 0:
             print(f"      basis extension {it + 1}/{n_steps}: "
                   f"{np.mean(hist[-log_every:]):.4f}", flush=True)
-    return v.detach().cpu().numpy(), dict(first=hist[0], final=float(np.mean(hist[-20:])), curve=hist)
+    return v.detach().cpu().numpy(), dict(first=hist[0], final=float(np.mean(hist[-20:])),
+                                          curve=hist, target_norm=target_norm,
+                                          norm=float(v.detach().norm()))
 
 
 def compose_with(fac, assignment, factor, v, gains=None):

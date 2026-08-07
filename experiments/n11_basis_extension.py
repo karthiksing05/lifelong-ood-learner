@@ -66,6 +66,10 @@ def main():
     p.add_argument("--bg-gain", type=float, default=2.0)
     p.add_argument("--epochs", type=int, default=40, help="adapter arm consolidation epochs")
     p.add_argument("--seed", type=int, default=0)
+    p.add_argument("--tag", default="", help="suffix for the output file, so a sweep over "
+                                             "--n-train-combos does not overwrite itself")
+    p.add_argument("--norm-match", action="store_true",
+                   help="hold the new direction at the scale of the factor's existing ones")
     p.add_argument("--skip-adapter", action="store_true")
     p.add_argument("--quick", action="store_true")
     args = p.parse_args()
@@ -132,9 +136,11 @@ def main():
     print(f"[n11] {len(tgt)} instances teach ONE {C.shape[1]}-dim direction", flush=True)
 
     v, hist = extend_basis(field, tgt, lab, fac, HF, n_steps=args.ext_steps, gains=gains,
-                           seed=args.seed, log_every=0 if args.quick else 200)
+                           seed=args.seed, log_every=0 if args.quick else 200,
+                           norm_match=args.norm_match)
     print(f"[n11] direction learned: loss {hist['first']:.4f} -> {hist['final']:.4f}, "
-          f"||v|| {np.linalg.norm(v):.3f}", flush=True)
+          f"||v|| {np.linalg.norm(v):.3f} (existing directions of this factor: "
+          f"{hist['target_norm']:.3f}, norm_match={args.norm_match})", flush=True)
 
     # ── score: trained combos vs never-trained combos ────────────────────────
     def score(d, f, tag):
@@ -243,7 +249,8 @@ def main():
                  f"(no per-concept parameters)", fontsize=8)
     fig.tight_layout()
     os.makedirs(FIG, exist_ok=True)
-    fig.savefig(os.path.join(FIG, "n11_basis_extension.png"), dpi=140, bbox_inches="tight")
+    fig.savefig(os.path.join(FIG, f"n11_basis_extension{args.tag}.png"), dpi=140,
+                bbox_inches="tight")
     plt.close(fig)
 
     tags = ["train combo", "UNSEEN combo", "adapter (per concept)", "real (ceiling)"]
@@ -256,7 +263,7 @@ def main():
                    n_train_combos=len(train_combos), n_eval_combos=len(eval_combos),
                    adapter_marginal=(marginal if not args.skip_adapter else 0),
                    ckpt=os.path.basename(args.ckpt), extension=hist["final"]),
-              os.path.join(RESULTS, "n11_basis_extension.json"), seed=args.seed)
+              os.path.join(RESULTS, f"n11_basis_extension{args.tag}.json"), seed=args.seed)
 
     print(f"\n[n11] basis extension, factor {HF} value {K}, basis R^2 {fac['r2']:.3f}")
     print(f"    {'arm':24s}{'acc':>6s}{'digit':>7s}{'fg':>5s}{'bg':>5s}"
