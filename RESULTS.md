@@ -1217,6 +1217,71 @@ vector), and an optimization budget appropriate to a model 17× larger than ours
 say is that the approach fails on real models, because nothing here got as far as testing the
 approach: on this budget even the trivial baseline barely conditions.
 
+## 5v. Three alternatives to a per-concept LoRA, on the goal's own loop (N16)
+
+What the adapter is doing is narrower than it looks. The composition is read in **embedding space**
+(`compose_factored`) and the manifold generates from it; the adapter only fits the residual between
+what the model produces under that embedding and what the target actually looks like — §5n measured
+exactly this. So the adapter is a *local density correction*, not the compositional mechanism, which
+is what makes it worth asking whether something else can play that role.
+
+Each arm below replaces the delta and nothing else. Composition, sampling and consolidation are
+untouched, so differences are attributable to the parameterization. 6 OOD compositions, 3 seeds:
+
+| arm | acc | **F1** | div | params |
+|---|---|---|---|---|
+| `lora` (current method) | **0.363 ± 0.028** | **0.469 ± 0.029** | 1.16 | 3.86M |
+| **`ortho`** (Cayley rotation) | **0.361 ± 0.011** | 0.440 ± 0.028 | 1.20 | **1.28M** |
+| `hypernet` (delta generated from the embedding) | 0.072 ± 0.006 | 0.045 ± 0.023 | 1.50 | 0.89M |
+| `guidance-pool` (guided samples, then consolidated) | 0.002 ± 0.002 | 0.056 ± 0.017 | 1.61 | 4.23M |
+| `guidance-only` (no manifold update at all) | 0.000 | 0.004 ± 0.004 | 1.59 | 0.38M |
+
+**Orthogonal deltas are the result worth keeping.** A Cayley-parameterized rotation matches LoRA on
+accuracy (0.361 vs 0.363, well inside the seed spread) at **one third of the parameters**
+(1.28M vs 3.86M), with slightly better content diversity and slightly worse coverage. Because a
+rotation cannot change the norm of what it acts on, it is also the natural candidate for the merging
+problem in §5r — that combination is untested and is the obvious next experiment.
+
+**The hypernetwork fails, and it was the one I expected to work.** If the embedding carries the
+semantics (§5n), generating the correction from it should give zero growth *and* conditionality —
+the two properties §5r identified as the ones that matter. It does not: 0.072 accuracy against LoRA's
+0.363. The parameterization here is FiLM-style channel modulation driven by a shared trunk, so two
+explanations are live and this experiment does not separate them — a shared trunk cannot hold
+per-concept corrections without interference, or channel-wise scaling is simply too weak a delta
+regardless of how it is produced. Testing a generated *low-rank* delta rather than a generated
+channel scale would separate them.
+
+**Classifier guidance controls the digit weakly and the colours not at all.** The composition here is
+literally a sum of attribute log-probability gradients, which is the most direct statement of the
+compositional hypothesis anywhere in this repo, and it costs parameters per *attribute* rather than
+per concept (0.38M, fixed). Sweeping the guidance scale:
+
+| scale | 0 (off) | 1 | 3 | 10 | 30 | 80 |
+|---|---|---|---|---|---|---|
+| digit accuracy | 0.09 | 0.20 | **0.26** | 0.00 | 0.00 | 0.00 |
+| joint accuracy | 0.01 | 0.01 | 0.01 | 0.00 | 0.00 | 0.00 |
+
+It peaks at scale 3 and collapses above it, and foreground/background never come under control at
+any scale. Against the embedding-conditioning route (digit 0.56–0.83) this is not competitive.
+
+**A correction to my own diagnosis, since it nearly became a false finding.** A first version of the
+guided sampler was a hand-rolled DDIM loop, and it scored at chance *with guidance switched off*. I
+read that as the sampler being broken. It was not: at scale 0 the model is sampling
+**unconditionally**, and unconditional samples scored against one specific target must score at
+chance — digit 0.09, foreground 0.28, background 0.28 is exactly right for 10/4/4 classes. The loop
+was fine and the control was behaving correctly. `sample_guided` now delegates to the same
+`BaseScoreField.sample` every other experiment uses, which is what it should have done from the
+start.
+
+**One negative on a hypothesis of mine, recorded because I proposed it.** Reading the code I noticed
+`learn_concept_factored` trained the concept embedding during consolidation and then overwrote it
+with `c_new` — so the adapter was fit against a conditioning that no longer existed at sampling time.
+Pinning the embedding to `c_new` before consolidating and freezing it there is cleaner and removes a
+real inconsistency, but it did not help: on matched configurations N9's `ours` goes 0.41 / F1 0.50
+before to 0.36 / 0.44 after, one seed each. That is within noise on 5 cases and certainly not the
+improvement I predicted. The fix is kept because it removes the inconsistency, not because it earns
+anything measurable.
+
 ## 6. Why we are *not* replicating the paper's diffusion results
 
 Side by side on ColorMNIST — their F1 (harmonic mean of precision and recall in Inception feature

@@ -124,7 +124,8 @@ class NeuralLifelongLearner:
 
     # ── step 4: distil the pool into a new hierarchical adapter ──────────────
     def consolidate(self, pool, name, mu=None, epochs=10, batch=16, lr=1e-3, p_drop=0.1,
-                    seed=None, verbose=False, project=None, rehearse=None):
+                    seed=None, verbose=False, project=None, rehearse=None,
+                    freeze_embedding=False, already_registered=False):
         """The paper's Eq. 15 loss, optimizing ONLY this concept's leaf delta and class embedding.
 
         `mu` (the teacher mean) is what places the concept in the hierarchy; pass it so related
@@ -146,8 +147,12 @@ class NeuralLifelongLearner:
         """
         seed = self.cfg["seed"] if seed is None else seed
         torch.manual_seed(seed)
-        self.bank.add_concept(name, np.ravel(pool.mean(0) if mu is None else mu))
+        if not already_registered:
+            self.bank.add_concept(name, np.ravel(pool.mean(0) if mu is None else mu))
         params = self.bank.trainable(name)
+        if freeze_embedding:
+            emb_p = self.bank._emb_extra[name]
+            params = [q for q in params if q is not emb_p]
         opt = torch.optim.Adam(params, lr=lr)
         X = torch.from_numpy(np.asarray(pool, np.float32)).to(self.device)
         X = X.reshape(-1, CH, self.field.img, self.field.img)
@@ -382,8 +387,18 @@ class NeuralLifelongLearner:
         pool = sample_factored_pool(self.field, c_new, n=n_pool, steps=self.cfg["steps"],
                                     seed=self.cfg["seed"] if seed is None else seed,
                                     guidance=guidance)
-        self.consolidate(pool, name, mu=np.asarray(pool).mean(0), epochs=epochs)
+        # Pin the embedding to the composed vector BEFORE consolidating, and hold it there.
+        #
+        # This used to run the other way round: consolidation trained the embedding along with the
+        # adapter, and then `c_new` was written over it afterwards.  The adapter was therefore fit
+        # against an embedding that no longer existed at sampling time -- and since the composition
+        # lives in the embedding (RESULTS 5n), that is the conditioning the adapter most needs to
+        # have seen.  Freezing it makes the adapter a residual correction to the actual composition
+        # rather than to a discarded intermediate.
+        self.bank.add_concept(name, np.asarray(pool).mean(0))
         self.bank._emb_extra[name].data = c_new.detach().clone()
+        self.consolidate(pool, name, mu=np.asarray(pool).mean(0), epochs=epochs,
+                         freeze_embedding=True, already_registered=True)
         self.last_read = read
         return c_new, pool
 
