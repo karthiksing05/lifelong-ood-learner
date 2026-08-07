@@ -1565,6 +1565,94 @@ It is stated as an open question rather than a refutation of closure in general,
 experiment that could refute it has not been run on a benchmark where closure could pay.
 
 
+## 5z. The growth accounting: cost is linear in VOCABULARY, flat in experience (N24)
+
+Every efficiency number so far has been per concept -- a basis direction is 256 floats where an
+adapter is 551K (5q), a kept orthogonal delta is 2.8x smaller than a kept LoRA (5w). The claim that
+matters for *lifelong* learning is about the curve: does running forever cost more the longer you
+run, or only more the more genuinely new vocabulary the world contains?
+
+`experiments/n24_growth.py` computes it. Per-concept costs are **read from the measured runs**
+(`n17_ortho_merge.json`, `n11_basis_extension*.json`) rather than restated, and the stream is each
+benchmark's own combinatorial structure -- 160 (digit, fg, bg) slots over 18 factor values for
+ColorMNIST, 419 realized attribute combinations over 28 attribute values for CelebA, arriving in
+random order over 20 seeds. The only modelling step is the routing rule of 5q, for which N18
+measures an actual detector.
+
+| benchmark | experiences | vocab items | vocabulary complete after | per-query LoRA | ours, oracle routing | ours, **measured** routing | ratio |
+|---|---|---|---|---|---|---|---|
+| ColorMNIST | 160 | 18 | experience **27** (83% of the stream then free) | 95.5M | 3.8M | **10.1M** | **9.5x** |
+| CelebA | 419 | 28 | experience **17** (96% of the stream then free) | 250.2M | 6.0M | **23.6M** | **10.6x** |
+
+**The measured-routing column is the one to quote.** The oracle column assumes the router is perfect;
+the measured column charges N18's own error rates back in, and the honest ratio is therefore ~10x
+rather than the 25-42x oracle routing would suggest. The dominant charge is the router's 20%
+over-spend on new combinations (0.200 +/- 0.058), each of which buys an adapter it did not need. The
+other error direction contributes nothing because N18 measured it at exactly **0.000** across 3 seeds
+and 120 queries: a new vocabulary item was never once sent down the free route.
+
+**The shape is the result, not the ratio.** Under oracle routing the curve is *flat* once vocabulary
+is complete -- every later experience is a new combination of values already held and costs nothing.
+Under measured routing it rises with a slope proportional to the misroute rate, so it is not flat,
+but it is bounded by a rate the detector controls rather than by the arrival of experiences. The
+per-query curve -- the source paper's consolidation step, kept rather than discarded -- rises at full
+cost forever. The ratio above is an artefact of where the stream was cut; what does not depend on
+that choice is that one curve's slope is set by a *detector error rate* and the other's by *time*.
+
+Note that the ratio *grows* with the richness of the combination space: CelebA has more compositions
+per vocabulary item than ColorMNIST, and is correspondingly cheaper to run. Combinatorial domains are
+the favourable case for this method, which is the right direction for the argument to point.
+
+**Two things this accounting still does not include.** It counts parameters, not compute: a "free"
+combination still costs a composition and a sampling pass. And it charges every vocabulary item a
+full weight update, which is what 5q's phase B requires -- conditioning alone on a never-seen value
+scores exactly 0.000 -- so the 256-float basis direction is *not* claimed as sufficient for new
+vocabulary, only for new combinations of vocabulary already learned.
+
+
+## 6c. The router: the system decides for itself which update to make (N18, 3 seeds)
+
+This is the piece that turns a set of certified mechanisms into a lifelong *learner*. 5q established
+what to do with each kind of novelty and 5w established what preserves what, but in every experiment
+before this one **I** supplied the category of the incoming query. The source paper names precisely
+this as open work -- "A full mechanism for **detecting**, consolidating, and reusing genuinely new
+primitives remains an important direction for future work" -- and consolidating and reusing were the
+parts already done.
+
+One backbone supplies all three routes: `ddpm_colormnist_nobg3` withheld background value 3 entirely
+*and* the four held-out (fg, bg) pairs, so trained slots, held-out combinations of trained values,
+and slots carrying a never-seen value are all available against the same weights. 40 queries per
+route, thresholds calibrated without any held-out label (5x).
+
+| decision | AUROC | unconditional ablation |
+|---|---|---|
+| novel vs in-distribution | **0.980 +/- 0.002** | 0.981 +/- 0.002 |
+| new-vocabulary vs new-combination | **0.995 +/- 0.002** | 0.998 +/- 0.001 |
+
+Self-routing accuracy **0.858 +/- 0.018** at the calibrated operating point. The confusion matrix is
+the same shape on all three seeds (seed 0 shown):
+
+| truth \ routed to | in-distribution | new-combination | new-vocabulary |
+|---|---|---|---|
+| in-distribution | 34 | 6 | 0 |
+| new-combination | 3 | 17 | 10 |
+| new-vocabulary | 0 | 0 | **40** |
+
+**The asymmetry is the result, and it is the one a lifelong learner wants.** The two mistakes are not
+equivalent. Sending a new *vocabulary* item down the free route produces a WRONG image -- the free
+route scores **0.000** on those queries against 0.621 where it is correct -- and that mistake happens
+at a rate of **0.000 +/- 0.000**: not one of 120 new-vocabulary queries across three seeds was ever
+routed to the free path. Sending a new *combination* to the weight route produces a correct image at
+unnecessary cost, and that happens at **0.200 +/- 0.058**. So the system never under-spends and
+sometimes over-spends, which is exactly the direction an irreversible-damage-avoiding policy should
+err in. 5z charges that over-spend back into the growth curve rather than reporting the oracle one.
+
+**What this is not.** The unconditional ablation matches the conditional signal to within a
+standard error on both decisions, so the router is an out-of-distribution detector on the model's own
+density and NOT evidence that the factor basis recognises what it can express (5x). The detector is
+sufficient to close the loop, and the mechanistic claim it might have supported is unsupported.
+
+
 ---
 
 ## 8. Where the numbers come from

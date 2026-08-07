@@ -76,6 +76,9 @@ def main():
     p.add_argument("--n-show", type=int, default=6)
     p.add_argument("--steps", type=int, default=50)
     p.add_argument("--seed", type=int, default=0)
+    p.add_argument("--guidance", type=float, default=-1.0,
+                   help="CFG scale for the composed conditioning; <=0 calibrates it on TRAINED "
+                        "combinations, which uses no held-out label")
     p.add_argument("--skip-poe", action="store_true", help="mode ascent is the expensive arm")
     p.add_argument("--quick", action="store_true")
     args = p.parse_args()
@@ -101,6 +104,33 @@ def main():
     cases = list(rng.permutation(sp["hold_ids"])[:args.n_cases])
     L = NeuralLifelongLearner(field, steps=args.steps, seed=args.seed, device=dev)
 
+    # ── calibrate guidance on TRAINED combinations (label-free) ─────────────
+    # RESULTS 5p's lesson, applied here before it can bite: a composer constant tuned against one
+    # checkpoint is a hidden dependency on that checkpoint.  Composing a TRAINED combination and
+    # asking whether the model reproduces it uses no held-out label, so the scale can be chosen
+    # per backbone.  Unlike ColorMNIST's factor gains there is no a-priori reason for
+    # under-response here -- the model was trained on exactly these summed vectors -- so if the
+    # calibration lands on 1.0 that is itself the finding, and it is printed either way.
+    if args.guidance <= 0:
+        tr_combos = np.array(sorted(ck["remap"], key=lambda z: ck["remap"][z]))
+        probe_js = rng.permutation(tr_combos)[:2 if args.quick else 5]
+        best_g, best_s = 1.0, -1.0
+        for g in ([1.0] if args.quick else [1.0, 1.5, 2.0]):
+            sc = []
+            for j in probe_js:
+                cb = sp["all_combos"][int(j)]
+                c = model.attr_embedding(torch.as_tensor(cb, dtype=torch.long))
+                S = to_data(sample_embedding(field, c.detach(), n=8, steps=args.steps,
+                                             seed=args.seed, guidance=g)).astype(np.float32)
+                sc.append(attr_accuracy(probes, S, cb).get("mean_attr", np.nan))
+            m = float(np.nanmean(sc))
+            print(f"[n20]   guidance {g}: trained-combination mean-attribute {m:.3f}", flush=True)
+            if m > best_s:
+                best_g, best_s = g, m
+        args.guidance = best_g
+        print(f"[n20] guidance calibrated on trained combinations -> {best_g} "
+              f"(mean-attribute {best_s:.3f})", flush=True)
+
     rows, panels = [], {}
     for ci, j in enumerate(cases):
         combo = sp["all_combos"][j]
@@ -113,7 +143,7 @@ def main():
         # ── ours: the composed factor vector, zero new parameters ───────────
         c_new = model.attr_embedding(torch.as_tensor(np.asarray(combo), dtype=torch.long))
         got["ours"] = to_data(sample_embedding(field, c_new.detach(), n=args.n_samples,
-                                               steps=args.steps,
+                                               steps=args.steps, guidance=args.guidance,
                                                seed=args.seed + ci)).astype(np.float32)
 
         # ── nearest trained combination (retrieval control) ─────────────────
@@ -122,6 +152,7 @@ def main():
             c_nn = model.attr_embedding(torch.as_tensor(sp["all_combos"][nn_j], dtype=torch.long))
             got["nearest-class"] = to_data(sample_embedding(field, c_nn.detach(),
                                                             n=args.n_samples, steps=args.steps,
+                                                            guidance=args.guidance,
                                                             seed=args.seed + ci)).astype(np.float32)
         else:
             got["nearest-class"] = to_data(field.sample(n=args.n_samples, steps=args.steps,
@@ -189,7 +220,7 @@ def main():
     keys = ("target", "joint", "mean_attr", "precision", "recall", "f1", "content_ratio")
     summary = {a: {k: float(np.nanmean([x[k] for x in rows if x["arm"] == a])) for k in keys}
                for a in order}
-    save_json(dict(rows=rows, summary=summary, n_cases=len(cases),
+    save_json(dict(rows=rows, summary=summary, n_cases=len(cases), guidance=args.guidance,
                    ckpt=os.path.basename(args.ckpt)),
               os.path.join(RESULTS, "n20_celeba_composition.json"), seed=args.seed)
     print(f"\n[n20] {len(cases)} held-out CelebA combinations, {args.n_samples} samples each")

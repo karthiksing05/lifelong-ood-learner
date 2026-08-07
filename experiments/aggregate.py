@@ -182,9 +182,96 @@ def agg_n9(runs):
     return dict(table=table, n_seeds=len(runs))
 
 
+def agg_n18(runs):
+    """N18 router: the two AUROCs, their unconditional ablation, and routing accuracy."""
+    keys = ["novel vs in-distribution", "new-vocabulary vs new-combination"]
+    out = dict(accuracy=stat([r.get("accuracy") for _, r in runs]))
+    print(f"    {'decision':38s}{'AUROC':>12s}{'uncond ablation':>18s}")
+    for k in keys:
+        a = stat([r.get("auroc", {}).get(k) for _, r in runs])
+        b = stat([r.get("auroc_uncond_ablation", {}).get(k) for _, r in runs])
+        out[k] = dict(auroc=a, uncond=b)
+        print(f"    {k:38s}{fmt(a):>12s}{fmt(b):>18s}")
+    print(f"    {'self-routing accuracy':38s}{fmt(out['accuracy']):>12s}")
+    for c in ("vocab_sent_to_free", "combination_sent_to_weights",
+              "vocab_free_route_accuracy", "combination_free_route_accuracy"):
+        s = stat([r.get("cost", {}).get(c) for _, r in runs])
+        out[c] = s
+        if s:
+            print(f"    {c:38s}{fmt(s):>12s}")
+    return dict(table=out, n_seeds=len(runs))
+
+
+def agg_n20(runs):
+    """N20 / N21: CelebA composition arms.  `target` is the discriminative column."""
+    arms, keys = [], ("target", "joint", "mean_attr", "precision", "recall", "f1", "content_ratio")
+    for _, r in runs:
+        arms += [a for a in r.get("summary", {}) if a not in arms]
+    table = {a: {k: stat([r["summary"][a][k] for _, r in runs
+                          if a in r.get("summary", {}) and k in r["summary"][a]])
+                 for k in keys} for a in arms}
+    print(f"    {'arm':30s}" + "".join(f"{k:>12s}" for k in keys))
+    for a, row in table.items():
+        print(f"    {a:30s}" + "".join(f"{fmt(row[k]):>12s}" for k in keys))
+    return dict(table=table, n_seeds=len(runs))
+
+
+def agg_n22(runs):
+    """N22: CelebA class-incremental, CL metrics on both the mean-attribute and target scores."""
+    arms = []
+    keys = ("ACC", "FGT", "BWT", "ACC_target", "FGT_target", "retention_exact", "params")
+    for _, r in runs:
+        arms += [x["arm"] for x in r.get("rows", []) if x["arm"] not in arms]
+    table = {}
+    for a in arms:
+        vals = {k: [] for k in keys}
+        for _, r in runs:
+            row = next((x for x in r.get("rows", []) if x["arm"] == a), None)
+            if row is None:
+                continue
+            for k in keys:
+                if k in row:
+                    vals[k].append(row[k])
+        table[a] = {k: stat(v) for k, v in vals.items()}
+    print(f"    {'arm':13s}{'ACC':>13s}{'FGT':>13s}{'tgtACC':>13s}{'tgtFGT':>13s}"
+          f"{'bit-identical':>15s}{'params':>11s}")
+    for a, row in table.items():
+        pm = f"{row['params']['mean'] / 1e6:.2f}M" if row["params"] else "--"
+        print(f"    {a:13s}{fmt(row['ACC']):>13s}{fmt(row['FGT']):>13s}"
+              f"{fmt(row['ACC_target']):>13s}{fmt(row['FGT_target']):>13s}"
+              f"{fmt(row['retention_exact']):>15s}{pm:>11s}")
+    return dict(table=table, n_seeds=len(runs))
+
+
+def agg_n23(runs):
+    """N23: native parity — the ratio is the number this experiment exists to produce."""
+    arms, keys = ["real", "native", "ours", "paper"], ("joint", "f1", "recall", "content_ratio")
+    table = {a: {k: stat([r["summary"][a][k] for _, r in runs
+                          if a in r.get("summary", {}) and k in r["summary"][a]])
+                 for k in keys} for a in arms}
+    print(f"    {'arm':10s}" + "".join(f"{k:>14s}" for k in keys))
+    for a in arms:
+        print(f"    {a:10s}" + "".join(f"{fmt(table[a][k]):>14s}" for k in keys))
+    par = {}
+    print(f"\n    parity (consolidated / native):")
+    for a in ("ours", "paper"):
+        par[a] = {k: stat([r["parity"][a][k] for _, r in runs
+                           if a in r.get("parity", {}) and k in r["parity"][a]])
+                  for k in ("joint", "f1", "recall")}
+        print(f"    {a:10s}" + "".join(f"{k} {fmt(par[a][k])}   " for k in par[a]))
+    drag = {k: stat([r.get("drag", {}).get(k) for _, r in runs])
+            for k in ("deployed (before)", "ours (after)", "oracle")}
+    print(f"\n    seen-slot accuracy (drag): "
+          + "  ".join(f"{k} {fmt(v)}" for k, v in drag.items() if v))
+    return dict(table=table, parity=par, drag=drag, n_seeds=len(runs))
+
+
 AGG = {"e2_composition": agg_e2, "n2_composition": agg_e2,
        "e3_lifelong": agg_e3, "n3_lifelong": agg_n3, "n7_inversion": agg_n7,
-       "n5_classinc": agg_n5, "n9_showdown": agg_n9, "n8_idealwords": agg_n7}
+       "n5_classinc": agg_n5, "n9_showdown": agg_n9, "n8_idealwords": agg_n7,
+       "n18_router": agg_n18, "n20_celeba_composition": agg_n20,
+       "n22_celeba_lifelong": agg_n22, "n23_native_parity": agg_n23,
+       "n21_celeba_vocabulary_Gray_Hair": agg_n20}
 
 
 def main():
