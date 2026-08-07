@@ -934,9 +934,12 @@ weights, and it carries higher content diversity (1.11 against 1.05 in §5h). An
 inversion on coverage is currently unsupported.
 
 One number *improved* on re-verification and is worth flagging rather than quietly banking: on the
-restored backbone `ours` is the top method in §5k at 0.849 ACC, above TTT (0.835) and parameter
-isolation (0.833) — but those three are within 0.016 against a ±0.013–0.021 seed spread, so they are
-tied on accuracy and separated by cost and by what they retain, not by quality.
+restored backbone `ours` is the top method in §5k at **0.816 ± 0.034 ACC over 4 seeds**, above
+parameter isolation (0.806 ± 0.030) and TTT (0.797 ± 0.041). Those three span 0.019 against standard
+errors of ±0.03–0.04, so **they are tied on accuracy**, and one seed drags all three down together
+(0.719 / 0.724 / 0.682). Do not read the ordering as a win. What the four seeds *do* separate
+cleanly is forgetting: 0.000 for both arms that remove shared parameters, against 0.058 / 0.082 /
+0.163 for EWC / finetune / replay.
 
 ## 6. Why we are *not* replicating the paper's diffusion results
 

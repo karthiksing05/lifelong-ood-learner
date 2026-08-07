@@ -334,25 +334,31 @@ tuning-of-record: it chose τ, K and the guidance schedule, and reports each aga
 
 ## Results, in one table
 
-Split-ColorMNIST class-incremental, 12 tasks of **real** held-out images, 3 seeds (`n5_classinc`),
+Split-ColorMNIST class-incremental, 12 tasks of **real** held-out images, 4 seeds (`n5_classinc`),
 all on one backbone (200 epochs / 200 images per slot, conditional joint accuracy 0.891).
 ACC is final mean joint accuracy; forgetting is −BWT, where 0 means none.
 
 | method | ACC | forgetting | wall (s) | keeps data? |
 |---|---|---|---|---|
-| **ours** (hierarchical, frozen ancestors) | **0.849 ± 0.013** | **0.000** | 322 | no |
-| test-time training | 0.835 ± 0.021 | 0.002 ± 0.010 | 820 | yes — all of it, forever |
-| parameter isolation | 0.833 ± 0.017 | **0.000** | 214 | no |
-| EWC | 0.757 ± 0.042 | 0.068 ± 0.026 | 291 | no |
-| finetune | 0.741 ± 0.035 | 0.089 ± 0.022 | 217 | no |
-| generative replay | 0.656 ± 0.086 | 0.180 ± 0.084 | 384 | no (samples itself) |
+| **ours** (hierarchical, frozen ancestors) | **0.816 ± 0.034** | **0.000** | 340 | no |
+| parameter isolation | 0.806 ± 0.030 | **0.000** | 231 | no |
+| test-time training | 0.797 ± 0.041 | 0.004 ± 0.007 | 892 | yes — all of it, forever |
+| EWC | 0.743 ± 0.032 | 0.058 ± 0.021 | 313 | no |
+| finetune | 0.725 ± 0.030 | 0.082 ± 0.017 | 232 | no |
+| generative replay | 0.651 ± 0.061 | 0.163 ± 0.062 | 409 | no (samples itself) |
 
-Ours is top on accuracy at exactly zero forgetting, but read the top three honestly: they sit within
-0.016 ACC of each other against a seed spread of ±0.013–0.021, so ours, TTT and parameter isolation
-are **statistically tied on accuracy**. What separates them is cost and what they retain — TTT pays
-2.5× the wall clock and must keep every task's data forever, and unlike the other two it has no fixed
-artifact to hand to a later task. The three methods that *protect* shared parameters rather than
-removing them (EWC, finetune, replay) all forget measurably, and that gap is the real result.
+**The accuracy column does not separate the top three and should not be read as if it does.** Ours,
+parameter isolation and TTT span 0.019 against per-seed standard errors of ±0.030–0.041; one seed
+(the fourth) is simply harder and drags all three down together (0.719 / 0.724 / 0.682). What they
+cost differs a lot more than what they score: TTT pays 2.6× our wall clock and must keep every
+task's data forever, and it produces no fixed artifact a later task can build on.
+
+**The forgetting column is the result.** The two arms that *remove* shared parameters from the
+optimizer sit at exactly 0.000 — not "small", zero, and `retention_exact` confirms every earlier
+concept is bit-identical to its birth. The three that try to *protect* shared parameters instead
+(EWC's Fisher penalty, replay's self-generated rehearsal, and unprotected finetune) all forget
+measurably: 0.058, 0.082, 0.163. That is the axis the comparison is about, and it separates cleanly
+across all four seeds.
 
 Two further findings that qualify the headline, both in `RESULTS.md`:
 
