@@ -1653,6 +1653,45 @@ density and NOT evidence that the factor basis recognises what it can express (5
 sufficient to close the loop, and the mechanistic claim it might have supported is unsupported.
 
 
+## 5q2. The basis-vs-adapter comparison, run matched (and why the old one was not)
+
+The claim in 5q -- that a basis direction beats a per-concept adapter -- took its two numbers from
+two different runs. The basis figure (F1 0.755) came from `n11_basis_extension_nm`, which was invoked
+with `--skip-adapter` and therefore contains no adapter arm at all; the adapter figure (0.658) came
+from `n11_basis_extension_k4`, which is the run *without* norm-matching. Read within the run that
+contains both, the ordering was the other way round: adapter 0.658 +/- 0.017 against basis 0.569 +/-
+0.155.
+
+So the comparison was re-run properly -- `--norm-match` with the adapter arm enabled, 3 seeds, both
+arms scored on the same combinations of the same backbone.
+
+| arm | joint | digit | fg | bg | F1 | recall | cost |
+|---|---|---|---|---|---|---|---|
+| basis, combinations it was **taught** on | 0.667 | 0.847 | 0.955 | 0.840 | 0.753 +/- 0.050 | 0.878 | 1024 bytes total |
+| basis, combinations **never taught** | **0.676** | 0.868 | 0.938 | 0.840 | **0.756 +/- 0.032** | 0.860 | — |
+| per-concept adapter | 0.532 | 0.651 | 0.828 | 0.944 | 0.662 +/- 0.081 | 0.823 | **551K per concept** |
+| adapter on REAL images | 0.885 | 0.889 | 1.000 | 0.997 | 0.887 +/- 0.027 | 0.898 | 551K per concept |
+| *real held-out images (ceiling)* | *0.910* | *0.910* | *1.000* | *1.000* | *0.913* | *0.912* | — |
+
+**Three things this settles.**
+
+1. **The basis does beat the adapter, at 2153x less cost** -- F1 0.756 against 0.662, from one
+   256-float direction against 551K parameters per concept, and the direction is shared by every
+   combination using that value while the adapter transfers to none of them.
+2. **It is a basis, not a lookup.** Combinations the direction was never taught on score *the same*
+   as the ones it was (0.676 against 0.667). That equality is the whole content of the word "basis";
+   a memorised mapping would fall off.
+3. **Norm-matching is load-bearing, not cosmetic.** The earlier contradictory result is exactly the
+   failure 5q documents: left free, the optimizer returns a direction 15-20x larger than the basis it
+   is joining, and F1 swings 0.65 / 0.35 / 0.71 across seeds. Constraining the new value to the scale
+   of the factor's existing values removes the swing (sd 0.032). **The unstable variant is the one
+   that lost to the adapter**, and reporting it against a norm-matched basis number from a different
+   run was the error.
+
+The methodological point is worth as much as the result: a claim assembled from two runs is not a
+comparison, and this one happened to be wrong in the direction that flattered the method.
+
+
 ---
 
 ## 8. Where the numbers come from
