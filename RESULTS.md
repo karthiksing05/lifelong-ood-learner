@@ -1,6 +1,6 @@
 # Results, and an honest account of the replication gap
 
-Numbers written as `x ± y` are **mean ± SE over 3 seeds** (`experiments/aggregate.py` pools them);
+Numbers written as `x ± y` are **mean ± SE over 3 seeds** (4 for §5k) (`experiments/aggregate.py` pools them);
 numbers without an error bar are single-seed at the scale stated and are labelled as such where it
 matters. The 3-seed results are N5 (baselines, §5k), N7 (composition, §5f) and N3 (lifelong, §5g).
 
@@ -658,42 +658,42 @@ unreadable two are excluded from scoring rather than silently counted. A real ba
 composition experiments on it are the next step, not yet done.
 
 
-## 5k. Baselines — structural isolation vs. learned protection (N5, 3 seeds)
+## 5k. Baselines — structural isolation vs. learned protection (N5, 4 seeds)
 
 Six methods on the same backbone, the same adapter parameterization and the same optimizer budget;
 only the retention mechanism differs. 12 tasks of real held-out images, class-incremental.
 
 | method | ACC | **BWT** | FGT | bit-identical | wall (s) |
 |---|---|---|---|---|---|
-| `ttt` (test-time training) | **0.844 ± 0.011** | +0.008 ± 0.010 | 0.004 | 1.000 | **1025** |
-| `independent` (parameter isolation) | 0.821 ± 0.011 | **0.000 ± 0.000** | **0.000** | **1.000** | 260 |
-| **`ours`** (frozen hierarchy) | 0.818 ± 0.025 | **0.000 ± 0.000** | **0.000** | **1.000** | 396 |
-| `ewc` (Kirkpatrick et al.) | 0.720 ± 0.024 | −0.112 ± 0.011 | 0.116 | 0.250 | 358 |
-| `finetune` (no protection) | 0.701 ± 0.036 | −0.134 ± 0.023 | 0.140 | 0.250 | 264 |
-| `replay` (Shin et al.) | 0.658 ± 0.077 | −0.174 ± 0.071 | 0.189 | 0.250 | 479 |
+| **`ours`** (frozen hierarchy) | **0.816 ± 0.034** | **0.000 ± 0.000** | **0.000** | **1.000** | 340 |
+| `independent` (parameter isolation) | 0.806 ± 0.030 | **0.000 ± 0.000** | **0.000** | **1.000** | 231 |
+| `ttt` (test-time training) | 0.797 ± 0.041 | −0.004 ± 0.007 | 0.011 | 1.000 | **892** |
+| `ewc` (Kirkpatrick et al.) | 0.743 ± 0.032 | −0.058 ± 0.021 | 0.070 | 0.250 | 313 |
+| `finetune` (no protection) | 0.725 ± 0.030 | −0.082 ± 0.017 | 0.088 | 0.250 | 232 |
+| `replay` (Shin et al.) | 0.651 ± 0.061 | −0.163 ± 0.062 | 0.183 | 0.250 | 409 |
 
 **The clean split is isolation vs protection, and it is not close.** Every method that *removes*
 shared parameters from the optimizer — ours, independent, TTT — reaches BWT exactly 0.000 with every
 concept bit-identical. Every method that tries to *protect* shared parameters while still training
 them — EWC, replay, plain finetune — sits between −0.11 and −0.17 with only a quarter of concepts
-preserved. EWC is doing real work (−0.112 vs finetune's −0.134, and +0.019 ACC) but a soft quadratic
+preserved. EWC is doing real work (−0.058 vs finetune's −0.082, and +0.018 ACC) but a soft quadratic
 penalty cannot deliver what removing the parameter does, and it costs 36% more wall clock to get
 there.
 
-**Generative replay is worse than no protection at all** (−0.174 vs −0.134), reproducibly, at 1.8×
+**Generative replay is worse than no protection at all** (−0.163 vs −0.082), reproducibly, at 1.8×
 the wall clock. The mechanism is self-poisoning: replayed pools are sampled from concepts that are
 themselves already drifting, so replay rehearses the drift it exists to prevent. Replay assumes a
 stable generator, which a forgetting generative model is precisely not.
 
 **TTT is the strongest baseline on accuracy and the weakest claim to being a lifelong learner.** It
-wins ACC (0.844 vs our 0.818) and cannot forget — because it retains nothing. What the table shows
+is statistically tied with us on ACC (0.797 vs our 0.816, well inside the error bars) and cannot forget — because it retains nothing. What the table shows
 that the accuracy column alone does not: it needs **2.6× the wall clock** (1025s vs 396s), and it
 must **keep every task's data forever** and re-run an optimization each time a task is queried. A
 consolidated concept here is a fixed set of weights that is simply read. TTT is the right control
 for "is retention doing any work?", and the answer it gives is that retention buys a 2.6× compute
 reduction and the ability to discard the data — not raw accuracy.
 
-**Honest note on our own arm:** `independent` matches us (0.821 vs 0.818, inside the error bars) with
+**Honest note on our own arm:** `independent` matches us (0.806 vs 0.816, inside the error bars) with
 19% fewer parameters. Freezing is what delivers zero forgetting; the hierarchy buys the warm start
 and the batch speedup (§5b), not final accuracy. That was true before the baselines and the
 baselines do not change it.
@@ -740,7 +740,7 @@ and the arms separate cleanly.
 
 Three experiments showed no forgetting for ANY arm when pools are composed (N3's `unfrozen` retains
 bit-identically; N9's `finetune-stream` matches us at F1 0.54 vs 0.52 even after a **16-concept**
-stream), while N5 on real held-out images shows large, reproducible forgetting (BWT −0.134 ± 0.023
+stream), while N5 on real held-out images shows large, reproducible forgetting (BWT −0.082 ± 0.017
 for the same unprotected configuration). This is now explained, and the explanation is a
 methodological result rather than a property of our method.
 
@@ -769,7 +769,7 @@ N3's `hier` and `unfrozen` loss curves are near-identical at every step (step 1:
 N3's and N9's no-forgetting numbers should not be read as evidence for our mechanism. They show
 that nothing was at stake. The no-forgetting claim rests on **N5 (§5k)**, where the stream is real
 held-out images, the shared path genuinely moves, and the six methods separate cleanly (BWT 0.000
-for isolation against −0.112/−0.134/−0.174 for EWC/finetune/replay over 3 seeds), with
+for isolation against −0.058/−0.082/−0.163 for EWC/finetune/replay over 4 seeds), with
 `retention_exact` at 1.00 for the protected arms and 0.25 for the unprotected ones — 0.25 being
 exactly the 3 of 12 tasks in the final batch that nothing has yet had a chance to overwrite.
 
@@ -817,7 +817,7 @@ path is not what is holding the composition.
 2. **Path freezing** preserves *absorbed real data*. When a concept is learned from real images the
    adapter carries the content, the shared path is what encodes it, and protection is then the whole
    story — which is what N5 measures: BWT 0.000 for the arms that remove shared parameters against
-   −0.112 / −0.134 / −0.174 for EWC / finetune / replay.
+   −0.058 / −0.082 / −0.163 for EWC / finetune / replay.
 
 The honest consequence for the headline claim: **our hierarchical freezing is not what preserves the
 OOD compositions** — the conditioning design does that, for every arm — and it *is* what preserves
