@@ -28,6 +28,7 @@ export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 NT="${SLURM_CPUS_PER_TASK:-8}"
 export OMP_NUM_THREADS="$NT" MKL_NUM_THREADS="$NT" OPENBLAS_NUM_THREADS="$NT"
 
+export HF_HOME=/coc/flash10/ksingara3/.cache/huggingface
 cd ~/flash/lifelong-ood-learner
 mkdir -p experiments/slurm results/cache
 

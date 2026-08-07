@@ -1109,6 +1109,114 @@ The honest caveat: this searched three mechanisms, not the space. Rehearsal was 
 sharply when tuned (0.094 → 0.339 → 0.479 from two changes), so the gap is a measured result for
 *these* methods, not a proof that folding cannot be made to work.
 
+## 5s. Does the Cobweb hierarchy earn its keep? (N14) — no, and it was given its best shot
+
+The hierarchy is the part of this repo with the least evidence behind it: §5g measures transfer at
+**+0.0013** (later concepts marginally *more* expensive, not less) and §5k has `independent` — one
+private adapter per concept, nothing shared — tying it. The obvious defence is that N3 and N5 stream
+concepts in random order over unrelated compositions, which is the condition least favourable to
+sharing. N14 removes that defence by handing the tree the case it was designed for: concepts arrive
+in **families sharing two of three factors, families back to back**, so each new concept lands under
+a populated ancestor.
+
+3 seeds, 5 families × 4 concepts:
+
+| arm | acc | transfer (first-epoch) | transfer (final) | shared nodes | params |
+|---|---|---|---|---|---|
+| `clustered` (families back to back) | 0.831 ± 0.005 | **+0.0058** | +0.0006 | 4.0 | 11.57M |
+| `shuffled` (same concepts, random order) | **0.859 ± 0.008** | +0.0038 | +0.0003 | 4.0 | 11.57M |
+| `flat` (no hierarchy, full isolation) | 0.842 ± 0.007 | +0.0040 | +0.0005 | 1.0 | 11.57M |
+
+Transfer is late-minus-early; **negative** would mean later concepts were cheaper, i.e. an ancestor
+gave them something. Every arm is positive, and **`clustered` is the worst on both accuracy and
+transfer** — the exact opposite of the hierarchy's premise, in the exact case built to favour it.
+
+This is not a null result from a broken mechanism. The tree genuinely forms (mean depth 3.2 against
+flat's 1.0) and genuinely shares (4 shared ancestors against flat's 1). It shares, and sharing does
+not help. Parameter counts are identical across all three arms, because the node count is driven by
+the concept count either way — so the hierarchy is not even buying compression.
+
+**Conclusion: the Cobweb-style hierarchical placement should come out of the method.** What survives
+from the Cobweb side of the project is the *insert-only* discipline — new structure never rewrites
+old structure — which is what §5k's exact preservation actually rests on, and which flat per-concept
+adapters provide just as well.
+
+## 5t. The full stream: rare vocabulary, free combinations (N13)
+
+§5q established the routing rule on one held-out value. N13 runs it as a **stream of four** — a
+backbone that never saw background 3, foreground 3, digit 8 or digit 9 (56 seen classes, conditional
+accuracy 0.953). Each value arrives, is absorbed, and must survive everything after it.
+
+A first version scored identically to the `basis-only` control, which turned out to be a real design
+error rather than noise: it absorbed each value into a **per-concept adapter**, and an adapter is
+only active while its own path is, whereas composing through the basis activates no path at all. New
+vocabulary has to land in the **always-on** weights or the composition step cannot see it. Corrected
+(absorb → merge into the base with rehearsal → fit a direction → compose for free):
+
+| value (in arrival order) | `ours` acc | `basis-only` acc | carried params |
+|---|---|---|---|
+| bg=3 (first absorbed) | 0.01 | 0.00 | **0.00M** |
+| fg=3 | 0.00 | 0.00 | **0.00M** |
+| digit=8 | 0.17 | 0.14 | **0.00M** |
+| digit=9 (last absorbed) | **0.52** | 0.08 | **0.00M** |
+| *`adapter-per-combo` (separate run)* | *0.62–0.85* | — | *19–23M* |
+
+Merging plainly works — the most recently absorbed value reaches 0.52 against the control's 0.08 on
+combinations nobody trained, at zero carried parameters. But the column reads as a **forgetting
+gradient**: 0.52 for the last value, 0.17 for the second-to-last, 0.00–0.01 for the first two. Each
+merge damages the vocabulary already folded in, which is §5r's measured cost (0.380 vs 0.837) showing
+up as a curve instead of a single number.
+
+So the honest position on the zero-parameter architecture is that it holds for **recent** vocabulary
+and decays for old, while the adapter-per-combination arm retains everything (0.62–0.85) at 19–23M
+parameters and no free combinations. The two ends of the trade are now both measured, and nothing
+tested here occupies the middle.
+
+## 5u. Does any of it transfer to a real pretrained model? (N15) — not yet, and the blocker is identified
+
+Everything above runs on a 6.8M-parameter UNet we trained ourselves on 32×32 ColorMNIST. N15 moves
+to **`google/ddpm-celebahq-256`**: 113.7M parameters, 256×256, trained by someone else, on the
+paper's own benchmark domain, with attributes that overlap spatially.
+
+Two things had to be built first, and both are findings rather than setup:
+
+1. **The model is unconditional** — no `class_embed_type`, no `num_class_embeds`, no
+   cross-attention, and `class_embedding` is None. There is nothing for `emb_override` to override
+   and no embedding table to factorize. A conditioning slot is **added** as a vector on the time
+   embedding (`neural/pretrained.py`), which is where our own UNet accepts one. Pretrained weights
+   are untouched and a zero vector reproduces the model exactly (verified at **0.000e+00**).
+2. **The basis cannot be read, so it is built** — one direction per attribute value, learned from
+   real images through the diffusion loss (`learn_attribute_basis`).
+
+Getting the sampler right was its own correction worth recording: walking this repo's cosine u-grid
+and mapping each u to the nearest trained timestep produced faces with a systematic **green cast**
+(channel means R 0.338 / G 0.365 / B 0.177 against the diffusers reference's 0.531 / 0.477 / 0.232).
+A pretrained model has to be integrated on the schedule it was trained on; on its native timestep
+grid the cast disappears (R 0.345 / G 0.344 / B 0.227) and the samples are clean 256×256 faces.
+
+6 attribute combinations × 8 samples, scoring the conjunction over the attributes actually composed:
+
+| arm | **target joint** | target per-attribute |
+|---|---|---|
+| *real CelebA images (ceiling)* | *0.417* | *0.778* |
+| `per-combo` (a direction for that exact combination) | 0.167 | 0.542 |
+| `composed` (sum of per-attribute directions) | 0.146 | 0.486 |
+| `uncond` (pretrained model untouched) | 0.146 | 0.528 |
+
+**`composed` equals `uncond` exactly (0.146), so the composition is doing nothing.** But the
+diagnostic that matters is the row above it: **`per-combo` — fitting a single combination directly,
+with no composition involved — barely beats unconditional either (0.167 vs 0.146).** The bottleneck
+is therefore *not* the compositional step. It is the conditioning channel: an additive vector on the
+512-dimensional time embedding of a 113.7M-parameter model, given 400 optimization steps on 64
+images, does not move the model appreciably.
+
+That is an honest negative and a narrow one. It says our method has **not** been shown to transfer,
+and it says the next thing to fix is the conditioning channel rather than the composer — more
+capacity (a small learned projection into the block-level conditioning rather than a single additive
+vector), and an optimization budget appropriate to a model 17× larger than ours. What it does not
+say is that the approach fails on real models, because nothing here got as far as testing the
+approach: on this budget even the trivial baseline barely conditions.
+
 ## 6. Why we are *not* replicating the paper's diffusion results
 
 Side by side on ColorMNIST — their F1 (harmonic mean of precision and recall in Inception feature

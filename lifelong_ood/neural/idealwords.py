@@ -293,3 +293,85 @@ def compose_with(fac, assignment, factor, v, gains=None):
         c = c + gain[f] * (np.asarray(v, np.float64) if f == factor
                            else np.asarray(fac["V"][f][int(a)], np.float64))
     return c
+
+
+def learn_attribute_basis(field, groups, n_steps=400, lr=0.05, batch=2, seed=0,
+                          u_range=(0.05, 0.95), norm=None, log_every=0):
+    """Build a factor basis from DATA, for a model that has no class-embedding table to factorize.
+
+    `factorize` reads an additive structure out of embeddings the backbone already learned.  A
+    pretrained UNCONDITIONAL model (google/ddpm-celebahq-256) has no such table -- there is nothing
+    to factorize, so the basis has to be learned through the diffusion loss instead.
+
+    `groups` = {name: (images, )} -- one entry per attribute VALUE, each holding real images that
+    have it.  Each direction is optimized independently against its own images, and compositions are
+    then formed by SUMMING the directions for the values requested.  That is the ideal-words
+    hypothesis stated as a construction rather than as a fit: if it holds on a real pretrained model,
+    combinations nobody trained are reachable by addition.
+
+    `norm` rescales each direction to a fixed magnitude.  n11 found this matters: left free the
+    optimizer returns directions an order of magnitude out of scale with each other, and summing
+    directions of mismatched scale lets whichever is largest dominate the composition.
+
+    -> {name: v}
+    """
+    out = {}
+    for i, (name, X) in enumerate(groups.items()):
+        d = field.emb_dim if hasattr(field, "emb_dim") else field.model.cemb.weight.shape[1]
+        v = torch.zeros(d, device=field.device, requires_grad=True)
+        opt = torch.optim.Adam([v], lr=lr)
+        Xt = torch.from_numpy(np.asarray(X, np.float32)).to(field.device)
+        Xt = Xt.reshape(-1, CH, field.img, field.img)
+        g = torch.Generator(device="cpu").manual_seed(seed + i)
+        torch.manual_seed(seed + i)
+        hist = []
+        for it in range(n_steps):
+            idx = torch.randint(0, len(Xt), (min(batch, len(Xt)),), generator=g).to(field.device)
+            x0 = Xt[idx]
+            u = (torch.rand(len(x0), device=field.device) * (u_range[1] - u_range[0]) + u_range[0])
+            ab = np.array([field.abar(float(uu)) for uu in u.detach().cpu().numpy()]) \
+                if hasattr(field, "abar") else cosine_abar(u.detach().cpu().numpy())
+            ab = torch.from_numpy(np.asarray(ab)).to(field.device).float().view(-1, 1, 1, 1)
+            e = torch.randn_like(x0)
+            xt = ab.sqrt() * x0 + (1 - ab).sqrt() * e
+            pred = _eps_grad(field, xt, u, v)
+            loss = torch.nn.functional.mse_loss(pred, e)
+            opt.zero_grad(set_to_none=True)
+            loss.backward()
+            opt.step()
+            if norm:
+                with torch.no_grad():
+                    nv = v.norm()
+                    if float(nv) > 0:
+                        v.mul_(float(norm) / nv)
+            hist.append(float(loss))
+            if log_every and (it + 1) % log_every == 0:
+                print(f"      {name} {it + 1}/{n_steps}: {np.mean(hist[-log_every:]):.4f}",
+                      flush=True)
+        out[name] = v.detach().cpu().numpy()
+        print(f"    [basis] {name}: loss {hist[0]:.4f} -> {np.mean(hist[-20:]):.4f}, "
+              f"||v|| {float(v.detach().norm()):.3f}", flush=True)
+    return out
+
+
+def _eps_grad(field, xt, u, emb):
+    """Epsilon WITH gradient to `emb`.  `field.eps` is no_grad and numpy, so it cannot be used here."""
+    if hasattr(field, "model") and hasattr(field.model, "time_embedding") and \
+            hasattr(field.model.time_embedding, "extra"):          # pretrained diffusers wrapper
+        t = torch.full((len(xt),), field._timestep(float(u.mean())), device=field.device,
+                       dtype=torch.long)
+        field.model.time_embedding.extra = emb
+        try:
+            return field.model(xt, t).sample
+        finally:
+            field.model.time_embedding.extra = None
+    return field.model(xt, u, emb_override=emb)                    # our own UNet
+
+
+def compose_attributes(dirs, names, gains=None):
+    """Sum the directions for a set of attribute values -- the composition, with no optimization."""
+    v = None
+    for i, nm in enumerate(names):
+        d = np.asarray(dirs[nm], np.float64) * (1.0 if gains is None else float(gains[i]))
+        v = d if v is None else v + d
+    return v
