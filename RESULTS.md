@@ -1692,6 +1692,57 @@ The methodological point is worth as much as the result: a claim assembled from 
 comparison, and this one happened to be wrong in the direction that flattered the method.
 
 
+## 6d. Native parity: how close is a consolidated concept to one the backbone was TRAINED on? (N23)
+
+The project's own sentence is "adapt new instances into the manifold in a way that is similar to if
+they were learned with the existing ideas". Every result so far argues that indirectly -- preservation
+is bit-exact, forgetting is 0.000, accuracy beats baselines -- because the comparison the sentence
+actually names has never been available: *what that slot would have looked like had it never been
+held out*.
+
+`n1_train --all-slots` supplies it. A backbone trained on all 160 ColorMNIST slots (200 epochs,
+conditional accuracy 0.922, unconditional validity 1.000) is not a method and is not competing; it is
+the reference. 12 held-out compositions, 3 seeds.
+
+| arm | joint | F1 | recall | content div |
+|---|---|---|---|---|
+| *real held-out images (data ceiling)* | *0.876 +/- 0.021* | *0.892 +/- 0.008* | *0.916 +/- 0.004* | *0.988* |
+| **native** (oracle, trained on this slot) | **0.876 +/- 0.013** | **0.871 +/- 0.008** | **0.873 +/- 0.019** | 0.979 |
+| **ours** (consolidated, never retrained) | 0.331 +/- 0.050 | 0.498 +/- 0.066 | 0.788 +/- 0.008 | 1.197 |
+| **paper** (per-query LoRA from the PoE teacher) | 0.444 +/- 0.046 | 0.005 +/- 0.003 | 0.043 +/- 0.017 | 0.954 |
+
+**The reference validates itself.** `native` sits at the data ceiling on joint accuracy (0.876 against
+0.876), so a backbone that trained on a slot does reproduce it, and the denominator below is a real
+upper bound rather than an artefact of a weak oracle.
+
+**Parity, consolidated / native:**
+
+| | joint | F1 | recall |
+|---|---|---|---|
+| **ours** | 0.379 +/- 0.060 | **0.571 +/- 0.073** | **0.903 +/- 0.024** |
+| paper | 0.506 +/- 0.048 | 0.006 +/- 0.003 | 0.050 +/- 0.021 |
+
+**The claim this supports, stated at the strength the numbers support it.** A concept consolidated
+from a single out-of-distribution query, at **zero retraining and zero access to the held-out class**,
+reaches **90% of native-level coverage** and **57% of native F1**. It does *not* reach native
+per-sample fidelity: 38% on joint accuracy. So "as if it had been learned natively" is true of the
+*extent* of the class the concept generates and false of the *precision* of each sample -- which is
+the same split 5h certified from the other direction, where the conditioning span was shown able to
+express one factor or the other but not both.
+
+**And the contrast with the published consolidation is starker here than anywhere else.** Its per-query
+LoRA scores *higher joint accuracy than ours* (0.444 against 0.331) and **0.6% of native F1**, because
+recall 0.043 means it reproduces the query rather than the class. Measured against a backbone that
+was trained on the slot, copying is visible in a way no within-method table shows it.
+
+**Drag.** Seen-slot accuracy is 0.852 +/- 0.038 before consolidation and **0.852 +/- 0.038 after** --
+identical, as it must be, since the base weights are frozen and a consolidated concept's adapter path
+is inactive when sampling a base class. Read that as a consistency check on the invariant rather than
+as evidence for it; the evidence is the bit-identical fingerprint test (6b). The oracle's 0.865 +/-
+0.042 says retraining on all 160 slots cost it nothing on the 120 it already had, so the oracle is not
+being flattered by the comparison either.
+
+
 ---
 
 ## 8. Where the numbers come from
