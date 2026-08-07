@@ -30,8 +30,8 @@ case "$MODE" in
       go "experiments/n20_celeba_composition.py --seed 0$Q"
       go "experiments/n22_celeba_lifelong.py --seed 0$Q"
     fi
-    if need ddpm_celeba_factored_nopairWavy_Hair-Blond_Hair.pt; then
-      go "experiments/n20_celeba_composition.py --ckpt $CACHE/ddpm_celeba_factored_nopairWavy_Hair-Blond_Hair.pt --tag _pair --seed 0$Q"
+    if need ddpm_celeba_factored_nopairSmiling-Big_Nose.pt; then
+      go "experiments/n20_celeba_composition.py --ckpt $CACHE/ddpm_celeba_factored_nopairSmiling-Big_Nose.pt --tag _pair --seed 0$Q"
     fi
     if need ddpm_celeba_factored_noGray_Hair.pt; then
       go "experiments/n21_celeba_vocabulary.py --attr Gray_Hair --seed 0$Q"
@@ -43,8 +43,8 @@ case "$MODE" in
   seeds)
     for s in 1 2; do
       need ddpm_celeba_factored.pt && go "experiments/n20_celeba_composition.py --seed $s"
-      need ddpm_celeba_factored_nopairWavy_Hair-Blond_Hair.pt && \
-        go "experiments/n20_celeba_composition.py --ckpt $CACHE/ddpm_celeba_factored_nopairWavy_Hair-Blond_Hair.pt --tag _pair --seed $s"
+      need ddpm_celeba_factored_nopairSmiling-Big_Nose.pt && \
+        go "experiments/n20_celeba_composition.py --ckpt $CACHE/ddpm_celeba_factored_nopairSmiling-Big_Nose.pt --tag _pair --seed $s"
       need ddpm_celeba_factored_noGray_Hair.pt && go "experiments/n21_celeba_vocabulary.py --attr Gray_Hair --seed $s"
       need ddpm_colormnist_oracle.pt && go "experiments/n23_native_parity.py --seed $s"
       need ddpm_celeba_factored.pt && go "experiments/n22_celeba_lifelong.py --seed $s"
