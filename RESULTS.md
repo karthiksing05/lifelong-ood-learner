@@ -1282,6 +1282,59 @@ before to 0.36 / 0.44 after, one seed each. That is within noise on 5 cases and 
 improvement I predicted. The fix is kept because it removes the inconsistency, not because it earns
 anything measurable.
 
+## 5w. Orthogonal deltas, merged (N17) — the merge route stays closed, but the delta gets 2.8x smaller
+
+§5v left one combination untested and I predicted it would work. Merging a LoRA delta destroys the
+model because a concept-specific transform becomes unconditional (§5r); an orthogonal delta cannot
+change the norm of what it acts on, and norm distortion looked like the destructive part. Rotations
+also compose into rotations, so repeated folds stay inside the constraint set. `test_ortho_merge.py`
+confirms the fold is exact (relative error **1.6e-06**, rotations orthogonal to 6.6e-07).
+
+Same protocol as §5k and §5r — 12 tasks of real held-out images, 3 seeds:
+
+| arm | ACC | forgetting | **carried params** |
+|---|---|---|---|
+| `lora-keep` | **0.837 ± 0.012** | **0.000** | 7.16M |
+| **`ortho-keep`** | 0.773 ± 0.048 | **0.000** | **2.56M** |
+| `lora-merge+rehearse` | 0.378 ± 0.051 | 0.125 ± 0.037 | 0.00M |
+| `ortho-merge+rehearse` | 0.082 ± 0.010 | 0.100 ± 0.016 | 0.00M |
+| `ortho-merge` | 0.069 ± 0.005 | 0.225 ± 0.013 | 0.00M |
+
+**The prediction was wrong.** Orthogonal merging is not better than low-rank merging, it is *far
+worse* — 0.082 against 0.378 with the same rehearsal. Norm preservation does not rescue the fold,
+which means the destructive part of merging was never norm distortion; it is the loss of
+conditionality, exactly as §5r argued and I then talked myself past.
+
+The failure has a coherent shape worth keeping. `ortho-merge+rehearse` forgets *less* than
+`lora-merge+rehearse` (0.100 vs 0.125) while scoring far lower — a rotation is a restricted
+transform, and once it is also required to be a no-op on every known conditioning there is almost no
+freedom left to fit the new concept. It is stable because it barely moves.
+
+**What does survive is worth having.** As a *kept* adapter, orthogonal deltas give
+**0.773 ± 0.048 at 2.56M against LoRA's 0.837 ± 0.012 at 7.16M** — 2.8× fewer carried parameters,
+still exactly zero forgetting and bit-identical retention, for −0.064 ACC that is within about 1.3
+standard errors. On a long stream, where carried parameters are the binding constraint, that is a
+better operating point than the accuracy difference suggests, and it composes with everything else:
+§5q's basis extension still makes new *combinations* free, so the adapter is only ever paid for new
+vocabulary.
+
+### The state of the zero-growth question, after four attempts
+
+| route | best ACC | verdict |
+|---|---|---|
+| frozen low-rank adapter (current) | 0.837 | exact preservation, unbounded growth |
+| frozen orthogonal adapter | 0.773 | exact preservation, **2.8× less growth** |
+| merged low-rank + rehearsal | 0.378 | zero growth, forgets |
+| merged orthogonal + rehearsal | 0.082 | zero growth, barely learns |
+| hypernetwork (generated delta) | 0.072 (composition task) | zero growth, does not fit |
+
+Four mechanisms have now been tried for "absorb into existing weights and carry nothing", and every
+one lands far below keeping a conditional delta. The consistent explanation across all of them is
+that **conditionality, not size, is what buys preservation** — a delta that can be switched off for
+concepts it was not trained for cannot damage them, and every attempt to remove that switch has had
+to reconstruct it statistically and has fallen short. That is now a result supported by four
+independent failures rather than an argument.
+
 ## 6. Why we are *not* replicating the paper's diffusion results
 
 Side by side on ColorMNIST — their F1 (harmonic mean of precision and recall in Inception feature

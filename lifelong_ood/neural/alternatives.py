@@ -137,6 +137,34 @@ class OrthoDelta(nn.Module):
         return torch.linalg.solve(I + S, I - S)        # Cayley -> orthogonal
 
 
+    @torch.no_grad()
+    def merge_into(self, wrapped):
+        """Fold every rotation into the base weights.  Exact, and rotations compose.
+
+        A rotation on a layer's OUTPUT is just a left-multiplication: `R(Wx + b) = (RW)x + Rb`, so
+        folding is exact for linear and convolutional layers alike, with no low-rank approximation
+        anywhere.  It is also closed -- merging a second rotation on top yields `R2 R1`, still a
+        rotation -- which is the property LoRA lacks and the reason this combination is worth
+        measuring: 5r found merged low-rank deltas corrupt the base, and norm distortion is the part
+        that does the damage.
+
+        The conditionality problem does NOT go away: a rotation trained while one concept was active
+        becomes unconditional once merged, exactly as a LoRA delta does.  Whether being norm-
+        preserving is enough to survive that is the question, not an assumption.
+        """
+        for i, w in enumerate(wrapped):
+            nb, bs, o = self.shapes[i]
+            R = self.rotation(i)
+            W = w.base.weight.data
+            head = W[:nb * bs].reshape(nb, bs, -1)
+            W[:nb * bs] = torch.einsum("nij,njk->nik", R.to(W.dtype), head).reshape(
+                nb * bs, *W.shape[1:])
+            if getattr(w.base, "bias", None) is not None:
+                b = w.base.bias.data
+                hb = b[:nb * bs].reshape(nb, bs, 1)
+                b[:nb * bs] = torch.einsum("nij,njk->nik", R.to(b.dtype), hb).reshape(nb * bs)
+
+
 class OrthoHook:
     """One hook per layer, consulting a shared registry for which concept's rotation is active.
 
