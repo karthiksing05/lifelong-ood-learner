@@ -80,9 +80,23 @@ def train_ddpm(model, X01, labels, epochs=60, batch=128, lr=2e-4, wd=1e-6, p_dro
     # and the float32 copy of that is 5 GB of host RAM, against 1.2 GB as uint8.
     u8 = np.asarray(X01).dtype == np.uint8
     if u8:
-        # flat rows are HWC (that is how the loaders ravel them), so go through HWC before NCHW
-        Xt = torch.from_numpy(np.ascontiguousarray(
-            np.asarray(X01).reshape(-1, img, img, CH).transpose(0, 3, 1, 2)))
+        # MUST be the same reinterpretation the float path below performs -- a plain reshape of the
+        # flat row into (CH, img, img), NOT an HWC->NCHW transpose.
+        #
+        # This repository's flat vectors are HWC as written by the loaders, and every consumer
+        # (`_as_img`, the float branch here, the sampler) *reinterprets* them as CHW.  That is a
+        # fixed permutation of the pixels, and because training and sampling apply the SAME
+        # permutation the model simply learns in the permuted space; `rgb_img` then displays flat
+        # vectors as HWC, so real and generated images are shown identically and correctly.
+        #
+        # The first version of this branch "helpfully" transposed to a true NCHW image.  That made
+        # training and sampling use DIFFERENT layouts: the CelebA backbone learned upright faces and
+        # was then sampled through `_as_img`'s CHW reinterpretation, so every generated panel came
+        # out as a tiled mosaic, per-attribute controllability measured 0.000 on eight of eight
+        # attributes, and the conditioning looked absent when it was merely being asked in the wrong
+        # basis.  Consistency with the rest of the pipeline matters more than the layout being the
+        # conventional one.
+        Xt = torch.from_numpy(np.ascontiguousarray(X01)).reshape(-1, CH, img, img)
     else:
         Xt = torch.from_numpy(to_model(X01).astype(np.float32)).reshape(-1, CH, img, img)
     Y = torch.from_numpy(np.asarray(labels, np.int64))
