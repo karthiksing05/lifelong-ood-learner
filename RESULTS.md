@@ -941,6 +941,67 @@ errors of ±0.03–0.04, so **they are tied on accuracy**, and one seed drags al
 cleanly is forgetting: 0.000 for both arms that remove shared parameters, against 0.058 / 0.082 /
 0.163 for EWC / finetune / replay.
 
+## 5q. Adding a factor DIRECTION instead of an adapter (N11)
+
+Everything above adds a concept by training a per-concept adapter. Three of our own results say that
+is the wrong primitive. §5n: zeroing a concept's private embedding drops it from 0.38 to 0.04 while
+the shared adapter path triples with little effect — the adapter is not carrying the composition.
+§5g: N3 measures transfer at **+0.0013**, so later concepts are marginally *more* expensive; adapters
+accumulate nothing reusable. §5k: `independent` ties the hierarchy (0.806 vs 0.816) with fewer
+parameters. A LoRA adapter is a **private function** — concept 41 gains nothing from concepts 1–40 —
+which makes it a one-off rather than a way to broaden composition.
+
+The ideal-words structure suggests the alternative. If `c(d,f,b) ≈ μ + D_d + F_f + B_b` at R² 0.83,
+a concept is a **point in a factor space**, not a function. Then adding to the manifold means adding
+a *direction* to shared vocabulary: learn one vector for a new background from a handful of OOD
+instances, and every (digit, foreground) combination using it becomes expressible immediately — none
+of them trained, none costing parameters.
+
+**Result** (`n11_basis_extension`, 3 seeds, factor value excluded from the basis fit, R² 0.856; one
+direction taught from 4 combinations then scored on 12 that were never trained):
+
+| arm | acc | **F1** | fg | bg | div | cost per concept |
+|---|---|---|---|---|---|---|
+| basis extension, **unseen** combos | 0.662 ± 0.063 | **0.755 ± 0.037** | 0.939 | 0.84 | 1.02 | **0** |
+| basis extension, taught combos | 0.656 ± 0.038 | 0.753 ± 0.035 | 0.955 | 0.84 | 1.07 | 256 floats total |
+| per-concept adapter | 0.628 ± 0.035 | 0.658 ± 0.017 | 0.854 | 0.98 | 1.02 | 551K params |
+| *real held-out images (ceiling)* | *0.903 ± 0.017* | *0.911 ± 0.009* | *1.000* | *1.00* | *1.00* |
+
+**Unseen combinations score the same as the taught ones** (0.755 vs 0.753) — the direction is
+genuinely a factor, not a memorized set. It **beats the adapter path** (F1 0.755 vs 0.658) while one
+256-float vector covers all 40 combinations using that value, against 551K *marginal* parameters per
+concept for adapters. What it gives up is background fidelity (0.84 vs 0.98), the expected cost of a
+smaller direction.
+
+**Preservation stops being a mechanism and becomes a property.** The basis is read-only during
+extension, so every composition that does not use the new value is bit-identical afterwards — no
+freezing, no `_seal()`, no path bookkeeping. `adapters.py` exists to buy structurally what this gets
+for free.
+
+### Two failure modes, both found by measurement and both fixable
+
+**The direction absorbs whatever the teaching set held constant.** The first run drew both teaching
+combinations with the same foreground; on unseen combinations digit transferred at 0.92 and
+background at 0.96 while foreground collapsed to **0.38**. Teaching combinations must *span* the
+other factors. Sweeping how many are needed shows the driver is coverage, not volume — unseen-combo
+F1 runs **0.37 / 0.30 / 0.65 / 0.73** for 1 / 2 / 4 / 8 teaching combinations, with the jump at 4,
+exactly where all four foregrounds are first spanned.
+
+**The learned direction must live at the basis's scale.** Left free, the optimizer returns ‖v‖
+4.7–5.4 where the factor's existing directions measure **0.515** — an order of magnitude out of
+scale, then multiplied by the gain on top. Across three seeds that gave F1 0.65 / 0.35 / 0.71, and
+the failing seed had the largest norm. Holding ‖v‖ at the mean norm of that factor's existing
+directions raises the mean to 0.755 and cuts the spread by 3× (±0.109 → ±0.037); the failing seed
+goes 0.35 → 0.76.
+
+### What this does not show
+
+The backbone here **has** seen this background value, just not these combinations, so this
+establishes the mechanism rather than the full claim. A backbone trained with the value withheld
+entirely is the decisive test and is running. And basis extension only adds new *values of existing
+factors* — a genuinely new factor, or a concept with no factored description, still has no home in
+this scheme, and that is where per-concept parameters would still be needed.
+
 ## 6. Why we are *not* replicating the paper's diffusion results
 
 Side by side on ColorMNIST — their F1 (harmonic mean of precision and recall in Inception feature
