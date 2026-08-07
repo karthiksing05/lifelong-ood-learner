@@ -331,6 +331,19 @@ tuning-of-record: it chose τ, K and the guidance schedule, and reports each aga
 | `n5_classinc` | Split-ColorMNIST class-incremental on **real** data vs finetune / replay / EWC / TTT / isolation |
 | `n8_idealwords` | the ideal-words factorization: is a composition expressible as a sum of factor directions? |
 | `n9_showdown` | **the case-study figure**: every method on the same OOD composition, annotated |
+| `n18_router` | **does the system decide for itself** which update an observation needs? (the "detecting" half of the gap the source paper names) |
+| `n19_celeba_train` | the CelebA backbone with **factored** conditioning — one embedding per (attribute, value), the fix RESULTS §5o asked for |
+| `n20_celeba_composition` | N9's showdown on held-out CelebA combinations, where the factors **overlap the same pixels** |
+| `n21_celeba_vocabulary` | §5q's new-vocabulary test on CelebA: an attribute whose ON value the backbone never saw |
+| `n22_celeba_lifelong` | N5's class-incremental protocol on CelebA — is preservation still structural when factors overlap? |
+| `n23_native_parity` | **the evaluation the thesis is named after**: a consolidated concept against a backbone that was *trained* on that slot |
+| `n24_growth` | what a lifelong stream costs: growth in vocabulary vs growth in experience (CPU only) |
+
+CelebA has three splits, and which one a checkpoint carries is recorded in the checkpoint itself:
+`--n-holdout` withholds whole combinations, `--holdout-pair A B` withholds every combination in which
+two attributes co-occur (the strong compositional split, and the direct analogue of ColorMNIST's
+held-out `(fg, bg)` pairs), and `--holdout-attr` withholds an attribute's ON value entirely (the
+new-vocabulary case).
 
 ## Results, in one table
 

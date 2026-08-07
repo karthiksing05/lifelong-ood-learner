@@ -147,6 +147,12 @@ def main():
                          **score(probes, R[:args.n_samples], q, R[args.n_samples:])))
 
     # ── drag: what did each backbone do to the slots it already had? ────────
+    # Read these three rows for different reasons.  `ours (after)` is expected to equal
+    # `deployed (before)` EXACTLY -- the base weights are frozen and a consolidated concept's
+    # adapter path is not active when sampling a base class -- so it is a consistency check on that
+    # invariant, not evidence for it (the evidence is the bit-identical fingerprint test, 6b).
+    # The informative comparison is the ORACLE: it bought its held-out slots by retraining on
+    # everything, and this asks what that cost the slots it already had.
     rng = np.random.default_rng(args.seed)
     seen_check = rng.permutation(slots_seen)[:args.n_seen_check]
     drag = {}
@@ -217,7 +223,8 @@ def main():
     for a in ("ours", "paper"):
         print(f"      {a:8s}" + "  ".join(f"{k} {parity[a][k]:.2f}"
                                           for k in ("joint", "f1", "recall")))
-    print(f"\n    drag on slots the backbone already had:")
+    print(f"\n    seen-slot accuracy (`ours (after)` matches `deployed (before)` by construction;")
+    print(f"    the oracle row is what retraining on everything cost the slots it already had):")
     for k, v in drag.items():
         print(f"      {k:20s} {v:.3f}")
     print(f"[n23] wrote figures/n23_native_parity.png")
