@@ -296,7 +296,15 @@ genuinely new instances rather than only its own generations.
 
 ![case studies](figures/case_studies_factored.png)
 
-*The shipped composer: teacher discovers, the ideal-words basis reads the composition, the per-factor gain corrects the background under-response, and the manifold generates. On the same six held-out compositions the earlier entangled class basis (`figures/case_studies_inversion.png`) scores 0.12 mean accuracy at content diversity 1.09; this scores **0.25 at 1.22**. Consolidation then raises it further -- N9 measures 0.42 for the same method sampled after the concept has been added to the manifold.*
+*The shipped composer, on the restored backbone: the teacher discovers, the ideal-words basis reads
+the composition off the query, the per-factor gain — now **calibrated on this backbone** rather than
+hardcoded (§5p) — corrects the model's under-response to background, and the manifold generates.
+Six held-out compositions, mean accuracy **0.40** at content diversity **1.09**, i.e. samples about
+as varied as real held-out images of the same composition. Per-case it ranges from 0.88 (slot 94)
+down to 0.00 (slot 19), and that spread is the real story: the composer either finds the composition
+or misses it, rather than degrading smoothly. One caveat the figure prints on itself — div/nov is
+1.01 rather than √2, meaning the samples share a common offset from the query, so they are varied
+renderings around one point rather than independent draws from the class.*
 
 Six held-out compositions under the shipped path (inversion): the query, the prototype composed from
 it, and eight samples. **Each row is annotated with the accuracy, recall and diversity measured on
