@@ -1,3 +1,5 @@
 ===== composable-diff scale sweep (ColorMNIST) =====
 [diag] composable-diff scale sweep, 3 held-out cases, top-3 slots, 16 samples
 
+     scale   joint  digit    fg    bg   prec  recall     F1   dens    cov
+      0.33   0.000  0.062  0.62  0.27  0.000   0.630  0.000   0.00   0.00

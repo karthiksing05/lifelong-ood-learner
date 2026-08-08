@@ -27,12 +27,12 @@ import torch
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from common import CACHE, RESULTS                                       # noqa: E402
-from n4_batch import cl_metrics                                        # noqa: E402
+from n4_batch import cl_metrics, quality_metrics                       # noqa: E402
 from n19_celeba_train import build_probes                              # noqa: E402
 from n20_celeba_composition import score                               # noqa: E402
 
 from lifelong_ood.celeba import ATTRS, as_float, load_celeba_comp, nearest_seen  # noqa: E402
-from lifelong_ood.evals import save_json                               # noqa: E402
+from lifelong_ood.evals import frechet_distance, save_json             # noqa: E402
 from lifelong_ood.neural import (NeuralLifelongLearner, fingerprint, load_field,  # noqa: E402
                                  to_data, to_model)
 from lifelong_ood.neural.baselines import (CLoRA, DERPlusPlus, EWC, MAS, SI,  # noqa: E402
@@ -132,6 +132,7 @@ def main():
                               seed=args.seed) if arm == "der++" else None)
         acc_rows = {t["name"]: [] for t in tasks}
         tgt_rows = {t["name"]: [] for t in tasks}
+        fd_rows = {t["name"]: [] for t in tasks}
         marks, learned = {}, []
         t0 = time.time()
         for i0 in range(0, len(tasks), args.batch_size):
@@ -159,6 +160,8 @@ def main():
                 sc = score(probes, S, t["combo"], t["ref"], t["diff"])
                 acc_rows[nm].append(sc["mean_attr"])
                 tgt_rows[nm].append(sc["target"])
+                # attribute accuracy cannot see image quality collapsing; this can
+                fd_rows[nm].append(frechet_distance(S, t["ref"]))
             exact = float(np.mean([float(np.array_equal(fingerprint(field, nm, seed=args.seed),
                                                         marks[nm])) for nm, _ in learned]))
             print(f"[n22:{arm}] {len(learned)}/{len(tasks)}: "
@@ -168,14 +171,17 @@ def main():
                   f"{time.time() - t0:.0f}s", flush=True)
         acc = [acc_rows[t["name"]] for t in tasks if acc_rows[t["name"]]]
         tgt = [tgt_rows[t["name"]] for t in tasks if tgt_rows[t["name"]]]
+        fd = [fd_rows[t["name"]] for t in tasks if fd_rows[t["name"]]]
         m = cl_metrics(acc)
         mt = cl_metrics(tgt)
+        qm = quality_metrics(fd, lower_better=True)
         stored = (len(buffer) if buffer is not None else
                   (sum(len(t["X"]) for t in tasks) if is_ttt else 0))
         rows.append(dict(stored_images=stored,
                          arm=arm, wall_seconds=time.time() - t0, params=L.bank.n_params(),
                          retention_exact=exact, acc_matrix=acc, target_matrix=tgt,
-                         ACC_target=mt["ACC"], BWT_target=mt["BWT"], FGT_target=mt["FGT"], **m))
+                         ACC_target=mt["ACC"], BWT_target=mt["BWT"], FGT_target=mt["FGT"],
+                         fd_matrix=fd, **{f"q{k}": v for k, v in qm.items()}, **m))
         print(f"[n22] -> {arm}: ACC {m['ACC']:.3f} BWT {m['BWT']:+.3f} FGT {m['FGT']:.3f} | "
               f"target ACC {mt['ACC']:.3f} FGT {mt['FGT']:.3f}\n", flush=True)
 

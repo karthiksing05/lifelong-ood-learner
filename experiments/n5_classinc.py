@@ -35,10 +35,11 @@ import torch
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from common import CACHE, RESULTS, ood_queries                         # noqa: E402
-from n4_batch import cl_metrics                                        # noqa: E402
+from n4_batch import cl_metrics, quality_metrics                       # noqa: E402
 
 from lifelong_ood.datasets import load_colormnist                      # noqa: E402
-from lifelong_ood.evals import composition_accuracy, fit_probes, save_grid, save_json  # noqa: E402
+from lifelong_ood.evals import (composition_accuracy, fit_probes, frechet_distance,  # noqa: E402
+                                save_grid, save_json)
 from lifelong_ood.neural import (NeuralLifelongLearner, fingerprint, load_field,  # noqa: E402
                                  to_data, to_model)
 from lifelong_ood.neural.baselines import (CLoRA, DERPlusPlus, EWC, MAS, SI,   # noqa: E402
@@ -107,7 +108,8 @@ def main():
     tasks = []
     for q in qs:
         idx = np.concatenate([[q["query"]], q["rest"]])[:args.n_train]
-        tasks.append(dict(name=f"task_{q['slot']}", q=q, X=to_model(data["X"][idx])))
+        tasks.append(dict(name=f"task_{q['slot']}", q=q, X=to_model(data["X"][idx]),
+                          R=data["X"][idx].astype(np.float32)))
     print(f"[n5] {len(tasks)} tasks x {args.n_train} REAL images, batches of {args.batch_size}, "
           f"arms {args.arms}, device {dev}", flush=True)
     save_grid(data["X"][np.concatenate([[t['q']['query']] for t in tasks[:8]])],
@@ -130,6 +132,8 @@ def main():
         buffer = (DERPlusPlus(size=args.buffer_size, alpha=args.der_alpha, beta=args.der_beta,
                               seed=args.seed) if arm == "der++" else None)
         acc_rows = {t["name"]: [] for t in tasks}
+        fd_rows = {t["name"]: [] for t in tasks}
+        refs = {t["name"]: t["R"] for t in tasks}
         marks, learned = {}, []
         t0 = time.time()
         for i0 in range(0, len(tasks), args.batch_size):
@@ -164,6 +168,9 @@ def main():
                     S = to_data(L.sample_concept(nm, n=args.n_samples,
                                                  seed=args.seed + 500 + si)).astype(np.float32)
                 acc_rows[nm].append(composition_accuracy(probes, S, q["d"], q["f"], q["b"])["joint"])
+            # probe accuracy is fidelity-blind -- an arm can keep the attributes legible while
+            # its images degrade -- so track generation quality on the same schedule
+            fd_rows[nm].append(frechet_distance(S, refs[nm]))
             exact = float(np.mean([float(np.array_equal(fingerprint(field, nm, seed=args.seed),
                                                         marks[nm])) for nm, _ in learned]))
             print(f"[n5:{arm}] {len(learned)}/{len(tasks)} tasks: "
@@ -171,7 +178,9 @@ def main():
                   f"exact {exact:.2f}, {L.bank.n_params() / 1e6:.2f}M, "
                   f"{time.time() - t0:.0f}s", flush=True)
         acc = [acc_rows[t["name"]] for t in tasks if acc_rows[t["name"]]]
+        fd = [fd_rows[t["name"]] for t in tasks if fd_rows[t["name"]]]
         m = cl_metrics(acc)
+        qm = quality_metrics(fd, lower_better=True)
         # What each arm has to KEEP, which the accuracy columns hide.  Diaz-Rodriguez et al. (2018)
         # formalize this as SSS; the raw count is more legible and makes the same point: DER++ buys
         # its retention with a permanent buffer of real images and TTT keeps every task's data
@@ -179,22 +188,25 @@ def main():
         stored = (len(buffer) if buffer is not None else
                   (sum(len(t["X"]) for t in tasks) if is_ttt else 0))
         rows.append(dict(arm=arm, wall_seconds=time.time() - t0, params=L.bank.n_params(),
-                         retention_exact=exact, acc_matrix=acc, stored_images=stored, **m))
+                         retention_exact=exact, acc_matrix=acc, stored_images=stored,
+                         fd_matrix=fd, **{f"q{k}": v for k, v in qm.items()}, **m))
         print(f"[n5] -> {arm}: ACC {m['ACC']:.3f}, BWT {m['BWT']:+.3f}, FGT {m['FGT']:.3f}\n",
               flush=True)
 
     save_json(dict(rows=rows, config=vars(args)), os.path.join(RESULTS, "n5_classinc.json"),
               seed=args.seed)
     print(f"\n[n5] Split-ColorMNIST class-incremental, {args.n_tasks} tasks of real held-out images")
-    print(f"    {'arm':13s}{'ACC':>7s}{'BWT':>9s}{'FGT':>8s}{'exact':>8s}{'params':>9s}"
-          f"{'stored':>8s}{'wall(s)':>9s}")
+    print(f"    {'arm':13s}{'ACC':>7s}{'BWT':>9s}{'FGT':>8s}{'exact':>8s}"
+          f"{'AFQ':>8s}{'FR':>8s}{'params':>9s}{'stored':>8s}{'wall(s)':>9s}")
     for r in rows:
         print(f"    {r['arm']:13s}{r['ACC']:7.3f}{r['BWT']:+9.3f}{r['FGT']:8.3f}"
-              f"{r['retention_exact']:8.2f}{r['params'] / 1e6:8.2f}M"
+              f"{r['retention_exact']:8.2f}{r.get('qAFQ', float('nan')):8.3f}"
+              f"{r.get('qFR', float('nan')):+8.3f}{r['params'] / 1e6:8.2f}M"
               f"{r.get('stored_images', 0):8d}{r['wall_seconds']:9.0f}")
     print("\n  ACC final mean accuracy (higher better) | BWT backward transfer (0 = no forgetting)")
     print("  FGT forgetting measure (0 = none) | exact = fraction bit-identical to birth")
     print("  stored = REAL images the arm must retain forever (0 = keeps no data)")
+    print("  AFQ final generation quality (Frechet to real, LOWER better) | FR its degradation")
     print(f"[n5] wrote {RESULTS}/n5_classinc.json")
 
 
