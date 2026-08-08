@@ -122,3 +122,7 @@ n5 exit=0 | Sat Aug  8 12:12:35 EDT 2026
 [n22:der++] 3/12: mean-attr 0.844, target 0.125, exact 1.00, 2.91M, 187s
 [n22:der++] 6/12: mean-attr 0.891, target 0.237, exact 0.50, 5.08M, 466s
 [n22:der++] 9/12: mean-attr 0.829, target 0.234, exact 0.33, 7.26M, 802s
+[n22:der++] 12/12: mean-attr 0.860, target 0.225, exact 0.25, 9.44M, 1213s
+[n22] -> der++: ACC 0.860 BWT +0.003 FGT 0.010 | target ACC nan FGT nan
+
+[n22:ewc] 3/12: mean-attr 0.833, target 0.125, exact 1.00, 2.91M, 74s

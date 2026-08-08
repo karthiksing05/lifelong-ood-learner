@@ -136,8 +136,19 @@ def show(row, img):
 
 
 def train_concept(field, bank, name, X01, img, epochs=6, batch=4, lr=1e-4, seed=0, verbose=True):
-    """Consolidate one concept into the bank: LoRA leaf + conditioning vector, base frozen."""
-    params = bank.trainable(name)
+    """Consolidate one concept into the bank: a LoRA leaf, base frozen.
+
+    The concept EMBEDDING is deliberately held at zero here, unlike on our own backbone.  Our UNet
+    was trained with a class vector added to its time embedding, so that slot means something to it.
+    This model is unconditional: the only thing its time embedding encodes is the noise level, and an
+    offset on it is read as "you are at a different timestep".  Training that vector therefore
+    corrupts denoising globally -- measured, and visible as melted faces in the v1 figure -- while
+    carrying no concept information the adapter path is not already carrying.
+    """
+    emb_p = bank._emb_extra[name]
+    with torch.no_grad():
+        emb_p.zero_()
+    params = [q for q in bank.trainable(name) if q is not emb_p]
     opt = torch.optim.Adam(params, lr=lr)
     X = torch.from_numpy(to_model(X01)).to(field.device).reshape(-1, 3, img, img)
     g = torch.Generator(device="cpu").manual_seed(seed)
@@ -181,6 +192,11 @@ def main():
                         "is too coarse for fine attributes (Eyeglasses TPR 0.38 there)")
     p.add_argument("--epochs", type=int, default=6)
     p.add_argument("--rank", type=int, default=8)
+    p.add_argument("--targets", nargs="+", default=["linear"],
+                   help="layer types to adapt.  `linear` only (attention and the "
+                        "projections) is where the LoRA personalization literature puts "
+                        "it; adapting every conv of a 113.7M model as well melts the "
+                        "samples.")
     p.add_argument("--lr", type=float, default=1e-4)
     p.add_argument("--steps", type=int, default=100, help="DDIM steps")
     p.add_argument("--comp-scale", type=float, default=1.0)
@@ -204,7 +220,8 @@ def main():
     print(f"[n25] real images: {A}-only {len(data['a_only'])}, {B}-only {len(data['b_only'])}, "
           f"BOTH {len(data['both'])} (the target, never shown to either concept)", flush=True)
 
-    bank = HierarchicalAdapterBank(field.model, rank=args.rank, device=dev, flat=True)
+    bank = HierarchicalAdapterBank(field.model, rank=args.rank, device=dev, flat=True,
+                                   targets=tuple(args.targets))
     field.bank = bank
     got = {}
 
@@ -222,19 +239,16 @@ def main():
                       lr=args.lr, seed=args.seed)
         got[f"{nm} only"] = to_data(field.sample(n=args.n_samples, steps=args.steps,
                                                  seed=args.seed, clip=(-1, 1),
-                                                 emb=bank.embedding(nm).detach(), branch=nm))
+                                                 branch=nm))
 
     # ── OURS: compose in conditioning space, over the union of both paths ────
-    with torch.no_grad():
-        cA = bank.embedding(A).detach()
-        cB = bank.embedding(B).detach()
-        c_comp = (cA + cB)
+    cA = cB = c_comp = None                    # conditioning is carried by the adapter paths
     path = sorted(set(bank.concepts[A]["path"]) | set(bank.concepts[B]["path"]))
     prev = list(bank.state["path"])
     bank.state["path"] = path
     try:
         got["ours"] = to_data(field.sample(n=args.n_samples, steps=args.steps, seed=args.seed,
-                                           clip=(-1, 1), emb=c_comp))
+                                           clip=(-1, 1)))
     finally:
         bank.state["path"] = prev
 
@@ -247,8 +261,8 @@ def main():
         return f
 
     e_null = lambda x, u: field.eps(x, u)                                    # noqa: E731
-    parts = [(eps_branch(A, cA), float(args.comp_scale)),
-             (eps_branch(B, cB), float(args.comp_scale))]
+    parts = [(eps_branch(A, None), float(args.comp_scale)),
+             (eps_branch(B, None), float(args.comp_scale))]
 
     def comp_eps(x, u):
         e0 = e_null(x, u)

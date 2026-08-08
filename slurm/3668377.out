@@ -23,3 +23,16 @@ Defaulting to unsafe serialization. Pass `allow_pickle=False` to raise an error 
       [Smiling] epoch 6/8: 0.0107 (79s)
       [Smiling] epoch 7/8: 0.0068 (93s)
       [Smiling] epoch 8/8: 0.0060 (106s)
+[n25] probe Eyeglasses: TPR 0.78 TNR 0.92 balanced 0.85 (usable)
+[n25] probe Smiling: TPR 0.97 TNR 0.52 balanced 0.75 (usable)
+
+[n25] google/ddpm-celebahq-256, `Eyeglasses` x `Smiling`
+    arm                 Eyeglasses     Smiling    both   vendi
+    real                      1.00        1.00    1.00    1.38
+    pretrained                0.00        0.67    0.00    1.51
+    Eyeglasses only           0.00        0.67    0.00    1.50
+    Smiling only              0.00        0.67    0.00    1.49
+    ours                      0.00        0.67    0.00    1.24
+    composable-diff           0.00        0.83    0.00    1.27
+[n25] wrote /coc/flash10/ksingara3/lifelong-ood-learner/figures/n25_pretrained_case_v1.png
+exit=0 | Sat Aug  8 13:21:18 EDT 2026

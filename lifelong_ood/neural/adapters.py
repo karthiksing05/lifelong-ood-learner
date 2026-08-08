@@ -256,7 +256,7 @@ class HierarchicalAdapterBank:
     """Frozen base UNet + a growing tree of LoRA deltas + one new class embedding per concept."""
 
     def __init__(self, model, rank=8, device="cuda", var=0.1, branch_max=4, max_depth=3,
-                 freeze_ancestors=True, flat=False):
+                 freeze_ancestors=True, flat=False, targets=("conv", "linear")):
         self.model = model
         self.device = device
         self.rank = int(rank)
@@ -265,7 +265,12 @@ class HierarchicalAdapterBank:
         self.freeze_ancestors = bool(freeze_ancestors)
         for p in model.parameters():
             p.requires_grad_(False)
-        self.wrapped = inject(model, rank, self.state)
+        # `targets` restricts WHICH layer types get a delta.  On our own small UNet adapting
+        # everything is fine; on a 113.7M-parameter pretrained model it perturbs hundreds of
+        # layers at once and the samples melt, so ('linear',) -- attention and the
+        # projections, which is where the LoRA personalization literature puts it -- is the
+        # setting that behaves.
+        self.wrapped = inject(model, rank, self.state, targets=targets)
         self.tree = ConceptTree(var=var, branch_max=branch_max, max_depth=max_depth, flat=flat)
         self.concepts = {}                   # name -> dict(path, leaf)
         self.frozen = set()                  # created by an earlier batch: immutable

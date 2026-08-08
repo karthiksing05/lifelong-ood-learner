@@ -70,3 +70,5 @@ n20 exit=0 | Sat Aug  8 12:59:31 EDT 2026
 [n20] case 1/12 combo 1036 [Black_Hair, No_Beard, Smiling, Big_Nose, Oval_Fa] diff=['Smiling'] ours target 1.00 F1 0.64
 [n20] case 2/12 combo 1138 [Black_Hair, Wavy_Hair, No_Beard, Smiling, Big_No] diff=['Big_Nose'] ours target 0.00 F1 0.71
 [n20] case 3/12 combo 87 [Smiling, Big_Nose, Oval_Face, Male, Sideburns, B] diff=['Smiling', 'Oval_Face'] ours target 0.00 F1 0.65
+[n20] case 4/12 combo 174 [No_Beard, Smiling, Big_Nose, Wearing_Necklace] diff=['Smiling'] ours target 1.00 F1 0.71
+[n20] case 5/12 combo 1033 [Black_Hair, No_Beard, Smiling, Big_Nose, Wearing] diff=['Smiling'] ours target 1.00 F1 0.70

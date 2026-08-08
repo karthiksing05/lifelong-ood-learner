@@ -150,3 +150,27 @@ n5 exit=0 | Sat Aug  8 11:54:17 EDT 2026
 [n22] -> ttt: ACC 0.787 BWT +0.004 FGT 0.003 | target ACC nan FGT nan
 
 [n22:c-lora] 3/12: mean-attr 0.747, target 0.281, exact 1.00, 2.91M, 59s
+[n22:c-lora] 6/12: mean-attr 0.792, target 0.562, exact 0.50, 5.08M, 137s
+[n22:c-lora] 9/12: mean-attr 0.789, target 0.575, exact 0.33, 7.26M, 226s
+[n22:c-lora] 12/12: mean-attr 0.779, target 0.469, exact 0.25, 9.44M, 337s
+[n22] -> c-lora: ACC 0.779 BWT +0.006 FGT 0.000 | target ACC nan FGT nan
+
+
+[n22] class-incremental CelebA, 12 held-out combinations of REAL images
+    arm              ACC      BWT     FGT  tgtACC  tgtFGT   exact   params
+    ours           0.773   +0.000   0.000     nan     nan    1.00   11.62M
+    independent    0.773   +0.000   0.000     nan     nan    1.00    9.44M
+    finetune       0.731   -0.045   0.052     nan     nan    0.25    9.44M
+    replay         0.694   -0.079   0.080     nan     nan    0.25    9.44M
+    gen-distill    0.774   -0.013   0.020     nan     nan    0.25    9.44M
+    der++          0.786   -0.002   0.010     nan     nan    0.25    9.44M
+    ewc            0.732   -0.045   0.050     nan     nan    0.25    9.44M
+    si             0.773   -0.001   0.008     nan     nan    0.25    9.44M
+    mas            0.779   +0.000   0.000     nan     nan    0.25    9.44M
+    ttt            0.787   +0.004   0.003     nan     nan    1.00    9.44M
+    c-lora         0.779   +0.006   0.000     nan     nan    0.25    9.44M
+
+  ACC/FGT on mean-attribute accuracy; tgtACC/tgtFGT on the ONE attribute that separates
+  each held-out combination from its nearest trained one.
+[n22] wrote /coc/flash10/ksingara3/lifelong-ood-learner/results/n22_celeba_lifelong.json
+n22 exit=0 | Sat Aug  8 13:22:46 EDT 2026
