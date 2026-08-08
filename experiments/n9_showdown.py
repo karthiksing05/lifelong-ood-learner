@@ -171,8 +171,18 @@ def main():
         R = data["X"][q["rest"][:100]]
         t = L3.compose(xq.ravel(), u_grid=(0.1, 0.2, 0.3, 0.4),
                        n_starts=8 if args.quick else 16, iters=30 if args.quick else 120)
-        got = {"poe-guided": to_data(L3.sample_teacher(t, n=args.n_samples,
-                                                       seed=args.seed + qi)).astype(np.float32)}
+        # THE PUBLISHED METHOD IN ITS PUBLISHED CONFIGURATION.  This arm used to inherit our
+        # `schedule="anneal"` default, which rises to wmax as u -> 0 and, against a teacher whose
+        # Eq. 12 precision blows up at low noise, injected the speckle the case-study figure showed.
+        # Their Eq. 14 exists to cancel exactly that (`w = min(w0*tr(Sigma_t)/d, wmax)`), and with it
+        # the same teacher produces CLEAN, correct digits (tests/diag_poe_faithful.py: accuracy
+        # 0.865 against our default's 0.521).  Their method must be run their way, or the comparison
+        # is against a strawman -- and the honest result is stronger, because what remains is not bad
+        # images but eight identical ones (recall 0.000, content diversity 0.24).
+        got = {"poe-guided": to_data(L3.sample_teacher(t, n=args.n_samples, seed=args.seed + qi,
+                                                       schedule="variance", var_scale=1.0,
+                                                       w0=1.2, wmax=2.0,
+                                                       wmin=0.0)).astype(np.float32)}
         c_cls, _, _ = learn_embedding(f3, xq, n_steps=args.inv_steps, seed=args.seed)
         got["inversion"] = to_data(sample_embedding(f3, c_cls, n=args.n_samples, steps=args.steps,
                                                     seed=args.seed + qi)).astype(np.float32)

@@ -199,8 +199,11 @@ def main():
         if not args.skip_poe:
             t = L.compose(xq, u_grid=(0.1, 0.2, 0.3, 0.4),
                           n_starts=4 if args.quick else 12, iters=20 if args.quick else 80)
-            got["poe-guided"] = to_data(L.sample_teacher(t, n=args.n_samples,
-                                                         seed=args.seed + ci)).astype(np.float32)
+            # the published method in its published configuration -- see n9 for why this matters
+            got["poe-guided"] = to_data(L.sample_teacher(t, n=args.n_samples, seed=args.seed + ci,
+                                                         schedule="variance", var_scale=1.0,
+                                                         w0=1.2, wmax=2.0,
+                                                         wmin=0.0)).astype(np.float32)
             tq = L.baseline_teacher(xq, kind="query_only")
             got["query-only"] = to_data(L.sample_teacher(tq, n=args.n_samples,
                                                          seed=args.seed + ci)).astype(np.float32)
