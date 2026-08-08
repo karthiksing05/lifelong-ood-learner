@@ -2,3 +2,32 @@
 [n28] slot 46 uniform        drift 0.0464  alone(fg/bg/digit) 1.00/1.00/0.62  composed joint 0.125  (52s)
 [n28] slot 46 high-t         drift 0.0456  alone(fg/bg/digit) 1.00/1.00/0.81  composed joint 0.000  (51s)
 [n28] slot 46 need-weighted  drift 0.0413  alone(fg/bg/digit) 0.94/1.00/0.62  composed joint 0.000  (52s)
+[n28] slot 46 residual       drift 0.0437  alone(fg/bg/digit) 1.00/0.94/0.56  composed joint 0.000  (69s)
+[n28] slot 46 rehearse       drift 0.0101  alone(fg/bg/digit) 0.88/0.81/0.38  composed joint 0.000  (110s)
+[n28] slot 110 uniform        drift 0.0433  alone(fg/bg/digit) 1.00/1.00/0.94  composed joint 0.000  (52s)
+[n28] slot 110 high-t         drift 0.0517  alone(fg/bg/digit) 1.00/1.00/0.94  composed joint 0.125  (52s)
+[n28] slot 110 need-weighted  drift 0.0405  alone(fg/bg/digit) 1.00/0.94/0.94  composed joint 0.000  (52s)
+[n28] slot 110 residual       drift 0.0446  alone(fg/bg/digit) 1.00/1.00/0.94  composed joint 0.125  (69s)
+[n28] slot 110 rehearse       drift 0.0103  alone(fg/bg/digit) 0.94/0.94/0.81  composed joint 0.000  (111s)
+[n28] slot 19 uniform        drift 0.0422  alone(fg/bg/digit) 1.00/1.00/0.88  composed joint 0.062  (51s)
+[n28] slot 19 high-t         drift 0.0435  alone(fg/bg/digit) 1.00/1.00/0.88  composed joint 0.188  (52s)
+[n28] slot 19 need-weighted  drift 0.0399  alone(fg/bg/digit) 1.00/0.88/0.88  composed joint 0.125  (52s)
+[n28] slot 19 residual       drift 0.0467  alone(fg/bg/digit) 1.00/1.00/0.88  composed joint 0.062  (70s)
+[n28] slot 19 rehearse       drift 0.0115  alone(fg/bg/digit) 0.94/0.94/0.69  composed joint 0.000  (111s)
+
+[n28] update rules, 3 compositions, 16 samples
+    rule               drift  aloneFG  aloneBG  aloneD   joint  recall     F1   wall
+    uniform           0.0440     1.00     1.00    0.81   0.062   0.461  0.146     52
+    high-t            0.0469     1.00     1.00    0.88   0.104   0.882  0.181     52
+    need-weighted     0.0406     0.98     0.94    0.81   0.042   0.684  0.140     52
+    residual          0.0450     1.00     0.98    0.79   0.062   0.875  0.110     69
+    rehearse          0.0106     0.92     0.90    0.62   0.000   0.781  0.105    111
+
+  drift = how far the model moves on conditionings this concept is NOT for, with its
+  path active.  The insert-only guarantee does not cover this, and composition depends
+  on it: an adapter evaluated outside its own conditioning is exactly what composing does.
+
+[n28] lowest drift: rehearse (0.0106)
+[n28] best composed joint: high-t (0.104)
+[n28] DIFFERENT rules win -- low drift does not by itself buy composition
+exit=0 | Sat Aug  8 16:26:55 EDT 2026

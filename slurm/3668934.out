@@ -27,3 +27,17 @@ Defaulting to unsafe serialization. Pass `allow_pickle=False` to raise an error 
       [Wearing_Hat] ep 30/40: 0.0003 (145s)
       [Wearing_Hat] ep 40/40: 0.0002 (194s)
       [Male] ep 10/40: 0.0003 (48s)
+      [Male] ep 20/40: 0.0003 (97s)
+      [Male] ep 30/40: 0.0002 (145s)
+      [Male] ep 40/40: 0.0002 (194s)
+[n26] sequential     wall    777s  attr 0.75  vendi 1.46  nodes 5 (+3 shared)  exact 1.00  0.98M
+An error occurred while trying to fetch google/ddpm-celebahq-256: google/ddpm-celebahq-256 does not appear to have a file named diffusion_pytorch_model.safetensors.
+Defaulting to unsafe serialization. Pass `allow_pickle=False` to raise an error instead.
+      [Eyeglasses+Smiling+Wearing_Hat+Male] ep 10/40: 0.0003 (194s)
+      [Eyeglasses+Smiling+Wearing_Hat+Male] ep 20/40: 0.0003 (388s)
+      [Eyeglasses+Smiling+Wearing_Hat+Male] ep 30/40: 0.0003 (582s)
+      [Eyeglasses+Smiling+Wearing_Hat+Male] ep 40/40: 0.0002 (776s)
+[n26] batch          wall    777s  attr 0.58  vendi 1.42  nodes 5 (+3 shared)  exact 1.00  0.98M
+An error occurred while trying to fetch google/ddpm-celebahq-256: google/ddpm-celebahq-256 does not appear to have a file named diffusion_pytorch_model.safetensors.
+Defaulting to unsafe serialization. Pass `allow_pickle=False` to raise an error instead.
+      [Eyeglasses+Smiling+Wearing_Hat+Male] ep 10/40: 0.0003 (196s)

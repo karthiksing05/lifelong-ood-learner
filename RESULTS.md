@@ -2601,6 +2601,52 @@ is a stronger supervision than the single query the OOD setting provides. It is 
 operator, not a method: it answers "why does score addition fail here", not "here is a better way to
 compose". `ours` remains the operator for ColorMNIST, and it wins by 3×.
 
+## 14. Update rules: "disturb the field least" is the wrong objective (N28)
+
+The insert-only guarantee covers an INACTIVE path. Composition evaluates an adapter on inputs it
+never saw, and nothing certifies its behaviour there — so the natural hypothesis is that an update
+which changes the frozen field only where it must should compose better than one that changes it
+everywhere. N28 measures that directly, on identical data, budget and architecture.
+
+`drift` is how far the model moves on conditionings the concept is *not* for, with its path **active**:
+`||eps_path(x,u,c_seen) − eps_frozen(x,u,c_seen)||` over trained classes.
+
+| rule | drift | fg alone | bg alone | digit alone | composed joint | recall | F1 | wall |
+|---|---|---|---|---|---|---|---|---|
+| uniform | 0.0440 | 1.00 | 1.00 | 0.81 | 0.062 | 0.461 | 0.146 | 52s |
+| **high-t** (t ≥ 0.5) | **0.0469** *(worst)* | 1.00 | 1.00 | **0.88** | **0.104** | **0.882** | **0.181** | 52s |
+| need-weighted | 0.0406 | 0.98 | 0.94 | 0.81 | 0.042 | 0.684 | 0.140 | 52s |
+| residual | 0.0450 | 1.00 | 0.98 | 0.79 | 0.062 | 0.875 | 0.110 | 69s |
+| **rehearse** | **0.0106** *(best)* | 0.92 | 0.90 | 0.62 | **0.000** *(worst)* | 0.781 | 0.105 | 111s |
+
+**The hypothesis is false, and cleanly so.** The rule with the *lowest* drift composes *worst*, and
+the rule with the *highest* drift composes *best*. `rehearse` suppresses drift by a factor of four —
+0.0106 against 0.041–0.047 — and reaches joint 0.000, because a penalty for changing anything also
+prevents the adapter from changing what it should: its factor accuracies are the lowest in the table
+(digit 0.62 against 0.81–0.88).
+
+So "an update that reflects the existing score field" does **not** mean "an update that disturbs it
+least". Drift is not a cost to be minimized; it is the mechanism by which a conditional differs from
+the unconditional model at all.
+
+**What does work is choosing WHERE to spend the update.** `high-t` — train only at noise levels above
+the midpoint — wins on composed joint accuracy (0.104), on recall (0.882 against uniform's 0.461) and
+on F1, at identical wall clock. This is the pretrained-backbone finding (§12b) reproducing on a
+backbone we trained ourselves and on a completely different dataset, which is what makes it a
+property of diffusion adaptation rather than of that one model's data mismatch:
+
+> A factor's *identity* is decided at high noise. Capacity spent at low noise goes to texture the
+> model already renders correctly, and buys nothing.
+
+`need-weighted` — sampling noise levels in proportion to the frozen model's own error — is the more
+principled version of the same idea and it does *not* beat the blunt threshold (joint 0.042 against
+0.104). Its measured "need" is largest at the noisiest levels where every model does badly, so it
+over-weights the extreme tail rather than the semantically decisive middle-to-high band. The crude
+rule is better, and that is worth stating rather than presenting the elegant one.
+
+**Recommendation adopted:** train concept adapters at high noise levels. It costs nothing, it is one
+line, and it improves composition and coverage on both backbones tested.
+
 ## 8. Where the numbers come from
 
 | experiment | file | scale run |
