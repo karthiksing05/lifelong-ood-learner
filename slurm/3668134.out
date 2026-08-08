@@ -6,3 +6,5 @@
 [n5:ours] 12/12 tasks: mean acc 0.88, exact 1.00, 8.82M, 259s
 [n5] -> ours: ACC 0.875, BWT +0.000, FGT 0.000
 
+[n5:independent] 3/12 tasks: mean acc 0.88, exact 1.00, 2.20M, 34s
+[n5:independent] 6/12 tasks: mean acc 0.89, exact 1.00, 3.86M, 73s

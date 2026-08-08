@@ -2001,6 +2001,149 @@ backbone, scored by the same probes, and configured the way its authors specify.
 
 ---
 
+## 9. Baselines added after a systematic literature review — and three defects it exposed in ours
+
+Two structured reviews of the composition and continual-learning literatures were run against this
+repository. The useful output was not the list of new arms; it was a list of ways we were running
+*existing* baselines weakly. Those come first, because they are the same failure mode as §5l-bis.
+
+### 9a. Three defects in our own code
+
+**(1) `consolidate()` raised `NameError` on every single-concept call.** The regularizer hook
+(`begin_task`) was added at both optimizer sites, but the single-concept `consolidate()` never
+declared the `ewc` parameter it referenced. Only `consolidate_batch()` was exercised by the CL
+experiments, so nothing caught it. Fixed, and the penalty plus the SI step hooks are now wired
+through that path too.
+
+**(2) Composable Diffusion was run at `w_i = 1/n`.** Liu et al.'s `w_i` are per-concept *guidance
+scales* meant to add — the sum of residuals is what makes the operator a product rather than a mean
+— and they run values around 5–7.5. Dividing by `n` pins total guidance at 1.0 regardless of how
+many concepts are composed, which is approximately their **average**, and gets weaker as more
+concepts are added. This is the identical error to §5l-bis, where running the published method on
+our schedule instead of its own Eq. 14 took its precision from 0.039 to 0.839. The weight is now
+swept, not defaulted (§9b).
+
+**(3) The textual-inversion baseline was confined to `span(C)`.** `learn_embedding` optimizes
+`alpha` over trained class embeddings. That restriction is a *claim our method makes* — that an
+unseen composition is expressible in the model's existing vocabulary — so imposing it on the
+baseline assumes exactly what is under test, and handicaps it precisely when the held-out
+combination falls outside the hull of seen classes. Textual Inversion as published (Gal et al.)
+optimizes a **free vector in R^d**. Added as `free=True` and reported as a separate
+`inversion-free` arm; the span-restricted version stays as ours.
+
+### 9b. Composable Diffusion, swept rather than defaulted
+
+`tests/diag_composable_scale.py`, ColorMNIST, 3 held-out compositions, top-3 slots, 16 samples:
+
+| scale | joint | digit | fg | bg | precision | recall |
+|---|---|---|---|---|---|---|
+| 0.33 | **0.000** | 0.062 | 0.62 | 0.27 | 0.000 | 0.630 |
+| 1.00 | **0.000** | 0.000 | 0.48 | 0.23 | 0.000 | 0.120 |
+| 2.00 | **0.000** | 0.146 | 0.10 | 0.42 | 0.000 | 0.367 |
+| 3.00 | **0.000** | 0.167 | 0.04 | 0.27 | 0.000 | 0.007 |
+| 5.00 | **0.000** | 0.104 | 0.04 | 0.31 | 0.000 | 0.000 |
+| 7.50 | **0.000** | 0.000 | 0.10 | 0.33 | 0.000 | 0.000 |
+
+Joint accuracy is **0.000 at every scale**, and precision is 0.000 at every scale. What the scale
+buys is the usual guidance-versus-diversity trade in the *wrong* place: at 0.33 the arm has recall
+0.630 with precision 0.000, i.e. it is diverse and wrong.
+
+This is the operator's own precondition failing, not a tuning failure, and it is worth stating
+plainly because it bounds what score addition can do here. Composable Diffusion composes *trained
+conditionals*. ColorMNIST's backbone has no conditional for "cyan foreground" and none for
+"deep-red background" — it has 120 entangled slot conditionals. Adding their scores cannot isolate a
+factor that no conditional represents. Having swept it across a 23× range, the row can no longer be
+read as a strawman.
+
+**CelebA is the case where the method genuinely applies**, because the factored head provides a real
+per-attribute conditional. There it composes exactly the conditionals our method composes, in score
+space rather than embedding space — the sharpest available comparison of the two operators — and it
+is reported at the scale chosen by its own sweep.
+
+### 9c. The strongest objection to our own operator, now an arm
+
+Du et al. (ICML 2023) prove that for a product `q^1 · q^2`,
+
+```
+grad log q~_t^prod(x_t)  !=  grad log q_t^1(x_t) + grad log q_t^2(x_t)
+```
+
+The sum of diffused scores is the score of the **product of diffused marginals**, not the
+**diffusion of the product**. Every method that pushes a composed score through DDIM or ancestral
+sampling — Composable Diffusion, the PoE teacher, and *ours* — is therefore targeting the wrong
+distribution, and the blame is the **sampler's**, not the model's. Their fix is extra MCMC
+transitions per noise level, which takes CLEVR 5-cube composition from 70.8% to 91.6% and ImageNet
+classifier guidance from 18.6% to 94.6%, at ~5× sampling cost.
+
+It is training-free and exemplar-free, so it is unambiguously fair here. Implemented as annealed
+unadjusted Langevin (`score.py`, `mcmc=dict(steps, lam)`) — MALA's accept/reject would need an
+energy parameterization a pretrained eps-net does not provide — and reported as `composable-mcmc`.
+
+### 9d. Continual-learning arms added
+
+The retention tables previously compared only against CL methods derived from the *classifier*
+literature. Added, all on the same backbone and optimizer budget:
+
+- **SI** (Zenke et al. 2017) — path-integral importance accumulated online. The cleanest transfer in
+  its family: it inspects only gradients and weight trajectories, never output semantics, so it
+  applies to an eps-regression objective without reinterpretation.
+- **MAS** (Aljundi et al. 2018) — importance as the sensitivity of the squared output norm. Derived
+  for an *arbitrary* vector output with no labels and no softmax, so setting `F = eps_theta` is not
+  an adaptation of the method, it *is* the method.
+- **DER++** (Buzzega et al. 2020) — the strongest simple baseline in modern CL. Its alpha term
+  matches a prediction recorded mid-trajectory; its beta term is plain exemplar replay.
+- **generative distillation** (Masip et al., CoLLAs 2025) — see below.
+
+**Why `gen-distill` had to be added rather than just reporting `replay`.** Naive generative replay
+is a *documented pathology* for diffusion: Masip et al. measure it at **FID 211.8 against plain
+finetuning's 68.8** — nearly 3× worse than no protection at all — because self-generated samples are
+regressed onto the noise drawn for them, so their errors are treated as ground truth and compound.
+Distillation instead matches the **pre-task model's own eps-prediction** on the same `(x_t, t)`,
+transferring the whole reverse process, and recovers FID 23.5 against a joint bound of 15.5.
+Reporting `replay` alone would be reporting a known-broken configuration as a baseline.
+
+### 9e. DER++ at ACC 0.250 was our bug, not a result
+
+The first DER++ run came in at **ACC 0.250, BWT −0.263** — far below plain finetuning's 0.750. That
+reads as a damning result for the strongest baseline in the CL literature, which is exactly why it
+was worth not believing.
+
+The cause: DER's stored target `z = h(x)` is a function of a **fixed** input. Here the network's
+input is `x_t = sqrt(abar) x0 + sqrt(1-abar) e`, and the buffer was redrawing `e` at replay time.
+The stored eps-prediction therefore described a *different image* than the one being presented — an
+incoherent target, and a strong one, applied at every step. Storing the noise draw alongside the
+sample fixes it:
+
+| DER++ | ACC | BWT | FGT |
+|---|---|---|---|
+| redrawn noise (wrong) | 0.250 | −0.263 | 0.263 |
+| stored noise (correct) | **0.781** | −0.025 | 0.025 |
+
+Third measurement bug in this project found by a control row rather than by a result.
+
+### 9f. Two columns the tables were missing
+
+**Generation quality.** Probe accuracy is *fidelity-blind*: an arm can keep the attributes legible
+while its images degrade, and the column will not show it. Masip et al.'s numbers are the proof —
+generative replay scores *higher* classifier accuracy than finetuning (0.50 vs 0.17) at 3× worse
+FID, so an accuracy-only table ranks the broken arm first. Both retention tables now track a
+per-concept Frechet distance on the same schedule as the accuracy matrix and report CLoG's **AFQ**
+(final quality) and **FR** (its degradation).
+
+**What each arm must keep.** A `stored` column counts the real images an arm retains forever: 0 for
+ours and for every regularizer, the buffer size for DER++, and the entire stream for TTT. This is
+the axis on which rehearsal methods lose to an insert-only bank, and it was invisible in a table of
+accuracies.
+
+**Reference-free diversity and a copying check.** Every other metric here is anchored to real
+images, and for a held-out combination that anchoring is weakest exactly where our claim is
+strongest — a *correct* novel sample is absent from the training manifold by construction, so
+precision and density measured against it are anti-correlated with the property under test. The
+**Vendi score** (Friedman & Dieng, TMLR 2023) needs no reference at all. **`memorization()`** is
+MOSAIC's `d_NN1/d_NN2 < 1/3` test against the images the backbone actually trained on, because a
+method that scores well by *retrieving* a training image is indistinguishable from one that composes
+in every aggregate metric above.
+
 ## 8. Where the numbers come from
 
 | experiment | file | scale run |

@@ -29,3 +29,20 @@
 [n20]   guidance 4.0: trained-combination mean-attribute 0.900
 [n20]   guidance 6.0: trained-combination mean-attribute 0.900
 [n20] guidance calibrated on trained combinations -> 4.0 (mean-attribute 0.900)
+[n20] case 1/3 combo 889 [Blond_Hair, Brown_Hair, Wavy_Hair, No_Beard, Smi] diff=['Brown_Hair'] ours target 0.12 F1 0.50
+[n20] case 2/3 combo 252 [Wavy_Hair, No_Beard, Big_Lips, Wearing_Necklace] diff=['Wavy_Hair'] ours target nan F1 0.63
+[n20] case 3/3 combo 1097 [Black_Hair, Wavy_Hair, No_Beard, Big_Lips, Oval_] diff=['Black_Hair'] ours target 0.56 F1 0.79
+/coc/flash10/ksingara3/lifelong-ood-learner/experiments/n20_celeba_composition.py:298: RuntimeWarning: Mean of empty slice
+  summary = {a: {k: float(np.nanmean([x[k] for x in rows if x["arm"] == a])) for k in keys}
+
+[n20] 3 held-out CelebA combinations, 16 samples each
+    method             pair  target  joint  mean_at   prec  recall     F1    div
+    real                nan    0.28   0.48     0.91   1.00    0.88   0.94   0.98
+    ours                nan    0.34   0.67     0.94   0.60    0.68   0.64   1.11
+    composable-diff     nan    0.25   0.48     0.88   0.48    0.70   0.52   1.25
+    nearest-class       nan    0.12   0.44     0.83   0.44    0.65   0.49   1.28
+[n20] wrote figures/n20_celeba_composition_cscale1.0.png
+===== composable-diff scale 2.0 (CelebA) =====
+[n20] backbone ddpm_celeba_factored.pt | 24 held-out combos | device cuda
+[n20]   guidance 1.0: trained-combination mean-attribute 0.742
+[n20]   guidance 1.5: trained-combination mean-attribute 0.788
