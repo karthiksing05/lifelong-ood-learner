@@ -4,6 +4,9 @@ __pycache__/
 data/
 results/*.png
 results/*.json
+# ...except the pooled summary: every figure and every table is generated from it, so
+# tracking it lets a fresh clone run `bash reproduce.sh figures` without 12 GPU-hours.
+!results/aggregate.json
 results/*.npz
 slurm-*.out
 .DS_Store

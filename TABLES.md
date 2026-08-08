@@ -32,15 +32,15 @@ experiment. Do not edit by hand -- regenerate.
 
 `pair` = both withheld attributes correct at once. `nearest-class` cannot express the co-occurrence by construction: every trained neighbour differs on at least one of the two.
 
-### CelebA — 24 whole combinations withheld (the weaker split)  *(n = 2 seeds)*
+### CelebA — 24 whole combinations withheld (the weaker split)  *(n = 3 seeds)*
 
 | method | target attr | joint | mean attribute | recall | F1 |
 |---|---|---|---|---|---|
-| `real` | 0.468 ± 0.084 | 0.484 ± 0.043 | 0.890 ± 0.000 | 0.851 ± 0.011 | 0.918 ± 0.006 |
-| `ours` | 0.506 ± 0.093 | 0.592 ± 0.002 | 0.918 ± 0.005 | 0.635 ± 0.001 | 0.623 ± 0.012 |
-| `poe-guided` | 0.338 ± 0.037 | 0.085 ± 0.012 | 0.624 ± 0.074 | 0.000 ± 0.000 | 0.000 ± 0.000 |
-| `query-only` | 0.452 ± 0.110 | 0.432 ± 0.102 | 0.866 ± 0.022 | 0.006 ± 0.000 | 0.011 ± 0.000 |
-| `nearest-class` | 0.218 ± 0.064 | 0.203 ± 0.057 | 0.765 ± 0.045 | 0.574 ± 0.047 | 0.480 ± 0.004 |
+| `real` | 0.459 ± 0.049 | 0.459 ± 0.035 | 0.856 ± 0.034 | 0.846 ± 0.008 | 0.915 ± 0.005 |
+| `ours` | 0.511 ± 0.054 | 0.589 ± 0.003 | 0.905 ± 0.013 | 0.622 ± 0.013 | 0.618 ± 0.009 |
+| `poe-guided` | 0.308 ± 0.036 | 0.096 ± 0.013 | 0.617 ± 0.043 | 0.000 ± 0.000 | 0.000 ± 0.000 |
+| `query-only` | 0.468 ± 0.066 | 0.439 ± 0.059 | 0.843 ± 0.026 | 0.022 ± 0.016 | 0.015 ± 0.004 |
+| `nearest-class` | 0.222 ± 0.037 | 0.181 ± 0.040 | 0.723 ± 0.050 | 0.590 ± 0.031 | 0.466 ± 0.015 |
 
 ---
 
@@ -104,17 +104,17 @@ Arms that structurally *remove* shared parameters sit at exactly 0.000; arms tha
 
 | method | accuracy (joint) | F1 | recall | content diversity |
 |---|---|---|---|---|
-| `real` | 0.910 ± 0.016 | 0.913 ± 0.020 | 0.911 ± 0.003 | 1.008 ± 0.023 |
-| `native` | 0.905 ± 0.016 | 0.866 ± 0.003 | 0.843 ± 0.017 | 0.993 ± 0.012 |
-| `ours` | 0.252 ± 0.080 | 0.423 ± 0.069 | 0.612 ± 0.174 | 1.262 ± 0.057 |
-| `paper` | 0.319 ± 0.163 | 0.002 ± 0.002 | 0.040 ± 0.020 | 1.169 ± 0.157 |
+| `real` | 0.876 ± 0.021 | 0.892 ± 0.008 | 0.916 ± 0.004 | 0.988 ± 0.004 |
+| `native` | 0.876 ± 0.013 | 0.871 ± 0.008 | 0.873 ± 0.019 | 0.979 ± 0.006 |
+| `ours` | 0.328 ± 0.049 | 0.497 ± 0.065 | 0.788 ± 0.008 | 1.198 ± 0.041 |
+| `paper` | 0.444 ± 0.046 | 0.005 ± 0.003 | 0.043 ± 0.017 | 0.954 ± 0.064 |
 
 **Parity (consolidated / native):**
 
 | method | accuracy | F1 | recall |
 |---|---|---|---|
-| `ours` | 0.282 ± 0.092 | 0.489 ± 0.081 | 0.719 ± 0.199 |
-| `paper` | 0.360 ± 0.183 | 0.002 ± 0.002 | 0.047 ± 0.024 |
+| `ours` | 0.375 ± 0.058 | 0.570 ± 0.072 | 0.903 ± 0.024 |
+| `paper` | 0.506 ± 0.048 | 0.006 ± 0.003 | 0.050 ± 0.021 |
 
 A consolidated concept reaches most of native-level *coverage* at zero retraining and does not reach native per-sample *precision*; the published per-query LoRA reaches neither.
 
