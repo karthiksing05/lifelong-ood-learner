@@ -93,6 +93,16 @@ def main():
                         "This is the direct analogue of ColorMNIST's held-out (fg, bg) pairs and is "
                         "a far stronger compositional demand than holding out 24 of ~1200 "
                         "combinations individually.")
+    p.add_argument("--chw", action="store_true",
+                   help="store images CHW-flat so that _as_img's reshape yields a TRUE image.\n"
+                        "This repository's loaders write flat vectors HWC and every consumer "
+                        "reinterprets them as CHW, which is self-consistent but permutes the "
+                        "pixels: at 64x64 a model 'row' of 64 entries is only 21 real pixels with "
+                        "RGB interleaved along the width, and one real row is split across three "
+                        "model rows.  ColorMNIST tolerates that at 32x32; whether CelebA does is "
+                        "an empirical question, and this flag is how it gets asked.  Probes are "
+                        "fit on the same flat convention, so scoring stays valid either way; only "
+                        "the sample-grid image is drawn wrong under --chw.")
     p.add_argument("--cond", choices=["factored", "class"], default="factored")
     p.add_argument("--out", default=None)
     p.add_argument("--quick", action="store_true")
@@ -109,6 +119,8 @@ def main():
         tag += f"_no{args.holdout_attr}"
     if pair:
         tag += f"_nopair{pair[0]}-{pair[1]}"
+    if args.chw:
+        tag += "_chw"
     if args.quick:
         tag += "_smoke"
     args.out = args.out or os.path.join(CACHE, f"ddpm_{tag}.pt")
@@ -118,6 +130,12 @@ def main():
     data = load_celeba_comp(img=args.img, max_rows=args.max_rows, min_count=args.min_count,
                             n_holdout=args.n_holdout, holdout_attr=args.holdout_attr,
                             holdout_pair=pair, seed=args.seed, cache_dir=CACHE)
+    if args.chw:
+        n_img = len(data["X8"])
+        data["X8"] = np.ascontiguousarray(
+            data["X8"].reshape(n_img, args.img, args.img, 3).transpose(0, 3, 1, 2)
+        ).reshape(n_img, -1)
+        print(f"[n19] images stored CHW-flat: the model now sees upright images", flush=True)
     sp = data["split"]
     tr = data["train_idx"]
     if args.max_train and len(tr) > args.max_train:
