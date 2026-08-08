@@ -30,3 +30,4 @@
 [n5:gen-distill] 12/12 tasks: mean acc 0.77, exact 0.25, 7.16M, 473s
 [n5] -> gen-distill: ACC 0.771, BWT -0.028, FGT 0.057
 
+[n5:der++] 3/12 tasks: mean acc 0.79, exact 1.00, 2.20M, 142s

@@ -34,6 +34,9 @@ from matplotlib.patches import FancyArrowPatch, FancyBboxPatch          # noqa: 
 
 FIG = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "figures")
 OURS, REAL, BASE1, BASE2, BASE3 = "#4C78A8", "#9E9E9E", "#E45756", "#F58518", "#72B7B2"
+# Composable Diffusion gets its own colour because it is the arm the coverage argument now rests
+# on: at its best scale it matches our ACCURACY on CelebA and loses on recall (RESULTS 9g).
+BASE4 = "#54A24B"
 plt.rcParams.update({"font.size": 9, "axes.spines.top": False, "axes.spines.right": False})
 
 
@@ -122,10 +125,10 @@ def f2_coverage_vs_copying(A):
     cb = A.get("n20_celeba_composition_pair", {}).get("table", {})
     panels = [("ColorMNIST (disjoint factors)", cm, "joint",
                [("real", REAL), ("ours", OURS), ("poe-guided", BASE1),
-                ("query-only", BASE2), ("nearest-class", BASE3)]),
+                ("composable-diff", BASE4), ("nearest-class", BASE3)]),
               ("CelebA (overlapping factors)", cb, "pair",
                [("real", REAL), ("ours", OURS), ("poe-guided", BASE1),
-                ("query-only", BASE2), ("nearest-class", BASE3)])]
+                ("composable-diff", BASE4), ("nearest-class", BASE3)])]
     fig, axes = plt.subplots(1, 2, figsize=(11, 4.2))
     for ax, (title, tbl, acc_key, arms) in zip(axes, panels):
         for arm, col in arms:
@@ -162,8 +165,8 @@ def f2_coverage_vs_copying(A):
 def f3_composition(A):
     cm = A.get("n9_showdown", {}).get("table", {})
     cb = A.get("n20_celeba_composition_pair", {}).get("table", {})
-    arms = ["real", "ours", "poe-guided", "query-only", "nearest-class"]
-    cols = [REAL, OURS, BASE1, BASE2, BASE3]
+    arms = ["real", "ours", "composable-diff", "poe-guided", "nearest-class"]
+    cols = [REAL, OURS, BASE4, BASE1, BASE3]
     fig, axes = plt.subplots(1, 2, figsize=(11, 4))
     for ax, (tbl, keys, title) in zip(axes, [
             (cm, ["joint", "recall", "f1"], "ColorMNIST — held-out (digit, fg, bg) slots"),
@@ -231,7 +234,8 @@ def f5_preservation(A):
     n5 = A.get("n5_classinc", {}).get("table", {})
     n22 = A.get("n22_celeba_lifelong", {}).get("table", {})
     fig, axes = plt.subplots(2, 2, figsize=(11, 6.4), sharex="col")
-    order = ("ours", "independent", "ttt", "ewc", "finetune", "replay")
+    order = ("ours", "independent", "ttt", "c-lora", "ewc", "si", "mas", "der++",
+             "gen-distill", "replay", "finetune")
     for col, (tbl, title) in enumerate([(n5, "ColorMNIST — Split-ColorMNIST, 12 tasks"),
                                         (n22, "CelebA — 12 held-out combinations")]):
         arms = [a for a in order if a in tbl]
@@ -240,10 +244,11 @@ def f5_preservation(A):
                 axes[r][col].text(0.5, 0.5, "not run", ha="center", transform=axes[r][col].transAxes)
             axes[0][col].set_title(title, fontsize=9.5)
             continue
-        # three categories, not two: `ttt` cannot forget either, but only because it re-fits each
-        # task from STORED DATA at evaluation time and throws the adapter away -- it keeps every
-        # instance forever, which is the cost a continual method is supposed to avoid.
-        removes, keeps_data = {"ours", "independent"}, {"ttt"}
+        # three categories, not two: `ttt` and `der++` buy their retention with STORED DATA -- ttt
+        # re-fits each task from every instance it kept, der++ replays a permanent exemplar buffer --
+        # which is the cost a continual method is supposed to avoid, and is invisible in a plot of
+        # forgetting alone.  Grey marks "did not forget, but kept the data".
+        removes, keeps_data = {"ours", "independent"}, {"ttt", "der++"}
         cols = [OURS if a in removes else ("#BDBDBD" if a in keeps_data else BASE1) for a in arms]
         for row, key, lab in ((0, "FGT", "forgetting  (0 = none)"),
                               (1, "retention_exact", "fraction bit-identical")):

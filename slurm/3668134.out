@@ -32,3 +32,4 @@
 
 [n5:der++] 3/12 tasks: mean acc 0.71, exact 1.00, 2.20M, 114s
 [n5:der++] 6/12 tasks: mean acc 0.84, exact 0.50, 3.86M, 272s
+[n5:der++] 9/12 tasks: mean acc 0.83, exact 0.33, 5.51M, 460s

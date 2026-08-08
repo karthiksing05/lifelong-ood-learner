@@ -60,23 +60,31 @@ def main():
 
     print("\n---\n\n## 1. Composition: does it recover a combination never observed?")
     table(A, "n9_showdown",
-          ["real", "ours", "poe-guided", "inversion", "nearest-class"],
-          ["joint", "recall", "f1", "content_ratio"],
-          ["accuracy (joint)", "recall", "F1", "content diversity"],
+          ["real", "ours", "poe-guided", "composable-diff", "composable-mcmc", "inversion",
+           "inversion-free", "nearest-class"],
+          ["joint", "recall", "f1", "vendi", "content_ratio"],
+          ["accuracy (joint)", "recall", "F1", "Vendi", "content diversity"],
           label="ColorMNIST — held-out (digit, fg, bg) slots",
           note="`real` is held-out images, the ceiling. `poe-guided` is the published method: it "
                "scores *higher* accuracy than ours and F1 ~0 because it emits near-copies of the "
-               "query.")
+               "query. `composable-diff` is Composable Diffusion at its best swept scale and "
+               "`composable-mcmc` adds Du et al.'s Langevin correction: both sit at 0.000 here "
+               "because this backbone has no per-factor conditional for score addition to combine.")
     table(A, "n20_celeba_composition_pair",
-          ["real", "ours", "poe-guided", "query-only", "nearest-class"],
+          ["real", "ours", "composable-diff", "composable-mcmc", "poe-guided", "query-only",
+           "nearest-class"],
           ["pair", "target", "recall", "f1", "content_ratio"],
           ["pair (both, never co-occurred)", "target attr", "recall", "F1", "content diversity"],
           label="CelebA — `Smiling` x `Big_Nose` never co-occur in training",
           note="`pair` = both withheld attributes correct at once. `nearest-class` cannot express "
                "the co-occurrence by construction: every trained neighbour differs on at least one "
-               "of the two.")
+               "of the two. **`composable-diff` is competitive here** -- run at the scale that "
+               "maximizes its own `pair`, it reaches parity with ours on accuracy while its recall "
+               "and diversity fall by roughly half (RESULTS 9g). Where the model has genuine "
+               "per-attribute conditionals, score addition is not worse than composing in "
+               "embedding space; it is worse at covering.")
     table(A, "n20_celeba_composition",
-          ["real", "ours", "poe-guided", "query-only", "nearest-class"],
+          ["real", "ours", "composable-diff", "poe-guided", "query-only", "nearest-class"],
           ["target", "joint", "mean_attr", "recall", "f1"],
           ["target attr", "joint", "mean attribute", "recall", "F1"],
           label="CelebA — 24 whole combinations withheld (the weaker split)")
@@ -104,16 +112,23 @@ def main():
 
     print("\n---\n\n## 3. Preservation and forgetting")
     table(A, "n5_classinc",
-          ["ours", "independent", "ttt", "ewc", "finetune", "replay"],
-          ["ACC", "FGT", "retention_exact", "params"],
-          ["accuracy", "forgetting (0 = none)", "fraction bit-identical", "adapter params"],
+          ["ours", "independent", "ttt", "c-lora", "ewc", "si", "mas", "der++", "gen-distill",
+           "replay", "finetune"],
+          ["ACC", "FGT", "retention_exact", "qAFQ", "stored_images", "params"],
+          ["accuracy", "forgetting (0 = none)", "fraction bit-identical",
+           "final quality (lower=better)", "images kept", "adapter params"],
           label="ColorMNIST — Split-ColorMNIST class-incremental, REAL held-out images",
-          note="Arms that structurally *remove* shared parameters sit at exactly 0.000; arms that "
-               "try to *protect* them forget.")
+          note="Arms that structurally *remove* shared parameters sit at exactly 0.000; every arm "
+               "that tries to *protect* them forgets, including the four added after the literature "
+               "review (SI, MAS, DER++, generative distillation) and the continual-personalization "
+               "baseline C-LoRA. `images kept` is the axis the accuracy columns hide: rehearsal buys "
+               "its retention with a permanent buffer, and TTT keeps the whole stream.")
     table(A, "n22_celeba_lifelong",
-          ["ours", "independent", "finetune", "replay", "ewc"],
-          ["ACC", "FGT", "retention_exact", "params"],
-          ["mean-attribute accuracy", "forgetting", "fraction bit-identical", "adapter params"],
+          ["ours", "independent", "c-lora", "ewc", "si", "mas", "der++", "gen-distill", "replay",
+           "finetune"],
+          ["ACC", "FGT", "retention_exact", "qAFQ", "stored_images", "params"],
+          ["mean-attribute accuracy", "forgetting", "fraction bit-identical",
+           "final quality (lower=better)", "images kept", "adapter params"],
           label="CelebA — class-incremental over held-out combinations, REAL images")
 
     print("\n---\n\n## 4. Native parity: against a backbone TRAINED on the held-out slot")
