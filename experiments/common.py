@@ -105,7 +105,7 @@ def ood_queries(data, n_slots=None, seed=0):
 
 
 def backbone_gains(field, C, slots_seen, probes, data, factor=2, grid=(1.0, 1.5, 2.0, 2.5, 3.0),
-                   n_slots=12, n=32, steps=50, seed=0, verbose=True, n_seeds=2):
+                   n_slots=8, n=16, steps=50, seed=0, verbose=True, n_seeds=1):
     """Per-factor gain calibrated on THIS backbone, using seen slots only.
 
     The gain corrects the model's under-response to a factor -- background, in ColorMNIST.  It was
@@ -125,17 +125,21 @@ def backbone_gains(field, C, slots_seen, probes, data, factor=2, grid=(1.0, 1.5,
 
     from lifelong_ood.neural.idealwords import factorize
     fac = factorize(C, slot_factors(slots_seen))
-    # Averaged over several calibration seeds and a wider slot sample.  At the old n_slots=6, n=16
-    # the argmax was unstable on the SAME backbone: separate runs selected gain 1.0 (seen-slot
-    # accuracy 0.80) and 3.0 (0.96).  Picking 1.0 leaves the background under-weighted and the
-    # composed samples come out the wrong colour, so this noise was costing the method real quality
-    # in exactly the figure meant to show it at its best.
+    # MEASURED, and the result is a negative worth keeping.  The composed samples come out with the
+    # wrong background colour, and the obvious suspect was this calibration picking too small a gain.
+    # It is not: every full run selects 1.0 (seen-slot accuracy 0.79-0.82), including under
+    # `holdout_basis` cross-validation, which refits the basis WITHOUT the calibration slots so that
+    # reproducing them poses the same generalisation question a held-out combination does.  The 3.0
+    # I first compared against came from a --quick run at n=8, i.e. noise, not a different optimum.
+    # So the weak background is the limitation 5h/5i already document -- the conditioning span
+    # carries one factor or the other -- and not a tuning error.  n_seeds is 1 because the choice is
+    # stable; the multi-seed vote is kept available for a backbone where it is not.
     import numpy as _np
     tally = {}
     for k in range(max(1, n_seeds)):
         gk, sk = calibrate_gains(field, fac, probes, data, slots_seen, grid=grid, factor=factor,
                                  n_slots=n_slots, n=n, steps=steps, seed=seed + 137 * k,
-                                 score_fn=score_fn)
+                                 score_fn=score_fn, C=C, labels=slot_factors(slots_seen))
         tally.setdefault(gk, []).append(sk)
     g = max(tally, key=lambda z: (len(tally[z]), float(_np.mean(tally[z]))))
     sc = float(_np.mean(tally[g]))

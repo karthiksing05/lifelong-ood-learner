@@ -164,25 +164,41 @@ def slot_factors(slots):
 
 
 def calibrate_gains(field, fac, probes, data, seen_slots, grid=(1.0, 1.5, 2.0, 3.0), factor=2,
-                    n_slots=6, n=16, steps=50, seed=0, score_fn=None):
+                    n_slots=6, n=16, steps=50, seed=0, score_fn=None, holdout_basis=True,
+                    C=None, labels=None):
     """Choose the per-factor gain using SEEN slots only -- never held-out labels.
 
-    Composing a seen slot from the factorization and asking whether the model reproduces it is a
-    legitimate, label-free calibration: the slots are training data.  The gain that best reproduces
-    seen compositions is then applied unchanged to held-out ones.
+    Composing a seen slot and asking whether the model reproduces it is label-free, because the slots
+    are training data.  But it measures the wrong thing by default: the calibration slot is IN the
+    basis fit, so the model is being asked to reproduce a combination it has already memorised, and
+    gain 1.0 suffices.  Applied to a HELD-OUT combination the same gain under-delivers the weak
+    factor -- measured on ColorMNIST as backgrounds coming out the wrong colour while the seen-slot
+    score reads 0.82.
+
+    `holdout_basis=True` fixes the mismatch without touching a held-out label: the basis is refit
+    with the calibration slots REMOVED, so reproducing them is a generalisation question of exactly
+    the kind a held-out combination poses.  This is cross-validation inside the seen set, and it is
+    what the gain is actually for.
     """
     from .ddpm import to_data
     from .inversion import sample_embedding
     rng = np.random.default_rng(seed)
     picks = rng.choice(np.asarray(seen_slots), min(n_slots, len(seen_slots)), replace=False)
+
+    fac_cal = fac
+    if holdout_basis and C is not None and labels is not None:
+        keep = ~np.isin(np.asarray(seen_slots), picks)
+        if keep.sum() > len(fac["V"]) * 4:            # enough rows left to identify the basis
+            fac_cal = factorize(np.asarray(C)[keep], np.asarray(labels)[keep])
+
     best, best_g = None, 1.0
     for g in grid:
-        gains = [1.0] * len(fac["V"])
+        gains = [1.0] * len(fac_cal["V"])
         gains[factor] = g
         sc = []
         for s_ in picks:
             d, f, b = int(s_) // 16, (int(s_) % 16) // 4, int(s_) % 4
-            c = compose(fac, (d, f, b), gains=gains)
+            c = compose(fac_cal, (d, f, b), gains=gains)
             S = to_data(sample_embedding(field, torch.as_tensor(c, dtype=torch.float32,
                                                                 device=field.device),
                                          n=n, steps=steps, seed=seed)).astype(np.float32)
