@@ -139,13 +139,21 @@ def f2_coverage_vs_copying(A):
         ax.axhspan(-0.02, 0.12, color="#E45756", alpha=0.07, zorder=0)
         ax.text(0.02, 0.045, "copying: right attributes, no coverage", fontsize=7.2,
                 color="#B03A38", transform=ax.get_yaxis_transform(), va="center")
+        # precision annotated per point: the baselines are not merely accurate, their samples are
+        # PLAUSIBLE members of the class (precision 0.84 / 0.94).  Only coverage separates them.
+        for arm, _c in arms:
+            x_, y_ = m(tbl, arm, acc_key), m(tbl, arm, "recall")
+            pr = m(tbl, arm, "precision")
+            if np.isfinite(x_) and np.isfinite(y_) and np.isfinite(pr):
+                ax.annotate(f"prec {pr:.2f}", (x_, y_), textcoords="offset points",
+                            xytext=(7, -9), fontsize=6.5, color="0.35")
         ax.set_xlabel(f"attribute accuracy ({acc_key})")
         ax.set_ylabel("recall  (coverage of the held-out class)")
         ax.set_xlim(-0.03, 1.0); ax.set_ylim(-0.03, 1.0)
         ax.set_title(title, fontsize=9.5)
     fig.suptitle("Attribute accuracy cannot separate composing from copying — coverage can.\n"
-                 "The published method and the query-only baseline sit in the red band on BOTH "
-                 "benchmarks: correct attributes, near-zero coverage.", fontsize=10)
+                 "The baselines are run in their OWN published configuration and beat us on "
+                 "accuracy AND precision;\nwhat they do not have is recall.", fontsize=10)
     fig.tight_layout(rect=[0, 0, 1, 0.90])
     save(fig, "f2_coverage_vs_copying.png")
 

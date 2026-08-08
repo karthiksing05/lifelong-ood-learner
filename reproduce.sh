@@ -55,6 +55,8 @@ colormnist|all)
     gpu "experiments/n23_native_parity.py --seed $s"                             # native parity
   done
   for s in 0 1 2 3; do gpu "experiments/n5_classinc.py --seed $s"; done          # forgetting
+  gpu "experiments/make_case_studies.py --n-cases 3"                             # F9 case study
+  gpu "tests/diag_poe_faithful.py"                                               # baseline fairness check
   [ "$STAGE" = colormnist ] && exit 0 ;;&
 
 celeba|all)
