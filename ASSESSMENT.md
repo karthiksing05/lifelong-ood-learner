@@ -81,13 +81,15 @@ guidance sweep and with the MCMC corrector) because that backbone has no per-fac
 add. The composition result is therefore **benchmark-dependent**, and the defensible contribution is
 characterizing *when* score addition suffices — not a better operator.
 
-### 2. Transfer to a pretrained backbone is still not demonstrated end-to-end
+### 2. Transfer to a pretrained backbone: preservation yes, composition not yet
 
-Preservation transfers (above). *Learning a concept* does not yet. The blocker has moved twice under
-diagnosis — from conditioning capacity (N15) to the time-embedding write, to the discovery that 32 of
-the model's 58 Linear modules are `time_emb_proj` — and the current state is that gentle adaptation
-preserves quality but adds no attribute, while aggressive adaptation adds the attribute and damages
-the model. This is reported as open, with the diagnostics that narrowed it.
+Preservation transfers exactly (`0.000e+00` on a 113.7M-parameter model). Concept *acquisition* now
+works too, once adaptation is confined to high noise levels: `Eyeglasses` at 0.75 with Vendi 1.48
+against the untouched model's 1.51 (§12). What has **not** been demonstrated end-to-end is
+composition of two such concepts at this scale with a quantitative result — the case study exists,
+the numbers are single-seed, and they are not part of any headline claim.
+
+The route there is now clear rather than blocked, which is a different thing from being done.
 
 ### 3. Scale
 
@@ -114,9 +116,10 @@ trained ourselves at small scale. This is the single largest obstacle to a top v
 
 In order of expected value:
 
-1. **Answer the scale question.** Finish the pretrained-backbone concept learning. Preservation is
-   already certified there; if concept acquisition works at 113.7M, every claim inherits it and the
-   "small models" objection disappears. This is the highest-value remaining item by a wide margin.
+1. **Answer the scale question.** Preservation is certified at 113.7M and concept acquisition now
+   works there (§12c). What remains is running the full loop — route, consolidate, compose, retain —
+   at that scale across seeds, so the lifelong claims inherit it rather than only the mechanism.
+   This is the highest-value remaining item by a wide margin.
 2. **Run the held-out-severity sweep.** The machinery exists (`n1_train.py --extra-holdout`). Every
    recent paper that ran one found degradation, so reporting the curve pre-empts the criticism and
    costs a few backbone trainings.

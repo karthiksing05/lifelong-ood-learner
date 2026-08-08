@@ -2405,6 +2405,81 @@ Three further readings:
   this row is preserved by isolation of the conditioning rather than by protecting the adapter.
   Forgetting is measured in n5, where the adapter carries the content.
 
+## 12. The pretrained backbone (N25): what unblocked it
+
+N15 left this open with a diagnosis — conditioning a 113.7M-parameter unconditional model through a
+single additive vector on its time embedding does not move it. Giving the bank real capacity turned
+out to be necessary but not sufficient, and the path to a working configuration went through three
+distinct faults, each found by looking at samples rather than at numbers.
+
+### 12a. Preservation transfers immediately
+
+`tests/test_pretrained_bank.py`, on **google/ddpm-celebahq-256** (113.7M params) and
+**google/ddpm-cifar10-32** (35.7M):
+
+| assertion | result |
+|---|---|
+| injecting the bank changes the pretrained model | **0.000e+00** |
+| a freshly registered concept is a no-op | **0.000e+00** |
+| training a second concept moves the first | **0.000e+00** |
+
+The preservation mechanism is structural, so it carries to a model we did not train without
+modification. This is the part of the method that transfers cleanly, and it is worth separating from
+the part that did not.
+
+### 12b. Three faults, in the order they were removed
+
+**1. Writing to the model's clock.** Our concept vector is added to the *time* embedding. On our own
+UNet that slot was trained to carry a class signal; on an unconditional model the time embedding
+encodes only the noise level, so an offset on it says *you are at a different timestep*. Training it
+corrupts denoising globally. Held at zero; the per-concept adapter path carries the concept.
+
+**2. Adapting the clock by a different route.** Restricting adapters to `linear` layers — where the
+personalization literature puts them — turned out to mean the opposite of what it sounds like:
+**32 of this model's 58 Linear modules are `time_emb_proj`**, plus two in the time embedding's own
+MLP. "Adapt the linears" was adapting the noise-level path in 34 places. Excluding it leaves the 24
+attention projections.
+
+**3. Teaching it our blur.** Even attention-only, any learning rate that moved the model also
+degraded it. The cause is a distribution mismatch that has nothing to do with the method: our images
+are CelebA (178px aligned, upsampled to 256) and the model is CelebA-HQ. Training at low noise levels
+— where fine texture is decided — teaches it our upsampling artifacts, which is exactly what the
+"painterly and patchy" samples were.
+
+### 12c. The fix, and the number
+
+Training only at **high noise levels**, where semantics are decided and texture is not:
+
+| training range | guidance w | `Eyeglasses` rate | Vendi | samples |
+|---|---|---|---|---|
+| all t | 1 | 0.00 | 1.54 | already degraded |
+| all t | 6 | 0.25 | 1.29 | unrecognizable |
+| **t ≥ 500** | 1 | 0.00 | **1.47** | **clean** |
+| **t ≥ 500** | 3 | **0.75** | **1.48** | artifacts return |
+| **t ≥ 700** | 1 | 0.25 | **1.46** | **clean, glasses present** |
+| t ≥ 700 | 3 | 0.50 | 1.36 | stylized but coherent |
+
+*(untouched model: Vendi 1.51)*
+
+So an attribute can be added to a pretrained diffusion model through this bank without damaging it,
+provided the adaptation is confined to the noise levels at which the attribute actually lives. The
+sampling-time amplification is free: the unconditional branch **is** the frozen model with the
+adapter path deactivated, so `eps_frozen + w (eps_adapter − eps_frozen)` needs no CFG dropout and no
+unconditional token.
+
+### 12d. What this does and does not license
+
+It does **not** restate the out-of-distribution claim. This model's training set is not ours to
+control, so we cannot say it never saw a smiling face in glasses. What is controlled is what **our
+concepts** saw: concept A is trained only on `(a=1, b=0)` and concept B only on `(b=1, a=0)`, so
+their co-occurrence is held out of both by construction, and composing them is a genuine held-out
+combination *at the level of the representations this method builds*.
+
+The general lesson is worth stating separately from this project: **when adapting a pretrained
+diffusion model on data from a lower-quality distribution than it was trained on, restrict training
+to high noise levels.** Otherwise the adapter spends its capacity transferring your artifacts, and
+the failure looks like a capacity or a learning-rate problem when it is neither.
+
 ## 8. Where the numbers come from
 
 | experiment | file | scale run |
