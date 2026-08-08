@@ -2258,6 +2258,69 @@ asked to support the same sentence:
 | a consolidated concept is usable | n23 native parity | n9 composition accuracy alone |
 | composition beats score addition | n9 (ColorMNIST) only | n20 (CelebA), where it does not — §9g |
 
+## 11. The full baseline set, run (seed 1 shown; 3 seeds in TABLES.md)
+
+### 11a. ColorMNIST — every training-free composition baseline, at its own best setting
+
+| method | joint | digit | fg | bg | precision | recall | F1 | content div |
+|---|---|---|---|---|---|---|---|---|
+| *real* | *0.85* | *0.85* | *1.00* | *1.00* | *1.00* | *0.96* | *0.98* | *1.01* |
+| **ours** | 0.28 | 0.50 | 0.75 | 0.82 | 0.47 | **0.79** | **0.56** | 1.17 |
+| poe-guided (their Eq. 14) | **0.74** | 1.00 | 0.96 | 0.78 | 0.75 | 0.00 | 0.00 | 0.32 |
+| composable-diff | 0.00 | 0.17 | 0.41 | 0.27 | 0.03 | 0.11 | 0.03 | 1.26 |
+| composable-mcmc | 0.00 | 0.24 | 0.46 | 0.20 | 0.01 | 0.00 | 0.00 | 0.51 |
+| inversion (span-restricted) | 0.23 | 0.37 | 0.58 | 0.77 | 0.30 | 0.67 | 0.37 | 1.06 |
+| inversion-free (Gal et al. as published) | 0.03 | 0.28 | 0.62 | 0.42 | 0.04 | 0.79 | 0.08 | 1.28 |
+| nearest-class | 0.00 | 0.17 | 0.80 | 0.00 | 0.00 | 0.00 | 0.00 | 0.97 |
+
+Three things worth stating.
+
+**Score addition fails here regardless of sampler.** `composable-diff` is 0.00 and Du et al.'s MCMC
+correction (`composable-mcmc`) does not rescue it — 0.00 as well, with diversity *falling* 1.26 →
+0.51. That is the expected result and it sharpens their claim rather than contradicting it: a better
+sampler corrects the distribution a composed score *targets*, and here the composed score is built
+from entangled slot conditionals that contain no per-factor information to begin with. The sampler
+was never the binding constraint on this benchmark.
+
+**The free-vector inversion baseline is much worse than the span-restricted one** (F1 0.08 vs 0.37),
+which is evidence *for* our parameterization rather than against it. Optimizing a free vector in R^d
+from a single query has nothing holding it in the region of conditioning space the model decodes
+well; its recall is high (0.79) and its precision is 0.04, i.e. it produces variety that is not the
+target. This is the arm that was previously missing, and it happens to support the design.
+
+**`poe-guided` still wins on accuracy and still scores F1 0.00.** Unchanged from §5l-bis, and it is
+the whole reason F1 rather than accuracy is the headline: 0.74 joint accuracy at recall 0.000.
+
+### 11b. CelebA, strong split — where a 2022 baseline catches us
+
+`Smiling` × `Big_Nose` never co-occur in training. `pair` = both correct at once.
+
+| method | pair | target | joint | mean_attr | precision | recall | content div |
+|---|---|---|---|---|---|---|---|
+| *real* | *0.88* | *0.59* | *0.36* | *0.83* | *1.00* | *0.89* | *1.01* |
+| **ours** | **1.00** | 0.74 | 0.36 | 0.86 | 0.68 | **0.52** | **1.04** |
+| composable-diff | **1.00** | 0.76 | 0.37 | 0.86 | 0.87 | 0.25 | 0.75 |
+| composable-mcmc | 0.98 | **0.77** | 0.41 | 0.88 | 0.38 | 0.44 | 0.82 |
+| poe-guided | 0.68 | 0.32 | 0.04 | 0.70 | 0.92 | 0.00 | 0.15 |
+| query-only | 0.73 | 0.41 | 0.22 | 0.74 | 0.83 | 0.01 | 0.28 |
+| nearest-class | 0.25 | 0.11 | 0.05 | 0.62 | 0.48 | 0.59 | 1.21 |
+
+Ours and `composable-diff` **tie at `pair` 1.00**, and it edges us on `target` (0.76 vs 0.74). The
+separation is entirely in coverage: **recall 0.52 vs 0.25** and **content diversity 1.04 vs 0.75**,
+where real data sits at 1.01. We match the real spread; it produces half the variety.
+
+Du et al.'s corrector behaves exactly as advertised *here*, where the conditionals are real: it moves
+`composable-diff`'s recall 0.25 → 0.44 and its precision 0.87 → 0.38, i.e. it trades sharpness for
+coverage and lands between the two. That is the first place in this repository where the MCMC
+correction does something, and it is the place where the operator's precondition is actually met.
+
+**The conclusion this table supports** is narrow and worth stating in exactly this form: on a
+benchmark with genuine per-attribute conditionals, our composition operator is **not more accurate**
+than adding scores — it reaches the same accuracy while covering twice as much of the class. On a
+benchmark without them (§11a) score addition does not work at all. Neither statement is about
+lifelong learning, which is measured elsewhere and where neither of these baselines competes: both
+produce a sample and keep nothing.
+
 ## 8. Where the numbers come from
 
 | experiment | file | scale run |

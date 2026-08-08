@@ -138,3 +138,4 @@ n5 exit=0 | Sat Aug  8 12:12:35 EDT 2026
 [n22] -> si: ACC 0.851 BWT +0.007 FGT 0.013 | target ACC nan FGT nan
 
 [n22:mas] 3/12: mean-attr 0.840, target 0.125, exact 1.00, 2.91M, 73s
+[n22:mas] 6/12: mean-attr 0.851, target 0.250, exact 0.50, 5.08M, 191s
