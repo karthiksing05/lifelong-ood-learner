@@ -30,7 +30,7 @@ case "$STAGE" in
 tests|all)
   echo "== tests =="
   for t in test_layout test_smoke test_neural test_merge test_ortho_merge test_unbounded \
-           test_pretrained; do gpu "tests/$t.py"; done
+           test_pretrained test_pretrained_bank; do gpu "tests/$t.py"; done
   [ "$STAGE" = tests ] && exit 0 ;;&
 
 backbones|all)
@@ -48,26 +48,29 @@ colormnist|all)
   echo "== ColorMNIST =="
   gpu "experiments/prebuild_celeba_probes.py"      # shared probe cache, also used by CelebA
   for s in 0 1 2; do
-    gpu "experiments/n9_showdown.py --seed $s"                                   # composition
+    gpu "experiments/n9_showdown.py --seed $s --tag _cal --mcmc-steps 10 --mcmc-lam 0.3"  # composition
     gpu "experiments/n11_basis_extension.py --norm-match --tag _nmadapt --seed $s"  # combination cost
     gpu "experiments/n11_basis_extension.py --ckpt results/cache/ddpm_colormnist_nobg3.pt --tag _B --seed $s"
     gpu "experiments/n18_router.py --seed $s"                                    # self-routing
     gpu "experiments/n23_native_parity.py --seed $s"                             # native parity
   done
-  for s in 0 1 2 3; do gpu "experiments/n5_classinc.py --seed $s"; done          # forgetting
-  gpu "experiments/make_case_studies.py --n-cases 3"                             # F9 case study
+  for s in 0 1 2; do gpu "experiments/n5_classinc.py --seed $s --tag _full"; done  # forgetting, 11 arms
+  gpu "experiments/make_case_studies.py --n-cases 3 --guidance 2.0"              # F9 case study
   gpu "tests/diag_poe_faithful.py"                                               # baseline fairness check
+  gpu "tests/diag_composable_scale.py --n-cases 3 --n-samples 16"                # composable-diff scale
+  gpu "tests/diag_ours_quality.py --n-cases 2 --n-samples 8"                     # pool-guidance choice
   [ "$STAGE" = colormnist ] && exit 0 ;;&
 
 celeba|all)
   echo "== CelebA =="
   P=results/cache/ddpm_celeba_factored_nopairSmiling-Big_Nose.pt
   for s in 0 1 2; do
-    gpu "experiments/n20_celeba_composition.py --ckpt $P --tag _pair --seed $s"  # strong split
-    gpu "experiments/n20_celeba_composition.py --seed $s"                        # weaker split
+    gpu "experiments/n20_celeba_composition.py --ckpt $P --tag _pairfull --seed $s --comp-scale 7.5 --mcmc-steps 10 --mcmc-lam 0.3"  # strong split
+    gpu "experiments/n20_celeba_composition.py --seed $s --tag _full --comp-scale 7.5 --mcmc-steps 10 --mcmc-lam 0.3"  # weaker split
     gpu "experiments/n21_celeba_vocabulary.py --attr Gray_Hair --seed $s"        # new vocabulary
   done
-  gpu "experiments/n22_celeba_lifelong.py --seed 0 --arms ours independent finetune replay ewc"
+  for s in 0 1 2; do gpu "experiments/n22_celeba_lifelong.py --seed $s --tag _full"; done   # 11 arms
+  gpu "experiments/n25_pretrained_case.py --attrs Eyeglasses Smiling"           # pretrained 256px case study
   [ "$STAGE" = celeba ] && exit 0 ;;&
 
 supporting|all)
