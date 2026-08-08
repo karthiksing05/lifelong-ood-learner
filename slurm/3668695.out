@@ -7,3 +7,8 @@
 [n9] guidance calibrated on TRAINED slots -> 1.5 (joint 0.969)
 [n9] 5 cases, 6 follow-on concepts, device cuda
 [n9] ours: absorbed 6 follow-on concepts (real)
+[n9] finetune-stream: absorbed 6 follow-on concepts (real)
+[n9] case 46 done
+[n9] case 110 done
+[n9] case 19 done
+[n9] case 99 done
