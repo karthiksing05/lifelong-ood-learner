@@ -1,0 +1,18 @@
+/nethome/ksingara3/flash/miniconda3/envs/chunks/lib/python3.12/site-packages/huggingface_hub/utils/_validators.py:205: UserWarning: The `local_dir_use_symlinks` argument is deprecated and ignored in `hf_hub_download`. Downloading to a local directory does not use symlinks anymore.
+  warnings.warn(
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+An error occurred while trying to fetch google/ddpm-celebahq-256: google/ddpm-celebahq-256 does not appear to have a file named diffusion_pytorch_model.safetensors.
+Defaulting to unsafe serialization. Pass `allow_pickle=False` to raise an error instead.
+[n26] google/ddpm-celebahq-256 256x256 | 4 concepts ['Eyeglasses', 'Smiling', 'Wearing_Hat', 'Male'] | device cuda
+[n26]   Eyeglasses: 96 real images
+[n26]   Smiling: 96 real images
+[n26]   Wearing_Hat: 96 real images
+[n26]   Male: 96 real images
+[n26]   probe Eyeglasses: TPR 0.78 TNR 0.92 usable
+[n26]   probe Smiling: TPR 0.97 TNR 0.52 usable
+[n26]   probe Wearing_Hat: TPR 0.00 TNR 1.00 NOT usable
+[n26]   probe Male: TPR 0.78 TNR 0.95 usable
+An error occurred while trying to fetch google/ddpm-celebahq-256: google/ddpm-celebahq-256 does not appear to have a file named diffusion_pytorch_model.safetensors.
+Defaulting to unsafe serialization. Pass `allow_pickle=False` to raise an error instead.
+      [Eyeglasses] ep 10/40: 0.0003 (49s)
+      [Eyeglasses] ep 20/40: 0.0003 (98s)
