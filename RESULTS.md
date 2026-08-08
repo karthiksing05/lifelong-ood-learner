@@ -2144,6 +2144,62 @@ MOSAIC's `d_NN1/d_NN2 < 1/3` test against the images the backbone actually train
 method that scores well by *retrieving* a training image is indistinguishable from one that composes
 in every aggregate metric above.
 
+### 9g. The uncomfortable one: a corrected baseline nearly catches us on CelebA
+
+Fixing the `1/n` handicap did not just make Composable Diffusion look better — it made it a genuinely
+competitive method, and on CelebA it very nearly matches ours. This is recorded in full rather than
+summarised, because it changes what the paper is entitled to claim.
+
+**Strong split** (`Smiling × Big_Nose` never co-occur in training), seed 0, 3 cases, 16 samples.
+`pair` = both withheld attributes correct at once, the metric the split exists to measure:
+
+| arm | scale | pair | target | joint | mean_attr | precision | recall | content div |
+|---|---|---|---|---|---|---|---|---|
+| real | — | 0.48 | 0.65 | 0.19 | 0.77 | 1.00 | 0.95 | 1.01 |
+| **ours** | — | **0.71** | 0.73 | 0.25 | 0.84 | 0.71 | **0.60** | **1.06** |
+| composable-diff | 1.0 | 0.38 | 0.65 | 0.00 | 0.67 | 0.38 | 0.61 | 1.25 |
+| composable-diff | 3.0 | 0.69 | **0.75** | 0.17 | 0.80 | 0.60 | 0.62 | 1.12 |
+| composable-diff | 5.0 | 0.71 | **0.75** | 0.21 | 0.83 | 0.79 | 0.51 | 0.96 |
+| composable-diff | 7.5 | **0.73** | 0.73 | 0.29 | 0.86 | **0.92** | 0.30 | 0.77 |
+| nearest-class | — | 0.12 | 0.17 | 0.00 | 0.53 | 0.38 | 0.61 | 1.27 |
+
+At `w = 1/n` — the configuration we had — it scores `pair` 0.38 and looks comfortably beaten. At its
+own best scale it scores **0.73 against our 0.71**. A 2022 method with **zero parameters and no
+training** matches us on the metric this benchmark was built to test.
+
+**What the extra columns show, and why they are the answer rather than an excuse.** Read across the
+scale sweep: as `w` rises, precision climbs 0.38 → 0.92 while recall falls 0.61 → 0.30 and content
+diversity falls 1.25 → 0.77, passing *through* the real data's 1.01 and out the other side. That is
+the same accuracy-for-coverage trade `poe-guided` makes in §5e, just at a gentler slope — strong
+guidance contracts trajectories, and the pool stops covering the composition. At its most accurate
+setting the baseline emits samples that are 92% correct and half as varied as real data.
+
+Ours sits at `pair` 0.71 with recall 0.60 and diversity 1.06 — matching real data's spread. The
+defensible claim is therefore **not** that our composition operator is better on CelebA. It is that
+it reaches equivalent composition accuracy at roughly **twice the coverage**, and that is only
+visible because we report recall and diversity next to accuracy.
+
+**The honest bottom line for the composition claim, which is now benchmark-dependent:**
+
+- **CelebA** — our operator does **not** beat score addition. Where the model has genuine
+  per-attribute conditionals, adding their scores works about as well as composing in embedding
+  space. We hold a coverage advantage at equal accuracy, and that is the whole of it.
+- **ColorMNIST** — our operator **strictly dominates**: composable-diff is at 0.000 joint accuracy at
+  every scale across a 23× range (§9b), because there is no per-factor conditional to add. Ours is
+  not, because it composes in a factor basis recovered from the entangled embeddings rather than in
+  score space.
+
+That contrast is a *result*, not a hedge: it identifies the precondition under which the cheaper
+operator suffices, and score addition is strictly cheaper when it does. What it costs us is the
+claim to a better composition operator in general.
+
+**None of this touches the lifelong claims.** Composable Diffusion produces a sample and keeps
+nothing — no concept is registered, nothing is preserved, nothing accumulates, and the next query
+starts from the frozen model again. Retention (§7d, N22), bit-exact preservation, the routing
+decision (§6c, N18), growth accounting (§5z, N24) and native parity (§6d, N23) are all measured
+against arms that *do* retain, and are unaffected. The paper's spine is the lifelong mechanism; the
+composition operator is inherited, and on one of two benchmarks it is not improved.
+
 ## 8. Where the numbers come from
 
 | experiment | file | scale run |
