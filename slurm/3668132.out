@@ -1,0 +1,2 @@
+===== n5 ColorMNIST class-incremental, ALL arms, seed 0 =====
+[n5] 12 tasks x 64 REAL images, batches of 3, arms ['ours', 'independent', 'finetune', 'replay', 'gen-distill', 'der++', 'ewc', 'si', 'mas', 'ttt', 'c-lora'], device cuda

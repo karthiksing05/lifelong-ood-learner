@@ -101,6 +101,11 @@ def main():
     p.add_argument("--n-samples", type=int, default=24)
     p.add_argument("--n-show", type=int, default=6)
     p.add_argument("--steps", type=int, default=50)
+    p.add_argument("--comp-scale", type=float, default=1.0,
+                   help="Composable Diffusion per-concept guidance scale (Liu et al. Eq. 11)")
+    p.add_argument("--mcmc-steps", type=int, default=0,
+                   help="annealed Langevin corrector steps per denoising step (Du et al. 2023)")
+    p.add_argument("--mcmc-lam", type=float, default=0.1)
     p.add_argument("--seed", type=int, default=0)
     p.add_argument("--guidance", type=float, default=-1.0,
                    help="CFG scale for the composed conditioning; <=0 calibrates it on TRAINED "
@@ -195,9 +200,22 @@ def main():
         # isolate a factor.  Here the factored head gives a genuine conditional per ATTRIBUTE, so
         # this is score-space composition of exactly the same conditionals our method composes in
         # embedding space -- the sharpest available comparison of the two operators.
+        # `scale` is per-concept guidance, NOT 1/n -- see composable.py; chosen by sweep so this
+        # arm is reported in its own best configuration, the same courtesy poe-guided gets.
         got["composable-diff"] = to_data(
             compose_attributes_scores(field, model, combo, n=args.n_samples, steps=args.steps,
-                                      seed=args.seed + ci)).astype(np.float32)
+                                      seed=args.seed + ci,
+                                      scale=args.comp_scale)).astype(np.float32)
+        # Du et al. (ICML 2023): the row above targets the product of DIFFUSED MARGINALS rather than
+        # the diffusion of the product, and annealed MCMC at each noise level is the correction.
+        # Training-free and exemplar-free, so it is fair, and it is the strongest published objection
+        # to score addition -- which is the operator both this arm and ours are variants of.
+        if args.mcmc_steps > 0:
+            got["composable-mcmc"] = to_data(
+                compose_attributes_scores(field, model, combo, n=args.n_samples, steps=args.steps,
+                                          seed=args.seed + ci, scale=args.comp_scale,
+                                          mcmc=dict(steps=args.mcmc_steps,
+                                                    lam=args.mcmc_lam))).astype(np.float32)
 
         # ── nearest trained combination (retrieval control) ─────────────────
         nn_cls = ck["remap"].get(int(nn_j))
@@ -236,7 +254,8 @@ def main():
               f"ours target {m['target']:.2f} F1 {m['f1']:.2f}", flush=True)
 
     # ── figure ───────────────────────────────────────────────────────────────
-    order = [a for a in ("real", "ours", "composable-diff", "poe-guided", "query-only",
+    order = [a for a in ("real", "ours", "composable-diff", "composable-mcmc", "poe-guided",
+                         "query-only",
                          "nearest-class") if any(x["arm"] == a for x in rows)]
     import matplotlib
     matplotlib.use("Agg")

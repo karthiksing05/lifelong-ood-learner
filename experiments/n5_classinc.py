@@ -93,9 +93,12 @@ def main():
                    help="DER++ exemplar buffer (Buzzega et al. report 200/500/5120)")
     p.add_argument("--der-alpha", type=float, default=0.5, help="DER++ dark-knowledge weight")
     p.add_argument("--der-beta", type=float, default=0.5, help="DER++ replay weight")
+    p.add_argument("--tag", default="", help="suffix for the output file; --quick runs force one "
+                                             "so a smoke can never overwrite a full result")
     p.add_argument("--quick", action="store_true")
     args = p.parse_args()
     if args.quick:
+        args.tag = args.tag or "_smoke"
         args.n_tasks, args.batch_size, args.n_train = 4, 2, 24
         args.n_samples, args.n_per_slot, args.epochs = 8, 20, 4
         args.replay_n, args.steps = 8, 10
@@ -193,8 +196,8 @@ def main():
         print(f"[n5] -> {arm}: ACC {m['ACC']:.3f}, BWT {m['BWT']:+.3f}, FGT {m['FGT']:.3f}\n",
               flush=True)
 
-    save_json(dict(rows=rows, config=vars(args)), os.path.join(RESULTS, "n5_classinc.json"),
-              seed=args.seed)
+    save_json(dict(rows=rows, config=vars(args)),
+              os.path.join(RESULTS, f"n5_classinc{args.tag}.json"), seed=args.seed)
     print(f"\n[n5] Split-ColorMNIST class-incremental, {args.n_tasks} tasks of real held-out images")
     print(f"    {'arm':13s}{'ACC':>7s}{'BWT':>9s}{'FGT':>8s}{'exact':>8s}"
           f"{'AFQ':>8s}{'FR':>8s}{'params':>9s}{'stored':>8s}{'wall(s)':>9s}")
@@ -207,7 +210,7 @@ def main():
     print("  FGT forgetting measure (0 = none) | exact = fraction bit-identical to birth")
     print("  stored = REAL images the arm must retain forever (0 = keeps no data)")
     print("  AFQ final generation quality (Frechet to real, LOWER better) | FR its degradation")
-    print(f"[n5] wrote {RESULTS}/n5_classinc.json")
+    print(f"[n5] wrote {RESULTS}/n5_classinc{args.tag}.json")
 
 
 if __name__ == "__main__":
