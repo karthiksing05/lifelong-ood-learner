@@ -18,3 +18,8 @@ Defaulting to unsafe serialization. Pass `allow_pickle=False` to raise an error 
       [Smiling] epoch 1/8: 0.0068 (13s)
       [Smiling] epoch 2/8: 0.0139 (26s)
       [Smiling] epoch 3/8: 0.0077 (40s)
+      [Smiling] epoch 4/8: 0.0111 (53s)
+      [Smiling] epoch 5/8: 0.0113 (66s)
+      [Smiling] epoch 6/8: 0.0107 (79s)
+      [Smiling] epoch 7/8: 0.0068 (93s)
+      [Smiling] epoch 8/8: 0.0060 (106s)

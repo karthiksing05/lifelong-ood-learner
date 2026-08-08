@@ -2200,6 +2200,64 @@ decision (§6c, N18), growth accounting (§5z, N24) and native parity (§6d, N23
 against arms that *do* retain, and are unaffected. The paper's spine is the lifelong mechanism; the
 composition operator is inherited, and on one of two benchmarks it is not improved.
 
+## 10. The metric audit: what each arm is allowed to be measured on
+
+Prompted by a simple question — are we reporting the axes this method actually wins on, and are we
+reporting the ones it loses on? Two columns were missing in each direction.
+
+### 10a. Missing columns that favour us
+
+| metric | what it asks | why the old table could not show it |
+|---|---|---|
+| **A** (Díaz-Rodríguez et al. 2018) | mean accuracy over the WHOLE lower triangle | final-row `ACC` cannot distinguish *never dropped* from *dropped and recovered by the end* |
+| **REM** = 1 − \|min(BWT,0)\| | remembering, normalized to [0,1] | same information as BWT, in the direction where 1.0 is the good end |
+| **SSS** = 1 − Mem(buffer)/Mem(stream) | what the arm must KEEP | invisible in a table of accuracies; ours is exactly **1.0**, DER++ and TTT are not |
+| **stored images** | the same thing, unnormalized | — |
+
+`SSS` is the sharpest of these. The n5 table shows `der++` at ACC 0.792 and `ttt` at 0.797 —
+statistically indistinguishable from our 0.792 — but `der++` holds a permanent 200-image buffer and
+`ttt` keeps all **768** images of the stream forever, while ours keeps none. An accuracy-only table
+reports those three arms as equivalent. They are not.
+
+### 10b. A missing column that does NOT favour us
+
+**MS** (model-size efficiency) is reported for the same reason. An insert-only bank grows, so MS is
+the one axis where the honest number is against us, and the n5 table makes it concrete: `independent`
+reaches **ACC 0.839** with **7.16M** adapter parameters where ours reaches **0.792** with **8.82M**.
+Parameter isolation without a hierarchy is *better on both axes here*.
+
+That is not a new finding — §5s already established the hierarchy does not earn its keep on this
+dataset — but it does bound what n5 can be used to claim. **n5 does not show our method beating
+parameter isolation; it shows both of them beating everything that tries to protect shared weights.**
+The differentiator against `independent` is not in this table at all — it is the routing rule (§6c)
+and the growth accounting (§5z), where an *arrangement* costs a 1024-byte basis direction instead of
+a 551K-parameter adapter. A reader who takes n5 alone would be entitled to prefer `independent`, and
+the paper should say so rather than let the ACC column imply otherwise.
+
+### 10c. What the new quality columns did and did not separate
+
+`AFQ`/`FR` (CLoG's generative-quality protocol on a pixel-PCA Fréchet distance) came out at
+0.030–0.040 for **every** arm with `FR` at +0.000 throughout. So on this benchmark the arms are not
+distinguishable by sample fidelity — the differences are in *which* attributes get generated, not in
+image quality. That is a null result, it is reported as one, and it means the accuracy columns are
+not hiding a fidelity collapse the way Masip et al. found for generative replay on Fashion-MNIST.
+
+The one arm where it *should* have bitten is `replay`, which collapses to **ACC 0.479 / BWT −0.307**
+— and its AFQ is 0.032, in line with everything else. Its failure is compositional, not visual.
+
+### 10d. Where each claim is actually settled
+
+Written down because the audit's main output was realising that three different tables were being
+asked to support the same sentence:
+
+| claim | the table that settles it | the table that does NOT |
+|---|---|---|
+| concepts are preserved exactly | n5/n22 `retention_exact` = 1.00 vs 0.25 | `ACC`, where `mas` also reaches FGT 0.000 |
+| retention costs no stored data | n5/n22 `SSS` = 1.0 vs `der++`, `ttt` | `ACC`, which ranks them equal |
+| cost scales with vocabulary, not experience | n24 growth accounting | n5, where we are *worse* than `independent` |
+| a consolidated concept is usable | n23 native parity | n9 composition accuracy alone |
+| composition beats score addition | n9 (ColorMNIST) only | n20 (CelebA), where it does not — §9g |
+
 ## 8. Where the numbers come from
 
 | experiment | file | scale run |
