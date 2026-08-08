@@ -64,6 +64,38 @@ which is sharper than any factor it is built from and samples near-copies of its
 | **C9** | **Native parity.** Against a backbone *trained on the held-out slot* (an oracle that itself sits at the data ceiling, joint 0.876 vs 0.876), a concept consolidated from one OOD query at **zero retraining** reaches **90% of native recall** and **57% of native F1** — while the published per-query LoRA reaches **0.6%** of native F1, scoring *higher* joint accuracy (0.444 vs 0.331) at recall 0.043. Parity is partial and stated as such: 38% on per-sample joint accuracy, so "as if learned natively" holds for the *extent* of the class generated and not for the *precision* of each sample. | **A** (3 seeds) | 6d (N23) |
 | **C8** | Cost grows with **vocabulary**, not with experience. Charging the router's own measured error rates, a 160-experience ColorMNIST stream costs 10.1M parameters against 95.5M for per-query LoRA, and a 419-experience CelebA stream 23.6M against 250.2M. Under oracle routing the curve is flat once vocabulary saturates; under measured routing its slope is set by a detector error rate rather than by the arrival of experiences. | **A** | 5z (N24) |
 
+## CelebA: the same claims where the factors OVERLAP
+
+Every claim above was measured on ColorMNIST, whose digit / foreground / background occupy disjoint
+pixels. Threat 4 said so. These rows are the same claims on CelebA, where attributes share pixels.
+
+The enabling change is `cond_mode="factored"` (one embedding per (attribute, value), summed), which
+is what makes CelebA trainable at all: RESULTS 5o measured a per-class embedding at 34% of the
+real-data ceiling and unmoved by 2.3x data, because a row over a 14-bit combination is estimated from
+as few as 25 images. Factoring estimates every attribute vector from every image carrying that value
+and lifts usable training data from ~5k images to ~96k, in **7168 conditioning parameters against
+308480**.
+
+| # | claim | grade | evidence |
+|---|---|---|---|
+| **C10** | **Factored conditioning makes CelebA trainable.** Per-attribute margin over unconditional **+0.081** against the per-class design's **+0.048** — 1.7x the setup 5o called "not ready to compose on" — and matched at 20 epochs what per-class needed 60 to reach. | **A** | 7a (N19) |
+| **C11** | **Composition works when the factors overlap the same pixels.** On a split where `Smiling` and `Big_Nose` NEVER co-occur (14620 images withheld; each attribute still seen alone 49874 / 25162 times), producing both at once scores **0.903 ± 0.094** against `nearest-class` **0.355 ± 0.186** and real held-out images 0.801 ± 0.137 — at recall 0.579 and diversity 1.068. This is the separability threat (threat 4 / RESULTS 7) tested rather than deferred. | **A** (3 seeds) | 7b (N20) |
+| **C12** | **Both published baselines copy rather than compose, and CelebA shows it more sharply than ColorMNIST.** `poe-guided` reaches recall **0.000 ± 0.000** and F1 **0.000** on 3/3 seeds; `query-only` scores `pair` **0.777** — near the real-image ceiling — at recall **0.018 ± 0.009** and diversity **0.295**. Attribute accuracy alone cannot separate composing from copying. | **A** (3 seeds) | 7b (N20) |
+| **C13** | **New vocabulary needs real data, and more starkly here.** For an attribute whose ON value the backbone never saw, an adapter trained on **real** images reaches **0.361 ± 0.153** against a ceiling of 0.420 ± 0.163 (86%), while a learned conditioning vector (**0.141 ± 0.112**) is **not separated** from an untrained one (0.118 ± 0.100). On ColorMNIST the conditioning route scored exactly 0.000; here it is indistinguishable from noise. Same conclusion, independent benchmark. | **A** (3 seeds) | 7c (N21) |
+| **C14** | **Preservation is structural on CelebA too**: **171/171** compositions not using the extended attribute are bit-identical after the extension, and class-incremental consolidation of real held-out images gives **forgetting exactly 0.000** (ACC 0.856). | **A** | 7c (N21), 7d (N22) |
+
+**Stated as limitations, not buried.** (i) On CelebA the factor basis is *supplied* architecturally,
+where on ColorMNIST it is *discovered* in an entangled per-class space (ideal-words R² 0.826) — so
+CelebA does not re-test "can the basis be found", it tests whether composing known values *renders*
+when they overlap. (ii) The guidance calibration selected the top of its grid on the strong split, so
+that operating point sits at a boundary. (iii) Composed samples score *above* the real-image ceiling
+on attribute accuracy, because a generated sample is a cleaner rendering than a photograph and a
+linear probe reads it more easily; the informative comparison is against the baselines, scored
+identically. (iv) The repo's flat-vector convention permutes pixels before the CNN sees them, which
+costs ~28% of the conditioning margin at 64×64 (+0.049 against +0.068 in a matched A/B) — so every
+CelebA number here is **conservative**, and the true-layout convention is the recommendation for
+future work.
+
 ## Honest negatives that are part of the result
 
 | # | claim | why it fails |
@@ -84,13 +116,23 @@ which is sharper than any factor it is built from and samples near-copies of its
 3. **Backbone scale.** 6.8M parameters on 24k images (ColorMNIST) and 9.3M on 96k (CelebA), against
    the paper's ~35M on 120k. Backbone-to-backbone variation on the same training command is up to
    0.07 F1 (5p), which bounds how finely any ordering here can be read.
-4. **CelebA's factor basis is architectural, not discovered.** On ColorMNIST the basis is recovered
-   from an entangled per-class embedding space (ideal-words R² 0.826). On CelebA a per-class
-   embedding is untrainable at this data scale — measured, not assumed (5o: 34% of ceiling, and 2.3x
-   data moved it to 33%) — so conditioning is factored by construction. CelebA therefore does not
-   re-test "can the basis be found"; it tests whether composing known factor values renders correctly
-   when the factors **overlap the same pixels**, which is the question ColorMNIST structurally cannot
-   ask.
+4. **Separability — now tested rather than outstanding.** This was the standing threat: every
+   composition result rested on ColorMNIST's spatially disjoint factors. C11–C14 are the same claims
+   on CelebA, where attributes share pixels, and they hold. What remains true is narrower: on CelebA
+   the factor basis is *supplied* architecturally, where on ColorMNIST it is *discovered* in an
+   entangled per-class space (ideal-words R² 0.826), because a per-class embedding is untrainable at
+   this data scale — measured, not assumed (5o: 34% of ceiling, unmoved by 2.3x data). So CelebA does
+   not re-test "can the basis be found"; it tests whether composing known values **renders** when they
+   overlap, which is the question ColorMNIST structurally cannot ask.
+5. **Seed spread on the CelebA `pair` metric is large** (±0.09–0.19 over 3 seeds). The orderings hold
+   on every seed; the magnitudes do not, and single-seed numbers there are misleading — seed 0 alone
+   reads `ours` 0.72 / `nearest-class` 0.10 against pooled 0.903 / 0.355. Only pooled tables are
+   quoted.
+6. **Three measurement bugs were found and fixed during this round**, each caught by a *control* row
+   rather than by a result: a uint8 training path that trained in a different pixel layout than it
+   sampled (every CelebA number measured under it was discarded); a probe-readability filter that
+   admitted five probes unable to recognise their own attribute; and smoke runs writing to the same
+   result files as full runs. `tests/test_layout.py` and `probe_usable()` are the permanent guards.
 
 ---
 
