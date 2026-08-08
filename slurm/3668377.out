@@ -1,0 +1,20 @@
+/nethome/ksingara3/flash/miniconda3/envs/chunks/lib/python3.12/site-packages/huggingface_hub/utils/_validators.py:205: UserWarning: The `local_dir_use_symlinks` argument is deprecated and ignored in `hf_hub_download`. Downloading to a local directory does not use symlinks anymore.
+  warnings.warn(
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+An error occurred while trying to fetch google/ddpm-celebahq-256: google/ddpm-celebahq-256 does not appear to have a file named diffusion_pytorch_model.safetensors.
+Defaulting to unsafe serialization. Pass `allow_pickle=False` to raise an error instead.
+[n25] google/ddpm-celebahq-256: 256x256, 113.7M params, device cuda
+[n25] real images: Eyeglasses-only 96, Smiling-only 96, BOTH 32 (the target, never shown to either concept)
+[n25] consolidating `Eyeglasses` from 96 real images (Eyeglasses=1, other=0)
+      [Eyeglasses] epoch 1/8: 0.0067 (13s)
+      [Eyeglasses] epoch 2/8: 0.0116 (27s)
+      [Eyeglasses] epoch 3/8: 0.0083 (40s)
+      [Eyeglasses] epoch 4/8: 0.0114 (53s)
+      [Eyeglasses] epoch 5/8: 0.0124 (66s)
+      [Eyeglasses] epoch 6/8: 0.0094 (79s)
+      [Eyeglasses] epoch 7/8: 0.0068 (93s)
+      [Eyeglasses] epoch 8/8: 0.0052 (106s)
+[n25] consolidating `Smiling` from 96 real images (Smiling=1, other=0)
+      [Smiling] epoch 1/8: 0.0068 (13s)
+      [Smiling] epoch 2/8: 0.0139 (26s)
+      [Smiling] epoch 3/8: 0.0077 (40s)

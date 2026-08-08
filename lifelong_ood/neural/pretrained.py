@@ -169,6 +169,19 @@ class PretrainedScoreField(BaseScoreField):
     def emb_dim(self):
         return self.model.emb_dim
 
+    def _u_for_timestep(self, t):
+        """The u whose cosine alpha_bar matches THIS model's alpha_bar at timestep `t`.
+
+        The inverse of `_timestep`, and it has to exist: guidance callbacks take u on this repo's
+        cosine grid, but the sampler walks the model's own integer grid.  Handing a callback
+        `t/(T-1)` would send it to a different noise level than the one being denoised -- which
+        renders as pure noise, since the composed epsilon then describes the wrong marginal.
+        """
+        if self._abar is None:
+            return float(t) / 999.0
+        grid = np.linspace(1e-4, 1.0, 2001)
+        return float(grid[int(np.argmin(np.abs(cosine_abar(grid) - float(self._abar[int(t)]))))])
+
     def _timestep(self, u):
         """Map this repo's u in [0,1] to the trained timestep with the closest alpha_bar."""
         if self._abar is None:
@@ -240,7 +253,7 @@ class PretrainedScoreField(BaseScoreField):
                 # classifier-free-style guidance toward an externally composed epsilon, so score
                 # composition (composable diffusion, a PoE teacher) works on a pretrained backbone
                 # too.  `guide_eps` follows the repo convention: flat float64 rows, u in [0, 1].
-                uu = float(t) / max(T - 1, 1)
+                uu = self._u_for_timestep(t)
                 gflat = np.asarray(guide_eps(x.reshape(n, -1).double().cpu().numpy(), uu))
                 ge = torch.from_numpy(gflat).float().to(self.device).reshape_as(x)
                 w = 1.0 if guide_w is None else float(np.asarray(guide_w(uu)).reshape(-1)[0])

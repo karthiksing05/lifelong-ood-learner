@@ -55,7 +55,8 @@ from lifelong_ood.neural.pretrained import load_pretrained             # noqa: E
 FIG = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "figures")
 
 
-def load_hires(attrs_wanted, img=256, n_each=96, n_probe=4000, max_rows=60000, seed=0):
+def load_hires(attrs_wanted, img=256, n_each=96, n_probe=4000, max_rows=60000, seed=0,
+               probe_img=128):
     """Real CelebA at `img` px, split into the groups this experiment needs, plus a probe set.
 
     Reads the requested attribute COLUMNS straight from the parquet rather than going through
@@ -93,15 +94,20 @@ def load_hires(attrs_wanted, img=256, n_each=96, n_probe=4000, max_rows=60000, s
                     w, h = im.size
                     top = max(0, (h - w) // 2)
                     sq = im.crop((0, top, w, top + w))
-                    want[grp].append(
-                        (np.asarray(sq.resize((img, img), Image.BICUBIC), np.float32) / 255.0).ravel())
+                    # CHW-flat, NOT HWC: `field.sample` returns [n, 3, img, img] flattened, and
+                    # training reshapes flat rows to (3, img, img).  Storing real images as HWC would
+                    # feed the model transposed data and render every generation as a tiled mosaic --
+                    # the same layout bug this repo already had once, caught the same way, by looking.
+                    want[grp].append((np.asarray(sq.resize((img, img), Image.BICUBIC),
+                                                 np.float32) / 255.0).transpose(2, 0, 1).ravel())
                 if len(pX) < n_probe:
                     if im is None:
                         im = Image.open(io.BytesIO(d["image"][k]["bytes"])).convert("RGB")
                         w, h = im.size
                         top = max(0, (h - w) // 2)
                         sq = im.crop((0, top, w, top + w))
-                    pX.append((np.asarray(sq.resize((64, 64), Image.BICUBIC), np.float32) / 255.0).ravel())
+                    pX.append((np.asarray(sq.resize((probe_img, probe_img), Image.BICUBIC),
+                                          np.float32) / 255.0).transpose(2, 0, 1).ravel())
                     pY.append([a, b])
             done = all(len(want[g]) >= need[g] for g in want) and len(pX) >= n_probe
             if done or n >= max_rows:
@@ -110,7 +116,8 @@ def load_hires(attrs_wanted, img=256, n_each=96, n_probe=4000, max_rows=60000, s
             break
     out = {g: (np.stack(v) if v else np.zeros((0, 3 * img * img), np.float32))
            for g, v in want.items()}
-    out["probe_X64"] = np.stack(pX) if pX else np.zeros((0, 64 * 64 * 3), np.float32)
+    out["probe_X"] = (np.stack(pX) if pX else
+                      np.zeros((0, 3 * probe_img * probe_img), np.float32))
     out["probe_Y"] = np.array(pY, np.int8) if pY else np.zeros((0, 2), np.int8)
     return out
 
@@ -121,6 +128,11 @@ def to_model(X01):
 
 def to_data(Xm):
     return np.clip((np.asarray(Xm, np.float32) + 1.0) / 2.0, 0.0, 1.0)
+
+
+def show(row, img):
+    """CHW-flat -> HWC for imshow.  Everything in this file is CHW-flat; only display transposes."""
+    return np.clip(np.asarray(row, np.float32).reshape(3, img, img).transpose(1, 2, 0), 0, 1)
 
 
 def train_concept(field, bank, name, X01, img, epochs=6, batch=4, lr=1e-4, seed=0, verbose=True):
@@ -164,6 +176,9 @@ def main():
                    help="the two attributes; their CO-OCCURRENCE is held out of both concepts")
     p.add_argument("--n-train", type=int, default=96, help="real images per concept")
     p.add_argument("--n-samples", type=int, default=6)
+    p.add_argument("--probe-img", type=int, default=128,
+                   help="resolution the attribute probes are fit and evaluated at; 64 "
+                        "is too coarse for fine attributes (Eyeglasses TPR 0.38 there)")
     p.add_argument("--epochs", type=int, default=6)
     p.add_argument("--rank", type=int, default=8)
     p.add_argument("--lr", type=float, default=1e-4)
@@ -184,7 +199,8 @@ def main():
     print(f"[n25] {args.model}: {img}x{img}, {nbase / 1e6:.1f}M params, device {dev}", flush=True)
 
     A, B = args.attrs
-    data = load_hires(args.attrs, img=img, n_each=args.n_train, seed=args.seed)
+    data = load_hires(args.attrs, img=img, n_each=args.n_train, seed=args.seed,
+                      probe_img=args.probe_img)
     print(f"[n25] real images: {A}-only {len(data['a_only'])}, {B}-only {len(data['b_only'])}, "
           f"BOTH {len(data['both'])} (the target, never shown to either concept)", flush=True)
 
@@ -248,7 +264,7 @@ def main():
     # ── score with the CelebA attribute probes (trained at 64px) ─────────────
     rows = []
     probes, probe_ok = {}, {}
-    PX, PY = data["probe_X64"], data["probe_Y"]
+    PX, PY = data["probe_X"], data["probe_Y"]
     if len(PX) > 200:
         from lifelong_ood.evals import SoftmaxProbe
         cut = int(0.9 * len(PX))
@@ -265,19 +281,21 @@ def main():
     else:
         print("[n25] too few probe images; reporting images only", flush=True)
 
-    def down64(X01):
+    P = args.probe_img
+
+    def to_probe(X01):
+        """CHW-flat at `img` px -> CHW-flat at the probe resolution, by mean-pooling."""
         n = len(X01)
-        Z = np.asarray(X01, np.float32).reshape(n, img, img, 3)
-        f = img // 64
-        Z = Z.reshape(n, 64, f, 64, f, 3).mean((2, 4))
-        return Z.reshape(n, -1)
+        Z = np.asarray(X01, np.float32).reshape(n, 3, img, img)
+        f = max(img // P, 1)
+        return Z.reshape(n, 3, P, f, P, f).mean((3, 5)).reshape(n, -1)
 
     for arm, S in got.items():
         if S is None or not len(S):
             continue
         r = dict(arm=arm, vendi=vendi_score(S))
         if probes:
-            S64 = down64(S)
+            S64 = to_probe(S)
             for nm in args.attrs:
                 if probe_ok.get(nm):
                     r[nm] = float((probes[nm].predict(S64) == 1).mean())
@@ -303,7 +321,7 @@ def main():
             ax = axes[r][c]
             ax.axis("off")
             if c < len(S):
-                ax.imshow(np.clip(S[c].reshape(img, img, 3), 0, 1))
+                ax.imshow(show(S[c], img))
         lab = arm
         if "both" in sc:
             lab += f"\nboth {sc['both']:.2f}"

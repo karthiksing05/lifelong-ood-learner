@@ -143,6 +143,33 @@ def agg_n7(runs):
     return dict(table=table, ceiling=ceil, n_seeds=len(runs))
 
 
+def _backfill(row, run):
+    """Compute A / REM / SSS for runs recorded before those columns existed.
+
+    Everything they need was already saved -- the full accuracy matrix, the retained-image count and
+    the stream size -- so re-running hours of GPU time only to add three derived numbers would be
+    waste.  MS is NOT backfilled: it needs the parameter count at every step, which older runs did
+    not record, and inventing it from the endpoints would misreport the one axis where our method
+    does worst.
+    """
+    if "A" in row or "acc_matrix" not in row:
+        return row
+    acc = row["acc_matrix"]
+    if not acc:
+        return row
+    out = dict(row)
+    tri = [v for r in acc for v in r]
+    out["A"] = float(np.mean(tri)) if tri else float("nan")
+    K = len(acc)
+    bwt = float(np.mean([acc[i][-1] - acc[i][0] for i in range(K - 1)])) if K > 1 else 0.0
+    out["REM"] = float(1.0 - abs(min(bwt, 0.0)))
+    cfg = run.get("config", {})
+    n_stream = float(cfg.get("n_tasks", K)) * float(cfg.get("n_train", 64))
+    if "stored_images" in row and n_stream > 0:
+        out["SSS"] = float(1.0 - min(1.0, float(row["stored_images"]) / n_stream))
+    return out
+
+
 def agg_n5(runs):
     """N5 / N9: one row per method, the standard CL metrics plus what each one costs."""
     arms, keys = [], ("ACC", "BWT", "FGT", "retention_exact", "params", "wall_seconds",
@@ -156,6 +183,7 @@ def agg_n5(runs):
             row = next((x for x in r.get("rows", []) if x["arm"] == a), None)
             if row is None:
                 continue
+            row = _backfill(row, r)
             for k in keys:
                 if k in row:
                     vals[k].append(row[k])
@@ -236,6 +264,7 @@ def agg_n22(runs):
             row = next((x for x in r.get("rows", []) if x["arm"] == a), None)
             if row is None:
                 continue
+            row = _backfill(row, r)
             for k in keys:
                 if k in row:
                     vals[k].append(row[k])

@@ -120,3 +120,5 @@ n5 exit=0 | Sat Aug  8 12:12:35 EDT 2026
 [n22] -> gen-distill: ACC 0.850 BWT -0.005 FGT 0.012 | target ACC nan FGT nan
 
 [n22:der++] 3/12: mean-attr 0.844, target 0.125, exact 1.00, 2.91M, 187s
+[n22:der++] 6/12: mean-attr 0.891, target 0.237, exact 0.50, 5.08M, 466s
+[n22:der++] 9/12: mean-attr 0.829, target 0.234, exact 0.33, 7.26M, 802s

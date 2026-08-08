@@ -93,7 +93,8 @@ def colormnist(args):
                "query-only": to_data(L.sample_teacher(L.baseline_teacher(xq, "query_only"),
                                                       n=args.n_show, seed=args.seed, **PAPER_POE))}
         L.learn_concept_factored(xq, f"c{q['slot']}", n_pool=48, epochs=args.epochs,
-                                 inv_steps=args.inv_steps, seed=args.seed)
+                                 inv_steps=args.inv_steps, seed=args.seed,
+                                 guidance=args.guidance)
         got["ours"] = to_data(L.sample_concept(f"c{q['slot']}", n=args.n_show, seed=args.seed))
         a0 = teacher_init_alpha(field, t, xq, seed=args.seed)
         got["nearest-class"] = to_data(field.sample(n=args.n_show, steps=args.steps,
@@ -126,6 +127,12 @@ def main():
     p.add_argument("--steps", type=int, default=50)
     p.add_argument("--inv-steps", type=int, default=400)
     p.add_argument("--epochs", type=int, default=40)
+    p.add_argument("--guidance", type=float, default=2.0,
+                   help="CFG weight for the distillation pool.  2.0, not the old "
+                        "implicit 1.0: tests/diag_ours_quality.py measures joint 0.375 "
+                        "vs 0.125 and backgrounds 1.00 vs 0.88, and the grid shows why "
+                        "-- at 1.0 some samples come out on the wrong background, and "
+                        "at 3.0 the colour factor breaks entirely.")
     p.add_argument("--seed", type=int, default=0)
     args = p.parse_args()
     os.makedirs(FIG, exist_ok=True)

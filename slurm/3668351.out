@@ -4,3 +4,21 @@ Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF
 An error occurred while trying to fetch google/ddpm-celebahq-256: google/ddpm-celebahq-256 does not appear to have a file named diffusion_pytorch_model.safetensors.
 Defaulting to unsafe serialization. Pass `allow_pickle=False` to raise an error instead.
 [n25] google/ddpm-celebahq-256: 256x256, 113.7M params, device cuda
+[n25] real images: Eyeglasses-only 16, Smiling-only 16, BOTH 32 (the target, never shown to either concept)
+[n25] consolidating `Eyeglasses` from 16 real images (Eyeglasses=1, other=0)
+      [Eyeglasses] epoch 1/1: 0.5064 (3s)
+[n25] consolidating `Smiling` from 16 real images (Smiling=1, other=0)
+      [Smiling] epoch 1/1: 0.4343 (2s)
+[n25] probe Eyeglasses: TPR 0.38 TNR 0.99 balanced 0.69 (NOT usable -- not reported)
+[n25] probe Smiling: TPR 0.75 TNR 0.95 balanced 0.85 (usable)
+
+[n25] google/ddpm-celebahq-256, `Eyeglasses` x `Smiling`
+    arm                 Eyeglasses     Smiling    both   vendi
+    real                       nan        0.67     nan    1.37
+    pretrained                 nan        0.67     nan    1.29
+    Eyeglasses only            nan        0.67     nan    1.29
+    Smiling only               nan        0.67     nan    1.28
+    ours                       nan        0.67     nan    1.26
+    composable-diff            nan        0.00     nan    1.11
+[n25] wrote /coc/flash10/ksingara3/lifelong-ood-learner/figures/n25_pretrained_case_smoke.png
+exit=0 | Sat Aug  8 13:08:08 EDT 2026

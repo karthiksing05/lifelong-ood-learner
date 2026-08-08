@@ -95,6 +95,12 @@ def main():
                         "0 disables the composable-mcmc arm")
     p.add_argument("--mcmc-lam", type=float, default=0.1,
                    help="Langevin step scale; 1.0 moves on the scale of the marginal width")
+    p.add_argument("--guidance", type=float, default=-1.0,
+                   help="CFG weight used when the MANIFOLD generates the distillation pool. "
+                        "<=0 calibrates it on TRAINED slots, which uses no held-out label. "
+                        "This was left at 1.0 while the CelebA experiment calibrated its own, and "
+                        "the asymmetry cost us: tests/diag_ours_quality.py measures joint accuracy "
+                        "0.125 at 1.0 against 0.375 at 2.0, with backgrounds going 0.88 -> 1.00.")
     p.add_argument("--epochs", type=int, default=40)
     p.add_argument("--bg-gain", type=float, default=-1.0,
                    help="fixed background gain; <=0 calibrates it on this backbone")
@@ -128,6 +134,34 @@ def main():
              backbone_gains(field0, C, slots_seen, probes, data, seed=args.seed,
                             steps=args.steps, n=8 if args.quick else 16))
 
+    # ── calibrate the pool guidance on TRAINED slots (label-free) ───────────
+    # Same argument as n20's guidance calibration, which this experiment was missing: a composer
+    # constant left at its default is a hidden dependency, and here it was costing 3x joint accuracy.
+    # Composing a slot the backbone was TRAINED on and asking whether the model reproduces it uses no
+    # held-out label, so the weight can be chosen per backbone and the choice is printed.
+    if args.guidance <= 0:
+        from lifelong_ood.neural.idealwords import sample_factored_pool
+        rng_g = np.random.default_rng(args.seed)
+        probe_slots = rng_g.permutation(len(slots_seen))[:2 if args.quick else 4]
+        best_g, best_s = 1.0, -1.0
+        for g in ([1.0] if args.quick else [1.0, 1.5, 2.0, 3.0]):
+            sc = []
+            for si in probe_slots:
+                sl = int(slots_seen[si])
+                S = to_data(sample_factored_pool(field0, C[si], n=8, steps=args.steps,
+                                                 seed=args.seed, guidance=g)).astype(np.float32)
+                row = data["slot"] == sl
+                d0, f0, b0 = (int(data["digit"][row][0]), int(data["fg"][row][0]),
+                              int(data["bg"][row][0]))
+                sc.append(composition_accuracy(probes, S, d0, f0, b0)["joint"])
+            m = float(np.nanmean(sc))
+            print(f"[n9]   guidance {g}: trained-slot joint {m:.3f}", flush=True)
+            if m > best_s:
+                best_g, best_s = g, m
+        args.guidance = best_g
+        print(f"[n9] guidance calibrated on TRAINED slots -> {best_g} (joint {best_s:.3f})",
+              flush=True)
+
     qs = ood_queries(data, n_slots=args.n_cases + args.stream_len, seed=args.seed)
     cases, stream = qs[:args.n_cases], qs[args.n_cases:]
     print(f"[n9] {len(cases)} cases, {len(stream)} follow-on concepts, device {dev}", flush=True)
@@ -156,7 +190,7 @@ def main():
             else:
                 L.learn_concept_factored(to_model(data["X"][q["query"]]).ravel(), nm,
                                          n_pool=48, epochs=args.epochs, inv_steps=args.inv_steps,
-                                         seed=args.seed + 100 + si)
+                                         seed=args.seed + 100 + si, guidance=args.guidance)
         print(f"[n9] {tag}: absorbed {len(stream)} follow-on concepts "
               f"({args.stream_source})", flush=True)
 
@@ -171,7 +205,7 @@ def main():
     for qi, q in enumerate(cases):
         L.learn_concept_factored(to_model(data["X"][q["query"]]).ravel(), f"c{q['slot']}",
                                  n_pool=48, epochs=args.epochs, inv_steps=args.inv_steps,
-                                 seed=args.seed + qi)
+                                 seed=args.seed + qi, guidance=args.guidance)
     run_stream(L, "ours")                     # the interference the method must survive
     for q in cases:
         S = to_data(L.sample_concept(f"c{q['slot']}", n=args.n_samples,
@@ -189,7 +223,7 @@ def main():
         for qi, q in enumerate(cases):
             L2.learn_concept_factored(to_model(data["X"][q["query"]]).ravel(), f"c{q['slot']}",
                                       n_pool=48, epochs=args.epochs, inv_steps=args.inv_steps,
-                                      seed=args.seed + qi)
+                                      seed=args.seed + qi, guidance=args.guidance)
         run_stream(L2, arm)
         for q in cases:
             S = to_data(L2.sample_concept(f"c{q['slot']}", n=args.n_samples,
