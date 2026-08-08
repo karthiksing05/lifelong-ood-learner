@@ -157,3 +157,33 @@ A workshop paper on **certified-preserving lifelong concept acquisition**, with:
 - and the pretrained preservation certificate as evidence the mechanism is not a small-model artifact.
 
 That paper is defensible line by line. The version claiming a better composition operator is not.
+
+---
+
+## Addendum: three design questions, explored (RESULTS §13–17)
+
+Since the assessment above, three questions were put to the framework directly.
+
+**1. Composition inherits the granularity of its conditionals** (§13). Score addition's failure on
+ColorMNIST was never the operator: giving that backbone per-factor conditionals it lacks takes the
+same arithmetic from joint 0.000 to 0.167. It does not reach our embedding composition (0.500)
+because a conditional fitted to "images with fg = f" carries the other factors' marginals with it.
+This converts §11c's awkward result into a *rule* — no conditioning channel ⇒ compose in score space;
+entangled conditionals ⇒ compose where the factor structure is explicit; compositionally-trained
+factored conditionals ⇒ score addition wins — which is a better contribution than the claim it
+replaces.
+
+**2. "Disturb the field least" is the wrong objective** (§14). Measured directly, the lowest-drift
+update rule composes worst and the highest-drift composes best. What works is choosing *where* to
+spend the update: high-noise-only adaptation wins on composition and coverage on both backbones and
+both datasets, at no cost. This is now the recommended update rule.
+
+**3. Batch addition is free** (§15, §16). Bit-identical preservation at every K from 1 to 12, 2.64×
+faster at K = 12 with no plateau, and — under a matched-discovery control — *identical* accuracy to
+sequential. An earlier apparent accuracy gap was a confound in our own experiment, now removed.
+
+**Effect on the assessment.** Item 2 of "what would move this to a conference paper" (the
+held-out-severity sweep) is unchanged. Item 4 (switch the bank to score composition) is **done**.
+The composition section now has a positive result to report — a characterization with a controlled
+experiment behind it — rather than only a concession, which materially improves the weakest part of
+the paper.

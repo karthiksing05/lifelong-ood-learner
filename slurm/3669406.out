@@ -51,3 +51,5 @@
 [n4:hier:sequential] step 7/12 (7 concepts): mean acc 0.50, exact retention 1.00, 4.41M params, 254s
 [n4:hier:sequential] step 8/12 (8 concepts): mean acc 0.44, exact retention 1.00, 4.96M params, 303s
 [n4:hier:sequential] step 9/12 (9 concepts): mean acc 0.39, exact retention 1.00, 5.51M params, 353s
+[n4:hier:sequential] step 10/12 (10 concepts): mean acc 0.44, exact retention 1.00, 6.06M params, 411s
+[n4:hier:sequential] step 11/12 (11 concepts): mean acc 0.40, exact retention 1.00, 6.61M params, 470s

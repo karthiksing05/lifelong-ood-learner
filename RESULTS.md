@@ -2751,6 +2751,89 @@ It also explains §15's result rather than conflicting with it: on the pretraine
 no pools at all (concepts train on real images), so there is neither the 2.64× saving **nor** the
 accuracy cost, and batch and sequential come out at 777s with retention 1.00 both ways.
 
+## 17. Synthesis: are these three ideas possible in this framework?
+
+Three questions were put to the framework. All three are answerable in it, two came back differently
+from the way they were posed, and one produced a design rule.
+
+### Q1 — conditional vs unconditional, and what compositions inherit
+
+**Answerable, and the answer is a rule.** The framework already spans the whole range: a
+per-slot-conditional backbone (ColorMNIST), a compositionally-conditioned one (CelebA), and a fully
+unconditional pretrained one (CelebA-HQ). N27 turns the coincidence into a controlled test by giving
+the ColorMNIST backbone per-factor conditionals it lacks and re-running the same operator.
+
+> **A composition inherits the granularity — and the marginals — of the conditionals it composes.**
+>
+> | the model has | concepts are | compose them in | evidence |
+> |---|---|---|---|
+> | no conditioning channel | deltas | **score** space; parameter space interferes | §12e: 0.50 vs 0.17 |
+> | entangled per-combination conditionals | vectors in a factorizable space | **embedding** space | §13b: 0.500 vs 0.167 |
+> | factored, compositionally-trained conditionals | per-attribute conditionals | **score** space | §11c: 0.965 vs 0.903 |
+>
+> Score addition on ColorMNIST went 0.000 → 0.167 purely by changing the *granularity* of what was
+> composed, on the same backbone and the same arithmetic — so the operator was never the problem. It
+> does not close the gap to embedding composition (0.500) because a conditional fitted to "images
+> with fg = f" is `p(x | fg = f)` and drags the other factors' marginals with it: `fg3` alone forces
+> bg to 0.00 rather than staying silent.
+
+The practical corollary is a design rule for the bank: **what you put in it determines what you can
+compose.** Slot concepts support retrieval; factor concepts support composition. And on an
+unconditional backbone the bank *is* the conditioning channel — it turns an unconditional model into
+a conditional one whose conditionals are exactly its members.
+
+### Q2 — updates that reflect the existing learned score field
+
+**Answerable, and the intuition is false as stated.** N28 measures it directly: `drift` is how far the
+model moves on conditionings a concept is *not* for, with its path **active** — the case the
+insert-only guarantee does not cover and the case composition actually exercises.
+
+The lowest-drift rule composes **worst** (rehearse: drift 0.0106, composed joint 0.000) and the
+highest-drift rule composes **best** (high-t: drift 0.0469, composed joint 0.104, recall 0.882
+against uniform's 0.461). Drift is not a cost to be minimized — it is the mechanism by which a
+conditional differs from the unconditional model at all, and an objective that suppresses it
+suppresses the concept too.
+
+What *does* work is choosing **where** to spend the update:
+
+> **Train concept adapters at high noise levels.** A factor's identity is settled there; capacity
+> spent at low noise goes to texture the model already renders correctly. Free, one line, and it
+> improves composition and coverage on **both** backbones and **both** datasets tested (§12c, §14) —
+> which is what makes it a property of diffusion adaptation rather than of one model's data.
+
+The more principled version — sampling noise levels in proportion to the frozen model's own error —
+*loses* to the blunt threshold (0.042 against 0.104), because measured "need" peaks in the noisiest
+tail where every model does badly rather than in the semantically decisive band. Reported that way
+round rather than the flattering way.
+
+### Q3 — batch updates, not one instance at a time
+
+**Already possible, now verified at scale and on a model we did not train, and it is free.**
+
+| | evidence |
+|---|---|
+| K concepts in ONE update | `consolidate_batch` / `learn_concepts_batch`; N26 for the pretrained path |
+| preservation survives it | bit-identical **1.00 at every K from 1 to 12**, and 1.00 on all three pretrained arms |
+| it scales | **2.64× faster at K = 12**, monotonic in K, no plateau |
+| it costs nothing in quality | K = 1 matched-discovery control: batch and sequential **identical** (§16b) |
+| it creates structure sequential cannot | shared ancestors trained by all K members at once (6 shared node-uses against 3) |
+
+With one qualification worth stating rather than burying: **the speedup comes from amortizing the
+generative pool sampling, not the optimizer.** On the pretrained backbone, where concepts train on
+real images and there is no pool, batch and sequential both take 777s — batching still preserves
+exactness and still builds shared structure, but it buys no time. So "batch addition is fast" is
+conditional on distilling from generated pools; "batch addition is safe and structural" is not
+conditional on anything.
+
+### What this changed in the method
+
+- `sample_composed` — score-space composition over bank members is now a first-class operation, since
+  three independent measurements say path union is the wrong way to read the bank (§12e, §13b, §14).
+- `learn_concept_disc` — the sequential path's discovery configuration is explicit, so mode
+  comparisons isolate the mode (§16b).
+- High-noise-only adaptation is the recommended update rule for concept adapters.
+- `inject(..., exclude=)` — on a pretrained backbone, keep adapters off the time-conditioning path.
+
 ## 8. Where the numbers come from
 
 | experiment | file | scale run |
