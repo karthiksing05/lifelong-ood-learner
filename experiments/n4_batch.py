@@ -166,7 +166,12 @@ def run_arm(args, data, probes, qs, mode, arm, dev):
         else:
             teachers, pools = [], []
             for xq, nm in zip(xqs[sl], names[sl]):
-                t, p = L.learn_concept(xq, nm, n_pool=args.n_pool, epochs=args.epochs, disc=None)
+                # the SAME discovery configuration the batch path gets.  Passing disc=None here let
+                # sequential fall back to candidates_ascent's defaults while batch ran with
+                # n_starts/iters from the args, so the two modes differed in discovery as well as in
+                # batching -- and the accuracy gap between them could not be attributed to either.
+                t, p = L.learn_concept_disc(xq, nm, n_pool=args.n_pool, epochs=args.epochs,
+                                            disc=disc)
                 teachers.append(t); pools.append(p)
         for nm, q in zip(names[sl], qs[sl]):
             learned.append((nm, q, len(learned)))

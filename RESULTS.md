@@ -2687,6 +2687,51 @@ Attribute rates (0.75 / 0.58 / 0.67) are over 4 samples × 4 concepts and the di
 what that resolution can distinguish; the honest reading is that batching does not *improve* concept
 quality, and the case for it rests on cost and sharing.
 
+## 16. How far does batch addition scale, and what does it cost? (N4, K-sweep)
+
+N4 compared batch against sequential at one batch size. This sweeps K with the total held fixed at
+**12 concepts**, so `sequential` is the same run throughout (a useful control: it lands at 680–690s
+and ACC 0.547 every time) and only the size of each update changes.
+
+| K (concepts per update) | wall | speedup | ACC | FGT | **bit-identical** |
+|---|---|---|---|---|---|
+| sequential (K=1, one at a time) | 686s | — | **0.547** | 0.000 | **1.00** |
+| 1 | 561s | 1.23× | 0.370 | 0.000 | **1.00** |
+| 2 | 429s | 1.59× | 0.375 | 0.000 | **1.00** |
+| 4 | 341s | 2.00× | 0.453 | 0.000 | **1.00** |
+| 8 | 297s | 2.29× | 0.396 | 0.000 | **1.00** |
+| **12** (all of them in ONE update) | **260s** | **2.64×** | 0.422 | 0.000 | **1.00** |
+
+**Two things scale cleanly.** The speedup grows monotonically with K and does not plateau by K=12 —
+all twelve concepts absorbed in a single update run 2.64× faster than twelve updates. And
+`retention_exact` is **1.00 at every K**, with FGT 0.000: batch size is a free efficiency knob and
+not a safety trade, which is the property the insert-only design was supposed to give and here it is
+measured across a 12× range.
+
+**One thing costs.** Batch accuracy sits at 0.37–0.45 against sequential's 0.547 — a real gap, and
+one an earlier reading of N4 (8 concepts, batch 4) missed because at that size the two matched at
+0.609. The sweep localizes it precisely:
+
+> **The loss is NOT in the batched optimizer.** At **K = 1** the batch path already scores 0.370
+> against sequential's 0.547 — and at K = 1 the optimizer is doing identical work in both. Whatever
+> costs the accuracy is upstream of consolidation.
+
+Upstream, `learn_concepts_batch` differs from `learn_concept` in **two** ways, and this sweep does not
+separate them:
+
+1. **discovery configuration** — the batch path is handed an explicit `disc`
+   (`n_starts=16, iters=120`), the sequential path calls `compose(xq)` and gets
+   `candidates_ascent`'s defaults. The two modes are therefore not running the same discovery;
+2. **pooled sampling** — the batch path draws all K pools from one reverse-diffusion run
+   (`sample_teacher_batch`), the sequential path draws each separately.
+
+The first is a **confound in the experiment**, not a property of batching, and it should be removed
+before the second can be blamed. §16b does that.
+
+It also explains §15's result rather than conflicting with it: on the pretrained backbone there are
+no pools at all (concepts train on real images), so there is neither the 2.64× saving **nor** the
+accuracy cost, and batch and sequential come out at 777s with retention 1.00 both ways.
+
 ## 8. Where the numbers come from
 
 | experiment | file | scale run |

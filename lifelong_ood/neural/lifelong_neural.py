@@ -469,6 +469,20 @@ class NeuralLifelongLearner:
         self.consolidate(pool, name, mu=teacher["mu"], epochs=epochs)
         return teacher, pool
 
+    def learn_concept_disc(self, xq, name, n_pool=64, epochs=10, disc=None, **kw):
+        """`learn_concept` with the discovery configuration made explicit.
+
+        `learn_concept` calls `compose(xq)` with no discovery arguments, so it silently uses
+        `candidates_ascent`'s defaults while `learn_concepts_batch` uses whatever `disc` it is
+        handed.  Any experiment comparing the two modes was therefore varying discovery as well as
+        batching.  This exists so a sequential run can be given the batch path's discovery settings
+        and the comparison isolates batching alone.
+        """
+        teacher = self.compose(xq, **(disc or {}))
+        pool = self.sample_teacher(teacher, n=n_pool, **kw)
+        self.consolidate(pool, name, mu=teacher["mu"], epochs=epochs)
+        return teacher, pool
+
     def learn_concepts_batch(self, xqs, names, n_pool=64, epochs=10, group=True,
                              disc=None, **kw):
         """The whole loop for K OOD queries at once: compose -> sample -> consolidate, all batched.
