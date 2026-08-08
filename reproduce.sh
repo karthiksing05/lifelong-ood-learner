@@ -59,6 +59,11 @@ colormnist|all)
   gpu "tests/diag_poe_faithful.py"                                               # baseline fairness check
   gpu "tests/diag_composable_scale.py --n-cases 3 --n-samples 16"                # composable-diff scale
   gpu "tests/diag_ours_quality.py --n-cases 2 --n-samples 8"                     # pool-guidance choice
+  gpu "experiments/n27_factor_conditionals.py --n-cases 3 --n-samples 16"        # what a composition inherits
+  gpu "experiments/n28_update_rules.py --n-cases 3 --n-samples 16"               # which update rule composes best
+  for K in 1 2 4 8 12; do
+    gpu "experiments/n4_batch.py --n-concepts 12 --batch-size $K --tag _K$K"     # how far batching scales
+  done
   [ "$STAGE" = colormnist ] && exit 0 ;;&
 
 celeba|all)
@@ -70,7 +75,8 @@ celeba|all)
     gpu "experiments/n21_celeba_vocabulary.py --attr Gray_Hair --seed $s"        # new vocabulary
   done
   for s in 0 1 2; do gpu "experiments/n22_celeba_lifelong.py --seed $s --tag _full"; done   # 11 arms
-  gpu "experiments/n25_pretrained_case.py --attrs Eyeglasses Smiling"           # pretrained 256px case study
+  gpu "experiments/n25_pretrained_case.py --attrs Eyeglasses Smiling --n-train 128 --epochs 40 --lr 5e-4 --rank 8 --t-min 600 --concept-guidance 2.0"   # pretrained 256px case study
+  gpu "experiments/n26_batch_pretrained.py --attrs Eyeglasses Smiling Wearing_Hat Male"  # batch on a pretrained backbone
   [ "$STAGE" = celeba ] && exit 0 ;;&
 
 supporting|all)
