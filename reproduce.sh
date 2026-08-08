@@ -100,8 +100,17 @@ analytic|all)
 figures|all)
   echo "== aggregate, figures, tables (local, no GPU) =="
   "$PY" experiments/aggregate.py
+  # tagged re-runs feed the canonical keys the figures and tables ask for
+  "$PY" experiments/aggregate.py n9_showdown_cal            --as n9_showdown
+  "$PY" experiments/aggregate.py n5_classinc_full           --as n5_classinc
+  "$PY" experiments/aggregate.py n22_celeba_lifelong_full   --as n22_celeba_lifelong
+  "$PY" experiments/aggregate.py n20_celeba_composition_full --as n20_celeba_composition
+  "$PY" experiments/aggregate.py n20_celeba_composition_pairfull --as n20_celeba_composition_pair
   "$PY" experiments/make_paper_figures.py
-  "$PY" experiments/make_paper_tables.py > TABLES.md && echo "  wrote TABLES.md"
+  # PYTHONIOENCODING: redirected stdout defaults to latin-1 on this cluster and the tables
+  # contain em-dashes, so without it the file is written truncated at the first one.
+  PYTHONIOENCODING=utf-8 "$PY" experiments/make_paper_tables.py > TABLES.md \
+    && echo "  wrote TABLES.md"
   ;;
 *)
   echo "usage: $0 {tests|backbones|colormnist|celeba|analytic|supporting|figures|all}"; exit 1 ;;

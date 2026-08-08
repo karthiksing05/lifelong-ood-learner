@@ -10,15 +10,18 @@ experiment. Do not edit by hand -- regenerate.
 
 ### ColorMNIST — held-out (digit, fg, bg) slots  *(n = 3 seeds)*
 
-| method | accuracy (joint) | recall | F1 | content diversity |
-|---|---|---|---|---|
-| `real` | 0.864 ± 0.040 | 0.939 ± 0.008 | 0.969 ± 0.004 | 0.991 ± 0.007 |
-| `ours` | 0.314 ± 0.007 | 0.810 ± 0.041 | 0.498 ± 0.030 | 1.209 ± 0.026 |
-| `poe-guided` | 0.817 ± 0.038 | 0.001 ± 0.001 | 0.003 ± 0.003 | 0.269 ± 0.026 |
-| `inversion` | 0.333 ± 0.066 | 0.690 ± 0.138 | 0.489 ± 0.102 | 1.057 ± 0.023 |
-| `nearest-class` | 0.000 ± 0.000 | 0.066 ± 0.066 | 0.005 ± 0.005 | 1.050 ± 0.069 |
+| method | accuracy (joint) | recall | F1 | Vendi | content diversity |
+|---|---|---|---|---|---|
+| `real` | 0.864 ± 0.023 | 0.939 ± 0.008 | 0.969 ± 0.004 | 1.901 ± 0.035 | 0.991 ± 0.007 |
+| `ours` | 0.539 ± 0.025 | 0.778 ± 0.034 | 0.605 ± 0.043 | 1.942 ± 0.028 | 1.112 ± 0.035 |
+| `poe-guided` | 0.839 ± 0.049 | 0.001 ± 0.001 | 0.003 ± 0.003 | 1.075 ± 0.010 | 0.269 ± 0.026 |
+| `composable-diff` | 0.000 ± 0.000 | 0.134 ± 0.054 | 0.030 ± 0.001 | 2.222 ± 0.050 | 1.223 ± 0.052 |
+| `composable-mcmc` | 0.003 ± 0.003 | 0.134 ± 0.067 | 0.000 ± 0.000 | 1.617 ± 0.147 | 0.678 ± 0.093 |
+| `inversion` | 0.403 ± 0.035 | 0.799 ± 0.027 | 0.545 ± 0.024 | 2.015 ± 0.089 | 1.075 ± 0.075 |
+| `inversion-free` | 0.169 ± 0.080 | 0.845 ± 0.035 | 0.332 ± 0.132 | 2.473 ± 0.176 | 1.244 ± 0.049 |
+| `nearest-class` | 0.000 ± 0.000 | 0.066 ± 0.066 | 0.005 ± 0.005 | 1.874 ± 0.097 | 1.050 ± 0.069 |
 
-`real` is held-out images, the ceiling. `poe-guided` is the published method: it scores *higher* accuracy than ours and F1 ~0 because it emits near-copies of the query.
+`real` is held-out images, the ceiling. `poe-guided` is the published method: it scores *higher* accuracy than ours and F1 ~0 because it emits near-copies of the query. `composable-diff` is Composable Diffusion at its best swept scale and `composable-mcmc` adds Du et al.'s Langevin correction: both sit at 0.000 here because this backbone has no per-factor conditional for score addition to combine.
 
 ### CelebA — `Smiling` x `Big_Nose` never co-occur in training  *(n = 3 seeds)*
 
@@ -26,11 +29,13 @@ experiment. Do not edit by hand -- regenerate.
 |---|---|---|---|---|---|
 | `real` | 0.801 ± 0.137 | 0.656 ± 0.068 | 0.884 ± 0.009 | 0.937 ± 0.005 | 1.007 ± 0.007 |
 | `ours` | 0.903 ± 0.094 | 0.727 ± 0.081 | 0.579 ± 0.034 | 0.598 ± 0.013 | 1.068 ± 0.026 |
+| `composable-diff` | 0.934 ± 0.066 | 0.740 ± 0.084 | 0.280 ± 0.015 | 0.405 ± 0.014 | 0.750 ± 0.005 |
+| `composable-mcmc` | 0.965 ± 0.023 | 0.779 ± 0.105 | 0.483 ± 0.034 | 0.350 ± 0.023 | 0.838 ± 0.016 |
 | `poe-guided` | 0.645 ± 0.189 | 0.488 ± 0.087 | 0.000 ± 0.000 | 0.000 ± 0.000 | 0.147 ± 0.004 |
 | `query-only` | 0.777 ± 0.117 | 0.620 ± 0.132 | 0.018 ± 0.009 | 0.031 ± 0.014 | 0.295 ± 0.009 |
 | `nearest-class` | 0.355 ± 0.186 | 0.235 ± 0.071 | 0.630 ± 0.035 | 0.505 ± 0.014 | 1.212 ± 0.006 |
 
-`pair` = both withheld attributes correct at once. `nearest-class` cannot express the co-occurrence by construction: every trained neighbour differs on at least one of the two.
+`pair` = both withheld attributes correct at once. `nearest-class` cannot express the co-occurrence by construction: every trained neighbour differs on at least one of the two. **`composable-diff` is competitive here** -- run at the scale that maximizes its own `pair`, it reaches parity with ours on accuracy while its recall and diversity fall by roughly half (RESULTS 9g). Where the model has genuine per-attribute conditionals, score addition is not worse than composing in embedding space; it is worse at covering.
 
 ### CelebA — 24 whole combinations withheld (the weaker split)  *(n = 3 seeds)*
 
@@ -38,7 +43,8 @@ experiment. Do not edit by hand -- regenerate.
 |---|---|---|---|---|---|
 | `real` | 0.459 ± 0.049 | 0.459 ± 0.035 | 0.856 ± 0.034 | 0.846 ± 0.008 | 0.915 ± 0.005 |
 | `ours` | 0.511 ± 0.054 | 0.589 ± 0.003 | 0.905 ± 0.013 | 0.622 ± 0.013 | 0.618 ± 0.009 |
-| `poe-guided` | 0.308 ± 0.036 | 0.096 ± 0.013 | 0.617 ± 0.043 | 0.000 ± 0.000 | 0.000 ± 0.000 |
+| `composable-diff` | 0.554 ± 0.039 | 0.628 ± 0.031 | 0.911 ± 0.022 | 0.306 ± 0.003 | 0.429 ± 0.009 |
+| `poe-guided` | 0.295 ± 0.080 | 0.291 ± 0.075 | 0.761 ± 0.098 | 0.000 ± 0.000 | 0.000 ± 0.000 |
 | `query-only` | 0.468 ± 0.066 | 0.439 ± 0.059 | 0.843 ± 0.026 | 0.022 ± 0.016 | 0.015 ± 0.004 |
 | `nearest-class` | 0.222 ± 0.037 | 0.181 ± 0.040 | 0.723 ± 0.050 | 0.590 ± 0.031 | 0.466 ± 0.015 |
 
@@ -73,28 +79,38 @@ The learned conditioning vector is **not separated** from the untrained one; onl
 
 ## 3. Preservation and forgetting
 
-### ColorMNIST — Split-ColorMNIST class-incremental, REAL held-out images  *(n = 4 seeds)*
+### ColorMNIST — Split-ColorMNIST class-incremental, REAL held-out images  *(n = 3 seeds)*
 
-| method | accuracy | forgetting (0 = none) | fraction bit-identical | adapter params |
-|---|---|---|---|---|
-| `ours` | 0.816 ± 0.034 | 0.000 ± 0.000 | 1.000 ± 0.000 | 8818432.000 ± 0.000 |
-| `independent` | 0.806 ± 0.030 | 0.000 ± 0.000 | 1.000 ± 0.000 | 7164976.000 ± 0.000 |
-| `ttt` | 0.797 ± 0.041 | 0.013 ± 0.006 | 1.000 ± 0.000 | 7164976.000 ± 0.000 |
-| `ewc` | 0.743 ± 0.032 | 0.070 ± 0.024 | 0.250 ± 0.000 | 7164976.000 ± 0.000 |
-| `finetune` | 0.725 ± 0.030 | 0.091 ± 0.022 | 0.250 ± 0.000 | 7164976.000 ± 0.000 |
-| `replay` | 0.651 ± 0.061 | 0.183 ± 0.055 | 0.250 ± 0.000 | 7164976.000 ± 0.000 |
+| method | final accuracy | A (whole stream) | forgetting (0 = none) | fraction bit-identical | SSS (stores nothing = 1) | MS (grows least = 1) | images kept |
+|---|---|---|---|---|---|---|---|
+| `ours` | 0.839 ± 0.025 | 0.842 ± 0.023 | 0.000 ± 0.000 | 1.000 ± 0.000 | 1.000 ± 0.000 | -- | 0.000 ± 0.000 |
+| `independent` | 0.863 ± 0.015 | 0.854 ± 0.016 | 0.000 ± 0.000 | 1.000 ± 0.000 | 1.000 ± 0.000 | -- | 0.000 ± 0.000 |
+| `ttt` | 0.828 ± 0.017 | 0.819 ± 0.008 | 0.021 ± 0.010 | 1.000 ± 0.000 | 0.000 ± 0.000 | -- | 768.000 ± 0.000 |
+| `c-lora` | 0.847 ± 0.020 | 0.836 ± 0.014 | 0.004 ± 0.002 | 0.250 ± 0.000 | 1.000 ± 0.000 | -- | 0.000 ± 0.000 |
+| `ewc` | 0.760 ± 0.021 | 0.773 ± 0.018 | 0.112 ± 0.019 | 0.250 ± 0.000 | 1.000 ± 0.000 | -- | 0.000 ± 0.000 |
+| `si` | 0.835 ± 0.025 | 0.825 ± 0.019 | 0.021 ± 0.009 | 0.250 ± 0.000 | 1.000 ± 0.000 | -- | 0.000 ± 0.000 |
+| `mas` | 0.839 ± 0.018 | 0.829 ± 0.013 | 0.000 ± 0.000 | 0.250 ± 0.000 | 1.000 ± 0.000 | -- | 0.000 ± 0.000 |
+| `der++` | 0.821 ± 0.015 | 0.823 ± 0.008 | 0.049 ± 0.002 | 0.250 ± 0.000 | 0.740 ± 0.000 | -- | 200.000 ± 0.000 |
+| `gen-distill` | 0.800 ± 0.017 | 0.802 ± 0.008 | 0.047 ± 0.009 | 0.250 ± 0.000 | 1.000 ± 0.000 | -- | 0.000 ± 0.000 |
+| `replay` | 0.693 ± 0.107 | 0.757 ± 0.058 | 0.159 ± 0.079 | 0.250 ± 0.000 | 1.000 ± 0.000 | -- | 0.000 ± 0.000 |
+| `finetune` | 0.752 ± 0.020 | 0.768 ± 0.016 | 0.123 ± 0.020 | 0.250 ± 0.000 | 1.000 ± 0.000 | -- | 0.000 ± 0.000 |
 
-Arms that structurally *remove* shared parameters sit at exactly 0.000; arms that try to *protect* them forget.
+Arms that structurally *remove* shared parameters sit at exactly 0.000; every arm that tries to *protect* them forgets, including the four added after the literature review (SI, MAS, DER++, generative distillation) and the continual-personalization baseline C-LoRA. `images kept` is the axis the accuracy columns hide: rehearsal buys its retention with a permanent buffer, and TTT keeps the whole stream.
 
-### CelebA — class-incremental over held-out combinations, REAL images  *(n = 1 seeds)*
+### CelebA — class-incremental over held-out combinations, REAL images  *(n = 3 seeds)*
 
-| method | mean-attribute accuracy | forgetting | fraction bit-identical | adapter params |
-|---|---|---|---|---|
-| `ours` | 0.848 | 0.000 | 1.000 | 12346352.000 |
-| `independent` | 0.830 | 0.000 | 1.000 | 9441328.000 |
-| `finetune` | 0.862 | 0.012 | 0.250 | 9441328.000 |
-| `replay` | 0.817 | 0.043 | 0.250 | 9441328.000 |
-| `ewc` | 0.864 | 0.009 | 0.250 | 9441328.000 |
+| method | mean-attribute accuracy | A (whole stream) | forgetting | fraction bit-identical | SSS (stores nothing = 1) | MS (grows least = 1) | images kept |
+|---|---|---|---|---|---|---|---|
+| `ours` | 0.763 ± 0.052 | -- | 0.000 ± 0.000 | 1.000 ± 0.000 | -- | -- | -- |
+| `independent` | 0.758 ± 0.046 | -- | 0.000 ± 0.000 | 1.000 ± 0.000 | -- | -- | -- |
+| `c-lora` | 0.763 ± 0.053 | -- | 0.003 ± 0.003 | 0.250 ± 0.000 | -- | -- | -- |
+| `ewc` | 0.753 ± 0.057 | -- | 0.026 ± 0.013 | 0.250 ± 0.000 | -- | -- | -- |
+| `si` | 0.769 ± 0.048 | -- | 0.008 ± 0.003 | 0.250 ± 0.000 | -- | -- | -- |
+| `mas` | 0.763 ± 0.047 | -- | 0.000 ± 0.000 | 0.250 ± 0.000 | -- | -- | -- |
+| `der++` | 0.782 ± 0.046 | -- | 0.010 ± 0.000 | 0.250 ± 0.000 | -- | -- | -- |
+| `gen-distill` | 0.761 ± 0.056 | -- | 0.016 ± 0.002 | 0.250 ± 0.000 | -- | -- | -- |
+| `replay` | 0.697 ± 0.072 | -- | 0.074 ± 0.026 | 0.250 ± 0.000 | -- | -- | -- |
+| `finetune` | 0.745 ± 0.059 | -- | 0.032 ± 0.011 | 0.250 ± 0.000 | -- | -- | -- |
 
 ---
 

@@ -326,7 +326,13 @@ AGG = {"e2_composition": agg_e2, "n2_composition": agg_e2,
 def main():
     p = argparse.ArgumentParser()
     p.add_argument("names", nargs="*", default=list(AGG))
+    p.add_argument("--as", dest="as_name", default=None,
+                   help="store the result under this canonical key instead of the run name, so a "
+                        "tagged re-run (n9_showdown_cal) feeds the figures and tables that ask for "
+                        "the experiment (n9_showdown).  Only valid with a single name.")
     args = p.parse_args()
+    if args.as_name and len(args.names) != 1:
+        p.error("--as takes exactly one name")
     summary = {}
     for name in args.names:
         runs = load_seeds(name)
@@ -346,7 +352,7 @@ def main():
             print(f"    no aggregator for {name}")
             continue
         try:
-            summary[name] = fn(runs)
+            summary[args.as_name or name] = fn(runs)
         except Exception as e:                                  # noqa: BLE001
             print(f"    could not aggregate: {type(e).__name__}: {e}")
     if summary:

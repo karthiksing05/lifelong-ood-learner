@@ -12,3 +12,7 @@ Defaulting to unsafe serialization. Pass `allow_pickle=False` to raise an error 
        5e-04    500     8    3.0        0.75    1.48    239
 An error occurred while trying to fetch google/ddpm-celebahq-256: google/ddpm-celebahq-256 does not appear to have a file named diffusion_pytorch_model.safetensors.
 Defaulting to unsafe serialization. Pass `allow_pickle=False` to raise an error instead.
+       5e-04    700     8    1.0        0.25    1.46    216
+       5e-04    700     8    3.0        0.50    1.36    238
+[diag] wrote /coc/flash10/ksingara3/lifelong-ood-learner/figures/diag_pretrained_lora.png
+exit=0 | Sat Aug  8 15:07:39 EDT 2026
