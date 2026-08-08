@@ -1813,6 +1813,71 @@ not work" rather than "this measurement is invalid" -- the most expensive confus
 a method-only table cannot detect at all.
 
 
+## 7b. CelebA composition (N20): the separability threat, tested
+
+Threat 7 has stood since the beginning: every composition result rested on ColorMNIST, whose digit /
+foreground / background occupy DISJOINT pixels, and that disjointness is load-bearing -- a
+per-dimension product of experts can assemble an unseen pairing because each pixel belongs to exactly
+one factor. CelebA attributes overlap. This is the test.
+
+Two splits, in increasing strength. Guidance is calibrated per backbone on TRAINED combinations, which
+uses no held-out label (5p's lesson); it chose 4.0 and 6.0.
+
+### The strong split: `Smiling x Big_Nose` never co-occur
+
+Every combination in which both are ON is withheld -- 14620 images across 111 combinations -- while
+49874 and 25162 images still carry each attribute ALONE. Only the CO-OCCURRENCE is novel, which is the
+direct analogue of ColorMNIST's held-out `(fg, bg)` pairs, and the two attributes are adjacent facial
+regions that jointly reshape the lower face, so the split is not separable.
+
+`pair` = both attributes correct AT ONCE. 12 held-out combinations, 24 samples each.
+
+| method | **pair** | target | joint | mean-attr | precision | recall | F1 | content div |
+|---|---|---|---|---|---|---|---|---|
+| *real held-out images* | *0.53* | *0.79* | *0.27* | *0.83* | *1.00* | *0.87* | *0.93* | *0.99* |
+| **ours** (composed vector, 0 params) | **0.72** | **0.86** | **0.34** | **0.86** | 0.70 | 0.58 | 0.60 | 1.05 |
+| `query-only` | 0.60 | 0.86 | 0.16 | 0.78 | 0.76 | **0.04** | **0.06** | 0.31 |
+| `poe-guided` (the published method) | 0.22 | 0.55 | 0.06 | 0.62 | 0.16 | **0.00** | **0.00** | 0.44 |
+| `nearest-class` (retrieval control) | **0.10** | 0.24 | 0.02 | 0.60 | 0.51 | 0.60 | 0.52 | 1.20 |
+
+### The weaker split: 24 whole combinations withheld
+
+| method | target | joint | mean-attr | precision | recall | F1 | content div |
+|---|---|---|---|---|---|---|---|
+| *real held-out images* | *0.38* | *0.44* | *0.89* | *1.00* | *0.86* | *0.92* | *0.98* |
+| **ours** | **0.41** | **0.59** | **0.92** | 0.65 | 0.64 | **0.64** | 1.12 |
+| `query-only` | 0.34 | 0.33 | 0.84 | 0.66 | 0.01 | 0.01 | 0.36 |
+| `poe-guided` | 0.30 | 0.07 | 0.70 | 0.00 | 0.00 | 0.00 | 0.38 |
+| `nearest-class` | 0.15 | 0.26 | 0.81 | 0.48 | 0.53 | 0.48 | 1.23 |
+
+### What this settles, and what it does not
+
+**Composing known factor values produces a combination that was never observed, when the factors
+overlap the same pixels.** On the strong split the composed vector reaches `pair` **0.72** where
+retrieval from the nearest trained combination reaches **0.10** -- and retrieval failing is not a
+weak baseline but a structural fact, since every trained neighbour differs on at least one of the two
+withheld attributes. Threat 7 is addressed rather than deferred.
+
+**Scoring above the real-image ceiling is expected here.** `ours` at 0.72 against real images at 0.53
+repeats what E0 recorded on ColorMNIST: a generated sample is a cleaner, more prototypical rendering
+than a photograph, and a linear probe reads it more easily. It means the probe ceiling is not a hard
+bound on generated data, not that composition beats reality; the informative comparison is against the
+baselines, all of which are scored the same way.
+
+**Both published baselines fail in the documented way.** `poe-guided` reaches recall 0.00 and F1 0.00
+on both splits at content diversity 0.38-0.44 -- it emits near-copies. `query-only` is the sharper
+demonstration: on the strong split it scores `pair` 0.60, respectable attribute accuracy, at recall
+**0.04** and diversity **0.31**. It is reproducing the query, which happens to carry the right
+attributes because it is an image of the target combination. Attribute accuracy alone cannot separate
+composing from copying; that is why coverage is reported beside it everywhere in this document.
+
+**Stated as a limitation:** the guidance calibration selected the TOP of its grid (6.0) on the strong
+split, so the operating point sits at a boundary and may not be optimal -- the sweep should be
+extended before these numbers are treated as the method's best. The grid was widened from 2.0 to 6.0
+on the evidence of `diag_celeba_guidance.py`; capping it at 2.0, as the first version did, would have
+understated the result substantially.
+
+
 ---
 
 ## 8. Where the numbers come from
