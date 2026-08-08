@@ -43,7 +43,6 @@ import torch
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from common import CACHE, RESULTS, ood_queries                          # noqa: E402
-from n27_factor_conditionals import score_add                           # noqa: E402
 
 from lifelong_ood.datasets import load_colormnist                       # noqa: E402
 from lifelong_ood.evals import (composition_accuracy, fit_probes,       # noqa: E402
@@ -256,8 +255,8 @@ def main():
                 key = "fg" if nm.startswith("fg") else ("bg" if nm.startswith("bg") else "digit")
                 per[key] = a[key]
             # and composed, by score addition (the operator RESULTS 12e recommends)
-            S = to_data(score_add(field, names, args.n_samples, args.steps,
-                                  args.seed, scale=1.0)).astype(np.float32)
+            S = to_data(L.sample_composed(names, n=args.n_samples, steps=args.steps,
+                                          seed=args.seed, scale=1.0)).astype(np.float32)
             a = composition_accuracy(probes, S, d, f, b)
             pr = precision_recall(S, R)
             rows.append(dict(rule=rule, slot=int(q["slot"]), wall_seconds=wall,

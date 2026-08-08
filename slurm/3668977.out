@@ -14,3 +14,8 @@
 [n27]   factor-score scale 3.0: joint 0.000
 [n27] case 110 done
 [n27] case 19: `digit1` from 96 seen images (18s)
+[n27] case 19: `fg0` from 96 seen images (18s)
+[n27] case 19: `bg3` from 96 seen images (18s)
+[n27]   factor-score scale 1.0: joint 0.375
+[n27]   factor-score scale 2.0: joint 0.000
+[n27]   factor-score scale 3.0: joint 0.000

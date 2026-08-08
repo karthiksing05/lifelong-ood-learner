@@ -182,8 +182,8 @@ def main():
         # ── THE TEST: score addition over factor conditionals, swept ────────
         best, best_j = None, -1.0
         for sc in args.scales:
-            S = to_data(score_add(field, names, args.n_samples, args.steps, args.seed,
-                                  scale=sc)).astype(np.float32)
+            S = to_data(L.sample_composed(names, n=args.n_samples, steps=args.steps,
+                                          seed=args.seed, scale=sc)).astype(np.float32)
             j = composition_accuracy(probes, S, d, f, b)["joint"]
             print(f"[n27]   factor-score scale {sc}: joint {j:.3f}", flush=True)
             if j > best_j:

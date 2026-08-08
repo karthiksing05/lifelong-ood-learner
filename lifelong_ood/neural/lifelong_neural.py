@@ -508,6 +508,46 @@ class NeuralLifelongLearner:
             u_start=u_start, clip=(-1, 1),
             guide_eps=lambda x, u: self.field.eps(x, u, name), guide_w=lambda u: guidance)
 
+    def sample_composed(self, names, n=16, steps=None, seed=None, scale=1.0, weights=None,
+                        u_start=1.0):
+        """Sample SEVERAL consolidated concepts at once, composed in SCORE space.
+
+            eps_hat = eps_base + sum_i w_i ( eps_concept_i - eps_base )
+
+        Use this rather than activating several paths together, which is what the bank did before
+        and which is measurably worse.  Two adapters activated at once SUM two deltas that were each
+        trained to be applied alone, and nothing in either one's training says what it should do
+        while the other is on.  Score composition never evaluates an adapter outside its own
+        conditioning: each `eps_concept_i` is the concept exactly as it was consolidated, and only
+        their PREDICTIONS are combined.
+
+        Measured on a pretrained backbone with two independently learned attributes (RESULTS 12e):
+        both attributes correct 0.50 for score composition against 0.17 for path union, at Vendi
+        1.56 against 1.37.  This is the failure the whole LoRA-merging literature exists to address
+        (ZipLoRA, Orthogonal Adaptation, Custom Diffusion's constrained merge), and the bank had
+        been doing the naive version of it.
+
+        `scale` is the per-concept weight (Liu et al.'s w_i, which are meant to ADD -- see
+        composable.py; 1/n would make this an average and a strictly weaker operator).  Preservation
+        is untouched: paths stay insert-only and every concept remains bit-identical.
+        """
+        c = self.cfg
+        names = list(names)
+        w = ([float(scale)] * len(names) if weights is None
+             else [float(x) for x in weights])
+
+        def eps(x, u):
+            e0 = self.field.eps(x, u, None)          # the frozen base: no path, no concept
+            out = e0.copy()
+            for nm, wi in zip(names, w):
+                out = out + wi * (self.field.eps(x, u, nm) - e0)
+            return out
+
+        return self.field.sample(
+            n=n, steps=steps or c["steps"], seed=c["seed"] if seed is None else seed,
+            u_start=u_start, clip=(-1, 1),
+            guide_eps=eps, guide_w=lambda u: 1.0)
+
     def fingerprint(self, name, **kw):
         from .adapters import fingerprint
         return fingerprint(self.field, name, **kw)
