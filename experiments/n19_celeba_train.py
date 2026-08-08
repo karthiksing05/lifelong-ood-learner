@@ -44,11 +44,18 @@ from lifelong_ood.evals import attr_accuracy, fit_attr_probes, save_grid, save_j
 from lifelong_ood.neural import NeuralScoreField, UNet, to_data, train_ddpm  # noqa: E402
 
 
-def build_probes(data, seed, epochs, cache=True):
-    """Attribute probes fit on REAL images, cached — every CelebA experiment scores with these."""
-    # keyed by HOW MANY real images the probes saw as well as by seed: a smoke run fits them on a
-    # few thousand rows, and a cache that ignored that would silently serve those to the full run
-    path = os.path.join(CACHE, f"attr_probes_img{data['img']}_n{len(data['X8'])}_s{seed}.pkl")
+def build_probes(data, seed, epochs, cache=True, layout="hwc"):
+    """Attribute probes fit on REAL images, cached — every CelebA experiment scores with these.
+
+    Keyed by how many real images the probes saw, by seed, AND by pixel LAYOUT.  A probe is a linear
+    model over flat pixels, so it is only valid for the flat ordering it was fitted on; the layout
+    A/B loaded HWC-fitted probes and applied them to CHW-flat images, which showed up as REAL
+    held-out images scoring 0.557 where the same images score 0.770 under matched probes.  A
+    mismatched probe makes every arm look equally bad, which is the most misleading failure a
+    comparison can have.
+    """
+    path = os.path.join(CACHE,
+                        f"attr_probes_img{data['img']}_n{len(data['X8'])}_{layout}_s{seed}.pkl")
     if cache and os.path.exists(path):
         import pickle
         with open(path, "rb") as fh:
@@ -187,7 +194,8 @@ def main():
     # ── evaluation: conditional accuracy against the REAL-DATA ceiling ───────
     model.load_state_dict(ema)
     field = NeuralScoreField(model, device=dev, batch=64)
-    probes = build_probes(data, args.seed, 8 if args.quick else 30)
+    probes = build_probes(data, args.seed, 8 if args.quick else 30,
+                          layout="chw" if args.chw else "hwc")
     readable = [a for a in probes["_attrs"] if probes[f"{a}_val_acc"] >= 0.65]
     print(f"[n19] probes readable at >=0.65: {len(readable)}/{len(probes['_attrs'])}", flush=True)
 
