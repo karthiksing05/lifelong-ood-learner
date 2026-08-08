@@ -1940,6 +1940,65 @@ for most combination-split cases, so that column has nothing to score. Mean-attr
 bit-identical fraction are the usable metrics and are what is quoted.
 
 
+## 5l-bis. The published method was being run in OUR configuration, not its own (corrected)
+
+The case-study figure showed `poe-guided` emitting the query plus speckle. That was our fault, and the
+correction changes every number in the comparison — in the baseline's favour, and in favour of the
+argument.
+
+**The mechanism.** Their Eq. 12 gives the teacher's epsilon a precision factor
+`(abar*Sigma_T + (1-abar) I)^-1`, which blows up as `abar -> 1`. Their Eq. 14 exists to cancel exactly
+that: `w(t) = min(w0 * tr(Sigma_t)/d, wmax)` shrinks guidance as the teacher concentrates. The
+`poe-guided` arm inherited this repository's `schedule="anneal"`, which does the opposite — it rises
+to `wmax` as `u -> 0`. And the justification for annealing, recorded in `cfg_weight`'s own docstring,
+is that the ANALYTIC Gaussian mixture has no density at an unseen pairing; a convolutional UNet shares
+weights across colours and has no such hole, so the rationale never transferred to the backbone the
+baseline actually runs on.
+
+**Two checks before accepting the diagnosis**, because a better-looking row is not an explanation:
+
+* `tests/diag_poe_faithful.py` sweeps the sampler. With their Eq. 14 and the raw Laplace covariance
+  the SAME teacher produces clean, correct digits at accuracy **0.865** against our default's 0.521.
+* `tests/diag_poe_modes.py` rules out a degenerate teacher: the selected expert means are spread
+  **0.229**, WIDER than the real class spread of 0.148, at `sigma_T` 0.082. Widening the discovery
+  grid to higher noise moves accuracy (0.521 -> 0.635) and leaves recall at 0.010. So the coverage
+  failure is not a discovery artefact either; it is the contraction 5e already identified — CFG
+  toward a unimodal Gaussian pulls every trajectory to its mean.
+
+**Corrected comparison, 3 seeds, baseline in its own configuration:**
+
+| ColorMNIST | joint | precision | recall | F1 | content div |
+|---|---|---|---|---|---|
+| *real held-out images* | *0.864* | *1.000* | *0.939* | *0.969* | *0.991* |
+| ours | 0.314 | 0.400 | **0.810** | **0.498** | 1.209 |
+| `poe-guided` (their Eq. 14) | **0.817** | **0.839** | **0.001** | 0.003 | 0.269 |
+| `nearest-class` | 0.000 | 0.008 | 0.066 | 0.005 | 1.050 |
+
+| CelebA, strong split | pair | precision | recall | F1 | content div |
+|---|---|---|---|---|---|
+| *real held-out images* | *0.801* | *1.000* | *0.884* | *0.937* | *1.007* |
+| ours | **0.903** | 0.667 | **0.579** | **0.598** | 1.068 |
+| `poe-guided` (their Eq. 14) | 0.645 | **0.944** | **0.000** | 0.000 | 0.147 |
+
+**What changed, and why it matters.** Under our schedule the baseline had precision 0.039 and looked
+broken. Under its own it has precision **0.839** (ColorMNIST) and **0.944** (CelebA): its samples are
+genuinely plausible members of the target class, and on ColorMNIST it beats us on accuracy *and*
+precision. What it does not have is coverage — recall 0.001 and 0.000, content diversity 0.27 and
+0.15 against a real class spread of ~1.0.
+
+So the claim is not "the published method fails". It is: **the published method produces excellent
+samples of one point in the class, and per-sample metrics cannot tell that apart from producing the
+class.** That is a stronger statement than the one this document made before, it is made with the
+baseline at its best rather than at our worst, and it is the statement the coverage metric exists to
+support.
+
+**Scope, unchanged from 6.** This is our reimplementation on our backbone under our metrics. Wang et
+al. report recall 80.7% on their own setup with Inception-feature precision/recall and a ~35M model
+on 120k images; nothing here contradicts that, and nothing here is a reproduction of their tables.
+What is now fair is the *internal* comparison: every arm in these tables is sampled from the same
+backbone, scored by the same probes, and configured the way its authors specify.
+
+
 ---
 
 ## 8. Where the numbers come from

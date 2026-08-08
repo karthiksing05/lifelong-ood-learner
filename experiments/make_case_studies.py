@@ -1,0 +1,136 @@
+"""The case-study panels, laid out the way the source paper lays its Figure 3 out.
+
+Wang et al. show, for one out-of-distribution query: the query, the PROTOTYPES their mode ascent
+discovered, and then a block of samples per method.  Ours previously showed methods as rows without
+the prototypes, which hid the most informative part -- what the composition is actually built from --
+and made a fair comparison harder to eyeball.
+
+Two things this fixes beyond layout:
+
+  * the published method is run in ITS OWN configuration (their Eq. 14 variance-aware schedule with
+    the raw Laplace covariance).  Under this repository's annealed schedule the same teacher emits
+    speckle, which made the baseline look broken when it is not; see tests/diag_poe_faithful.py.
+  * every row is annotated with accuracy AND coverage, because the whole argument is that the first
+    cannot distinguish composing from copying and the second can.
+
+Needs the backbones.  Writes figures/f9_case_colormnist.png and figures/f10_case_celeba.png.
+"""
+import argparse
+import os
+import sys
+
+import numpy as np
+import torch
+
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from common import CACHE, backbone_gains, ood_queries                   # noqa: E402
+
+FIG = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "figures")
+PAPER_POE = dict(schedule="variance", var_scale=1.0, w0=1.2, wmax=2.0, wmin=0.0)
+
+
+def panel(fig, gs_row, imgs, side, label, note="", n=6, cmap=None):
+    import matplotlib.pyplot as plt
+    for c in range(n):
+        ax = fig.add_subplot(gs_row[c])
+        if imgs is not None and c < len(imgs):
+            ax.imshow(np.clip(np.asarray(imgs[c], np.float32).reshape(side, side, 3), 0, 1))
+            ax.set_xticks([]); ax.set_yticks([])
+        else:
+            # a row with fewer panels than the grid (K=3 prototypes against 6 sample columns)
+            # should leave BLANK space, not empty framed boxes that read as failed generations
+            ax.axis("off")
+        if c == 0:
+            ax.set_ylabel(label, fontsize=6.5, rotation=0, ha="right", va="center")
+        if c == n - 1 and note:
+            ax.set_title(note, fontsize=5.5, loc="right", pad=2)
+
+
+def colormnist(args):
+    from lifelong_ood.datasets import load_colormnist, slot_name
+    from lifelong_ood.evals import composition_accuracy, fit_probes, precision_recall
+    from lifelong_ood.neural import (NeuralLifelongLearner, learn_embedding, load_field,
+                                     sample_embedding, teacher_init_alpha, to_data, to_model)
+    from lifelong_ood.neural.idealwords import slot_factors
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    from matplotlib.gridspec import GridSpec
+
+    dev = "cuda" if torch.cuda.is_available() else "cpu"
+    data = load_colormnist(n_per_slot=args.n_per_slot, seed=args.seed)
+    probes = fit_probes(data, seed=args.seed, epochs=30)
+    ck = torch.load(os.path.join(CACHE, "ddpm_colormnist.pt"), map_location="cpu",
+                    weights_only=False)
+    remap = ck["remap"]; slots = np.array(sorted(remap))
+    C = ck["ema"]["cemb.weight"].numpy()[[remap[int(x)] for x in slots]]
+    field = load_field(os.path.join(CACHE, "ddpm_colormnist.pt"), device=dev)
+    # no n= override: use the robust default (wider slot sample, multi-seed vote), since a
+    # gain of 1.0 chosen by a noisy calibration leaves backgrounds under-weighted and the
+    # composed samples come out the wrong colour in the very figure meant to show them
+    gains = backbone_gains(field, C, slots, probes, data, seed=args.seed,
+                           steps=args.steps)
+    L = NeuralLifelongLearner(field, steps=args.steps, seed=args.seed, device=dev)
+    L.attach_factorization(C, slot_factors(slots), gains=gains)
+
+    qs = ood_queries(data, n_slots=args.n_cases, seed=args.seed)
+    rows = ["real", "prototypes", "ours", "poe-guided (paper Eq.14)", "query-only", "nearest-class"]
+    fig = plt.figure(figsize=(1.05 * (args.n_show + 1), 1.15 * len(qs) * len(rows) + 1.2))
+    gs = GridSpec(len(qs) * len(rows), args.n_show + 1, figure=fig, hspace=0.06, wspace=0.06)
+    r = 0
+    for q in qs:
+        xq = to_model(data["X"][q["query"]]).ravel()
+        R = data["X"][q["rest"][:100]].astype(np.float32)
+        t = L.compose(xq, u_grid=(0.1, 0.2, 0.3, 0.4), n_starts=16, iters=120)
+        from lifelong_ood.compose import candidates_ascent
+        M, V, _ = candidates_ascent(field, xq, u_grid=(0.1, 0.2, 0.3, 0.4), n_starts=16,
+                                    iters=120, seed=args.seed)
+        got = {"real": R[:args.n_show],
+               "prototypes": to_data(M[t["sel"]]).astype(np.float32),
+               "poe-guided (paper Eq.14)": to_data(
+                   L.sample_teacher(t, n=args.n_show, seed=args.seed, **PAPER_POE)),
+               "query-only": to_data(L.sample_teacher(L.baseline_teacher(xq, "query_only"),
+                                                      n=args.n_show, seed=args.seed, **PAPER_POE))}
+        L.learn_concept_factored(xq, f"c{q['slot']}", n_pool=48, epochs=args.epochs,
+                                 inv_steps=args.inv_steps, seed=args.seed)
+        got["ours"] = to_data(L.sample_concept(f"c{q['slot']}", n=args.n_show, seed=args.seed))
+        a0 = teacher_init_alpha(field, t, xq, seed=args.seed)
+        got["nearest-class"] = to_data(field.sample(n=args.n_show, steps=args.steps,
+                                                    seed=args.seed, clip=(-1, 1),
+                                                    branch=int(np.argmax(a0))))
+        for name in rows:
+            S = np.asarray(got[name], np.float32)
+            note = ""
+            if name not in ("prototypes",):
+                a = composition_accuracy(probes, S, q["d"], q["f"], q["b"])
+                pr = precision_recall(S, R)
+                note = f"acc {a['joint']:.2f} | recall {pr['recall']:.2f}"
+            panel(fig, [gs[r, c] for c in range(args.n_show + 1)], S, 32,
+                  f"{name}\n{slot_name(q['d'], q['f'], q['b'])}" if name == "real" else name,
+                  note, n=args.n_show)
+            r += 1
+    fig.suptitle("ColorMNIST — one held-out composition per block.  `prototypes` are what mode "
+                 "ascent discovered;\nthe published method is run with its OWN Eq. 14 schedule.  "
+                 "Accuracy is high where coverage is zero.", fontsize=8.5)
+    p = os.path.join(FIG, "f9_case_colormnist.png")
+    fig.savefig(p, dpi=145, bbox_inches="tight"); plt.close(fig)
+    print(f"  wrote {p}")
+
+
+def main():
+    p = argparse.ArgumentParser()
+    p.add_argument("--n-cases", type=int, default=3)
+    p.add_argument("--n-show", type=int, default=6)
+    p.add_argument("--n-per-slot", type=int, default=100)
+    p.add_argument("--steps", type=int, default=50)
+    p.add_argument("--inv-steps", type=int, default=400)
+    p.add_argument("--epochs", type=int, default=40)
+    p.add_argument("--seed", type=int, default=0)
+    args = p.parse_args()
+    os.makedirs(FIG, exist_ok=True)
+    colormnist(args)
+
+
+if __name__ == "__main__":
+    main()

@@ -105,7 +105,7 @@ def ood_queries(data, n_slots=None, seed=0):
 
 
 def backbone_gains(field, C, slots_seen, probes, data, factor=2, grid=(1.0, 1.5, 2.0, 2.5, 3.0),
-                   n_slots=6, n=16, steps=50, seed=0, verbose=True):
+                   n_slots=12, n=32, steps=50, seed=0, verbose=True, n_seeds=2):
     """Per-factor gain calibrated on THIS backbone, using seen slots only.
 
     The gain corrects the model's under-response to a factor -- background, in ColorMNIST.  It was
@@ -125,8 +125,20 @@ def backbone_gains(field, C, slots_seen, probes, data, factor=2, grid=(1.0, 1.5,
 
     from lifelong_ood.neural.idealwords import factorize
     fac = factorize(C, slot_factors(slots_seen))
-    g, sc = calibrate_gains(field, fac, probes, data, slots_seen, grid=grid, factor=factor,
-                            n_slots=n_slots, n=n, steps=steps, seed=seed, score_fn=score_fn)
+    # Averaged over several calibration seeds and a wider slot sample.  At the old n_slots=6, n=16
+    # the argmax was unstable on the SAME backbone: separate runs selected gain 1.0 (seen-slot
+    # accuracy 0.80) and 3.0 (0.96).  Picking 1.0 leaves the background under-weighted and the
+    # composed samples come out the wrong colour, so this noise was costing the method real quality
+    # in exactly the figure meant to show it at its best.
+    import numpy as _np
+    tally = {}
+    for k in range(max(1, n_seeds)):
+        gk, sk = calibrate_gains(field, fac, probes, data, slots_seen, grid=grid, factor=factor,
+                                 n_slots=n_slots, n=n, steps=steps, seed=seed + 137 * k,
+                                 score_fn=score_fn)
+        tally.setdefault(gk, []).append(sk)
+    g = max(tally, key=lambda z: (len(tally[z]), float(_np.mean(tally[z]))))
+    sc = float(_np.mean(tally[g]))
     gains = [1.0] * len(fac["V"])
     gains[factor] = g
     if verbose:

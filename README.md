@@ -29,24 +29,31 @@ composition stage is that mechanism.
 
 This is the figure the project turns on. A method that re-emits the query scores **high attribute
 accuracy** — the query is, after all, an image of the target — while covering none of the class. The
-published method and the query-only baseline sit in the red band on **both** benchmarks. Any
-evaluation that reports accuracy without coverage cannot distinguish them from a method that
-actually composes.
+published method and the query-only baseline sit in the red band on **both** benchmarks.
+
+The point is sharper than "the baseline is bad", and the baselines are run at their best to make it:
+on ColorMNIST `poe-guided` beats us on accuracy (0.817 vs 0.314) **and** on precision (0.839 vs
+0.400), so by every per-sample measure its output is better than ours. Its recall is **0.001**. Any
+evaluation that reports accuracy without coverage would rank it first.
 
 ### 2. Composition recovers combinations that were never observed
 
 ![composition](figures/f3_composition.png)
 ![ColorMNIST case study](figures/f9_case_colormnist.png)
 
-ColorMNIST F1 **0.502 ± 0.036** against the published method's **0.007 ± 0.007**. In the case study
-the failure is visible rather than tabular: the `poe-guided` row is the query plus speckle, eight
-times over.
+ColorMNIST F1 **0.498 ± 0.030** against the published method's **0.003 ± 0.003**. The published
+method is run in **its own configuration** (their Eq. 14 variance-aware schedule), and that matters:
+under this repository's annealed schedule the same teacher emitted speckle and looked broken. Run
+their way it is *excellent* — joint accuracy **0.817** and precision **0.839**, higher than ours on
+both — and its recall is **0.001**. In the case study the six samples are sharp, correct, and
+identical.
 
 On CelebA the split is stronger — `Smiling` and `Big_Nose` **never co-occur** in training, though each
 appears alone tens of thousands of times, and they share the lower face. Producing both at once
 scores **0.903 ± 0.094** where retrieval from the nearest trained combination reaches **0.355 ±
 0.186**, and retrieval falling short is structural: every trained neighbour differs on at least one
-of the two.
+of the two. The published method reaches precision **0.944** here — its samples are plausible faces —
+at recall **0.000**.
 
 ![CelebA case study](figures/f10_case_celeba.png)
 
