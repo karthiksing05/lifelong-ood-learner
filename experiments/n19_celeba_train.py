@@ -196,7 +196,8 @@ def main():
     field = NeuralScoreField(model, device=dev, batch=64)
     probes = build_probes(data, args.seed, 8 if args.quick else 30,
                           layout="chw" if args.chw else "hwc")
-    readable = [a for a in probes["_attrs"] if probes[f"{a}_val_acc"] >= 0.65]
+    from lifelong_ood.evals import probe_usable
+    readable = [a for a in probes["_attrs"] if probe_usable(probes, a)]
     print(f"[n19] probes readable at >=0.65: {len(readable)}/{len(probes['_attrs'])}", flush=True)
 
     rng = np.random.default_rng(args.seed)

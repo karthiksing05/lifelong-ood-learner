@@ -40,8 +40,8 @@ from n19_celeba_train import build_probes                               # noqa: 
 
 from lifelong_ood.celeba import (ATTRS, as_float, class_name, load_celeba_comp,  # noqa: E402
                                  nearest_seen)
-from lifelong_ood.evals import (attr_accuracy, precision_recall, sample_geometry,  # noqa: E402
-                                save_json)
+from lifelong_ood.evals import (attr_accuracy, precision_recall, probe_usable,  # noqa: E402
+                                sample_geometry, save_json)
 from lifelong_ood.neural import (NeuralLifelongLearner, load_field, sample_embedding,  # noqa: E402
                                  to_data, to_model)
 
@@ -53,7 +53,7 @@ def attr_hits(probes, S01, combo, idx):
     hits = []
     for k in idx:
         a_k = ATTRS[k]
-        if probes.get(f"{a_k}_val_acc", 0.0) >= 0.65:
+        if probe_usable(probes, a_k):
             hits.append(probes[a_k].predict(np.asarray(S01, np.float32)) == int(combo[k]))
     return float(np.stack(hits).all(0).mean()) if hits else float("nan")
 

@@ -308,9 +308,35 @@ def fit_attr_probes(data, n_train=None, seed=0, epochs=30, attrs=None):
     for k, a in enumerate(attrs):
         pr = SoftmaxProbe(2, seed=seed, epochs=epochs).fit(X[tr], A[tr, k].astype(int))
         out[a] = pr
-        out[f"{a}_val_acc"] = pr.acc(X[va], A[va, k].astype(int))
+        y = A[va, k].astype(int)
+        p = pr.predict(X[va])
+        out[f"{a}_val_acc"] = pr.acc(X[va], y)
+        # TPR/TNR/balanced as well as plain accuracy, because plain accuracy is the WRONG
+        # readability criterion for a rare attribute: Gray_Hair is ON in 4.3% of CelebA, so a probe
+        # that answers "no" every time scores 0.957 while recognising the attribute 32% of the time.
+        # Measured on real images, five of the twelve attributes the old >=0.65 accuracy filter
+        # admitted cannot recognise their own attribute (Oval_Face TPR 0.066, Bald 0.206, Brown_Hair
+        # 0.171, Gray_Hair 0.321, No_Beard TNR 0.303) -- and Wavy_Hair, which the filter REJECTED at
+        # 0.533, is usable with TPR 0.908.  Scoring a generator on a blind probe measures the probe.
+        out[f"{a}_tpr"] = float((p[y == 1] == 1).mean()) if (y == 1).any() else float("nan")
+        out[f"{a}_tnr"] = float((p[y == 0] == 0).mean()) if (y == 0).any() else float("nan")
+        out[f"{a}_bal"] = 0.5 * (out[f"{a}_tpr"] + out[f"{a}_tnr"])
+        out[f"{a}_base"] = float(y.mean())
     out["_attrs"] = list(attrs)
     return out
+
+
+def probe_usable(probes, a, min_bal=0.65, min_tpr=0.5, min_val_acc=0.65):
+    """Can this probe be used to SCORE a generator on attribute `a`?
+
+    Requires it to recognise the attribute when present (`tpr`) and to be meaningfully above chance
+    on both classes (`bal`), not merely accurate on an imbalanced test set.  Falls back to plain
+    accuracy for probe dicts pickled before these statistics were recorded.
+    """
+    bal, tpr = probes.get(f"{a}_bal"), probes.get(f"{a}_tpr")
+    if bal is None or tpr is None or bal != bal or tpr != tpr:
+        return probes.get(f"{a}_val_acc", 0.0) >= min_val_acc
+    return bal >= min_bal and tpr >= min_tpr
 
 
 def attr_accuracy(probes, samples, combo, attrs=None, min_val_acc=0.65):
@@ -323,7 +349,7 @@ def attr_accuracy(probes, samples, combo, attrs=None, min_val_acc=0.65):
     attrs = attrs or probes["_attrs"]
     per, usable = {}, []
     for k, a in enumerate(attrs):
-        if probes.get(f"{a}_val_acc", 0.0) < min_val_acc:
+        if not probe_usable(probes, a, min_val_acc=min_val_acc):
             continue
         hit = probes[a].predict(np.asarray(samples, np.float32)) == int(combo[k])
         per[a] = float(hit.mean())
