@@ -1,3 +1,21 @@
 ===== DER++ after the stored-noise fix =====
 [n5] 6 tasks x 64 REAL images, batches of 3, arms ['der++', 'finetune'], device cuda
 [n5:der++] 3/6 tasks: mean acc 0.79, exact 1.00, 2.20M, 122s
+[n5:der++] 6/6 tasks: mean acc 0.78, exact 0.50, 3.86M, 286s
+[n5] -> der++: ACC 0.781, BWT -0.025, FGT 0.025
+
+[n5:finetune] 3/6 tasks: mean acc 0.73, exact 1.00, 2.20M, 36s
+[n5:finetune] 6/6 tasks: mean acc 0.78, exact 0.50, 3.86M, 76s
+[n5] -> finetune: ACC 0.781, BWT -0.050, FGT 0.050
+
+
+[n5] Split-ColorMNIST class-incremental, 6 tasks of real held-out images
+    arm              ACC      BWT     FGT   exact   params  stored  wall(s)
+    der++          0.781   -0.025   0.025    0.50    3.86M     200      286
+    finetune       0.781   -0.050   0.050    0.50    3.86M       0       76
+
+  ACC final mean accuracy (higher better) | BWT backward transfer (0 = no forgetting)
+  FGT forgetting measure (0 = none) | exact = fraction bit-identical to birth
+  stored = REAL images the arm must retain forever (0 = keeps no data)
+[n5] wrote /coc/flash10/ksingara3/lifelong-ood-learner/results/n5_classinc.json
+exit=0 | Sat Aug  8 10:59:10 EDT 2026

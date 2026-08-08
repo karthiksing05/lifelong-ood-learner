@@ -41,7 +41,8 @@ from n19_celeba_train import build_probes                               # noqa: 
 from lifelong_ood.celeba import (ATTRS, as_float, class_name, load_celeba_comp,  # noqa: E402
                                  nearest_seen)
 from lifelong_ood.evals import (attr_accuracy, density_coverage, frechet_distance,  # noqa: E402
-                                precision_recall, probe_usable, sample_geometry, save_json)
+                                precision_recall, probe_usable, sample_geometry, save_json,
+                                vendi_score)
 from lifelong_ood.neural import (NeuralLifelongLearner, load_field, sample_embedding,  # noqa: E402
                                  to_data, to_model)
 from lifelong_ood.neural.composable import compose_attributes_scores   # noqa: E402
@@ -88,6 +89,8 @@ def score(probes, S01, combo, R01, target_idx, pair_idx=None):
                 density=dc["density"], coverage=dc["coverage"],
                 frechet=frechet_distance(np.asarray(S01, np.float32),
                                          np.asarray(R01, np.float32)),
+                # reference-free, so it stays meaningful for a combination with no real images
+                vendi=vendi_score(np.asarray(S01, np.float32)),
                 content_ratio=g.get("content_ratio", float("nan")))
 
 

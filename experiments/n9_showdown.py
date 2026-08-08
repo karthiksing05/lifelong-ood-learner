@@ -43,7 +43,8 @@ from common import CACHE, RESULTS, backbone_gains, ood_queries         # noqa: E
 
 from lifelong_ood.datasets import load_colormnist, slot_name           # noqa: E402
 from lifelong_ood.evals import (composition_accuracy, density_coverage, fit_probes,  # noqa: E402
-                                frechet_distance, precision_recall, sample_geometry, save_json)
+                                frechet_distance, memorization, precision_recall,
+                                sample_geometry, save_json, vendi_score)
 from lifelong_ood.neural import (NeuralLifelongLearner, learn_embedding,  # noqa: E402
                                  load_field, sample_embedding, to_data, to_model)
 from lifelong_ood.neural.composable import compose_classes            # noqa: E402
@@ -52,15 +53,28 @@ from lifelong_ood.neural.idealwords import slot_factors                # noqa: E
 FIG = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "figures")
 
 
-def score(probes, S01, q, R):
+def score(probes, S01, q, R, train_pool=None):
+    """Metrics for one arm on one held-out composition.
+
+    Note what each is anchored to, because it decides what each can and cannot show.  Precision,
+    density and Frechet are all anchored to `R` -- REAL held-out images of the target composition --
+    which is the only anchoring under which they mean anything here: measured against the TRAINING
+    manifold they would be anti-correlated with the property under test, since a correct novel
+    combination is absent from that manifold by construction.  `vendi` is anchored to nothing at all
+    and so survives even where no real images of the target exist.  `memorized` is anchored to the
+    training set on purpose: it is the check that a good score was not obtained by copying.
+    """
     pr = precision_recall(S01, R)
     dc = density_coverage(S01, R)          # Naeem et al. -- robust to the outlier that inflates P/R
     g = sample_geometry(S01, R[0], R)
     a = composition_accuracy(probes, S01, q["d"], q["f"], q["b"])
+    mem = (memorization(S01, train_pool) if train_pool is not None
+           else dict(frac_memorized=float("nan")))
     return dict(joint=a["joint"], digit=a["digit"], fg=a["fg"], bg=a["bg"],
                 precision=pr["precision"], recall=pr["recall"], f1=pr["f1"],
                 density=dc["density"], coverage=dc["coverage"],
-                frechet=frechet_distance(S01, R),
+                frechet=frechet_distance(S01, R), vendi=vendi_score(S01),
+                memorized=mem["frac_memorized"],
                 content_ratio=g.get("content_ratio", float("nan")))
 
 
@@ -116,6 +130,11 @@ def main():
     print(f"[n9] {len(cases)} cases, {len(stream)} follow-on concepts, device {dev}", flush=True)
 
     rows, panels = [], {}
+    # the images the backbone was actually trained on, subsampled once: a method that scores well
+    # by RETRIEVING one of these is indistinguishable from one that composes, in every other metric
+    _tr = np.where(data["seen"])[0]
+    train_pool = data["X"][np.random.default_rng(args.seed).choice(
+        _tr, size=min(600, len(_tr)), replace=False)].astype(np.float32)
 
     def run_stream(L, tag):
         """The interference every retention claim has to survive.
@@ -156,7 +175,7 @@ def main():
                                      seed=args.seed)).astype(np.float32)
         panels.setdefault(q["slot"], {})["ours"] = S
         rows.append(dict(arm="ours", slot=q["slot"],
-                         **score(probes, S, q, data["X"][q["rest"][:100]])))
+                         **score(probes, S, q, data["X"][q["rest"][:100]], train_pool)))
 
     # ── FINETUNE / TTT streams: same concepts, unprotected shared adapter ────
     for arm, freeze in (("finetune-stream", False),):
@@ -174,7 +193,7 @@ def main():
                                           seed=args.seed)).astype(np.float32)
             panels[q["slot"]][arm] = S
             rows.append(dict(arm=arm, slot=q["slot"],
-                             **score(probes, S, q, data["X"][q["rest"][:100]])))
+                             **score(probes, S, q, data["X"][q["rest"][:100]], train_pool)))
 
     # ── the composition baselines, no stream (they are one-shot methods) ─────
     f3, L3 = fresh()
@@ -236,7 +255,7 @@ def main():
         got["real"] = R[:args.n_samples].astype(np.float32)
         for arm, S in got.items():
             panels[q["slot"]][arm] = S
-            rows.append(dict(arm=arm, slot=q["slot"], **score(probes, S, q, R)))
+            rows.append(dict(arm=arm, slot=q["slot"], **score(probes, S, q, R, train_pool)))
         print(f"[n9] case {q['slot']} done", flush=True)
 
     # ── the figure ───────────────────────────────────────────────────────────

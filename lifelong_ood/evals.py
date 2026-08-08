@@ -107,6 +107,56 @@ def _feat(X, img=IMG):
     return A / (np.linalg.norm(A, axis=1, keepdims=True) + 1e-9)
 
 
+def vendi_score(samples, q=1.0):
+    """Diversity WITHOUT a reference set (Friedman & Dieng, TMLR 2023, arXiv:2210.02410).
+
+    The exponential of the Shannon entropy of the eigenvalues of the normalized sample-similarity
+    matrix; it reads as an effective number of distinct modes, so 1.0 means "every sample is the
+    same image" and n means "all n are mutually dissimilar".
+
+    This is here because every other metric in this file is anchored to real images of the target,
+    and for a held-out combination those may not exist -- and where they do, precision and density
+    are anchored to a manifold the correct answer is deliberately absent from.  Vendi needs no
+    reference at all, so it is the one diversity number that stays well-defined in exactly the
+    setting this repository is about, and it is what distinguishes a method that covers a new
+    combination from one that emits eight copies of a prototype.
+    """
+    F = _feat(np.asarray(samples, np.float64))
+    n = len(F)
+    if n < 2:
+        return 1.0
+    K = (F @ F.T) / n                      # unit-norm rows, so this is cosine similarity / n
+    w = np.linalg.eigvalsh((K + K.T) / 2)
+    w = np.clip(w, 0.0, None)
+    s = w.sum()
+    if s <= 0:
+        return 1.0
+    w = w / s
+    nz = w[w > 1e-12]
+    return float(np.exp(-(nz * np.log(nz)).sum()))
+
+
+def memorization(samples, train):
+    """MOSAIC's copying test: a sample is memorized iff d_NN1 / d_NN2 < 1/3.
+
+    Reported because "generated the held-out combination" and "retrieved a training image that
+    happens to look like it" are indistinguishable in every aggregate metric here -- a method that
+    copies scores WELL on precision and Frechet.  Comparing each sample's nearest training neighbour
+    to its SECOND nearest makes copying visible: a genuine sample sits at comparable distance from
+    several training images, while a copy is dramatically closer to the one it came from.
+
+    -> dict(frac_memorized, median_ratio).  `train` should be images the model actually saw.
+    """
+    S, T = _feat(np.asarray(samples, np.float64)), _feat(np.asarray(train, np.float64))
+    if len(T) < 2 or not len(S):
+        return dict(frac_memorized=float("nan"), median_ratio=float("nan"))
+    D = np.sqrt(np.maximum(((S[:, None, :] - T[None, :, :]) ** 2).sum(-1), 0.0))
+    part = np.sort(D, axis=1)[:, :2]
+    ratio = part[:, 0] / np.maximum(part[:, 1], 1e-12)
+    return dict(frac_memorized=float((ratio < 1.0 / 3.0).mean()),
+                median_ratio=float(np.median(ratio)))
+
+
 def _knn_radius(F, k):
     D = np.sqrt(((F[:, None] - F[None]) ** 2).sum(2))
     np.fill_diagonal(D, np.inf)
