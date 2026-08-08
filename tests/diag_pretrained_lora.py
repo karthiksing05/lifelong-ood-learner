@@ -79,9 +79,16 @@ def main():
     p.add_argument("--batch", type=int, default=4)
     p.add_argument("--probe-img", type=int, default=128)
     p.add_argument("--seed", type=int, default=0)
-    p.add_argument("--lrs", type=float, nargs="+", default=[5e-5, 2e-4])
-    p.add_argument("--t-mins", type=int, nargs="+", default=[0, 300, 600])
+    p.add_argument("--lrs", type=float, nargs="+", default=[2e-4])
+    p.add_argument("--t-mins", type=int, nargs="+", default=[0])
     p.add_argument("--ranks", type=int, nargs="+", default=[4])
+    p.add_argument("--guidances", type=float, nargs="+", default=[1.0, 3.0, 5.0, 8.0, 12.0],
+                   help="CFG weight against the FROZEN base at sampling time.  The sweep above "
+                        "showed the real trade: a delta gentle enough to leave quality intact "
+                        "(vendi 1.43-1.51 vs the untouched 1.51) adds no attribute at w=1, and a "
+                        "delta strong enough to add one destroys the model.  Amplifying a gentle "
+                        "delta at sampling time is the way out, and it is free -- the unconditional "
+                        "branch IS the frozen model with the path deactivated.")
     args = p.parse_args()
 
     dev = "cuda" if torch.cuda.is_available() else "cpu"
@@ -106,7 +113,7 @@ def main():
     base = to_data(field.sample(n=args.n_samples, steps=args.steps, seed=args.seed, clip=(-1, 1)))
     panels = [(f"pretrained (untouched)\n{A} {float((probe.predict(to_probe(base))==1).mean()):.2f}",
                base)]
-    print(f"    {'lr':>8s}{'t_min':>7s}{'rank':>6s}{A[:10]:>12s}{'vendi':>8s}{'sec':>7s}")
+    print(f"    {'lr':>8s}{'t_min':>7s}{'rank':>6s}{'w':>7s}{A[:10]:>12s}{'vendi':>8s}{'sec':>7s}")
     for lr in args.lrs:
         for tm in args.t_mins:
             for rk in args.ranks:
@@ -118,13 +125,25 @@ def main():
                 bank.add_concept(A, to_model(data["a_only"]).mean(0))
                 train(f2, bank, A, data["a_only"], img, args.epochs, args.batch, lr, tm,
                       seed=args.seed)
-                S = to_data(f2.sample(n=args.n_samples, steps=args.steps, seed=args.seed,
-                                      clip=(-1, 1), branch=A))
-                hit = float((probe.predict(to_probe(S)) == 1).mean())
-                vd = vendi_score(S)
-                print(f"    {lr:8.0e}{tm:7d}{rk:6d}{hit:12.2f}{vd:8.2f}{time.time()-t0:7.0f}",
-                      flush=True)
-                panels.append((f"lr {lr:.0e}, t>={tm}, r{rk}\n{A} {hit:.2f}", S))
+                path = list(bank.concepts[A]["path"])
+
+                def guided(x, u, _f=f2, _b=bank, _p=path):
+                    prev = list(_b.state["path"])
+                    _b.state["path"] = _p
+                    try:
+                        return _f.eps(x, u)
+                    finally:
+                        _b.state["path"] = prev
+
+                for w in args.guidances:
+                    S = to_data(f2.sample(n=args.n_samples, steps=args.steps, seed=args.seed,
+                                          clip=(-1, 1), guide_eps=guided,
+                                          guide_w=lambda u, _w=w: _w))
+                    hit = float((probe.predict(to_probe(S)) == 1).mean())
+                    vd = vendi_score(S)
+                    print(f"    {lr:8.0e}{tm:7d}{rk:6d}{w:7.1f}{hit:12.2f}{vd:8.2f}"
+                          f"{time.time()-t0:7.0f}", flush=True)
+                    panels.append((f"lr {lr:.0e}, r{rk}, w={w:g}\n{A} {hit:.2f}", S))
                 del f2, bank
                 torch.cuda.empty_cache()
 

@@ -135,7 +135,42 @@ def show(row, img):
     return np.clip(np.asarray(row, np.float32).reshape(3, img, img).transpose(1, 2, 0), 0, 1)
 
 
-def train_concept(field, bank, name, X01, img, epochs=6, batch=4, lr=1e-4, seed=0, verbose=True):
+def sample_concept_cfg(field, names, args):
+    """Sample a concept (or a union of concepts) with GUIDANCE against the frozen base model.
+
+    This is the lever that makes a pretrained backbone workable, and it follows from something this
+    repository already relies on: the unconditional branch IS the frozen model with an empty adapter
+    path.  No CFG dropout has to be trained for, and no unconditional token is needed.
+
+    So instead of training the adapter hard enough to move a 113.7M-parameter model on its own --
+    which degrades it, measured -- the adapter is trained GENTLY and amplified at sampling time:
+
+        eps_hat = eps_frozen + w * ( eps_adapter - eps_frozen )
+
+    A delta too small to damage the model is still a perfectly good DIRECTION, and w decides how far
+    along it to travel.  Passing several names activates their paths together, which is how a
+    composed concept is sampled.
+    """
+    bank = field.bank
+    prev = list(bank.state["path"])
+    path = sorted({n for nm in names for n in bank.concepts[nm]["path"]})
+
+    def guided(x, u):
+        bank.state["path"] = path
+        try:
+            return field.eps(x, u)
+        finally:
+            bank.state["path"] = prev
+
+    try:
+        return field.sample(n=args.n_samples, steps=args.steps, seed=args.seed, clip=(-1, 1),
+                            guide_eps=guided, guide_w=lambda u: float(args.concept_guidance))
+    finally:
+        bank.state["path"] = prev
+
+
+def train_concept(field, bank, name, X01, img, epochs=6, batch=4, lr=1e-4, seed=0,
+                  t_min=0, verbose=True):
     """Consolidate one concept into the bank: a LoRA leaf, base frozen.
 
     The concept EMBEDDING is deliberately held at zero here, unlike on our own backbone.  Our UNet
@@ -163,7 +198,7 @@ def train_concept(field, bank, name, X01, img, epochs=6, batch=4, lr=1e-4, seed=
             x0 = X[perm[i0:i0 + batch].to(field.device)]
             # sample NATIVE trained timesteps: this model has its own (linear-beta) schedule and
             # training it on our cosine grid would optimize it at noise levels it never saw
-            ts = torch.randint(0, T, (len(x0),), generator=g).to(field.device)
+            ts = torch.randint(int(t_min), T, (len(x0),), generator=g).to(field.device)
             a = ab[ts].view(-1, 1, 1, 1)
             e = torch.randn(x0.shape, generator=g).to(field.device)
             xt = a.sqrt() * x0 + (1 - a).sqrt() * e
@@ -200,6 +235,14 @@ def main():
     p.add_argument("--lr", type=float, default=1e-4)
     p.add_argument("--steps", type=int, default=100, help="DDIM steps")
     p.add_argument("--comp-scale", type=float, default=1.0)
+    p.add_argument("--concept-guidance", type=float, default=3.0,
+                   help="CFG weight for a concept against the FROZEN base.  Lets the "
+                        "adapter stay small enough not to damage the model while still "
+                        "steering it.")
+    p.add_argument("--t-min", type=int, default=0,
+                   help="lowest training timestep.  Our images are CelebA upsampled from "
+                        "178px and the model is CelebA-HQ, so low-t training teaches it "
+                        "our blur rather than the attribute.")
     p.add_argument("--batch", type=int, default=4)
     p.add_argument("--seed", type=int, default=0)
     p.add_argument("--tag", default="")
@@ -236,21 +279,12 @@ def main():
         print(f"[n25] consolidating `{nm}` from {len(data[key])} real images "
               f"({A if key == 'a_only' else B}=1, other=0)", flush=True)
         train_concept(field, bank, nm, data[key], img, epochs=args.epochs, batch=args.batch,
-                      lr=args.lr, seed=args.seed)
-        got[f"{nm} only"] = to_data(field.sample(n=args.n_samples, steps=args.steps,
-                                                 seed=args.seed, clip=(-1, 1),
-                                                 branch=nm))
+                      lr=args.lr, seed=args.seed, t_min=args.t_min)
+        got[f"{nm} only"] = to_data(sample_concept_cfg(field, [nm], args))
 
     # ── OURS: compose in conditioning space, over the union of both paths ────
     cA = cB = c_comp = None                    # conditioning is carried by the adapter paths
-    path = sorted(set(bank.concepts[A]["path"]) | set(bank.concepts[B]["path"]))
-    prev = list(bank.state["path"])
-    bank.state["path"] = path
-    try:
-        got["ours"] = to_data(field.sample(n=args.n_samples, steps=args.steps, seed=args.seed,
-                                           clip=(-1, 1)))
-    finally:
-        bank.state["path"] = prev
+    got["ours"] = to_data(sample_concept_cfg(field, [A, B], args))
 
     # ── Composable Diffusion: add the two concepts' score residuals ──────────
     # each conditional is evaluated on its OWN adapter path, which is the faithful reading of

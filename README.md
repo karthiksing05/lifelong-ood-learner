@@ -143,17 +143,20 @@ scores **0.903 ± 0.094** where retrieval from the nearest trained combination r
 of the two. The published method reaches precision **0.944** here — its samples are plausible faces —
 at recall **0.000**.
 
-**One baseline is genuinely competitive here, and the honest statement is narrow.** Composable
-Diffusion (Liu et al. 2022) — zero parameters, no training — reaches `pair` **0.73** against our
-**0.71** when run at the guidance scale that maximises its own metric. It buys that by collapsing
-coverage: across the scale sweep its precision climbs 0.38 → 0.92 while recall falls 0.61 → 0.30 and
-content diversity falls to **0.77**, passing *through* real data's 1.01. We reach equivalent accuracy
-at roughly twice the coverage, and that is the whole of the CelebA composition claim. On ColorMNIST
-the same operator scores **0.000 at every scale across a 23× range**, because that backbone has no
-per-factor conditional for score addition to combine. **The composition result is therefore
-benchmark-dependent** — it identifies *when* the cheaper operator suffices — and RESULTS §9g gives the
-full sweep. What is not affected is anything below: composable diffusion produces a sample and keeps
-nothing.
+**Two baselines are genuinely competitive here, and the honest statement is narrow.** Composable
+Diffusion (Liu et al. 2022) reaches `pair` **0.934±0.066** against our **0.903±0.094** with zero
+parameters and no training, and Du et al.'s MCMC-corrected version of it reaches **0.965±0.023** —
+also training-free. On accuracy, our composition operator is **not** the best available on CelebA.
+
+What we keep is coverage: recall **0.579** against composable-diff's 0.280 and composable-mcmc's
+0.483, and content diversity **1.068** where real data sits at 1.007 and the two baselines sit at
+0.750 and 0.838. We match the spread of real data; they produce sharper, narrower sets.
+
+**On ColorMNIST the same operators score 0.000** — at every guidance scale across a 23× sweep, and
+with the MCMC correction — because that backbone has no per-factor conditional for score addition to
+combine (RESULTS §11a). So the composition result is **benchmark-dependent**, and the useful thing it
+establishes is *when* the cheap operator suffices rather than that ours is better. What is unaffected
+is everything below: these baselines produce a sample and register nothing.
 
 ![CelebA case study](figures/f10_case_celeba.png)
 

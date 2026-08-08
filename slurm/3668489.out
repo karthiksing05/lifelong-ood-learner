@@ -11,3 +11,18 @@ Defaulting to unsafe serialization. Pass `allow_pickle=False` to raise an error 
        5e-05      0     4        0.00    1.50    102
 An error occurred while trying to fetch google/ddpm-celebahq-256: google/ddpm-celebahq-256 does not appear to have a file named diffusion_pytorch_model.safetensors.
 Defaulting to unsafe serialization. Pass `allow_pickle=False` to raise an error instead.
+       5e-05    300     4        0.00    1.46    102
+An error occurred while trying to fetch google/ddpm-celebahq-256: google/ddpm-celebahq-256 does not appear to have a file named diffusion_pytorch_model.safetensors.
+Defaulting to unsafe serialization. Pass `allow_pickle=False` to raise an error instead.
+       5e-05    600     4        0.00    1.47    102
+An error occurred while trying to fetch google/ddpm-celebahq-256: google/ddpm-celebahq-256 does not appear to have a file named diffusion_pytorch_model.safetensors.
+Defaulting to unsafe serialization. Pass `allow_pickle=False` to raise an error instead.
+       2e-04      0     4        0.00    1.51    102
+An error occurred while trying to fetch google/ddpm-celebahq-256: google/ddpm-celebahq-256 does not appear to have a file named diffusion_pytorch_model.safetensors.
+Defaulting to unsafe serialization. Pass `allow_pickle=False` to raise an error instead.
+       2e-04    300     4        0.00    1.43    102
+An error occurred while trying to fetch google/ddpm-celebahq-256: google/ddpm-celebahq-256 does not appear to have a file named diffusion_pytorch_model.safetensors.
+Defaulting to unsafe serialization. Pass `allow_pickle=False` to raise an error instead.
+       2e-04    600     4        0.00    1.48    102
+[diag] wrote /coc/flash10/ksingara3/lifelong-ood-learner/figures/diag_pretrained_lora.png
+exit=0 | Sat Aug  8 13:53:01 EDT 2026

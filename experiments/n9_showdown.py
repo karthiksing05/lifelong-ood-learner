@@ -148,7 +148,8 @@ def main():
             sc = []
             for si in probe_slots:
                 sl = int(slots_seen[si])
-                S = to_data(sample_factored_pool(field0, C[si], n=8, steps=args.steps,
+                c_si = torch.as_tensor(np.asarray(C[si], np.float32), device=dev)
+                S = to_data(sample_factored_pool(field0, c_si, n=8, steps=args.steps,
                                                  seed=args.seed, guidance=g)).astype(np.float32)
                 row = data["slot"] == sl
                 d0, f0, b0 = (int(data["digit"][row][0]), int(data["fg"][row][0]),

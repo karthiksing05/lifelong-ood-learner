@@ -130,3 +130,49 @@ n5 exit=0 | Sat Aug  8 11:58:25 EDT 2026
 [n22:ewc] 3/12: mean-attr 0.646, target nan, exact 1.00, 2.91M, 68s
 [n22:ewc] 6/12: mean-attr 0.677, target 0.271, exact 0.50, 5.08M, 275s
 [n22:ewc] 9/12: mean-attr 0.635, target 0.200, exact 0.33, 7.26M, 490s
+[n22:ewc] 12/12: mean-attr 0.665, target 0.281, exact 0.25, 9.44M, 728s
+[n22] -> ewc: ACC 0.665 BWT -0.001 FGT 0.021 | target ACC nan FGT nan
+
+[n22:si] 3/12: mean-attr 0.656, target nan, exact 1.00, 2.91M, 66s
+[n22:si] 6/12: mean-attr 0.693, target 0.271, exact 0.50, 5.08M, 270s
+[n22:si] 9/12: mean-attr 0.674, target 0.200, exact 0.33, 7.26M, 510s
+[n22:si] 12/12: mean-attr 0.685, target 0.258, exact 0.25, 9.44M, 746s
+[n22] -> si: ACC 0.685 BWT +0.014 FGT 0.004 | target ACC nan FGT nan
+
+[n22:mas] 3/12: mean-attr 0.672, target nan, exact 1.00, 2.91M, 68s
+[n22:mas] 6/12: mean-attr 0.680, target 0.312, exact 0.50, 5.08M, 270s
+[n22:mas] 9/12: mean-attr 0.668, target 0.237, exact 0.33, 7.26M, 483s
+[n22:mas] 12/12: mean-attr 0.674, target 0.289, exact 0.25, 9.44M, 720s
+[n22] -> mas: ACC 0.674 BWT +0.000 FGT 0.000 | target ACC nan FGT nan
+
+[n22:ttt] 3/12: mean-attr 0.703, target nan, exact 1.00, 2.91M, 82s
+[n22:ttt] 6/12: mean-attr 0.706, target 0.292, exact 1.00, 5.08M, 361s
+[n22:ttt] 9/12: mean-attr 0.688, target 0.250, exact 1.00, 7.26M, 719s
+[n22:ttt] 12/12: mean-attr 0.695, target 0.289, exact 1.00, 9.44M, 1170s
+[n22] -> ttt: ACC 0.695 BWT -0.006 FGT 0.009 | target ACC nan FGT nan
+
+[n22:c-lora] 3/12: mean-attr 0.646, target nan, exact 1.00, 2.91M, 61s
+[n22:c-lora] 6/12: mean-attr 0.661, target 0.292, exact 0.50, 5.08M, 257s
+[n22:c-lora] 9/12: mean-attr 0.667, target 0.237, exact 0.33, 7.26M, 466s
+[n22:c-lora] 12/12: mean-attr 0.664, target 0.289, exact 0.25, 9.44M, 700s
+[n22] -> c-lora: ACC 0.664 BWT -0.003 FGT 0.009 | target ACC nan FGT nan
+
+
+[n22] class-incremental CelebA, 12 held-out combinations of REAL images
+    arm              ACC      BWT     FGT  tgtACC  tgtFGT   exact   params
+    ours           0.668   +0.000   0.000     nan     nan    1.00   12.35M
+    independent    0.672   +0.000   0.000     nan     nan    1.00    9.44M
+    finetune       0.650   -0.021   0.033     nan     nan    0.25    9.44M
+    replay         0.573   -0.109   0.116     nan     nan    0.25    9.44M
+    gen-distill    0.658   -0.013   0.016     nan     nan    0.25    9.44M
+    der++          0.701   +0.007   0.010     nan     nan    0.25    9.44M
+    ewc            0.665   -0.001   0.021     nan     nan    0.25    9.44M
+    si             0.685   +0.014   0.004     nan     nan    0.25    9.44M
+    mas            0.674   +0.000   0.000     nan     nan    0.25    9.44M
+    ttt            0.695   -0.006   0.009     nan     nan    1.00    9.44M
+    c-lora         0.664   -0.003   0.009     nan     nan    0.25    9.44M
+
+  ACC/FGT on mean-attribute accuracy; tgtACC/tgtFGT on the ONE attribute that separates
+  each held-out combination from its nearest trained one.
+[n22] wrote /coc/flash10/ksingara3/lifelong-ood-learner/results/n22_celeba_lifelong.json
+n22 exit=0 | Sat Aug  8 14:41:14 EDT 2026

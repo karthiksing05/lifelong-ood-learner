@@ -336,7 +336,12 @@ def main():
         print(f"\n[{name}] {len(runs)} run(s): {', '.join(os.path.basename(p) for p, _ in runs)}")
         if len(runs) == 1:
             print("    NOTE: single seed -- no error bars.  Re-run with several --seed values.")
+        # tagged runs (`n5_classinc_full`, `n20_celeba_composition_pairfull`) use the aggregator of
+        # the experiment they came from.  Longest-prefix, so `..._pair` wins over `..._composition`.
         fn = AGG.get(name)
+        if fn is None:
+            k = max((q for q in AGG if name.startswith(q)), key=len, default=None)
+            fn = AGG.get(k) if k else None
         if fn is None:
             print(f"    no aggregator for {name}")
             continue

@@ -1,1 +1,45 @@
 ===== n9 ColorMNIST showdown, calibrated guidance, seed 2 =====
+[calib] ideal-words R^2 0.826; factor-2 gain 2.5 (seen-slot joint accuracy 0.91) -> gains [1.0, 1.0, 2.5]
+Traceback (most recent call last):
+  File "/coc/flash10/ksingara3/lifelong-ood-learner/experiments/n9_showdown.py", line 362, in <module>
+    main()
+  File "/coc/flash10/ksingara3/lifelong-ood-learner/experiments/n9_showdown.py", line 151, in main
+    S = to_data(sample_factored_pool(field0, C[si], n=8, steps=args.steps,
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/nethome/ksingara3/flash/miniconda3/envs/chunks/lib/python3.12/site-packages/torch/utils/_contextlib.py", line 116, in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/coc/flash10/ksingara3/lifelong-ood-learner/lifelong_ood/neural/idealwords.py", line 216, in sample_factored_pool
+    return sample_embedding(field, c_new, n=n, steps=steps, seed=seed, guidance=guidance, eta=eta)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/nethome/ksingara3/flash/miniconda3/envs/chunks/lib/python3.12/site-packages/torch/utils/_contextlib.py", line 116, in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/coc/flash10/ksingara3/lifelong-ood-learner/lifelong_ood/neural/inversion.py", line 274, in sample_embedding
+    return field.sample(n=n, steps=steps, seed=seed, clip=clip, eta=eta,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/coc/flash10/ksingara3/lifelong-ood-learner/lifelong_ood/score.py", line 150, in sample
+    e = e + w * (guide_eps(x, u) - e)
+                 ^^^^^^^^^^^^^^^
+  File "/coc/flash10/ksingara3/lifelong-ood-learner/lifelong_ood/neural/inversion.py", line 271, in cond
+    return field.eps(x, u, None, emb=c_new)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/nethome/ksingara3/flash/miniconda3/envs/chunks/lib/python3.12/site-packages/torch/utils/_contextlib.py", line 116, in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/coc/flash10/ksingara3/lifelong-ood-learner/lifelong_ood/neural/ddpm.py", line 202, in eps
+    e = self.model(xb, ub, self._cond(len(xb), branch), emb_override=emb)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/nethome/ksingara3/flash/miniconda3/envs/chunks/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1751, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/nethome/ksingara3/flash/miniconda3/envs/chunks/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1762, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/coc/flash10/ksingara3/lifelong-ood-learner/lifelong_ood/neural/unet.py", line 203, in forward
+    eo = emb_override.to(e.dtype)
+         ^^^^^^^^^^^^^^^
+AttributeError: 'numpy.ndarray' object has no attribute 'to'
+srun: error: crushinator: task 0: Exited with exit code 1
+srun: Terminating StepId=3668501.0
+n9 exit=1 | Sat Aug  8 13:45:18 EDT 2026

@@ -2321,6 +2321,55 @@ benchmark without them (§11a) score addition does not work at all. Neither stat
 lifelong learning, which is measured elsewhere and where neither of these baselines competes: both
 produce a sample and keep nothing.
 
+### 11c. Three seeds, and the composition conclusion gets weaker again
+
+Seed 1 alone (§11b) suggested a tie on accuracy with a coverage win for us. Across three seeds the
+picture is worse than that, and the arm responsible is the one added *because* it was the strongest
+published objection to our own operator.
+
+**CelebA, strong split** (`Smiling` × `Big_Nose` never co-occur), mean ± s.e. over 3 seeds:
+
+| method | pair | target | precision | recall | Vendi | content div |
+|---|---|---|---|---|---|---|
+| *real* | *0.801±0.137* | *0.656±0.068* | *1.000* | *0.884* | *2.454* | *1.007* |
+| **ours** | 0.903±0.094 | 0.727±0.081 | 0.667 | **0.579** | 2.250 | **1.068** |
+| composable-diff | 0.934±0.066 | 0.740±0.084 | **0.856** | 0.280 | 1.736 | 0.750 |
+| **composable-mcmc** | **0.965±0.023** | **0.779±0.105** | 0.390 | 0.483 | **2.285** | 0.838 |
+| poe-guided | 0.645±0.189 | 0.488±0.087 | 0.944 | 0.000 | 1.048 | 0.147 |
+| query-only | 0.777±0.117 | 0.620±0.132 | 0.804 | 0.018 | 1.180 | 0.295 |
+| nearest-class | 0.355±0.186 | 0.235±0.071 | 0.477 | 0.630 | 2.512 | 1.212 |
+
+**Du et al.'s MCMC-corrected score addition beats us on both accuracy metrics** — `pair` 0.965 vs
+0.903, `target` 0.779 vs 0.727 — and it does *not* pay the coverage price `composable-diff` pays:
+its Vendi is **2.285 against our 2.250**, i.e. slightly better, with recall 0.483 against our 0.579.
+
+So the §9g framing ("equivalent accuracy at twice the coverage") survives only against
+`composable-diff`. Against `composable-mcmc` our remaining advantages are **recall (0.579 vs 0.483)**
+and **content diversity (1.068 vs 0.838, real 1.007)** — we match the real spread and it does not —
+while it is more accurate. That is a narrower claim than the one this repository was making a day
+ago, and it is the correct one.
+
+On the **weaker CelebA split** the same arm is even more dominant on accuracy (`target` 0.718±0.063
+vs our 0.511±0.054) and much weaker on coverage (recall 0.198 vs our 0.622), which is the familiar
+sharpness-for-coverage trade at a more extreme setting.
+
+**What survives, stated exactly.**
+
+1. **On ColorMNIST our operator is the only one that works at all** — both composable arms are at
+   0.000 across a 23× guidance sweep and with the MCMC corrector, because that backbone has no
+   per-factor conditional to add (§11a). This is a real and reproducible separation.
+2. **On CelebA our operator is not the best available.** A training-free 2023 sampler correction
+   applied to a 2022 operator is more accurate. We keep an advantage in coverage, which matters for
+   the copying argument, but we should not claim a better composition operator.
+3. **None of this touches the lifelong results**, and this is not a rhetorical escape: `composable-diff`
+   and `composable-mcmc` produce a sample and register nothing. They cannot be asked what they
+   retain, what they cost on the hundredth concept, or whether an earlier concept survived — which is
+   what §7d, §5z and §6d measure, and where the contribution is.
+
+The composition stage should therefore be presented as **inherited and characterized**, not as
+improved: the useful contribution there is knowing *when* score addition suffices (CelebA: it does,
+and better) and when it cannot work at all (ColorMNIST: no per-factor conditional exists).
+
 ## 8. Where the numbers come from
 
 | experiment | file | scale run |
