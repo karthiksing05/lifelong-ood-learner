@@ -1743,6 +1743,76 @@ as evidence for it; the evidence is the bit-identical fingerprint test (6b). The
 being flattered by the comparison either.
 
 
+## 7a. CelebA, made trainable: factored conditioning (N19) — and two bugs found on the way
+
+5o left CelebA measured and unusable: conditioning reached 34% of the real-data ceiling, and 2.3x the
+data with 140 epochs moved it to 33%. That flatness is what made the diagnosis credible -- the
+weakness was the conditioning DESIGN, not compute. A per-class embedding row over a 14-bit attribute
+combination is estimated from as few as 25 images and shares nothing with the combination that
+differs from it on one bit.
+
+**The fix** (`unet.py cond_mode="factored"`): one embedding per (attribute, value), summed. Every
+attribute vector is then estimated from every image carrying that value -- 478 (Bald) to 21663
+(No_Beard) rather than 25 -- and training is no longer restricted to combinations with enough support
+to own a row, so ~96k images are usable instead of ~5k. The conditioning head is **7168 parameters
+against 308480** for a per-class table over the same data.
+
+**Per-attribute margin over unconditional, which is what 5o measured:**
+
+| backbone | margin |
+|---|---|
+| 5o: per-class embedding, 60 ep, 5k images | +0.048 |
+| factored, corrected, 20 ep | +0.049 |
+| factored, 60 ep, `Smiling x Big_Nose` withheld | +0.054 |
+| factored, 60 ep, `Gray_Hair` withheld | +0.055 |
+| **factored, 60 ep, combination holdout** | **+0.081** |
+
+**1.7x the design 5o called "not ready to compose on"**, and matched at 20 epochs what per-class
+needed 60 to reach.
+
+### Two bugs, both found by looking at controls rather than at results
+
+**The uint8 fast path trained in a different layout than it sampled.** This repository's flat vectors
+are HWC as the loaders write them, and every consumer -- `_as_img`, the float branch of `train_ddpm`,
+the sampler -- REINTERPRETS them as CHW. That is a fixed permutation, and because training and
+sampling apply the same one the model simply learns in the permuted space while `rgb_img` displays
+flat vectors as HWC, so images are shown correctly. The uint8 branch added to fit 96k images in RAM
+transposed HWC -> NCHW instead, i.e. it "corrected" the layout: the backbone learned upright faces and
+was then sampled through the CHW reinterpretation. Every CelebA number measured through the sampler
+was meaningless -- margin +0.011, per-attribute controllability **0.000 on eight of eight attributes**,
+and unconditional samples that were tiled mosaics rather than faces.
+
+It was not the numbers that exposed it. They were merely bad, and "undertrained" was a plausible
+story. It was the **sample grid**: controllability of exactly 0.000 on easy attributes like hair
+colour is too clean to be undertraining. `tests/test_layout.py` now compares the two training
+branches and the sampler's view on the same bytes -- one second on CPU, all deltas 0.000e+00 -- and
+would have caught it before three GPU-hours. ColorMNIST never used that branch and is unaffected.
+
+**The probe readability filter admitted blind probes.** `attr_accuracy` excluded attributes whose
+probe scored under 0.65 plain accuracy. For a rare attribute that is the wrong criterion: Gray_Hair is
+ON in 4.3% of CelebA, so a probe answering "no" every time scores 0.957. Measured on 8000 real images
+(`tests/diag_probe_balance.py`), five of the twelve attributes the filter admitted cannot recognise
+their own attribute --
+
+| attribute | plain acc | TPR |
+|---|---|---|
+| Oval_Face | 0.712 | **0.066** |
+| Brown_Hair | 0.778 | **0.171** |
+| Bald | 0.977 | **0.206** |
+| Gray_Hair | 0.962 | **0.321** |
+| No_Beard | 0.883 | TNR **0.303** |
+
+-- while Wavy_Hair, which the filter REJECTED at 0.533, is usable with TPR 0.908. Wrong in both
+directions. `probe_usable` now requires TPR >= 0.5 and balanced accuracy >= 0.65.
+
+**Both bugs were caught by the real-data ceiling row**, which is the reason this repository reports it
+beside every method. A mismatched probe cache showed up as REAL held-out images scoring 0.557 where
+the same images score 0.770; a blind probe showed up as a real-image ceiling of 0.25 on an attribute
+whose probe claimed 0.96. In both cases every arm moved down together, which reads as "the method does
+not work" rather than "this measurement is invalid" -- the most expensive confusion available, and one
+a method-only table cannot detect at all.
+
+
 ---
 
 ## 8. Where the numbers come from
