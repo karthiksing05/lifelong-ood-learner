@@ -40,10 +40,11 @@ from n19_celeba_train import build_probes                               # noqa: 
 
 from lifelong_ood.celeba import (ATTRS, as_float, class_name, load_celeba_comp,  # noqa: E402
                                  nearest_seen)
-from lifelong_ood.evals import (attr_accuracy, precision_recall, probe_usable,  # noqa: E402
-                                sample_geometry, save_json)
+from lifelong_ood.evals import (attr_accuracy, density_coverage, frechet_distance,  # noqa: E402
+                                precision_recall, probe_usable, sample_geometry, save_json)
 from lifelong_ood.neural import (NeuralLifelongLearner, load_field, sample_embedding,  # noqa: E402
                                  to_data, to_model)
+from lifelong_ood.neural.composable import compose_attributes_scores   # noqa: E402
 
 FIG = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "figures")
 
@@ -79,10 +80,14 @@ def score(probes, S01, combo, R01, target_idx, pair_idx=None):
                 hits.append(probes[a_k].predict(np.asarray(S01, np.float32)) == int(combo[k]))
         if hits:
             tgt = float(np.stack(hits).all(0).mean())
+    dc = density_coverage(np.asarray(S01, np.float32), np.asarray(R01, np.float32))
     return dict(joint=a["joint"], mean_attr=a.get("mean_attr", float("nan")), target=tgt,
                 pair=(attr_hits(probes, S01, combo, pair_idx) if pair_idx is not None
                       else float("nan")),
                 precision=pr["precision"], recall=pr["recall"], f1=pr["f1"],
+                density=dc["density"], coverage=dc["coverage"],
+                frechet=frechet_distance(np.asarray(S01, np.float32),
+                                         np.asarray(R01, np.float32)),
                 content_ratio=g.get("content_ratio", float("nan")))
 
 
@@ -182,6 +187,15 @@ def main():
                                                steps=args.steps, guidance=args.guidance,
                                                seed=args.seed + ci)).astype(np.float32)
 
+        # ── Composable Diffusion (Liu et al. 2022) in the setting it was DESIGNED for ──────
+        # On ColorMNIST it can only add the scores of entangled slot conditionals, which cannot
+        # isolate a factor.  Here the factored head gives a genuine conditional per ATTRIBUTE, so
+        # this is score-space composition of exactly the same conditionals our method composes in
+        # embedding space -- the sharpest available comparison of the two operators.
+        got["composable-diff"] = to_data(
+            compose_attributes_scores(field, model, combo, n=args.n_samples, steps=args.steps,
+                                      seed=args.seed + ci)).astype(np.float32)
+
         # ── nearest trained combination (retrieval control) ─────────────────
         nn_cls = ck["remap"].get(int(nn_j))
         if nn_cls is None:                                 # neighbour not in the class table
@@ -219,8 +233,8 @@ def main():
               f"ours target {m['target']:.2f} F1 {m['f1']:.2f}", flush=True)
 
     # ── figure ───────────────────────────────────────────────────────────────
-    order = [a for a in ("real", "ours", "poe-guided", "query-only", "nearest-class")
-             if any(x["arm"] == a for x in rows)]
+    order = [a for a in ("real", "ours", "composable-diff", "poe-guided", "query-only",
+                         "nearest-class") if any(x["arm"] == a for x in rows)]
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
@@ -257,7 +271,8 @@ def main():
                 bbox_inches="tight")
     plt.close(fig)
 
-    keys = ("pair", "target", "joint", "mean_attr", "precision", "recall", "f1", "content_ratio")
+    keys = ("pair", "target", "joint", "mean_attr", "precision", "recall", "f1",
+            "density", "coverage", "frechet", "content_ratio")
     summary = {a: {k: float(np.nanmean([x[k] for x in rows if x["arm"] == a])) for k in keys}
                for a in order}
     save_json(dict(rows=rows, summary=summary, n_cases=len(cases), guidance=args.guidance,

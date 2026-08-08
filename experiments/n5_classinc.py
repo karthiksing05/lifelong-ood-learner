@@ -41,17 +41,30 @@ from lifelong_ood.datasets import load_colormnist                      # noqa: E
 from lifelong_ood.evals import composition_accuracy, fit_probes, save_grid, save_json  # noqa: E402
 from lifelong_ood.neural import (NeuralLifelongLearner, fingerprint, load_field,  # noqa: E402
                                  to_data, to_model)
-from lifelong_ood.neural.baselines import EWC, test_time_train          # noqa: E402
+from lifelong_ood.neural.baselines import (CLoRA, DERPlusPlus, EWC, MAS, SI,   # noqa: E402
+                                           test_time_train)
 
 # arm -> (flat topology, freeze ancestors, generative replay, EWC, test-time only)
+#
+# The regularization arms (ewc/si/mas/c-lora) and the rehearsal arms (replay/gen-distill/der++) all
+# run on the SAME flat topology with trainable shared parameters, so the only difference between them
+# is the protection mechanism.  `ours` and `independent` change the topology instead, which is the
+# axis the whole table is about: protecting shared weights versus not sharing them.
 ARMS = {
     "ours":        (False, True,  False, False, False),
     "independent": (True,  True,  False, False, False),
     "finetune":    (True,  False, False, False, False),
     "replay":      (True,  False, True,  False, False),
+    "gen-distill": (True,  False, True,  False, False),
+    "der++":       (True,  False, False, False, False),
     "ewc":         (True,  False, False, True,  False),
+    "si":          (True,  False, False, False, False),
+    "mas":         (True,  False, False, False, False),
     "ttt":         (True,  False, False, False, True),
+    "c-lora":      (True,  False, False, False, False),
 }
+# arms whose protection is a penalty sharing the (begin_task, penalty, consolidate) hook
+REGULARIZERS = {"ewc": EWC, "si": SI, "mas": MAS, "c-lora": CLoRA}
 
 
 def main():
@@ -69,6 +82,16 @@ def main():
     p.add_argument("--seed", type=int, default=0)
     p.add_argument("--arms", nargs="+", default=list(ARMS))
     p.add_argument("--ewc-lambda", type=float, default=5000.0)
+    p.add_argument("--clora-lambda", type=float, default=1e4,
+                   help="C-LoRA self-regularisation strength (Smith et al., TMLR 2024)")
+    p.add_argument("--si-lambda", type=float, default=1.0,
+                   help="SI penalty strength c (Zenke et al. 2017; paper uses 1.0)")
+    p.add_argument("--mas-lambda", type=float, default=1.0,
+                   help="MAS penalty strength (Aljundi et al. 2018; untuned default 1.0)")
+    p.add_argument("--buffer-size", type=int, default=200,
+                   help="DER++ exemplar buffer (Buzzega et al. report 200/500/5120)")
+    p.add_argument("--der-alpha", type=float, default=0.5, help="DER++ dark-knowledge weight")
+    p.add_argument("--der-beta", type=float, default=0.5, help="DER++ replay weight")
     p.add_argument("--quick", action="store_true")
     args = p.parse_args()
     if args.quick:
@@ -97,7 +120,15 @@ def main():
         field = load_field(args.ckpt, device=dev)
         L = NeuralLifelongLearner(field, rank=args.rank, steps=args.steps, seed=args.seed,
                                   device=dev, flat=flat, freeze_ancestors=freeze)
-        ewc = EWC(lam=args.ewc_lambda) if use_ewc else None
+        # every regularizer shares EWC's (begin_task, penalty, consolidate) interface, so they all
+        # ride the same hook and differ only in how importance is estimated
+        ewc = None
+        if arm in REGULARIZERS:
+            lam = {"ewc": args.ewc_lambda, "c-lora": args.clora_lambda,
+                   "si": args.si_lambda, "mas": args.mas_lambda}[arm]
+            ewc = REGULARIZERS[arm](lam=lam)
+        buffer = (DERPlusPlus(size=args.buffer_size, alpha=args.der_alpha, beta=args.der_beta,
+                              seed=args.seed) if arm == "der++" else None)
         acc_rows = {t["name"]: [] for t in tasks}
         marks, learned = {}, []
         t0 = time.time()
@@ -113,7 +144,8 @@ def main():
             # and is undone afterwards.  Training here as well would make it finetune+TTT, not TTT.
             L.consolidate_batch([(t["name"], t["X"], None) for t in grp],
                                 epochs=(0 if is_ttt else args.epochs),
-                                replay=replay, ewc=ewc)
+                                replay=replay, ewc=ewc, buffer=buffer,
+                                replay_distill=(arm == "gen-distill"))
             for t in grp:
                 learned.append((t["name"], t["q"]))
                 marks[t["name"]] = fingerprint(field, t["name"], seed=args.seed)
@@ -140,20 +172,29 @@ def main():
                   f"{time.time() - t0:.0f}s", flush=True)
         acc = [acc_rows[t["name"]] for t in tasks if acc_rows[t["name"]]]
         m = cl_metrics(acc)
+        # What each arm has to KEEP, which the accuracy columns hide.  Diaz-Rodriguez et al. (2018)
+        # formalize this as SSS; the raw count is more legible and makes the same point: DER++ buys
+        # its retention with a permanent buffer of real images and TTT keeps every task's data
+        # forever, where the frozen-ancestor bank and every regularizer store none.
+        stored = (len(buffer) if buffer is not None else
+                  (sum(len(t["X"]) for t in tasks) if is_ttt else 0))
         rows.append(dict(arm=arm, wall_seconds=time.time() - t0, params=L.bank.n_params(),
-                         retention_exact=exact, acc_matrix=acc, **m))
+                         retention_exact=exact, acc_matrix=acc, stored_images=stored, **m))
         print(f"[n5] -> {arm}: ACC {m['ACC']:.3f}, BWT {m['BWT']:+.3f}, FGT {m['FGT']:.3f}\n",
               flush=True)
 
     save_json(dict(rows=rows, config=vars(args)), os.path.join(RESULTS, "n5_classinc.json"),
               seed=args.seed)
     print(f"\n[n5] Split-ColorMNIST class-incremental, {args.n_tasks} tasks of real held-out images")
-    print(f"    {'arm':13s}{'ACC':>7s}{'BWT':>9s}{'FGT':>8s}{'exact':>8s}{'params':>9s}{'wall(s)':>9s}")
+    print(f"    {'arm':13s}{'ACC':>7s}{'BWT':>9s}{'FGT':>8s}{'exact':>8s}{'params':>9s}"
+          f"{'stored':>8s}{'wall(s)':>9s}")
     for r in rows:
         print(f"    {r['arm']:13s}{r['ACC']:7.3f}{r['BWT']:+9.3f}{r['FGT']:8.3f}"
-              f"{r['retention_exact']:8.2f}{r['params'] / 1e6:8.2f}M{r['wall_seconds']:9.0f}")
+              f"{r['retention_exact']:8.2f}{r['params'] / 1e6:8.2f}M"
+              f"{r.get('stored_images', 0):8d}{r['wall_seconds']:9.0f}")
     print("\n  ACC final mean accuracy (higher better) | BWT backward transfer (0 = no forgetting)")
     print("  FGT forgetting measure (0 = none) | exact = fraction bit-identical to birth")
+    print("  stored = REAL images the arm must retain forever (0 = keeps no data)")
     print(f"[n5] wrote {RESULTS}/n5_classinc.json")
 
 

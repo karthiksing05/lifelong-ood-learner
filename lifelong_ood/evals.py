@@ -137,6 +137,66 @@ def precision_recall(samples, reference, k=3):
     return dict(precision=precision, recall=recall, f1=float(f1))
 
 
+def density_coverage(samples, reference, k=3):
+    """Density & Coverage (Naeem et al. 2020), the modern replacement for precision & recall.
+
+    Precision/recall (Kynkaanniemi et al. 2019) are known to be unstable to outliers: a single
+    reference point with a large k-NN radius swallows arbitrarily many generated samples and inflates
+    precision.  Naeem et al. fix both halves:
+
+      DENSITY  = (1/(k*|S|)) * sum_s |{r : ||s-r|| <= radius_k(r)}|  -- counts how many reference
+                 balls each sample lands in, so one fat ball cannot certify a whole cloud.
+      COVERAGE = fraction of REFERENCE points with at least one generated sample inside their own
+                 k-NN radius -- the fraction of the real class that was actually reached.
+
+    Coverage is the quantity this repository's whole argument rests on, and it is more robust than
+    the recall it complements: recall asks whether a real point falls in the GENERATED manifold,
+    whose radii a mode-collapsed generator can make meaningless, while coverage uses the REFERENCE
+    radii, which the generator cannot influence.  Reported alongside precision/recall, not instead.
+    """
+    S, R = np.asarray(samples, np.float64), np.asarray(reference, np.float64)
+    if len(S) < 2 or len(R) < 2:
+        return dict(density=float("nan"), coverage=float("nan"))
+    FS, FR = _feat(S), _feat(R)
+    rR = _knn_radius(FR, k)
+    D = np.sqrt(((FS[:, None] - FR[None]) ** 2).sum(2))          # [n_samples, n_ref]
+    inside = D <= rR[None, :]
+    density = float(inside.sum() / (k * len(FS)))
+    coverage = float(inside.any(0).mean())
+    return dict(density=density, coverage=coverage)
+
+
+def frechet_distance(samples, reference):
+    """Frechet distance in the same feature space the other coverage metrics use.
+
+    NOT "FID": FID is defined on Inception-V3 pool3 features, and Inception is the wrong detector for
+    32x32 recoloured MNIST -- it was trained on natural images at 299x299 and this repository's whole
+    benchmark is out of its domain.  Using it anyway would produce a number that LOOKS comparable to
+    the literature and is not.  This reports the same Frechet statistic on the low-pass pixel
+    features `_feat` already defines, so it is internally comparable across arms and honestly
+    labelled as not comparable to published FID values.
+    """
+    from scipy import linalg
+    FS, FR = _feat(np.asarray(samples, np.float64)), _feat(np.asarray(reference, np.float64))
+    if len(FS) < 4 or len(FR) < 4:
+        return float("nan")
+    # Project onto the reference's leading directions first.  With 24 samples in 768 dimensions the
+    # covariances are singular and `sqrtm` of their product is both slow and numerically junk; the
+    # statistic is only meaningful in a subspace the sample count can actually estimate.
+    d = int(min(64, len(FS) - 1, len(FR) - 1))
+    Rc = FR - FR.mean(0)
+    _, _, Vt = np.linalg.svd(Rc, full_matrices=False)
+    P = Vt[:d].T
+    A, B = FS @ P, FR @ P
+    mu1, mu2 = A.mean(0), B.mean(0)
+    s1, s2 = np.cov(A, rowvar=False), np.cov(B, rowvar=False)
+    eps = 1e-8 * np.eye(d)                                   # shrinkage keeps sqrtm well-posed
+    covmean, _ = linalg.sqrtm((s1 + eps).dot(s2 + eps), disp=False)
+    if np.iscomplexobj(covmean):
+        covmean = covmean.real
+    return float(((mu1 - mu2) ** 2).sum() + np.trace(s1 + s2 - 2 * covmean))
+
+
 def _content_rmse(X, img=IMG):
     """Mean pairwise RMSE after a 2x2 box downsample -- a crude low-pass.
 

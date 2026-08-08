@@ -44,13 +44,56 @@ from lifelong_ood.neural import (NeuralLifelongLearner, fingerprint, load_field,
 
 
 def cl_metrics(acc):
-    """acc[i][t] = accuracy of concept i after step t (t >= i).  -> ACC / BWT / FGT."""
+    """acc[i][t] = accuracy of concept i after step t (t >= i).  -> ACC / BWT / FGT.
+
+    ACC and BWT follow the GEM convention (Lopez-Paz & Ranzato, NeurIPS 2017); FGT is Chaudhry
+    et al.'s forgetting measure (RWalk, ECCV 2018), i.e. the drop from each concept's best
+    historical value rather than from its value at birth.
+    """
     K = len(acc)
     final = [acc[i][-1] for i in range(K)]
     bwt = [acc[i][-1] - acc[i][0] for i in range(K - 1)]          # [0] is "right after learning i"
     fgt = [max(acc[i]) - acc[i][-1] for i in range(K - 1)]
     return dict(ACC=float(np.mean(final)), BWT=float(np.mean(bwt)) if bwt else 0.0,
                 FGT=float(np.mean(fgt)) if fgt else 0.0)
+
+
+def quality_metrics(q, lower_better=True):
+    """CLoG's generative-CL protocol applied to a per-concept quality matrix.
+
+    `q[i][t]` = generation quality of concept i measured after step t.  Returns
+
+        AFQ = mean_i q[i][-1]                     Average Final Quality
+        AIQ = mean_t mean_{i seen by t} q[i][t]   Average Incremental Quality
+        FR  = mean_i (q[i][-1] - q[i][0])         Forgetting Rate, signed so >0 is degradation
+
+    This exists because joint probe accuracy is FIDELITY-BLIND: a method can keep the right
+    attributes legible while its images degrade badly, and the accuracy column will not show it.
+    That is not hypothetical -- Masip et al. (CoLLAs 2025) measure generative replay on a DDPM at
+    HIGHER classifier accuracy than plain finetuning (0.50 vs 0.17) while its FID is three times
+    worse (211.8 vs 68.8).  Reporting only accuracy would report that arm as the better one.
+
+    `lower_better` matches a distance (Frechet); the FR sign is flipped for a similarity so that
+    positive always means "got worse".
+
+    Zhang et al., "CLoG: Benchmarking Continual Learning of Image Generation Models," 2024,
+    arXiv:2406.04584.
+    """
+    K = len(q)
+    if not K:
+        return dict(AFQ=float("nan"), AIQ=float("nan"), FR=float("nan"))
+    s = 1.0 if lower_better else -1.0
+    afq = float(np.mean([q[i][-1] for i in range(K)]))
+    # column t averages every concept already learned at that point; rows have different lengths
+    T = max(len(r) for r in q)
+    cols = []
+    for t in range(T):
+        vals = [q[i][t] for i in range(K) if t < len(q[i])]
+        if vals:
+            cols.append(float(np.mean(vals)))
+    fr = [s * (q[i][-1] - q[i][0]) for i in range(K - 1)]
+    return dict(AFQ=afq, AIQ=float(np.mean(cols)) if cols else float("nan"),
+                FR=float(np.mean(fr)) if fr else 0.0)
 
 
 def evaluate_all(L, field, probes, learned, n_samples, seed):

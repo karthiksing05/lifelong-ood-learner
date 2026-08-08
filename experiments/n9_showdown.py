@@ -42,10 +42,11 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from common import CACHE, RESULTS, backbone_gains, ood_queries         # noqa: E402
 
 from lifelong_ood.datasets import load_colormnist, slot_name           # noqa: E402
-from lifelong_ood.evals import (composition_accuracy, fit_probes, precision_recall,  # noqa: E402
-                                sample_geometry, save_json)
+from lifelong_ood.evals import (composition_accuracy, density_coverage, fit_probes,  # noqa: E402
+                                frechet_distance, precision_recall, sample_geometry, save_json)
 from lifelong_ood.neural import (NeuralLifelongLearner, learn_embedding,  # noqa: E402
                                  load_field, sample_embedding, to_data, to_model)
+from lifelong_ood.neural.composable import compose_classes            # noqa: E402
 from lifelong_ood.neural.idealwords import slot_factors                # noqa: E402
 
 FIG = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "figures")
@@ -53,10 +54,13 @@ FIG = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 
 
 def score(probes, S01, q, R):
     pr = precision_recall(S01, R)
+    dc = density_coverage(S01, R)          # Naeem et al. -- robust to the outlier that inflates P/R
     g = sample_geometry(S01, R[0], R)
     a = composition_accuracy(probes, S01, q["d"], q["f"], q["b"])
     return dict(joint=a["joint"], digit=a["digit"], fg=a["fg"], bg=a["bg"],
                 precision=pr["precision"], recall=pr["recall"], f1=pr["f1"],
+                density=dc["density"], coverage=dc["coverage"],
+                frechet=frechet_distance(S01, R),
                 content_ratio=g.get("content_ratio", float("nan")))
 
 
@@ -69,6 +73,14 @@ def main():
     p.add_argument("--n-per-slot", type=int, default=100)
     p.add_argument("--steps", type=int, default=50)
     p.add_argument("--inv-steps", type=int, default=400)
+    p.add_argument("--comp-scale", type=float, default=1.0,
+                   help="Composable Diffusion per-concept guidance scale (Liu et al. Eq. 11); "
+                        "chosen by tests/diag_composable_scale.py, NOT left at 1/n")
+    p.add_argument("--mcmc-steps", type=int, default=0,
+                   help="annealed Langevin corrector steps per denoising step (Du et al. 2023); "
+                        "0 disables the composable-mcmc arm")
+    p.add_argument("--mcmc-lam", type=float, default=0.1,
+                   help="Langevin step scale; 1.0 moves on the scale of the marginal width")
     p.add_argument("--epochs", type=int, default=40)
     p.add_argument("--bg-gain", type=float, default=-1.0,
                    help="fixed background gain; <=0 calibrates it on this backbone")
@@ -186,11 +198,41 @@ def main():
         c_cls, _, _ = learn_embedding(f3, xq, n_steps=args.inv_steps, seed=args.seed)
         got["inversion"] = to_data(sample_embedding(f3, c_cls, n=args.n_samples, steps=args.steps,
                                                     seed=args.seed + qi)).astype(np.float32)
+        # Textual Inversion AS PUBLISHED: a free vector in R^d, not a combination of trained class
+        # embeddings.  The span-restricted version above is a claim OUR method makes -- that an
+        # unseen composition is expressible in the model's existing vocabulary -- so using it for the
+        # baseline would assume the thing under test and would handicap the baseline precisely when
+        # the held-out combination falls outside the hull of seen classes.
+        c_free, _, _ = learn_embedding(f3, xq, n_steps=args.inv_steps, seed=args.seed, free=True)
+        got["inversion-free"] = to_data(
+            sample_embedding(f3, c_free, n=args.n_samples, steps=args.steps,
+                             seed=args.seed + qi)).astype(np.float32)
         from lifelong_ood.neural import teacher_init_alpha
         a0 = teacher_init_alpha(f3, t, xq, seed=args.seed)
         got["nearest-class"] = to_data(f3.sample(n=args.n_samples, steps=args.steps,
                                                  seed=args.seed + qi, clip=(-1, 1),
                                                  branch=int(np.argmax(a0)))).astype(np.float32)
+        # Composable Diffusion (Liu et al. 2022): ADD the guidance residuals of the k nearest
+        # trained conditionals.  This is the canonical compositional operator and the one the source
+        # paper uses for its top-3 row; unlike an analytic Gaussian teacher it cannot collapse to a
+        # prototype mean, so it is the strongest available "just combine what you already have".
+        topk = np.argsort(-a0)[:3]
+        null_row = ck["ema"]["cemb.weight"].numpy()[f3.model.null_id]
+        got["composable-diff"] = to_data(
+            compose_classes(f3, C, topk, n=args.n_samples, steps=args.steps,
+                            seed=args.seed + qi, null_emb=null_row,
+                            scale=args.comp_scale)).astype(np.float32)
+        # Du et al. (ICML 2023) show the row above targets the WRONG distribution -- the sum of
+        # diffused scores is the score of the product of diffused marginals, not the diffusion of the
+        # product -- and that annealed MCMC at each noise level fixes it without touching the model.
+        # It is training-free and needs no exemplars, so it is a fair arm, and it is the strongest
+        # published objection to every score-addition composition method.
+        if args.mcmc_steps > 0:
+            got["composable-mcmc"] = to_data(
+                compose_classes(f3, C, topk, n=args.n_samples, steps=args.steps,
+                                seed=args.seed + qi, null_emb=null_row, scale=args.comp_scale,
+                                mcmc=dict(steps=args.mcmc_steps,
+                                          lam=args.mcmc_lam))).astype(np.float32)
         got["real"] = R[:args.n_samples].astype(np.float32)
         for arm, S in got.items():
             panels[q["slot"]][arm] = S
@@ -198,7 +240,9 @@ def main():
         print(f"[n9] case {q['slot']} done", flush=True)
 
     # ── the figure ───────────────────────────────────────────────────────────
-    order = ["real", "ours", "poe-guided", "inversion", "nearest-class", "finetune-stream"]
+    order = [a for a in ["real", "ours", "poe-guided", "composable-diff", "composable-mcmc",
+                         "inversion", "inversion-free", "nearest-class", "finetune-stream"]
+             if any(r["arm"] == a for r in rows)]
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
@@ -239,7 +283,8 @@ def main():
     arms = order
     summary = {a: {k: float(np.nanmean([x[k] for x in rows if x["arm"] == a]))
                    for k in ("joint", "digit", "fg", "bg", "precision", "recall", "f1",
-                             "content_ratio")} for a in arms if any(x["arm"] == a for x in rows)}
+                             "density", "coverage", "frechet", "content_ratio")}
+               for a in arms if any(x["arm"] == a for x in rows)}
     save_json(dict(rows=rows, summary=summary), os.path.join(RESULTS, "n9_showdown.json"),
               seed=args.seed)
     print(f"\n[n9] {len(cases)} held-out compositions, {args.n_samples} samples each")

@@ -55,6 +55,13 @@ def main():
                    help="hold out entire DIGIT values.  Several held-out values give n12 a STREAM "
                         "of new vocabulary to absorb, which is what measuring cumulative drift "
                         "under weight reconsolidation needs")
+    p.add_argument("--extra-holdout", type=int, default=0,
+                   help="hold out this many ADDITIONAL slots beyond the benchmark's default, "
+                        "chosen at random under --seed.  Drives the held-out-severity sweep: "
+                        "compositional generalization is reported to degrade as coverage of the "
+                        "combination grid thins, so a single split cannot be read as the result. "
+                        "Every individual attribute VALUE is kept present somewhere in training, "
+                        "so this thins combinations without ever removing a primitive.")
     p.add_argument("--all-slots", action="store_true",
                    help="train on ALL 160 slots including the held-out ones.  This is not a "
                         "method -- it is the NATIVE ORACLE for the parity evaluation (n23): the "
@@ -104,6 +111,27 @@ def main():
         seen = seen & ~np.isin(data["digit"], np.asarray(args.holdout_digits))
         print(f"[n1] holding out digits {args.holdout_digits} ENTIRELY", flush=True)
         data["seen"] = seen
+    if args.extra_holdout > 0:
+        # thin the combination grid without ever deleting a primitive: a slot is only eligible to be
+        # dropped if each of its three attribute values still appears in some OTHER slot that stays.
+        # Otherwise the task stops being "compose known parts in a new arrangement" and silently
+        # becomes "invent an unseen part", which is a different claim measured elsewhere (n11/n21).
+        rng = np.random.default_rng(args.seed)
+        cur = np.unique(data["slot"][seen])
+        dropped = []
+        for s in rng.permutation(cur):
+            if len(dropped) >= args.extra_holdout:
+                break
+            keep = seen & (data["slot"] != s) & ~np.isin(data["slot"], dropped)
+            ok = all((data[k][keep] == data[k][data["slot"] == s][0]).any()
+                     for k in ("digit", "fg", "bg"))
+            if ok:
+                dropped.append(int(s))
+        seen = seen & ~np.isin(data["slot"], dropped)
+        data["seen"] = seen
+        print(f"[n1] SEVERITY: {len(dropped)} extra slots held out "
+              f"(every attribute value still present): {sorted(dropped)}", flush=True)
+
     Xs, slots = data["X"][seen], data["slot"][seen]
     uniq = np.unique(slots)
     remap = {int(s): i for i, s in enumerate(uniq)}          # 120 seen slots -> 0..119

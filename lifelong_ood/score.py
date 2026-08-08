@@ -71,7 +71,8 @@ class BaseScoreField:
 
     # ── reverse-diffusion sampling (DDIM), with optional analytic guidance ───
     def sample(self, n=16, steps=50, seed=0, u_start=1.0, x_init=None,
-               guide_eps=None, guide_w=None, branch=None, clip=(-0.2, 1.2), eta=0.0):
+               guide_eps=None, guide_w=None, branch=None, clip=(-0.2, 1.2), eta=0.0,
+               mcmc=None):
         """DDIM sampler, with `eta` interpolating to ancestral (stochastic) sampling.
 
         guide_eps(x, u) -> conditional epsilon (e.g. the PoE teacher of compose.py, their Eq. 12);
@@ -85,6 +86,31 @@ class BaseScoreField:
         the same output and the pool collapses -- which is what our diversity investigation kept
         running into.  `eta>0` re-injects noise at every step, so variety no longer has to survive
         the whole trajectory from x_T alone.
+
+        `mcmc` = dict(steps=k, lam=step_scale) turns on ANNEALED LANGEVIN CORRECTION of the composed
+        score, i.e. Du et al., "Reduce, Reuse, Recycle" (ICML 2023, arXiv:2302.11552).  Their result
+        is the sharpest criticism of every score-addition composition method, this repository's
+        included:
+
+            grad log q~_t^prod(x_t)  !=  grad log q_t^1(x_t) + grad log q_t^2(x_t)
+
+        The sum of diffused scores is the score of the PRODUCT OF DIFFUSED MARGINALS, not the
+        DIFFUSION OF THE PRODUCT.  So running a composed score through plain ancestral/DDIM sampling
+        targets the wrong distribution, and the failure is attributable to the SAMPLER rather than to
+        the model.  Their fix is to spend extra MCMC transitions at each noise level, which are
+        invariant to the correct annealed target; it recovers CLEVR 5-cube composition from 70.8% to
+        91.6% and ImageNet classifier guidance from 18.6% to 94.6%.
+
+        Implemented as unadjusted Langevin (ULA), the variant that needs no density: with
+        s(x,u) = -e(x,u)/sqrt(1-abar), each transition is
+
+            x <- x + (sig^2/2) s(x,u) + sig z,     sig^2 = 2 * lam * (1 - abar_u)
+
+        so the step size is annealed with the noise level exactly as they prescribe, and lam is
+        dimensionless (lam=1 moves on the scale of the marginal's own width).  MALA's accept/reject
+        would need an energy parameterization the pretrained eps-net does not provide.
+
+        Costs (steps+1)x more network evaluations per denoising step; they report ~5x overall.
         """
         rng = np.random.default_rng(seed)
         D = self.dim
@@ -94,9 +120,27 @@ class BaseScoreField:
         else:
             x = np.sqrt(a0) * np.atleast_2d(x_init) + np.sqrt(1 - a0) * rng.standard_normal((n, D))
         us = np.linspace(u_start, 0.0, steps + 1)
+        mc_steps = 0 if not mcmc else int(mcmc.get("steps", 0))
+        mc_lam = 0.1 if not mcmc else float(mcmc.get("lam", 0.1))
+
+        def _guided_eps(xx, uu):
+            ee = self.eps(xx, uu, branch)
+            if guide_eps is not None:
+                ww = 1.0 if guide_w is None else np.asarray(guide_w(uu), dtype=np.float64)
+                ee = ee + ww * (guide_eps(xx, uu) - ee)
+            return ee
+
         for i in range(steps):
             u, un = float(us[i]), float(us[i + 1])
             a, an = float(cosine_abar(u)), float(cosine_abar(un))
+            # Du et al.'s correction: before taking the reverse step, let the chain equilibrate to
+            # the composed target AT THIS noise level.  Corrects the composed score, not the base
+            # model, which is why it only ever runs when something is actually being composed.
+            if mc_steps and guide_eps is not None:
+                sig = np.sqrt(2.0 * mc_lam * max(1.0 - a, 1e-12))
+                for _ in range(mc_steps):
+                    s = -_guided_eps(x, u) / np.sqrt(max(1.0 - a, 1e-12))
+                    x = x + 0.5 * sig ** 2 * s + sig * rng.standard_normal(x.shape)
             e = self.eps(x, u, branch)
             if guide_eps is not None:
                 # guide_w may return a scalar OR a [N, 1] column -- the paper's Eq. 14 makes the

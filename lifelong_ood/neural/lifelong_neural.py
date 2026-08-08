@@ -125,7 +125,7 @@ class NeuralLifelongLearner:
     # ── step 4: distil the pool into a new hierarchical adapter ──────────────
     def consolidate(self, pool, name, mu=None, epochs=10, batch=16, lr=1e-3, p_drop=0.1,
                     seed=None, verbose=False, project=None, rehearse=None,
-                    freeze_embedding=False, already_registered=False):
+                    freeze_embedding=False, already_registered=False, ewc=None):
         """The paper's Eq. 15 loss, optimizing ONLY this concept's leaf delta and class embedding.
 
         `mu` (the teacher mean) is what places the concept in the hierarchy; pass it so related
@@ -154,6 +154,10 @@ class NeuralLifelongLearner:
             emb_p = self.bank._emb_extra[name]
             params = [q for q in params if q is not emb_p]
         opt = torch.optim.Adam(params, lr=lr)
+        # regularisation baselines that anchor to the PRE-TASK weights (C-LoRA) need a
+        # snapshot before the first step; EWC does not define this hook and is unaffected.
+        if ewc is not None and hasattr(ewc, "begin_task"):
+            ewc.begin_task(params)
         X = torch.from_numpy(np.asarray(pool, np.float32)).to(self.device)
         X = X.reshape(-1, CH, self.field.img, self.field.img)
         model = self.field.model
@@ -203,9 +207,19 @@ class NeuralLifelongLearner:
                             ref = model(xrt, ur, emb_override=cr)
                         loss = loss + reh["w"] * torch.nn.functional.mse_loss(
                             model(xrt, ur, emb_override=cr), ref)
+                    if ewc is not None:
+                        pen = ewc.penalty(params)
+                        if pen is not None:
+                            loss = loss + pen
                     opt.zero_grad(set_to_none=True)
                     loss.backward()
+                    # SI accumulates its path integral from (grad, step) pairs, so it needs to see
+                    # every step; regularizers without the hooks are unaffected.
+                    if ewc is not None and hasattr(ewc, "pre_step"):
+                        ewc.pre_step(params)
                     opt.step()
+                    if ewc is not None and hasattr(ewc, "post_step"):
+                        ewc.post_step(params)
                     if project:
                         # keep the update out of the directions old conditionings read, so the
                         # delta can be folded into the base weights without overwriting them
@@ -227,7 +241,7 @@ class NeuralLifelongLearner:
         return self
 
     def consolidate_batch(self, items, epochs=10, batch=16, lr=1e-3, seed=None, group=True,
-                          replay=None, verbose=False, ewc=None):
+                          replay=None, verbose=False, ewc=None, buffer=None, replay_distill=False):
         """Add K concepts to the manifold in ONE consolidation.  `items` = [(name, pool, mu), ...].
 
         All K leaves and any shared group node they were given are optimized TOGETHER: one Adam over
@@ -250,13 +264,27 @@ class NeuralLifelongLearner:
         # model's own earlier concepts, so old knowledge defends itself through the loss.  It only
         # does anything when ancestors are trainable -- with frozen ancestors nothing shared can
         # move, so there is nothing for replay to protect, which is the point of the comparison.
+        #
+        # `replay_distill` switches those same pools to GENERATIVE DISTILLATION (Masip et al.,
+        # CoLLAs 2025).  The distinction is only in the target, and it matters enormously: plain
+        # generative replay regresses a self-generated sample onto the noise that was drawn for it,
+        # so any error already in the sample is treated as ground truth and compounds -- which is why
+        # it is measured at FID 211.8 against finetuning's 68.8 for a DDPM, i.e. WORSE than no
+        # protection at all.  Distillation instead matches the PRE-TASK model's own eps-prediction on
+        # the same (x_t, t), transferring the whole reverse process rather than one endpoint, and
+        # recovers FID 23.5 against a joint-training bound of 15.5.  Reporting naive generative
+        # replay without this arm would be reporting a known-broken configuration as a baseline.
         replay = list(replay or [])
         new_names, names = names, names + [n for n, _ in replay]
+        n_new = len(new_names)
         params, seen_ids = [], set()
         for p in self.bank.trainable_batch(names):
             if id(p) not in seen_ids:
                 seen_ids.add(id(p)); params.append(p)
         opt = torch.optim.Adam(params, lr=lr)
+        # same pre-task snapshot for the batch path (see consolidate)
+        if ewc is not None and hasattr(ewc, "begin_task"):
+            ewc.begin_task(params)
         pools = [torch.from_numpy(np.asarray(p, np.float32)).to(self.device).reshape(-1, CH, self.field.img, self.field.img)
                  for _, p, _ in items]
         pools += [torch.from_numpy(np.asarray(p, np.float32)).to(self.device).reshape(-1, CH, self.field.img, self.field.img)
@@ -265,6 +293,20 @@ class NeuralLifelongLearner:
         model.train()
         g = torch.Generator(device="cpu").manual_seed(seed)
         curves = {n: [] for n in names}
+        # The distillation teacher is this model at its PRE-TASK weights.  Snapshotting the trainable
+        # tensors is enough to reconstruct it -- everything else is frozen by construction -- so no
+        # second copy of the network is ever allocated.
+        teacher_vals = ([p.detach().clone() for p in params] if (replay_distill and replay) else None)
+
+        def _teacher_eps(xt, u, emb):
+            cur = [p.detach().clone() for p in params]
+            with torch.no_grad():
+                for p, tv in zip(params, teacher_vals):
+                    p.data.copy_(tv)
+                ref = model(xt, u, emb_override=emb).detach()
+                for p, cv in zip(params, cur):
+                    p.data.copy_(cv)
+            return ref
         for ep in range(max(int(epochs), 0)):
             # one pass over every concept's pool per epoch, concepts interleaved
             order = []
@@ -280,15 +322,34 @@ class NeuralLifelongLearner:
                 e = torch.randn_like(x0)
                 xt = a.sqrt() * x0 + (1 - a).sqrt() * e
                 with self.bank.activate(names[j]):
-                    loss = torch.nn.functional.mse_loss(
-                        model(xt, u, emb_override=self.bank.embedding(names[j])), e)
+                    emb_j = self.bank.embedding(names[j])
+                    # replay pools are the tail of `pools`; only those get the distillation target
+                    tgt = (_teacher_eps(xt, u, emb_j)
+                           if (teacher_vals is not None and j >= n_new) else e)
+                    pred = model(xt, u, emb_override=emb_j)
+                    loss = torch.nn.functional.mse_loss(pred, tgt)
+                if buffer is not None and j < n_new:
+                    # DER's "dark knowledge" is the logit as it was MID-TRAJECTORY, so the example
+                    # must be banked here, during training, not from a pass at the task boundary.
+                    buffer.add(x0, emb_j, names[j], pred, u, e,
+                               p_insert=1.0 / max(int(epochs), 1))
                 if ewc is not None:
                     pen = ewc.penalty(params)
                     if pen is not None:
                         loss = loss + pen
+                if buffer is not None:
+                    # DER++ adds its two memory terms to EVERY step, not once per task, because the
+                    # buffer is sampled i.i.d. rather than at task boundaries (Buzzega et al.).
+                    bl = buffer.loss(model, self.bank, self.device, CH, self.field.img, g)
+                    if bl is not None:
+                        loss = loss + bl
                 opt.zero_grad(set_to_none=True)
                 loss.backward()
+                if ewc is not None and hasattr(ewc, "pre_step"):
+                    ewc.pre_step(params)
                 opt.step()
+                if ewc is not None and hasattr(ewc, "post_step"):
+                    ewc.post_step(params)
                 curves[names[j]].append(float(loss))
             if verbose:
                 last = {n: (np.mean(v[-4:]) if v else float("nan")) for n, v in curves.items()}

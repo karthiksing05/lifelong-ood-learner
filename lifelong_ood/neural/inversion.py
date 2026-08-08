@@ -45,7 +45,7 @@ def _basis(model, ids=None):
 def learn_embedding(field, targets, n_steps=300, lr=0.05, batch=8, seed=0, init_alpha=None,
                     weight_decay=1e-3, simplex=False, u_range=(0.05, 0.95), verbose=False,
                     ids=None, log_every=0, anchor=0.0, anchor_alpha=None, region_weight=None,
-                    region_mask=None):
+                    region_mask=None, free=False, init_emb=None):
     """Fit `c_new = sum_k alpha_k c_k` so the model explains `targets` when conditioned on it.
 
     `targets`: [N, D] images in the model's [-1, 1] space.  One image is the intended setting (a
@@ -54,6 +54,14 @@ def learn_embedding(field, targets, n_steps=300, lr=0.05, batch=8, seed=0, init_
     `simplex=True` constrains alpha to a convex combination via softmax, which cannot leave the hull
     of trained embeddings.  `False` allows extrapolation past them, which an out-of-distribution
     composition may genuinely need; N7 compares the two.
+
+    `free=True` drops the basis entirely and optimizes a free vector in R^d_emb.  That is what
+    Textual Inversion (Gal et al., ICLR 2023) actually does, and it is the setting the BASELINE arm
+    must use.  The span-restricted parameterization above is a claim OUR method makes -- that an
+    unseen composition is expressible in the model's existing vocabulary -- so imposing it on the
+    baseline would assume the very thing under test, and would handicap it exactly when the held-out
+    combination falls outside the hull of seen classes.  `free` costs d_emb parameters instead of K
+    and returns alpha=None.
 
     `anchor` is how the teacher keeps hold of the manifold.  Initializing alpha from the teacher and
     then optimizing freely lets a single query pull it anywhere -- measured: recall recovers to 0.89
@@ -85,12 +93,20 @@ def learn_embedding(field, targets, n_steps=300, lr=0.05, batch=8, seed=0, init_
     g = torch.Generator(device="cpu").manual_seed(seed)
     torch.manual_seed(seed)
 
-    a = torch.zeros(K, device=dev) if init_alpha is None \
-        else torch.as_tensor(np.asarray(init_alpha, np.float32), device=dev).clone()
-    if not simplex and init_alpha is None:
-        a += 1.0 / K
+    if free:
+        # a free point in conditioning space; initialized at the basis mean (or a supplied vector)
+        # so it starts somewhere the model decodes sensibly rather than at an arbitrary origin
+        a = (torch.as_tensor(np.asarray(init_emb, np.float32), device=dev).clone().reshape(-1)
+             if init_emb is not None else
+             (torch.as_tensor(np.asarray(init_alpha, np.float32), device=dev) @ C
+              if init_alpha is not None else C.mean(0).clone()))
+    else:
+        a = torch.zeros(K, device=dev) if init_alpha is None \
+            else torch.as_tensor(np.asarray(init_alpha, np.float32), device=dev).clone()
+        if not simplex and init_alpha is None:
+            a += 1.0 / K
     a_ref = None
-    if anchor > 0.0:
+    if anchor > 0.0 and not free:
         ref = anchor_alpha if anchor_alpha is not None else init_alpha
         if ref is not None:
             a_ref = torch.as_tensor(np.asarray(ref, np.float32), device=dev)
@@ -122,8 +138,11 @@ def learn_embedding(field, targets, n_steps=300, lr=0.05, batch=8, seed=0, init_
         ab = torch.from_numpy(cosine_abar(u.detach().cpu().numpy())).to(dev).float().view(-1, 1, 1, 1)
         e = torch.randn_like(x0)
         xt = ab.sqrt() * x0 + (1 - ab).sqrt() * e
-        w = torch.softmax(a, 0) if simplex else a
-        c_new = w @ C
+        if free:
+            c_new = a
+        else:
+            w = torch.softmax(a, 0) if simplex else a
+            c_new = w @ C
         pred = model(xt, u, emb_override=c_new)
         if only is not None:
             err = (pred - e) ** 2
@@ -148,6 +167,8 @@ def learn_embedding(field, targets, n_steps=300, lr=0.05, batch=8, seed=0, init_
     if was_training:
         model.train()
     with torch.no_grad():
+        if free:
+            return a.detach(), None, hist
         w = torch.softmax(a, 0) if simplex else a
         c_new = (w @ C).detach()
     return c_new, w.detach().cpu().numpy(), hist

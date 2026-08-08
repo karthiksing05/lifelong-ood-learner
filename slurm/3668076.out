@@ -1,0 +1,9 @@
+===== composable-diff scale sweep (ColorMNIST) =====
+Traceback (most recent call last):
+  File "/coc/flash10/ksingara3/lifelong-ood-learner/tests/diag_composable_scale.py", line 27, in <module>
+    from lifelong_ood.compose import ood_queries, slot_factors                    # noqa: E402
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ImportError: cannot import name 'ood_queries' from 'lifelong_ood.compose' (/coc/flash10/ksingara3/lifelong-ood-learner/tests/../lifelong_ood/compose.py)
+srun: error: brainiac: task 0: Exited with exit code 1
+srun: Terminating StepId=3668076.0
+exit=1 | Sat Aug  8 10:45:00 EDT 2026

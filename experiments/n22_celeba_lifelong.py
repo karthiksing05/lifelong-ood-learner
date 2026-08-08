@@ -35,16 +35,25 @@ from lifelong_ood.celeba import ATTRS, as_float, load_celeba_comp, nearest_seen 
 from lifelong_ood.evals import save_json                               # noqa: E402
 from lifelong_ood.neural import (NeuralLifelongLearner, fingerprint, load_field,  # noqa: E402
                                  to_data, to_model)
-from lifelong_ood.neural.baselines import EWC, test_time_train         # noqa: E402
+from lifelong_ood.neural.baselines import (CLoRA, DERPlusPlus, EWC, MAS, SI,  # noqa: E402
+                                           test_time_train)
 
+# see n5_classinc.py for what each arm holds fixed; the arm set is identical so the ColorMNIST and
+# CelebA retention tables can be read against each other directly
 ARMS = {
     "ours":        (False, True,  False, False, False),
     "independent": (True,  True,  False, False, False),
     "finetune":    (True,  False, False, False, False),
     "replay":      (True,  False, True,  False, False),
+    "gen-distill": (True,  False, True,  False, False),
+    "der++":       (True,  False, False, False, False),
     "ewc":         (True,  False, False, True,  False),
+    "si":          (True,  False, False, False, False),
+    "mas":         (True,  False, False, False, False),
     "ttt":         (True,  False, False, False, True),
+    "c-lora":      (True,  False, False, False, False),
 }
+REGULARIZERS = {"ewc": EWC, "si": SI, "mas": MAS, "c-lora": CLoRA}
 
 
 def main():
@@ -63,6 +72,13 @@ def main():
     p.add_argument("--tag", default="", help="suffix for the output file; --quick runs use one "
                                              "so a smoke can never overwrite a full result")
     p.add_argument("--ewc-lambda", type=float, default=5000.0)
+    p.add_argument("--clora-lambda", type=float, default=1e4,
+                   help="C-LoRA self-regularisation strength (Smith et al., TMLR 2024)")
+    p.add_argument("--si-lambda", type=float, default=1.0)
+    p.add_argument("--mas-lambda", type=float, default=1.0)
+    p.add_argument("--buffer-size", type=int, default=200)
+    p.add_argument("--der-alpha", type=float, default=0.5)
+    p.add_argument("--der-beta", type=float, default=0.5)
     p.add_argument("--quick", action="store_true")
     args = p.parse_args()
     if args.quick:
@@ -106,7 +122,14 @@ def main():
         field = load_field(args.ckpt, device=dev, batch=64)
         L = NeuralLifelongLearner(field, rank=args.rank, steps=args.steps, seed=args.seed,
                                   device=dev, flat=flat, freeze_ancestors=freeze)
-        ewc = EWC(lam=args.ewc_lambda) if use_ewc else None
+        # every regularizer shares EWC's (begin_task, penalty, consolidate) interface
+        ewc = None
+        if arm in REGULARIZERS:
+            lam = {"ewc": args.ewc_lambda, "c-lora": args.clora_lambda,
+                   "si": args.si_lambda, "mas": args.mas_lambda}[arm]
+            ewc = REGULARIZERS[arm](lam=lam)
+        buffer = (DERPlusPlus(size=args.buffer_size, alpha=args.der_alpha, beta=args.der_beta,
+                              seed=args.seed) if arm == "der++" else None)
         acc_rows = {t["name"]: [] for t in tasks}
         tgt_rows = {t["name"]: [] for t in tasks}
         marks, learned = {}, []
@@ -119,7 +142,8 @@ def main():
                           for nm, _ in learned]
             L.consolidate_batch([(t["name"], t["X"], None) for t in grp],
                                 epochs=(0 if is_ttt else args.epochs),
-                                replay=replay, ewc=ewc)
+                                replay=replay, ewc=ewc, buffer=buffer,
+                                replay_distill=(arm == "gen-distill"))
             for t in grp:
                 learned.append((t["name"], t))
                 marks[t["name"]] = fingerprint(field, t["name"], seed=args.seed)
@@ -146,7 +170,10 @@ def main():
         tgt = [tgt_rows[t["name"]] for t in tasks if tgt_rows[t["name"]]]
         m = cl_metrics(acc)
         mt = cl_metrics(tgt)
-        rows.append(dict(arm=arm, wall_seconds=time.time() - t0, params=L.bank.n_params(),
+        stored = (len(buffer) if buffer is not None else
+                  (sum(len(t["X"]) for t in tasks) if is_ttt else 0))
+        rows.append(dict(stored_images=stored,
+                         arm=arm, wall_seconds=time.time() - t0, params=L.bank.n_params(),
                          retention_exact=exact, acc_matrix=acc, target_matrix=tgt,
                          ACC_target=mt["ACC"], BWT_target=mt["BWT"], FGT_target=mt["FGT"], **m))
         print(f"[n22] -> {arm}: ACC {m['ACC']:.3f} BWT {m['BWT']:+.3f} FGT {m['FGT']:.3f} | "

@@ -1,0 +1,3 @@
+===== DER++ after the stored-noise fix =====
+[n5] 6 tasks x 64 REAL images, batches of 3, arms ['der++', 'finetune'], device cuda
+[n5:der++] 3/6 tasks: mean acc 0.79, exact 1.00, 2.20M, 122s
