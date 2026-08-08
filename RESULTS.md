@@ -2480,6 +2480,42 @@ diffusion model on data from a lower-quality distribution than it was trained on
 to high noise levels.** Otherwise the adapter spends its capacity transferring your artifacts, and
 the failure looks like a capacity or a learning-rate problem when it is neither.
 
+### 12e. The case study, and what it says about our composition operator
+
+`google/ddpm-celebahq-256`, 128 real images per concept, attention-only adapters trained at t ≥ 600,
+sampled with w = 2 against the frozen base. `Eyeglasses` and `Smiling` are learned as separate
+concepts, each blind to the other (A on `a=1, b=0`, B on `b=1, a=0`), so their co-occurrence is
+withheld from both by construction.
+
+| arm | Eyeglasses | Smiling | both | Vendi |
+|---|---|---|---|---|
+| *real* | *1.00* | *1.00* | *1.00* | *1.38* |
+| pretrained (untouched) | 0.00 | 0.67 | 0.00 | 1.51 |
+| **`Eyeglasses` alone** | **1.00** | 0.50 | 0.50 | **1.58** |
+| **`Smiling` alone** | 0.00 | **1.00** | 0.00 | **1.60** |
+| composable-diff (score addition) | 0.67 | 0.83 | **0.50** | 1.56 |
+| ours (both adapter paths active) | 0.50 | 0.67 | 0.17 | 1.37 |
+
+**Concept acquisition works, cleanly.** Each concept reaches 1.00 on its own attribute at a Vendi
+*above* the untouched model's 1.51, and the samples are recognizable, well-formed 256×256 faces. That
+is the thing N15 could not do, and it took the three fixes in §12b plus high-noise-only training.
+
+**Our composition operator is the weakest row in the table**, and the reason is structural rather
+than incidental. `ours` composes by activating both adapter paths at once, so it *sums two deltas
+that were each trained to be applied alone*. Score addition composes the same two concepts by
+combining their predictions instead, and gets `both` 0.50 against our 0.17 while keeping Vendi 1.56
+against our 1.37.
+
+This is the third independent measurement pointing the same way — §9g, §11c and now here — and it is
+the actionable one, because it names a fix rather than a limitation: **a bank of independently
+trained adapters should be composed in SCORE space, not by activating several paths simultaneously.**
+The LoRA-merging literature exists precisely because summed deltas interfere (ZipLoRA, Orthogonal
+Adaptation, Custom Diffusion's constrained merge all address this), and this repository had been
+doing the naive thing at the point where it matters most.
+
+Nothing about preservation changes: the paths are still insert-only, ancestors are still frozen, and
+§12a certifies bit-exactness on this model. What changes is the recommended way to *read* the bank.
+
 ## 8. Where the numbers come from
 
 | experiment | file | scale run |

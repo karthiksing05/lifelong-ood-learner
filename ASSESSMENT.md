@@ -81,17 +81,31 @@ guidance sweep and with the MCMC corrector) because that backbone has no per-fac
 add. The composition result is therefore **benchmark-dependent**, and the defensible contribution is
 characterizing *when* score addition suffices — not a better operator.
 
-### 2. Transfer to a pretrained backbone: preservation yes, composition not yet
+### 2. Our composition operator is the wrong one for a bank of adapters
 
-Preservation transfers exactly (`0.000e+00` on a 113.7M-parameter model). Concept *acquisition* now
-works too, once adaptation is confined to high noise levels: `Eyeglasses` at 0.75 with Vendi 1.48
-against the untouched model's 1.51 (§12). What has **not** been demonstrated end-to-end is
-composition of two such concepts at this scale with a quantitative result — the case study exists,
-the numbers are single-seed, and they are not part of any headline claim.
+Three independent measurements now say this (§9g, §11c, §12e), and the third is the clearest.
+On the pretrained backbone, each concept is acquired perfectly on its own (1.00 on its attribute, at
+a Vendi *above* the untouched model). Composing two of them:
 
-The route there is now clear rather than blocked, which is a different thing from being done.
+| | both attributes correct | Vendi |
+|---|---|---|
+| score addition | **0.50** | **1.56** |
+| ours (activate both adapter paths) | 0.17 | 1.37 |
 
-### 3. Scale
+Activating two paths sums two deltas each trained to be applied *alone*. This is the failure the
+entire LoRA-merging literature exists to address, and we were doing the naive version of it.
+
+**This is a fix, not a limitation:** compose the bank in score space. It does not touch preservation
+(paths stay insert-only, §12a certifies bit-exactness on this model) — it changes how the bank is
+read. It should be done before submission, and it is cheap.
+
+### 3. Transfer to a pretrained backbone: mechanism yes, full loop not yet
+
+Preservation transfers exactly and concept acquisition works (§12). What has **not** been run at that
+scale is the full loop — route, consolidate, compose, retain, across seeds. The case study is
+single-seed and is not part of any headline claim.
+
+### 4. Scale
 
 Backbones are 6.8M (32×32) and 9.3M (64×64) parameters. Every quantitative claim rests on models we
 trained ourselves at small scale. This is the single largest obstacle to a top venue.
@@ -125,7 +139,10 @@ In order of expected value:
    costs a few backbone trainings.
 3. **Test the few-shot-per-concept regime.** CLoG reports parameter isolation failing there, and our
    method is parameter isolation. If it holds up, that is a result; if it does not, better to know.
-4. **Reframe the composition section** as a characterization of when score addition suffices, with
+4. **Switch the bank's composition to score space** (§12e). Cheap, well-motivated by three separate
+   measurements, and it converts the composition section's weakest result into a design decision
+   with evidence behind it.
+5. **Reframe the composition section** as a characterization of when score addition suffices, with
    the ColorMNIST/CelebA contrast as the finding. Already done in the docs; it should shape the
    paper's structure too.
 
