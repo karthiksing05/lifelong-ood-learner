@@ -38,3 +38,9 @@
 
 [n5:ewc] 3/12 tasks: mean acc 0.73, exact 1.00, 2.20M, 37s
 [n5:ewc] 6/12 tasks: mean acc 0.78, exact 0.50, 3.86M, 87s
+[n5:ewc] 9/12 tasks: mean acc 0.72, exact 0.33, 5.51M, 142s
+[n5:ewc] 12/12 tasks: mean acc 0.78, exact 0.25, 7.16M, 201s
+[n5] -> ewc: ACC 0.781, BWT -0.074, FGT 0.085
+
+[n5:si] 3/12 tasks: mean acc 0.73, exact 1.00, 2.20M, 38s
+[n5:si] 6/12 tasks: mean acc 0.83, exact 0.50, 3.86M, 88s

@@ -2,3 +2,5 @@
 [calib] ideal-words R^2 0.826; factor-2 gain 2.5 (seen-slot joint accuracy 0.91) -> gains [1.0, 1.0, 2.5]
 [n9] 5 cases, 6 follow-on concepts, device cuda
 [n9] ours: absorbed 6 follow-on concepts (real)
+[n9] finetune-stream: absorbed 6 follow-on concepts (real)
+[n9] case 88 done

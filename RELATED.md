@@ -103,6 +103,47 @@ neighbour and is now represented by **C-LoRA**:
 - **CNS** — ICCV 2025, [2510.02296](https://arxiv.org/abs/2510.02296). Explicitly **fusion-free**: finetune only the neurons associated with a concept, no bank and no merge rule. The most direct architectural competitor to the bank premise.
 - **CCDM** — TPAMI, [2606.04797](https://arxiv.org/abs/2606.04797). Attribute-decoupled LoRA plus relevance-guided aggregation — the nearest published thing to "a bank of attribute experts selected by relevance", and therefore our closest prior art.
 
+## Bit-exact preservation is not novel as a property — and pretending otherwise invites the obvious attack
+
+The single most predictable reviewer objection is *"exact preservation is old — see PNN, PackNet,
+Piggyback."* It is correct, and the distinction has to be made before a reviewer makes it. Nor are
+all "architecture-based" methods equivalent on this axis; lumping them together is itself an error.
+
+| method | isolation | **exact zero-forgetting?** | cost |
+|---|---|---|---|
+| **PNN** ([1606.04671](https://arxiv.org/abs/1606.04671)) | additive frozen columns + laterals | **yes, unconditional** | **O(T²)** from all-pairs laterals |
+| **PackNet** ([1711.05769](https://arxiv.org/abs/1711.05769)) | prune + freeze a shared trunk | **yes**, given the task ID | log₂(T)·\|θ\| bits; **capacity saturates** |
+| **Piggyback** ([1801.06519](https://arxiv.org/abs/1801.06519)) | binary mask on a frozen trunk | **yes** — W is never trained | 1 bit/weight/task |
+| **SupSup** ([2006.14769](https://arxiv.org/abs/2006.14769)) | mask on a *random untrained* trunk | yes with task ID | 1 bit/weight/task |
+| **HAT** ([1801.01423](https://arxiv.org/abs/1801.01423)) | soft gates + soft gradient masking | **NO — approximate** | activation-sized |
+| **DEN** ([1708.01547](https://arxiv.org/abs/1708.01547)) | selective retraining + expansion | **NO — approximate** | data-dependent |
+
+**HAT is routinely miscited as zero-forgetting and is not.** Its gate `σ(s·e)` never reaches exactly
+{0,1} for finite `s_max`, and its gradient-masking factor `1 − min(a^{≤t−1})` is *continuous*, so any
+weight whose cumulative mask is < 1 still receives gradient and the shared weights implementing old
+tasks genuinely drift. The paper reports 45–80% forgetting *reduction*, not elimination. DEN's
+stage-1 "selective retraining" explicitly modifies weights shared with earlier tasks.
+
+**PNN is our closest structural ancestor.** An insert-only adapter bank with frozen ancestors *is* a
+column-per-concept design minus the all-pairs lateral wiring — which is exactly what turns quadratic
+growth into roughly linear. The correct framing is therefore:
+
+> We obtain PNN's unconditional bit-exact preservation without its quadratic cost, because adapters
+> read only the frozen trunk and their own ancestors rather than every predecessor.
+
+And the novelty claim must live somewhere other than exactness:
+
+1. **the routing decision** — whether an arrival is a new *arrangement* (free) or a new *part* (a kept
+   delta), decided by the model's own denoising error with no labels (AUROC 0.980 / 0.995);
+2. **the growth curve that follows from it** — cost linear in vocabulary, flat in experience;
+3. **native parity** — asking whether a consolidated concept matches a backbone *trained* on that
+   slot, which the parameter-isolation literature does not measure;
+4. **the generative setting** — CLoG reports parameter isolation *failing* on Oxford-Flowers/CUB for
+   lack of per-task samples, so it is not a foregone conclusion that it works here.
+
+Point 4 cuts both ways and is worth pre-empting rather than hoping for: an insert-only bank *is*
+parameter isolation, so the few-shot-per-concept regime is where a reviewer will attack it.
+
 ## The gap we occupy
 
 A dedicated arXiv query for `abs:"product of experts" AND abs:"LoRA"` returns **zero results**, and
