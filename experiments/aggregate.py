@@ -146,7 +146,7 @@ def agg_n7(runs):
 def agg_n5(runs):
     """N5 / N9: one row per method, the standard CL metrics plus what each one costs."""
     arms, keys = [], ("ACC", "BWT", "FGT", "retention_exact", "params", "wall_seconds",
-                      "qAFQ", "qAIQ", "qFR", "stored_images")
+                      "qAFQ", "qAIQ", "qFR", "stored_images", "A", "REM", "MS", "SSS")
     for _, r in runs:
         arms += [x["arm"] for x in r.get("rows", []) if x["arm"] not in arms]
     table = {}
@@ -160,15 +160,16 @@ def agg_n5(runs):
                 if k in row:
                     vals[k].append(row[k])
         table[a] = {k: stat(v) for k, v in vals.items()}
-    print(f"    {'arm':13s}{'ACC':>13s}{'BWT':>14s}{'FGT':>13s}{'bit-identical':>15s}"
-          f"{'AFQ':>13s}{'stored':>9s}{'params':>12s}{'wall(s)':>11s}")
+    print(f"    {'arm':13s}{'ACC':>13s}{'A':>13s}{'FGT':>13s}{'bit-identical':>15s}"
+          f"{'REM':>13s}{'SSS':>13s}{'MS':>13s}{'stored':>9s}{'params':>12s}")
     for a, row in table.items():
         pm = f"{row['params']['mean'] / 1e6:.2f}M" if row['params'] else "--"
         ws = f"{row['wall_seconds']['mean']:.0f}" if row['wall_seconds'] else "--"
         st = f"{row['stored_images']['mean']:.0f}" if row.get('stored_images') else "--"
-        print(f"    {a:13s}{fmt(row['ACC']):>13s}{fmt(row['BWT']):>14s}{fmt(row['FGT']):>13s}"
-              f"{fmt(row['retention_exact']):>15s}{fmt(row.get('qAFQ')):>13s}{st:>9s}"
-              f"{pm:>12s}{ws:>11s}")
+        print(f"    {a:13s}{fmt(row['ACC']):>13s}{fmt(row.get('A')):>13s}"
+              f"{fmt(row['FGT']):>13s}{fmt(row['retention_exact']):>15s}"
+              f"{fmt(row.get('REM')):>13s}{fmt(row.get('SSS')):>13s}{fmt(row.get('MS')):>13s}"
+              f"{st:>9s}{pm:>12s}")
     return dict(table=table, n_seeds=len(runs))
 
 

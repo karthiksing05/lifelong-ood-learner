@@ -23,6 +23,92 @@ composition stage is that mechanism.
 
 ---
 
+## The setting, and how it differs from the closest prior work
+
+The nearest neighbour to this project is Wang et al., *Test-Time Compositional Generalization in
+Diffusion Models via Concept Discovery* (arXiv:2605.07078). We use their composition machinery
+directly, so the difference is not in the operator — it is in **what happens to the result**.
+
+### Their setting
+
+A frozen diffusion model meets **one** out-of-distribution query. The pipeline:
+
+```
+mode-ascent discovery on s_θ(x_t,t)  →  submodular selection of K prototypes
+       →  per-dimension Product-of-Experts teacher  →  CFG toward that teacher (Eq. 13),
+          with the variance-aware weight schedule of Eq. 14
+       →  (optionally) distil the resulting pool into one LoRA + one embedding
+```
+
+The question asked is *can a frozen model be steered to render a combination it never saw?* The
+answer is evaluated on the samples produced for that query — FID, CLIP-I, and precision/recall/F1 in
+Inception feature space. **The per-query LoRA is then discarded.** Nothing carries to the next query,
+and there is no second query in the protocol.
+
+### Our setting
+
+The same frozen model meets an **unbounded stream** of out-of-distribution queries, one at a time,
+forever. Each must be produced, **kept**, and must not damage anything kept earlier:
+
+```
+for each arriving query, forever:
+    compose  (their four stages, unchanged)
+    ROUTE    is this a new ARRANGEMENT of parts we have, or a genuinely new PART?
+    CONSOLIDATE  arrangement → a shared basis direction (1024 bytes)
+                 new part    → a new leaf in an insert-only adapter bank
+    CERTIFY  every previously consolidated concept is checked bit-identical
+```
+
+The question asked is *can a model accumulate out-of-distribution concepts indefinitely without
+forgetting, and does a concept it consolidated behave like one it was trained on?*
+
+### The differences that matter
+
+| | Wang et al. | this work |
+|---|---|---|
+| **horizon** | one query | an unbounded stream |
+| **what persists after a query** | nothing — the LoRA is discarded | a routed, consolidated concept |
+| **the decision made per query** | none; every query takes the same path | **route**: new arrangement (free) vs new part (a kept delta) |
+| **cost of the *n*-th concept** | same as the first (nothing accumulates) | ~0 for an arrangement, one small delta for a new part |
+| **interference between concepts** | not applicable | **certified**: earlier concepts bit-identical, measured |
+| **what is evaluated** | sample quality for that one composition | that, **plus** retention across the stream, growth, and parity with a natively-trained backbone |
+| **baselines it must beat** | composition methods | composition methods **and** the continual-learning literature |
+
+Concretely, three things in this repository have no counterpart in theirs, and they are the
+contribution:
+
+1. **The routing decision.** Their pipeline spends a LoRA on every query. Ours first asks whether the
+   query is expressible in the vocabulary it already has — decided from the model's own denoising
+   error, no labels (AUROC 0.980 novel-vs-in-distribution, 0.995 vocabulary-vs-combination). An
+   arrangement then costs a shared basis direction rather than an adapter, which is what makes cost
+   scale with *vocabulary* rather than with *experience*.
+2. **Consolidation that provably cannot interfere.** Ancestors are frozen and insertion is
+   append-only, so a new concept has no write path to an existing one. This is verified rather than
+   argued: every earlier concept is bit-identical after every insertion (fraction 1.00, against
+   0.25–0.50 for every method that instead tries to *protect* shared weights).
+3. **Native parity.** We ask whether a consolidated concept matches a backbone *trained* on that slot
+   — a question that only arises once concepts are kept.
+
+### What we take from them, unchanged
+
+The discovery → selection → PoE → guided-sampling stages are theirs, and we run their method in
+**their own configuration** (Eq. 14), not ours — a distinction that mattered: under this repository's
+annealed schedule the same teacher produced speckle and looked broken, and its precision went from
+0.039 to 0.839 once corrected. Their limitation section names the gap this project fills:
+
+> *"A full mechanism for detecting, consolidating, and reusing genuinely new primitives remains an
+> important direction for future work."*
+
+### Two honest notes on the comparison
+
+- **Their headline does not hold uniformly on CelebA.** In their own tables, query-only beats PoE on
+  FID-Faithful (107.5 vs 120.9) and on F1-Faithful (64.0 vs 20.3). The claim is unambiguous on
+  ColorMNIST; on CelebA it is not, and we do not lean on it.
+- **The fair comparison target is their PoE row, not their LoRA row.** Their LoRA variant is not
+  test-time-free, so a claim of "no retraining" should be measured against PoE.
+
+---
+
 ## The argument, in six figures
 
 ### 1. Attribute accuracy cannot tell composing from copying. Coverage can.

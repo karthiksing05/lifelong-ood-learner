@@ -39,3 +39,82 @@
 [n5:ewc] 3/12 tasks: mean acc 0.79, exact 1.00, 2.20M, 40s
 [n5:ewc] 6/12 tasks: mean acc 0.82, exact 0.50, 3.86M, 95s
 [n5:ewc] 9/12 tasks: mean acc 0.84, exact 0.33, 5.51M, 154s
+[n5:ewc] 12/12 tasks: mean acc 0.78, exact 0.25, 7.16M, 219s
+[n5] -> ewc: ACC 0.781, BWT -0.091, FGT 0.102
+
+[n5:si] 3/12 tasks: mean acc 0.79, exact 1.00, 2.20M, 40s
+[n5:si] 6/12 tasks: mean acc 0.85, exact 0.50, 3.86M, 95s
+[n5:si] 9/12 tasks: mean acc 0.85, exact 0.33, 5.51M, 155s
+[n5:si] 12/12 tasks: mean acc 0.87, exact 0.25, 7.16M, 220s
+[n5] -> si: ACC 0.870, BWT +0.011, FGT 0.011
+
+[n5:mas] 3/12 tasks: mean acc 0.79, exact 1.00, 2.20M, 40s
+[n5:mas] 6/12 tasks: mean acc 0.82, exact 0.50, 3.86M, 95s
+[n5:mas] 9/12 tasks: mean acc 0.85, exact 0.33, 5.51M, 154s
+[n5:mas] 12/12 tasks: mean acc 0.85, exact 0.25, 7.16M, 219s
+[n5] -> mas: ACC 0.854, BWT +0.000, FGT 0.000
+
+[n5:ttt] 3/12 tasks: mean acc 0.81, exact 1.00, 2.20M, 64s
+[n5:ttt] 6/12 tasks: mean acc 0.81, exact 1.00, 3.86M, 190s
+[n5:ttt] 9/12 tasks: mean acc 0.83, exact 1.00, 5.51M, 380s
+[n5:ttt] 12/12 tasks: mean acc 0.85, exact 1.00, 7.16M, 633s
+[n5] -> ttt: ACC 0.854, BWT +0.006, FGT 0.006
+
+[n5:c-lora] 3/12 tasks: mean acc 0.79, exact 1.00, 2.20M, 34s
+[n5:c-lora] 6/12 tasks: mean acc 0.83, exact 0.50, 3.86M, 85s
+[n5:c-lora] 9/12 tasks: mean acc 0.86, exact 0.33, 5.51M, 141s
+[n5:c-lora] 12/12 tasks: mean acc 0.86, exact 0.25, 7.16M, 202s
+[n5] -> c-lora: ACC 0.865, BWT +0.011, FGT 0.000
+
+
+[n5] Split-ColorMNIST class-incremental, 12 tasks of real held-out images
+    arm              ACC      BWT     FGT   exact     AFQ      FR   params  stored  wall(s)
+    ours           0.875   +0.000   0.000    1.00   0.034  +0.000    8.82M       0      259
+    independent    0.891   +0.000   0.000    1.00   0.029  +0.000    7.16M       0      167
+    finetune       0.760   -0.114   0.131    0.25   0.029  +0.000    7.16M       0      167
+    replay         0.786   -0.085   0.114    0.25   0.033  +0.000    7.16M       0      290
+    gen-distill    0.828   -0.011   0.028    0.25   0.030  +0.000    7.16M       0      371
+    der++          0.833   +0.000   0.045    0.25   0.029  +0.000    7.16M     200      673
+    ewc            0.781   -0.091   0.102    0.25   0.029  +0.000    7.16M       0      219
+    si             0.870   +0.011   0.011    0.25   0.030  +0.000    7.16M       0      220
+    mas            0.854   +0.000   0.000    0.25   0.030  +0.000    7.16M       0      219
+    ttt            0.854   +0.006   0.006    1.00   0.037  +0.000    7.16M     768      633
+    c-lora         0.865   +0.011   0.000    0.25   0.030  +0.000    7.16M       0      202
+
+  ACC final mean accuracy (higher better) | BWT backward transfer (0 = no forgetting)
+  FGT forgetting measure (0 = none) | exact = fraction bit-identical to birth
+  stored = REAL images the arm must retain forever (0 = keeps no data)
+  AFQ final generation quality (Frechet to real, LOWER better) | FR its degradation
+[n5] wrote /coc/flash10/ksingara3/lifelong-ood-learner/results/n5_classinc_full.json
+n5 exit=0 | Sat Aug  8 11:58:25 EDT 2026
+===== n22 CelebA lifelong, ALL arms, seed 2 =====
+[n22] 12 held-out CelebA combinations x 64 REAL images, batches of 3, arms ['ours', 'independent', 'finetune', 'replay', 'gen-distill', 'der++', 'ewc', 'si', 'mas', 'ttt', 'c-lora'], device cuda
+/coc/flash10/ksingara3/lifelong-ood-learner/experiments/n22_celeba_lifelong.py:169: RuntimeWarning: Mean of empty slice
+  f"target {np.nanmean([tgt_rows[nm][-1] for nm, _ in learned]):.3f}, "
+[n22:ours] 3/12: mean-attr 0.693, target nan, exact 1.00, 3.63M, 80s
+[n22:ours] 6/12: mean-attr 0.674, target 0.292, exact 1.00, 6.54M, 357s
+[n22:ours] 9/12: mean-attr 0.677, target 0.225, exact 1.00, 9.44M, 670s
+[n22:ours] 12/12: mean-attr 0.668, target 0.281, exact 1.00, 12.35M, 1062s
+[n22] -> ours: ACC 0.668 BWT +0.000 FGT 0.000 | target ACC nan FGT nan
+
+[n22:independent] 3/12: mean-attr 0.672, target nan, exact 1.00, 2.91M, 84s
+[n22:independent] 6/12: mean-attr 0.669, target 0.292, exact 1.00, 5.08M, 277s
+[n22:independent] 9/12: mean-attr 0.660, target 0.225, exact 1.00, 7.26M, 476s
+[n22:independent] 12/12: mean-attr 0.672, target 0.281, exact 1.00, 9.44M, 702s
+[n22] -> independent: ACC 0.672 BWT +0.000 FGT 0.000 | target ACC nan FGT nan
+
+[n22:finetune] 3/12: mean-attr 0.646, target nan, exact 1.00, 2.91M, 61s
+[n22:finetune] 6/12: mean-attr 0.664, target 0.271, exact 0.50, 5.08M, 253s
+[n22:finetune] 9/12: mean-attr 0.648, target 0.175, exact 0.33, 7.26M, 456s
+[n22:finetune] 12/12: mean-attr 0.650, target 0.250, exact 0.25, 9.44M, 677s
+[n22] -> finetune: ACC 0.650 BWT -0.021 FGT 0.033 | target ACC nan FGT nan
+
+[n22:replay] 3/12: mean-attr 0.656, target nan, exact 1.00, 2.91M, 61s
+[n22:replay] 6/12: mean-attr 0.628, target 0.271, exact 0.50, 5.08M, 293s
+[n22:replay] 9/12: mean-attr 0.590, target 0.237, exact 0.33, 7.26M, 574s
+[n22:replay] 12/12: mean-attr 0.573, target 0.289, exact 0.25, 9.44M, 921s
+[n22] -> replay: ACC 0.573 BWT -0.109 FGT 0.116 | target ACC nan FGT nan
+
+[n22:gen-distill] 3/12: mean-attr 0.672, target nan, exact 1.00, 2.91M, 61s
+[n22:gen-distill] 6/12: mean-attr 0.654, target 0.271, exact 0.50, 5.08M, 307s
+[n22:gen-distill] 9/12: mean-attr 0.672, target 0.212, exact 0.33, 7.26M, 623s

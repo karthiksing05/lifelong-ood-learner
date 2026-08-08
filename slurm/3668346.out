@@ -1,0 +1,19 @@
+/nethome/ksingara3/flash/miniconda3/envs/chunks/lib/python3.12/site-packages/huggingface_hub/utils/_validators.py:205: UserWarning: The `local_dir_use_symlinks` argument is deprecated and ignored in `hf_hub_download`. Downloading to a local directory does not use symlinks anymore.
+  warnings.warn(
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+An error occurred while trying to fetch google/ddpm-celebahq-256: google/ddpm-celebahq-256 does not appear to have a file named diffusion_pytorch_model.safetensors.
+Defaulting to unsafe serialization. Pass `allow_pickle=False` to raise an error instead.
+[n25] google/ddpm-celebahq-256: 256x256, 113.7M params, device cuda
+Traceback (most recent call last):
+  File "/coc/flash10/ksingara3/lifelong-ood-learner/experiments/n25_pretrained_case.py", line 308, in <module>
+    main()
+  File "/coc/flash10/ksingara3/lifelong-ood-learner/experiments/n25_pretrained_case.py", line 169, in main
+    data = load_hires(args.attrs, img=img, n_each=args.n_train, seed=args.seed)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/coc/flash10/ksingara3/lifelong-ood-learner/experiments/n25_pretrained_case.py", line 70, in load_hires
+    ia, ib = [ATTRS.index(a) for a in attrs_wanted]
+              ^^^^^^^^^^^^^^
+ValueError: 'Eyeglasses' is not in list
+srun: error: xaea-12: task 0: Exited with exit code 1
+srun: Terminating StepId=3668346.0
+exit=1 | Sat Aug  8 12:59:31 EDT 2026

@@ -58,6 +58,42 @@ def cl_metrics(acc):
                 FGT=float(np.mean(fgt)) if fgt else 0.0)
 
 
+def efficiency_metrics(acc, params, stored, n_train_total, params0=None):
+    """Diaz-Rodriguez et al. (NeurIPS-W 2018) normalized CL metrics, all in [0,1], higher better.
+
+        A   = sum_{i>=j} R_ij / (N(N+1)/2)     the WHOLE lower triangle, not just the final row
+        REM = 1 - |min(BWT, 0)|                remembering
+        MS  = min(1, mean_i Mem(theta_1)/Mem(theta_i))     model-size efficiency
+        SSS = 1 - min(1, mean_i Mem(M_i)/Mem(D))           sample-storage efficiency
+
+    These are here because the accuracy columns systematically flatter methods that pay for their
+    retention somewhere the table does not look.  `A` rewards holding a concept for the WHOLE stream
+    rather than recovering by the end -- final-row ACC cannot tell "never dropped" from "dropped and
+    came back".  `SSS` is the axis on which every rehearsal method loses to an insert-only bank and
+    on which ours is exactly 1.0, because it keeps no data at all.  `MS` is the axis on which OUR
+    method pays: a bank grows, so this is the column a reviewer should be pointed at rather than
+    away from.
+
+    `stored` = real images retained forever; `n_train_total` = the size of the stream, so SSS is
+    measured against what a full-replay method would have to keep.
+
+    arXiv:1810.13166.
+    """
+    K = len(acc)
+    if not K:
+        return {}
+    # lower triangle: acc[i][t] exists only for steps at or after concept i was learned
+    tri = [v for row in acc for v in row]
+    A = float(np.mean(tri)) if tri else float("nan")
+    bwt = np.mean([acc[i][-1] - acc[i][0] for i in range(K - 1)]) if K > 1 else 0.0
+    rem = float(1.0 - abs(min(float(bwt), 0.0)))
+    p0 = float(params0 if params0 else (params[0] if np.ndim(params) else params))
+    pk = np.atleast_1d(np.asarray(params, float))
+    ms = float(min(1.0, float(np.mean(p0 / np.maximum(pk, 1e-9)))))
+    sss = float(1.0 - min(1.0, float(stored) / max(float(n_train_total), 1.0)))
+    return dict(A=A, REM=rem, MS=ms, SSS=sss)
+
+
 def quality_metrics(q, lower_better=True):
     """CLoG's generative-CL protocol applied to a per-concept quality matrix.
 

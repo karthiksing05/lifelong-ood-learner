@@ -114,9 +114,10 @@ def main():
     table(A, "n5_classinc",
           ["ours", "independent", "ttt", "c-lora", "ewc", "si", "mas", "der++", "gen-distill",
            "replay", "finetune"],
-          ["ACC", "FGT", "retention_exact", "qAFQ", "stored_images", "params"],
-          ["accuracy", "forgetting (0 = none)", "fraction bit-identical",
-           "final quality (lower=better)", "images kept", "adapter params"],
+          ["ACC", "A", "FGT", "retention_exact", "SSS", "MS", "stored_images"],
+          ["final accuracy", "A (whole stream)", "forgetting (0 = none)",
+           "fraction bit-identical", "SSS (stores nothing = 1)", "MS (grows least = 1)",
+           "images kept"],
           label="ColorMNIST — Split-ColorMNIST class-incremental, REAL held-out images",
           note="Arms that structurally *remove* shared parameters sit at exactly 0.000; every arm "
                "that tries to *protect* them forgets, including the four added after the literature "
@@ -126,9 +127,10 @@ def main():
     table(A, "n22_celeba_lifelong",
           ["ours", "independent", "c-lora", "ewc", "si", "mas", "der++", "gen-distill", "replay",
            "finetune"],
-          ["ACC", "FGT", "retention_exact", "qAFQ", "stored_images", "params"],
-          ["mean-attribute accuracy", "forgetting", "fraction bit-identical",
-           "final quality (lower=better)", "images kept", "adapter params"],
+          ["ACC", "A", "FGT", "retention_exact", "SSS", "MS", "stored_images"],
+          ["mean-attribute accuracy", "A (whole stream)", "forgetting",
+           "fraction bit-identical", "SSS (stores nothing = 1)", "MS (grows least = 1)",
+           "images kept"],
           label="CelebA — class-incremental over held-out combinations, REAL images")
 
     print("\n---\n\n## 4. Native parity: against a backbone TRAINED on the held-out slot")

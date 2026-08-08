@@ -35,7 +35,8 @@ import torch
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from common import CACHE, RESULTS, ood_queries                         # noqa: E402
-from n4_batch import cl_metrics, quality_metrics                       # noqa: E402
+from n4_batch import (cl_metrics, efficiency_metrics,                  # noqa: E402
+                      quality_metrics)
 
 from lifelong_ood.datasets import load_colormnist                      # noqa: E402
 from lifelong_ood.evals import (composition_accuracy, fit_probes, frechet_distance,  # noqa: E402
@@ -138,6 +139,7 @@ def main():
         fd_rows = {t["name"]: [] for t in tasks}
         refs = {t["name"]: t["R"] for t in tasks}
         marks, learned = {}, []
+        params_curve = []
         t0 = time.time()
         for i0 in range(0, len(tasks), args.batch_size):
             grp = tasks[i0:i0 + args.batch_size]
@@ -174,6 +176,7 @@ def main():
             # probe accuracy is fidelity-blind -- an arm can keep the attributes legible while
             # its images degrade -- so track generation quality on the same schedule
             fd_rows[nm].append(frechet_distance(S, refs[nm]))
+            params_curve.append(L.bank.n_params())
             exact = float(np.mean([float(np.array_equal(fingerprint(field, nm, seed=args.seed),
                                                         marks[nm])) for nm, _ in learned]))
             print(f"[n5:{arm}] {len(learned)}/{len(tasks)} tasks: "
@@ -190,9 +193,12 @@ def main():
         # forever, where the frozen-ancestor bank and every regularizer store none.
         stored = (len(buffer) if buffer is not None else
                   (sum(len(t["X"]) for t in tasks) if is_ttt else 0))
+        em = efficiency_metrics(acc, params_curve or [L.bank.n_params()], stored,
+                                sum(len(t["X"]) for t in tasks))
         rows.append(dict(arm=arm, wall_seconds=time.time() - t0, params=L.bank.n_params(),
                          retention_exact=exact, acc_matrix=acc, stored_images=stored,
-                         fd_matrix=fd, **{f"q{k}": v for k, v in qm.items()}, **m))
+                         fd_matrix=fd, params_curve=params_curve,
+                         **{f"q{k}": v for k, v in qm.items()}, **em, **m))
         print(f"[n5] -> {arm}: ACC {m['ACC']:.3f}, BWT {m['BWT']:+.3f}, FGT {m['FGT']:.3f}\n",
               flush=True)
 

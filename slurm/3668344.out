@@ -1,0 +1,21 @@
+=== cifar10-32 (fast) ===
+/nethome/ksingara3/flash/miniconda3/envs/chunks/lib/python3.12/site-packages/huggingface_hub/utils/_validators.py:205: UserWarning: The `local_dir_use_symlinks` argument is deprecated and ignored in `hf_hub_download`. Downloading to a local directory does not use symlinks anymore.
+  warnings.warn(
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[test] google/ddpm-cifar10-32: 32x32, emb_dim 512, 35.7M params
+[test] injected, no active path      : max|delta| = 0.000e+00
+[test] fresh concept, untrained      : max|delta| = 0.000e+00
+[test] c0 after training c1          : max|delta| = 0.000e+00
+[test] PASS: bank attaches to a pretrained UNet, and preservation still holds
+=== celebahq-256 (the real target) ===
+/nethome/ksingara3/flash/miniconda3/envs/chunks/lib/python3.12/site-packages/huggingface_hub/utils/_validators.py:205: UserWarning: The `local_dir_use_symlinks` argument is deprecated and ignored in `hf_hub_download`. Downloading to a local directory does not use symlinks anymore.
+  warnings.warn(
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+An error occurred while trying to fetch google/ddpm-celebahq-256: google/ddpm-celebahq-256 does not appear to have a file named diffusion_pytorch_model.safetensors.
+Defaulting to unsafe serialization. Pass `allow_pickle=False` to raise an error instead.
+[test] google/ddpm-celebahq-256: 256x256, emb_dim 512, 113.7M params
+[test] injected, no active path      : max|delta| = 0.000e+00
+[test] fresh concept, untrained      : max|delta| = 0.000e+00
+[test] c0 after training c1          : max|delta| = 0.000e+00
+[test] PASS: bank attaches to a pretrained UNet, and preservation still holds
+exit=0 | Sat Aug  8 12:54:20 EDT 2026

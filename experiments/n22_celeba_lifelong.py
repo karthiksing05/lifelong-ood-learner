@@ -27,7 +27,8 @@ import torch
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from common import CACHE, RESULTS                                       # noqa: E402
-from n4_batch import cl_metrics, quality_metrics                       # noqa: E402
+from n4_batch import (cl_metrics, efficiency_metrics,                  # noqa: E402
+                      quality_metrics)
 from n19_celeba_train import build_probes                              # noqa: E402
 from n20_celeba_composition import score                               # noqa: E402
 
@@ -134,6 +135,7 @@ def main():
         tgt_rows = {t["name"]: [] for t in tasks}
         fd_rows = {t["name"]: [] for t in tasks}
         marks, learned = {}, []
+        params_curve = []
         t0 = time.time()
         for i0 in range(0, len(tasks), args.batch_size):
             grp = tasks[i0:i0 + args.batch_size]
@@ -162,6 +164,7 @@ def main():
                 tgt_rows[nm].append(sc["target"])
                 # attribute accuracy cannot see image quality collapsing; this can
                 fd_rows[nm].append(frechet_distance(S, t["ref"]))
+            params_curve.append(L.bank.n_params())
             exact = float(np.mean([float(np.array_equal(fingerprint(field, nm, seed=args.seed),
                                                         marks[nm])) for nm, _ in learned]))
             print(f"[n22:{arm}] {len(learned)}/{len(tasks)}: "
@@ -177,11 +180,14 @@ def main():
         qm = quality_metrics(fd, lower_better=True)
         stored = (len(buffer) if buffer is not None else
                   (sum(len(t["X"]) for t in tasks) if is_ttt else 0))
+        em = efficiency_metrics(acc, params_curve or [L.bank.n_params()], stored,
+                                sum(len(t["X"]) for t in tasks))
         rows.append(dict(stored_images=stored,
                          arm=arm, wall_seconds=time.time() - t0, params=L.bank.n_params(),
                          retention_exact=exact, acc_matrix=acc, target_matrix=tgt,
                          ACC_target=mt["ACC"], BWT_target=mt["BWT"], FGT_target=mt["FGT"],
-                         fd_matrix=fd, **{f"q{k}": v for k, v in qm.items()}, **m))
+                         fd_matrix=fd, params_curve=params_curve,
+                         **{f"q{k}": v for k, v in qm.items()}, **em, **m))
         print(f"[n22] -> {arm}: ACC {m['ACC']:.3f} BWT {m['BWT']:+.3f} FGT {m['FGT']:.3f} | "
               f"target ACC {mt['ACC']:.3f} FGT {mt['FGT']:.3f}\n", flush=True)
 
