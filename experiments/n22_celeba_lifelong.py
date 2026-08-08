@@ -202,7 +202,7 @@ def main():
               f"{r['params'] / 1e6:8.2f}M")
     print("\n  ACC/FGT on mean-attribute accuracy; tgtACC/tgtFGT on the ONE attribute that "
           "separates\n  each held-out combination from its nearest trained one.")
-    print(f"[n22] wrote {RESULTS}/n22_celeba_lifelong.json")
+    print(f"[n22] wrote {RESULTS}/n22_celeba_lifelong{args.tag}.json")
 
 
 if __name__ == "__main__":

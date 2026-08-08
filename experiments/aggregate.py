@@ -163,6 +163,16 @@ def _backfill(row, run):
     K = len(acc)
     bwt = float(np.mean([acc[i][-1] - acc[i][0] for i in range(K - 1)])) if K > 1 else 0.0
     out["REM"] = float(1.0 - abs(min(bwt, 0.0)))
+    # CelebA's target column was blanked by a nan-poisoned mean; recompute it here so the seeds
+    # already spent do not have to be spent again (see n4_batch.cl_metrics).
+    tgt = row.get("target_matrix")
+    if tgt:
+        fin = [r[-1] for r in tgt if len(r)]
+        if fin and not np.isfinite(row.get("ACC_target", float("nan"))):
+            with np.errstate(invalid="ignore"):
+                out["ACC_target"] = float(np.nanmean(fin))
+                fg = [np.nanmax(r) - r[-1] for r in tgt[:-1] if len(r)]
+                out["FGT_target"] = float(np.nanmean(fg)) if fg else 0.0
     cfg = run.get("config", {})
     n_stream = float(cfg.get("n_tasks", K)) * float(cfg.get("n_train", 64))
     if "stored_images" in row and n_stream > 0:
@@ -173,7 +183,8 @@ def _backfill(row, run):
 def agg_n5(runs):
     """N5 / N9: one row per method, the standard CL metrics plus what each one costs."""
     arms, keys = [], ("ACC", "BWT", "FGT", "retention_exact", "params", "wall_seconds",
-                      "qAFQ", "qAIQ", "qFR", "stored_images", "A", "REM", "MS", "SSS")
+                      "qAFQ", "qAIQ", "qFR", "stored_images", "A", "REM", "MS", "SSS",
+                      "ACC_target", "FGT_target")
     for _, r in runs:
         arms += [x["arm"] for x in r.get("rows", []) if x["arm"] not in arms]
     table = {}

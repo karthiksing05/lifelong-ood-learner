@@ -1,0 +1,72 @@
+/nethome/ksingara3/flash/miniconda3/envs/chunks/lib/python3.12/site-packages/huggingface_hub/utils/_validators.py:205: UserWarning: The `local_dir_use_symlinks` argument is deprecated and ignored in `hf_hub_download`. Downloading to a local directory does not use symlinks anymore.
+  warnings.warn(
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+An error occurred while trying to fetch google/ddpm-celebahq-256: google/ddpm-celebahq-256 does not appear to have a file named diffusion_pytorch_model.safetensors.
+Defaulting to unsafe serialization. Pass `allow_pickle=False` to raise an error instead.
+[n25] google/ddpm-celebahq-256: 256x256, 113.7M params, device cuda
+[n25] real images: Eyeglasses-only 128, Smiling-only 128, BOTH 32 (the target, never shown to either concept)
+[n25] consolidating `Eyeglasses` from 128 real images (Eyeglasses=1, other=0)
+      [Eyeglasses] epoch 1/25: 0.0099 (8s)
+      [Eyeglasses] epoch 2/25: 0.0125 (15s)
+      [Eyeglasses] epoch 3/25: 0.0167 (23s)
+      [Eyeglasses] epoch 4/25: 0.0115 (31s)
+      [Eyeglasses] epoch 5/25: 0.0078 (38s)
+      [Eyeglasses] epoch 6/25: 0.0075 (46s)
+      [Eyeglasses] epoch 7/25: 0.0215 (53s)
+      [Eyeglasses] epoch 8/25: 0.0198 (61s)
+      [Eyeglasses] epoch 9/25: 0.0121 (68s)
+      [Eyeglasses] epoch 10/25: 0.0114 (76s)
+      [Eyeglasses] epoch 11/25: 0.0138 (84s)
+      [Eyeglasses] epoch 12/25: 0.0093 (91s)
+      [Eyeglasses] epoch 13/25: 0.0083 (99s)
+      [Eyeglasses] epoch 14/25: 0.0087 (106s)
+      [Eyeglasses] epoch 15/25: 0.0104 (114s)
+      [Eyeglasses] epoch 16/25: 0.0071 (122s)
+      [Eyeglasses] epoch 17/25: 0.0101 (129s)
+      [Eyeglasses] epoch 18/25: 0.0097 (137s)
+      [Eyeglasses] epoch 19/25: 0.0115 (144s)
+      [Eyeglasses] epoch 20/25: 0.0115 (152s)
+      [Eyeglasses] epoch 21/25: 0.0106 (160s)
+      [Eyeglasses] epoch 22/25: 0.0083 (167s)
+      [Eyeglasses] epoch 23/25: 0.0105 (175s)
+      [Eyeglasses] epoch 24/25: 0.0100 (182s)
+      [Eyeglasses] epoch 25/25: 0.0080 (190s)
+[n25] consolidating `Smiling` from 128 real images (Smiling=1, other=0)
+      [Smiling] epoch 1/25: 0.0076 (8s)
+      [Smiling] epoch 2/25: 0.0162 (15s)
+      [Smiling] epoch 3/25: 0.0178 (23s)
+      [Smiling] epoch 4/25: 0.0112 (30s)
+      [Smiling] epoch 5/25: 0.0064 (38s)
+      [Smiling] epoch 6/25: 0.0060 (46s)
+      [Smiling] epoch 7/25: 0.0213 (53s)
+      [Smiling] epoch 8/25: 0.0144 (61s)
+      [Smiling] epoch 9/25: 0.0121 (68s)
+      [Smiling] epoch 10/25: 0.0113 (76s)
+      [Smiling] epoch 11/25: 0.0148 (84s)
+      [Smiling] epoch 12/25: 0.0095 (91s)
+      [Smiling] epoch 13/25: 0.0069 (99s)
+      [Smiling] epoch 14/25: 0.0082 (106s)
+      [Smiling] epoch 15/25: 0.0095 (114s)
+      [Smiling] epoch 16/25: 0.0068 (122s)
+      [Smiling] epoch 17/25: 0.0088 (129s)
+      [Smiling] epoch 18/25: 0.0092 (137s)
+      [Smiling] epoch 19/25: 0.0094 (145s)
+      [Smiling] epoch 20/25: 0.0121 (152s)
+      [Smiling] epoch 21/25: 0.0097 (160s)
+      [Smiling] epoch 22/25: 0.0089 (167s)
+      [Smiling] epoch 23/25: 0.0084 (175s)
+      [Smiling] epoch 24/25: 0.0090 (183s)
+      [Smiling] epoch 25/25: 0.0076 (190s)
+[n25] probe Eyeglasses: TPR 0.78 TNR 0.92 balanced 0.85 (usable)
+[n25] probe Smiling: TPR 0.97 TNR 0.52 balanced 0.75 (usable)
+
+[n25] google/ddpm-celebahq-256, `Eyeglasses` x `Smiling`
+    arm                 Eyeglasses     Smiling    both   vendi
+    real                      1.00        1.00    1.00    1.38
+    pretrained                0.00        0.67    0.00    1.51
+    Eyeglasses only           0.00        0.67    0.00    1.66
+    Smiling only              0.00        0.83    0.00    1.60
+    ours                      0.00        0.67    0.00    1.44
+    composable-diff           0.00        0.83    0.00    1.44
+[n25] wrote /coc/flash10/ksingara3/lifelong-ood-learner/figures/n25_pretrained_case_v2.png
+exit=0 | Sat Aug  8 13:35:11 EDT 2026

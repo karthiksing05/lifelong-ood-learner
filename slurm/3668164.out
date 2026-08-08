@@ -76,3 +76,18 @@ n20 exit=0 | Sat Aug  8 12:41:02 EDT 2026
 [n20] case 7/12 combo 86 [Smiling, Big_Nose, Oval_Face, Male, Sideburns] diff=['Smiling'] ours target 1.00 F1 0.43
 [n20] case 8/12 combo 186 [No_Beard, Smiling, Big_Nose, Big_Lips] diff=['Smiling'] ours target 1.00 F1 0.67
 [n20] case 9/12 combo 1036 [Black_Hair, No_Beard, Smiling, Big_Nose, Oval_Fa] diff=['Smiling'] ours target 1.00 F1 0.68
+[n20] case 10/12 combo 375 [Gray_Hair, No_Beard, Smiling, Big_Nose, Male] diff=['Smiling'] ours target 1.00 F1 0.51
+[n20] case 11/12 combo 1136 [Black_Hair, Wavy_Hair, No_Beard, Smiling, Big_No] diff=['Wavy_Hair', 'Smiling'] ours target 0.00 F1 0.68
+[n20] case 12/12 combo 188 [No_Beard, Smiling, Big_Nose, Big_Lips, Male] diff=['Smiling'] ours target 0.96 F1 0.63
+
+[n20] 12 held-out CelebA combinations, 24 samples each
+    method             pair  target  joint  mean_at   prec  recall     F1    div
+    real               0.88    0.59   0.36     0.83   1.00    0.89   0.94   1.01
+    ours               1.00    0.74   0.36     0.86   0.68    0.52   0.57   1.04
+    composable-diff    1.00    0.76   0.37     0.86   0.87    0.25   0.38   0.75
+    composable-mcmc    0.98    0.77   0.41     0.88   0.38    0.44   0.31   0.82
+    poe-guided         0.68    0.32   0.04     0.70   0.92    0.00   0.00   0.15
+    query-only         0.73    0.41   0.22     0.74   0.83    0.01   0.01   0.28
+    nearest-class      0.25    0.11   0.05     0.62   0.48    0.59   0.48   1.21
+[n20] wrote figures/n20_celeba_composition_pairfull.png
+n20pair exit=0 | Sat Aug  8 13:41:04 EDT 2026

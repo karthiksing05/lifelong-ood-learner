@@ -53,9 +53,15 @@ def cl_metrics(acc):
     K = len(acc)
     final = [acc[i][-1] for i in range(K)]
     bwt = [acc[i][-1] - acc[i][0] for i in range(K - 1)]          # [0] is "right after learning i"
-    fgt = [max(acc[i]) - acc[i][-1] for i in range(K - 1)]
-    return dict(ACC=float(np.mean(final)), BWT=float(np.mean(bwt)) if bwt else 0.0,
-                FGT=float(np.mean(fgt)) if fgt else 0.0)
+    fgt = [np.nanmax(acc[i]) - acc[i][-1] for i in range(K - 1)]
+    # nan-aware throughout.  On CelebA the `target` matrix legitimately contains nan for concepts
+    # whose distinguishing attribute has no usable probe, and a plain mean lets ONE such entry blank
+    # the entire column -- which it did: every tgtACC/tgtFGT in the first full run came out nan while
+    # the per-step prints showed real values (0.250, 0.516, 0.550).
+    with np.errstate(invalid="ignore"):
+        return dict(ACC=float(np.nanmean(final)) if len(final) else float("nan"),
+                    BWT=float(np.nanmean(bwt)) if bwt else 0.0,
+                    FGT=float(np.nanmean(fgt)) if fgt else 0.0)
 
 
 def efficiency_metrics(acc, params, stored, n_train_total, params0=None):
@@ -84,8 +90,8 @@ def efficiency_metrics(acc, params, stored, n_train_total, params0=None):
         return {}
     # lower triangle: acc[i][t] exists only for steps at or after concept i was learned
     tri = [v for row in acc for v in row]
-    A = float(np.mean(tri)) if tri else float("nan")
-    bwt = np.mean([acc[i][-1] - acc[i][0] for i in range(K - 1)]) if K > 1 else 0.0
+    A = float(np.nanmean(tri)) if tri else float("nan")
+    bwt = np.nanmean([acc[i][-1] - acc[i][0] for i in range(K - 1)]) if K > 1 else 0.0
     rem = float(1.0 - abs(min(float(bwt), 0.0)))
     p0 = float(params0 if params0 else (params[0] if np.ndim(params) else params))
     pk = np.atleast_1d(np.asarray(params, float))

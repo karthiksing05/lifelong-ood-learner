@@ -126,3 +126,15 @@ n5 exit=0 | Sat Aug  8 12:12:35 EDT 2026
 [n22] -> der++: ACC 0.860 BWT +0.003 FGT 0.010 | target ACC nan FGT nan
 
 [n22:ewc] 3/12: mean-attr 0.833, target 0.125, exact 1.00, 2.91M, 74s
+[n22:ewc] 6/12: mean-attr 0.868, target 0.263, exact 0.50, 5.08M, 194s
+[n22:ewc] 9/12: mean-attr 0.825, target 0.242, exact 0.33, 7.26M, 326s
+[n22:ewc] 12/12: mean-attr 0.861, target 0.225, exact 0.25, 9.44M, 510s
+[n22] -> ewc: ACC 0.861 BWT +0.009 FGT 0.007 | target ACC nan FGT nan
+
+[n22:si] 3/12: mean-attr 0.840, target 0.125, exact 1.00, 2.91M, 76s
+[n22:si] 6/12: mean-attr 0.859, target 0.250, exact 0.50, 5.08M, 197s
+[n22:si] 9/12: mean-attr 0.833, target 0.250, exact 0.33, 7.26M, 331s
+[n22:si] 12/12: mean-attr 0.851, target 0.175, exact 0.25, 9.44M, 514s
+[n22] -> si: ACC 0.851 BWT +0.007 FGT 0.013 | target ACC nan FGT nan
+
+[n22:mas] 3/12: mean-attr 0.840, target 0.125, exact 1.00, 2.91M, 73s
