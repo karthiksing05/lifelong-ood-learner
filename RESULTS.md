@@ -1830,15 +1830,19 @@ Every combination in which both are ON is withheld -- 14620 images across 111 co
 direct analogue of ColorMNIST's held-out `(fg, bg)` pairs, and the two attributes are adjacent facial
 regions that jointly reshape the lower face, so the split is not separable.
 
-`pair` = both attributes correct AT ONCE. 12 held-out combinations, 24 samples each.
+`pair` = both attributes correct AT ONCE. 12 held-out combinations, 24 samples each, **3 seeds**.
 
 | method | **pair** | target | joint | mean-attr | precision | recall | F1 | content div |
 |---|---|---|---|---|---|---|---|---|
-| *real held-out images* | *0.53* | *0.79* | *0.27* | *0.83* | *1.00* | *0.87* | *0.93* | *0.99* |
-| **ours** (composed vector, 0 params) | **0.72** | **0.86** | **0.34** | **0.86** | 0.70 | 0.58 | 0.60 | 1.05 |
-| `query-only` | 0.60 | 0.86 | 0.16 | 0.78 | 0.76 | **0.04** | **0.06** | 0.31 |
-| `poe-guided` (the published method) | 0.22 | 0.55 | 0.06 | 0.62 | 0.16 | **0.00** | **0.00** | 0.44 |
-| `nearest-class` (retrieval control) | **0.10** | 0.24 | 0.02 | 0.60 | 0.51 | 0.60 | 0.52 | 1.20 |
+| *real held-out images* | *0.801 ± 0.137* | *0.656* | *0.343* | *0.827* | *1.000* | *0.884* | *0.937* | *1.007* |
+| **ours** (composed vector, 0 params) | **0.903 ± 0.094** | **0.727** | **0.367** | **0.850** | 0.667 | 0.579 | 0.598 | 1.068 |
+| `query-only` | 0.777 ± 0.117 | 0.620 | 0.263 | 0.778 | 0.804 | **0.018** | **0.031** | 0.295 |
+| `poe-guided` (the published method) | 0.463 ± 0.140 | 0.436 | 0.105 | 0.593 | 0.145 | **0.000** | **0.000** | 0.432 |
+| `nearest-class` (retrieval control) | **0.355 ± 0.186** | 0.235 | 0.082 | 0.628 | 0.477 | 0.630 | 0.505 | 1.212 |
+
+**Seed spread on `pair` is large (±0.09–0.19) and single-seed numbers mislead here** — seed 0 alone
+reads `ours` 0.72 and `nearest-class` 0.10, against 3-seed means of 0.903 and 0.355. The orderings
+hold on every seed; the magnitudes do not, which is why only the pooled table is quoted.
 
 ### The weaker split: 24 whole combinations withheld
 
@@ -1853,21 +1857,21 @@ regions that jointly reshape the lower face, so the split is not separable.
 ### What this settles, and what it does not
 
 **Composing known factor values produces a combination that was never observed, when the factors
-overlap the same pixels.** On the strong split the composed vector reaches `pair` **0.72** where
-retrieval from the nearest trained combination reaches **0.10** -- and retrieval failing is not a
-weak baseline but a structural fact, since every trained neighbour differs on at least one of the two
-withheld attributes. Threat 7 is addressed rather than deferred.
+overlap the same pixels.** On the strong split the composed vector reaches `pair` **0.903 +/- 0.094**
+where retrieval from the nearest trained combination reaches **0.355 +/- 0.186** -- and retrieval
+falling short is not a weak baseline but a structural fact, since every trained neighbour differs on
+at least one of the two withheld attributes. Threat 7 is addressed rather than deferred.
 
-**Scoring above the real-image ceiling is expected here.** `ours` at 0.72 against real images at 0.53
-repeats what E0 recorded on ColorMNIST: a generated sample is a cleaner, more prototypical rendering
+**Scoring above the real-image ceiling is expected here.** `ours` at 0.903 against real images at
+0.801 repeats what E0 recorded on ColorMNIST: a generated sample is a cleaner, more prototypical rendering
 than a photograph, and a linear probe reads it more easily. It means the probe ceiling is not a hard
 bound on generated data, not that composition beats reality; the informative comparison is against the
 baselines, all of which are scored the same way.
 
 **Both published baselines fail in the documented way.** `poe-guided` reaches recall 0.00 and F1 0.00
 on both splits at content diversity 0.38-0.44 -- it emits near-copies. `query-only` is the sharper
-demonstration: on the strong split it scores `pair` 0.60, respectable attribute accuracy, at recall
-**0.04** and diversity **0.31**. It is reproducing the query, which happens to carry the right
+demonstration: on the strong split it scores `pair` 0.777, close to the real-image ceiling, at recall
+**0.018 +/- 0.009** and diversity **0.295**. It is reproducing the query, which happens to carry the right
 attributes because it is an image of the target combination. Attribute accuracy alone cannot separate
 composing from copying; that is why coverage is reported beside it everywhere in this document.
 
