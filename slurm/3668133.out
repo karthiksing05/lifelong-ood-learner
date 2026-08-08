@@ -37,3 +37,4 @@
 [n5] -> der++: ACC 0.839, BWT -0.023, FGT 0.051
 
 [n5:ewc] 3/12 tasks: mean acc 0.73, exact 1.00, 2.20M, 37s
+[n5:ewc] 6/12 tasks: mean acc 0.78, exact 0.50, 3.86M, 87s

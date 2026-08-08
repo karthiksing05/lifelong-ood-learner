@@ -12,8 +12,10 @@ The loop is the method. A query arrives; the system decides *for itself* whether
 parts cost a small kept delta; the result is registered and every earlier concept is certified
 bit-identical. Nothing in the loop retrains the backbone.
 
-**Relation to prior work.** Wang et al., *Test-Time Compositional Generalization in Diffusion Models
-via Concept Discovery*, supply the first three stages (discover → select → compose → sample) and stop
+**Relation to prior work.** See [RELATED.md](RELATED.md) for the full positioning, which baselines
+are fair for this setting and which are not, and the citation hazards found while checking. Wang et
+al., *Test-Time Compositional Generalization in Diffusion Models via Concept Discovery*, supply the
+first three stages (discover → select → compose → sample) and stop
 where this repository begins: they distil one flat `(LoRA, c_new)` pair per query **and discard it**,
 naming the gap in their own conclusion — *"a full mechanism for detecting, consolidating, and reusing
 genuinely new primitives remains an important direction for future work."* Everything below the
@@ -54,6 +56,18 @@ scores **0.903 ± 0.094** where retrieval from the nearest trained combination r
 0.186**, and retrieval falling short is structural: every trained neighbour differs on at least one
 of the two. The published method reaches precision **0.944** here — its samples are plausible faces —
 at recall **0.000**.
+
+**One baseline is genuinely competitive here, and the honest statement is narrow.** Composable
+Diffusion (Liu et al. 2022) — zero parameters, no training — reaches `pair` **0.73** against our
+**0.71** when run at the guidance scale that maximises its own metric. It buys that by collapsing
+coverage: across the scale sweep its precision climbs 0.38 → 0.92 while recall falls 0.61 → 0.30 and
+content diversity falls to **0.77**, passing *through* real data's 1.01. We reach equivalent accuracy
+at roughly twice the coverage, and that is the whole of the CelebA composition claim. On ColorMNIST
+the same operator scores **0.000 at every scale across a 23× range**, because that backbone has no
+per-factor conditional for score addition to combine. **The composition result is therefore
+benchmark-dependent** — it identifies *when* the cheaper operator suffices — and RESULTS §9g gives the
+full sweep. What is not affected is anything below: composable diffusion produces a sample and keeps
+nothing.
 
 ![CelebA case study](figures/f10_case_celeba.png)
 
@@ -131,6 +145,15 @@ Kept here rather than in a footnote, because several shaped the design.
   this data scale (measured: 34% of ceiling, unmoved by 2.3× data), so conditioning is factored by
   construction. CelebA tests whether composing known values *renders* when they overlap — not whether
   the basis can be found.
+- **The composition operator is not better than score addition on CelebA.** Run at its own best
+  scale, Composable Diffusion matches us on `pair` accuracy (0.73 vs 0.71) with zero parameters and
+  no training; we win on coverage, not on accuracy. The operator is inherited from prior work and
+  improved only on the benchmark where no per-factor conditional exists (RESULTS §9g).
+- **Every score-addition method here, ours included, samples the wrong distribution.** Du et al.
+  (ICML 2023) show the sum of diffused scores is the score of the *product of diffused marginals*,
+  not the *diffusion of the product*, so the sampler — not the model — is the error source. Their
+  MCMC correction is reported as `composable-mcmc`; it does not rescue ColorMNIST, where the missing
+  ingredient is a per-factor conditional rather than a better sampler.
 
 ## Reproducing
 
