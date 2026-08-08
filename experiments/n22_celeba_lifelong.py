@@ -60,6 +60,8 @@ def main():
     p.add_argument("--steps", type=int, default=50)
     p.add_argument("--seed", type=int, default=0)
     p.add_argument("--arms", nargs="+", default=list(ARMS))
+    p.add_argument("--tag", default="", help="suffix for the output file; --quick runs use one "
+                                             "so a smoke can never overwrite a full result")
     p.add_argument("--ewc-lambda", type=float, default=5000.0)
     p.add_argument("--quick", action="store_true")
     args = p.parse_args()
@@ -150,7 +152,7 @@ def main():
               f"target ACC {mt['ACC']:.3f} FGT {mt['FGT']:.3f}\n", flush=True)
 
     save_json(dict(rows=rows, config=vars(args)),
-              os.path.join(RESULTS, "n22_celeba_lifelong.json"), seed=args.seed)
+              os.path.join(RESULTS, f"n22_celeba_lifelong{args.tag}.json"), seed=args.seed)
     print(f"\n[n22] class-incremental CelebA, {len(tasks)} held-out combinations of REAL images")
     print(f"    {'arm':13s}{'ACC':>7s}{'BWT':>9s}{'FGT':>8s}{'tgtACC':>8s}{'tgtFGT':>8s}"
           f"{'exact':>8s}{'params':>9s}")

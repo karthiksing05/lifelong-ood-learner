@@ -21,8 +21,12 @@ go () { "${SUB[@]}" --export=ALL,SCRIPT="$1" experiments/run_gpu.sh | tail -1; }
 find . -name __pycache__ -type d -exec rm -rf {} + 2>/dev/null
 sync
 
+# A smoke run MUST NOT write where a full run writes.  Every experiment saves to
+# results/<name><tag>.json, so --quick runs get their own tag; without it a smoke that finishes
+# after a full run silently replaces a 12-case result with a 2-case one, and aggregate.py then
+# reports the smoke as if it were the real thing.  (This happened: n21/n20/n22 were clobbered.)
 Q=""
-[ "$MODE" = smoke ] && Q=" --quick"
+[ "$MODE" = smoke ] && Q=" --quick --tag _smoke"
 
 case "$MODE" in
   smoke|full)

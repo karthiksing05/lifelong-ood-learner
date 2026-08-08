@@ -63,6 +63,8 @@ def main():
     p.add_argument("--epochs", type=int, default=40)
     p.add_argument("--n-adapter-combos", type=int, default=4)
     p.add_argument("--seed", type=int, default=0)
+    p.add_argument("--tag", default="", help="suffix for the output file; --quick runs use one "
+                                             "so a smoke can never overwrite a full result")
     p.add_argument("--skip-adapter", action="store_true")
     p.add_argument("--quick", action="store_true")
     args = p.parse_args()
@@ -223,7 +225,7 @@ def main():
                  fontsize=8)
     fig.tight_layout()
     os.makedirs(FIG, exist_ok=True)
-    fig.savefig(os.path.join(FIG, f"n21_celeba_vocabulary_{args.attr}.png"), dpi=140,
+    fig.savefig(os.path.join(FIG, f"n21_celeba_vocabulary_{args.attr}{args.tag}.png"), dpi=140,
                 bbox_inches="tight")
     plt.close(fig)
 
@@ -241,7 +243,7 @@ def main():
                    adapter_marginal=marginal, extension=hist["final"],
                    preservation=float(np.mean(ident)) if ident else float("nan"),
                    ckpt=os.path.basename(args.ckpt)),
-              os.path.join(RESULTS, f"n21_celeba_vocabulary_{args.attr}.json"), seed=args.seed)
+              os.path.join(RESULTS, f"n21_celeba_vocabulary_{args.attr}{args.tag}.json"), seed=args.seed)
 
     print(f"\n[n21] new vocabulary item {args.attr}, never seen ON by the backbone")
     print(f"    {'arm':30s}{args.attr[:8]:>9s}{'joint':>7s}{'mean_at':>9s}"
