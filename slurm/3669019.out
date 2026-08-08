@@ -42,3 +42,16 @@
 [n4:hier:batch] step 1/6 (2 concepts): mean acc 0.56, exact retention 1.00, 2.20M params, 53s
 [n4:hier:batch] step 2/6 (4 concepts): mean acc 0.55, exact retention 1.00, 3.31M params, 111s
 [n4:hier:batch] step 3/6 (6 concepts): mean acc 0.43, exact retention 1.00, 4.96M params, 178s
+[n4:hier:batch] step 4/6 (8 concepts): mean acc 0.44, exact retention 1.00, 6.06M params, 249s
+[n4:hier:batch] step 5/6 (10 concepts): mean acc 0.45, exact retention 1.00, 7.72M params, 332s
+[n4:hier:batch] step 6/6 (12 concepts): mean acc 0.38, exact retention 1.00, 9.37M params, 429s
+[n4] -> hier/batch: 429s, ACC 0.375, BWT +0.000, FGT 0.000
+
+[n4:hier:sequential] step 1/12 (1 concepts): mean acc 0.62, exact retention 1.00, 1.10M params, 38s
+[n4:hier:sequential] step 2/12 (2 concepts): mean acc 0.81, exact retention 1.00, 1.65M params, 81s
+[n4:hier:sequential] step 3/12 (3 concepts): mean acc 0.54, exact retention 1.00, 2.20M params, 127s
+[n4:hier:sequential] step 4/12 (4 concepts): mean acc 0.66, exact retention 1.00, 2.76M params, 176s
+[n4:hier:sequential] step 5/12 (5 concepts): mean acc 0.70, exact retention 1.00, 3.31M params, 227s
+[n4:hier:sequential] step 6/12 (6 concepts): mean acc 0.58, exact retention 1.00, 3.86M params, 283s
+[n4:hier:sequential] step 7/12 (7 concepts): mean acc 0.64, exact retention 1.00, 4.41M params, 341s
+[n4:hier:sequential] step 8/12 (8 concepts): mean acc 0.58, exact retention 1.00, 4.96M params, 401s

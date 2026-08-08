@@ -2647,6 +2647,46 @@ rule is better, and that is worth stating rather than presenting the elegant one
 **Recommendation adopted:** train concept adapters at high noise levels. It costs nothing, it is one
 line, and it improves composition and coverage on both backbones tested.
 
+## 15. Batch addition on a pretrained backbone (N26), and where its speedup actually comes from
+
+"Do not learn one instance at a time into the manifold" is a requirement, not a preference: a stream
+that arrives in groups must be absorbed in groups or the cost of the manifold becomes the cost of its
+history. N4 established batch addition on our own 6.8M UNet — **1.7× faster** than K sequential
+consolidations at identical accuracy, retention still exactly 1.000, and genuinely shared nodes (6
+against 3). N26 asks the same of `google/ddpm-celebahq-256`, and needs its own trainer, because
+`consolidate_batch` samples our cosine schedule and a pretrained DDPM has its own.
+
+4 concepts (`Eyeglasses`, `Smiling`, `Wearing_Hat`, `Male`), 96 real images each, 40 epochs:
+
+| arm | wall | attribute rate | Vendi | nodes | shared | **bit-identical** | params |
+|---|---|---|---|---|---|---|---|
+| sequential (4 optimizations) | 777s | **0.75** | 1.46 | 5 | 3 | **1.00** | 0.98M |
+| batch (1 optimization) | 777s | 0.58 | 1.42 | 5 | 3 | **1.00** | 0.98M |
+| batch-shared (1 optimization, group node) | 783s | 0.67 | 1.45 | 6 | **6** | **1.00** | 1.18M |
+
+**The requirement is met: K concepts go in as one update, and every concept is still bit-identical
+afterwards on a 113.7M-parameter model we did not train.** `batch-shared` additionally creates twice
+the sharing (6 shared node-uses against 3), which is the thing a sequential run structurally cannot
+do — a shared ancestor accumulates gradient from all K members inside one optimization, where
+sequential can only hand a later concept a frozen warm start.
+
+**But there is no wall-clock speedup here (1.00×), and that is the more useful finding.** Comparing
+against N4's 1.7× locates where batching actually pays:
+
+> Batch addition amortizes the **generative pool sampling**, not the optimizer. On ColorMNIST each
+> concept needs a pool sampled from the model — one reverse-diffusion run instead of K is the whole
+> saving. Here the concepts are trained on **real images**, so there is no pool, and interleaving K
+> concepts' minibatches costs exactly the same number of optimizer steps as running them in sequence.
+
+So the efficiency claim should be stated conditionally rather than generally: batching is a large win
+when concepts are distilled from *generated* pools, and a wash when they come from *real* data. What
+it buys unconditionally is the shared structure and the preservation guarantee, both of which hold on
+both backbones.
+
+Attribute rates (0.75 / 0.58 / 0.67) are over 4 samples × 4 concepts and the differences are within
+what that resolution can distinguish; the honest reading is that batching does not *improve* concept
+quality, and the case for it rests on cost and sharing.
+
 ## 8. Where the numbers come from
 
 | experiment | file | scale run |

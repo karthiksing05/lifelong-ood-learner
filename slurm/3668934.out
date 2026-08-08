@@ -41,3 +41,17 @@ Defaulting to unsafe serialization. Pass `allow_pickle=False` to raise an error 
 An error occurred while trying to fetch google/ddpm-celebahq-256: google/ddpm-celebahq-256 does not appear to have a file named diffusion_pytorch_model.safetensors.
 Defaulting to unsafe serialization. Pass `allow_pickle=False` to raise an error instead.
       [Eyeglasses+Smiling+Wearing_Hat+Male] ep 10/40: 0.0003 (196s)
+      [Eyeglasses+Smiling+Wearing_Hat+Male] ep 20/40: 0.0003 (392s)
+      [Eyeglasses+Smiling+Wearing_Hat+Male] ep 30/40: 0.0002 (587s)
+      [Eyeglasses+Smiling+Wearing_Hat+Male] ep 40/40: 0.0002 (783s)
+[n26] batch-shared   wall    783s  attr 0.67  vendi 1.45  nodes 6 (+6 shared)  exact 1.00  1.18M
+
+[n26] 4 concepts into google/ddpm-celebahq-256
+    arm             wall(s)   attr  vendi  nodes  shared  exact
+    sequential          777   0.75   1.46      5       3   1.00
+    batch               777   0.58   1.42      5       3   1.00
+    batch-shared        783   0.67   1.45      6       6   1.00
+    -> batch is 1.00x faster than sequential
+    -> batch-shared is 0.99x faster than sequential
+[n26] wrote /coc/flash10/ksingara3/lifelong-ood-learner/figures/n26_batch_pretrained_v1.png
+exit=0 | Sat Aug  8 16:43:48 EDT 2026
