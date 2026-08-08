@@ -3,3 +3,12 @@
 
 [diag] MCMC corrector: 10 Langevin steps per denoising step, guidance scale fixed at 1.0
 
+       lam   joint  digit    fg    bg   prec  recall     F1   dens    cov
+      0.02   0.000  0.083  0.65  0.06  0.021   0.000  0.000   0.02   0.01
+      0.05   0.000  0.042  0.65  0.04  0.000   0.007  0.000   0.00   0.00
+      0.10   0.000  0.021  0.71  0.08  0.042   0.000  0.000   0.04   0.01
+      0.30   0.000  0.021  0.75  0.23  0.229   0.350  0.000   0.22   0.01
+
+[diag] best joint accuracy at lam 0.020 (joint 0.000, F1 0.000)
+[diag] joint accuracy is 0.000 at EVERY setting -- this is the operator's precondition failing, not a tuning failure: with only entangled slot conditionals there is no per-factor score to add.
+exit=0 | Sat Aug  8 11:16:08 EDT 2026

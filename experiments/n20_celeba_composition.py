@@ -294,7 +294,7 @@ def main():
     plt.close(fig)
 
     keys = ("pair", "target", "joint", "mean_attr", "precision", "recall", "f1",
-            "density", "coverage", "frechet", "content_ratio")
+            "density", "coverage", "frechet", "content_ratio", "vendi")
     summary = {a: {k: float(np.nanmean([x[k] for x in rows if x["arm"] == a])) for k in keys}
                for a in order}
     save_json(dict(rows=rows, summary=summary, n_cases=len(cases), guidance=args.guidance,

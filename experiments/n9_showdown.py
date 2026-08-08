@@ -104,9 +104,12 @@ def main():
                    help="real held-out images actually move the shared path; composed pools do not")
     p.add_argument("--stream-train", type=int, default=64, help="real images per follow-on concept")
     p.add_argument("--seed", type=int, default=0)
+    p.add_argument("--tag", default="", help="suffix for the output file; --quick forces one so a "
+                                             "smoke can never overwrite a full result")
     p.add_argument("--quick", action="store_true")
     args = p.parse_args()
     if args.quick:
+        args.tag = args.tag or "_smoke"
         args.n_cases, args.n_samples, args.n_per_slot = 2, 12, 20
         args.steps, args.inv_steps, args.epochs, args.stream_len = 20, 60, 4, 2
         args.stream_train = 16
@@ -296,15 +299,17 @@ def main():
                  fontsize=8)
     fig.tight_layout()
     os.makedirs(FIG, exist_ok=True)
-    fig.savefig(os.path.join(FIG, "n9_showdown.png"), dpi=140, bbox_inches="tight")
+    fig.savefig(os.path.join(FIG, f"n9_showdown{args.tag}.png"), dpi=140, bbox_inches="tight")
     plt.close(fig)
 
     arms = order
     summary = {a: {k: float(np.nanmean([x[k] for x in rows if x["arm"] == a]))
                    for k in ("joint", "digit", "fg", "bg", "precision", "recall", "f1",
-                             "density", "coverage", "frechet", "content_ratio")}
+                             "density", "coverage", "frechet", "content_ratio",
+                             "vendi", "memorized")}
                for a in arms if any(x["arm"] == a for x in rows)}
-    save_json(dict(rows=rows, summary=summary), os.path.join(RESULTS, "n9_showdown.json"),
+    save_json(dict(rows=rows, summary=summary),
+              os.path.join(RESULTS, f"n9_showdown{args.tag}.json"),
               seed=args.seed)
     print(f"\n[n9] {len(cases)} held-out compositions, {args.n_samples} samples each")
     print(f"    {'method':18s}{'acc':>6s}{'digit':>7s}{'fg':>5s}{'bg':>5s}"
@@ -315,7 +320,8 @@ def main():
         v = summary[a]
         print(f"    {a:18s}{v['joint']:6.2f}{v['digit']:7.2f}{v['fg']:5.2f}{v['bg']:5.2f}"
               f"{v['precision']:7.2f}{v['recall']:8.2f}{v['f1']:7.2f}{v['content_ratio']:13.2f}")
-    print(f"[n9] wrote figures/n9_showdown.png and {RESULTS}/n9_showdown.json")
+    print(f"[n9] wrote figures/n9_showdown{args.tag}.png and "
+          f"{RESULTS}/n9_showdown{args.tag}.json")
 
 
 if __name__ == "__main__":

@@ -6,3 +6,27 @@
 [n5:ours] 12/12 tasks: mean acc 0.79, exact 1.00, 8.82M, 314s
 [n5] -> ours: ACC 0.792, BWT +0.000, FGT 0.000
 
+[n5:independent] 3/12 tasks: mean acc 0.79, exact 1.00, 2.20M, 41s
+[n5:independent] 6/12 tasks: mean acc 0.83, exact 1.00, 3.86M, 89s
+[n5:independent] 9/12 tasks: mean acc 0.85, exact 1.00, 5.51M, 142s
+[n5:independent] 12/12 tasks: mean acc 0.84, exact 1.00, 7.16M, 200s
+[n5] -> independent: ACC 0.839, BWT +0.000, FGT 0.000
+
+[n5:finetune] 3/12 tasks: mean acc 0.73, exact 1.00, 2.20M, 42s
+[n5:finetune] 6/12 tasks: mean acc 0.78, exact 0.50, 3.86M, 90s
+[n5:finetune] 9/12 tasks: mean acc 0.78, exact 0.33, 5.51M, 144s
+[n5:finetune] 12/12 tasks: mean acc 0.71, exact 0.25, 7.16M, 204s
+[n5] -> finetune: ACC 0.714, BWT -0.125, FGT 0.153
+
+[n5:replay] 3/12 tasks: mean acc 0.73, exact 1.00, 2.20M, 42s
+[n5:replay] 6/12 tasks: mean acc 0.82, exact 0.50, 3.86M, 116s
+[n5:replay] 9/12 tasks: mean acc 0.71, exact 0.33, 5.51M, 219s
+[n5:replay] 12/12 tasks: mean acc 0.48, exact 0.25, 7.16M, 356s
+[n5] -> replay: ACC 0.479, BWT -0.307, FGT 0.312
+
+[n5:gen-distill] 3/12 tasks: mean acc 0.73, exact 1.00, 2.20M, 42s
+[n5:gen-distill] 6/12 tasks: mean acc 0.81, exact 0.50, 3.86M, 130s
+[n5:gen-distill] 9/12 tasks: mean acc 0.81, exact 0.33, 5.51M, 271s
+[n5:gen-distill] 12/12 tasks: mean acc 0.77, exact 0.25, 7.16M, 473s
+[n5] -> gen-distill: ACC 0.771, BWT -0.028, FGT 0.057
+
