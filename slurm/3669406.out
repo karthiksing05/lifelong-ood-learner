@@ -53,3 +53,16 @@
 [n4:hier:sequential] step 9/12 (9 concepts): mean acc 0.39, exact retention 1.00, 5.51M params, 353s
 [n4:hier:sequential] step 10/12 (10 concepts): mean acc 0.44, exact retention 1.00, 6.06M params, 411s
 [n4:hier:sequential] step 11/12 (11 concepts): mean acc 0.40, exact retention 1.00, 6.61M params, 470s
+[n4:hier:sequential] step 12/12 (12 concepts): mean acc 0.37, exact retention 1.00, 7.16M params, 532s
+[n4] -> hier/sequential: 532s, ACC 0.370, BWT +0.000, FGT 0.000
+
+
+[n4] 12 OOD concepts, batch size 12
+    arm            mode  wall(s)  speedup    ACC     BWT    FGT  exact   params  shared
+    hier          batch      249     2.14x  0.422  +0.000  0.000   1.00    7.72M       2
+    hier     sequential      532     1.00x  0.370  +0.000  0.000   1.00    7.16M       4
+
+  ACC final mean accuracy | BWT backward transfer (0 = no forgetting) | FGT forgetting measure
+  exact = fraction of concepts still bit-identical to birth
+[n4] wrote /coc/flash10/ksingara3/lifelong-ood-learner/results/n4_batch.json
+exit=0 | Sat Aug  8 18:12:46 EDT 2026

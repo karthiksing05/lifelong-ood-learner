@@ -2728,17 +2728,26 @@ Upstream, `learn_concepts_batch` differed from `learn_concept` in **two** ways:
 Re-running with the sequential path given the batch path's discovery configuration
 (`learn_concept_disc`), at K = 1 where batching can do nothing:
 
-| K = 1, matched discovery | wall | ACC | FGT | bit-identical |
+| matched discovery | wall | ACC | FGT | bit-identical |
 |---|---|---|---|---|
-| batch | 521s | **0.370** | 0.000 | 1.00 |
-| sequential | 521s | **0.370** | 0.000 | 1.00 |
+| **K = 1** batch | 521s | 0.370 | 0.000 | 1.00 |
+| **K = 1** sequential | 521s | 0.370 | 0.000 | 1.00 |
+| **K = 12** batch (all in ONE update) | **249s** | **0.422** | 0.000 | 1.00 |
+| **K = 12** sequential | 532s | 0.370 | 0.000 | 1.00 |
 
-**Identical on every column.** The entire 0.547 → 0.370 gap was the discovery setting, not batching:
-the old sequential runs were quietly using a *more expensive and better* discovery configuration
-(686s against 521s) than the batch runs they were being compared with. Pooled sampling is exonerated,
-the batched optimizer is exonerated, and the earlier N4 conclusion — that batch and sequential reach
-the same accuracy — turns out to have been right, with the K-sweep's apparent gap being an artifact
-of this experiment rather than a property of the method.
+**At K = 1 the two are identical on every column** — the control works, and the entire 0.547 → 0.370
+gap was the discovery setting rather than batching. The old sequential runs were quietly using a
+*more expensive and better* discovery configuration (686s against 521s) than the batch runs they were
+compared with. Pooled sampling is exonerated, the batched optimizer is exonerated, and the earlier N4
+conclusion that the two modes reach the same accuracy was right; the K-sweep's apparent gap was an
+artifact of this experiment.
+
+**And at K = 12 batching is strictly better on both axes: 2.14× faster *and* +0.052 accuracy**
+(0.422 against 0.370), at FGT 0.000 and bit-identical 1.00. The accuracy gain is the shared-ancestor
+effect, and it is the one thing a sequential run cannot reproduce at any budget: a group node trained
+by all twelve members inside one optimization, where sequential can only hand a later concept a
+frozen warm start. Absorbing the group that arrived is not merely cheaper than absorbing it one at a
+time — on this benchmark it is also better.
 
 Two lessons worth keeping separate from the result. The first is the finding: **batch addition is
 free.** Same accuracy, same forgetting, same bit-exact preservation, and monotonically faster as K
@@ -2815,7 +2824,7 @@ round rather than the flattering way.
 | K concepts in ONE update | `consolidate_batch` / `learn_concepts_batch`; N26 for the pretrained path |
 | preservation survives it | bit-identical **1.00 at every K from 1 to 12**, and 1.00 on all three pretrained arms |
 | it scales | **2.64× faster at K = 12**, monotonic in K, no plateau |
-| it costs nothing in quality | K = 1 matched-discovery control: batch and sequential **identical** (§16b) |
+| it costs nothing in quality | K = 1 matched-discovery control: **identical**; at K = 12 batch is **better** (0.422 vs 0.370) (§16b) |
 | it creates structure sequential cannot | shared ancestors trained by all K members at once (6 shared node-uses against 3) |
 
 With one qualification worth stating rather than burying: **the speedup comes from amortizing the

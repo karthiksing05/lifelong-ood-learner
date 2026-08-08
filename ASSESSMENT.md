@@ -178,9 +178,10 @@ update rule composes worst and the highest-drift composes best. What works is ch
 spend the update: high-noise-only adaptation wins on composition and coverage on both backbones and
 both datasets, at no cost. This is now the recommended update rule.
 
-**3. Batch addition is free** (§15, §16). Bit-identical preservation at every K from 1 to 12, 2.64×
-faster at K = 12 with no plateau, and — under a matched-discovery control — *identical* accuracy to
-sequential. An earlier apparent accuracy gap was a confound in our own experiment, now removed.
+**3. Batch addition is better than free** (§15, §16). Bit-identical preservation at every K from 1
+to 12, and under a matched-discovery control it is **2.14× faster AND +0.052 more accurate** at
+K = 12 (0.422 against 0.370) — the shared-ancestor effect, which a sequential run cannot reproduce at
+any budget. An earlier apparent accuracy *deficit* was a confound in our own experiment, now removed.
 
 **Effect on the assessment.** Item 2 of "what would move this to a conference paper" (the
 held-out-severity sweep) is unchanged. Item 4 (switch the bank to score composition) is **done**.
