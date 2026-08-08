@@ -2370,6 +2370,41 @@ The composition stage should therefore be presented as **inherited and character
 improved: the useful contribution there is knowing *when* score addition suffices (CelebA: it does,
 and better) and when it cannot work at all (ColorMNIST: no per-factor conditional exists).
 
+### 11d. ColorMNIST, re-run with the guidance calibrated (3 seeds)
+
+The pool-guidance weight had been left at 1.0 on this benchmark while CelebA calibrated its own
+(§10 / `tests/diag_ours_quality.py`).  Calibrating it label-free on TRAINED slots selects **1.5**
+(trained-slot joint 0.969 against 0.781 at 1.0, and 0.062 at 3.0 where the colour factor breaks).
+Re-running the whole showdown with it:
+
+| method | joint | digit | fg | bg | precision | recall | F1 | Vendi | content div | memorized |
+|---|---|---|---|---|---|---|---|---|---|---|
+| *real* | *0.864±0.023* | *0.864* | *1.000* | *0.997* | *1.000* | *0.939* | *0.969* | *1.901* | *0.991* | *0.000* |
+| **ours** | 0.539±0.025 | 0.739 | 0.828 | 0.911 | 0.561 | 0.778 | **0.605±0.043** | **1.942** | **1.112** | 0.000 |
+| poe-guided | **0.839±0.049** | 0.997 | 0.983 | 0.856 | 0.839 | 0.001 | 0.003±0.003 | 1.075 | 0.269 | 0.000 |
+| composable-diff | 0.000 | 0.144 | 0.458 | 0.192 | 0.022 | 0.134 | 0.030 | 2.222 | 1.223 | 0.000 |
+| composable-mcmc | 0.003 | 0.264 | 0.667 | 0.122 | 0.056 | 0.134 | 0.000 | 1.617 | 0.678 | 0.000 |
+| inversion (span) | 0.403±0.035 | 0.656 | 0.858 | 0.728 | 0.489 | 0.799 | 0.545 | 2.015 | 1.075 | 0.000 |
+| inversion-free | 0.169±0.080 | 0.461 | 0.628 | 0.672 | 0.242 | 0.845 | 0.332 | 2.473 | 1.244 | 0.000 |
+| nearest-class | 0.000 | 0.225 | 0.933 | 0.000 | 0.008 | 0.066 | 0.005 | 1.874 | 1.050 | 0.000 |
+| finetune-stream | 0.542±0.061 | 0.753 | 0.850 | 0.872 | 0.572 | 0.799 | 0.626 | 1.952 | 1.101 | 0.000 |
+
+**Our headline ColorMNIST number moves from F1 0.498±0.030 to 0.605±0.043**, and joint accuracy from
+roughly 0.31 to 0.539±0.025, entirely from calibrating a knob that had been left at its default.
+Backgrounds go 0.82 → 0.911.  Nothing about the method changed.
+
+Three further readings:
+
+- **Vendi confirms the coverage story without a reference set.**  Ours is 1.942 against real data's
+  1.901 -- we match the spread of the class -- while `poe-guided` is at 1.075, i.e. barely more than
+  one effective mode, which is what recall 0.001 means stated a different way.
+- **Nothing is memorizing.**  MOSAIC's copying test is 0.000 for every arm, so no method here is
+  scoring by retrieving a training image.
+- **`finetune-stream` still matches us** (F1 0.626 vs 0.605), which is §5n unchanged: on ColorMNIST a
+  factored concept's semantics live in its private embedding, which no later concept can write to, so
+  this row is preserved by isolation of the conditioning rather than by protecting the adapter.
+  Forgetting is measured in n5, where the adapter carries the content.
+
 ## 8. Where the numbers come from
 
 | experiment | file | scale run |

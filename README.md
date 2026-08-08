@@ -129,10 +129,10 @@ evaluation that reports accuracy without coverage would rank it first.
 ![composition](figures/f3_composition.png)
 ![ColorMNIST case study](figures/f9_case_colormnist.png)
 
-ColorMNIST F1 **0.498 ± 0.030** against the published method's **0.003 ± 0.003**. The published
+ColorMNIST F1 **0.605 ± 0.043** against the published method's **0.003 ± 0.003**. The published
 method is run in **its own configuration** (their Eq. 14 variance-aware schedule), and that matters:
 under this repository's annealed schedule the same teacher emitted speckle and looked broken. Run
-their way it is *excellent* — joint accuracy **0.817** and precision **0.839**, higher than ours on
+their way it is *excellent* — joint accuracy **0.839** and precision **0.839**, higher than ours on
 both — and its recall is **0.001**. In the case study the six samples are sharp, correct, and
 identical.
 

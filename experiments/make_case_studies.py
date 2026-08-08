@@ -127,12 +127,13 @@ def main():
     p.add_argument("--steps", type=int, default=50)
     p.add_argument("--inv-steps", type=int, default=400)
     p.add_argument("--epochs", type=int, default=40)
-    p.add_argument("--guidance", type=float, default=2.0,
-                   help="CFG weight for the distillation pool.  2.0, not the old "
-                        "implicit 1.0: tests/diag_ours_quality.py measures joint 0.375 "
-                        "vs 0.125 and backgrounds 1.00 vs 0.88, and the grid shows why "
-                        "-- at 1.0 some samples come out on the wrong background, and "
-                        "at 3.0 the colour factor breaks entirely.")
+    p.add_argument("--guidance", type=float, default=1.5,
+                   help="CFG weight for the distillation pool.  1.5 is what n9's "
+                        "label-free calibration selects on this backbone (trained-slot "
+                        "joint 0.969 against 0.781 at 1.0); the figure must use the same "
+                        "value the table does.  At the old implicit 1.0 some samples land "
+                        "on the wrong background, and at 3.0 the colour factor breaks "
+                        "entirely -- see tests/diag_ours_quality.py.")
     p.add_argument("--seed", type=int, default=0)
     args = p.parse_args()
     os.makedirs(FIG, exist_ok=True)
