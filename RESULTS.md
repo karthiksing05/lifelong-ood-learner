@@ -648,7 +648,7 @@ loads from HuggingFace parquet shards, so no 1.4 GB zip extraction is needed.
 This matters beyond being the paper's second dataset. **Every conclusion above rests on ColorMNIST,
 whose factors are spatially separable** — and that separability is load-bearing: it is why the
 per-dimension PoE can assemble an unseen pairing at all, why the region-restricted class prior was
-constructible, and why E4's closure hypothesis was untestable (`PLAN.md` §3.2). CelebA attributes
+constructible, and why E4's closure hypothesis was untestable (RESULTS 5y). CelebA attributes
 overlap — "smiling" and "big lips" occupy the same pixels — so it tests exactly what ColorMNIST
 structurally cannot.
 
@@ -1459,7 +1459,7 @@ of K. Verified at K = 40, added in batches of 1, 2, 3, 5 and 8:
 
 The honest limit: growth is **linear, not sublinear**. At the rank-8 setting used in N3–N5 each
 concept costs ~0.55M parameters, so 40 concepts already exceed the 6.8M-parameter base. Unbounded in
-principle, expensive in practice — see `PLAN.md` for the compression directions (lower rank for
+principle, expensive in practice — see `RESULTS.md` for the compression directions (lower rank for
 leaves, adapting a subset of layers, and merging sibling adapters during an offline consolidation
 pass with a fingerprint check to keep the guarantee auditable).
 
@@ -1481,7 +1481,7 @@ pass with a fingerprint check to keep the guarantee auditable).
 - **E4 (composition closure) is unresolved by design.** ColorMNIST's attributes are spatially
   separable — background pixels depend only on `bg`, stroke pixels only on `fg` — so a per-dimension
   PoE can always assemble an unseen pair from base concepts, and having the combination pre-learned
-  buys nothing. Closure cannot be demonstrated on this benchmark; see `PLAN.md` §3.2.
+  buys nothing. Closure cannot be demonstrated on this benchmark; see RESULTS 5y.
 
 ## 5x. Choosing the router's signal by measuring, not by reasoning
 
@@ -1536,7 +1536,7 @@ asserted.
 ## 5y. Closure by COST: does an accumulated bank make the next concept cheaper? (no)
 
 E4 asked whether a consolidated concept gets *reused* by later compositions and measured
-`adapter_expert_frac = 0.00`. PLAN 3.2 argued the benchmark was at fault rather than the mechanism --
+`adapter_expert_frac = 0.00`. RESULTS 5y argued the benchmark was at fault rather than the mechanism --
 ColorMNIST's attributes are spatially separable, so a per-dimension PoE can always assemble an unseen
 (fg, bg) pair from base concepts and having the combination pre-learned in one expert buys nothing --
 and recommended testing closure by **cost** instead: does consolidating concept `k` get cheaper when
@@ -1559,7 +1559,7 @@ bank that has accumulated behind them.
 So closure does not show up in accuracy (E4) and does not show up in cost either. Together with N14
 (hierarchical placement loses to flat) and N3's transfer of +0.0013, three independent measurements
 now say the same thing: **on ColorMNIST, consolidated concepts do not make later learning easier.**
-The most likely reason remains the one PLAN 3.2 gave -- separable factors make a pre-learned
+The most likely reason remains the one RESULTS 5y gave -- separable factors make a pre-learned
 combination redundant -- which is a hypothesis about the benchmark and is exactly what CelebA is for.
 It is stated as an open question rather than a refutation of closure in general, because the
 experiment that could refute it has not been run on a benchmark where closure could pay.
@@ -1882,6 +1882,64 @@ on the evidence of `diag_celeba_guidance.py`; capping it at 2.0, as the first ve
 understated the result substantially.
 
 
+## 7c. CelebA vocabulary (N21): the routing rule's second half, on overlapping attributes
+
+5q's rule has two halves and CelebA tests both. 7b showed the first -- a new COMBINATION of known
+values is expressible. This is the second: an attribute whose ON value the backbone has **never
+seen** (`--holdout-attr Gray_Hair`, 4452 images withheld entirely), 4 combinations teach the vector
+and 8 more are never taught, 3 seeds.
+
+| arm | the withheld attribute | % of ceiling | cost |
+|---|---|---|---|
+| *real held-out images (ceiling)* | *0.420 ± 0.163* | — | — |
+| **adapter trained on REAL images** | **0.361 ± 0.153** | **86%** | 726K per concept |
+| learned conditioning vector | 0.141 ± 0.112 | 34% | 1024 bytes |
+| untrained vector (floor) | 0.118 ± 0.100 | 28% | 0 |
+
+**The learned and untrained conditioning vectors are not separated** (0.141 ± 0.112 against 0.118 ±
+0.100). On ColorMNIST the same arm scored exactly 0.000; here it is indistinguishable from noise.
+Either way the conclusion is the one 5q reached and it now holds on a second, harder benchmark:
+**conditioning cannot fabricate a factor value the backbone never generated, and only a weight update
+from real data recovers it.**
+
+Absolute values are compressed because this attribute's probe has TPR 0.32 -- its own ceiling is only
+0.420 -- which is exactly why the ceiling row is reported beside every arm, and why the honest
+statement is "86% of what real images achieve" rather than an absolute.
+
+**Preservation is structural here too: 171/171** compositions not using the extended attribute are
+bit-identical after the extension. Nothing they read was written.
+
+## 7d. CelebA retention (N22): is preservation still structural when factors overlap?
+
+N5's result is the one the paper rests on, and it was measured only on ColorMNIST: arms that
+structurally *remove* shared parameters forget exactly 0.000, arms that try to *protect* them forget.
+Preservation here is claimed to be **structural** -- a frozen ancestor path plus a private
+conditioning vector cannot be written by a later concept -- and a structural argument should be
+indifferent to whether the factors overlap in pixel space. So this is a test the method can fail.
+
+12 held-out combinations of REAL images, arriving in batches of 3.
+
+| arm | mean-attribute ACC | forgetting | **fraction bit-identical** | adapter params |
+|---|---|---|---|---|
+| **ours** | 0.848 | **0.000** | **1.00** | 12.35M |
+| **independent** (parameter isolation) | 0.830 | **0.000** | **1.00** | 9.44M |
+| finetune | 0.862 | 0.012 | 0.25 | 9.44M |
+| ewc | 0.864 | 0.009 | 0.25 | 9.44M |
+| replay | 0.817 | 0.043 | 0.25 | 9.44M |
+
+**The `exact` column is the result, and it separates perfectly**: 1.00 for both arms that remove
+shared parameters, 0.25 for all three that try to protect them. Accuracy does not separate the arms
+at all here (0.817–0.864, with `ewc` nominally highest) — which is the point worth taking from this
+table. On a metric as insensitive as a 12-attribute mean, a method can look fine while having
+overwritten three quarters of what it previously held. Forgetting measured as accuracy drift would
+have reported 0.009 for `ewc` and called it nearly perfect; forgetting measured as *did the earlier
+concept survive unchanged* reports that three of four did not.
+
+`tgtACC`/`tgtFGT` are NaN throughout: the stricter probe filter (7a) excludes the differing attribute
+for most combination-split cases, so that column has nothing to score. Mean-attribute ACC and the
+bit-identical fraction are the usable metrics and are what is quoted.
+
+
 ---
 
 ## 8. Where the numbers come from
@@ -1899,6 +1957,6 @@ understated the result substantially.
 | per-concept retention analysis | `experiments/analyze_n3.py` | — |
 | multi-seed pooling | `experiments/aggregate.py` | — |
 
-Raw outputs land in `results/*.json` (git-ignored; regenerate with the commands in `PLAN.md` §5).
+Raw outputs land in `results/*.json` (git-ignored; regenerate with the commands in the README).
 
 [cobweb-poincare]: https://github.com/karthiksing05/cobweb-poincare

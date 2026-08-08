@@ -218,7 +218,7 @@ class NeuralLifelongLearner:
         model.eval()
         self.history.append(name)
         # The COST of learning this concept, which is how closure is measured on a dataset whose
-        # attributes are spatially separable (see PLAN.md 3.2): if the hierarchy shares anything
+        # attributes are spatially separable (see RESULTS.md 3.2): if the hierarchy shares anything
         # useful, a concept landing near existing relatives should start lower and end lower than an
         # isolated one, even though its final accuracy may be no different.
         self.last_curve = dict(name=name, curve=curve, first=curve[0] if curve else None,

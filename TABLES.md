@@ -90,8 +90,11 @@ Arms that structurally *remove* shared parameters sit at exactly 0.000; arms tha
 
 | method | mean-attribute accuracy | forgetting | fraction bit-identical | adapter params |
 |---|---|---|---|---|
-| `ours` | 0.719 | 0.000 | 1.000 | 4357536.000 |
-| `finetune` | 0.745 | 0.000 | 0.500 | 3631280.000 |
+| `ours` | 0.848 | 0.000 | 1.000 | 12346352.000 |
+| `independent` | 0.830 | 0.000 | 1.000 | 9441328.000 |
+| `finetune` | 0.862 | 0.012 | 0.250 | 9441328.000 |
+| `replay` | 0.817 | 0.043 | 0.250 | 9441328.000 |
+| `ewc` | 0.864 | 0.009 | 0.250 | 9441328.000 |
 
 ---
 

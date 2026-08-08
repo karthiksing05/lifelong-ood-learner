@@ -211,28 +211,54 @@ def f4_vocabulary(A):
 
 # ── F5 ────────────────────────────────────────────────────────────────────────
 def f5_preservation(A):
+    """Two metrics, because on CelebA the usual one barely separates the arms and the other does.
+
+    `forgetting` is accuracy drift, the standard continual-learning measure.  `bit-identical` is the
+    fraction of earlier concepts whose epsilon output on fixed noise is UNCHANGED -- not close,
+    unchanged.  On CelebA accuracy spans 0.817-0.864 across arms with `ewc` nominally highest, while
+    the bit-identical fraction is 1.00 for the two arms that remove shared parameters and 0.25 for
+    all three that try to protect them.  A method can look fine on the first while having overwritten
+    three quarters of what it held.
+    """
     n5 = A.get("n5_classinc", {}).get("table", {})
     n22 = A.get("n22_celeba_lifelong", {}).get("table", {})
-    fig, axes = plt.subplots(1, 2, figsize=(11, 4))
-    for ax, (tbl, title) in zip(axes, [(n5, "ColorMNIST (Split-ColorMNIST, 12 tasks)"),
-                                       (n22, "CelebA (12 held-out combinations)")]):
-        arms = [a for a in ("ours", "independent", "ttt", "ewc", "finetune", "replay")
-                if a in tbl]
+    fig, axes = plt.subplots(2, 2, figsize=(11, 6.4), sharex="col")
+    order = ("ours", "independent", "ttt", "ewc", "finetune", "replay")
+    for col, (tbl, title) in enumerate([(n5, "ColorMNIST — Split-ColorMNIST, 12 tasks"),
+                                        (n22, "CelebA — 12 held-out combinations")]):
+        arms = [a for a in order if a in tbl]
         if not arms:
-            ax.text(0.5, 0.5, "n22 still running", ha="center", transform=ax.transAxes)
-            ax.set_title(title, fontsize=9.5); continue
-        f = [m(tbl, a, "FGT") for a in arms]
-        er = [se(tbl, a, "FGT") for a in arms]
-        cols = [OURS if a in ("ours", "independent") else BASE1 for a in arms]
-        ax.bar(range(len(arms)), f, 0.55, yerr=er, capsize=3, color=cols)
-        ax.set_xticks(range(len(arms))); ax.set_xticklabels(arms, rotation=20, fontsize=8)
-        ax.set_ylabel("forgetting (0 = none)")
-        ax.axhline(0, color="0.3", lw=0.8)
-        ax.set_title(title, fontsize=9.5)
-    fig.suptitle("Arms that structurally REMOVE shared parameters forget exactly 0.000; "
-                 "arms that try to PROTECT them forget.\n(blue = removes, red = protects)",
+            for r in (0, 1):
+                axes[r][col].text(0.5, 0.5, "not run", ha="center", transform=axes[r][col].transAxes)
+            axes[0][col].set_title(title, fontsize=9.5)
+            continue
+        # three categories, not two: `ttt` cannot forget either, but only because it re-fits each
+        # task from STORED DATA at evaluation time and throws the adapter away -- it keeps every
+        # instance forever, which is the cost a continual method is supposed to avoid.
+        removes, keeps_data = {"ours", "independent"}, {"ttt"}
+        cols = [OURS if a in removes else ("#BDBDBD" if a in keeps_data else BASE1) for a in arms]
+        for row, key, lab in ((0, "FGT", "forgetting  (0 = none)"),
+                              (1, "retention_exact", "fraction bit-identical")):
+            ax = axes[row][col]
+            v = [m(tbl, a, key) for a in arms]
+            e = [se(tbl, a, key) for a in arms]
+            ax.bar(range(len(arms)), v, 0.6, yerr=e, capsize=3, color=cols)
+            for i, val in enumerate(v):
+                if np.isfinite(val):
+                    ax.annotate(f"{val:.3f}", (i, val), textcoords="offset points",
+                                xytext=(0, 4), ha="center", fontsize=7)
+            ax.set_ylabel(lab, fontsize=8.5)
+            ax.set_ylim(0, max(1.15 if row else max([x for x in v if np.isfinite(x)] + [0.05]) * 1.35,
+                               0.05))
+            ax.axhline(0, color="0.3", lw=0.8)
+        axes[0][col].set_title(title, fontsize=9.5)
+        axes[1][col].set_xticks(range(len(arms)))
+        axes[1][col].set_xticklabels(arms, rotation=18, fontsize=8)
+    fig.suptitle("Preservation is structural.  Blue REMOVES shared parameters; red tries to PROTECT "
+                 "them; grey (ttt) keeps every instance forever.\nOn CelebA accuracy barely "
+                 "separates the arms — the bit-identical fraction separates them completely.",
                  fontsize=10)
-    fig.tight_layout(rect=[0, 0, 1, 0.90])
+    fig.tight_layout(rect=[0, 0, 1, 0.91])
     save(fig, "f5_preservation.png")
 
 

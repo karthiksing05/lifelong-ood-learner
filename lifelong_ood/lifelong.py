@@ -38,7 +38,7 @@ class LifelongLearner:
         # K, tau, schedule, wmin/wmax and u_start are all set by experiments/e0_tune.py, not guessed:
         # tau=0.05 adaptive takes teacher accuracy to the probe ceiling (0.20 -> 0.75 joint), and the
         # annealed schedule keeps 71% of that through sampling where the paper's variance schedule
-        # keeps 21%.  See PLAN.md 3.1 for the measurements.
+        # keeps 21%.  See RESULTS.md 3.1 for the measurements.
         self.tree = tree if tree is not None else make_tree(prior_var, backend=backend)
         self.adapters = []              # [(name, tree)] -- separate trees, base stays frozen
         self.cfg = dict(min_count=min_count, mode=mode, K=K, tau=tau, w0=w0, wmax=wmax,

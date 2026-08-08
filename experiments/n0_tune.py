@@ -18,7 +18,7 @@ where the sample's identity and variety get decided.  A product of experts is a 
 chain to mu_T no matter where it started.
 
 The analytic backbone needed that floor because its unconditional mixture actively fights the
-composition (see PLAN.md 4).  A trained UNet does not: it holds real density at unseen combinations,
+composition (see RESULTS.md 4).  A trained UNet does not: it holds real density at unseen combinations,
 so it can be trusted to supply variety at high noise and the teacher only needs to take over late.
 Hence this sweep is over `wmin`, with the others kept as secondary axes.
 
