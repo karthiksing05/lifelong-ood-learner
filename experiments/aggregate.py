@@ -126,7 +126,8 @@ def agg_n3(runs):
 
 def agg_n7(runs):
     """N7: composition arms scored with the paper's coverage metrics."""
-    arms, keys = [], ("joint", "digit", "fg", "bg", "precision", "recall", "f1", "content_ratio")
+    arms, keys = [], ("joint", "digit", "fg", "bg", "precision", "recall", "f1", "content_ratio",
+                      "vendi", "memorized", "density", "coverage")
     for _, r in runs:
         arms += [a for a in r.get("summary", {}) if a not in arms]
     table = {a: {k: stat([r["summary"][a][k] for _, r in runs
@@ -144,7 +145,8 @@ def agg_n7(runs):
 
 def agg_n5(runs):
     """N5 / N9: one row per method, the standard CL metrics plus what each one costs."""
-    arms, keys = [], ("ACC", "BWT", "FGT", "retention_exact", "params", "wall_seconds")
+    arms, keys = [], ("ACC", "BWT", "FGT", "retention_exact", "params", "wall_seconds",
+                      "qAFQ", "qAIQ", "qFR", "stored_images")
     for _, r in runs:
         arms += [x["arm"] for x in r.get("rows", []) if x["arm"] not in arms]
     table = {}
@@ -159,18 +161,21 @@ def agg_n5(runs):
                     vals[k].append(row[k])
         table[a] = {k: stat(v) for k, v in vals.items()}
     print(f"    {'arm':13s}{'ACC':>13s}{'BWT':>14s}{'FGT':>13s}{'bit-identical':>15s}"
-          f"{'params':>12s}{'wall(s)':>11s}")
+          f"{'AFQ':>13s}{'stored':>9s}{'params':>12s}{'wall(s)':>11s}")
     for a, row in table.items():
         pm = f"{row['params']['mean'] / 1e6:.2f}M" if row['params'] else "--"
         ws = f"{row['wall_seconds']['mean']:.0f}" if row['wall_seconds'] else "--"
+        st = f"{row['stored_images']['mean']:.0f}" if row.get('stored_images') else "--"
         print(f"    {a:13s}{fmt(row['ACC']):>13s}{fmt(row['BWT']):>14s}{fmt(row['FGT']):>13s}"
-              f"{fmt(row['retention_exact']):>15s}{pm:>12s}{ws:>11s}")
+              f"{fmt(row['retention_exact']):>15s}{fmt(row.get('qAFQ')):>13s}{st:>9s}"
+              f"{pm:>12s}{ws:>11s}")
     return dict(table=table, n_seeds=len(runs))
 
 
 def agg_n9(runs):
     """N9 showdown: method x composition-quality metrics."""
-    arms, keys = [], ("joint", "digit", "fg", "bg", "precision", "recall", "f1", "content_ratio")
+    arms, keys = [], ("joint", "digit", "fg", "bg", "precision", "recall", "f1", "content_ratio",
+                      "vendi", "memorized", "density", "coverage")
     for _, r in runs:
         arms += [a for a in r.get("summary", {}) if a not in arms]
     table = {a: {k: stat([r["summary"][a][k] for _, r in runs
@@ -204,7 +209,7 @@ def agg_n18(runs):
 
 def agg_n20(runs):
     """N20 / N21: CelebA composition arms.  `target` is the discriminative column."""
-    arms, keys = [], ("pair", "target", "joint", "mean_attr", "precision", "recall", "f1",
+    arms, keys = [], ("pair", "target", "joint", "mean_attr", "precision", "recall", "f1", "vendi",
                       "content_ratio")
     for _, r in runs:
         arms += [a for a in r.get("summary", {}) if a not in arms]

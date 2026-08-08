@@ -1,0 +1,5 @@
+===== Du et al. corrector: Langevin step-size sweep (ColorMNIST) =====
+[diag] composable-diff scale sweep, 3 held-out cases, top-3 slots, 16 samples
+
+[diag] MCMC corrector: 10 Langevin steps per denoising step, guidance scale fixed at 1.0
+

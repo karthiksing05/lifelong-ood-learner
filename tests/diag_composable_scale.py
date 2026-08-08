@@ -46,6 +46,11 @@ def main():
     p.add_argument("--seed", type=int, default=0)
     p.add_argument("--scales", type=float, nargs="+",
                    default=[0.33, 1.0, 2.0, 3.0, 5.0, 7.5])
+    p.add_argument("--mcmc-steps", type=int, default=0,
+                   help="if >0, sweep the Langevin step scale at --fixed-scale instead of "
+                        "sweeping the guidance scale (Du et al. 2023 corrector)")
+    p.add_argument("--mcmc-lams", type=float, nargs="+", default=[0.02, 0.05, 0.1, 0.3])
+    p.add_argument("--fixed-scale", type=float, default=1.0)
     args = p.parse_args()
 
     import torch
@@ -67,11 +72,18 @@ def main():
     print(f"[diag] composable-diff scale sweep, {len(qs)} held-out cases, "
           f"top-{args.topk} slots, {args.n_samples} samples\n", flush=True)
 
-    hdr = (f"    {'scale':>6s}{'joint':>8s}{'digit':>7s}{'fg':>6s}{'bg':>6s}"
+    # either sweep guidance scale (no corrector) or sweep the corrector's step size at a fixed scale
+    mcmc_mode = args.mcmc_steps > 0
+    grid = args.mcmc_lams if mcmc_mode else args.scales
+    lbl = "lam" if mcmc_mode else "scale"
+    if mcmc_mode:
+        print(f"[diag] MCMC corrector: {args.mcmc_steps} Langevin steps per denoising step, "
+              f"guidance scale fixed at {args.fixed_scale}\n", flush=True)
+    hdr = (f"    {lbl:>6s}{'joint':>8s}{'digit':>7s}{'fg':>6s}{'bg':>6s}"
            f"{'prec':>7s}{'recall':>8s}{'F1':>7s}{'dens':>7s}{'cov':>7s}")
     print(hdr)
     out = []
-    for sc in args.scales:
+    for sc in grid:
         agg = []
         for qi, q in enumerate(qs):
             xq = to_model(data["X"][q["query"]]).ravel()
@@ -79,9 +91,12 @@ def main():
             t = L.compose(xq, u_grid=(0.1, 0.2, 0.3, 0.4), n_starts=16, iters=120)
             a0 = teacher_init_alpha(field, t, xq, seed=args.seed)
             topk = np.argsort(-a0)[:args.topk]
-            S = to_data(compose_classes(field, C, topk, n=args.n_samples, steps=args.steps,
-                                        seed=args.seed + qi, null_emb=null_row,
-                                        scale=float(sc))).astype(np.float32)
+            S = to_data(compose_classes(
+                field, C, topk, n=args.n_samples, steps=args.steps, seed=args.seed + qi,
+                null_emb=null_row,
+                scale=(args.fixed_scale if mcmc_mode else float(sc)),
+                mcmc=(dict(steps=args.mcmc_steps, lam=float(sc)) if mcmc_mode
+                      else None))).astype(np.float32)
             R = data["X"][data["slot"] == q["slot"]].astype(np.float32)
             a = composition_accuracy(probes, S, q["d"], q["f"], q["b"])
             pr = precision_recall(S, R)
@@ -93,10 +108,13 @@ def main():
         print(f"    {sc:6.2f}{m[0]:8.3f}{m[1]:7.3f}{m[2]:6.2f}{m[3]:6.2f}"
               f"{m[4]:7.3f}{m[5]:8.3f}{m[6]:7.3f}{m[7]:7.2f}{m[8]:7.2f}", flush=True)
 
-    best = max(out, key=lambda r: r[1][0])
-    print(f"\n[diag] best joint accuracy at scale {best[0]:.2f} "
+    best = max(out, key=lambda r: (r[1][0], r[1][6]))
+    print(f"\n[diag] best joint accuracy at {lbl} {best[0]:.3f} "
           f"(joint {best[1][0]:.3f}, F1 {best[1][6]:.3f})")
-    print("[diag] use this scale for the composable-diff arm in n9/n20")
+    if max(r[1][0] for r in out) == 0.0:
+        print("[diag] joint accuracy is 0.000 at EVERY setting -- this is the operator's "
+              "precondition failing, not a tuning failure: with only entangled slot conditionals "
+              "there is no per-factor score to add.")
 
 
 if __name__ == "__main__":
