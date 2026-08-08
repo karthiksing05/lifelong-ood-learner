@@ -69,10 +69,14 @@ def main():
     p.add_argument("--inv-steps", type=int, default=400)
     p.add_argument("--epochs", type=int, default=40)
     p.add_argument("--seed", type=int, default=0)
+    p.add_argument("--tag", default="", help="suffix for the output file; --quick runs "
+                                             "use one so a smoke can never overwrite a "
+                                             "full result")
     p.add_argument("--quick", action="store_true")
     args = p.parse_args()
     if args.quick:
         args.n_cases, args.n_samples, args.n_per_slot = 2, 8, 20
+        args.tag = args.tag or "_smoke"
         args.steps, args.inv_steps, args.epochs, args.n_seen_check = 20, 60, 4, 2
     dev = "cuda" if torch.cuda.is_available() else "cpu"
 
@@ -204,13 +208,13 @@ def main():
                  "at zero retraining", fontsize=10)
     fig.tight_layout()
     os.makedirs(FIG, exist_ok=True)
-    fig.savefig(os.path.join(FIG, "n23_native_parity.png"), dpi=140, bbox_inches="tight")
+    fig.savefig(os.path.join(FIG, f"n23_native_parity{args.tag}.png"), dpi=140, bbox_inches="tight")
     plt.close(fig)
 
     save_json(dict(rows=rows, summary=summary, parity=parity, drag=drag,
                    ours_params=int(L.bank.n_params()), ours_wall_seconds=ours_wall,
                    n_cases=len(qs)),
-              os.path.join(RESULTS, "n23_native_parity.json"), seed=args.seed)
+              os.path.join(RESULTS, f"n23_native_parity{args.tag}.json"), seed=args.seed)
 
     print(f"\n[n23] native parity over {len(qs)} held-out compositions")
     print(f"    {'arm':10s}{'joint':>7s}{'digit':>7s}{'fg':>5s}{'bg':>5s}"

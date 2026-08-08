@@ -273,7 +273,8 @@ AGG = {"e2_composition": agg_e2, "n2_composition": agg_e2,
        "n18_router": agg_n18, "n20_celeba_composition": agg_n20,
        "n22_celeba_lifelong": agg_n22, "n23_native_parity": agg_n23,
        "n21_celeba_vocabulary_Gray_Hair": agg_n20,
-       "n20_celeba_composition_pair": agg_n20}
+       "n20_celeba_composition_pair": agg_n20,
+       "n11_basis_extension_nmadapt": agg_n7}
 
 
 def main():
@@ -299,9 +300,22 @@ def main():
             print(f"    could not aggregate: {type(e).__name__}: {e}")
     if summary:
         out = os.path.join(RESULTS, "aggregate.json")
-        with open(out, "w") as fh:
-            json.dump(summary, fh, indent=1, default=float)
-        print(f"\nwrote {out}")
+        # MERGE rather than replace.  Running this with a subset of names used to overwrite the
+        # whole file with just those, silently dropping every other experiment's pooled table --
+        # and the figures are built from this file, so they came out empty rather than wrong.
+        prev = {}
+        if os.path.exists(out):
+            try:
+                with open(out) as fh:
+                    prev = json.load(fh)
+            except (ValueError, OSError):
+                prev = {}
+        prev.update(summary)
+        tmp = out + ".tmp"
+        with open(tmp, "w") as fh:
+            json.dump(prev, fh, indent=1, default=float)
+        os.replace(tmp, out)
+        print(f"\nwrote {out} ({len(summary)} updated, {len(prev)} total)")
 
 
 if __name__ == "__main__":

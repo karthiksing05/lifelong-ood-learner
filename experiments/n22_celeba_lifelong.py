@@ -66,6 +66,7 @@ def main():
     p.add_argument("--quick", action="store_true")
     args = p.parse_args()
     if args.quick:
+        args.tag = args.tag or "_smoke"
         args.n_tasks, args.batch_size, args.n_train = 4, 2, 24
         args.n_samples, args.epochs, args.replay_n, args.steps = 8, 4, 8, 10
         args.arms = ["ours", "finetune"]

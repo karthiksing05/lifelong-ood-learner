@@ -69,6 +69,7 @@ def main():
     p.add_argument("--quick", action="store_true")
     args = p.parse_args()
     if args.quick:
+        args.tag = args.tag or "_smoke"
         args.n_teach_combos, args.n_eval_combos, args.n_samples = 2, 3, 8
         args.ext_steps, args.steps, args.epochs, args.n_adapter_combos = 60, 20, 4, 1
         args.n_per_combo = 16

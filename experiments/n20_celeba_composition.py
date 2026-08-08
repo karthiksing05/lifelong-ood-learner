@@ -103,6 +103,7 @@ def main():
     p.add_argument("--quick", action="store_true")
     args = p.parse_args()
     if args.quick:
+        args.tag = args.tag or "_smoke"
         args.n_cases, args.n_samples, args.steps = 2, 8, 20
     dev = "cuda" if torch.cuda.is_available() else "cpu"
 
