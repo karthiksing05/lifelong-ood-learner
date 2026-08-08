@@ -1,0 +1,16 @@
+[n27] 3 held-out compositions; factor concepts built from SEEN images only
+[n27] case 46: `digit2` from 96 seen images (19s)
+[n27] case 46: `fg3` from 96 seen images (17s)
+[n27] case 46: `bg2` from 96 seen images (18s)
+[n27]   factor-score scale 1.0: joint 0.062
+[n27]   factor-score scale 2.0: joint 0.000
+[n27]   factor-score scale 3.0: joint 0.000
+[n27] case 46 done
+[n27] case 110: `digit6` from 96 seen images (17s)
+[n27] case 110: `fg3` from 96 seen images (18s)
+[n27] case 110: `bg2` from 96 seen images (18s)
+[n27]   factor-score scale 1.0: joint 0.062
+[n27]   factor-score scale 2.0: joint 0.062
+[n27]   factor-score scale 3.0: joint 0.000
+[n27] case 110 done
+[n27] case 19: `digit1` from 96 seen images (18s)

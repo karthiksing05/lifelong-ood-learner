@@ -1,0 +1,23 @@
+[n28] 1 held-out compositions x 5 update rules
+[n28] slot 46 uniform        drift 0.0000  alone(fg/bg/digit) 0.38/0.12/0.38  composed joint 0.000  (2s)
+[n28] slot 46 high-t         drift 0.0000  alone(fg/bg/digit) 0.38/0.25/0.50  composed joint 0.000  (1s)
+[n28] slot 46 need-weighted  drift 0.0000  alone(fg/bg/digit) 0.25/0.00/0.25  composed joint 0.000  (1s)
+[n28] slot 46 residual       drift 0.0000  alone(fg/bg/digit) 0.25/0.12/0.38  composed joint 0.000  (2s)
+[n28] slot 46 rehearse       drift 0.0000  alone(fg/bg/digit) 0.25/0.38/0.12  composed joint 0.000  (3s)
+
+[n28] update rules, 1 compositions, 8 samples
+    rule               drift  aloneFG  aloneBG  aloneD   joint  recall     F1   wall
+    uniform           0.0000     0.38     0.12    0.38   0.000   0.632  0.000      2
+    high-t            0.0000     0.38     0.25    0.50   0.000   1.000  0.000      1
+    need-weighted     0.0000     0.25     0.00    0.25   0.000   0.105  0.000      1
+    residual          0.0000     0.25     0.12    0.38   0.000   1.000  0.000      2
+    rehearse          0.0000     0.25     0.38    0.12   0.000   0.000  0.000      3
+
+  drift = how far the model moves on conditionings this concept is NOT for, with its
+  path active.  The insert-only guarantee does not cover this, and composition depends
+  on it: an adapter evaluated outside its own conditioning is exactly what composing does.
+
+[n28] lowest drift: uniform (0.0000)
+[n28] best composed joint: uniform (0.000)
+[n28] SAME rule wins both -- less disturbance composes better
+smoke=0 | Sat Aug  8 16:03:41 EDT 2026

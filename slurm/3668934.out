@@ -16,3 +16,9 @@ An error occurred while trying to fetch google/ddpm-celebahq-256: google/ddpm-ce
 Defaulting to unsafe serialization. Pass `allow_pickle=False` to raise an error instead.
       [Eyeglasses] ep 10/40: 0.0003 (49s)
       [Eyeglasses] ep 20/40: 0.0003 (98s)
+      [Eyeglasses] ep 30/40: 0.0002 (146s)
+      [Eyeglasses] ep 40/40: 0.0002 (194s)
+      [Smiling] ep 10/40: 0.0003 (48s)
+      [Smiling] ep 20/40: 0.0003 (97s)
+      [Smiling] ep 30/40: 0.0002 (145s)
+      [Smiling] ep 40/40: 0.0002 (194s)

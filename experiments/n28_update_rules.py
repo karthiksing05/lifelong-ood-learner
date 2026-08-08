@@ -95,7 +95,9 @@ def train_rule(field, bank, name, X01, img, rule, epochs=40, batch=16, lr=1e-3, 
     if rule == "rehearse" and seen_X is not None:
         Xr = torch.from_numpy(np.asarray(to_model(seen_X), np.float32)).to(dev)
         Xr = Xr.reshape(-1, CH, img, img)
-        Cr = [torch.as_tensor(np.asarray(c, np.float32), device=dev) for c in seen_conds]
+        Cr = [c if torch.is_tensor(c) else torch.as_tensor(np.asarray(c, np.float32),
+                                                           device=dev)
+              for c in seen_conds]
     t0 = time.time()
     for _ in range(epochs):
         perm = torch.randperm(len(X), generator=g)
@@ -166,13 +168,13 @@ def off_concept_drift(field, bank, name, seen_conds, X01, img, n=16, grid=(0.2, 
             a = float(cosine_abar(np.array([u]))[0])
             e = rng.standard_normal(x0.shape)
             xt = np.sqrt(a) * x0 + np.sqrt(1 - a) * e
+            # SAME conditioning `c` both times; the only difference is whether this concept's
+            # adapter path is active.  Setting bank.state["path"] by hand does not work -- eps()
+            # calls bank.activate(branch) itself, which overwrites it, and the two calls then come
+            # out bit-identical and the metric reads a constant 0.0000.  Passing branch=name with an
+            # explicit `emb` activates the path while keeping the foreign conditioning.
             base = field.eps(xt, float(u), None, emb=c)
-            prev = list(bank.state["path"])
-            bank.state["path"] = list(bank.concepts[name]["path"])
-            try:
-                got = field.eps(xt, float(u), None, emb=c)
-            finally:
-                bank.state["path"] = prev
+            got = field.eps(xt, float(u), name, emb=c)
             tot += float(np.sqrt(np.mean((got - base) ** 2)))
             cnt += 1
     return tot / max(cnt, 1)
@@ -214,7 +216,9 @@ def main():
     # a fixed reference set for drift: real seen images + a few trained conditionals
     sidx = np.where(seen)[0]
     seen_X = data["X"][rng.choice(sidx, size=min(32, len(sidx)), replace=False)]
-    seen_conds = [C[i] for i in rng.permutation(len(C))[:4]]
+    # torch tensors, not numpy: these go straight into `emb_override`, which is a module input
+    seen_conds = [torch.as_tensor(np.asarray(C[i], np.float32), device=dev)
+                  for i in rng.permutation(len(C))[:4]]
 
     print(f"[n28] {len(qs)} held-out compositions x {len(args.rules)} update rules", flush=True)
     rows = []
