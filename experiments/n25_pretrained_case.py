@@ -227,6 +227,11 @@ def main():
                         "is too coarse for fine attributes (Eyeglasses TPR 0.38 there)")
     p.add_argument("--epochs", type=int, default=6)
     p.add_argument("--rank", type=int, default=8)
+    p.add_argument("--exclude", nargs="*",
+                   default=["time_emb_proj", "time_embedding"],
+                   help="layer names to leave alone.  32 of this model's 58 Linear "
+                        "modules are time_emb_proj: adapting them perturbs the noise-level "
+                        "signal in 34 places, which is what melted the v1/v2 samples.")
     p.add_argument("--targets", nargs="+", default=["linear"],
                    help="layer types to adapt.  `linear` only (attention and the "
                         "projections) is where the LoRA personalization literature puts "
@@ -264,7 +269,8 @@ def main():
           f"BOTH {len(data['both'])} (the target, never shown to either concept)", flush=True)
 
     bank = HierarchicalAdapterBank(field.model, rank=args.rank, device=dev, flat=True,
-                                   targets=tuple(args.targets))
+                                   targets=tuple(args.targets),
+                                   exclude=tuple(args.exclude))
     field.bank = bank
     got = {}
 

@@ -120,7 +120,8 @@ def main():
                 t0 = time.time()
                 f2, _ = load_pretrained(args.model, device=dev, batch=args.batch)
                 bank = HierarchicalAdapterBank(f2.model, rank=rk, device=dev, flat=True,
-                                               targets=("linear",))
+                                               targets=("linear",),
+                                               exclude=("time_emb_proj", "time_embedding"))
                 f2.bank = bank
                 bank.add_concept(A, to_model(data["a_only"]).mean(0))
                 train(f2, bank, A, data["a_only"], img, args.epochs, args.batch, lr, tm,

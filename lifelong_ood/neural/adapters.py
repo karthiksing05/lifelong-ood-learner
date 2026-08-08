@@ -116,12 +116,25 @@ class PathLoRA(nn.Module):
         return True
 
 
-def inject(model, rank, state, targets=("conv", "linear")):
-    """Replace every Conv2d/Linear in `model` with a PathLoRA wrapper.  -> list of wrappers."""
+def inject(model, rank, state, targets=("conv", "linear"), exclude=()):
+    """Replace every Conv2d/Linear in `model` with a PathLoRA wrapper.  -> list of wrappers.
+
+    `exclude` skips children whose attribute name contains any of the given strings.  It exists for
+    pretrained backbones, where "adapt every Linear" is not the neutral choice it sounds like: in
+    `google/ddpm-celebahq-256`, **32 of the 58 Linear modules are `time_emb_proj`** and two more are
+    the time embedding's own MLP, so adapting linears means overwhelmingly adapting the path that
+    tells the model WHAT NOISE LEVEL IT IS AT.  Perturbing that in 34 places corrupts denoising
+    globally -- the same failure as writing to the time embedding directly, arrived at by a different
+    route -- and it is what produced melted faces and collapsing diversity under guidance.  Excluding
+    it leaves the 24 attention projections, which is where the personalization literature adapts.
+    """
     wrapped = []
+    ex = tuple(exclude or ())
 
     def walk(mod):
         for name, child in list(mod.named_children()):
+            if any(e in name for e in ex):
+                continue
             is_c = isinstance(child, nn.Conv2d) and "conv" in targets
             is_l = isinstance(child, nn.Linear) and "linear" in targets
             if is_c or is_l:
@@ -256,7 +269,8 @@ class HierarchicalAdapterBank:
     """Frozen base UNet + a growing tree of LoRA deltas + one new class embedding per concept."""
 
     def __init__(self, model, rank=8, device="cuda", var=0.1, branch_max=4, max_depth=3,
-                 freeze_ancestors=True, flat=False, targets=("conv", "linear")):
+                 freeze_ancestors=True, flat=False, targets=("conv", "linear"),
+                 exclude=()):
         self.model = model
         self.device = device
         self.rank = int(rank)
@@ -270,7 +284,7 @@ class HierarchicalAdapterBank:
         # layers at once and the samples melt, so ('linear',) -- attention and the
         # projections, which is where the LoRA personalization literature puts it -- is the
         # setting that behaves.
-        self.wrapped = inject(model, rank, self.state, targets=targets)
+        self.wrapped = inject(model, rank, self.state, targets=targets, exclude=exclude)
         self.tree = ConceptTree(var=var, branch_max=branch_max, max_depth=max_depth, flat=flat)
         self.concepts = {}                   # name -> dict(path, leaf)
         self.frozen = set()                  # created by an earlier batch: immutable
