@@ -6,6 +6,7 @@
 #   bash reproduce.sh colormnist # the ColorMNIST experiments, 3 seeds
 #   bash reproduce.sh celeba     # the CelebA experiments, 3 seeds
 #   bash reproduce.sh analytic   # the analytic (no-gradient) track, 3 seeds
+#   bash reproduce.sh supporting # the experiments behind the negative results and the cost claims
 #   bash reproduce.sh figures    # aggregate + all figures + TABLES.md  (CPU, seconds)
 #   bash reproduce.sh all        # everything, in dependency order
 #
@@ -67,6 +68,21 @@ celeba|all)
   gpu "experiments/n22_celeba_lifelong.py --seed 0 --arms ours independent finetune replay ewc"
   [ "$STAGE" = celeba ] && exit 0 ;;&
 
+supporting|all)
+  echo "== supporting results (every number cited in README/TABLES that the stages above miss) =="
+  gpu "experiments/e0_tune.py"                                  # tuning of record: tau, K, schedule
+  gpu "experiments/n8_idealwords.py"                            # the factor basis itself
+  gpu "experiments/n14_hierarchy.py"                            # X1: the hierarchy does NOT pay
+  for s in 0 1 2; do
+    gpu "experiments/n16_alternatives.py --seed $s"             # C6: hypernet / guidance / ortho
+    gpu "experiments/n17_ortho_merge.py --seed $s"              # C6: kept vs merged, 2.8x
+    gpu "experiments/n3_lifelong.py --n-concepts 10 --seed $s"  # per-concept retention detail
+  done
+  gpu "experiments/n2_composition.py"                           # composition on the neural backbone
+  gpu "experiments/n4_batch.py"                                 # batch vs sequential addition
+  "$PY" experiments/n24_growth.py                               # F8: the growth accounting (CPU)
+  [ "$STAGE" = supporting ] && exit 0 ;;&
+
 analytic|all)
   echo "== analytic track (no gradient descent anywhere) =="
   cpu "experiments/e1_manifold.py"
@@ -83,5 +99,5 @@ figures|all)
   "$PY" experiments/make_paper_tables.py > TABLES.md && echo "  wrote TABLES.md"
   ;;
 *)
-  echo "usage: $0 {tests|backbones|colormnist|celeba|analytic|figures|all}"; exit 1 ;;
+  echo "usage: $0 {tests|backbones|colormnist|celeba|analytic|supporting|figures|all}"; exit 1 ;;
 esac

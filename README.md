@@ -133,6 +133,7 @@ bash reproduce.sh backbones   # the 5 checkpoints everything else loads (~12 GPU
 bash reproduce.sh colormnist  # ColorMNIST experiments, 3 seeds
 bash reproduce.sh celeba      # CelebA experiments, 3 seeds
 bash reproduce.sh analytic    # the analytic track (no gradient descent anywhere)
+bash reproduce.sh supporting  # negative results and cost claims (n14/n16/n17/n24)
 bash reproduce.sh figures     # aggregate + every figure + TABLES.md   (CPU, seconds)
 ```
 
@@ -157,7 +158,10 @@ lifelong_ood/          the method
   neural/adapters.py   the insert-only adapter bank; preservation lives here
   neural/idealwords.py the factor basis, basis extension, new-vocabulary learning
   neural/router.py     the self-routing detector
-experiments/           one file per experiment; e* analytic, n* neural
+experiments/           one file per experiment; e* analytic, n* neural.  `reproduce.sh`
+                       covers every number in README and TABLES; the remaining scripts
+                       reproduce the fuller record in RESULTS.md, including the
+                       refuted hypotheses
 tests/                 7 assertions, including the two that caught real bugs
 results/               per-run JSON + aggregate.json (the source for every figure and table)
 figures/               f1-f10, all generated
