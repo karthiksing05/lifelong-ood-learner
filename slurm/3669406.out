@@ -17,3 +17,37 @@
 [n4:hier:sequential] step 1/12 (1 concepts): mean acc 0.00, exact retention 1.00, 1.10M params, 27s
 [n4:hier:sequential] step 2/12 (2 concepts): mean acc 0.47, exact retention 1.00, 1.65M params, 57s
 [n4:hier:sequential] step 3/12 (3 concepts): mean acc 0.31, exact retention 1.00, 2.20M params, 90s
+[n4:hier:sequential] step 4/12 (4 concepts): mean acc 0.48, exact retention 1.00, 2.76M params, 126s
+[n4:hier:sequential] step 5/12 (5 concepts): mean acc 0.53, exact retention 1.00, 3.31M params, 164s
+[n4:hier:sequential] step 6/12 (6 concepts): mean acc 0.44, exact retention 1.00, 3.86M params, 206s
+[n4:hier:sequential] step 7/12 (7 concepts): mean acc 0.50, exact retention 1.00, 4.41M params, 252s
+[n4:hier:sequential] step 8/12 (8 concepts): mean acc 0.44, exact retention 1.00, 4.96M params, 298s
+[n4:hier:sequential] step 9/12 (9 concepts): mean acc 0.39, exact retention 1.00, 5.51M params, 347s
+[n4:hier:sequential] step 10/12 (10 concepts): mean acc 0.44, exact retention 1.00, 6.06M params, 402s
+[n4:hier:sequential] step 11/12 (11 concepts): mean acc 0.40, exact retention 1.00, 6.61M params, 460s
+[n4:hier:sequential] step 12/12 (12 concepts): mean acc 0.37, exact retention 1.00, 7.16M params, 521s
+[n4] -> hier/sequential: 521s, ACC 0.370, BWT +0.000, FGT 0.000
+
+
+[n4] 12 OOD concepts, batch size 1
+    arm            mode  wall(s)  speedup    ACC     BWT    FGT  exact   params  shared
+    hier          batch      521     1.00x  0.370  +0.000  0.000   1.00    7.16M       4
+    hier     sequential      521     1.00x  0.370  +0.000  0.000   1.00    7.16M       4
+
+  ACC final mean accuracy | BWT backward transfer (0 = no forgetting) | FGT forgetting measure
+  exact = fraction of concepts still bit-identical to birth
+[n4] wrote /coc/flash10/ksingara3/lifelong-ood-learner/results/n4_batch.json
+===== FAIR comparison, K=12 =====
+[n4] 12 concepts, batch size 12, arms ['hier'], modes ['batch', 'sequential'], device cuda
+[n4:hier:batch] step 1/1 (12 concepts): mean acc 0.42, exact retention 1.00, 7.72M params, 248s
+[n4] -> hier/batch: 249s, ACC 0.422, BWT +0.000, FGT 0.000
+
+[n4:hier:sequential] step 1/12 (1 concepts): mean acc 0.00, exact retention 1.00, 1.10M params, 26s
+[n4:hier:sequential] step 2/12 (2 concepts): mean acc 0.47, exact retention 1.00, 1.65M params, 58s
+[n4:hier:sequential] step 3/12 (3 concepts): mean acc 0.31, exact retention 1.00, 2.20M params, 91s
+[n4:hier:sequential] step 4/12 (4 concepts): mean acc 0.48, exact retention 1.00, 2.76M params, 127s
+[n4:hier:sequential] step 5/12 (5 concepts): mean acc 0.53, exact retention 1.00, 3.31M params, 165s
+[n4:hier:sequential] step 6/12 (6 concepts): mean acc 0.44, exact retention 1.00, 3.86M params, 208s
+[n4:hier:sequential] step 7/12 (7 concepts): mean acc 0.50, exact retention 1.00, 4.41M params, 254s
+[n4:hier:sequential] step 8/12 (8 concepts): mean acc 0.44, exact retention 1.00, 4.96M params, 303s
+[n4:hier:sequential] step 9/12 (9 concepts): mean acc 0.39, exact retention 1.00, 5.51M params, 353s

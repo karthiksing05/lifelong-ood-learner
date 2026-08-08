@@ -2716,17 +2716,36 @@ one an earlier reading of N4 (8 concepts, batch 4) missed because at that size t
 > against sequential's 0.547 — and at K = 1 the optimizer is doing identical work in both. Whatever
 > costs the accuracy is upstream of consolidation.
 
-Upstream, `learn_concepts_batch` differs from `learn_concept` in **two** ways, and this sweep does not
-separate them:
+Upstream, `learn_concepts_batch` differed from `learn_concept` in **two** ways:
 
 1. **discovery configuration** — the batch path is handed an explicit `disc`
-   (`n_starts=16, iters=120`), the sequential path calls `compose(xq)` and gets
-   `candidates_ascent`'s defaults. The two modes are therefore not running the same discovery;
-2. **pooled sampling** — the batch path draws all K pools from one reverse-diffusion run
-   (`sample_teacher_batch`), the sequential path draws each separately.
+   (`n_starts=16, iters=120`); the sequential path called `compose(xq)` and got
+   `candidates_ascent`'s defaults. The two modes were not running the same discovery;
+2. **pooled sampling** — the batch path draws all K pools from one reverse-diffusion run.
 
-The first is a **confound in the experiment**, not a property of batching, and it should be removed
-before the second can be blamed. §16b does that.
+### 16b. The gap was the confound, and batching costs nothing
+
+Re-running with the sequential path given the batch path's discovery configuration
+(`learn_concept_disc`), at K = 1 where batching can do nothing:
+
+| K = 1, matched discovery | wall | ACC | FGT | bit-identical |
+|---|---|---|---|---|
+| batch | 521s | **0.370** | 0.000 | 1.00 |
+| sequential | 521s | **0.370** | 0.000 | 1.00 |
+
+**Identical on every column.** The entire 0.547 → 0.370 gap was the discovery setting, not batching:
+the old sequential runs were quietly using a *more expensive and better* discovery configuration
+(686s against 521s) than the batch runs they were being compared with. Pooled sampling is exonerated,
+the batched optimizer is exonerated, and the earlier N4 conclusion — that batch and sequential reach
+the same accuracy — turns out to have been right, with the K-sweep's apparent gap being an artifact
+of this experiment rather than a property of the method.
+
+Two lessons worth keeping separate from the result. The first is the finding: **batch addition is
+free.** Same accuracy, same forgetting, same bit-exact preservation, and monotonically faster as K
+grows. The second is methodological, and it is the third time this project has been bitten the same
+way: a comparison between two code paths silently compared two *configurations*, and the difference
+was read as a property of the mechanism. The fix was to make the sequential path's discovery explicit
+rather than defaulted.
 
 It also explains §15's result rather than conflicting with it: on the pretrained backbone there are
 no pools at all (concepts train on real images), so there is neither the 2.64× saving **nor** the
