@@ -2516,6 +2516,91 @@ doing the naive thing at the point where it matters most.
 Nothing about preservation changes: the paths are still insert-only, ancestors are still frozen, and
 §12a certifies bit-exactness on this model. What changes is the recommended way to *read* the bank.
 
+## 13. Conditional vs unconditional, and what a composition inherits (N27)
+
+Score composition behaved in two opposite ways across this repository and the split looked like a
+property of the datasets:
+
+| backbone | conditioning channel | embedding composition | score addition |
+|---|---|---|---|
+| ColorMNIST | one entangled vector per SLOT | F1 0.605 | **0.000** |
+| CelebA | one vector per ATTRIBUTE VALUE | pair 0.903 | 0.934–0.965 |
+| CelebA-HQ (pretrained) | none | path union 0.17 | 0.50 |
+
+It is not a property of the datasets. N27 tests it directly by **giving the ColorMNIST backbone
+per-factor conditionals it does not have** — an adapter concept trained on every SEEN image sharing a
+factor value (`fg=f` over all digits and backgrounds, and so on) — and re-running the identical
+operator on the identical backbone. Everything stays in-distribution: each factor VALUE appears in
+the seen slots, only the COMBINATION is held out.
+
+### 13a. The factor conditionals are real
+
+Each adapter isolates its own factor almost perfectly:
+
+| concept, sampled alone | its own factor | the other two |
+|---|---|---|
+| `fg0` | fg **1.00** | bg 0.06, digit 0.06 |
+| `fg3` | fg **1.00** | bg 0.00, digit 0.09 |
+| `bg2` | bg **1.00** | fg 0.00, digit 0.06 |
+| `bg3` | bg **0.94** | fg 0.00, digit 0.06 |
+| `digit6` | digit **0.94** | fg 0.12, bg 0.44 |
+| `digit1` | digit **0.81** | fg 0.31, bg 0.38 |
+
+### 13b. And the operator that produced *nothing* now produces something
+
+3 held-out compositions, 16 samples:
+
+| arm | joint | digit | fg | bg | F1 | Vendi |
+|---|---|---|---|---|---|---|
+| *real* | *0.792* | *0.792* | *1.00* | *1.00* | *0.956* | *1.67* |
+| **ours** (embedding space) | **0.500** | 0.646 | 0.92 | 0.85 | **0.596** | 1.81 |
+| **factor-score** (score addition over FACTOR conditionals) | **0.167** | 0.458 | 0.65 | 0.75 | 0.434 | 1.97 |
+| slot-score (score addition over SLOT conditionals) | 0.000 | 0.042 | 0.48 | 0.23 | 0.000 | 2.02 |
+| factor-union (same adapters, paths activated together) | 0.000 | 0.104 | 0.12 | 0.15 | 0.000 | 2.73 |
+
+**The operator was never the problem.** Given conditionals at the right granularity, score addition
+goes from 0.000 to 0.167 joint accuracy and from F1 0.000 to 0.434 — on the same backbone, the same
+data and the same arithmetic. ColorMNIST's 120 conditionals are per-slot, and not one of them means
+"cyan foreground", so adding them cannot isolate a factor none of them represents.
+
+**But granularity does not close the gap.** Our embedding composition still wins, 0.500 against
+0.167, and the reason is visible in the table above: a conditional trained on "every image with
+fg = f" is `p(x | fg = f)`, which carries **the marginal of the other factors along with it**. `fg3`
+alone puts bg at 0.00 — it does not merely fail to specify the background, it actively imposes the
+background distribution of its own training set. Adding three such conditionals makes each one fight
+the other two over factors it was never meant to speak about, and the product only partially resolves
+the disagreement.
+
+That is the difference from CelebA, where score addition wins. CelebA's factored head is trained with
+conditioning built as a **sum of per-attribute embeddings**, so the model has seen those vectors used
+compositionally and `attr[k, v]` genuinely means one attribute and stays silent about the rest.
+ColorMNIST's factor adapters are fitted post-hoc to marginals and cannot be silent.
+
+### 13c. The rule this gives
+
+> **A composition inherits the granularity — and the marginals — of the conditionals it composes.**
+>
+> - **No conditioning channel** (unconditional pretrained model): concepts can only be deltas. Deltas
+>   must be composed in **score** space; summing them in parameter space interferes (§12e, and
+>   `factor-union` at 0.000 here).
+> - **Entangled conditionals** (one per combination): score addition cannot reach a novel
+>   arrangement, because no conditional isolates a factor. Composition has to happen in a space where
+>   the factor structure is explicit — which is what the ideal-words basis provides (R² 0.826), and
+>   why our embedding composition is the operator that works here.
+> - **Factored conditionals trained compositionally** (CelebA): score addition is the strongest
+>   operator available, and better than ours (§11c).
+>
+> The practical corollary for a bank: **what you put in it determines what you can compose.** A bank
+> of slot concepts supports retrieval; a bank of factor concepts supports composition. That is a
+> design decision the routing rule already makes — an *arrangement* costs a basis direction and a
+> new *part* costs an adapter — and N27 is the measurement showing why the distinction matters
+> beyond cost.
+
+**A caveat this experiment carries.** Its factor concepts are trained from 96 real images each, which
+is a stronger supervision than the single query the OOD setting provides. It is a probe of the
+operator, not a method: it answers "why does score addition fail here", not "here is a better way to
+compose". `ours` remains the operator for ColorMNIST, and it wins by 3×.
+
 ## 8. Where the numbers come from
 
 | experiment | file | scale run |

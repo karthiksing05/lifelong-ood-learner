@@ -1,1 +1,4 @@
 [n28] 3 held-out compositions x 5 update rules
+[n28] slot 46 uniform        drift 0.0464  alone(fg/bg/digit) 1.00/1.00/0.62  composed joint 0.125  (52s)
+[n28] slot 46 high-t         drift 0.0456  alone(fg/bg/digit) 1.00/1.00/0.81  composed joint 0.000  (51s)
+[n28] slot 46 need-weighted  drift 0.0413  alone(fg/bg/digit) 0.94/1.00/0.62  composed joint 0.000  (52s)

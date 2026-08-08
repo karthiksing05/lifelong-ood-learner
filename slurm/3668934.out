@@ -23,3 +23,7 @@ Defaulting to unsafe serialization. Pass `allow_pickle=False` to raise an error 
       [Smiling] ep 30/40: 0.0002 (145s)
       [Smiling] ep 40/40: 0.0002 (194s)
       [Wearing_Hat] ep 10/40: 0.0003 (49s)
+      [Wearing_Hat] ep 20/40: 0.0003 (97s)
+      [Wearing_Hat] ep 30/40: 0.0003 (145s)
+      [Wearing_Hat] ep 40/40: 0.0002 (194s)
+      [Male] ep 10/40: 0.0003 (48s)

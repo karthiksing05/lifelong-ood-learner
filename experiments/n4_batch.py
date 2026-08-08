@@ -209,6 +209,7 @@ def main():
     p.add_argument("--ascent-starts", type=int, default=16)
     p.add_argument("--ascent-iters", type=int, default=120)
     p.add_argument("--seed", type=int, default=0)
+    p.add_argument("--tag", default="", help="suffix for the output file")
     p.add_argument("--arms", nargs="+", default=["hier"])
     p.add_argument("--modes", nargs="+", default=["batch", "sequential"])
     p.add_argument("--quick", action="store_true")
@@ -232,7 +233,8 @@ def main():
             print(f"[n4] -> {arm}/{mode}: {rows[-1]['wall_seconds']:.0f}s, "
                   f"ACC {rows[-1]['ACC']:.3f}, BWT {rows[-1]['BWT']:+.3f}, "
                   f"FGT {rows[-1]['FGT']:.3f}\n", flush=True)
-    save_json(dict(rows=rows, config=vars(args)), os.path.join(RESULTS, "n4_batch.json"),
+    save_json(dict(rows=rows, config=vars(args)),
+              os.path.join(RESULTS, f"n4_batch{args.tag}.json"),
               seed=args.seed)
 
     print(f"\n[n4] {args.n_concepts} OOD concepts, batch size {args.batch_size}")

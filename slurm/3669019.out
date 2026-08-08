@@ -1,0 +1,4 @@
+===== batch size K=1 =====
+[n4] 12 concepts, batch size 1, arms ['hier'], modes ['batch', 'sequential'], device cuda
+[n4:hier:batch] step 1/12 (1 concepts): mean acc 0.00, exact retention 1.00, 1.10M params, 31s
+[n4:hier:batch] step 2/12 (2 concepts): mean acc 0.47, exact retention 1.00, 1.65M params, 65s
