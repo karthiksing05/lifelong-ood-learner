@@ -2997,6 +2997,21 @@ speckled digit is still the right digit in the right colours. `evals.speckle()` 
 — total variation relative to real images of the same class, plus a literal count of pixels differing
 from all four neighbours.
 
+**Only the first of those two numbers turned out to be usable, and saying so changes the diagnosis.**
+The isolated-pixel count sits at the noise floor for 32×32 ColorMNIST: across every stage measured
+below it ranges 0.00000–0.00010 of pixels, which on a batch of 16 images is **0 to 1.6 pixels in the
+entire batch**, against 0.98 for real data. Worse, as a *ratio* it divided by a denominator that is
+nearly zero on real images, and the interval sweep duly reported `isolated_ratio` of **20345 on two
+rows and ~0.2 on three others for image sets that are statistically identical** (`slurm/3673660.out`).
+The denominator is now floored at one pixel in ten thousand and `tests/test_speckle.py` asserts the
+ratio stays bounded, that the detector still fires on unambiguous dots, and that a set scored against
+itself is exactly 1.0. No number published in this document ever came from the broken column.
+
+The substantive consequence: **the artifact is not isolated dots at all.** The stage with the highest
+total variation (the frozen backbone on a trained class, 1.593) has *zero* isolated pixels. What we
+had been calling "scattered pixels" is broadband roughness — elevated TV across the whole image — and
+that is what the rest of this section measures.
+
 ### 19a. The obvious hypothesis, refuted
 
 Guidance applied at **low** noise levels amplifies high-frequency error, and this repository had

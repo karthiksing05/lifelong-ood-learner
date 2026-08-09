@@ -30,8 +30,8 @@ sync
 case "$STAGE" in
 tests|all)
   echo "== tests =="
-  for t in test_layout test_smoke test_neural test_merge test_ortho_merge test_unbounded \
-           test_pretrained test_pretrained_bank; do gpu "tests/$t.py"; done
+  for t in test_layout test_speckle test_smoke test_neural test_merge test_ortho_merge \
+           test_unbounded test_pretrained test_pretrained_bank; do gpu "tests/$t.py"; done
   # CPU-only, and it gates the PROSE: every number the docs quote must match the aggregate
   "$PY" tests/test_claims.py
   [ "$STAGE" = tests ] && exit 0 ;;&

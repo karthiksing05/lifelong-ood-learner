@@ -314,6 +314,14 @@ Kept here rather than in a footnote, because several of these shaped the design.
   operator is the only one that works at all. The composition result is **benchmark-dependent**.
 - **Scale.** Every quantitative claim rests on backbones of 6.8M and 9.3M parameters that we trained.
   The pretrained work establishes the mechanism at 113.7M, not the full loop.
+- **Image quality.** Our ColorMNIST samples carry visible high-frequency roughness. It is **not ours
+  to fix at this scale**: walking the pipeline stage by stage, the frozen 6.8M backbone renders a
+  class it was explicitly *trained* on at **1.593×** real total variation — worse than anything
+  downstream of it, including our adapter at 1.278× (50 steps) or 1.183× (200 steps). No change to
+  the composer, pool, adapter or sampler removes an artifact the frozen model puts there; a bigger
+  backbone does. The obvious culprit — classifier-free guidance amplifying high-frequency error at
+  low noise levels — was implemented, swept and **refuted**, and the negative result is kept because
+  it is the evidence. [docs/RESULTS.md](docs/RESULTS.md) §19.
 - **That the hierarchy earns its keep.** Given its best case, `clustered` placement is the *worst*
   arm (0.831) against `shuffled` (0.859) and `flat` (0.842). The method is flat and insert-only as a
   result.
