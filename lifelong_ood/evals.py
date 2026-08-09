@@ -141,7 +141,11 @@ def speckle(samples, reference=None, img=IMG):
     if reference is not None and len(reference):
         rtv, riso = _stats(reference)
         out["tv_ratio"] = float(tv / max(rtv, 1e-9))
-        out["isolated_ratio"] = float(iso / max(riso, 1e-9))
+        # Real ColorMNIST has almost no isolated pixels (~2e-4), so a plain ratio divides by nearly
+        # zero and swings between 0.1 and 20345 across runs that look identical.  Floor the
+        # denominator at one pixel in ten thousand -- below that the reference has nothing to
+        # measure against and the ABSOLUTE count is the honest number.
+        out["isolated_ratio"] = float(iso / max(riso, 1e-4))
     return out
 
 

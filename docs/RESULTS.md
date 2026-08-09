@@ -2989,6 +2989,72 @@ Four different digits, four different colour pairs, each the median of its pair 
 what a reader should expect to reproduce rather than the best of forty. `--select best-per-pair` and
 `worst-per-pair` render the tails, and the figure always states which rule produced it.
 
+## 19. The visual artifacts: a refuted hypothesis, and where they actually come from
+
+Our samples carry a scattered high-frequency texture that **no metric in this repository could see**.
+Composition accuracy, precision/recall, density/coverage and Vendi are all indifferent to it: a
+speckled digit is still the right digit in the right colours. `evals.speckle()` measures it directly
+— total variation relative to real images of the same class, plus a literal count of pixels differing
+from all four neighbours.
+
+### 19a. The obvious hypothesis, refuted
+
+Guidance applied at **low** noise levels amplifies high-frequency error, and this repository had
+already demonstrated exactly that for the analytic teacher: running the companion method on our
+annealed schedule rather than its own Eq. 14 injected speckle into the case-study figure (§5l-bis).
+We were applying a **constant** classifier-free weight at every noise level when sampling the
+distillation pool, which is the same mistake in our own half of the pipeline. The standard fix is to
+restrict guidance to an interval (Kynkäänniemi et al., NeurIPS 2024, arXiv:2404.07724), so that was
+implemented and swept.
+
+| guidance interval | tv vs real | joint | recall |
+|---|---|---|---|
+| none (constant, the old behaviour) | 1.279 | 0.479 | 0.788 |
+| [0.1, 1.0] | 1.272 | 0.458 | 0.791 |
+| [0.2, 1.0] | 1.261 | 0.417 | 0.795 |
+| [0.3, 1.0] | 1.271 | 0.479 | 0.785 |
+| [0.5, 1.0] | 1.275 | 0.500 | 0.778 |
+
+**No effect** — the five rows of `figures/diag_guidance_interval.png` are indistinguishable. And in
+hindsight it could not have had one: `sample_concept` already samples at **guidance 1.0**, so there
+is no CFG at sampling time to restrict. The interval only touched pool generation, and the adapter
+does not visibly inherit texture from the pool.
+
+The knob is kept (`sample_embedding(..., interval=)`) because it is correct and cheap, and the
+negative result is kept because it is the evidence that the artifact is *not* CFG.
+
+### 19b. Where the texture actually comes from
+
+Walking the pipeline stage by stage, each against real images of the same composition
+(`tests/diag_artifact_source.py`):
+
+| stage | tv vs real |
+|---|---|
+| *real images* | *0.993* |
+| **the frozen backbone, on a class it was TRAINED on** | **1.593** |
+| the backbone at the composed vector, 50 steps | 1.207 |
+| the backbone at the composed vector, 200 steps | 1.116 |
+| our adapter, 50 steps | 1.278 |
+| our adapter, 200 steps | 1.183 |
+
+**The texture is the backbone's, and our pipeline is smoother than the backbone is on its own trained
+classes.** The 6.8M-parameter UNet at 32×32 renders a class it was explicitly trained on at 1.59×
+real total variation — worse than anything downstream of it. No change to the composer, the pool, the
+adapter or the sampler can remove an artifact that the frozen model puts there.
+
+Two things do help, and only one of them is free:
+
+1. **More sampling steps.** Monotonic in both stages: 1.278 → 1.214 → 1.183 for the adapter across
+   50 / 100 / 200 steps, at no cost to accuracy. The case-study figure now renders at 200 steps and
+   says so; the tables stay at 50 so every arm is compared at one budget.
+2. **A better backbone.** This is the real fix and it is the same lever as §12 — the 113.7M-parameter
+   pretrained model produces clean 256×256 faces, and the artifacts in that figure came from *our*
+   adaptation of it rather than from the model.
+
+The general lesson is the one this project keeps relearning: **a defect nothing measures will survive
+every experiment.** Three of the corrections in this repository were found by looking at pictures,
+and this is the fourth.
+
 ## 8. Where the numbers come from
 
 | experiment | file | scale run |

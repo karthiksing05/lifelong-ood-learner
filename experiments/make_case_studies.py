@@ -154,7 +154,9 @@ def colormnist(args):
         f"best.  Median joint over all 40 is 0.438, range [0.00, 0.94], and it is strongly "
         f"colour-dependent\n(green-on-navy 0.719 vs yellow-on-dark_brown 0.125).  `prototypes` are "
         f"what mode ascent discovered; the companion method runs on its OWN Eq. 14 schedule.  "
-        f"Accuracy is high where coverage is zero.", fontsize=8)
+        f"Accuracy is high where coverage is zero.  Sampled with {args.steps} steps "
+        f"(tables use 50); the residual texture is the BACKBONE's -- it scores 1.59x real "
+        f"on its own TRAINED classes, worse than anything downstream of it.", fontsize=8)
     p = os.path.join(FIG, "f9_case_colormnist.png")
     fig.savefig(p, dpi=145, bbox_inches="tight"); plt.close(fig)
     print(f"  wrote {p}")
@@ -175,7 +177,12 @@ def main():
     p.add_argument("--scan-tag", default="_v1")
     p.add_argument("--n-show", type=int, default=6)
     p.add_argument("--n-per-slot", type=int, default=100)
-    p.add_argument("--steps", type=int, default=50)
+    p.add_argument("--steps", type=int, default=200,
+                   help="sampling steps for the FIGURE.  tests/diag_artifact_source.py "
+                        "measures the excess high-frequency texture falling from 1.28x "
+                        "real at 50 steps to 1.18x at 200, monotonically, at no cost to "
+                        "accuracy.  The TABLES stay at 50 so every arm is compared at "
+                        "one budget; the figure is about what the method looks like.")
     p.add_argument("--inv-steps", type=int, default=400)
     p.add_argument("--epochs", type=int, default=40)
     p.add_argument("--guidance", type=float, default=1.5,
