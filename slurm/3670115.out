@@ -46,3 +46,7 @@ Defaulting to unsafe serialization. Pass `allow_pickle=False` to raise an error 
       [Eyeglasses] epoch 38/40: 0.0003 (293s)
       [Eyeglasses] epoch 39/40: 0.0003 (300s)
       [Eyeglasses] epoch 40/40: 0.0002 (308s)
+[n25] consolidating `Smiling` from 128 real images (Smiling=1, other=0)
+      [Smiling] epoch 1/40: 0.0003 (8s)
+      [Smiling] epoch 2/40: 0.0002 (16s)
+      [Smiling] epoch 3/40: 0.0003 (23s)

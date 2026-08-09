@@ -2179,6 +2179,12 @@ defensible claim is therefore **not** that our composition operator is better on
 it reaches equivalent composition accuracy at roughly **twice the coverage**, and that is only
 visible because we report recall and diversity next to accuracy.
 
+> **Superseded by §11c.** This section is a single seed, and against `composable-diff` only. At
+> three seeds, with Du et al.'s MCMC-corrected version of the same operator in the table, even the
+> "equivalent accuracy" half does not survive: `composable-mcmc` is *more* accurate than ours and
+> does not pay the coverage price. §11c is the number to quote; this section is kept for the
+> reasoning, which is unchanged.
+
 **The honest bottom line for the composition claim, which is now benchmark-dependent:**
 
 - **CelebA** — our operator does **not** beat score addition. Where the model has genuine
@@ -2517,6 +2523,8 @@ Nothing about preservation changes: the paths are still insert-only, ancestors a
 §12a certifies bit-exactness on this model. What changes is the recommended way to *read* the bank.
 
 ## 13. Conditional vs unconditional, and what a composition inherits (N27)
+
+> **This is an ANALYSIS experiment, not a method.** Its factor concepts are trained from 96 real images each — far stronger supervision than the single query the out-of-distribution setting provides. It answers *why* score addition fails on one benchmark and works on another; it is not a proposal for how to compose, and no headline claim rests on it.
 
 Score composition behaved in two opposite ways across this repository and the split looked like a
 property of the datasets:

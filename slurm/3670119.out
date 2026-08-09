@@ -39,3 +39,6 @@
 
 [n27] factor conditionals 0.104 vs slot conditionals 0.000 -- the OPERATOR was fine; the conditionals were not
 [n27] wrote /coc/flash10/ksingara3/lifelong-ood-learner/figures/n27_factor_conditionals_v1.png
+===== n28 seed 1 =====
+[n28] 3 held-out compositions x 5 update rules
+[n28] slot 37 uniform        drift 0.0408  alone(fg/bg/digit) 1.00/1.00/0.56  composed joint 0.125  (41s)

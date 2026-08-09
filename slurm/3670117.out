@@ -29,3 +29,8 @@
     ep 15 step 2200: loss 0.0292
   epoch 15/200: loss 0.0245
     ep 16 step 2400: loss 0.0238
+  epoch 16/200: loss 0.0239
+    ep 17 step 2600: loss 0.0238
+  epoch 17/200: loss 0.0236
+    ep 18 step 2800: loss 0.0224
+  epoch 18/200: loss 0.0224
