@@ -2948,6 +2948,47 @@ sets the starting point rather than the ceiling.
    values — measured separately in §7c (n21) and §5q2 (n11), where a genuinely new value needs a
    weight update from real images and cannot be composed at all.
 
+### 11e. Every held-out composition, scored — and how the case study is chosen (N29)
+
+The case-study figure had been showing three compositions picked at random by `ood_queries(seed=0)`.
+Two of the three landed on the same colour pair and one of those was a poor case, which makes the
+figure simultaneously unrepresentative and monotonous. Choosing nicer slots by hand would fix the
+look and destroy the evidence, so the selection was made a measurement: **score all 40 held-out
+compositions, report the distribution, and pick from it by a stated rule.**
+
+**The full distribution** (ours, calibrated guidance, 16 samples each):
+
+> joint accuracy **mean 0.441, median 0.438, range [0.00, 0.94]** · F1 mean 0.582, median 0.644
+
+**And it is strongly colour-dependent**, which the old three-case figure could not have shown:
+
+| colour pair | n | median joint | best | worst |
+|---|---|---|---|---|
+| green on navy | 10 | **0.719** | 0.94 | 0.25 |
+| pink on dark_purple | 10 | **0.688** | 0.88 | 0.31 |
+| cyan on deep_red | 10 | 0.375 | 0.62 | 0.00 |
+| yellow on dark_brown | 10 | **0.125** | 0.44 | 0.00 |
+
+A **5.8× spread in median accuracy** across the four held-out colour pairs. `yellow on dark_brown` is
+the hard case — a low-contrast warm foreground on a warm background — and `green on navy` is the easy
+one. Any figure showing three random slots is as likely to describe one end as the other, and the
+mean over 40 (0.441) is close to the 3-seed n9 number (0.539 over 5 cases), so neither is
+misrepresenting the method; the *figure* was.
+
+**The selection rule.** ColorMNIST's held-out tier is exactly 4 colour pairs × 10 digits, so the rule
+that spans the benchmark is **one case per colour pair, at that pair's median**:
+
+| slot | composition | joint |
+|---|---|---|
+| 152 | digit 9, cyan on deep_red | 0.38 |
+| 69 | digit 4, green on navy | 0.75 |
+| 126 | digit 7, pink on dark_purple | 0.69 |
+| 19 | digit 1, yellow on dark_brown | 0.19 |
+
+Four different digits, four different colour pairs, each the median of its pair — so the figure is
+what a reader should expect to reproduce rather than the best of forty. `--select best-per-pair` and
+`worst-per-pair` render the tails, and the figure always states which rule produced it.
+
 ## 8. Where the numbers come from
 
 | experiment | file | scale run |

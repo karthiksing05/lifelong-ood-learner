@@ -147,9 +147,14 @@ def colormnist(args):
                   f"{name}\n{slot_name(q['d'], q['f'], q['b'])}" if name == "real" else name,
                   note, n=args.n_show)
             r += 1
-    fig.suptitle("ColorMNIST — one held-out composition per block.  `prototypes` are what mode "
-                 "ascent discovered;\nthe published method is run with its OWN Eq. 14 schedule.  "
-                 "Accuracy is high where coverage is zero.", fontsize=8.5)
+    rule = "explicit slots" if args.slots else args.select
+    fig.suptitle(
+        f"ColorMNIST — one held-out composition per block, selected by `{rule}` over ALL 40 scored "
+        f"compositions (N29):\nthe MEDIAN case of each of the four held-out colour pairs, not the "
+        f"best.  Median joint over all 40 is 0.438, range [0.00, 0.94], and it is strongly "
+        f"colour-dependent\n(green-on-navy 0.719 vs yellow-on-dark_brown 0.125).  `prototypes` are "
+        f"what mode ascent discovered; the companion method runs on its OWN Eq. 14 schedule.  "
+        f"Accuracy is high where coverage is zero.", fontsize=8)
     p = os.path.join(FIG, "f9_case_colormnist.png")
     fig.savefig(p, dpi=145, bbox_inches="tight"); plt.close(fig)
     print(f"  wrote {p}")
