@@ -133,7 +133,48 @@ def main():
            "images kept"],
           label="CelebA — class-incremental over held-out combinations, REAL images")
 
-    print("\n---\n\n## 4. Native parity: against a backbone TRAINED on the held-out slot")
+    print("\n---\n\n## 4. Batch addition, and the pretrained backbone")
+    table(A, "n26_batch_pretrained",
+          ["sequential", "batch", "batch-shared"],
+          ["wall_seconds", "mean_attr", "vendi", "retention_exact", "shared_nodes"],
+          ["wall (s)", "attribute rate", "Vendi", "fraction bit-identical", "shared nodes"],
+          label="google/ddpm-celebahq-256 — 4 concepts, one update vs four",
+          note="Preservation is exact on a 113.7M-parameter model we did not train, whichever way "
+               "the concepts go in. There is no wall-clock saving here because these concepts train "
+               "on REAL images: batching amortizes the generative pool sampling, and there is no "
+               "pool. On ColorMNIST, where there is, K=12 in one update is 2.14x faster AND +0.052 "
+               "accuracy (RESULTS 16b).")
+    table(A, "n25_pretrained_case",
+          ["real", "pretrained", "ours (score-composed)", "ours (path-union)"],
+          ["both", "vendi"],
+          ["both attributes correct", "Vendi"],
+          label="google/ddpm-celebahq-256 — two concepts learned blind to each other, then composed",
+          note="The last two rows are the SAME bank read two ways. Score composition is Liu et "
+               "al.'s rule applied to bank members; we adopt it. `pretrained` is the untouched "
+               "model.")
+
+    print("\n---\n\n## 5. What a composition inherits from its conditionals (analysis)")
+    table(A, "n27_factor_conditionals",
+          ["real", "ours", "factor-score", "factor-union", "slot-score"],
+          ["joint", "fg", "bg", "recall", "f1"],
+          ["accuracy (joint)", "fg", "bg", "recall", "F1"],
+          label="ColorMNIST — the SAME operator over per-FACTOR vs per-SLOT conditionals",
+          note="An ANALYSIS experiment, not a method: the factor concepts are trained from 96 real "
+               "images each. Score addition over slot conditionals is 0.000 and over factor "
+               "conditionals is not, on the same backbone with the same arithmetic -- so the "
+               "operator was never the problem. It still does not reach our embedding composition, "
+               "because a conditional fitted to one factor carries the other factors' marginals.")
+    table(A, "n28_update_rules",
+          ["uniform", "high-t", "need-weighted", "residual", "rehearse"],
+          ["drift", "joint", "recall", "f1"],
+          ["off-concept drift", "composed joint", "recall", "F1"],
+          label="ColorMNIST — which update rule composes best",
+          note="`drift` is how far the model moves on conditionings a concept is NOT for, with its "
+               "path ACTIVE -- the case the insert-only guarantee does not cover. The lowest-drift "
+               "rule composes WORST and the highest composes best: disturbing the field less is not "
+               "the objective. Training at high noise levels is.")
+
+    print("\n---\n\n## 6. Native parity: against a backbone TRAINED on the held-out slot")
     table(A, "n23_native_parity", ["real", "native", "ours", "paper"],
           ["joint", "f1", "recall", "content_ratio"],
           ["accuracy (joint)", "F1", "recall", "content diversity"],

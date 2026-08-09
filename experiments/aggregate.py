@@ -313,6 +313,58 @@ def agg_n23(runs):
     return dict(table=table, parity=par, drag=drag, n_seeds=len(runs))
 
 
+def _agg_rows(runs, label_key, keys, width=24):
+    """Generic per-`label_key` aggregator for experiments that write a flat `rows` list.
+
+    Used by the exploration experiments (n25-n28), whose rows are one dict per arm/rule rather than
+    the accuracy-matrix shape the older aggregators expect.  Keys absent from a run are simply
+    skipped, so an experiment can gain a column without breaking the seeds already collected.
+    """
+    labels = []
+    for _, r in runs:
+        labels += [x[label_key] for x in r.get("rows", []) if x[label_key] not in labels]
+    table = {}
+    for a in labels:
+        vals = {k: [] for k in keys}
+        for _, r in runs:
+            row = next((x for x in r.get("rows", []) if x[label_key] == a), None)
+            if row is None:
+                continue
+            for k in keys:
+                if k in row and row[k] is not None:
+                    vals[k].append(row[k])
+        table[a] = {k: stat(v) for k, v in vals.items()}
+    print(f"    {label_key:{width}s}" + "".join(f"{k:>14s}" for k in keys))
+    for a, row in table.items():
+        print(f"    {a:{width}s}" + "".join(f"{fmt(row[k]):>14s}" for k in keys))
+    return dict(table=table, n_seeds=len(runs))
+
+
+def agg_n25(runs):
+    """N25: the pretrained case study -- per-arm attribute rates and diversity."""
+    ks = sorted({k for _, r in runs for x in r.get("rows", []) for k in x
+                 if k not in ("arm",)})
+    return _agg_rows(runs, "arm", tuple(ks))
+
+
+def agg_n26(runs):
+    """N26: batch vs sequential on a pretrained backbone."""
+    return _agg_rows(runs, "arm", ("wall_seconds", "mean_attr", "vendi", "retention_exact",
+                                   "n_nodes", "shared_nodes", "params"), width=16)
+
+
+def agg_n27(runs):
+    """N27: what a composition inherits from its conditionals."""
+    return _agg_rows(runs, "arm", ("joint", "digit", "fg", "bg", "precision", "recall", "f1",
+                                   "vendi"))
+
+
+def agg_n28(runs):
+    """N28: which update rule composes best, and how far it moves the frozen field."""
+    return _agg_rows(runs, "rule", ("drift", "alone_fg", "alone_bg", "alone_digit", "joint",
+                                    "recall", "f1", "vendi", "wall_seconds"), width=16)
+
+
 AGG = {"e2_composition": agg_e2, "n2_composition": agg_e2,
        "e3_lifelong": agg_e3, "n3_lifelong": agg_n3, "n7_inversion": agg_n7,
        "n5_classinc": agg_n5, "n9_showdown": agg_n9, "n8_idealwords": agg_n7,
@@ -320,7 +372,9 @@ AGG = {"e2_composition": agg_e2, "n2_composition": agg_e2,
        "n22_celeba_lifelong": agg_n22, "n23_native_parity": agg_n23,
        "n21_celeba_vocabulary_Gray_Hair": agg_n20,
        "n20_celeba_composition_pair": agg_n20,
-       "n11_basis_extension_nmadapt": agg_n7}
+       "n11_basis_extension_nmadapt": agg_n7,
+       "n25_pretrained_case": agg_n25, "n26_batch_pretrained": agg_n26,
+       "n27_factor_conditionals": agg_n27, "n28_update_rules": agg_n28}
 
 
 def main():
