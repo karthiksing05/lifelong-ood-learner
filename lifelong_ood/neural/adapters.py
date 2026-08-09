@@ -90,6 +90,23 @@ class PathLoRA(nn.Module):
 
 
     @torch.no_grad()
+    def drop_node(self, nid):
+        """Delete node `nid`'s delta WITHOUT folding it into the base weight.
+
+        The opposite of `merge_node`: that one absorbs the delta and keeps its effect forever, this
+        one discards it and reclaims the parameters.  Because the base weight is never written to,
+        dropping a node cannot perturb any other node -- which is what makes concept deletion exact
+        rather than approximate.  Caller is responsible for not dropping a SHARED ancestor.
+        """
+        nid = str(nid)
+        if nid not in self.A:
+            return 0
+        freed = self.A[nid].numel() + self.B[nid].numel()
+        del self.A[nid]
+        del self.B[nid]
+        return int(freed)
+
+    @torch.no_grad()
     def merge_node(self, nid):
         """Fold node `nid`'s delta into the base weight and delete the node.
 
@@ -379,6 +396,56 @@ class HierarchicalAdapterBank:
         if not keep_embedding:
             self._emb_extra.pop(name, None)
         return freed
+
+    @torch.no_grad()
+    def remove_concept(self, name, prune_tree=True):
+        """Delete a concept exactly, reclaiming its private parameters.  -> accounting dict.
+
+        The counterpart to `add_concept`, and available for the same structural reason preservation
+        is: the frozen base is never written to, and a concept IS a set of nodes on a path.  So
+        removing one is dropping the nodes that only IT uses.  Every remaining concept is therefore
+        **bit-identical** afterwards, not approximately unchanged -- no gradient step, no re-fitting,
+        no distillation.  Methods that protect shared weights cannot offer this at all: to forget one
+        task they have to retrain, and the result is a different model for every task that remains.
+
+        **The one thing that would break it** is dropping a node another concept still routes
+        through, so the nodes to drop are computed as the path MINUS the union of every other
+        registered concept's path, and shared ancestors are kept and reported.
+
+        `prune_tree` also removes the dropped nodes from the placement tree so nothing can later
+        descend into a node whose parameters are gone.  Note what this does NOT do: ancestors'
+        running means were updated by `_touch` at insertion time, and an incremental mean is not
+        exactly reversible in floating point, so *placement statistics* retain a trace of the deleted
+        concept even though no parameter does.  That affects where a FUTURE concept lands, not any
+        existing one, and the certificate below is unaffected.
+        """
+        if name not in self.concepts:
+            raise KeyError(f"no concept {name!r} to remove")
+        rec = self.concepts.pop(name)
+        still_used = {nid for n, c in self.concepts.items() for nid in c["path"]}
+        to_drop = [nid for nid in rec["path"] if nid not in still_used]
+        shared = [nid for nid in rec["path"] if nid in still_used]
+
+        freed = 0
+        for nid in to_drop:
+            for w in self.wrapped:
+                freed += w.drop_node(nid)
+            self.frozen.discard(nid)
+            self._open.discard(nid)
+        emb = self._emb_extra.pop(name, None)
+        if emb is not None:
+            freed += emb.numel()
+
+        if prune_tree:
+            for nid in to_drop:
+                for kids in self.tree.children.values():
+                    if nid in kids:
+                        kids.remove(nid)
+                self.tree.children.pop(nid, None)
+                self.tree.mean.pop(nid, None)
+                self.tree.count.pop(nid, None)
+        return dict(name=name, dropped_nodes=to_drop, kept_shared=shared,
+                    freed_params=int(freed), n_concepts=len(self.concepts))
 
     # -- activation -----------------------------------------------------------
     def activate(self, name):

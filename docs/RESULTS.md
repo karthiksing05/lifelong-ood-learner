@@ -3154,6 +3154,59 @@ did not survive replication (§14 was the first). Both are kept in the record.
 document already reports. What is new is that the *near* end is reachable at all, and that the
 companion method cannot reach it or leave it.
 
+## 21. The metric policy: why KID per composition and FID only pooled
+
+This repository reports FID where Inception is in domain, and it took a measurement to decide *how*.
+
+`evals.frechet_distance` computes the Fréchet statistic on low-pass **pixel** features and is
+deliberately not called FID: Inception-V3 was trained on natural images at 299×299, and 32×32
+recoloured MNIST is outside its domain, so a number computed there would look comparable to the
+literature without being comparable to anything. That stands. `lifelong_ood/fid.py` adds the standard
+number for the rest of the suite — CelebA, CIFAR-10, CLEVR — using `pytorch-fid`'s **TF-ported**
+Inception weights rather than torchvision's, because every published value it would be compared
+against uses the ported ones.
+
+### 21a. FID is unusable at the sample counts this benchmark runs at
+
+Scoring **two halves of one distribution** — true distance exactly zero, so every number reported is
+pure bias (`tests/test_fid.py`):
+
+| n | FID | KID |
+|---|---|---|
+| 32 | **50.663** | −0.00177 |
+| 64 | 35.092 | 0.00091 |
+| 128 | 24.438 | 0.00102 |
+| 256 | 16.504 | 0.00238 |
+| 512 | 10.743 | 0.00164 |
+| 1024 | 5.603 | 0.00036 |
+
+**FID reads 50.7 between identical distributions at n = 32** — larger than many real FID differences
+reported in the literature — and it decays monotonically with n. It is tracking the sample count, not
+the data. KID (Bińkowski et al., ICLR 2018 — the unbiased MMD² estimator) stays within 0.0024 of zero
+at every n.
+
+Our per-composition sample counts are 16–100. So the policy is:
+
+* **KID per composition**, which is where every OOD claim in this document lives;
+* **FID pooled over ≥ 2048 samples**, for dataset-level quality only — and `fid()` raises rather than
+  returning a number below that, because the failure mode being guarded against is a small-n FID
+  getting quoted as if it meant something;
+* **pixel-feature Fréchet** retained for ColorMNIST and other non-natural data, labelled as not
+  comparable to published FID.
+
+A useful corollary for the OOD claim specifically: the withheld combination has *real images* — they
+exist in the dataset and were simply never trained on — so KID **against the held-out real images**
+directly scores "did you generate the unseen combination," rather than merely measuring prettiness.
+
+### 21b. The layout trap, pinned
+
+This repository's flat vectors are HWC and the model pipeline *reinterprets* them as CHW — harmless
+there, because training and sampling apply the same permutation. It is not harmless for Inception,
+which must see an upright image or its features mean nothing, and which will return a confident
+number either way. `fid.py` reshapes the display way; the test asserts that a CHW-permuted copy of a
+set scores **0.344** against the same set's **−1.4e−03**, so a silent regression cannot pass. This is
+the third guard against the permutation that cost three hours in §5 (`tests/test_layout.py`).
+
 ## 8. Where the numbers come from
 
 | experiment | file | scale run |
