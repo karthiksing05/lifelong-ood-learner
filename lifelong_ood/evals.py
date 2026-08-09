@@ -107,6 +107,44 @@ def _feat(X, img=IMG):
     return A / (np.linalg.norm(A, axis=1, keepdims=True) + 1e-9)
 
 
+def speckle(samples, reference=None, img=IMG):
+    """High-frequency energy relative to real data -- the "scattered pixels" artifact, quantified.
+
+    Classifier-free guidance applied at LOW noise levels amplifies the model's high-frequency error:
+    the trajectory is being pushed while the only thing left to decide is fine detail, and the push
+    lands on individual pixels.  It shows up as isolated bright dots on an otherwise clean image, and
+    no accuracy or coverage metric in this file can see it -- a speckled digit is still the right
+    digit in the right colours.
+
+    Two numbers, both scale-free:
+      `tv_ratio`   total variation of the samples / total variation of the reference. 1.0 means the
+                   samples are as smooth as real data; >1 means extra high-frequency energy.
+      `isolated`   fraction of pixels that differ from ALL four neighbours by more than `thr` -- a
+                   direct count of dots, which TV alone can be fooled about by legitimate texture.
+    """
+    def _stats(X):
+        n = len(X)
+        A = np.asarray(X, np.float64).reshape(n, img, img, -1)
+        dh = np.abs(np.diff(A, axis=1)).mean()
+        dw = np.abs(np.diff(A, axis=2)).mean()
+        tv = 0.5 * (dh + dw)
+        P = A.mean(-1)                                   # luminance, for the isolation test
+        pad = np.pad(P, ((0, 0), (1, 1), (1, 1)), mode="edge")
+        nb = np.stack([pad[:, :-2, 1:-1], pad[:, 2:, 1:-1],
+                       pad[:, 1:-1, :-2], pad[:, 1:-1, 2:]])
+        thr = 0.25
+        iso = (np.abs(P[None] - nb) > thr).all(0).mean()
+        return tv, iso
+
+    tv, iso = _stats(samples)
+    out = dict(tv=float(tv), isolated=float(iso))
+    if reference is not None and len(reference):
+        rtv, riso = _stats(reference)
+        out["tv_ratio"] = float(tv / max(rtv, 1e-9))
+        out["isolated_ratio"] = float(iso / max(riso, 1e-9))
+    return out
+
+
 def vendi_score(samples, q=1.0):
     """Diversity WITHOUT a reference set (Friedman & Dieng, TMLR 2023, arXiv:2210.02410).
 

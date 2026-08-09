@@ -260,21 +260,40 @@ def teacher_init_alpha(field, teacher, xq, ids=None, temperature=0.001, reps=2, 
 
 
 @torch.no_grad()
-def sample_embedding(field, c_new, n=32, steps=50, seed=0, guidance=1.0, eta=0.0, clip=(-1, 1)):
+def sample_embedding(field, c_new, n=32, steps=50, seed=0, guidance=1.0, eta=0.0, clip=(-1, 1),
+                     interval=None):
     """Sample the MODEL conditioned on `c_new` -- the manifold generating, not a Gaussian.
 
     `guidance=1.0` means plain conditional sampling, which is exactly how the base model reaches
     recall 0.90 on its own classes.  Values above 1 apply ordinary classifier-free guidance against
-    the null token; that sharpens and, as always with CFG, costs diversity, so it is off by default.
+    the null token; that sharpens and, as always with CFG, costs diversity.
+
+    `interval=(u_lo, u_hi)` applies that guidance ONLY at noise levels inside the interval, and plain
+    conditional sampling (w = 1) outside it.  This is the fix for the speckle in our samples, and the
+    diagnosis is the same one RESULTS 5l-bis made about the teacher: **guidance at low noise levels
+    amplifies high-frequency error**.  Late in the reverse process the composition is already
+    decided and the only thing left is fine detail, so a constant push lands on individual pixels and
+    shows up as isolated bright dots -- which no accuracy or coverage metric here can see, because a
+    speckled digit is still the right digit in the right colours.
+
+    Wang et al. solve this for their analytic teacher with the variance-aware schedule of their
+    Eq. 14; for ordinary CFG the equivalent is a limited interval (Kynkaanniemi et al., NeurIPS 2024,
+    "Applying Guidance in a Limited Interval Improves Sample and Distribution Quality in Diffusion
+    Models", arXiv:2404.07724).  We had been applying a constant weight at every noise level, which
+    is exactly the configuration both papers identify as the artifact's source.
     """
     def cond(x, u):
         return field.eps(x, u, None, emb=c_new)
 
     if guidance == 1.0:
-        return field.sample(n=n, steps=steps, seed=seed, clip=clip, eta=eta,
-                            guide_eps=cond, guide_w=lambda u: 1.0)
+        w = (lambda u: 1.0)
+    elif interval is None:
+        w = (lambda u: guidance)
+    else:
+        lo, hi = float(interval[0]), float(interval[1])
+        w = (lambda u: guidance if lo <= float(u) <= hi else 1.0)
     return field.sample(n=n, steps=steps, seed=seed, clip=clip, eta=eta,
-                        guide_eps=cond, guide_w=lambda u: guidance)
+                        guide_eps=cond, guide_w=w)
 
 
 # ── composing the MODEL's conditionals, one per factor ───────────────────────

@@ -434,7 +434,7 @@ class NeuralLifelongLearner:
         return c_new, ws, [int(np.argmax(w)) for w in ws]
 
     def learn_concept_factored(self, xq, name, n_pool=64, epochs=10, inv_steps=400, inv_lr=0.05,
-                               seed=None, gains=None, guidance=1.0, **kw):
+                               seed=None, gains=None, guidance=1.0, interval=None, **kw):
         """The full loop with the best composer: read -> compose -> sample the manifold -> consolidate.
 
         The teacher still discovers (mode ascent supplies the prototypes the factorization is read
@@ -447,7 +447,7 @@ class NeuralLifelongLearner:
                                                 seed=seed, gains=gains)
         pool = sample_factored_pool(self.field, c_new, n=n_pool, steps=self.cfg["steps"],
                                     seed=self.cfg["seed"] if seed is None else seed,
-                                    guidance=guidance)
+                                    guidance=guidance, interval=interval)
         # Pin the embedding to the composed vector BEFORE consolidating, and hold it there.
         #
         # This used to run the other way round: consolidation trained the embedding along with the
