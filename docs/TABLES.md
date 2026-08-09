@@ -114,7 +114,60 @@ Arms that structurally *remove* shared parameters sit at exactly 0.000; every ar
 
 ---
 
-## 4. Native parity: against a backbone TRAINED on the held-out slot
+## 4. Batch addition, and the pretrained backbone
+
+### google/ddpm-celebahq-256 — 4 concepts, one update vs four  *(n = 3 seeds)*
+
+| method | wall (s) | attribute rate | Vendi | fraction bit-identical | shared nodes |
+|---|---|---|---|---|---|
+| `sequential` | 775.052 ± 1.037 | 0.875 ± 0.072 | 1.406 ± 0.034 | 1.000 ± 0.000 | 3.000 ± 0.000 |
+| `batch` | 774.721 ± 1.083 | 0.819 ± 0.123 | 1.398 ± 0.011 | 1.000 ± 0.000 | 3.000 ± 0.000 |
+| `batch-shared` | 781.795 ± 1.031 | 0.847 ± 0.097 | 1.392 ± 0.036 | 1.000 ± 0.000 | 6.000 ± 0.000 |
+
+Preservation is exact on a 113.7M-parameter model we did not train, whichever way the concepts go in. There is no wall-clock saving here because these concepts train on REAL images: batching amortizes the generative pool sampling, and there is no pool. On ColorMNIST, where there is, K=12 in one update is 2.14x faster AND +0.052 accuracy (RESULTS 16b).
+
+### google/ddpm-celebahq-256 — two concepts learned blind to each other, then composed  *(n = 3 seeds)*
+
+| method | both attributes correct | Vendi |
+|---|---|---|
+| `real` | 0.917 ± 0.083 | 1.384 ± 0.000 |
+| `pretrained` | 0.167 ± 0.167 | 1.456 ± 0.030 |
+| `ours (score-composed)` | 0.417 ± 0.083 | 1.436 ± 0.077 |
+| `ours (path-union)` | 0.417 ± 0.083 | 1.280 ± 0.019 |
+
+The last two rows are the SAME bank read two ways. Score composition is Liu et al.'s rule applied to bank members; we adopt it. `pretrained` is the untouched model.
+
+---
+
+## 5. What a composition inherits from its conditionals (analysis)
+
+### ColorMNIST — the SAME operator over per-FACTOR vs per-SLOT conditionals  *(n = 3 seeds)*
+
+| method | accuracy (joint) | fg | bg | recall | F1 |
+|---|---|---|---|---|---|
+| `real` | 0.667 ± 0.075 | 1.000 ± 0.000 | 1.000 ± 0.000 | 0.919 ± 0.020 | 0.958 ± 0.011 |
+| `ours` | 0.562 ± 0.072 | 0.938 ± 0.036 | 0.812 ± 0.062 | 0.727 ± 0.126 | 0.679 ± 0.068 |
+| `factor-score` | 0.042 ± 0.021 | 0.354 ± 0.205 | 0.750 ± 0.095 | 0.697 ± 0.027 | 0.490 ± 0.071 |
+| `factor-union` | 0.000 ± 0.000 | 0.292 ± 0.127 | 0.271 ± 0.110 | 0.970 ± 0.030 | 0.039 ± 0.039 |
+| `slot-score` | 0.000 ± 0.000 | 0.250 ± 0.188 | 0.146 ± 0.146 | 0.034 ± 0.015 | 0.016 ± 0.016 |
+
+An ANALYSIS experiment, not a method: the factor concepts are trained from 96 real images each. Score addition over slot conditionals is 0.000 and over factor conditionals is not, on the same backbone with the same arithmetic -- so the operator was never the problem. It still does not reach our embedding composition, because a conditional fitted to one factor carries the other factors' marginals.
+
+### ColorMNIST — which update rule composes best  *(n = 3 seeds)*
+
+| method | off-concept drift | composed joint | recall | F1 |
+|---|---|---|---|---|
+| `uniform` | 0.040 ± 0.004 | 0.167 ± 0.042 | 0.737 ± 0.135 | 0.434 ± 0.121 |
+| `high-t` | 0.043 ± 0.001 | 0.188 ± 0.130 | 0.687 ± 0.117 | 0.421 ± 0.162 |
+| `need-weighted` | 0.038 ± 0.002 | 0.083 ± 0.055 | 0.751 ± 0.133 | 0.269 ± 0.060 |
+| `residual` | 0.040 ± 0.003 | 0.125 ± 0.125 | 0.872 ± 0.091 | 0.319 ± 0.221 |
+| `rehearse` | 0.010 ± 0.000 | 0.146 ± 0.116 | 0.953 ± 0.022 | 0.366 ± 0.054 |
+
+`drift` is how far the model moves on conditionings a concept is NOT for, with its path ACTIVE -- the case the insert-only guarantee does not cover. The lowest-drift rule composes WORST and the highest composes best: disturbing the field less is not the objective. Training at high noise levels is.
+
+---
+
+## 6. Native parity: against a backbone TRAINED on the held-out slot
 
 ### ColorMNIST — the oracle is trained on all 160 slots  *(n = 3 seeds)*
 
