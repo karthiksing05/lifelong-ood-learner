@@ -3207,6 +3207,91 @@ number either way. `fid.py` reshapes the display way; the test asserts that a CH
 set scores **0.344** against the same set's **−1.4e−03**, so a silent regression cannot pass. This is
 the third guard against the permutation that cost three hours in §5 (`tests/test_layout.py`).
 
+## 22. Certified deletion (N31): removing a concept without disturbing the others
+
+Every lifelong result here is about adding. Deletion is the same question with the sign flipped, and
+deployed systems are asked it constantly — a retracted source, a right-to-be-forgotten request, a
+concept that turned out to be wrong. It is also where parameter *isolation* and parameter
+*protection* differ most sharply, and nothing here had measured it.
+
+For us, deletion is not a new mechanism: a concept **is** a set of nodes on a path, and the frozen
+base is never written to, so removing one is dropping the nodes only it uses
+(`bank.remove_concept`). The honest baseline is what a method that folds updates into shared weights
+would actually have to do — **retrain from scratch on the remaining concepts**.
+
+10 concepts on ColorMNIST, deleting the middle one (`experiments/n31_deletion.py`):
+
+| arm | survivors bit-identical | max drift | deleted name gone | params freed | seconds |
+|---|---|---|---|---|---|
+| **ours (structural)** | **9 / 9** | **0.000e+00** | yes | 551,408 | **0.002** |
+| retrain-without-it | 0 / 9 | 9.930e−01 | yes | 0 | 258.4 |
+
+The frozen base is bit-identical too, which is the other half of "nothing else moved". Deletion is a
+dict operation, so it is O(1) in the stream where retraining is O(K) model fits — reported as the two
+absolute times rather than as a ratio, since dividing 258 s by ~0 would be an artifact of the
+denominator rather than a measurement.
+
+**Forgetting is total, not a fallback.** The field resolves a concept name *through* `bank.concepts`,
+so once the bank drops it the name is genuinely unknown and `eps()` raises. It does not quietly
+revert to the base and keep generating something.
+
+### 22a. What deletion does *not* recover
+
+Deletion makes a concept unreachable. It does **not** generally reclaim its storage, and the first
+run of this experiment hid that behind a lucky choice of victim. Measured for every concept before
+deleting any:
+
+| reclaimable fraction of a concept's path parameters | min | median | max |
+|---|---|---|---|
+| | **0.000** | 0.250 | 0.333 |
+
+Two separate reasons, and both are structural:
+
+1. **Only the leaf is private.** A path is root → intermediate → leaf, and the ancestors are shared
+   with other concepts, so at best ⅓ of the parameters on a path can go.
+2. **A leaf can be adopted.** `_descend` may route a later concept *through* an earlier concept's
+   leaf, promoting it to an ancestor. Dropping it would break the descendant, so it is kept —
+   **3 / 10** concepts here are in that state, and for those only the 256-float embedding is
+   reclaimable.
+
+So the accurate claim is *certified forgetting with partial reclamation*, not "deletion frees the
+concept". The guard that produces this — the nodes to drop are the path minus the union of every
+other concept's path — is what makes the 9/9 above hold; without it, deleting an adopted leaf would
+silently corrupt its descendants.
+
+## 23. Order invariance (N32): a prediction this repository made and had to retract
+
+Insert-only preservation invites an appealing conjecture: since nothing shared is ever written to, a
+concept's parameters should not depend on what came *after* it, so the same concept set presented in
+a different order should give **bit-identical** concepts. That would be a proof-shaped result, much
+stronger than the usual "accuracy varies by X across orderings" that continual learning reports.
+
+**It is false, and the experiment says so.** 6 concepts, 4 orderings, against the reference order
+(`experiments/n32_order.py`):
+
+| arm | bit-identical | max drift | same path | bit-identical \| same path |
+|---|---|---|---|---|
+| ours | **0.000** | 1.937 | 0.056 | 0.000 |
+| unfrozen-ancestors (control) | 0.000 | 1.939 | 0.056 | 0.000 |
+
+Ours is **indistinguishable from the control that does not freeze anything at all**, which is the
+cleanest possible refutation.
+
+**Why, and what the real property is.** Placement is computed against whatever tree exists at
+insertion time, so a different order gives a concept a different parent — only **5.6%** of concepts
+kept their path at all. And even those were not bit-identical, because a shared ancestor's *contents*
+depend on which concept created it and what trained it, both of which the order changes.
+
+The property this repository actually has, and which §5/§7 measure, is **forward-only**: once a
+concept is consolidated, nothing that arrives later changes it. That is not the same as order
+invariance, and conflating the two was an error of reasoning on my part, not a bug in the code. The
+narrower structural claim does survive and is true by construction: `insert_batch` computes every
+member's placement against **one snapshot** before creating anything, so the structure produced by a
+*batch* does not depend on the arrival order *within* that batch (§15).
+
+Kept rather than deleted, alongside §14 and §20b, as the third prediction here that replication
+refused.
+
 ## 8. Where the numbers come from
 
 | experiment | file | scale run |

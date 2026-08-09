@@ -303,6 +303,32 @@ it nor leave it.
 
 ---
 
+## 9. Certified deletion: a concept can be removed without disturbing the others
+
+**Claim.** The same structure that makes addition non-destructive makes **removal** exact. Deleting a
+concept leaves every remaining concept, and the frozen base, **bit-identical** — no gradient step, no
+re-fitting, no distillation — in O(1).
+
+**Evidence.** 10 concepts on ColorMNIST, deleting the middle one:
+
+| arm | survivors bit-identical | max drift | params freed | seconds |
+|---|---|---|---|---|
+| **ours** | **9 / 9** | **0.000e+00** | 551,408 | **0.002** |
+| retrain without it | 0 / 9 | 0.993 | 0 | 258.4 |
+
+Forgetting is total rather than a fallback: the field resolves names through the bank, so a deleted
+name becomes genuinely unknown and raises, instead of quietly reverting to the base.
+
+**What this does not claim.** Deletion makes a concept unreachable; it does **not** generally reclaim
+its storage. Only the leaf is private (≤ ⅓ of a path's parameters), and `_descend` can adopt an
+earlier leaf as a later concept's ancestor — 3/10 concepts here — after which only the embedding can
+go. Measured reclaimable fraction: min 0.000, median 0.250, max 0.333. The accurate description is
+*certified forgetting with partial reclamation*.
+
+**Where:** [docs/RESULTS.md](docs/RESULTS.md) §22. `experiments/n31_deletion.py`.
+
+---
+
 ## What is explicitly not claimed
 
 Kept here rather than in a footnote, because several of these shaped the design.
@@ -312,6 +338,12 @@ Kept here rather than in a footnote, because several of these shaped the design.
   accuracy metric, with zero parameters and no training. We keep an advantage in *coverage* (recall
   0.579 vs 0.483; content diversity 1.068 vs 0.838, where real data is 1.007). On ColorMNIST our
   operator is the only one that works at all. The composition result is **benchmark-dependent**.
+- **Order invariance.** Insert-only preservation suggests the same concepts in a different order
+  should give bit-identical concepts. **They do not**, and our arm is indistinguishable from a
+  control that freezes nothing: 0.000 bit-identical across 4 orderings, because placement is decided
+  against whatever tree exists at insertion time (only 5.6% of concepts even keep their path) and a
+  shared ancestor's contents depend on which concept created it. The real property is **forward-only**
+  — once consolidated, nothing later changes a concept — which is what §5/§7 measure. §23.
 - **Scale.** Every quantitative claim rests on backbones of 6.8M and 9.3M parameters that we trained.
   The pretrained work establishes the mechanism at 113.7M, not the full loop.
 - **Image quality.** Our ColorMNIST samples carry visible high-frequency roughness. It is **not ours

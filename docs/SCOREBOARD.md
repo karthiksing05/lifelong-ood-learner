@@ -124,6 +124,7 @@ product-of-experts + adapter banks).
 | **batch addition** | **2.14× faster and +0.052 ACC** at K=12, bit-identical at every K from 1 to 12 |
 | **native parity** | recall **0.903 ± 0.024** against a backbone *trained* on the held-out slot |
 | **preservation on a pretrained model** | **0.000e+00** on `google/ddpm-celebahq-256` (113.7M params) |
+| **certified deletion** | remove a concept in 0.002 s with **9/9** survivors and the base bit-identical; retraining without it leaves **0/9** (drift 0.993). Reclaims storage only partially — median 0.250 of a path |
 | **prototype-distance dial** | ours spans **2.32×** in distance-to-prototype (recall 0.003 → 0.843) from one consolidated concept; the companion method spans **0.94×** — i.e. not at all — with recall 0.000 throughout |
 
 ---

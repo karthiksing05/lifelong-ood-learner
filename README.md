@@ -214,6 +214,184 @@ than ours and we say so. What this project contributes is everything below the c
 
 ---
 
+## The machinery, in detail
+
+The pseudocode above is the shape. This is what each piece actually computes, and where each idea
+came from.
+
+### What is inherited from Cobweb, and what deliberately is not
+
+The hierarchy is Cobweb's (Fisher, 1987) in the continuous COBWEB/3 lineage. There are **two trees**
+in this repository and they play different roles, which is worth separating before anything else:
+
+| | `GaussianCobweb` / `CobwebPrivateTree` | `ConceptTree` |
+|---|---|---|
+| where | `tree.py`, `backend.py` | `neural/adapters.py` |
+| what it organizes | data instances | **concepts** (one node may own an adapter delta) |
+| operators | insert · create · **merge** · **split** | insert only |
+| scoring | category utility | Gaussian log-likelihood + margin |
+| used by | the analytic score field, `compose` | the `HierarchicalAdapterBank` |
+
+**The real Cobweb** is cobweb-private's C++ `CobwebContinuousTree` (nanobind), used whenever it is
+importable; `GaussianCobweb` is a pure-numpy fallback so the repository runs without it. Both expose
+`ifit` / `fit` / `snapshot`, and everything downstream reads only the snapshot, so they are
+interchangeable. The configuration matches cobweb-poincare exactly (`covar_from=1`: a node's variance
+is its own `sum_sq/count + prior_var`), so trees built here agree with trees built there.
+
+**What is inherited, faithfully.** Each node stores diagonal-Gaussian sufficient statistics
+`(n, Σx, Σx²)`, so a node is a concept prototype with a spread rather than a centroid. Instances
+arrive one at a time; the stream *is* the training, with no gradient step and no batch. Descent
+scores a candidate partition by **category utility** — the continuous analogue of Fisher's
+expected-correct-guesses, where a Gaussian attribute contributes `1/(2√π σ)`:
+
+```
+score(node)      = (1 / 2√π) · mean_d [ 1 / σ_d ],     σ_d² = Σx²/n − (Σx/n)² + prior_var
+CU(partition)    = (1/K) · Σ_k (n_k / n) · [ score(child_k) − score(parent) ]
+```
+
+and `ifit` picks whichever of the four classic operators maximizes it: host into the best child,
+create a new child, **merge** the two best children under a new node, or **split** the best child
+(promoting its children). `prior_var` is the variance floor and the only structural hyperparameter.
+
+**What `ConceptTree` drops, and why it has to.** The bank's tree keeps incremental insertion, the
+per-node running mean, and shared ancestors. It drops merge and split — and that is not a
+simplification for convenience, it is forced:
+
+> **Merge and split restructure nodes that already exist.** In the bank, an existing node *owns
+> adapter parameters that an earlier concept's path runs through*. Moving it changes what that
+> concept generates. The bit-exact preservation certificate and Cobweb's restructuring operators
+> cannot both hold, so the operators go.
+
+Two consequences follow, and both are measured rather than assumed. Placement quality is genuinely
+worse without restructuring — but §5s found `clustered` placement is the *worst* arm (0.831) against
+`shuffled` (0.859) and `flat` (0.842), so the hierarchy was not earning its keep anyway, and the loss
+is one we were already paying. And `insert_batch` places a whole batch against **one snapshot** of
+the tree, so a batch's structure does not depend on its own arrival order.
+
+Descent is also simplified. `_descend` scores children by a spherical Gaussian log-likelihood against
+a single scalar `var` rather than by category utility, descends only while the best child beats
+staying put by `margin` nats, and is capped by `branch_max` / `max_depth`:
+
+```python
+ll(nid, mu) = -0.5 * mean((mu - mean[nid])**2) / var        # no log-det term; var is a constant
+path, cur = [0], 0
+for _ in range(max_depth):
+    inner = [k for k in children[cur] if children[k]] or children[cur]
+    best  = argmax_k ll(k, mu)
+    if ll(best, mu) < ll(cur, mu) + margin and len(children[cur]) < branch_max:
+        break                                   # stay here and attach a leaf
+    path.append(best); cur = best               # note: a saturated fan-out FORCES the descent,
+                                                # which is what makes levels form instead of a star
+```
+
+One subtlety that matters and is easy to miss: `_touch` keeps updating ancestors' running means as
+concepts arrive, **but ancestors' adapter deltas stay frozen**. Statistics and parameters are
+decoupled — the hierarchy stays adaptive for deciding *where a future concept goes*, while being
+immutable for *what an existing concept generates*. That is the whole trick in one sentence.
+
+### The routing signals, exactly as computed
+
+No labels and no held-out probe are used anywhere. The signal is the backbone's own ε-prediction
+error on the query, under the best conditioning it can offer (`neural/router.py`).
+
+For a candidate conditioning vector `c` at noise level `u`:
+
+```
+L(c, u) = E_ε [ || eps_theta( √ᾱ(u)·x_q + √(1−ᾱ(u))·ε , u, c ) − ε ||² ]
+```
+
+estimated with `n_noise` draws. **Every candidate sees the identical noise draws** — with independent
+noise the differences between conditionings are swamped by the variance of the draw, so this is a
+correctness requirement, not an optimization.
+
+The two decision signals are the best such loss over two different candidate sets, at two noise
+levels chosen by `tests/diag_router_signals.py`:
+
+```
+s_novel = min over the backbone's TRAINED class conditionals,  at u = 0.10
+s_vocab = min over BASIS COMPOSITIONS c = μ + Σ_f gain_f · V[f][v_f],  at u = 0.45
+```
+
+The basis candidates are the **full Cartesian product** of known factor values, enumerated rather
+than searched — 160 rows for ColorMNIST, scored in one batched forward pass, which is cheaper and
+less fragile than a coordinate descent that can stop in a local minimum and report a spuriously good
+fit. The decision is then a two-threshold cascade:
+
+```python
+if   s_novel <= t_novel:  "in-distribution"    # do nothing
+elif s_vocab <= t_vocab:  "new-combination"    # expressible in the basis -> 1024 bytes
+else:                     "new-vocabulary"     # a factor VALUE we lack   -> one 551K-param leaf
+```
+
+**Calibration, and where it is honest.** `t_novel` is the 0.90 quantile of `s_novel` over *trained*
+slots — "more unusual than nine-tenths of what I was trained on" — which uses no labels at all.
+`t_vocab` cannot be label-free in the same way, because it separates two categories that are *both*
+absent from training. It is calibrated instead on the model's **own samples from basis combinations
+it never trained on**, which the system can manufacture unaided. That substitution is an assumption;
+`calibrate()` says so, and n18 reports the sensitivity sweep alongside the operating point. The bias
+runs one way — self-samples are on-manifold, so the threshold it yields is if anything too low.
+
+**Two negative results are kept in the router itself**, because both were things the module first
+asserted and neither survived measurement:
+
+- **Normalizing by the unconditional loss inverts the signal.** Dividing the best conditional loss by
+  the unconditional one — to divide out per-image denoising difficulty — scores AUROC **0.199**, not
+  weak but *reversed*. The denominator is itself sensitive to novelty: on a query carrying an unseen
+  factor value the unconditional branch is also bad, and degrades faster than the numerator. A ratio
+  to a quantity that responds to novelty cannot measure novelty.
+- **The conditioning is not what carries the decision.** In `tests/diag_router_signals.py` the
+  plain unconditional error — no class, no basis — scores **0.985 / 0.998**, matching the
+  conditional signal measured on the same run. So this router is
+  an OOD detector on the model's own density, and must **not** be reported as evidence that the
+  factor basis decides the route. n18 runs it as an explicit ablation row for that reason.
+
+### `HierarchicalAdapterBank`, operation by operation
+
+```python
+add_concept(name, mu):            # or add_concepts(names, mus) for a batch
+    _seal()                       # last insertion's _open joins .frozen -> never trainable again
+    path, leaf = tree.insert(mu)  # insert-only placement
+    _open = {leaf}
+    for nid in path:              # idempotent: add_node returns early if nid already exists,
+        for w in wrapped:         # so ancestors are NOT recreated and NOT reinitialized
+            w.add_node(nid)       # A ~ kaiming, B = 0  ->  a fresh node is an EXACT no-op
+    _emb_extra[name] = Parameter(randn(d_emb) * 0.01)
+
+trainable(name)  ->  [A[nid], B[nid] for nid in path if nid in _open] + [_emb_extra[name]]
+                     #                              ^^^^^^^^^^^^^^^^ the guarantee, as a filter
+
+activate(name)   ->  context manager setting state["path"]; an UNKNOWN name selects the EMPTY path,
+                     i.e. the bare frozen base — a concept is only ever reachable through the bank
+
+n_params()       ->  sum of every A and B currently allocated (the growth curve's y-axis)
+merge_concept()  ->  fold the path's deltas INTO the frozen weights and free them: the adapter
+                     becomes scaffolding rather than storage, and the count returns to the base's
+remove_concept() ->  drop the nodes ONLY this concept uses; survivors stay bit-identical (§22)
+```
+
+`merge_concept` and `remove_concept` are exact opposites and both are exact: one absorbs a delta
+permanently, the other discards it. Neither can perturb another concept, because the only shared
+object either touches is the frozen base weight — and `remove_concept` never writes to it.
+
+### Our stages, enumerated
+
+Stages 1–4 are the companion paper's, used unchanged. These are the ones this work adds.
+
+| | **5 · ROUTE** | **6 · CONSOLIDATE** | **7 · CERTIFY** | **8 · DELETE** |
+|---|---|---|---|---|
+| **in** | query `x_q` | pool + teacher mean `μ` | the bank | a concept name |
+| **does** | two ε-losses vs known conditionals; two-threshold cascade | `_seal` → `tree.insert` → `add_node` → Adam over `_open` only | re-fingerprint every earlier concept, compare bit-for-bit | drop the nodes only that concept uses |
+| **out** | one of three routes | a new leaf; ancestors sealed | pass/fail, not a score | survivors untouched, name unknown |
+| **costs** | one batched forward pass | 1024 B (arrangement) or 551K params (new part) | one forward pass per stored concept | O(1) — a dict operation |
+| **evidence** | AUROC 0.980 / 0.995, error one-sided (0 unsafe in 120) | bit-identical 1.000 at every K from 1 to 12 | 1.000 across 3 seeds, 2 datasets, 11 baselines | 9/9 survivors bit-identical; retraining: 0/9 |
+
+The one property that ties them together: **nothing an earlier concept depends on is ever in an
+optimizer again.** Stage 6 enforces it by construction, stage 7 checks it empirically rather than
+trusting the construction, stage 5 decides whether stage 6 needs to run at all, and stage 8 is the
+same property read backwards.
+
+---
+
 ## Contributions, in one line each
 
 Full detail, with evidence and caveats for each: **[CONTRIBUTIONS.md](CONTRIBUTIONS.md)**.
