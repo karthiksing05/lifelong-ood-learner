@@ -499,7 +499,8 @@ class NeuralLifelongLearner:
         return teachers, pools
 
     # ── using what was learned ───────────────────────────────────────────────
-    def sample_concept(self, name, n=16, steps=None, seed=None, guidance=1.0, u_start=1.0):
+    def sample_concept(self, name, n=16, steps=None, seed=None, guidance=1.0, u_start=1.0,
+                       x_init=None, var=None):
         """Conditional generation from a consolidated concept: its adapter path is active and its
         learned embedding conditions the model, contrasted against the frozen base (CFG).
 
@@ -517,9 +518,19 @@ class NeuralLifelongLearner:
         # unconditional branch inside sample() is `field.eps(x, u, None)`, which activates the empty
         # path -- the frozen base.  Two genuinely different functions, which is what makes this real
         # classifier-free guidance rather than a guided model guiding itself.
+        # `x_init` + `u_start` are the DISTANCE-FROM-PROTOTYPE dial.  Starting the reverse process
+        # from a partially noised prototype rather than from pure noise controls how much of the
+        # prototype survives: u_start -> 0 keeps almost all of it (near-copies), u_start -> 1 keeps
+        # none of it (unconstrained samples from the concept's conditional).  Identical in form to
+        # what `sample_teacher` already does for the analytic teacher, so the two methods can be
+        # swept on the same axis and compared.
+        xi = x_init
+        if xi is not None and var:
+            rng = np.random.default_rng(c["seed"] if seed is None else seed)
+            xi = np.atleast_2d(xi) + np.sqrt(var) * rng.standard_normal((n, np.size(xi)))
         return self.field.sample(
             n=n, steps=steps or c["steps"], seed=c["seed"] if seed is None else seed,
-            u_start=u_start, clip=(-1, 1),
+            u_start=u_start, x_init=xi, clip=(-1, 1),
             guide_eps=lambda x, u: self.field.eps(x, u, name), guide_w=lambda u: guidance)
 
     def sample_composed(self, names, n=16, steps=None, seed=None, scale=1.0, weights=None,
