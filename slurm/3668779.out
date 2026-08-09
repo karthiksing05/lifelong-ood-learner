@@ -1,3 +1,0 @@
-[calib] ideal-words R^2 0.826; factor-2 gain 1.0 (seen-slot joint accuracy 0.86) -> gains [1.0, 1.0, 1.0]
-  wrote /coc/flash10/ksingara3/lifelong-ood-learner/figures/f9_case_colormnist.png
-exit=0 | Sat Aug  8 15:07:49 EDT 2026

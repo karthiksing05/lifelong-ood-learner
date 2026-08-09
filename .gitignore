@@ -12,3 +12,7 @@ slurm-*.out
 .DS_Store
 experiments/slurm/
 results/cache/
+slurm/
+figures/*_smoke.png
+figures/*cscale*.png
+figures/*pairscale*.png
