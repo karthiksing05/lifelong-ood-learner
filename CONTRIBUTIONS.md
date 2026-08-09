@@ -171,13 +171,20 @@ been run at that scale across seeds.
 **Claim.** Reading a bank of independently trained adapters by activating several paths at once is
 the wrong operator; combining their *predictions* is the right one.
 
-**Evidence.** Three independent measurements:
+**Evidence**, at 3 seeds:
 
 | setting | score composition | path union |
 |---|---|---|
-| pretrained backbone, 2 attributes | both correct **0.50**, Vendi 1.56 | 0.17, Vendi 1.37 |
-| ColorMNIST factor concepts | joint **0.167** | 0.000 |
-| ColorMNIST update-rule study | joint **0.104** | — |
+| pretrained backbone, 2 attributes — accuracy | both correct 0.417 ± 0.083 | **0.417 ± 0.083** (tie) |
+| pretrained backbone, 2 attributes — diversity | Vendi **1.436** (untouched: 1.456) | 1.280 |
+| ColorMNIST factor concepts | joint **0.042**, F1 **0.490** | 0.000, F1 0.039 |
+
+**The accuracy claim did not replicate.** A single seed showed 0.50 against 0.17 on the pretrained
+backbone; at three seeds the two operators **tie on accuracy**. What survives is that path union
+*collapses diversity* (Vendi 1.280 against the untouched model's 1.456, where score composition holds
+1.436), and that on ColorMNIST factor concepts path union produces **nothing at all** while score
+composition produces something. The recommendation rests on those two, and the retracted number is
+kept in [docs/RESULTS.md](docs/RESULTS.md) §12e.
 
 The reason is structural: activating two paths sums two deltas each trained to be applied **alone**,
 and nothing in either one's training says what it should do while the other is on. This is the

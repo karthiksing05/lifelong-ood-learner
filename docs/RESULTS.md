@@ -2488,6 +2488,27 @@ the failure looks like a capacity or a learning-rate problem when it is neither.
 
 ### 12e. The case study, and what it says about our composition operator
 
+> **Corrected at 3 seeds.** The table below is seed 0. Replicated over three seeds, the accuracy
+> advantage of score composition over path union **does not survive**: both reach `both` = 0.417 ±
+> 0.083. What survives is a **diversity** advantage — Vendi 1.436 ± 0.077 against 1.280 ± 0.019,
+> where the untouched model is 1.456 — and the ColorMNIST evidence in §13b, where path union produces
+> nothing at all (0.000 against 0.042, F1 0.039 against 0.490). The recommendation to compose in
+> score space stands on those two, not on the single-seed accuracy gap reported below.
+>
+> Three-seed table:
+>
+> | arm | Eyeglasses | Smiling | both | Vendi |
+> |---|---|---|---|---|
+> | *real* | *1.000* | *0.889* | *0.917* | *1.384* |
+> | pretrained (untouched) | 0.167 | 0.611 | 0.167 | 1.456 |
+> | **`Eyeglasses` alone** | **1.000 ± 0.000** | 0.167 | 0.250 | 1.443 |
+> | **`Smiling` alone** | 0.250 | **1.000 ± 0.000** | 0.250 | 1.468 |
+> | ours (score-composed) | 0.833 | 0.667 | **0.417 ± 0.083** | **1.436** |
+> | ours (path-union) | 0.667 | 0.778 | **0.417 ± 0.083** | 1.280 |
+>
+> The acquisition result is *stronger* at three seeds than at one: each concept reaches **1.000 ±
+> 0.000** on its own attribute, at a Vendi indistinguishable from the untouched model.
+
 `google/ddpm-celebahq-256`, 128 real images per concept, attention-only adapters trained at t ≥ 600,
 sampled with w = 2 against the frozen base. `Eyeglasses` and `Smiling` are learned as separate
 concepts, each blind to the other (A on `a=1, b=0`, B on `b=1, a=0`), so their co-occurrence is

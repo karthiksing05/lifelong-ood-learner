@@ -83,7 +83,9 @@ Full detail, with evidence and caveats for each: **[CONTRIBUTIONS.md](CONTRIBUTI
    the bank changes the model by exactly **0.000e+00** and concepts are acquired at 256px without
    quality loss.
 6. **Two rules for adapting diffusion models**, both measured rather than argued: compose a bank in
-   **score space**, and train concept adapters at **high noise levels only**.
+   **score space** (path union collapses diversity and, on factor concepts, produces nothing), and
+   train concept adapters at **high noise levels only** — which is the difference between working and
+   not on a pretrained backbone.
 
 ---
 
