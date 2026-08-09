@@ -26,11 +26,20 @@ combination at the level of the representations this method builds.  That is exa
 Diffusion's setting, which is why it is the baseline that matters here.
 
 Rows in the figure, and what each isolates:
-  `real`            real CelebA faces with both attributes -- the target.
-  `pretrained`      the untouched model.  What the backbone does with no concept at all.
-  `A only` / `B only`   each concept alone: did the concept learn its own attribute?
-  `ours`            the two concepts composed in conditioning space, then consolidated.
-  `composable-diff` the same two concepts composed by ADDING their score residuals (Liu et al.).
+  `real`                  real CelebA faces with both attributes -- the target.
+  `pretrained`            the untouched model.  What the backbone does with no concept at all.
+  `A only` / `B only`     each concept alone: did the concept learn its own attribute?
+  `ours (score-composed)` the two concepts combined by adding their score residuals against the
+                          frozen base -- Liu et al.'s rule applied to bank members, which is the
+                          operator this project ADOPTS (RESULTS 12e/13/14).
+  `ours (path-union)`     the same two concepts with both adapter paths active at once.  Kept as the
+                          ablation that motivated the change.
+
+NOTE ON BASELINES.  There is no external composition baseline in this figure and that is a property
+of the setting rather than an omission: the backbone is unconditional, so no method can compose
+anything before concepts have been put somewhere, and the bank is what puts them there.  The
+comparison is therefore operator-vs-operator over one bank.  External composition baselines are run
+where they are meaningful -- N9 and N20, on conditional backbones.
 
     python experiments/n25_pretrained_case.py --attrs Eyeglasses Smiling --n-train 96
 """
@@ -288,32 +297,39 @@ def main():
                       lr=args.lr, seed=args.seed, t_min=args.t_min)
         got[f"{nm} only"] = to_data(sample_concept_cfg(field, [nm], args))
 
-    # ── OURS: compose in conditioning space, over the union of both paths ────
-    cA = cB = c_comp = None                    # conditioning is carried by the adapter paths
-    got["ours"] = to_data(sample_concept_cfg(field, [A, B], args))
-
-    # ── Composable Diffusion: add the two concepts' score residuals ──────────
-    # each conditional is evaluated on its OWN adapter path, which is the faithful reading of
-    # "compose two independently learned concepts" for a bank rather than a single shared model
-    def eps_branch(nm, emb):
+    # ── the two ways to READ the bank, over the SAME two concepts ───────────
+    #
+    # These arms differ only in the composition operator; both use the adapters consolidated above
+    # and nothing else.  Worth being explicit, because on an unconditional backbone there is no
+    # external composition baseline to run: with no conditioning channel, no method can compose
+    # anything without first putting concepts somewhere, and the bank is what puts them there.  So
+    # the honest comparison is operator-vs-operator on one bank rather than method-vs-method.
+    #
+    # `score-composed` is Liu et al.'s rule (composable diffusion) applied to bank members:
+    #     eps = eps_base + sum_i w ( eps_concept_i - eps_base )
+    # We ADOPT that operator rather than compete with it -- RESULTS 12e/13/14 are three independent
+    # measurements saying it is the right way to read a bank of independently trained adapters.
+    #
+    # `path-union` activates both adapter paths at once, which sums two deltas each trained to be
+    # applied ALONE.  It is kept in the figure as the ablation that motivated the change.
+    def eps_branch(nm):
         def f(x, u):
-            return field.eps(x, u, branch=nm, emb=emb)
+            return field.eps(x, u, branch=nm)
         return f
 
-    e_null = lambda x, u: field.eps(x, u)                                    # noqa: E731
-    parts = [(eps_branch(A, None), float(args.comp_scale)),
-             (eps_branch(B, None), float(args.comp_scale))]
+    parts = [(eps_branch(A), float(args.comp_scale)), (eps_branch(B), float(args.comp_scale))]
 
     def comp_eps(x, u):
-        e0 = e_null(x, u)
+        e0 = field.eps(x, u)
         out = e0.copy()
         for f, w in parts:
             out = out + w * (f(x, u) - e0)
         return out
 
-    got["composable-diff"] = to_data(field.sample(
+    got["ours (score-composed)"] = to_data(field.sample(
         n=args.n_samples, steps=args.steps, seed=args.seed, clip=(-1, 1),
         guide_eps=comp_eps, guide_w=lambda u: 1.0))
+    got["ours (path-union)"] = to_data(sample_concept_cfg(field, [A, B], args))
 
     # ── score with the CelebA attribute probes (trained at 64px) ─────────────
     rows = []
@@ -360,7 +376,8 @@ def main():
         rows.append(r)
 
     # ── the figure ──────────────────────────────────────────────────────────
-    order = [a for a in ["real", "pretrained", f"{A} only", f"{B} only", "composable-diff", "ours"]
+    order = [a for a in ["real", "pretrained", f"{A} only", f"{B} only",
+                         "ours (score-composed)", "ours (path-union)"]
              if got.get(a) is not None and len(got[a])]
     import matplotlib
     matplotlib.use("Agg")
@@ -384,8 +401,9 @@ def main():
         axes[r][0].set_xticks([]); axes[r][0].set_yticks([])
         for sp in axes[r][0].spines.values():
             sp.set_visible(False)
-    fig.suptitle(f"{args.model} — `{A}` and `{B}` learned separately, composed\n"
-                 f"(their co-occurrence was withheld from BOTH concepts)", fontsize=10)
+    fig.suptitle(f"{args.model} — `{A}` and `{B}` learned separately, then composed\n"
+                 f"(their co-occurrence was withheld from BOTH concepts; the last two rows are the "
+                 f"SAME bank, read two ways)", fontsize=10)
     fig.tight_layout(rect=[0, 0, 1, 0.95])
     out = os.path.join(FIG, f"n25_pretrained_case{args.tag}.png")
     fig.savefig(out, dpi=140, bbox_inches="tight")

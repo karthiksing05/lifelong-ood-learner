@@ -1,0 +1,5 @@
+[n1] device cuda (NVIDIA A40)
+[n1] SEVERITY: 20 extra slots held out (every attribute value still present): [1, 7, 17, 22, 31, 36, 48, 59, 66, 90, 112, 116, 130, 132, 134, 135, 143, 148, 153, 156]
+[n1] 20000 images, 100 seen classes, 12000 held-out images never shown
+[n1] UNet 6.8M params, 200 epochs
+  epoch 1/200: loss 0.2632
