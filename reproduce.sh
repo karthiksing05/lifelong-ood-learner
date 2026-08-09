@@ -5,6 +5,7 @@
 #   bash reproduce.sh backbones  # train the 5 backbones everything else loads (~12 GPU-hours)
 #   bash reproduce.sh colormnist # the ColorMNIST experiments, 3 seeds
 #   bash reproduce.sh celeba     # the CelebA experiments, 3 seeds
+#   bash reproduce.sh pretrained # google/ddpm-celebahq-256: preservation, acquisition, batch
 #   bash reproduce.sh analytic   # the analytic (no-gradient) track, 3 seeds
 #   bash reproduce.sh supporting # the experiments behind the negative results and the cost claims
 #   bash reproduce.sh figures    # aggregate + all figures + TABLES.md  (CPU, seconds)
@@ -64,6 +65,13 @@ colormnist|all)
   for K in 1 2 4 8 12; do
     gpu "experiments/n4_batch.py --n-concepts 12 --batch-size $K --tag _K$K"     # how far batching scales
   done
+  # held-out SEVERITY: thin the combination grid without removing a primitive, then re-run the
+  # showdown on each thinned backbone.  MOSAIC (ICML 2026) reports compositional generalization
+  # collapsing as coverage thins, so one split cannot be read as the result.
+  for E in 20 40; do
+    gpu "experiments/n1_train.py --epochs 200 --n-per-slot 200 --seed 0 --extra-holdout $E --out results/cache/ddpm_colormnist_sev$E.pt"
+    gpu "experiments/n9_showdown.py --ckpt results/cache/ddpm_colormnist_sev$E.pt --seed 0 --tag _sev$E --mcmc-steps 10 --mcmc-lam 0.3"
+  done
   [ "$STAGE" = colormnist ] && exit 0 ;;&
 
 celeba|all)
@@ -75,9 +83,19 @@ celeba|all)
     gpu "experiments/n21_celeba_vocabulary.py --attr Gray_Hair --seed $s"        # new vocabulary
   done
   for s in 0 1 2; do gpu "experiments/n22_celeba_lifelong.py --seed $s --tag _full"; done   # 11 arms
-  gpu "experiments/n25_pretrained_case.py --attrs Eyeglasses Smiling --n-train 128 --epochs 40 --lr 5e-4 --rank 8 --t-min 600 --concept-guidance 2.0"   # pretrained 256px case study
-  gpu "experiments/n26_batch_pretrained.py --attrs Eyeglasses Smiling Wearing_Hat Male"  # batch on a pretrained backbone
   [ "$STAGE" = celeba ] && exit 0 ;;&
+
+pretrained|all)
+  echo "== pretrained backbone (google/ddpm-celebahq-256, 113.7M params, 256px) =="
+  # needs the HF cache; nothing here trains a backbone, the model is downloaded once
+  export HF_HOME="${HF_HOME:-$HOME/flash/.cache/huggingface}"
+  gpu "tests/test_pretrained_bank.py"                                            # preservation certificate
+  for s in 0 1 2; do
+    gpu "experiments/n25_pretrained_case.py --attrs Eyeglasses Smiling --n-train 128 --epochs 40 --lr 5e-4 --rank 8 --t-min 600 --concept-guidance 2.0 --seed $s --tag _final"
+    gpu "experiments/n26_batch_pretrained.py --attrs Eyeglasses Smiling Wearing_Hat Male --seed $s --tag _v1"
+  done
+  gpu "tests/diag_pretrained_lora.py --epochs 30"                                # chooses rank/lr/noise range
+  [ "$STAGE" = pretrained ] && exit 0 ;;&
 
 supporting|all)
   echo "== supporting results (every number cited in README/TABLES that the stages above miss) =="

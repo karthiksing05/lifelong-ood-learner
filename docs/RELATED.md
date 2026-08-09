@@ -5,14 +5,37 @@ below was checked against its abstract page. The point of this file is to say **
 fair baselines for our setting and which are not**, because most of the neighbouring literature
 solves a different problem and comparing to it naively would flatter us.
 
+## The paper this one continues
+
+**Wang, Gupta, Zhu, MacLellan, *Test-Time Compositional Generalization in Diffusion Models via
+Concept Discovery* ([2605.07078](https://arxiv.org/abs/2605.07078)) is a companion paper from our own
+group**, not external prior work. That is stated plainly because it changes how everything below
+should be read: we are not competing with its composition operator, we are **extending its method
+into a setting it does not address**, and inheriting the operator is the intended relationship rather
+than a concession.
+
+Their contribution is the composer: discover concept prototypes by mode ascent on the model's own
+score field, select a subset submodularly, combine them as a per-dimension product of experts, and
+sample the frozen model toward that teacher. It works, and this repository uses it unchanged.
+
+Their limitation section names what it does not do:
+
+> *"A full mechanism for detecting, consolidating, and reusing genuinely new primitives remains an
+> important direction for future work."*
+
+This project is that mechanism. The per-query LoRA their pipeline distils is discarded; ours is
+**routed, kept, and certified**, and the story is retold as a **lifelong, out-of-distribution
+learning** problem rather than a test-time generalization one.
+
 ## Our setting, stated precisely
 
-> One out-of-distribution query arrives. Produce the held-out **combination of known attributes** it
-> depicts, from a **frozen** backbone, with **no per-concept pre-training** and no layout input. Then
-> keep it, forever, without degrading anything already there.
+> Out-of-distribution queries arrive **forever**. Produce the held-out **combination of known
+> attributes** each depicts, from a **frozen** backbone, with no per-concept pre-training and no
+> layout input — then **keep** it, without degrading anything already kept, at a cost that scales
+> with the vocabulary rather than with the history.
 
-The second sentence is what most of the literature does not attempt, and the first excludes most of
-what looks superficially comparable.
+The composition half is Wang et al.'s. Everything after "then keep it" is what this repository adds,
+and it is what excludes most of the neighbouring literature from being a baseline for it.
 
 ## The dividing line: the exemplar argument, not the retraining argument
 
@@ -47,7 +70,7 @@ claim.
 | method | operator | in our tables |
 |---|---|---|
 | **Composable Diffusion** — Liu, Li, Du, Torralba, Tenenbaum, ECCV 2022, [2206.01714](https://arxiv.org/abs/2206.01714) | add guidance residuals of several conditionals (product of experts in score space) | **yes**, `composable-diff` |
-| **Test-Time Concept Discovery** — Wang, Gupta, Zhu, MacLellan, [2605.07078](https://arxiv.org/abs/2605.07078) | mode-ascent discovery → submodular selection → analytic-score PoE | **yes**, `poe-guided`, in its own Eq. 14 configuration |
+| **Test-Time Concept Discovery** — Wang, Gupta, Zhu, MacLellan, [2605.07078](https://arxiv.org/abs/2605.07078) — **our group's companion paper** | mode-ascent discovery → submodular selection → analytic-score PoE | **yes**, `poe-guided`, in its own Eq. 14 configuration. Reported as the method we extend, not as a rival |
 | **Textual Inversion** — Gal et al., ICLR 2023, [2208.01618](https://arxiv.org/abs/2208.01618) | learn one embedding; compose by concatenation | **yes**, `inversion` (acquisition is not training-free; included as the cheap reference point) |
 | **MCMC-corrected composition** — Du, Durkan, Strudel, Tenenbaum, Dieleman, Fergus, Sohl-Dickstein, Doucet, Grathwohl, ICML 2023, [2302.11552](https://arxiv.org/abs/2302.11552) | annealed Langevin/HMC transitions at each noise level, correcting the composed score | **yes**, `composable-mcmc` |
 | **StructureDiffusion** — Feng et al., ICLR 2023, [2212.05032](https://arxiv.org/abs/2212.05032) | restructure cross-attention K/V by constituency parse | **not applicable** — our backbone is class-conditional with a single embedding added to the timestep embedding. There is no text encoder and no cross-attention over tokens to restructure. Stated rather than silently omitted. |
@@ -199,6 +222,8 @@ in the LLM task-transfer setting.
 
 Recorded because two of these would be factual errors a reviewer catches immediately.
 
+- **Cite 2605.07078 as our own group's work.** It is a companion paper, and presenting it as
+  independent prior work would misrepresent the relationship in the other direction.
 - **"Diffusion MoE" does not exist** as a paper. The work usually meant is **DiT-MoE**, *Scaling Diffusion Transformers to 16 Billion Parameters* ([2407.11633](https://arxiv.org/abs/2407.11633)) — which also reports that its expert routing is spatial/temporal and *largely insensitive to class conditioning*, i.e. MoE routing in diffusion does **not** naturally produce concept experts.
 - **"LoRA-Switch" is two unrelated things.** "LoRA Switch" (unhyphenated) is a round-robin activation schedule inside Multi-LoRA Composition (TMLR 2024) — not a router, not an MoE. "LoRA-Switch" (hyphenated, [2405.17741](https://arxiv.org/abs/2405.17741)) is an **LLM systems** paper about CUDA kernel fusion.
 - **CLoRA ≠ C-LoRA.** [2403.19776](https://arxiv.org/abs/2403.19776) is contrastive test-time composition; [2304.06027](https://arxiv.org/abs/2304.06027) is continual self-regularized LoRA. One letter apart, unrelated.
