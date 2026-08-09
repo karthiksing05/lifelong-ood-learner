@@ -2577,6 +2577,13 @@ Each adapter isolates its own factor almost perfectly:
 
 ### 13b. And the operator that produced *nothing* now produces something
 
+> **3-seed numbers.** The single-seed table below reported factor-score at joint 0.167. Over three
+> seeds it is **0.042 ± 0.021** against slot-score's **0.000 ± 0.000** — a much smaller gap on joint
+> accuracy than one seed suggested. The separation is far clearer on the coverage-aware metric:
+> **F1 0.490 ± 0.071 against 0.016 ± 0.016**, and recall 0.697 against 0.034. The qualitative claim —
+> the operator works given factor conditionals and produces nothing given slot conditionals — holds;
+> the size of the effect on joint accuracy does not. `ours` is 0.562 ± 0.072 / F1 0.679 ± 0.068.
+
 3 held-out compositions, 16 samples:
 
 | arm | joint | digit | fg | bg | F1 | Vendi |
@@ -2631,6 +2638,35 @@ operator, not a method: it answers "why does score addition fail here", not "her
 compose". `ours` remains the operator for ColorMNIST, and it wins by 3×.
 
 ## 14. Update rules: "disturb the field least" is the wrong objective (N28)
+
+> **Corrected at 3 seeds.** The single-seed table below reported a clean ordering — lowest drift
+> composes worst, highest composes best. **The composition half of that does not replicate.** Over
+> three seeds the composed-joint differences are inside the noise (high-t 0.188 ± 0.130, uniform
+> 0.167 ± 0.042, rehearse 0.146 ± 0.116), so no rule can be declared the best composer from this
+> experiment.
+>
+> | rule | drift | fg alone | bg alone | digit alone | composed joint | F1 |
+> |---|---|---|---|---|---|---|
+> | uniform | 0.040 ± 0.004 | 1.000 | 0.958 | 0.604 ± 0.021 | 0.167 ± 0.042 | 0.434 |
+> | **high-t** | 0.043 ± 0.001 | **1.000 ± 0.000** | **1.000 ± 0.000** | **0.729 ± 0.083** | 0.188 ± 0.130 | 0.421 |
+> | need-weighted | 0.038 ± 0.002 | 0.958 | 0.792 | 0.625 | 0.083 ± 0.055 | 0.269 |
+> | residual | 0.040 ± 0.003 | 1.000 | 0.979 | 0.604 | 0.125 ± 0.125 | 0.319 |
+> | **rehearse** | **0.010 ± 0.000** | 0.875 | 0.792 | 0.562 ± 0.108 | 0.146 ± 0.116 | 0.366 |
+>
+> **What does survive replication**, with separated error bars:
+>
+> 1. **`rehearse` cuts drift by 4×** (0.010 ± 0.000 against 0.038–0.043) — robust, and it is the only
+>    rule that moves drift at all.
+> 2. **It pays for that in the concept itself**: fg 0.875 against 1.000, bg 0.792 against 0.958–1.000.
+>    Suppressing what an adapter changes does suppress what it *should* change.
+> 3. **`high-t` learns the factors best**: bg **1.000 ± 0.000** and digit **0.729 ± 0.083** against
+>    uniform's 0.958 and 0.604 ± 0.021.
+>
+> So the negative result stands — minimizing disturbance is not the objective, since the rule with 4×
+> less drift is not better at composing and is measurably worse at learning the factor. But the
+> positive claim must be narrowed: **high-noise training learns factors better**, which is a
+> per-concept result, not the composition result the single seed suggested. Its composition case
+> rests on the pretrained backbone (§12c), where it was the difference between working and not.
 
 The insert-only guarantee covers an INACTIVE path. Composition evaluates an adapter on inputs it
 never saw, and nothing certifies its behaviour there — so the natural hypothesis is that an update

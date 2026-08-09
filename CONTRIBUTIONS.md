@@ -201,18 +201,24 @@ the model already renders correctly.
 
 **Evidence.** On the pretrained backbone this is the difference between working and not: all-timestep
 training gives 0.25 on unrecognizable samples, `t ≥ 500` gives **0.75 at Vendi 1.48** against the
-untouched model's 1.51. On *our own* backbone and a different dataset it wins again — composed joint
-**0.104** against uniform's 0.062, recall **0.882** against 0.461, at identical wall clock. Two
-backbones and two datasets is what makes it a property of diffusion adaptation rather than of one
-model's data mismatch.
+untouched model's 1.51 — and without it, no learning rate produced an attribute without destroying
+the model.
+
+On *our own* backbone at 3 seeds the effect is **on the concepts, not on the composition**: high-t
+learns the factors better (bg **1.000 ± 0.000** and digit **0.729 ± 0.083** against uniform's 0.958
+and 0.604 ± 0.021) while the composed-joint differences sit inside the noise (0.188 ± 0.130 against
+0.167 ± 0.042). A single seed showed a clean composition win; it did not replicate, and the claim is
+narrowed accordingly.
 
 ### 6c. The negative result that produced these
 
 The hypothesis that motivated the study was that an update **disturbing the existing score field
-least** should compose best. Measured directly, it is false: the lowest-drift rule composes **worst**
-(`rehearse`: drift 0.0106, composed joint 0.000) and the highest-drift composes **best** (`high-t`:
-drift 0.0469, joint 0.104). Drift is not a cost to minimize — it is the mechanism by which a
-conditional differs from the unconditional model at all.
+least** should compose best. It is false, though for a narrower reason than a single seed suggested.
+`rehearse` genuinely cuts drift by **4×** (0.010 ± 0.000 against 0.038–0.043 — the only rule that
+moves drift at all), and it is **not** rewarded for it: composition is no better than any other rule,
+and the concept itself is measurably **worse** (fg 0.875 against 1.000, bg 0.792 against 0.958–1.000).
+Suppressing what an adapter changes suppresses what it should change. Drift is not a cost to
+minimize — it is the mechanism by which a conditional differs from the unconditional model at all.
 
 The more principled version of 6b — sampling noise levels in proportion to the frozen model's own
 error — *loses* to the blunt threshold (0.042 against 0.104), because measured "need" peaks in the

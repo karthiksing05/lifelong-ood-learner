@@ -48,8 +48,8 @@ stronger supervision than the OOD setting provides.
 
 | experiment | question | answer | § |
 |---|---|---|---|
-| `n27_factor_conditionals` | is score addition's failure the operator, or the conditionals? | the conditionals: **0.000 → 0.167** on the same backbone | §13 |
-| `n28_update_rules` | which update rule disturbs the score field least, and does that help? | it does **not** — lowest drift composes worst | §14 |
+| `n27_factor_conditionals` | is score addition's failure the operator, or the conditionals? | the conditionals: F1 **0.016 → 0.490** on the same backbone | §13 |
+| `n28_update_rules` | which update rule disturbs the score field least, and does that help? | it does **not** — 4× less drift buys no composition and a worse concept | §14 |
 | `n11_basis_extension` | what does a new vocabulary *value* cost vs a new arrangement? | 1024 bytes vs 551K params | §5q2 |
 | `n21_celeba_vocabulary` | can an attribute value the backbone never saw be added? | only with a weight update from real images | §7c |
 
