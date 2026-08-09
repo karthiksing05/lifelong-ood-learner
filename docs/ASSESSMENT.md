@@ -120,7 +120,7 @@ trained ourselves at small scale. This is the single largest obstacle to a top v
 | "Your generative-replay baseline is undertuned." | Cited as a reproduced known failure mode (Masip et al.) *and* generative distillation added as the corrected arm. | **adequate** |
 | "You report probe accuracy, not generation quality." | AFQ/AIQ/FR added on a Fréchet distance. Reported as a null result: 0.030–0.040 for every arm. | **adequate** |
 | "Parameter isolation fails when per-concept data is scarce (CLoG)." | Not tested. An insert-only bank *is* parameter isolation, so this is the sharpest untested attack. | **open** |
-| "A single held-out split is cherry-picked (MOSAIC)." | `--extra-holdout` implemented for a severity sweep; **not yet run**. | **partly addressed** |
+| "A single held-out split is cherry-picked (MOSAIC)." | **Run** (§18): three backbones, grid thinned to 80/160 slots. Ours holds 0.467 where the companion method drops 0.892 → 0.292. One seed per level. | **addressed** |
 | "Composable Diffusion + MCMC beats you." | True on CelebA; stated in README and RESULTS. | **conceded** |
 | "Small models." | No answer. | **open** |
 
@@ -134,9 +134,9 @@ In order of expected value:
    works there (§12c). What remains is running the full loop — route, consolidate, compose, retain —
    at that scale across seeds, so the lifelong claims inherit it rather than only the mechanism.
    This is the highest-value remaining item by a wide margin.
-2. **Run the held-out-severity sweep.** The machinery exists (`n1_train.py --extra-holdout`). Every
-   recent paper that ran one found degradation, so reporting the curve pre-empts the criticism and
-   costs a few backbone trainings.
+2. ~~**Run the held-out-severity sweep.**~~ **Done** (§18) — and it came out favourably: the
+   companion method collapses by a factor of three at the severe end while ours does not. Worth
+   re-running at 3 seeds per level, since backbone variance is currently confounded with severity.
 3. **Test the few-shot-per-concept regime.** CLoG reports parameter isolation failing there, and our
    method is parameter isolation. If it holds up, that is a result; if it does not, better to know.
 4. **Switch the bank's composition to score space** (§12e). Cheap, well-motivated by three separate
