@@ -2908,6 +2908,46 @@ conditional on anything.
 - High-noise-only adaptation is the recommended update rule for concept adapters.
 - `inject(..., exclude=)` — on a pretrained backbone, keep adapters off the time-conditioning path.
 
+## 18. Held-out severity: does this collapse as the combination grid thins? (N1 `--extra-holdout`)
+
+MOSAIC (ICML 2026) argues that benchmarks like ColorMNIST are the *easy* regime — single-object,
+densely covered — and that compositional generalization collapses as more combinations are withheld.
+Inheriting the benchmark means inheriting the criticism, so the grid is thinned and the whole
+showdown re-run on each thinned backbone. `--extra-holdout E` withholds E further slots on top of the
+benchmark's 40, choosing only slots whose every attribute **value** still appears elsewhere — so
+combinations are removed and primitives never are.
+
+Three backbones trained from scratch, one seed each:
+
+| extra withheld | seen slots | **ours** joint / F1 | `poe-guided` joint | `inversion` joint | `composable-diff` joint |
+|---|---|---|---|---|---|
+| 0 (the benchmark) | 120 | 0.492 / 0.520 | **0.892** | 0.425 | 0.000 |
+| 20 | 100 | **0.683 / 0.750** | **0.942** | 0.450 | 0.025 |
+| 40 (grid half empty) | 80 | 0.467 / **0.372** | **0.292** | 0.392 | 0.008 |
+
+**The headline: at the most severe setting the companion method collapses and ours does not.**
+`poe-guided` runs 0.892 → 0.942 → **0.292**, losing two thirds of its accuracy once 80 of 160 slots
+are withheld. Ours runs 0.492 → 0.683 → 0.467 — no trend, and certainly no collapse. `inversion` is
+similarly stable (0.425 → 0.450 → 0.392) and `composable-diff` stays at ~0 throughout, as everywhere
+else on this benchmark.
+
+The mechanism is visible in the design rather than only in the numbers: `poe-guided` composes
+prototypes *discovered in the backbone's own score field*, so thinning that field thins what it can
+discover. Our concepts are consolidated from the query and then **kept**, so the backbone's coverage
+sets the starting point rather than the ceiling.
+
+**Two caveats, both real.**
+
+1. **One seed per severity level, and each level is a different backbone.** Backbone-to-backbone
+   variance is therefore not separated from the severity effect, and ours being *better* at E=20
+   than at E=0 is the clearest sign of that — it is not plausible that withholding 20 more
+   combinations helps. The E=40 collapse of `poe-guided` is large enough (a factor of three) to
+   survive that noise; the finer ordering is not.
+2. **`--extra-holdout` never removes a primitive**, by construction. So this sweeps *combination*
+   sparsity, which is what MOSAIC's criticism is about, and says nothing about withholding attribute
+   values — measured separately in §7c (n21) and §5q2 (n11), where a genuinely new value needs a
+   weight update from real images and cannot be composed at all.
+
 ## 8. Where the numbers come from
 
 | experiment | file | scale run |

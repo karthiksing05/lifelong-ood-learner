@@ -23,6 +23,7 @@ disfavour after audits found we were running a baseline weakly ([RESULTS.md](RES
 | **batch addition** | **ours** | no baseline offers it; 2.14× faster *and* +0.052 ACC at K=12 |
 | **routing (arrangement vs part)** | **ours** | no baseline offers it; AUROC 0.980 / 0.995 |
 | **native parity** | **ours** | no baseline offers it |
+| **robustness as the grid thins** | **ours** | at 80/160 slots withheld the companion method drops 0.892 → 0.292; ours holds 0.467 |
 | **parameter economy** | ✗ `independent` | 7.16M vs our 8.82M at higher ACC |
 
 Two losses, both stated in [../CONTRIBUTIONS.md](../CONTRIBUTIONS.md) rather than buried.
@@ -123,6 +124,23 @@ product-of-experts + adapter banks).
 | **batch addition** | **2.14× faster and +0.052 ACC** at K=12, bit-identical at every K from 1 to 12 |
 | **native parity** | recall **0.903 ± 0.024** against a backbone *trained* on the held-out slot |
 | **preservation on a pretrained model** | **0.000e+00** on `google/ddpm-celebahq-256` (113.7M params) |
+
+---
+
+## 3b. Held-out severity — does it collapse as coverage thins?
+
+Three backbones trained from scratch with progressively more of the combination grid withheld (one
+seed each; every attribute *value* still present at every level).
+
+| extra withheld | seen slots | **ours** joint | `poe-guided` joint | `inversion` joint |
+|---|---|---|---|---|
+| 0 | 120 | 0.492 | **0.892** | 0.425 |
+| 20 | 100 | **0.683** | **0.942** | 0.450 |
+| 40 | 80 | **0.467** | 0.292 | 0.392 |
+
+At the severe end the companion method loses two thirds of its accuracy and ours does not move much.
+One seed per level and a different backbone at each, so the fine ordering is noise — the factor-of-
+three collapse is not. [RESULTS.md](RESULTS.md) §18.
 
 ---
 
