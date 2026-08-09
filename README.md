@@ -10,6 +10,10 @@ and on a pretrained 113.7M-parameter diffusion model we did not train.
 
 ![the loop](figures/f1_loop.png)
 
+The full architecture, laid out against Figure 1 of the companion paper — their four stages unchanged in the top band, ours beside them, and the bank opened up to the tensors:
+
+![the architecture](figures/f0_architecture.png)
+
 ---
 
 ## How this branches off Wang et al.

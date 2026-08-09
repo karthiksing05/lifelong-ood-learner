@@ -132,6 +132,7 @@ figures|all)
   "$PY" experiments/aggregate.py n22_celeba_lifelong_full   --as n22_celeba_lifelong
   "$PY" experiments/aggregate.py n20_celeba_composition_full --as n20_celeba_composition
   "$PY" experiments/aggregate.py n20_celeba_composition_pairfull --as n20_celeba_composition_pair
+  "$PY" experiments/make_architecture_figure.py     # F0: the architecture, no results needed
   "$PY" experiments/make_paper_figures.py
   # PYTHONIOENCODING: redirected stdout defaults to latin-1 on this cluster and the tables
   # contain em-dashes, so without it the file is written truncated at the first one.
