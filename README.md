@@ -48,6 +48,153 @@ for each arriving query, forever:
     CERTIFY      every previously consolidated concept is checked bit-identical
 ```
 
+---
+
+## The method in pseudocode
+
+What is actually stored, what is actually touched, and what is provably not.
+
+### The state that persists between queries
+
+```python
+BACKBONE  eps_theta(x_t, t, c)         # a UNet, FROZEN forever. requires_grad_(False) on every
+                                       # parameter at construction and never re-enabled.
+                                       # Its class-embedding table has a NULL row: conditioning on
+                                       # that row IS the unconditional model.
+
+BANK = HierarchicalAdapterBank:
+  .wrapped   [PathLoRA]                # every targeted nn.Linear / nn.Conv2d of the backbone,
+                                       # replaced in-place by a wrapper. `targets`/`exclude` pick
+                                       # which: all of them on our UNet, attention-only on a
+                                       # pretrained one (32 of its 58 Linears are time_emb_proj,
+                                       # and adapting the noise-level path destroys the model).
+  .state["path"]  [node_id]            # THE ACTIVE PATH. One shared mutable list. Switching
+                                       # concepts is switching this list — no weight copying,
+                                       # no re-injection, no forward-pass branching.
+  .tree      ConceptTree               # insert-only. node_id -> children. Never merged, never split.
+  .concepts  {name: (path, leaf)}      # path = root..leaf node ids for that concept
+  .frozen    {node_id}                 # sealed by an earlier insertion: NEVER in an optimizer again
+  ._open     {node_id}                 # created by the insertion in progress: the only trainable set
+  ._emb_extra {name: vector[d_emb]}    # the concept's conditioning vector
+
+FACTOR_BASIS = factorize(C, labels)    # ideal words, fit ONCE by ridge regression on the backbone's
+                                       # own trained class embeddings C:
+                                       #     C[i] ~ mu + sum_f V[f][ label[i][f] ]
+                                       # V[f] is [n_values_f, d_emb]. R^2 = 0.826 on ColorMNIST.
+                                       # This is what makes a factor addressable at all.
+```
+
+Inside one wrapped layer, the delta is a **sum over the active path** — which is why a concept is
+its ancestors plus its leaf, and why an unrelated concept contributes exactly zero:
+
+```python
+class PathLoRA(base_layer):            # base_layer.weight is frozen
+    A, B = ParameterDict(), ParameterDict()      # keyed by node_id
+
+    def add_node(nid):
+        A[nid] = kaiming_uniform(rank, fan_in)
+        B[nid] = ZEROS(fan_out, rank)            # <- a fresh node is an EXACT no-op, not a small one
+
+    def forward(x):
+        out = base_layer(x)                      # frozen weights
+        for nid in BANK.state["path"]:           # <- only the active path contributes
+            if nid in A:
+                out = out + B[nid] @ (A[nid] @ x)
+        return out
+```
+
+### One query
+
+```python
+def absorb(x_q):
+    # ── 1. ROUTE ────────────────────────────────────────────────────────────
+    # No labels. Score x_q under every conditional the bank can already express and take the best
+    # denoising error, at two noise levels chosen by tests/diag_router_signals.py.
+    s_novel = min_c  E_eps[ || eps_theta(noise(x_q, u=0.10), c) - eps ||^2 ]   # over trained classes
+    s_vocab = min_c  E_eps[ || eps_theta(noise(x_q, u=0.45), c) - eps ||^2 ]   # over basis compositions
+
+    if   s_novel <= t_novel:  return                      # already in distribution: do nothing
+    elif s_vocab <= t_vocab:  kind = "new ARRANGEMENT"     # expressible in the factor basis
+    else:                     kind = "new VOCABULARY"      # a factor VALUE we do not have
+
+    # ── 2. COMPOSE — read the query IN THE FACTOR BASIS ─────────────────────
+    # Not a free vector, and not a weighting over the ~120 entangled class embeddings: one softmax
+    # per factor, so 10 + 4 + 4 = 18 parameters. Composition is structural rather than something
+    # the optimizer has to discover, and 18 parameters are determined by a SINGLE image where 120
+    # would not be.
+    w = [softmax(logits_f) for f in factors]              # learned by inversion through the FROZEN model
+    c_new = mu + sum_f  gain[f] * (w[f] @ V[f])           # gain[f] calibrated on TRAINED slots, label-free
+
+    if kind == "new VOCABULARY":
+        V[f] = concat(V[f], new_direction)                # extend the basis: 1024 bytes
+        # (measured: a genuinely new VALUE cannot be composed — it needs a weight update
+        #  from real images. §7c. The router's job is to tell these two cases apart.)
+
+    # ── 3. SAMPLE the pool FROM THE MANIFOLD, not from the teacher ──────────
+    # The PoE teacher is a unimodal Gaussian: guiding toward it collapses every trajectory onto its
+    # mean (recall 0.00 in every configuration tried, §5e). So the teacher decides WHERE the concept
+    # is and the model's own conditional generates it.
+    pool = sample(eps_theta, cond=c_new, guidance=1.5)     # guidance calibrated on TRAINED slots
+
+    # ── 4. CONSOLIDATE — the only place any parameter moves ─────────────────
+    BANK._seal()                                  # everything _open from the last insertion joins
+                                                  # .frozen. After this line it can never be trained
+                                                  # again, by ANY future concept.
+    path, leaf = BANK.tree.insert(mean(pool))     # insert-only placement
+    BANK._open = {leaf}
+    for nid in path:
+        for layer in BANK.wrapped: layer.add_node(nid)     # B = 0, so the model is UNCHANGED so far
+    BANK._emb_extra[name] = c_new                 # pinned, and frozen during distillation: the
+                                                  # adapter is a residual to the ACTUAL composition
+
+    params = [p for nid in path if nid in BANK._open for p in (A[nid], B[nid])]
+    #        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ THE PRESERVATION GUARANTEE, in one line.
+    #        Ancestors are in .frozen, so they are not in `params`, so no gradient can reach them.
+    #        Not a penalty, not a small learning rate — the parameters are absent from the optimizer.
+    Adam(params).minimize( ||eps_theta(noise(pool), c_new) - eps||^2 )
+    #   noise levels: uniform by default; `t >= t_min` is the RECOMMENDED setting (§14) and what the
+    #   pretrained path uses at t_min=600, where it is the difference between acquiring an attribute
+    #   and destroying the model. Not yet the default in `consolidate()` on our own backbones.
+
+    # ── 5. CERTIFY ──────────────────────────────────────────────────────────
+    for old_name in BANK.concepts:
+        assert fingerprint(old_name) == stored_fingerprint[old_name]      # bit-identical, ==, not ~=
+```
+
+### Reading the bank afterwards
+
+```python
+def sample_concept(name):                          # one concept
+    with BANK.activate(name):                      # state["path"] = concepts[name].path
+        return sample(guide_eps = eps_theta(., c=_emb_extra[name]),  guide_w = 1.0)
+
+def sample_composed(names):                        # SEVERAL concepts — in SCORE space
+    eps_base = eps_theta(x, t, NULL)               # the frozen model: empty path
+    eps_hat  = eps_base + sum_i w_i * (eps_theta(x, t, concept_i) - eps_base)
+    #          ^ each term activates ONE path at a time, so no adapter is ever evaluated outside
+    #            its own conditioning. Activating several paths at once instead sums deltas that
+    #            were each trained to be applied ALONE — measurably worse (§12e).
+```
+
+### Batch addition: K concepts in one update
+
+The only change is that `_open` holds K leaves plus any shared node, and one optimizer sees all of
+them — which is what lets a shared ancestor learn from every member at once:
+
+```python
+BANK._seal()
+paths, leaves, new_nodes = BANK.tree.insert_batch(mus, group=True)
+BANK._open = set(new_nodes)                        # K leaves + the shared group node
+params = union of _open nodes' (A, B) + the K embeddings
+Adam(params).minimize( interleaved minibatches from all K pools )
+```
+
+`_seal()` runs once for the whole batch, so the guarantee is identical whatever K is — which is what
+makes batch size a free efficiency knob rather than a safety trade (bit-identical **1.000 at every K
+from 1 to 12**, and 2.14× faster at K=12).
+
+---
+
 | | Wang et al. | this work |
 |---|---|---|
 | horizon | one query | an unbounded stream |
