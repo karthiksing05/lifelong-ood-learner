@@ -259,6 +259,50 @@ succeeds on another; it is not a proposal for how to compose.
 
 ---
 
+## 8. The prototype/exemplar trade is a dial we can turn and the companion method cannot
+
+**Claim.** How far a sample sits from its composed prototype is a **runtime argument**, not a fixed
+property of a composition method — but only if the concept has been consolidated into a conditional
+of its own. One consolidated concept covers the whole range from near-copies of the prototype to
+unconstrained draws, with no retraining.
+
+**Mechanism.** Start the reverse process from a partially noised prototype rather than from pure
+noise: `x_init = sqrt(abar(s)) * prototype + sqrt(1 - abar(s)) * noise`, integrating from `u = s`.
+`score.sample()` already did the noising, so this is one argument (`sample_concept(..., u_start=s,
+x_init=mu)`), not new machinery.
+
+**Evidence.** 3 seeds × 4 compositions × 16 samples, sweeping `s` over seven settings:
+
+| | distance to prototype | recall | Vendi |
+|---|---|---|---|
+| **ours**, s = 0.60 → 1.00 | 0.071 → 0.165 (**2.32×**) | 0.003 → 0.843 | 1.15 → 1.88 |
+| **poe-guided**, s = 0.60 → 1.00 | 0.058 → 0.055 (**0.94×**) | 0.000 throughout | 1.07 → 1.07 |
+
+Every quantity moves together for ours and none of them moves for theirs. At `s = 1.0` the companion
+method begins from essentially pure noise and its samples still land 0.055 from the prototype:
+guidance toward the analytic teacher re-collapses the trajectory onto the mode regardless of where it
+started. That is the same collapse behind its joint 0.839 at F1 0.003, now shown to be **structural
+rather than a tuning choice** — and shown under a starting condition that *favours* it, since its
+`x_init` is a draw from the teacher's Gaussian and is already diverse before noising, while ours is
+the bare prototype mean.
+
+**Recommended setting:** `s = 0.90`, where F1 peaks at 0.669 ± 0.018. A coarse single-seed sweep had
+read the elbow at 0.8; the 3-seed fine sweep put 0.8 at 0.410 ± 0.058, four standard errors below,
+and that earlier read is recorded as superseded. This is a setting to *pass* when generating
+exemplars — `sample_concept` still defaults to `u_start = 1.0`, which is what every comparison table
+was run at, because tuning our arm's operating point while leaving the baselines at theirs would not
+be a comparison.
+
+**What this does not claim.** The dial does not manufacture coverage the concept lacks — at `s = 1.0`
+it is just sampling the concept's conditional, which is what every other table already reports. The
+new facts are that the near end is reachable at all, and that the companion method can neither reach
+it nor leave it.
+
+**Where:** [docs/RESULTS.md](docs/RESULTS.md) §20, `figures/f11_prototype_dial.png`.
+`experiments/n30_prototype_distance.py`.
+
+---
+
 ## What is explicitly not claimed
 
 Kept here rather than in a footnote, because several of these shaped the design.

@@ -193,7 +193,10 @@ def main():
                  "s = the noise level the reverse process starts from, having noised the prototype "
                  "to it: s->0 near-copies, s->1 unconstrained samples.", fontsize=9)
     fig.tight_layout(rect=[0, 0, 1, 0.97])
-    out = os.path.join(FIG, f"n30_prototype_distance{args.tag}.png")
+    # seed in the filename: three seed jobs writing one `--tag` otherwise race for the same PNG and
+    # only the last to finish survives.  The JSONs were always seed-tagged by `save_json`, so no data
+    # was lost -- but the panel on disk silently belonged to whichever job happened to finish last.
+    out = os.path.join(FIG, f"n30_prototype_distance{args.tag}_seed{args.seed}.png")
     fig.savefig(out, dpi=135, bbox_inches="tight")
     print(f"[n30] wrote {out}")
 

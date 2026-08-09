@@ -58,6 +58,16 @@ CLAIMS = [
     (0.490, .02, "n27_factor_conditionals", "factor-score", "f1", "n27 factor-score F1"),
     (0.562, .02, "n27_factor_conditionals", "ours", "joint", "n27 ours joint"),
     (0.010, .002, "n28_update_rules", "rehearse", "drift", "n28 rehearse drift"),
+    # ── the prototype-distance dial (CONTRIBUTIONS 8, RESULTS §20) ───────────
+    # the DEFAULT operating point, and the two endpoints the "2.32x span" is computed from
+    (0.669, .02, "n30_prototype_distance_fine", "ours@0.9", "f1", "n30 ours F1 at the default s=0.9"),
+    (0.410, .02, "n30_prototype_distance_fine", "ours@0.8", "f1", "n30 ours F1 at superseded s=0.8"),
+    (0.071, .01, "n30_prototype_distance_fine", "ours@0.6", "dist_prototype", "n30 ours d(proto) s=0.6"),
+    (0.165, .01, "n30_prototype_distance_fine", "ours@1", "dist_prototype", "n30 ours d(proto) s=1.0"),
+    # the contrast the claim rests on: theirs does not move, and never covers
+    (0.058, .01, "n30_prototype_distance_fine", "poe-guided@0.6", "dist_prototype", "n30 poe d(proto) s=0.6"),
+    (0.055, .01, "n30_prototype_distance_fine", "poe-guided@1", "dist_prototype", "n30 poe d(proto) s=1.0"),
+    (0.000, .01, "n30_prototype_distance_fine", "poe-guided@1", "recall", "n30 poe recall at s=1.0"),
 ]
 
 

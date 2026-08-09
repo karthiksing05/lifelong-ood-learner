@@ -3055,6 +3055,90 @@ The general lesson is the one this project keeps relearning: **a defect nothing 
 every experiment.** Three of the corrections in this repository were found by looking at pictures,
 and this is the fourth.
 
+## 20. Distance from the prototype is a dial, not a property of the method (N30)
+
+Every composition table in this document reports a single operating point, and that has been quietly
+unfair to both methods. A composition method produces two things a user might want independently:
+
+* a **prototype** — what the combination looks like, canonically;
+* **exemplars** — instances of it that differ from one another.
+
+This repository has been reporting the far end of that axis and the companion paper the near end,
+which is exactly why their samples score high joint accuracy at recall 0.001 while ours score lower
+accuracy with real coverage (§11d). Neither is a property of the method. Both are a *choice*.
+
+**The dial.** Start the reverse process from a partially noised prototype instead of from pure noise,
+and integrate from that noise level:
+
+```
+x_init = sqrt(abar(s)) * prototype + sqrt(1 - abar(s)) * noise,    integrate from u = s
+```
+
+`s → 0` leaves the prototype nearly intact (near-copies); `s → 1` destroys it (unconstrained draws
+from the method's own conditional). The same axis applies to both methods, which is what makes them
+comparable on it. `score.sample()` already implemented the noising, so this is a sweep, not a new
+mechanism.
+
+`experiments/n30_prototype_distance.py`, 3 seeds × 4 compositions × 16 samples, mean ± s.e.m.:
+
+| s | ours d(proto) | ours recall | ours F1 | ours Vendi | poe d(proto) | poe recall | poe F1 |
+|---|---|---|---|---|---|---|---|
+| 0.60 | 0.071±0.003 | 0.003±0.002 | 0.007±0.003 | 1.146 | 0.058±0.004 | 0.001±0.001 | 0.002 |
+| 0.70 | 0.087±0.003 | 0.062±0.007 | 0.112±0.013 | 1.253 | 0.058±0.004 | 0.000 | 0.000 |
+| 0.80 | 0.109±0.004 | 0.291±0.055 | 0.410±0.058 | 1.436 | 0.058±0.004 | 0.000 | 0.000 |
+| 0.85 | 0.123±0.004 | 0.541±0.051 | 0.620±0.030 | 1.567 | 0.057±0.004 | 0.000 | 0.000 |
+| **0.90** | **0.136±0.003** | **0.688±0.027** | **0.669±0.018** | **1.692** | 0.056±0.004 | 0.000 | 0.000 |
+| 0.95 | 0.149±0.003 | 0.790±0.015 | 0.638±0.008 | 1.790 | 0.055±0.004 | 0.000 | 0.000 |
+| 1.00 | 0.165±0.003 | 0.843±0.018 | 0.599±0.015 | 1.884 | 0.055±0.004 | 0.000 | 0.000 |
+
+![the dial](../figures/f11_prototype_dial.png)
+
+### 20a. The dial is ours alone
+
+**For our method every quantity moves together and monotonically**: distance to the prototype spans
+0.071 → 0.165 (**2.32×**), Vendi 1.15 → 1.88, recall 0.003 → 0.843, while joint accuracy trades the
+other way, 0.953 → 0.490. That is the shape a controllable knob is supposed to have, and it means the
+two ends of the axis are both reachable from one consolidated concept — no retraining, one argument.
+
+**For the companion method the dial does nothing.** Distance to the prototype moves 0.058 → 0.055
+(0.94×, i.e. not at all), Vendi stays at 1.07, and recall is 0.000 at every setting. The striking row
+is `s = 1.0`: the prototype has been destroyed and the process begins from essentially pure noise, and
+the samples *still* land 0.055 from the prototype. Guidance toward the analytic teacher re-collapses
+the trajectory onto the mode regardless of where it started — which is the same collapse that gives
+poe-guided joint 0.839 at F1 0.003 in §11d, now shown to be structural rather than a tuning choice.
+
+One asymmetry, stated because it cuts against us and does not change the conclusion: our arm's
+`x_init` is the prototype mean exactly, while the teacher arm's is a draw from the teacher's own
+Gaussian, `mu + sqrt(var) * z`, and is therefore *already diverse* before any noise is added. The
+companion method is thus given the more favourable starting condition and still collapses.
+
+### 20b. The operating point, corrected
+
+A coarse first sweep (`--strengths 0.2 … 1.0`, one seed, 2 compositions) read the elbow at **s = 0.8**
+and that was provisionally adopted as the default. **The 3-seed fine sweep does not support it.**
+F1 is *not* monotone in `s`: it peaks at **s = 0.90** (0.669 ± 0.018), and s = 0.8 sits at
+0.410 ± 0.058 — more than four standard errors below, not a rounding difference. The settings
+statistically indistinguishable from the best (within 2 s.e.) are **{0.85, 0.90, 0.95}**.
+
+The recommended setting is therefore **s = 0.90**, and s = 0.8 is recorded here as superseded rather
+than deleted. The coarse sweep was not wrong about the *shape* — F1 does rise steeply through 0.8 —
+it simply had no sample points between 0.8 and 1.0 and so could not see that the rise continues.
+
+**This is a default for exemplar generation, not a global change, and no table in this document moves
+because of it.** `sample_concept` still defaults to `u_start = 1.0` (start from pure noise, ignore the
+prototype), which is what every arm in every comparison table was and remains run at — changing that
+default would silently re-scale results that were collected under it, and would compare our arm at a
+tuned operating point against baselines at an untuned one. `s = 0.90` is the setting to pass when the
+thing being asked for is *exemplars of a concept*, which is the case-study figures.
+
+This is the second time in this repository that a conclusion drawn from a coarse single-seed sweep
+did not survive replication (§14 was the first). Both are kept in the record.
+
+**What this does not claim.** The dial does not create coverage that the concept does not have: at
+`s = 1.0` we are simply sampling the concept's conditional, which is what every other table in this
+document already reports. What is new is that the *near* end is reachable at all, and that the
+companion method cannot reach it or leave it.
+
 ## 8. Where the numbers come from
 
 | experiment | file | scale run |

@@ -365,6 +365,30 @@ def agg_n28(runs):
                                     "recall", "f1", "vendi", "wall_seconds"), width=16)
 
 
+def agg_n30(runs):
+    """N30: the prototype-distance dial, aggregated per (arm, strength).
+
+    Unlike n25-n28 a row here is identified by TWO fields, so the generic aggregator cannot be
+    reused: it would collapse all seven strengths of an arm into one cell.  Rows are relabelled
+    `arm@s` -- the same key the experiment's own `summary` uses -- and then averaged over the
+    compositions within a seed before averaging over seeds, so a seed counts once regardless of how
+    many compositions it drew.
+    """
+    merged = []
+    for path, r in runs:
+        by = {}
+        for x in r.get("rows", []):
+            by.setdefault(f"{x['arm']}@{x['strength']:g}", []).append(x)
+        merged.append((path, dict(rows=[
+            dict(key=k, **{m: float(np.nanmean([v[m] for v in xs if m in v]))
+                           for m in ("dist_prototype", "dist_pairwise", "joint", "digit", "fg",
+                                     "bg", "recall", "f1", "vendi", "tv_ratio")
+                           if any(m in v for v in xs)})
+            for k, xs in by.items()])))
+    return _agg_rows(merged, "key", ("dist_prototype", "dist_pairwise", "joint", "recall", "f1",
+                                     "vendi"), width=18)
+
+
 AGG = {"e2_composition": agg_e2, "n2_composition": agg_e2,
        "e3_lifelong": agg_e3, "n3_lifelong": agg_n3, "n7_inversion": agg_n7,
        "n5_classinc": agg_n5, "n9_showdown": agg_n9, "n8_idealwords": agg_n7,
@@ -374,7 +398,8 @@ AGG = {"e2_composition": agg_e2, "n2_composition": agg_e2,
        "n20_celeba_composition_pair": agg_n20,
        "n11_basis_extension_nmadapt": agg_n7,
        "n25_pretrained_case": agg_n25, "n26_batch_pretrained": agg_n26,
-       "n27_factor_conditionals": agg_n27, "n28_update_rules": agg_n28}
+       "n27_factor_conditionals": agg_n27, "n28_update_rules": agg_n28,
+       "n30_prototype_distance_fine": agg_n30}
 
 
 def main():
