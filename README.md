@@ -154,6 +154,7 @@ bash reproduce.sh all
 | file | what it is |
 |---|---|
 | **[CONTRIBUTIONS.md](CONTRIBUTIONS.md)** | each contribution in detail: claim, evidence, caveats |
+| **[docs/SCOREBOARD.md](docs/SCOREBOARD.md)** | every axis vs every baseline, with the winner named |
 | **[docs/](docs/)** | every result, in full |
 | [docs/RESULTS.md](docs/RESULTS.md) | the complete record, including every refuted hypothesis |
 | [docs/TABLES.md](docs/TABLES.md) | every number with error bars, regenerated from `results/` |

@@ -6,6 +6,7 @@ claims; this folder is the evidence behind them.
 
 | file | what it is |
 |---|---|
+| **[SCOREBOARD.md](SCOREBOARD.md)** | every axis vs every baseline, with the winner named — start here |
 | **[RESULTS.md](RESULTS.md)** | the complete lab record, in the order things were learned |
 | **[TABLES.md](TABLES.md)** | every headline number with error bars, regenerated from `results/` |
 | **[RELATED.md](RELATED.md)** | positioning, which baselines are fair for this setting, citation hazards |
