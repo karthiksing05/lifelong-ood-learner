@@ -47,13 +47,20 @@ def _as_img(X, device, img=IMG):
 
 # ── training ─────────────────────────────────────────────────────────────────
 def train_ddpm(model, X01, labels, epochs=60, batch=128, lr=2e-4, wd=1e-6, p_drop=0.1,
-               device="cuda", ema_decay=0.999, seed=0, log_every=200, u_min=1e-3, tf32=False):
+               device="cuda", ema_decay=0.999, seed=0, log_every=200, u_min=1e-3, tf32=False,
+               on_epoch=None):
     """Standard epsilon-prediction training with classifier-free-guidance dropout.
 
     Matches the paper's backbone recipe (AdamW, lr 2e-4, weight decay 1e-6, grad clip 1.0, null-token
     dropout p=0.1, EMA on the weights) on the cosine schedule this repository uses throughout, with
     `u ~ U(0,1)` standing in for their discrete t ~ U{1..T}.  Returns the EMA weights, which are what
     every downstream field is built from.
+
+    `on_epoch(ep, ema)` is called after each epoch with the CURRENT EMA weights, so a caller can
+    checkpoint mid-run.  The 128px CelebA backbones take ~26 h against a 30 h wall limit and this
+    function used to return only at the very end, which made a wall-clock kill or a preemption cost
+    the entire run rather than one epoch.  The dict handed over is the live one -- copy before
+    writing it from another thread.
     """
     if tf32:
         # Ampere-class tensor cores for conv/matmul: ~2x on the CelebA backbone, which trains on 96k
@@ -131,6 +138,8 @@ def train_ddpm(model, X01, labels, epochs=60, batch=128, lr=2e-4, wd=1e-6, p_dro
             if log_every and step % log_every == 0:
                 print(f"    ep {ep + 1} step {step}: loss {tot / max(nb, 1):.4f}", flush=True)
         print(f"  epoch {ep + 1}/{epochs}: loss {tot / max(nb, 1):.4f}", flush=True)
+        if on_epoch is not None:
+            on_epoch(ep + 1, ema)
     for k, v in model.state_dict().items():          # non-float buffers, verbatim
         if not v.dtype.is_floating_point:
             ema[k] = v.detach().clone()

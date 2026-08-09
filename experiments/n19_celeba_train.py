@@ -81,6 +81,10 @@ def build_probes(data, seed, epochs, cache=True, layout="hwc"):
 def main():
     p = argparse.ArgumentParser()
     p.add_argument("--epochs", type=int, default=70)
+    p.add_argument("--save-every", type=int, default=5,
+                   help="write a resumable snapshot to <out>.partial every N epochs; 0 disables. "
+                        "At 128px an epoch is ~17 min and the run does not fit comfortably inside "
+                        "one wall limit, so the default is on.")
     p.add_argument("--batch", type=int, default=256)
     p.add_argument("--lr", type=float, default=2e-4)
     p.add_argument("--base", type=int, default=64)
@@ -193,17 +197,44 @@ def main():
     print(f"[n19] UNet {nparam / 1e6:.1f}M params ({ncond} in the conditioning head, "
           f"vs {len(tr_combos) * 256} for a per-class table)", flush=True)
 
-    t0 = time.time()
-    ema = train_ddpm(model, data["X8"][tr], y, epochs=args.epochs, batch=args.batch, lr=args.lr,
-                     device=dev, seed=args.seed, tf32=True)
-    mins = (time.time() - t0) / 60
     os.makedirs(os.path.dirname(args.out), exist_ok=True)
-    torch.save(dict(ema=ema, n_classes=len(tr_combos), arch=arch, remap=remap,
+
+    def package(ema, epochs_done):
+        """The checkpoint dict, identical in shape whether written mid-run or at the end."""
+        return dict(ema=ema, n_classes=len(tr_combos), arch=arch, remap=remap,
                     class_attrs=class_attrs, concepts={}, dataset="celeba", img=args.img,
                     hold_ids=sp["hold_ids"], hold_combos=sp["hold_combos"],
                     holdout_attr=args.holdout_attr, holdout_pair=pair,
                     min_count=args.min_count, n_holdout=args.n_holdout, seed=args.seed,
-                    attr_names=list(ATTRS)), args.out)   # so downstream uses the SAME set
+                    epochs_done=epochs_done, epochs_planned=args.epochs,
+                    attr_names=list(ATTRS))            # so downstream uses the SAME set
+
+    def checkpoint(ep, ema):
+        """Write every `--save-every` epochs, so a wall-clock kill costs one interval, not the run.
+
+        `train_ddpm` copies the non-float buffers into `ema` only when it returns, so a mid-run
+        snapshot has to take them from the live model itself -- otherwise the partial checkpoint is
+        missing exactly the tensors `load_state_dict` refuses to do without.  Written to a temporary
+        name and renamed, so a kill DURING the write cannot leave a truncated file behind.
+        """
+        if not args.save_every or ep % args.save_every or ep == args.epochs:
+            return
+        snap = {k: v.detach().clone().cpu() for k, v in ema.items()}
+        for k, v in model.state_dict().items():
+            if not v.dtype.is_floating_point:
+                snap[k] = v.detach().clone().cpu()
+        tmp = args.out + ".partial"
+        torch.save(package(snap, ep), tmp + ".tmp")
+        os.replace(tmp + ".tmp", tmp)
+        print(f"[n19] checkpoint at epoch {ep}/{args.epochs} -> {tmp}", flush=True)
+
+    t0 = time.time()
+    ema = train_ddpm(model, data["X8"][tr], y, epochs=args.epochs, batch=args.batch, lr=args.lr,
+                     device=dev, seed=args.seed, tf32=True, on_epoch=checkpoint)
+    mins = (time.time() - t0) / 60
+    torch.save(package(ema, args.epochs), args.out)
+    if os.path.exists(args.out + ".partial"):
+        os.remove(args.out + ".partial")               # the finished run supersedes it
     print(f"[n19] trained in {mins:.1f} min -> {args.out}", flush=True)
 
     # ── evaluation: conditional accuracy against the REAL-DATA ceiling ───────
