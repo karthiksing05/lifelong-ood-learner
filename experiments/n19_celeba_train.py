@@ -39,6 +39,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from common import CACHE, RESULTS                                       # noqa: E402
 
 from lifelong_ood.celeba import (ATTRS, IMG_CELEBA, as_float, class_name,  # noqa: E402
+                                 set_attrs,
                                  load_celeba_comp, nearest_seen)
 from lifelong_ood.evals import attr_accuracy, fit_attr_probes, save_grid, save_json  # noqa: E402
 from lifelong_ood.neural import NeuralScoreField, UNet, to_data, train_ddpm  # noqa: E402
@@ -111,9 +112,18 @@ def main():
                         "fit on the same flat convention, so scoring stays valid either way; only "
                         "the sample-grid image is drawn wrong under --chw.")
     p.add_argument("--cond", choices=["factored", "class"], default="factored")
+    p.add_argument("--attrs", nargs="+", default=None,
+                   help="conditioning attributes.  Default is the inherited 14, of which "
+                        "tests/diag_celeba_attrs.py shows only 2 are both balanced and "
+                        "probe-readable; a short measured set gives far more images per "
+                        "compositional class and a probe ceiling near 1.0.")
     p.add_argument("--out", default=None)
     p.add_argument("--quick", action="store_true")
     args = p.parse_args()
+    if args.attrs:
+        set_attrs(args.attrs)          # in place, so every module sees it
+        print(f"[n19] conditioning on {len(args.attrs)} attributes: {args.attrs}",
+              flush=True)
     if args.quick:
         args.epochs, args.base, args.max_rows, args.max_train = 2, 32, 4000, 2000
         args.min_count, args.n_holdout = 5, 3
@@ -168,7 +178,11 @@ def main():
               f"{int((A[:, ka] == 1).sum())} and {int((A[:, kb] == 1).sum())} images carry each "
               f"attribute alone", flush=True)
 
-    arch = dict(base=args.base, img=args.img, mults=(1, 2, 2, 2), cond_mode=args.cond)
+    # one more downsampling level at 128px, so the deepest block still reaches the 16x16 and
+    # 8x8 resolutions the attention layers are placed at; without it a 128px model attends
+    # only at 32x32 and above and never forms a global view of the face.
+    mults = (1, 2, 2, 2, 4) if args.img >= 128 else (1, 2, 2, 2)
+    arch = dict(base=args.base, img=args.img, mults=mults, cond_mode=args.cond)
     if args.cond == "factored":
         arch["class_attrs"] = class_attrs
     model = UNet(n_classes=len(tr_combos), **arch)
@@ -188,7 +202,8 @@ def main():
                     class_attrs=class_attrs, concepts={}, dataset="celeba", img=args.img,
                     hold_ids=sp["hold_ids"], hold_combos=sp["hold_combos"],
                     holdout_attr=args.holdout_attr, holdout_pair=pair,
-                    min_count=args.min_count, n_holdout=args.n_holdout, seed=args.seed), args.out)
+                    min_count=args.min_count, n_holdout=args.n_holdout, seed=args.seed,
+                    attr_names=list(ATTRS)), args.out)   # so downstream uses the SAME set
     print(f"[n19] trained in {mins:.1f} min -> {args.out}", flush=True)
 
     # ── evaluation: conditional accuracy against the REAL-DATA ceiling ───────

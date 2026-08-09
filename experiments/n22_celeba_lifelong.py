@@ -32,7 +32,7 @@ from n4_batch import (cl_metrics, efficiency_metrics,                  # noqa: E
 from n19_celeba_train import build_probes                              # noqa: E402
 from n20_celeba_composition import score                               # noqa: E402
 
-from lifelong_ood.celeba import ATTRS, as_float, load_celeba_comp, nearest_seen  # noqa: E402
+from lifelong_ood.celeba import ATTRS, set_attrs, as_float, load_celeba_comp, nearest_seen  # noqa: E402
 from lifelong_ood.evals import frechet_distance, save_json             # noqa: E402
 from lifelong_ood.neural import (NeuralLifelongLearner, fingerprint, load_field,  # noqa: E402
                                  to_data, to_model)
@@ -90,6 +90,14 @@ def main():
     dev = "cuda" if torch.cuda.is_available() else "cpu"
 
     ck = torch.load(args.ckpt, map_location="cpu", weights_only=False)
+
+    if ck.get("attr_names"):
+
+        # the backbone was trained on a specific attribute set; scoring it against a
+
+        # different one would silently mismatch every index into `combo`
+
+        set_attrs(ck["attr_names"])
     img = ck["img"]
     import lifelong_ood.neural.ddpm as _d
     _d.IMG, _d.DIM = img, 3 * img * img

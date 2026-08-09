@@ -16,6 +16,7 @@ Two things this fixes beyond layout:
 Needs the backbones.  Writes figures/f9_case_colormnist.png and figures/f10_case_celeba.png.
 """
 import argparse
+import json
 import os
 import sys
 
@@ -24,7 +25,7 @@ import torch
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from common import CACHE, backbone_gains, ood_queries                   # noqa: E402
+from common import CACHE, RESULTS, backbone_gains, ood_queries          # noqa: E402
 
 FIG = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "figures")
 PAPER_POE = dict(schedule="variance", var_scale=1.0, w0=1.2, wmax=2.0, wmin=0.0)
@@ -45,6 +46,41 @@ def panel(fig, gs_row, imgs, side, label, note="", n=6, cmap=None):
             ax.set_ylabel(label, fontsize=6.5, rotation=0, ha="right", va="center")
         if c == n - 1 and note:
             ax.set_title(note, fontsize=5.5, loc="right", pad=2)
+
+
+def select_cases(data, args):
+    """Choose which held-out compositions the figure shows, by a STATED rule.
+
+    Picking slots by hand would improve the figure and destroy it as evidence.  `n29_slot_scan.py`
+    scores all 40 held-out compositions, and this selects from that ranking.
+
+    The default spans the benchmark rather than the method's comfort zone: ColorMNIST's held-out tier
+    is exactly 4 colour pairs x 10 digits, and success varies strongly across those pairs (median
+    joint 0.719 for green-on-navy against 0.125 for yellow-on-dark_brown).  One case per pair at the
+    pair's MEDIAN is therefore what a reader should expect to reproduce -- a figure of best cases
+    would be four times more flattering and worth nothing.
+    """
+    if args.slots:
+        want = [int(x) for x in args.slots]
+    else:
+        scan = os.path.join(RESULTS, f"n29_slot_scan{args.scan_tag}.json")
+        if not os.path.exists(scan):
+            print(f"  [cases] no scan at {scan}; falling back to {args.n_cases} random slots. "
+                  f"Run experiments/n29_slot_scan.py for the principled selection.", flush=True)
+            return ood_queries(data, n_slots=args.n_cases, seed=args.seed)
+        with open(scan) as fh:
+            sc = json.load(fh)
+        want = sc["picks"][args.select]
+        by = {r["slot"]: r for r in sc["rows"]}
+        print(f"  [cases] rule `{args.select}` over {sc['summary']['n']} scored compositions "
+              f"(median joint {sc['summary']['joint_median']:.3f}, "
+              f"range [{sc['summary']['joint_min']:.2f}, {sc['summary']['joint_max']:.2f}]):",
+              flush=True)
+        for s_ in want:
+            print(f"      slot {s_:3d}  {by[s_]['name']:34s} joint {by[s_]['joint']:.2f}", flush=True)
+    allq = ood_queries(data, n_slots=None, seed=args.seed)
+    idx = {q["slot"]: q for q in allq}
+    return [idx[s_] for s_ in want if s_ in idx]
 
 
 def colormnist(args):
@@ -74,7 +110,7 @@ def colormnist(args):
     L = NeuralLifelongLearner(field, steps=args.steps, seed=args.seed, device=dev)
     L.attach_factorization(C, slot_factors(slots), gains=gains)
 
-    qs = ood_queries(data, n_slots=args.n_cases, seed=args.seed)
+    qs = select_cases(data, args)
     rows = ["real", "prototypes", "ours", "poe-guided (paper Eq.14)", "query-only", "nearest-class"]
     fig = plt.figure(figsize=(1.05 * (args.n_show + 1), 1.15 * len(qs) * len(rows) + 1.2))
     gs = GridSpec(len(qs) * len(rows), args.n_show + 1, figure=fig, hspace=0.06, wspace=0.06)
@@ -121,7 +157,17 @@ def colormnist(args):
 
 def main():
     p = argparse.ArgumentParser()
-    p.add_argument("--n-cases", type=int, default=3)
+    p.add_argument("--n-cases", type=int, default=3,
+                   help="only used when no scan is available and slots fall back to random")
+    p.add_argument("--select", default="median-per-pair",
+                   choices=["median-per-pair", "best-per-pair", "worst-per-pair"],
+                   help="rule over experiments/n29_slot_scan.py's ranking. The default "
+                        "shows one case per COLOUR PAIR at that pair's median, so the "
+                        "figure spans the benchmark and is representative rather than "
+                        "flattering.")
+    p.add_argument("--slots", nargs="*", default=None,
+                   help="explicit slot ids, overriding --select")
+    p.add_argument("--scan-tag", default="_v1")
     p.add_argument("--n-show", type=int, default=6)
     p.add_argument("--n-per-slot", type=int, default=100)
     p.add_argument("--steps", type=int, default=50)

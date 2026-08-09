@@ -24,6 +24,7 @@ TWO DEVIATIONS, both forced and both flagged:
     which is the paper's own stated criterion ("chosen so that their attribute combination differs
     from at least one seen class on a single attribute").
 """
+import hashlib
 import io
 import os
 import zipfile
@@ -34,6 +35,25 @@ IMG_CELEBA = 64
 ATTRS = ["Black_Hair", "Blond_Hair", "Brown_Hair", "Gray_Hair", "Wavy_Hair", "No_Beard",
          "Smiling", "Big_Nose", "Big_Lips", "Oval_Face", "Male", "Sideburns",
          "Wearing_Necklace", "Bald"]
+
+
+def set_attrs(names):
+    """Replace the conditioning attribute set, IN PLACE.
+
+    Every module does `from .celeba import ATTRS` and therefore holds a reference to this exact list
+    object, so mutating it in place is what makes a change visible everywhere rather than only in
+    this module.
+
+    The default 14 were inherited, never measured, and `tests/diag_celeba_attrs.py` shows only two of
+    them survive scrutiny: `Bald` has base rate 0.015 and probe TPR **0.00**, `Sideburns` 0.00,
+    `Wavy_Hair` 0.10, `Oval_Face` 0.16, and `Big_Lips` answers "yes" to 98% of images.  An attribute
+    the backbone cannot learn still multiplies the class count -- diluting every class's training
+    data -- and an attribute the probe cannot read caps every score that includes it, which is why
+    real held-out images score mean-attribute 0.827 rather than ~1.0.
+    """
+    ATTRS[:] = list(names)
+    return ATTRS
+
 
 _HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 _CANDIDATES = [os.environ.get("LOL_CELEBA_DIR", ""),
@@ -304,7 +324,13 @@ def load_celeba_comp(img=IMG_CELEBA, root=None, max_rows=None, min_count=60, n_h
     cache = None
     if cache_dir:
         os.makedirs(cache_dir, exist_ok=True)
-        cache = os.path.join(cache_dir, f"celeba_raw_img{img}_n{max_rows or 0}.npz")
+        # The attribute SET must be in the key.  `A`'s columns are exactly ATTRS, so a run with a
+        # different attribute list that reads a cache written under the old one gets a matrix whose
+        # columns mean something else entirely -- and it fails silently, because the shape is only
+        # wrong in a dimension nothing checks.  Measured: a 4-attribute run reported "1226 distinct
+        # combos", which is impossible for 4 binary attributes and is exactly the 14-attribute count.
+        key = hashlib.sha1(",".join(ATTRS).encode()).hexdigest()[:8]
+        cache = os.path.join(cache_dir, f"celeba_raw_img{img}_n{max_rows or 0}_a{key}.npz")
     if cache and os.path.exists(cache):
         z = np.load(cache)
         X8, A = z["X"], z["A"]

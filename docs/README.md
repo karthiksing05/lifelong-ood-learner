@@ -51,6 +51,9 @@ stronger supervision than the OOD setting provides.
 | `n27_factor_conditionals` | is score addition's failure the operator, or the conditionals? | the conditionals: F1 **0.016 → 0.490** on the same backbone | §13 |
 | `n28_update_rules` | which update rule disturbs the score field least, and does that help? | it does **not** — 4× less drift buys no composition and a worse concept | §14 |
 | `n11_basis_extension` | what does a new vocabulary *value* cost vs a new arrangement? | 1024 bytes vs 551K params | §5q2 |
+| `n8_idealwords` | is the conditioning space additively factored at all? | **yes** — `c(d,f,b) ≈ mu + D + F + B`, R² 0.826. The whole composer rests on this | §5q |
+| `n7_inversion` | can a concept be learned as a POINT in conditioning space rather than guided toward? | yes, and it is what covers the class where guidance cannot | §5f |
+| `n29_slot_scan` | how does performance vary across ALL 40 held-out compositions? | median joint 0.438, range [0.00, 0.94]; strongly colour-dependent | §11e |
 | `n21_celeba_vocabulary` | can an attribute value the backbone never saw be added? | only with a weight update from real images | §7c |
 
 ### The negative results
