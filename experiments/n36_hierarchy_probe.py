@@ -69,20 +69,32 @@ FIG = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 
 
 
 @contextlib.contextmanager
-def forced_path(bank, name, path):
-    """Temporarily make `name` resolve to `path`.
+def forced(bank, name, path, emb=None):
+    """Temporarily make `name` resolve to `path`, and optionally to a different embedding.
 
-    `activate()` re-reads `concepts[name]["path"]` on every `eps` call, so this dict -- not
-    `state["path"]` -- is the only place an ablation can be injected from outside.  Setting
-    `state["path"]` directly is silently overwritten, which is how an off-concept drift metric once
-    read a constant 0.0000.
+    Both overrides go through `bank`, and they have to: `activate()` re-reads
+    `concepts[name]["path"]` on every `eps` call (so setting `state["path"]` from outside is silently
+    overwritten -- that is how an off-concept drift metric once read a constant 0.0000), and
+    `_emb(branch)` re-reads `_emb_extra[name]` the same way.
+
+    Why not `inversion.sample_embedding`, which conditions on a raw vector?  It calls
+    `field.eps(x, u, None, emb=c)` with branch=None, and branch=None activates the EMPTY path -- it
+    would switch off the very node being probed.  Overriding the concept's own stored embedding and
+    sampling with `branch=name` keeps the forced path active AND applies the chosen conditioning.
     """
-    old = bank.concepts[name]["path"]
+    import torch as _t
+    old_p = bank.concepts[name]["path"]
+    old_e = bank._emb_extra.get(name)
     bank.concepts[name]["path"] = list(path)
+    if emb is not None:
+        bank._emb_extra[name] = _t.as_tensor(np.asarray(emb), dtype=_t.float32,
+                                             device=bank.device)
     try:
         yield
     finally:
-        bank.concepts[name]["path"] = old
+        bank.concepts[name]["path"] = old_p
+        if old_e is not None:
+            bank._emb_extra[name] = old_e
 
 
 def influence(L, field, name, pool, node_ids, u_grid, seed):
@@ -225,10 +237,9 @@ def main():
         host = members[nid][0]
         anc = paths[host][:paths[host].index(nid) + 1]
         fam = np.mean([bank._emb_extra[n].detach().cpu().numpy() for n in members[nid]], 0)
-        with forced_path(bank, host, anc):
+        with forced(bank, host, anc, emb=fam):
             alone[nid] = to_data(field.sample(n=args.n_show, steps=args.steps, seed=args.seed,
-                                              branch=host, emb=fam,
-                                              clip=(-1, 1))).astype(np.float32)
+                                              branch=host, clip=(-1, 1))).astype(np.float32)
         print(f"[n36] node {nid}: alone-generation done", flush=True)
 
     ic = [r["profile_centroid"] for r in rows if r["is_internal"] and r["profile_centroid"] == r["profile_centroid"]]

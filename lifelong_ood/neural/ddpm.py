@@ -48,13 +48,20 @@ def _as_img(X, device, img=IMG):
 # ── training ─────────────────────────────────────────────────────────────────
 def train_ddpm(model, X01, labels, epochs=60, batch=128, lr=2e-4, wd=1e-6, p_drop=0.1,
                device="cuda", ema_decay=0.999, seed=0, log_every=200, u_min=1e-3, tf32=False,
-               on_epoch=None):
+               on_epoch=None, params=None, eval_only=False):
     """Standard epsilon-prediction training with classifier-free-guidance dropout.
 
     Matches the paper's backbone recipe (AdamW, lr 2e-4, weight decay 1e-6, grad clip 1.0, null-token
     dropout p=0.1, EMA on the weights) on the cosine schedule this repository uses throughout, with
     `u ~ U(0,1)` standing in for their discrete t ~ U{1..T}.  Returns the EMA weights, which are what
     every downstream field is built from.
+
+    `params` restricts the optimizer to a SUBSET of the model's parameters, leaving the loss, the
+    noise schedule and the data order untouched.  N37 needs that: comparing "train everything" with
+    "train only this block" is only a comparison if the objective is identical, and reimplementing
+    the loop per arm is how the two silently drift apart.  `eval_only=True` runs a single pass and
+    returns the mean loss without stepping anything, which is how those arms get one comparable
+    number at the end.
 
     `on_epoch(ep, ema)` is called after each epoch with the CURRENT EMA weights, so a caller can
     checkpoint mid-run.  The 128px CelebA backbones take ~26 h against a 30 h wall limit and this
@@ -73,7 +80,8 @@ def train_ddpm(model, X01, labels, epochs=60, batch=128, lr=2e-4, wd=1e-6, p_dro
         torch.backends.cudnn.benchmark = True
     torch.manual_seed(seed)
     model.to(device).train()
-    opt = torch.optim.AdamW(model.parameters(), lr=lr, weight_decay=wd)
+    opt = torch.optim.AdamW(model.parameters() if params is None else params,
+                            lr=lr, weight_decay=wd)
     sd = model.state_dict()
     ema = {k: v.detach().clone().float() for k, v in sd.items()}
     # fused EMA over the float tensors only; buffers (ints) are copied at the end.  Doing this with
@@ -110,6 +118,8 @@ def train_ddpm(model, X01, labels, epochs=60, batch=128, lr=2e-4, wd=1e-6, p_dro
     n = len(Xt)
     g = torch.Generator().manual_seed(seed)
     step = 0
+    if eval_only:                        # one pass, no stepping -> the mean loss
+        epochs = 1
     for ep in range(epochs):
         perm = torch.randperm(n, generator=g)
         tot, nb = 0.0, 0
@@ -126,6 +136,11 @@ def train_ddpm(model, X01, labels, epochs=60, batch=128, lr=2e-4, wd=1e-6, p_dro
             a = a.view(-1, 1, 1, 1)
             noise = torch.randn_like(x0)
             xt = a.sqrt() * x0 + (1 - a).sqrt() * noise
+            if eval_only:
+                with torch.no_grad():
+                    loss = torch.nn.functional.mse_loss(model(xt, u, c), noise)
+                tot += float(loss); nb += 1; step += 1
+                continue
             loss = torch.nn.functional.mse_loss(model(xt, u, c), noise)
             opt.zero_grad(set_to_none=True)
             loss.backward()
@@ -138,6 +153,8 @@ def train_ddpm(model, X01, labels, epochs=60, batch=128, lr=2e-4, wd=1e-6, p_dro
             if log_every and step % log_every == 0:
                 print(f"    ep {ep + 1} step {step}: loss {tot / max(nb, 1):.4f}", flush=True)
         print(f"  epoch {ep + 1}/{epochs}: loss {tot / max(nb, 1):.4f}", flush=True)
+        if eval_only:
+            return tot / max(nb, 1)
         if on_epoch is not None:
             on_epoch(ep + 1, ema)
     for k, v in model.state_dict().items():          # non-float buffers, verbatim
