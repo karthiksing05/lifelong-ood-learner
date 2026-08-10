@@ -100,7 +100,9 @@ def main():
     if args.quick:
         args.tag = args.tag or "_smoke"
         args.blocks, args.epochs_per_block, args.n_per_slot = 2, 1, 12
-        args.base, args.steps, args.n_eval_slots, args.n_samples = 16, 15, 2, 8
+        # base stays 32: the UNet uses GroupNorm(32, C), so every channel count must be a
+        # multiple of 32 and a smaller base fails at construction rather than running fast
+        args.base, args.steps, args.n_eval_slots, args.n_samples = 32, 15, 2, 8
     dev = "cuda" if torch.cuda.is_available() else "cpu"
     total_epochs = args.blocks * args.epochs_per_block
 
