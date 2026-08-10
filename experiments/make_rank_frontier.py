@@ -6,13 +6,18 @@ smaller.  Rank was set to 8 once and never revisited, so the comparison has been
 -capacity against a baseline at its own natural size.
 
 This does NOT run a new experiment.  `n5_classinc.py` already takes `--rank`, so the sweep is that
-same tested code at r in {1, 2, 4, 8, 16}, and the baselines keep their published numbers from
-`results/aggregate.json` rather than being re-run at a configuration nobody chose for them.
+same tested code at r in {1, 2, 4, 8, 16}.
+
+**`independent` is swept too, and has to be.**  It is this same bank with flat placement, so it has
+the identical rank knob, and an earlier version of this figure swept only ours -- which would have
+compared our tuned capacity against their arbitrary one and reported a win we had bought by tuning a
+knob for ourselves alone.  The other nine baselines are not adapter methods and keep their published
+numbers from `results/aggregate.json`.
 
 Reads `results/n5_classinc_rank<r>__seed*.json` (one job per rank per seed) and draws:
 
-  * ACC against total parameters, ours as a CURVE and every baseline as a fixed point, so "are we on
-    the frontier" is answered by looking rather than asserted;
+  * ACC against total parameters, ours and `independent` both as CURVES and the remaining baselines
+    as fixed points, so "are we on the frontier" is answered by looking rather than asserted;
   * bit-identical retention against rank, to check that shrinking capacity does not quietly cost the
     guarantee -- it should be exactly 1.000 at every rank, since preservation is structural and has
     nothing to do with how big the delta is.
@@ -35,8 +40,13 @@ BASELINES = ("independent", "c-lora", "mas", "si", "ttt", "der++", "gen-distill"
              "finetune", "replay")
 
 
-def load_rank(r):
-    """-> (acc_mean, acc_sem, params, exact) pooled over whatever seeds exist for rank r."""
+def load_rank(r, arm="ours"):
+    """-> pooled ACC / params / bit-identity for `arm` at rank r, over whatever seeds exist.
+
+    `independent` is swept too, and must be: it is this same bank with flat placement, so it has the
+    IDENTICAL rank knob.  Comparing our swept rank against its fixed rank-8 point would be the
+    "baseline at a configuration nobody chose for it" unfairness this repository forbids elsewhere.
+    """
     fs = sorted(glob.glob(os.path.join(RESULTS, f"n5_classinc_rank{r}__seed*.json")))
     if not fs:
         f = os.path.join(RESULTS, f"n5_classinc_rank{r}.json")
@@ -46,7 +56,7 @@ def load_rank(r):
     acc, par, ex = [], [], []
     for f in fs:
         rows = json.load(open(f)).get("rows", [])
-        row = next((x for x in rows if x["arm"] == "ours"), None)
+        row = next((x for x in rows if x["arm"] == arm), None)
         if row is None:
             continue
         acc.append(row.get("ACC"))
@@ -55,13 +65,14 @@ def load_rank(r):
     if not acc:
         return None
     acc = [a for a in acc if a is not None]
-    return dict(rank=r, acc=float(np.mean(acc)),
+    return dict(rank=r, arm=arm, acc=float(np.mean(acc)),
                 sem=float(np.std(acc, ddof=1) / np.sqrt(len(acc))) if len(acc) > 1 else 0.0,
                 params=float(np.mean(par)), exact=float(np.mean(ex)), n_seeds=len(acc))
 
 
 def main():
     pts = [p for p in (load_rank(r) for r in RANKS) if p]
+    ind = [p for p in (load_rank(r, "independent") for r in RANKS) if p]
     if not pts:
         print("[f12] no rank-sweep results yet -- run n5_classinc.py --arms ours --rank R "
               "--tag _rankR for R in", RANKS)
@@ -78,15 +89,25 @@ def main():
     for p in pts:
         print(f"    {p['rank']:6d}{p['params'] / 1e6:11.2f}M{p['acc']:10.3f}+/-{p['sem']:.3f}"
               f"{p['exact']:15.3f}")
-    ind_acc, ind_par = cell("independent", "ACC"), cell("independent", "params")
-    if ind_acc and ind_par:
-        better = [p for p in pts if p["acc"] >= ind_acc and p["params"] <= ind_par]
-        cheaper = [p for p in pts if p["params"] <= ind_par]
-        print(f"\n[f12] `independent`: ACC {ind_acc:.3f} at {ind_par / 1e6:.2f}M")
-        print(f"[f12] ranks at or below its parameter count: "
-              f"{[p['rank'] for p in cheaper] or 'none'}")
-        print(f"[f12] ranks that DOMINATE it (>= ACC and <= params): "
-              f"{[p['rank'] for p in better] or 'NONE -- the loss stands'}")
+    if ind:
+        print(f"\n[f12] independent across rank")
+        print(f"    {'rank':>6s}{'params':>12s}{'ACC':>16s}")
+        for p in ind:
+            print(f"    {p['rank']:6d}{p['params'] / 1e6:11.2f}M{p['acc']:10.3f}+/-{p['sem']:.3f}")
+        # the fair question: at MATCHED rank, who wins, and does the answer depend on rank?
+        print(f"\n[f12] head to head at matched rank")
+        print(f"    {'rank':>6s}{'ours ACC':>12s}{'indep ACC':>12s}{'delta':>9s}"
+              f"{'ours par':>11s}{'indep par':>11s}")
+        for a in pts:
+            b = next((x for x in ind if x["rank"] == a["rank"]), None)
+            if not b:
+                continue
+            print(f"    {a['rank']:6d}{a['acc']:12.3f}{b['acc']:12.3f}{a['acc'] - b['acc']:+9.3f}"
+                  f"{a['params'] / 1e6:10.2f}M{b['params'] / 1e6:10.2f}M")
+        wins = [a["rank"] for a in pts
+                if (b := next((x for x in ind if x["rank"] == a["rank"]), None))
+                and a["acc"] >= b["acc"]]
+        print(f"\n[f12] ranks where ours >= independent at MATCHED rank: {wins or 'NONE'}")
     if any(p["exact"] != 1.0 for p in pts):
         print("[f12] WARNING: bit-identity is not 1.000 at every rank -- preservation is supposed "
               "to be independent of capacity, so this would be a real defect")
@@ -105,11 +126,15 @@ def main():
     for p in pts:
         ax.annotate(f"r={p['rank']}", (p["params"] / 1e6, p["acc"]), textcoords="offset points",
                     xytext=(6, -11), fontsize=8, color="#1B7F4B")
-    for arm in BASELINES:
+    if ind:
+        ax.errorbar([p["params"] / 1e6 for p in ind], [p["acc"] for p in ind],
+                    yerr=[p["sem"] for p in ind], color="#B03A2E", marker="s", ms=5, lw=2,
+                    capsize=3, label="independent, by rank", zorder=3)
+    for arm in [b for b in BASELINES if b != "independent"]:
         a, q = cell(arm, "ACC"), cell(arm, "params")
         if a is None or q is None:
             continue
-        star = arm == "independent"
+        star = False
         ax.scatter([q / 1e6], [a], s=64 if star else 34,
                    marker="*" if star else "s",
                    color="#B03A2E" if star else "#7C7C7C", zorder=4 if star else 2)

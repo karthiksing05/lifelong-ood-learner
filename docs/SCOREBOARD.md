@@ -148,13 +148,14 @@ three collapse is not. [RESULTS.md](RESULTS.md) §18.
 
 ## 4. Assertions
 
-`bash reproduce.sh tests` — **9 / 9 pass**, including the pretrained-backbone preservation
+`bash reproduce.sh tests` — **11 / 11 pass**, including the pretrained-backbone preservation
 certificate. These gate every number above.
 
 ```
 PASS test_layout          PASS test_merge           PASS test_pretrained
 PASS test_smoke           PASS test_ortho_merge     PASS test_pretrained_bank
 PASS test_neural          PASS test_unbounded       PASS test_speckle
+PASS test_fid             PASS test_claims
 ```
 
 ---
