@@ -72,9 +72,15 @@ rendering regime — and a pile of standalone LoRAs re-learns that shared struct
 stores it *repeatedly*, because each adapter is complete in itself and ignorant of the rest. The bank
 makes the sharing structural instead: **a concept is a path**, its ancestors *are* the shared parts,
 and a newcomer's forward pass runs through the family's sealed group node before its own leaf has
-learned anything. The leaf only has to learn what makes this concept *different* from its family —
-the same argument, one level up, as adapting rather than retraining the backbone. (N34 measures this
-as transfer: same pool, same budget, ancestor present vs absent.)
+learned anything. The leaf then only has to learn what makes this concept *different* from its family
+— the same argument, one level up, as adapting rather than retraining the backbone.
+
+**That last step is the design's rationale, and it is the one part that has not survived measurement.**
+The shared node is real — it carries 2.3× a leaf's magnitude and its formative training instances come
+from four different members — but routing a newcomer through its *own* family is worth −0.004 F1
+against a *mismatched* family's ancestor and −0.063 against no ancestor at all (§24). The storage
+argument in point 3 stands; the transfer argument does not, and the rest of this section should be
+read as what the structure buys *without* it.
 
 **3. The lifelong obligations fall out of the representation, instead of being bolted on.** Once a
 concept is a path in an insert-only tree, each hard property is one structural fact rather than a
@@ -84,18 +90,20 @@ mechanism with its own failure modes:
 |---|---|---|
 | no forgetting | sealed nodes are absent from every future optimizer | §5, §7d — 1.000 bit-identical |
 | routing / cost | arrangement = 1024-byte basis direction; new part = one leaf | §6c — AUROC 0.980/0.995 |
-| batch absorption | K leaves + a group node under one optimizer, sealed once | §15 — 2.14× faster, +0.052 ACC |
+| batch absorption | K leaves + a group node under one optimizer, sealed once | §15 — 2.15× faster, ACC unchanged |
 | deletion | drop the nodes only that concept uses; base never written | §22 — 9/9 bit-identical |
-| reuse | frozen ancestors sit in the newcomer's forward pass, read-only | N34 |
+| ~~reuse~~ | *predicted* transfer from frozen ancestors — **refuted**, §24 | N34 |
 
 A pile of standalone adapters offers none of these as *properties* — forgetting is trivially absent
 but so is sharing; deletion works but reclaims nothing shared because nothing is shared; cost is flat
 at one full adapter per concept regardless of how little is genuinely new.
 
-**4. What the bank is *not*.** The hierarchy's placement quality is not the argument: given its best
-case, clustered placement *loses* to shuffled (§5s), and stream order changes what the tree builds
-(§23). The bank's value is the constraint structure — sealing, path-scoped optimization, private
-leaves — not clustering magic, and the docs say so where each conjecture failed.
+**4. What the bank is *not*.** Three separate conjectures about the *hierarchy* have now failed:
+clustered placement loses to shuffled given its best case (§5s), stream order changes what the tree
+builds (§23), and a matched ancestor transfers no better than a mismatched one (§24). What survives
+every one of those is the **constraint structure** — sealing, path-scoped optimization, private leaves.
+That is what the certificates rest on, and it is what this repository is actually defending; the tree
+is the bookkeeping that makes it expressible, not a claim about clustering.
 
 ### Ground-up or finetuning? Both, in a specific division of labour
 
@@ -255,7 +263,7 @@ Adam(params).minimize( interleaved minibatches from all K pools )
 
 `_seal()` runs once for the whole batch, so the guarantee is identical whatever K is — which is what
 makes batch size a free efficiency knob rather than a safety trade (bit-identical **1.000 at every K
-from 1 to 12**, and 2.14× faster at K=12).
+from 1 to 12**, and 2.15× faster at K=12).
 
 ---
 
@@ -465,7 +473,7 @@ Full detail, with evidence and caveats for each: **[CONTRIBUTIONS.md](CONTRIBUTI
    direction. An arrangement costs a 1024-byte basis direction instead of a 551K-parameter adapter,
    which is what makes cost scale with vocabulary rather than experience.
 3. **Batch addition that is strictly better than one-at-a-time.** K concepts in one update:
-   **2.14× faster *and* +0.052 accuracy** at K=12, bit-identical at every K from 1 to 12.
+   **2.15× faster at no cost to accuracy** at K=12 over 3 seeds, bit-identical at every K and seed.
 4. **Native parity.** A consolidated concept is measured against a backbone *trained* on that slot —
    a question that only exists once concepts are kept.
 5. **The mechanism transfers to a model we did not train.** On `google/ddpm-celebahq-256`, injecting

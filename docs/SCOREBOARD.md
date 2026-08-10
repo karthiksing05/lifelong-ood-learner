@@ -20,7 +20,7 @@ disfavour after audits found we were running a baseline weakly ([RESULTS.md](RES
 | **composition, ColorMNIST** | **ours** | F1 0.605 vs 0.545 next-best, 0.003 for the companion method |
 | **composition, CelebA** | ✗ `composable-mcmc` | 0.965 vs our 0.903 |
 | **coverage at comparable accuracy** | **ours** | recall 0.579 vs 0.483; diversity 1.068 vs 0.838 (real: 1.007) |
-| **batch addition** | **ours** | no baseline offers it; 2.14× faster *and* +0.052 ACC at K=12 |
+| **batch addition** | **ours** | no baseline offers it; **2.15× faster at K=12** (3 seeds) at no cost to ACC (+0.035 ± 0.037, n.s.) or preservation |
 | **routing (arrangement vs part)** | **ours** | no baseline offers it; AUROC 0.980 / 0.995 |
 | **native parity** | **ours** | no baseline offers it |
 | **robustness as the grid thins** | **ours** | at 80/160 slots withheld the companion method drops 0.892 → 0.292; ours holds 0.467 |
@@ -121,7 +121,7 @@ product-of-experts + adapter banks).
 |---|---|
 | **routing** (arrangement vs new part, unsupervised) | AUROC **0.980** / **0.995**, error one-sided in the safe direction (0 unsafe routings in 120 queries) |
 | **growth accounting** | an arrangement costs **1024 bytes**, a new part **551K parameters**; a 160-experience stream costs ~10× less than one adapter per query |
-| **batch addition** | **2.14× faster and +0.052 ACC** at K=12, bit-identical at every K from 1 to 12 |
+| **batch addition** | **2.15× faster** at K=12 over 3 seeds, ACC +0.035 ± 0.037 (not distinguishable from zero), bit-identical at every K and every seed |
 | **native parity** | recall **0.903 ± 0.024** against a backbone *trained* on the held-out slot |
 | **preservation on a pretrained model** | **0.000e+00** on `google/ddpm-celebahq-256` (113.7M params) |
 | **hierarchical reuse** | ✗ **not supported**: a matched family ancestor is worth −0.004 F1 against a mismatched one and −0.063 against none. Shared nodes are real (2.3× a leaf, entropy 0.61) but do not transfer (§24) |

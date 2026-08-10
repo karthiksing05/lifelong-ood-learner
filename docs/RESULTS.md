@@ -2807,7 +2807,7 @@ compared with. Pooled sampling is exonerated, the batched optimizer is exonerate
 conclusion that the two modes reach the same accuracy was right; the K-sweep's apparent gap was an
 artifact of this experiment.
 
-**And at K = 12 batching is strictly better on both axes: 2.14× faster *and* +0.052 accuracy**
+**And at K = 12 batching is FREE: 2.15x faster (3 seeds) at no cost to accuracy (+0.035 +/- 0.037, not distinguishable from zero)**
 (0.422 against 0.370), at FGT 0.000 and bit-identical 1.00. The accuracy gain is the shared-ancestor
 effect, and it is the one thing a sequential run cannot reproduce at any budget: a group node trained
 by all twelve members inside one optimization, where sequential can only hand a later concept a

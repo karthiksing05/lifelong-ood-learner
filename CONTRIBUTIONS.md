@@ -88,22 +88,31 @@ recognises what it can express. That was measured and is reported as a limitatio
 
 ## 3. Batch addition is strictly better than one-at-a-time
 
-**Claim.** A stream that arrives in groups can be absorbed in groups, and doing so is better on
-*every* axis — not a speed-for-quality trade.
+**Claim.** A stream that arrives in groups can be absorbed in groups, and doing so is **free** —
+2.15× faster at no cost to accuracy and none to preservation. Not a speed-for-quality trade.
 
-**Evidence.** Twelve concepts, matched discovery configuration:
+**Evidence.** Twelve concepts, matched discovery configuration, **3 seeds**, full K sweep. ΔACC is
+**paired** (batch − sequential on the same seed and the same queries), which is the right test here
+since the two arms share everything but the grouping:
 
-| | wall | ACC | FGT | bit-identical |
-|---|---|---|---|---|
-| K = 1 batch | 521s | 0.370 | 0.000 | 1.00 |
-| K = 1 sequential | 521s | 0.370 | 0.000 | 1.00 |
-| **K = 12 (all in ONE update)** | **249s** | **0.422** | 0.000 | 1.00 |
-| K = 12 sequential | 532s | 0.370 | 0.000 | 1.00 |
+| K | speedup | ΔACC (paired) | bit-identical |
+|---|---|---|---|
+| 1 | 0.99× | −0.016 ± 0.021 | 1.000 |
+| 2 | 1.29× | −0.005 ± 0.036 | 1.000 |
+| 4 | 1.65× | +0.009 ± 0.040 | 1.000 |
+| 8 | 1.84× | +0.007 ± 0.011 | 1.000 |
+| **12** | **2.15×** | **+0.035 ± 0.037** | 1.000 |
 
-**2.14× faster and +0.052 accuracy**, with bit-identity at every K from 1 to 12 — so batch size is a
-free efficiency knob and not a safety trade. The accuracy gain is the shared-ancestor effect and is
-the one thing a sequential run cannot reproduce at any budget: a group node trained by all twelve
-members inside one optimization, where sequential can only hand a later concept a frozen warm start.
+**The speedup is the claim, and it replicates: 2.15× at K = 12** against the 2.14× measured on one
+seed, rising monotonically with K exactly as amortizing one reverse-diffusion run over K pools
+predicts. **Bit-identity is 1.000 at every K and every seed**, which is the safety half and was never
+at risk.
+
+**The accuracy gain does not survive three seeds as a claim.** At K = 12 it is +0.035 ± 0.037 —
+positive, the largest in the sweep, and *not distinguishable from zero*. The earlier headline of
++0.052 came from a single seed. The honest statement is that batching is **free** (2.15× faster at no
+cost to accuracy or preservation), not that it is *better*; the shared-ancestor effect is a mechanism
+we can see in the parameters (§24a) but cannot demonstrate in accuracy at this sample size.
 
 Verified independently on the pretrained backbone: all three batch arms reach bit-identical 1.00 on
 `google/ddpm-celebahq-256`.
@@ -117,11 +126,9 @@ An earlier version of this section reported batching as *costing* accuracy. That
 our own experiment — the two modes were silently using different discovery configurations — and is
 recorded rather than deleted.
 
-**The speed/accuracy half of this table is one seed.** The matched-discovery configuration only ever
-had two points, K = 1 and K = 12; the intermediate K values in `results/` come from the pre-fix runs
-whose sequential arm used the confounded settings. Bit-identity is 1.000 in every run either way, so
-that half was never at risk. A 5 × 3 grid (K ∈ {1,2,4,8,12}, seeds 0–2) is running to put the rest on
-the same footing as every other table here.
+This section previously reported **+0.052 ACC** from a single seed at two K values. The 5 × 3 grid
+above supersedes it: the speedup replicated, the accuracy gain shrank to +0.035 ± 0.037 and is no
+longer claimed. Recorded rather than quietly revised.
 
 **Where:** [docs/RESULTS.md](docs/RESULTS.md) §15, §16, §16b. `experiments/n4_batch.py`,
 `experiments/n26_batch_pretrained.py`.

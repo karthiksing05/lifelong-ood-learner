@@ -124,7 +124,7 @@ Arms that structurally *remove* shared parameters sit at exactly 0.000; every ar
 | `batch` | 774.721 ± 1.083 | 0.819 ± 0.123 | 1.398 ± 0.011 | 1.000 ± 0.000 | 3.000 ± 0.000 |
 | `batch-shared` | 781.795 ± 1.031 | 0.847 ± 0.097 | 1.392 ± 0.036 | 1.000 ± 0.000 | 6.000 ± 0.000 |
 
-Preservation is exact on a 113.7M-parameter model we did not train, whichever way the concepts go in. There is no wall-clock saving here because these concepts train on REAL images: batching amortizes the generative pool sampling, and there is no pool. On ColorMNIST, where there is, K=12 in one update is 2.14x faster AND +0.052 accuracy (RESULTS 16b).
+Preservation is exact on a 113.7M-parameter model we did not train, whichever way the concepts go in. There is no wall-clock saving here because these concepts train on REAL images: batching amortizes the generative pool sampling, and there is no pool. On ColorMNIST, where there is, K=12 in one update is 2.15x faster at no cost to accuracy (3 seeds; RESULTS 16b).
 
 ### google/ddpm-celebahq-256 — two concepts learned blind to each other, then composed  *(n = 3 seeds)*
 

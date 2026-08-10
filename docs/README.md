@@ -30,7 +30,7 @@ Each writes per-seed JSON to `results/<name>__seed<k>.json`, combined by
 | `n18_router` | can the system decide *arrangement vs new part* by itself? | AUROC **0.980 / 0.995**, error one-sided | §6c |
 | `n23_native_parity` | is a consolidated concept as good as a trained one? | recall **0.903 ± 0.024** | §6d |
 | `n24_growth` | what does the *n*-th concept cost? | linear in vocabulary, flat in experience | §5z |
-| `n4_batch` | can concepts be absorbed in groups? | **2.14× faster and +0.052 ACC** at K=12 | §16, §16b |
+| `n4_batch` | can concepts be absorbed in groups? | **2.15× faster** at K=12 (3 seeds), ACC +0.035 ± 0.037 (n.s.) | §16, §16b |
 
 ### The pretrained backbone (`google/ddpm-celebahq-256`, 113.7M params, 256×256)
 

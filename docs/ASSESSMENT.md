@@ -179,7 +179,7 @@ spend the update: high-noise-only adaptation wins on composition and coverage on
 both datasets, at no cost. This is now the recommended update rule.
 
 **3. Batch addition is better than free** (§15, §16). Bit-identical preservation at every K from 1
-to 12, and under a matched-discovery control it is **2.14× faster AND +0.052 more accurate** at
+to 12, and under a matched-discovery control it is **2.15x faster at no cost to accuracy** at
 K = 12 (0.422 against 0.370) — the shared-ancestor effect, which a sequential run cannot reproduce at
 any budget. An earlier apparent accuracy *deficit* was a confound in our own experiment, now removed.
 
