@@ -20,9 +20,21 @@ these are the concepts the tree genuinely groups; same-digit families do not clu
                  the frozen group node, the ancestor's delta is active in the forward pass while
                  ONLY the new leaf trains.  Whether it actually landed there is RECORDED, not
                  assumed -- if the tree does not group the family, the premise fails visibly.
+  `wrong-family` THE CONTROL THAT MAKES THIS A TEST.  Same newcomer, same pool, same budget, but
+                 forced through the ancestor of a DIFFERENT family.  If a mismatched ancestor helps
+                 as much as the matched one, then "reuse" is buying nothing but extra capacity in the
+                 forward pass and the shared-semantics story is false.  Any claim about hierarchy has
+                 to clear this arm, not just `standalone`.
   `no-reuse`     identical bank, identical pool, but placement forced flat for this one insertion --
                  the single difference is that the ancestor's delta is absent from the forward pass.
+                 Isolates the ancestor's contribution from everything else about being in a bank.
   `standalone`   a fresh bank on a fresh field: the prior solution, one adapter from scratch.
+
+The three comparisons answer three different questions, and only the first two are about hierarchy:
+
+    reuse vs wrong-family   does the SHARED SEMANTICS help, or is any ancestor as good?
+    reuse vs no-reuse       does having an ancestor at all help?
+    reuse vs standalone     does the bank beat the prior solution end to end?
 
 Between trials the newcomer is deleted with `remove_concept`, which N31 certified restores every
 survivor bit-identically -- so one phase-1 build serves the whole grid, and the deletion machinery
@@ -95,8 +107,20 @@ def main():
         print(f"[n34] only {len(fam)} family members available; need {args.k_family + 1}")
         return 1
     first, newcomer = fam[:args.k_family], fam[args.k_family]
+    # a SECOND family, as unlike the first as the held-out set allows -- the source of the
+    # mismatched ancestor the control routes through
+    others = [q for q in ood_queries(data, seed=args.seed)
+              if (q["f"], q["b"]) != (fam[0]["f"], fam[0]["b"])]
+    other_fam = {}
+    for q in others:
+        other_fam.setdefault((q["f"], q["b"]), []).append(q)
+    second = max(other_fam.values(), key=len)[:args.k_family] if other_fam else []
     print(f"[n34] family {how}: slots {[q['slot'] for q in first]} first, "
-          f"slot {newcomer['slot']} (digit {newcomer['d']}) arrives later\n", flush=True)
+          f"slot {newcomer['slot']} (digit {newcomer['d']}) arrives later")
+    print(f"[n34] control family fg={second[0]['f']},bg={second[0]['b']}: "
+          f"slots {[q['slot'] for q in second]}\n" if second else
+          "[n34] WARNING: no second family available -- the wrong-family control cannot run\n",
+          flush=True)
     R = data["X"][newcomer["rest"][:100]].astype(np.float32)
     nm = f"c{newcomer['slot']}"
 
@@ -106,8 +130,15 @@ def main():
     names = [f"c{q['slot']}" for q in first]
     L.learn_concepts_batch([to_model(data["X"][q["query"]]).ravel() for q in first], names,
                            n_pool=args.n_pool, epochs=args.epoch_grid[-1])
-    fam_fp = {n: fingerprint(field, n, seed=args.seed) for n in names}
     fam_nodes = {nid for n in names for nid in L.bank.concepts[n]["path"]} - {0}
+    # the control family goes in as its OWN sealed batch, so it owns a separate group node
+    names2 = [f"x{q['slot']}" for q in second]
+    if second:
+        L.learn_concepts_batch([to_model(data["X"][q["query"]]).ravel() for q in second], names2,
+                               n_pool=args.n_pool, epochs=args.epoch_grid[-1])
+    wrong_nodes = ({nid for n in names2 for nid in L.bank.concepts[n]["path"]} - {0} - fam_nodes
+                   if second else set())
+    fam_fp = {n: fingerprint(field, n, seed=args.seed) for n in names + names2}
     print(f"[n34] family consolidated: shared/family nodes {sorted(fam_nodes)}, "
           f"{L.bank.n_params() / 1e6:.2f}M adapter params\n", flush=True)
 
@@ -120,11 +151,29 @@ def main():
     teacher = L.compose(xq)                       # reads the FROZEN base only: arm-independent
     pool = L.sample_teacher(teacher, n=args.n_pool, seed=args.seed)
 
-    def trial(learner, epochs, flat):
+    def trial(learner, epochs, flat, force_parent=None):
+        """Consolidate the newcomer once.  `force_parent` grafts its leaf under a chosen node.
+
+        The graft is done by REGISTERING first and rewriting the path before any optimizer is built,
+        so the forced ancestor is genuinely in the forward pass during training rather than only at
+        sampling time -- otherwise the control would test nothing.
+        """
         was = learner.bank.tree.flat
         learner.bank.tree.flat = flat
         try:
-            learner.consolidate(pool, nm, mu=teacher["mu"], epochs=epochs)
+            if force_parent is None:
+                learner.consolidate(pool, nm, mu=teacher["mu"], epochs=epochs)
+            else:
+                learner.bank.add_concept(nm, np.ravel(teacher["mu"]))
+                rec = learner.bank.concepts[nm]
+                leaf = rec["leaf"]
+                anc = learner.bank.tree.path_of(force_parent)
+                for nid in anc:                      # ensure every forced ancestor is allocated
+                    for w in learner.bank.wrapped:
+                        w.add_node(nid, learner.bank.device)
+                rec["path"] = list(anc) + [leaf]
+                learner.consolidate(pool, nm, mu=teacher["mu"], epochs=epochs,
+                                    already_registered=True)
         finally:
             learner.bank.tree.flat = was
         path = list(learner.bank.concepts[nm]["path"])
@@ -138,15 +187,20 @@ def main():
 
     rows = []
     for epochs in args.epoch_grid:
-        for arm, (learner, flat) in (("reuse", (L, False)), ("no-reuse", (L, True)),
-                                     ("standalone", (L_s, False))):
-            S, path, marginal, _ = trial(learner, epochs, flat)
+        arms = [("reuse", L, False, None), ("no-reuse", L, True, None),
+                ("standalone", L_s, False, None)]
+        if wrong_nodes:
+            arms.insert(1, ("wrong-family", L, False, max(wrong_nodes)))
+        for arm, learner, flat, forced in arms:
+            S, path, marginal, _ = trial(learner, epochs, flat, force_parent=forced)
             a = composition_accuracy(probes, S, newcomer["d"], newcomer["f"], newcomer["b"])
             pr = precision_recall(S, R)
             through = bool(set(path) & fam_nodes)
+            through_wrong = bool(set(path) & wrong_nodes)
             rows.append(dict(arm=arm, epochs=int(epochs), joint=a["joint"], digit=a["digit"],
                              fg=a["fg"], bg=a["bg"], recall=pr["recall"], f1=pr["f1"],
                              vendi=vendi_score(S), through_family=through,
+                             through_wrong_family=through_wrong,
                              marginal_params=int(marginal)))
             print(f"[n34] e={epochs:3d} {arm:11s} joint {a['joint']:.3f} f1 {pr['f1']:.3f} "
                   f"through_family={through} (+{marginal / 1e3:.0f}K params)", flush=True)
@@ -167,14 +221,29 @@ def main():
                    newcomer_slot=int(newcomer["slot"]), family_drift=drift, config=vars(args)),
               os.path.join(RESULTS, f"n34_reuse{args.tag}.json"), seed=args.seed)
 
+    arm_names = ["reuse"] + (["wrong-family"] if wrong_nodes else []) + ["no-reuse", "standalone"]
     print(f"\n[n34] the newcomer's learning curve (joint / F1)")
-    print(f"    {'epochs':>8s}{'reuse':>16s}{'no-reuse':>16s}{'standalone':>16s}")
+    print(f"    {'epochs':>8s}" + "".join(f"{a:>16s}" for a in arm_names))
     for e in args.epoch_grid:
         cells = []
-        for arm in ("reuse", "no-reuse", "standalone"):
+        for arm in arm_names:
             r = next((x for x in rows if x["arm"] == arm and x["epochs"] == e), None)
             cells.append(f"{r['joint']:.2f} / {r['f1']:.2f}" if r else "--")
         print(f"    {e:8d}" + "".join(f"{c:>16s}" for c in cells))
+
+    # the comparison that decides whether HIERARCHY (not capacity) is doing the work
+    if wrong_nodes:
+        def mean_f1(a):
+            v = [r["f1"] for r in rows if r["arm"] == a]
+            return float(np.mean(v)) if v else float("nan")
+        m_r, m_w, m_n = mean_f1("reuse"), mean_f1("wrong-family"), mean_f1("no-reuse")
+        print(f"\n[n34] mean F1 over the budget grid: reuse {m_r:.3f}  wrong-family {m_w:.3f}  "
+              f"no-reuse {m_n:.3f}")
+        print(f"[n34] shared SEMANTICS worth {m_r - m_w:+.3f} F1 over a mismatched ancestor; "
+              f"having ANY ancestor worth {m_w - m_n:+.3f} over none")
+        if m_r <= m_w:
+            print("[n34] => a mismatched ancestor helps as much as the matched one: on this "
+                  "evidence the gain is CAPACITY, not shared structure")
     return 0
 
 
