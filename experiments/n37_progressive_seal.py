@@ -124,9 +124,15 @@ def main():
         t0 = time.time()
 
         if arm == "full":
-            ema = train_ddpm(model, X, y, epochs=total_epochs, batch=args.batch, lr=args.lr,
-                             device=dev, seed=args.seed)
-            model.load_state_dict(ema)
+            # NOT loading the EMA weights, deliberately.  The block arms below train in K separate
+            # `train_ddpm` calls, each of which starts a FRESH EMA from the current state, so there
+            # is no EMA trajectory comparable to a single 32-epoch run's.  Loading EMA here and live
+            # weights there compares two different things: the first version of this experiment did
+            # exactly that and reported `full` as the WORST arm (0.0963 against 0.0532), which is an
+            # artifact of an EMA at decay 0.999 lagging ~1000 steps behind, not a finding.  Every arm
+            # is now evaluated on the weights training actually left behind.
+            train_ddpm(model, X, y, epochs=total_epochs, batch=args.batch, lr=args.lr,
+                       device=dev, seed=args.seed)
             n_train = sum(p_.numel() for p_ in model.parameters())
 
         else:
