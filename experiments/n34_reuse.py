@@ -151,6 +151,26 @@ def main():
     teacher = L.compose(xq)                       # reads the FROZEN base only: arm-independent
     pool = L.sample_teacher(teacher, n=args.n_pool, seed=args.seed)
 
+    def snap_tree(t):
+        """Placement state, deep-copied.
+
+        `remove_concept` reclaims parameters but deliberately does NOT revert `_touch`'s running
+        means -- an incremental mean is not exactly reversible in floating point, and §22 says so.
+        That is harmless for the deletion certificate and fatal here: without restoring it, each
+        insert/delete cycle drifts the ancestors' means and LATER TRIALS GET DIFFERENT PLACEMENTS,
+        which is exactly what made the first run of this experiment report identical numbers for
+        every arm at e>=6.
+        """
+        return dict(mean={k: (None if v is None else v.copy()) for k, v in t.mean.items()},
+                    count=dict(t.count), children={k: list(v) for k, v in t.children.items()},
+                    _next=t._next)
+
+    def restore_tree(t, s_):
+        t.mean = {k: (None if v is None else v.copy()) for k, v in s_["mean"].items()}
+        t.count = dict(s_["count"])
+        t.children = {k: list(v) for k, v in s_["children"].items()}
+        t._next = s_["_next"]
+
     def trial(learner, epochs, flat, force_parent=None):
         """Consolidate the newcomer once.  `force_parent` grafts its leaf under a chosen node.
 
@@ -182,7 +202,7 @@ def main():
         marginal = sum(w.A[str(n)].numel() + w.B[str(n)].numel()
                        for n in path for w in learner.bank.wrapped if str(n) in w.A
                        if n not in fam_nodes and n != 0)
-        acct = learner.bank.remove_concept(nm)     # exact reset -- certified by N31
+        acct = learner.bank.remove_concept(nm)     # exact for PARAMETERS -- certified by N31
         return S, path, marginal, acct
 
     rows = []
@@ -192,11 +212,18 @@ def main():
         if wrong_nodes:
             arms.insert(1, ("wrong-family", L, False, max(wrong_nodes)))
         for arm, learner, flat, forced in arms:
+            snap = snap_tree(learner.bank.tree)
             S, path, marginal, _ = trial(learner, epochs, flat, force_parent=forced)
+            restore_tree(learner.bank.tree, snap)      # placement state back to phase 1 exactly
+            # node ids are per-bank and both banks number from 1, so `standalone`'s path must NEVER
+            # be tested against the family bank's ids -- that comparison reported through_family=True
+            # for a fresh bank that contains no family at all.
+            own_fam = fam_nodes if learner is L else set()
+            own_wrong = wrong_nodes if learner is L else set()
             a = composition_accuracy(probes, S, newcomer["d"], newcomer["f"], newcomer["b"])
             pr = precision_recall(S, R)
-            through = bool(set(path) & fam_nodes)
-            through_wrong = bool(set(path) & wrong_nodes)
+            through = bool(set(path) & own_fam)
+            through_wrong = bool(set(path) & own_wrong)
             rows.append(dict(arm=arm, epochs=int(epochs), joint=a["joint"], digit=a["digit"],
                              fg=a["fg"], bg=a["bg"], recall=pr["recall"], f1=pr["f1"],
                              vendi=vendi_score(S), through_family=through,
