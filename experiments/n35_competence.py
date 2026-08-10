@@ -179,47 +179,61 @@ def main():
             R = data["X"][q["rest"][:100]].astype(np.float32)
             xq = to_model(data["X"][q["query"]]).ravel()
             for arm in args.arms:
-                field = load_field(ck, device=dev)
-                L = NeuralLifelongLearner(field, steps=args.steps, seed=args.seed, device=dev)
-                L.attach_factorization(C, slot_factors(slots), gains=gains)
-                exact = float("nan")
-                if arm == "ours":
-                    # a second concept first, so retention has something to preserve at every rung
-                    other = to_model(data["X"][qs[(qs.index(q) + 1) % len(qs)]["query"]]).ravel()
-                    L.learn_concept_factored(other, "prev", n_pool=32, epochs=args.epochs,
-                                             inv_steps=args.inv_steps, seed=args.seed,
-                                             guidance=args.guidance)
-                    fp = fingerprint(field, "prev", seed=args.seed)
-                    L.learn_concept_factored(xq, "cur", n_pool=48, epochs=args.epochs,
-                                             inv_steps=args.inv_steps, seed=args.seed,
-                                             guidance=args.guidance)
-                    exact = float(np.max(np.abs(fingerprint(field, "prev", seed=args.seed)
-                                                - fp)) == 0.0)
-                    S = to_data(L.sample_concept("cur", n=args.n_samples, steps=args.steps,
-                                                 seed=args.seed)).astype(np.float32)
-                elif arm == "poe-guided":
-                    t = L.compose(xq, u_grid=(0.1, 0.2, 0.3, 0.4),
-                                  n_starts=8 if args.quick else 16,
-                                  iters=30 if args.quick else 120)
-                    S = to_data(L.sample_teacher(t, n=args.n_samples, seed=args.seed,
-                                                 **PAPER_POE)).astype(np.float32)
-                elif arm == "inversion":
-                    emb = learn_embedding(field, xq[None], n_steps=args.inv_steps, seed=args.seed)
-                    S = to_data(sample_embedding(field, emb, n=args.n_samples, steps=args.steps,
-                                                 seed=args.seed)).astype(np.float32)
-                else:
-                    j = int(np.argmin(np.linalg.norm(C - C.mean(0), axis=1)))
-                    S = to_data(field.sample(n=args.n_samples, steps=args.steps, seed=args.seed,
-                                             branch=j, clip=(-1, 1))).astype(np.float32)
-                a = composition_accuracy(probes, S, q["d"], q["f"], q["b"])
-                pr = precision_recall(S, R)
-                rows.append(dict(arm=arm, epochs=ep, slot=int(q["slot"]), joint=a["joint"],
-                                 digit=a["digit"], fg=a["fg"], bg=a["bg"], recall=pr["recall"],
-                                 f1=pr["f1"], vendi=vendi_score(S), retention_exact=exact))
-                del field, L
+              # 8 rungs x 4 arms is a long sweep, and an arm that fails on ONE rung should cost that
+              # cell rather than every cell computed so far.  Recorded as nan and reported, never
+              # silently skipped.
+              try:
+                  field = load_field(ck, device=dev)
+                  L = NeuralLifelongLearner(field, steps=args.steps, seed=args.seed, device=dev)
+                  L.attach_factorization(C, slot_factors(slots), gains=gains)
+                  exact = float("nan")
+                  if arm == "ours":
+                      # a second concept first, so retention has something to preserve at every rung
+                      other = to_model(data["X"][qs[(qs.index(q) + 1) % len(qs)]["query"]]).ravel()
+                      L.learn_concept_factored(other, "prev", n_pool=32, epochs=args.epochs,
+                                               inv_steps=args.inv_steps, seed=args.seed,
+                                               guidance=args.guidance)
+                      fp = fingerprint(field, "prev", seed=args.seed)
+                      L.learn_concept_factored(xq, "cur", n_pool=48, epochs=args.epochs,
+                                               inv_steps=args.inv_steps, seed=args.seed,
+                                               guidance=args.guidance)
+                      exact = float(np.max(np.abs(fingerprint(field, "prev", seed=args.seed)
+                                                  - fp)) == 0.0)
+                      S = to_data(L.sample_concept("cur", n=args.n_samples, steps=args.steps,
+                                                   seed=args.seed)).astype(np.float32)
+                  elif arm == "poe-guided":
+                      t = L.compose(xq, u_grid=(0.1, 0.2, 0.3, 0.4),
+                                    n_starts=8 if args.quick else 16,
+                                    iters=30 if args.quick else 120)
+                      S = to_data(L.sample_teacher(t, n=args.n_samples, seed=args.seed,
+                                                   **PAPER_POE)).astype(np.float32)
+                  elif arm == "inversion":
+                      emb, _, _ = learn_embedding(field, xq[None], n_steps=args.inv_steps,
+                                                  seed=args.seed)
+                      S = to_data(sample_embedding(field, emb, n=args.n_samples, steps=args.steps,
+                                                   seed=args.seed)).astype(np.float32)
+                  else:
+                      j = int(np.argmin(np.linalg.norm(C - C.mean(0), axis=1)))
+                      S = to_data(field.sample(n=args.n_samples, steps=args.steps, seed=args.seed,
+                                               branch=j, clip=(-1, 1))).astype(np.float32)
+                  a = composition_accuracy(probes, S, q["d"], q["f"], q["b"])
+                  pr = precision_recall(S, R)
+                  rows.append(dict(arm=arm, epochs=ep, slot=int(q["slot"]), joint=a["joint"],
+                                   digit=a["digit"], fg=a["fg"], bg=a["bg"], recall=pr["recall"],
+                                   f1=pr["f1"], vendi=vendi_score(S), retention_exact=exact))
+                  del field, L
+                  torch.cuda.empty_cache()
+              except Exception as exc:
+                nan = float("nan")
+                rows.append(dict(arm=arm, epochs=ep, slot=int(q["slot"]), joint=nan, digit=nan,
+                                 fg=nan, bg=nan, recall=nan, f1=nan, vendi=nan,
+                                 retention_exact=nan, error=f"{type(exc).__name__}: {exc}"))
+                print(f"[n35] ep {ep} slot {q['slot']} {arm}: FAILED -- "
+                      f"{type(exc).__name__}: {exc}", flush=True)
                 torch.cuda.empty_cache()
             print(f"[n35] ep {ep:>4} slot {q['slot']}: " + "  ".join(
-                f"{r['arm']} {r['f1']:.2f}" for r in rows[-len(args.arms):]), flush=True)
+                f"{r['arm']} {r['f1']:.2f}" if r["f1"] == r["f1"] else f"{r['arm']} --"
+                for r in rows[-len(args.arms):]), flush=True)
 
     # ── summarize, and check each conjecture against the numbers ─────────────
     eps = [p_["epochs"] for p_ in props]

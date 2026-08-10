@@ -130,8 +130,8 @@ def main():
                                                  **PAPER_POE)).astype(np.float32)
                 else:
                     # textual inversion gets the m real images directly -- its natural setting
-                    emb = learn_embedding(field, X, n_steps=args.inv_steps,
-                                         seed=args.seed)
+                    emb, _, _ = learn_embedding(field, X, n_steps=args.inv_steps,
+                                                seed=args.seed)
                     S = to_data(sample_embedding(field, emb, n=args.n_samples, steps=args.steps,
                                                  seed=args.seed)).astype(np.float32)
                 a = composition_accuracy(probes, S, q["d"], q["f"], q["b"])
