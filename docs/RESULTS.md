@@ -3292,6 +3292,115 @@ member's placement against **one snapshot** before creating anything, so the str
 Kept rather than deleted, alongside §14 and §20b, as the third prediction here that replication
 refused.
 
+## 24. What the hierarchy is and is not doing (N34, N36, and the rank sweep)
+
+Three experiments run for different reasons converged on one answer, so they are reported together.
+The short version: **the shared node is real, and it does not help.** What is load-bearing is the
+sealing discipline, not the tree.
+
+### 24a. Shared nodes are live, and genuinely jointly formed
+
+Two things had to be true before "reuse" could mean anything, and both are.
+
+*Live.* `B` is zero-initialized, so a node can carry a large `A` and emit exactly nothing until `B`
+grows — `diag_shared_node` raised that possibility for the unfrozen arm, and if it held for group
+nodes then every reuse arm would be identical by construction. Measured
+(`tests/diag_ancestor_live.py`, 3 concepts sharing one group node):
+
+| node | owners | ‖B‖ | ‖BA‖ / ‖W‖ |
+|---|---|---|---|
+| 0 (root) | 3 | **0.00000** | **0.000e+00** |
+| 1 (group) | 3 | 7.291 | **8.907e−02** |
+| 2, 3, 4 (leaves) | 1 | ~4.2 | ~3.8e−02 |
+
+The group node carries **~2.3× the relative magnitude of any individual leaf**. Separately this
+quantifies a piece of dead weight: the **root is exactly inert** — it exists before the first
+insertion, so it never enters `_open`, never trains, and contributes precisely zero while still
+costing 551K allocated parameters. (In the unified framing of [UNIFIED.md](UNIFIED.md) that is not a
+bug so much as an empty slot: the backbone is already playing the root's role from outside the tree.)
+
+*Jointly formed.* N36 attributes each node to the pool instances that shaped it, by
+`‖∂L(x_i)/∂(A_n,B_n)‖` under the consolidation loss itself. At 8 concepts, the top-influence
+instances of a leaf come from exactly one concept, and those of an internal node come from **four
+different concepts** — normalized member entropy **0.61**, against ~0.0 if one member dominated. The
+picture is in `figures/f13_hierarchy_probe.png`, colour-coded by source concept.
+
+So the structure is not an illusion: shared nodes exist, carry signal, and are built from several
+members' data.
+
+### 24b. But routing a newcomer through the family does not help it
+
+N34 gives a family of held-out slots sharing a colour pair, batch-adds K of them (creating and
+sealing a group node), then presents the (K+1)-th and consolidates **one identical pool** four ways.
+The fourth arm is the control that makes it a test: `wrong-family` forces the newcomer through the
+ancestor of a *different* family, so "any ancestor helps" and "*this* ancestor helps" can be told
+apart. Mean F1 over the budget grid:
+
+| arm | mean F1 |
+|---|---|
+| `no-reuse` (flat, no ancestor) | **0.091** |
+| `wrong-family` (mismatched ancestor) | 0.028 |
+| `reuse` (matched family ancestor) | 0.024 |
+
+**Shared semantics are worth −0.004 F1 over a mismatched ancestor, and having any ancestor at all is
+worth −0.063 over having none.** The matched and mismatched ancestors are indistinguishable, and both
+are worse than no ancestor. On this evidence the hierarchy is not transferring structure to a
+newcomer; if anything the extra always-on delta is interference.
+
+One seed, one family definition, and F1 values small enough that the ordering deserves replication
+before it is leaned on — but it is the direction, and the control is what makes it interpretable at
+all. Without `wrong-family`, "reuse beats standalone" would have been reportable as transfer.
+
+### 24c. Depth is not organizing abstraction either
+
+The falsifiable prediction attached to the hierarchy was that shared ancestors act at **coarse**
+resolutions and private leaves at fine ones. Measured as the ‖BA‖/‖W‖-weighted centroid over wrapped
+layers in module order: **internal 48.8 vs leaf 46.9** — ancestors act, if anything, marginally
+*later*. Whatever the shared node is encoding, it is not a coarse-to-fine decomposition
+(`figures/f13b_layer_profiles.png`).
+
+### 24d. Capacity is not the lever either (rank sweep, 3 seeds)
+
+`independent` beats us on the retention table at fewer parameters, and rank had been set to 8 once
+and never revisited — so the comparison was ours-at-an-arbitrary-capacity against a baseline at its
+own. `independent` is this same bank with flat placement, so it has the **identical** rank knob and
+had to be swept too.
+
+| rank | ours ACC | independent ACC | Δ | ours params | indep params |
+|---|---|---|---|---|---|
+| 1 | 0.840 ± 0.009 | 0.849 ± 0.010 | −0.009 | 1.10M | 0.90M |
+| 2 | 0.849 ± 0.015 | 0.852 ± 0.013 | −0.003 | 2.20M | 1.79M |
+| 4 | 0.849 ± 0.026 | 0.845 ± 0.014 | **+0.003** | 4.41M | 3.58M |
+| 8 | 0.842 ± 0.026 | 0.863 ± 0.015 | −0.021 | 8.82M | 7.16M |
+| 16 | 0.819 ± 0.027 | 0.849 ± 0.015 | −0.030 | 17.64M | 14.33M |
+
+**Bit-identity is 1.000 at every rank for both arms**, which is the prediction: preservation is
+structural and has nothing to do with how large the delta is.
+
+The loss to `independent` **stands** — at matched rank we lead only at r=4, by less than a standard
+error. And a single-seed read taken earlier, that ACC decreases monotonically with rank
+(0.844 → 0.766), **did not replicate**: at three seeds the curve is flat from r=1 to r=8 and only
+falls at r=16. It is recorded here because it was nearly written up.
+
+### 24e. What this means for the claims
+
+The hierarchy's *structural* properties hold and are the ones the certificates rest on: sealed nodes
+leave the optimizer, preservation is exact at every rank and every backbone competence (§25 C3),
+deletion is exact (§22). Its *functional* claims do not survive contact:
+
+| claim | status |
+|---|---|
+| shared nodes exist and carry signal | **holds** (‖BA‖ 2.3× a leaf) |
+| shared nodes are formed from several members | **holds** (entropy 0.61) |
+| a newcomer benefits from routing through its family | **not supported** (§24b) |
+| depth organizes abstraction coarse→fine | **refuted** (§24c) |
+| clustered placement beats alternatives | **refuted** earlier (§5s) |
+
+The honest summary is that **what is load-bearing is the sealing discipline — path-scoped
+optimization and private leaves — and not the tree's clustering judgment.** That is already how
+[../README.md](../README.md) frames it ("the bank's value is the constraint structure, not clustering
+magic"), and §24 is the evidence for that sentence rather than a new position.
+
 ## 8. Where the numbers come from
 
 | experiment | file | scale run |

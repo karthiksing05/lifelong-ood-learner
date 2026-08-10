@@ -46,6 +46,11 @@ It also does **not** claim superiority over parameter isolation *on this table*:
 matches us on every column at **fewer parameters** (ACC 0.863±0.015 / 7.16M against 0.839±0.025 /
 8.82M). The differentiator against it is contribution 2, measured elsewhere.
 
+That loss survives a fair capacity sweep. `independent` is this same bank with flat placement, so it
+has the identical rank knob; sweeping **both** arms over r ∈ {1,2,4,8,16} at 3 seeds, we lead at
+matched rank only at r = 4 and by less than a standard error (§24d). Bit-identity is 1.000 at every
+rank for both, which is the point: preservation does not depend on capacity.
+
 **Where:** [docs/RESULTS.md](docs/RESULTS.md) §7d, §10; [docs/TABLES.md](docs/TABLES.md) §3.
 `experiments/n5_classinc.py`, `experiments/n22_celeba_lifelong.py`.
 
@@ -111,6 +116,12 @@ unconditional; "batch addition is fast" is conditional on there being pools to a
 An earlier version of this section reported batching as *costing* accuracy. That was a confound in
 our own experiment — the two modes were silently using different discovery configurations — and is
 recorded rather than deleted.
+
+**The speed/accuracy half of this table is one seed.** The matched-discovery configuration only ever
+had two points, K = 1 and K = 12; the intermediate K values in `results/` come from the pre-fix runs
+whose sequential arm used the confounded settings. Bit-identity is 1.000 in every run either way, so
+that half was never at risk. A 5 × 3 grid (K ∈ {1,2,4,8,12}, seeds 0–2) is running to put the rest on
+the same footing as every other table here.
 
 **Where:** [docs/RESULTS.md](docs/RESULTS.md) §15, §16, §16b. `experiments/n4_batch.py`,
 `experiments/n26_batch_pretrained.py`.
@@ -354,6 +365,12 @@ Kept here rather than in a footnote, because several of these shaped the design.
   backbone does. The obvious culprit — classifier-free guidance amplifying high-frequency error at
   low noise levels — was implemented, swept and **refuted**, and the negative result is kept because
   it is the evidence. [docs/RESULTS.md](docs/RESULTS.md) §19.
+- **That the hierarchy TRANSFERS anything.** Shared nodes are real — a group node carries 2.3× the
+  relative magnitude of a leaf, and its top-influence training instances come from four different
+  members (entropy 0.61) — but routing a newcomer through its own family is worth **−0.004 F1**
+  against a *mismatched* family's ancestor and **−0.063** against no ancestor at all. Depth does not
+  organize abstraction either (internal layer-centroid 48.8 vs leaf 46.9). What is load-bearing is
+  the sealing discipline, not the tree. §24.
 - **That the hierarchy earns its keep.** Given its best case, `clustered` placement is the *worst*
   arm (0.831) against `shuffled` (0.859) and `flat` (0.842). The method is flat and insert-only as a
   result.
