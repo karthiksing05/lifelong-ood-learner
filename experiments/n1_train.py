@@ -69,6 +69,9 @@ def main():
                         "claim 'a consolidated concept behaves as if it had been learned natively' "
                         "is unmeasurable without it.  Never use this checkpoint as a method's "
                         "backbone; its filename carries `_oracle` so a mix-up is visible.")
+    p.add_argument("--snapshot-epochs", type=int, nargs="*", default=None,
+                   help="also write <out>_ep<N>.pt at each of these epochs: a competence "
+                        "ladder from ONE run, which is what N35 sweeps over")
     p.add_argument("--quick", action="store_true")
     args = p.parse_args()
     if args.quick:
@@ -154,14 +157,38 @@ def main():
         _u.IMG = img
     nparam = sum(p.numel() for p in model.parameters())
     print(f"[n1] UNet {nparam / 1e6:.1f}M params, {args.epochs} epochs", flush=True)
+    os.makedirs(os.path.dirname(args.out), exist_ok=True)
+
+    def package(ema, epochs_done):
+        return dict(ema=ema, n_classes=len(uniq), arch=arch,
+                    remap=remap, concepts={}, n_per_slot=args.n_per_slot,
+                    dataset=args.dataset, img=img, epochs_done=epochs_done)
+
+    # A LADDER OF COMPETENCE FROM ONE RUN.  N35 asks how much backbone training the method needs,
+    # which naively means training one backbone per rung -- but every rung is a PREFIX of the longest
+    # run, so snapshotting the EMA mid-training gives the whole ladder for the price of the top rung
+    # and removes the between-run backbone variance (RESULTS 5p measured up to 0.07 F1 between two
+    # runs of the SAME command) from the comparison entirely.  The rungs then differ ONLY in training
+    # length, which is the variable under study.
+    snaps = sorted({int(e) for e in (args.snapshot_epochs or []) if 0 < int(e) < args.epochs})
+
+    def on_epoch(ep, ema_live):
+        if ep not in snaps:
+            return
+        snap = {k: v.detach().clone().cpu() for k, v in ema_live.items()}
+        for k, v in model.state_dict().items():          # non-float buffers: folded in only on
+            if not v.dtype.is_floating_point:            # return, so take them from the live model
+                snap[k] = v.detach().clone().cpu()
+        path = f"{os.path.splitext(args.out)[0]}_ep{ep}.pt"
+        torch.save(package(snap, ep), path + ".tmp")
+        os.replace(path + ".tmp", path)
+        print(f"[n1] snapshot at epoch {ep} -> {path}", flush=True)
+
     t0 = time.time()
     ema = train_ddpm(model, Xs, y, epochs=args.epochs, batch=args.batch, lr=args.lr,
-                     device=dev, seed=args.seed)
+                     device=dev, seed=args.seed, on_epoch=on_epoch if snaps else None)
     mins = (time.time() - t0) / 60
-    os.makedirs(os.path.dirname(args.out), exist_ok=True)
-    torch.save(dict(ema=ema, n_classes=len(uniq), arch=arch,
-                    remap=remap, concepts={}, n_per_slot=args.n_per_slot,
-                    dataset=args.dataset, img=img), args.out)
+    torch.save(package(ema, args.epochs), args.out)
     print(f"[n1] trained in {mins:.1f} min -> {args.out}", flush=True)
 
     # ── sanity: does it generate valid compositions? ─────────────────────────

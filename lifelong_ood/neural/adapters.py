@@ -394,7 +394,9 @@ class HierarchicalAdapterBank:
         Returns the number of adapter parameters reclaimed.
         """
         c = self.concepts[name]
-        shared = {nid for k, cc in self.concepts.items() if k != name for nid in cc["path"]}
+        # root exempt for the same reason as in `remove_concept`: it is shared by construction
+        shared = {0} | {nid for k, cc in self.concepts.items() if k != name
+                        for nid in cc["path"]}
         freed = 0
         for nid in c["path"]:
             if nid in shared:
@@ -436,7 +438,12 @@ class HierarchicalAdapterBank:
         if name not in self.concepts:
             raise KeyError(f"no concept {name!r} to remove")
         rec = self.concepts.pop(name)
-        still_used = {nid for n, c in self.concepts.items() for nid in c["path"]}
+        # The ROOT is structural, not owned by anybody: every path begins there, and it is "unused"
+        # only in the degenerate moment when the bank holds no other concept.  Pruning it then leaves
+        # `tree.children` without node 0 and the next insertion dies in `_descend` -- which is
+        # exactly how this was found, deleting the sole concept of a fresh bank (n34).  So the root
+        # is permanently exempt from both the drop and the prune.
+        still_used = {0} | {nid for n, c in self.concepts.items() for nid in c["path"]}
         to_drop = [nid for nid in rec["path"] if nid not in still_used]
         shared = [nid for nid in rec["path"] if nid in still_used]
 
