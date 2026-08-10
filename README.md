@@ -54,6 +54,66 @@ for each arriving query, forever:
 
 ---
 
+## Why a bank instead of a pile of LoRAs — the intuition
+
+The companion paper's endpoint is a **standalone adapter**: one LoRA distilled per query, complete in
+itself, then discarded. The obvious lifelong extension is to just *keep* them — a growing pile of
+independent adapters, one per concept. That is the design this repository is explicitly *in lieu of*,
+and the reasons are structural rather than aesthetic.
+
+**1. The backbone is the substrate, not a starting point.** A concept here is never a model; it is a
+small conditional *edit* to a frozen score field that already knows how to render. Everything a
+concept does not have to relearn — strokes, shading, the image manifold itself — it gets by running
+*through* the backbone. Both designs agree this far. They part ways on the next observation:
+
+**2. Concepts are not independent of each other either.** That is the compositional thesis in one
+sentence. A cyan-on-red *6* shares almost everything with a cyan-on-red *3* — the colour scheme, the
+rendering regime — and a pile of standalone LoRAs re-learns that shared structure *every time* and
+stores it *repeatedly*, because each adapter is complete in itself and ignorant of the rest. The bank
+makes the sharing structural instead: **a concept is a path**, its ancestors *are* the shared parts,
+and a newcomer's forward pass runs through the family's sealed group node before its own leaf has
+learned anything. The leaf only has to learn what makes this concept *different* from its family —
+the same argument, one level up, as adapting rather than retraining the backbone. (N34 measures this
+as transfer: same pool, same budget, ancestor present vs absent.)
+
+**3. The lifelong obligations fall out of the representation, instead of being bolted on.** Once a
+concept is a path in an insert-only tree, each hard property is one structural fact rather than a
+mechanism with its own failure modes:
+
+| obligation | why the bank gets it for free | where measured |
+|---|---|---|
+| no forgetting | sealed nodes are absent from every future optimizer | §5, §7d — 1.000 bit-identical |
+| routing / cost | arrangement = 1024-byte basis direction; new part = one leaf | §6c — AUROC 0.980/0.995 |
+| batch absorption | K leaves + a group node under one optimizer, sealed once | §15 — 2.14× faster, +0.052 ACC |
+| deletion | drop the nodes only that concept uses; base never written | §22 — 9/9 bit-identical |
+| reuse | frozen ancestors sit in the newcomer's forward pass, read-only | N34 |
+
+A pile of standalone adapters offers none of these as *properties* — forgetting is trivially absent
+but so is sharing; deletion works but reclaims nothing shared because nothing is shared; cost is flat
+at one full adapter per concept regardless of how little is genuinely new.
+
+**4. What the bank is *not*.** The hierarchy's placement quality is not the argument: given its best
+case, clustered placement *loses* to shuffled (§5s), and stream order changes what the tree builds
+(§23). The bank's value is the constraint structure — sealing, path-scoped optimization, private
+leaves — not clustering magic, and the docs say so where each conjecture failed.
+
+### Ground-up or finetuning? Both, in a specific division of labour
+
+To be precise about the training regime, since "adapter" usually implies finetuning someone else's
+model: the **backbone** is trained ground-up, once, by us — `n1_train.py` / `n19_celeba_train.py`,
+from scratch, on the *seen* slots only (held-out combinations are excluded before training; that is
+what makes them OOD). The pretrained track (§12) swaps in `google/ddpm-celebahq-256`, someone else's
+weights, to show the mechanism does not depend on our having trained the substrate. The **lifelong
+phase** — everything this repository actually claims — is then strictly additive adaptation on that
+frozen backbone: no gradient ever reaches a backbone parameter, on any path, at any point. The CL
+baselines in §5 finetune copies of the *same* backbone, so the comparison is between update
+disciplines, not between pretraining recipes. One nuance the pseudocode below can obscure: in the
+OOD composition loop the leaf distils a *sampled pool*; in the class-incremental tables (§5) the
+router has decided the data is a new part, and the leaf consolidates the task's *real images*
+directly. Same bank, same guarantee — what changes is only where the training set comes from.
+
+---
+
 ## The method in pseudocode
 
 What is actually stored, what is actually touched, and what is provably not.

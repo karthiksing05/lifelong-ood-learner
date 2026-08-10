@@ -381,18 +381,32 @@ class HierarchicalAdapterBank:
         45K-550K parameters and is what actually names the concept (RESULTS 5n).  The weights learn
         HOW to render; the embedding says WHAT to render.  Only the first needs merging.
 
+        **Scope of the mutation, stated plainly:** a fold writes to the base weight, so it changes
+        EVERY branch -- the unconditional model and every other concept -- by exactly this concept's
+        delta.  That is the deliberate trade of merge mode (constant parameters instead of the
+        preservation certificate; RESULTS 5r measures the damage and N17 the mitigation).  What is
+        NOT part of that trade is leaking a **shared** node: folding an ancestor that other concepts
+        still route through would push their joint structure onto every branch while they still list
+        the node on their paths.  So only nodes no other concept uses are folded; shared ancestors
+        stay on this concept's path, which leaves the function computed on ITS OWN branch exactly
+        unchanged either way.
+
         Returns the number of adapter parameters reclaimed.
         """
         c = self.concepts[name]
+        shared = {nid for k, cc in self.concepts.items() if k != name for nid in cc["path"]}
         freed = 0
         for nid in c["path"]:
+            if nid in shared:
+                continue
             for w in self.wrapped:
                 k = str(nid)
                 if k in w.A:
                     freed += w.A[k].numel() + w.B[k].numel()
                     w.merge_node(k)
-        c["path"] = []                          # nothing left to activate; the base carries it now
-        self.frozen.discard(*(c["path"] or [-1])) if c["path"] else None
+            self.frozen.discard(nid)
+            self._open.discard(nid)
+        c["path"] = [nid for nid in c["path"] if nid in shared]
         if not keep_embedding:
             self._emb_extra.pop(name, None)
         return freed

@@ -1,7 +1,7 @@
 #!/bin/bash
 # Reproduce every number and every figure in this repository.
 #
-#   bash reproduce.sh tests      # 7 assertions, ~5 min, no backbone needed
+#   bash reproduce.sh tests      # 11 assertions, ~8 min, no backbone needed
 #   bash reproduce.sh backbones  # train the 5 backbones everything else loads (~12 GPU-hours)
 #   bash reproduce.sh colormnist # the ColorMNIST experiments, 3 seeds
 #   bash reproduce.sh celeba     # the CelebA experiments, 3 seeds
