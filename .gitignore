@@ -10,7 +10,14 @@ results/*.json
 results/*.npz
 slurm-*.out
 .DS_Store
-experiments/slurm/
+experiments/# slurm logs are noise, but the JOB SCRIPTS define how published results were produced and have
+# to travel with the repo.  A parent directory that is excluded is never descended into, so the
+# re-include has to be staged: exclude the contents, re-admit the jobs dir, exclude ITS contents,
+# re-admit the scripts.
+slurm/*
+!slurm/jobs/
+slurm/jobs/*
+!slurm/jobs/*.sbatch
 results/cache/
 slurm/
 figures/*_smoke.png
