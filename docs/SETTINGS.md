@@ -35,11 +35,16 @@ Source: `poe-diffusion.pdf`, Tables 5–8 (backbone, discovery, distillation, sa
 | Parameterization | ε-prediction | ε-prediction | ε-prediction | ε-prediction | MATCH |
 | Compute | 1×A40, ~6 h | comparable | 4×RTX6000, ~50 h | ~26 GPU-h | DEVIATION |
 
-The from-scratch backbone is the deviation that decides CelebA image quality, and §29 established
-it penalises **every arm equally** — including `poe-guided`, the paper's own method. It is the
-honest answer to "why don't our faces look like theirs": we are not reproducing their method badly,
-we are running it on a substrate trained for roughly an eighth of the compute at a quarter of the
-pixels, over a benchmark **23× wider in conditioning rows**.
+The from-scratch backbone is a large deviation and it penalises **every arm equally**, including
+`poe-guided`, the paper's own method: we are running their method on a substrate trained for roughly
+an eighth of the compute at a quarter of the pixels, over a benchmark **23× wider in conditioning
+rows**.
+
+**It is no longer established that this is what decides CelebA image quality.** §29 concluded that;
+§29a does not support it. Running the pipeline on the paper's *own* pretrained `ddpm-celebahq-256` —
+a backbone that renders photorealistic faces, untouched by us — still produced samples rougher than
+real, which the backbone story cannot explain. Three candidates are now live: this deviation, the
+w₀ infidelity (§5a, measured and fixed), and the input-layout permutation (§5b).
 
 ## 2. Concept discovery (their Table 6)
 
