@@ -304,7 +304,8 @@ def main():
     fig.legend(handles=handles, loc="lower center", ncol=min(len(names), 8), fontsize=8,
                frameon=False, title="border colour = which concept's pool the instance came from",
                title_fontsize=8)
-    fig.suptitle("LEFT: the pool instances that most shape each node's adapter "
+    fig.suptitle(f"Placement rule: {L.bank.tree.rule}.  "
+                 "LEFT: the pool instances that most shape each node's adapter "
                  "(||dL/d(A,B)||, the consolidation loss itself).\n"
                  "RIGHT: what the node generates ALONE -- root..node active, no leaf, its "
                  "descendants' mean conditioning.", fontsize=10)

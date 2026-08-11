@@ -3473,7 +3473,7 @@ centres ~6 apart** — ancestor purity 1.00 is achievable by construction, chanc
 
 | rule | branch_max | max_depth | biggest shared prefix | **ancestor purity** |
 |---|---|---|---|---|
-| `ll` (**shipped**) | 4 | 3 | **31 / 40** | **0.28** |
+| `ll` (*former default*) | 4 | 3 | **31 / 40** | **0.28** |
 | `ll` | 16 | 6 | 16 / 40 | 0.49 |
 | `cu` | 4 | 3 | 32 / 40 | **0.62** |
 | `cu` | 16 | 6 | 32 / 40 | 0.62 |
@@ -3532,8 +3532,24 @@ does not close it either. Honest accounting of the three causes, in order of siz
 | saturation-forced descent (`branch_max`) | 0.28 → 0.49 under `ll`; irrelevant under `cu` | **yes** — raise the caps |
 | no merge/split to repair early splits | grouped 0.62 vs shuffled 0.81 | **no** — forbidden by §24f |
 
-`ConceptTree(rule="cu")` is implemented, with `"ll"` left as the default so no existing result moves.
-What it is *not* yet is validated end to end: a better-shaped tree is only worth having if it makes
+**`cu` is now the default** (`ConceptTree`, `LIFELONG_TREE_RULE`), and `"ll"` remains selectable so
+the control arm of any comparison can still name it explicitly. It is adopted for tree SHAPE, which
+is what this section is about, and *not* for end-task gain — the rule comparison
+(`rulecmp.sbatch`, 2 experiments x 2 rules x 3 seeds, env-set so the experiment code is
+byte-identical between arms) found that effect small and **mixed**:
+
+| | `ll` | `cu` |
+|---|---|---|
+| n9 showdown, ours F1 | 0.606 | **0.633** |
+| n9 showdown, ours joint | 0.539 | **0.556** |
+| n5 class-incremental, ACC | **0.845** | 0.826 |
+| n5 parameters | **8.82 M** | 9.37 M |
+
+Every non-bank baseline is byte-identical under both rules, which is the control that the env
+override touched only the arm it was supposed to. Tables collected under `ll` and not yet re-run
+are still `ll`-derived and are marked here rather than silently reattributed.
+
+What `cu` is *not* is validated end to end: a better-shaped tree is only worth having if it makes
 §24b's transfer appear, and that has to be measured rather than assumed — the same mistake the
 reuse claim made before the `wrong-family` control was added.
 
@@ -3926,6 +3942,58 @@ The fix is ordered by expected effect:
 
 Item 1 subsumes items 2 and 4 for image quality and is the only one that changes what the samples
 look like. It is also the setup the paper actually used for its own CelebA figures.
+
+### 29a. Two of those disparities were bugs, not choices — and §29's verdict is now unsafe
+
+A line-by-line pass over the paper's Tables 5–8 (`docs/SETTINGS.md`) separated deliberate deviations
+from accidental ones and found **four accidental**, two of which were producing published-looking
+numbers.
+
+**(a) CelebA was guided at 2.4× the published strength.** A constant named `PAPER_POE` holding
+`w0 = 1.2` was copy-pasted into six experiment files. 1.2 is Table 8's **Color-MNIST** value; CelebA
+is **0.5**. So n20 — the CelebA headline — plus n44 and `diag_celeba_chain` all over-guided CelebA,
+*including the `poe-guided` arm*, under a comment reading "the published method in its published
+configuration". Measured on the paper's own pretrained `ddpm-celebahq-256`:
+
+| arm | w₀ = 1.2 (what we ran) | w₀ = 0.5 (Table 8) |
+|---|---|---|
+| prototypes (mode ascent) | 0.78 – 1.40 | unchanged (not sampled) |
+| `poe-guided` | **2.50 – 4.82** | **1.45 – 1.67** |
+| `query-only` | 3.53 – 4.27 | 1.80 – 2.56 |
+
+*(tv ratio against real faces; 1.0 = as rough as real, >1 = rougher.)* The published method was being
+handicapped by a factor it never chose, and correcting it roughly halves the excess roughness.
+
+**(b) §29's verdict does not survive this run.** §29 concluded the from-scratch backbone determined
+CelebA image quality. But the table above is on **their** pretrained backbone — a model that renders
+photorealistic faces, untouched by us — and its `poe-guided` output is still 1.45–1.67× rougher than
+real, while the mode-ascent prototypes feeding it sit at 0.78–1.40. The damage is therefore
+downstream of the backbone *and* downstream of discovery.
+
+**(c) Our own 64px backbone fails in the opposite direction**, which is the detail that redirects the
+investigation. `diag_celeba_w0.py` predicted the over-guidance signature — tv > 1 — and **falsified
+it**: both arms come out at tv **0.727 (w₀=0.5)** and **0.781 (w₀=1.2)**, i.e. *smoother* than real,
+not rougher. Our CelebA samples are blurry, not over-guided. Guidance strength is not what is wrong
+with them.
+
+So the CelebA picture-quality question has three candidate causes and §29 named only the third:
+
+1. the w₀ infidelity — **real, measured, fixed** (it damages the pretrained path most)
+2. the input-layout permutation — **§31**, and the leading candidate for the blur
+3. the from-scratch backbone — still plausible, no longer established
+
+The CelebA tables are being rerun at the corrected w₀ in the canonical configuration
+(`slurm/jobs/n20_canon_w05.sbatch`, both splits × 3 seeds).
+
+**A caution recorded because it nearly became a silent error.** The first rerun used the experiment's
+*default* flags and wrote to `n20_celeba_composition.json` / `_pair.json`. Those are **alias
+targets**: `reproduce.sh` runs the experiment with `--comp-scale 7.5 --mcmc-steps 10 --mcmc-lam 0.3`
+under `_full`/`_pairfull` and aliases the results into those names. The rerun therefore replaced a
+3-seed canonical table with a 1-seed off-configuration one and **dropped the `composable-mcmc` arm
+entirely** (`--mcmc-steps` defaults to 0, which disables it). It went unnoticed because
+`results/aggregate.json` is not rebuilt automatically, so `test_claims` was checking the prose
+against a stale aggregate and passing 37/37 while the files on disk disagreed. Aliases restored,
+outputs parked as `*_w05probe.json`. **Rebuild the aggregate before trusting `test_claims`.**
 
 ## 8. Where the numbers come from
 
