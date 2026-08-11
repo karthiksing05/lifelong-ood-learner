@@ -416,6 +416,46 @@ and permuted is barely better than the 0.605 you get by doing nothing at all.
 `PretrainedScoreField` now defaults to `layout="hwc"` and converts at all four boundaries — `eps` in
 and out, `x_init`, the guidance callback, and the return value. The pretrained track is being rerun.
 
+### 30c. Saturated prototypes: Adam was finding the boundary, not a mode
+
+With the layout fixed the pretrained CelebA samples became real faces, which exposed the fault
+underneath: the prototypes came out **neon posterized** -- flat regions of pure saturated colour with
+the face structure faintly visible through them.
+
+That signature is specific. It is not "slightly out of range": it is a large fraction of coordinates
+sitting at *exactly* the boundary, which is what clipping does to values driven past it. Adding a
+range clamp confirmed the reading by failing in an informative way — it changed the numbers and left
+the pictures identical, because the values still arrived at the edge and merely stopped there.
+
+**The cause is the optimizer.** `mode_ascent` used **Adam**, whose update is normalized: every
+coordinate moves by about `lr` per iteration however small its gradient is. Near a mode the gradient
+vanishes and a plain gradient step vanishes with it — Adam's does not. It keeps taking full-sized
+steps and marches past. Measured on the pretrained CelebA backbone at u = 0.15, with the query's own
+eps error (**0.0260**) as the bar, since eps error is the quantity ascent exists to reduce:
+
+| setting | fraction of x₀ outside [−1,1] | eps error at the returned point |
+|---|---|---|
+| Adam, lr 0.09, 100 it *(their Table 6)* | **11.1 %** | 0.0113 |
+| Adam, lr 0.02, 100 it | 0.0 % | 0.0056 |
+| Adam, lr 0.09, 20 it | 0.3 % | 0.0391 — *worse than the query* |
+| **plain, lr 0.09, 100 it** | **0.0 %** | **0.0046** |
+| plain, lr 1.00, 100 it | 32.9 % | 0.0469 — *worse than the query* |
+
+**Plain ascent wins on both axes** — entirely in gamut *and* a lower-error mode than Adam finds. It
+is now the default, recorded in `docs/SETTINGS.md §5c` as a measured deviation from their Table 6,
+with `adam=True` retained to reproduce their column.
+
+The result is visible rather than statistical: prototypes are now recognisable faces, and
+`poe-guided` on the paper's own backbone renders coherent faces at real-image texture (tv 0.82–1.11
+against real 1.0), where before it was 2.50–4.82.
+
+![the paper's pipeline on its own backbone, after the layout, guidance and ascent fixes](../figures/f18_celeba_paper_paperdisc_w05.png)
+
+**Four explanations were tried and three were refuted by measurement**, which is worth recording
+because each was plausible: runaway Adam steps (max |x₀| measured 1.5–2.0, not the 9 predicted), the
+x₀ estimator (un-clipped Tweedie measured *identical* to the old rescaling), and the clamp itself.
+The one that held is the one adjudicated by the objective rather than by argument.
+
 ### 30a. The CelebA banding artifact IS the permutation — confirmed with a control and a counter-control
 
 The samples show horizontal seams and rectangular patches cutting an otherwise coherent face. The
