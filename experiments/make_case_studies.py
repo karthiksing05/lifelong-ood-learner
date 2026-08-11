@@ -13,7 +13,9 @@ Two things this fixes beyond layout:
   * every row is annotated with accuracy AND coverage, because the whole argument is that the first
     cannot distinguish composing from copying and the second can.
 
-Needs the backbones.  Writes figures/f9_case_colormnist.png and figures/f10_case_celeba.png.
+Needs the backbones.  Writes figures/f9_case_colormnist.png (and a machine-readable
+results/case_colormnist*.json).  The CelebA panel f10_case_celeba.png is NOT written here --
+make_paper_figures.py derives it from n20_celeba_composition_pair.png.
 """
 import argparse
 import json

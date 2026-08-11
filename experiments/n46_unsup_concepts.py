@@ -59,6 +59,10 @@ def main():
                         "10 digits x 4 fg x 4 bg, so K=8 is well under the 18 values a factored "
                         "description needs and K=18 is the matched-capacity setting.")
     p.add_argument("--n-cases", type=int, default=6)
+    p.add_argument("--n-control", type=int, default=6,
+                   help="SEEN compositions used as the port-works control")
+    p.add_argument("--oracle", action="store_true",
+                   help="let discovery see the held-out queries.  Not a fair baseline; it separates a library that cannot express the target from weights that cannot find it.")
     p.add_argument("--n-samples", type=int, default=16)
     p.add_argument("--n-pool", type=int, default=512, help="unlabelled images for discovery")
     p.add_argument("--disc-steps", type=int, default=600)
@@ -72,7 +76,7 @@ def main():
     args = p.parse_args()
     if args.quick:
         args.tag = args.tag or "_smoke"
-        args.n_cases, args.n_samples, args.n_pool = 2, 8, 64
+        args.n_cases, args.n_samples, args.n_pool, args.n_control = 2, 8, 64, 2
         args.disc_steps, args.fit_steps, args.steps, args.n_per_slot = 40, 20, 20, 20
     dev = "cuda" if torch.cuda.is_available() else "cpu"
 
@@ -86,7 +90,13 @@ def main():
     # been built with knowledge of the held-out compositions.
     seen = np.where(data["seen"])[0]
     pool = data["X"][seen[rng.permutation(len(seen))[:args.n_pool]]]
-    print(f"[n46] discovering K={args.K} concepts from {len(pool)} UNLABELLED seen images "
+    if args.oracle:
+        # NOT a fair lifelong baseline -- the library is allowed to see the held-out queries, so it
+        # cannot be run as a competitor.  It upper-bounds the method here, which is what separates
+        # "the discovered library cannot express this" from "the weights could not find it".
+        pool = np.concatenate([pool, data["X"][[q["query"] for q in qs]]], axis=0)
+    print(f"[n46] discovering K={args.K} concepts from {len(pool)} UNLABELLED "
+          f"{'seen + HELD-OUT (oracle)' if args.oracle else 'seen'} images "
           f"({args.disc_steps} steps)", flush=True)
     t0 = time.time()
     lib = discover_concepts(field, pool, K=args.K, n_steps=args.disc_steps, lr=args.lr,
@@ -96,6 +106,33 @@ def main():
 
     d_emb = lib["C"].shape[1]
     rows, panels = [], {}
+
+    # ── CONTROL, and it runs FIRST ───────────────────────────────────────────
+    # A baseline reported at 0.000 is worthless without evidence that the port works at all.  The
+    # same library and the same weight-fitting, applied to SEEN compositions, must reproduce them:
+    # those are in the discovery pool's own distribution, so anything near chance here indicts this
+    # implementation rather than the method, and no held-out number below should be believed.
+    seen_slots = np.unique(data["slot"][seen])
+    ctrl = []
+    for s_ in seen_slots[rng.permutation(len(seen_slots))[:args.n_control]]:
+        rows_s = np.where(data["slot"] == s_)[0]
+        xs = data["X"][rows_s[0]]
+        i0 = rows_s[0]
+        w = fit_weights(field, xs, lib["C"], n_steps=args.fit_steps, lr=args.lr, seed=args.seed)
+        S = to_data(sample_unsup(field, lib["C"], w, n=args.n_samples, steps=args.steps,
+                                 seed=args.seed, clip=(-1, 1))).astype(np.float32)
+        a = composition_accuracy(probes, S, int(data["digit"][i0]), int(data["fg"][i0]),
+                                 int(data["bg"][i0]))
+        ctrl.append(float(a["joint"]))
+        rows.append(dict(slot=int(s_), arm="liu-unsup-SEEN-control", K=args.K,
+                         joint=float(a["joint"]), digit=float(a["digit"]), fg=float(a["fg"]),
+                         bg=float(a["bg"]), recall=float("nan"),
+                         bytes_per_concept=int(args.K * 4), library_bytes=int(args.K * d_emb * 4)))
+    print(f"[n46] CONTROL on {len(ctrl)} SEEN compositions: mean joint {np.mean(ctrl):.3f}  "
+          f"{[round(v, 2) for v in ctrl]}")
+    print(f"[n46]   chance is ~{1/10 * 1/4 * 1/4:.3f}.  If this is at chance the port is broken and "
+          f"the held-out numbers below mean nothing.\n", flush=True)
+
     for q in qs:
         xq = data["X"][q["query"]]
         R = data["X"][q["rest"][:100]].astype(np.float32)
@@ -104,7 +141,7 @@ def main():
                                  seed=args.seed, clip=(-1, 1))).astype(np.float32)
         a = composition_accuracy(probes, S, q["d"], q["f"], q["b"])
         pr = precision_recall(S, R)
-        rows.append(dict(slot=int(q["slot"]), arm="liu-unsup", K=args.K,
+        rows.append(dict(slot=int(q["slot"]), arm=("liu-unsup-oracle" if args.oracle else "liu-unsup"), K=args.K,
                          joint=float(a["joint"]), digit=float(a["digit"]), fg=float(a["fg"]),
                          bg=float(a["bg"]), recall=float(pr["recall"]),
                          bytes_per_concept=int(args.K * 4),
