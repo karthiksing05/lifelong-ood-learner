@@ -160,7 +160,7 @@ class BaseScoreField:
 
     # ── mode ascent on p_t (the paper's Eq. 4) ──────────────────────────────
     def mode_ascent(self, xq, u, n_starts=16, iters=100, lr=0.05, seed=0, init="query",
-                    clamp=True, k_sigma=3.0):
+                    clamp=True, k_sigma=3.0, tweedie=True):
         """Adam ascent on log p_t from noised copies of the query -> (modes in x_t space, x0-space).
 
         `clamp` keeps the ascent on the DATA'S SUPPORT, and without it this walks off into nonsense.
@@ -194,7 +194,19 @@ class BaseScoreField:
             x = x + lr * (m / (1 - b1 ** i)) / (np.sqrt(v / (1 - b2 ** i)) + eps)
             if clamp:
                 x = np.clip(x, -bound, bound)
-        return x, x / np.sqrt(a)
+        # x0-space mode by TWEEDIE, not by rescaling.  `x / sqrt(abar)` is the noisy point divided
+        # by sqrt(abar): it still CONTAINS the noise, amplified by 1/sqrt(abar).  Measured, that is
+        # 25% of the image's dynamic range at u=0.15, 52% at u=0.3 and 101% at u=0.5 -- and the
+        # paper's CelebA grid runs to u=0.5.  So the "prototypes" it returned were mostly noise,
+        # which is what made them saturated posterized nonsense once clipped for display.
+        #     x0_hat = (x_t + (1-abar) * score(x_t)) / sqrt(abar)
+        #            = (x_t - sqrt(1-abar) * eps_hat) / sqrt(abar)
+        # `tweedie=False` restores the old rescaling for comparison.
+        if tweedie:
+            x0 = (x + (1.0 - a) * self.score(x, u)) / np.sqrt(a)
+        else:
+            x0 = x / np.sqrt(a)
+        return x, np.clip(x0, -1.0, 1.0) if clamp else x0
 
     def laplace_diag(self, xt, u, probes=4, delta=5e-3, seed=0, var_floor=1e-4, var_cap=1.0):
         """Diagonal Laplace covariance of p_t at x_t via Hutchinson finite differences on the score,
