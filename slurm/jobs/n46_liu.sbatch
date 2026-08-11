@@ -18,9 +18,13 @@ srun $PY experiments/n46_unsup_concepts.py --quick || exit 1
 # control: a port that cannot reproduce IN-DISTRIBUTION compositions indicts the implementation,
 # not the method.  Both runs now carry that control, and --oracle upper-bounds the method by
 # letting discovery see the held-out queries.
-srun $PY experiments/n46_unsup_concepts.py --K 8  --tag _k8
-srun $PY experiments/n46_unsup_concepts.py --K 18 --tag _k18
-srun $PY experiments/n46_unsup_concepts.py --K 18 --oracle --tag _k18_oracle
+# Concepts now initialize at the class-table MEAN, not a random point: the first run's
+# SEEN control came out at chance, which is what inversion.learn_embedding(free=True)
+# already warned about -- a free conditioning vector must start where the model decodes
+# sensibly.  disc-steps raised, since the library is the whole method here.
+srun $PY experiments/n46_unsup_concepts.py --K 8  --disc-steps 1500 --tag _k8
+srun $PY experiments/n46_unsup_concepts.py --K 18 --disc-steps 1500 --tag _k18
+srun $PY experiments/n46_unsup_concepts.py --K 18 --disc-steps 1500 --oracle --tag _k18_oracle
 rc=$?
 echo "exit=$rc | $(date)"
 exit $rc

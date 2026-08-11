@@ -70,9 +70,18 @@ def discover_concepts(field, X01, K=8, n_steps=400, lr=0.05, batch=8, seed=0,
 
     d = model.cemb.weight.shape[1]
     g = torch.Generator(device="cpu").manual_seed(seed)
-    # concepts initialized at the table's own scale so they decode to something rather than noise
+    # Initialize each concept at the class table's MEAN plus a small perturbation to break symmetry
+    # between the K of them.  NOT at a random point: `inversion.learn_embedding(free=True)` records
+    # why -- a free vector in conditioning space has to start "somewhere the model decodes sensibly
+    # rather than at an arbitrary origin", and the paper's own setting hides this, because a
+    # pretrained text encoder's embedding space is dense with meaning almost everywhere while a
+    # 120-row class table trained from scratch is not.  The first version of this initialized at
+    # `randn * table_std` and the SEEN control came out at chance (joint 0.000-0.062 against 0.006),
+    # i.e. the port could not reproduce even in-distribution compositions.
+    mu = model.cemb.weight.detach().mean(0)
     scale = float(model.cemb.weight.detach().std())
-    C_lib = (torch.randn(K, d, generator=g).to(dev) * scale).requires_grad_(True)
+    C_lib = (mu.unsqueeze(0) + 0.1 * scale * torch.randn(K, d, generator=g).to(dev)
+             ).clone().requires_grad_(True)
     X = _as_img(to_model(np.asarray(X01)), dev, field.img, getattr(field, 'layout', None))
     N = len(X)
     logits = torch.zeros(N, K, device=dev).requires_grad_(True)   # softmax -> the simplex
