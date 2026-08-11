@@ -81,6 +81,13 @@ def build_probes(data, seed, epochs, cache=True, layout="hwc"):
 def main():
     p = argparse.ArgumentParser()
     p.add_argument("--epochs", type=int, default=70)
+    p.add_argument("--layout", choices=["permuted", "hwc"], default="hwc",
+                   help="`hwc` hands the UNet a real image; `permuted` is the plain\n"
+                        "reshape every backbone before 2026-08-11 used, which makes the\n"
+                        "network's channels out of horizontal image bands and produces a\n"
+                        "measurable seam at rows H/3 and 2H/3 (RESULTS 30a: seam score\n"
+                        "2.509 against real data's 0.906, and 0.908 once fixed).  DEFAULT\n"
+                        "hwc here because these backbones are being retrained anyway.")
     p.add_argument("--resume", action="store_true",
                    help="continue from <out>.partial if it exists, training only the epochs that "
                         "remain.  Both 128px runs have now been killed mid-flight -- one preempted "
@@ -213,6 +220,7 @@ def main():
                     holdout_attr=args.holdout_attr, holdout_pair=pair,
                     min_count=args.min_count, n_holdout=args.n_holdout, seed=args.seed,
                     epochs_done=epochs_done, epochs_planned=args.epochs,
+                    layout=args.layout,                # a checkpoint MUST record its layout
                     attr_names=list(ATTRS))            # so downstream uses the SAME set
 
     def checkpoint(ep, ema):
@@ -250,7 +258,7 @@ def main():
 
     t0 = time.time()
     ema = train_ddpm(model, data["X8"][tr], y, epochs=remaining, batch=args.batch, lr=args.lr,
-                     device=dev, seed=args.seed + start_ep, tf32=True,
+                     device=dev, seed=args.seed + start_ep, tf32=True, layout=args.layout,
                      on_epoch=lambda ep, e: checkpoint(ep + start_ep, e))
     mins = (time.time() - t0) / 60
     torch.save(package(ema, args.epochs), args.out)
