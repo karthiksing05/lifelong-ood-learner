@@ -24,7 +24,8 @@ disfavour after audits found we were running a baseline weakly ([RESULTS.md](RES
 | **routing (arrangement vs part)** | **ours** | no baseline offers it; AUROC 0.980 / 0.995 |
 | **native parity** | **ours** | no baseline offers it |
 | **robustness as the grid thins** | **ours** | at 80/160 slots withheld the companion method drops 0.892 → 0.292; ours holds 0.467 |
-| **parameter economy** | ✗ `independent` | 7.16M vs our 8.82M at higher ACC |
+| **parameter economy** | ✗ `independent` | 7.16M vs our 8.82M at higher ACC; loss survives a fair rank sweep of both arms (§24d) |
+| **cost per new concept** | **ours** | routing makes an *arrangement* cost 1024 B against 551K — **538×** — so cost tracks vocabulary, not experience |
 
 Two losses, both stated in [../CONTRIBUTIONS.md](../CONTRIBUTIONS.md) rather than buried.
 

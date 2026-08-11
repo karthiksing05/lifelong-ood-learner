@@ -54,56 +54,64 @@ for each arriving query, forever:
 
 ---
 
-## Why a bank instead of a pile of LoRAs — the intuition
+## Why a bank instead of a pile of LoRAs — and what the evidence actually supports
 
 The companion paper's endpoint is a **standalone adapter**: one LoRA distilled per query, complete in
-itself, then discarded. The obvious lifelong extension is to just *keep* them — a growing pile of
-independent adapters, one per concept. That is the design this repository is explicitly *in lieu of*,
-and the reasons are structural rather than aesthetic.
+itself, then discarded. The obvious lifelong extension is to keep them — a growing pile of
+independent adapters. This repository is *in lieu of* that, and the reason is **cost growth**: a
+lifelong learner has to absorb an unbounded stream without its parameter count growing with its
+history.
 
-**1. The backbone is the substrate, not a starting point.** A concept here is never a model; it is a
-small conditional *edit* to a frozen score field that already knows how to render. Everything a
-concept does not have to relearn — strokes, shading, the image manifold itself — it gets by running
-*through* the backbone. Both designs agree this far. They part ways on the next observation:
+**1. The backbone is the substrate, not a starting point.** A concept is never a model; it is a small
+conditional *edit* to a frozen score field that already knows how to render. Everything a concept
+does not have to relearn — strokes, shading, the image manifold — it gets by running *through* the
+backbone.
 
-**2. Concepts are not independent of each other either.** That is the compositional thesis in one
-sentence. A cyan-on-red *6* shares almost everything with a cyan-on-red *3* — the colour scheme, the
-rendering regime — and a pile of standalone LoRAs re-learns that shared structure *every time* and
-stores it *repeatedly*, because each adapter is complete in itself and ignorant of the rest. The bank
-makes the sharing structural instead: **a concept is a path**, its ancestors *are* the shared parts,
-and a newcomer's forward pass runs through the family's sealed group node before its own leaf has
-learned anything. The leaf then only has to learn what makes this concept *different* from its family
-— the same argument, one level up, as adapting rather than retraining the backbone.
+**2. Most arrivals should not cost an adapter at all.** This is where the growth curve is actually
+won. The router decides, from the model's own denoising error and with no labels, whether a query is
+a new *arrangement* of known parts or a genuinely new *part*:
 
-**That last step is the design's rationale, and it is the one part that has not survived measurement.**
-The shared node is real — it carries 2.3× a leaf's magnitude and its formative training instances come
-from four different members — but routing a newcomer through its *own* family is worth −0.004 F1
-against a *mismatched* family's ancestor and −0.063 against no ancestor at all (§24). The storage
-argument in point 3 stands; the transfer argument does not, and the rest of this section should be
-read as what the structure buys *without* it.
-
-**3. The lifelong obligations fall out of the representation, instead of being bolted on.** Once a
-concept is a path in an insert-only tree, each hard property is one structural fact rather than a
-mechanism with its own failure modes:
-
-| obligation | why the bank gets it for free | where measured |
+| route | cost | |
 |---|---|---|
-| no forgetting | sealed nodes are absent from every future optimizer | §5, §7d — 1.000 bit-identical |
-| routing / cost | arrangement = 1024-byte basis direction; new part = one leaf | §6c — AUROC 0.980/0.995 |
-| batch absorption | K leaves + a group node under one optimizer, sealed once | §15 — 2.15× faster, ACC unchanged |
-| deletion | drop the nodes only that concept uses; base never written | §22 — 9/9 bit-identical |
-| ~~reuse~~ | *predicted* transfer from frozen ancestors — **refuted**, §24 | N34 |
+| already in distribution | **0** | do nothing |
+| new arrangement | **1024 bytes** | extend the shared factor basis |
+| new part | one low-rank block | the only case that grows the model |
 
-A pile of standalone adapters offers none of these as *properties* — forgetting is trivially absent
-but so is sharing; deletion works but reclaims nothing shared because nothing is shared; cost is flat
-at one full adapter per concept regardless of how little is genuinely new.
+That is a **538×** difference between the two update kinds, which is what makes cost track
+*vocabulary* rather than *experience* — a 160-experience stream costs ~10× less than one adapter per
+query (§6c), and the slope is set by a detector error rate rather than by arrivals.
 
-**4. What the bank is *not*.** Three separate conjectures about the *hierarchy* have now failed:
-clustered placement loses to shuffled given its best case (§5s), stream order changes what the tree
-builds (§23), and a matched ancestor transfers no better than a mismatched one (§24). What survives
-every one of those is the **constraint structure** — sealing, path-scoped optimization, private leaves.
-That is what the certificates rest on, and it is what this repository is actually defending; the tree
-is the bookkeeping that makes it expressible, not a claim about clustering.
+**3. What a new part costs is a knob, and it is currently set too high.** A block at rank 8 is 551K
+parameters; at **rank 1 it is 69K**, and across three seeds the accuracy is indistinguishable
+(0.840 ± 0.009 vs 0.842 ± 0.026) with bit-identity 1.000 at every rank (§24d). Flat placement costs
+~20% less again. **Flat + rank 1 is 9.8× cheaper than this repository's default at no measured cost
+— 75K per concept against 735K.**
+
+**4. Preservation is the sealing discipline, and it is free.** Sealed nodes are absent from every
+future optimizer, so nothing an earlier concept depends on can move. That is a property of *how the
+optimizer is scoped*, not of how concepts are arranged.
+
+### What the hierarchy is, honestly
+
+Concepts are placed in a tree and a concept's adapter is the sum along its root-to-leaf path. The
+hope was that ancestors would amortize storage and transfer structure to newcomers. **Neither has
+survived measurement**, and the reader should not treat the tree as central:
+
+| claim | status |
+|---|---|
+| shared nodes exist and carry signal | holds — a group node carries 2.3× a leaf's magnitude |
+| shared nodes are formed from several members | holds — top-influence instances span 4 concepts |
+| the tree **saves** parameters | **false** — every node costs a full block, so depth *adds* ~23% |
+| ancestors **transfer** to a newcomer | **not supported** — routing through the matched family ties having no ancestor |
+| depth organizes abstraction coarse→fine | **refuted** (§24c) |
+| the placement rule clusters at all | **refuted** — 0.27 purity against a 0.25 random baseline (§24g) |
+
+The placement defect is understood and fixable — Cobweb's category utility raises purity to 0.60
+against an offline oracle's 0.66 (§24j) — but a better-shaped tree bought **no** downstream gain
+(n5 ACC −0.017, n9 F1 +0.026, both inside error bars) at +23% parameters. So the tree is presented
+here as **bookkeeping that makes paths expressible**, not as a contribution. What is load-bearing is
+sealing plus routing, and the architecture the evidence supports is **flat, low-rank, and routed**,
+with at most a per-batch group node (§15, the one place sharing measurably pays).
 
 ### Ground-up or finetuning? Both, in a specific division of labour
 

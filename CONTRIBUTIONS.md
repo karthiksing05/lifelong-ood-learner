@@ -347,6 +347,35 @@ go. Measured reclaimable fraction: min 0.000, median 0.250, max 0.333. The accur
 
 ---
 
+## 10. Cost that tracks vocabulary rather than experience
+
+**Claim.** The parameter growth of this system is governed by how many genuinely new *parts* the
+world contains, not by how many experiences arrive — and the per-part cost is far smaller than the
+default configuration spends.
+
+**Evidence.** Three levers, all measured:
+
+| lever | effect | where |
+|---|---|---|
+| **routing** an arrangement to the shared basis instead of a new block | **1024 B vs 551K — 538×** | §6c |
+| **rank 1** instead of the default rank 8 | **8×** fewer, ACC 0.840 ± 0.009 vs 0.842 ± 0.026 | §24d |
+| **flat** instead of hierarchical placement | ~20% fewer | §24d |
+
+Bit-identity is **1.000 at every rank and both placement rules**, so none of this trades preservation
+for size. Combined, flat + rank 1 costs **75K per concept against the shipped 735K — 9.8×** — at no
+measured accuracy cost.
+
+**What this does not claim.** Neither low rank nor flat placement is novel; what is measured here is
+that this system does not need the capacity it was configured with, and that the *routing* decision —
+which has no counterpart in the companion paper, whose pipeline spends a full LoRA on every query — is
+the lever that makes growth sublinear in experience. It also does not claim constant memory: growth
+is monotone, and flattens only if the world's vocabulary is finite (see below).
+
+**Where:** [docs/RESULTS.md](docs/RESULTS.md) §6c, §24d. `experiments/n24_growth.py`,
+`experiments/make_rank_frontier.py`.
+
+---
+
 ## What is explicitly not claimed
 
 Kept here rather than in a footnote, because several of these shaped the design.
@@ -372,6 +401,9 @@ Kept here rather than in a footnote, because several of these shaped the design.
   backbone does. The obvious culprit — classifier-free guidance amplifying high-frequency error at
   low noise levels — was implemented, swept and **refuted**, and the negative result is kept because
   it is the evidence. [docs/RESULTS.md](docs/RESULTS.md) §19.
+- **That the hierarchy SAVES parameters.** It costs them: every node is a full block, so depth
+  *adds* ~23% over flat (8.82M vs 7.16M at rank 8) and ~31% under the better-shaped `cu` rule. The
+  cost saving in this work comes from routing, not from sharing.
 - **That the hierarchy TRANSFERS anything.** Shared nodes are real — a group node carries 2.3× the
   relative magnitude of a leaf, and its top-influence training instances come from four different
   members (entropy 0.61) — but routing a newcomer through its own family is worth **−0.004 F1**
