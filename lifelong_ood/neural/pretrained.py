@@ -317,3 +317,42 @@ def load_pretrained(name="google/ddpm-celebahq-256", device="cuda", batch=4, lay
     img = int(model.config.sample_size)
     return PretrainedScoreField(model, sched, img=img, device=device, batch=batch,
                                 layout=layout), img
+
+def load_paper_backbone(path, device="cuda", batch=4):
+    """Rebuild the fine-tuned CelebA backbone n47 wrote -> (field, img, cemb, remap).
+
+    This is the companion paper's Table 5 CelebA column: `google/ddpm-celebahq-256` fine-tuned at
+    128px with a class-embedding table of |C|+1 rows added to the time embedding, on the model's own
+    LINEAR beta schedule with T=1000.
+
+    The schedule matters and is easy to get wrong here.  Everything else in this repository runs on
+    a cosine abar, so a `u` means one thing on our backbones and another on this one; the field is
+    therefore built with the model's OWN `DDPMScheduler`, whose `alphas_cumprod` is the linear ladder
+    the fine-tune was trained against.  Passing our cosine u-grid to it would silently query the
+    wrong noise levels.
+
+    `cemb` is returned rather than installed, because conditioning here goes through the time
+    embedding via `CondUNetShim.forward(..., emb_override=...)`, exactly as for any other concept
+    vector in this repository -- so a class row and a learned concept are the same kind of object.
+    """
+    import torch as _t
+    from diffusers import DDPMScheduler, UNet2DModel
+    ck = _t.load(path, map_location="cpu", weights_only=False)
+    unet = UNet2DModel.from_pretrained(ck["model"])
+    unet.config.sample_size = int(ck["img"])
+    unet.sample_size = int(ck["img"])
+    unet.time_embedding = _CondTimeEmbedding(unet.time_embedding)
+    missing, unexpected = unet.load_state_dict(ck["ema"], strict=False)
+    # the wrapper renames time_embedding.* -> time_embedding.inner.*, so those keys land in
+    # `missing` unless remapped; do it explicitly rather than trusting strict=False to be harmless
+    if any(k.startswith("time_embedding.") for k in missing):
+        remap = {k.replace("time_embedding.", "time_embedding.inner.", 1): v
+                 for k, v in ck["ema"].items() if k.startswith("time_embedding.")}
+        unet.load_state_dict(remap, strict=False)
+    try:
+        sched = DDPMScheduler.from_pretrained(ck["model"])
+    except Exception:
+        sched = None
+    field = PretrainedScoreField(unet, sched, img=int(ck["img"]), device=device, batch=batch,
+                                 layout=ck.get("layout", "hwc"))
+    return field, int(ck["img"]), ck["ema_cemb"].numpy(), ck["remap"]
