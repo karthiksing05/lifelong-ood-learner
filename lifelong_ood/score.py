@@ -160,11 +160,21 @@ class BaseScoreField:
 
     # ── mode ascent on p_t (the paper's Eq. 4) ──────────────────────────────
     def mode_ascent(self, xq, u, n_starts=16, iters=100, lr=0.05, seed=0, init="query",
-                    clamp=True, k_sigma=3.0, tweedie=True, adam=False):
+                    clamp=True, k_sigma=3.0, tweedie=True, adam=True):
         """Adam ascent on log p_t from noised copies of the query -> (modes in x_t space, x0-space).
 
-        `adam=False` -- PLAIN gradient ascent -- is the default, and it is a measured deviation from
-        the paper's Table 6, which specifies Adam.  Adam's update is normalized: every coordinate
+        `adam=True` is the default, matching the paper's Table 6.  `adam=False` -- PLAIN gradient
+        ascent -- is selected PER DATASET where it is needed, and the criterion is where the problem
+        it fixes actually occurs rather than where it happens to help:
+
+            pretrained CelebA, u=0.15   Adam leaves 11.1% of the mode outside [-1,1]
+            Color-MNIST, u=0.05..0.40   Adam leaves 0.00%-0.32%
+
+        So Color-MNIST never had the out-of-gamut problem and keeps the paper's optimizer; CelebA
+        has it badly and uses plain ascent (`PAPER_CELEBA` sets `adam=False`).  That distinction
+        matters for fairness: switching Color-MNIST to plain ascent improved OUR arm and cost the
+        companion method 0.100 of joint accuracy for nothing in return (recall 0.001 either way),
+        which is not a change that should be made on a dataset that had no problem to fix.  Adam's update is normalized: every coordinate
         moves by about `lr` per iteration however small its gradient is, so near a mode, where the
         gradient vanishes, it keeps taking full-sized steps and marches past.  Measured on the
         pretrained CelebA backbone at u=0.15, against the query's own eps error of 0.0260:

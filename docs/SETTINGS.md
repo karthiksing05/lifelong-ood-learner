@@ -57,7 +57,7 @@ w₀ infidelity (§5a, measured and fixed), and the input-layout permutation (§
 | Ascent starts per *t* | 128 | 8 | **12–16** | **DEVIATION** |
 | Ascent iterations | 150 | 100 | 80–120 | DEVIATION |
 | Ascent step size | 0.1 | 0.09 | 0.1 | MATCH (CM) |
-| Ascent optimizer | Adam | Adam | **plain gradient** | **DEVIATION — measured, §5c** |
+| Ascent optimizer | Adam | Adam | Adam (CM) / **plain** (CelebA) | **DEVIATION on CelebA only — §5c** |
 | Initialization | hybrid (50/50) | query-centred | hybrid | MATCH (CM) |
 | Hutchinson probes | 4 | 4 | 4 | MATCH |
 | Hutchinson FD step | 5e-3 | 5e-3 | *not exposed* | **UNVERIFIED** |
@@ -213,7 +213,20 @@ adding a range clamp changed the numbers without changing the pictures — the v
 the edge, they just stopped there. Three earlier explanations of mine (runaway Adam steps, the
 x₀ estimator, the clamp) were each refuted by measurement before this one held.
 
-`adam=True` remains selectable to reproduce the paper's column exactly.
+**Scoped to CelebA, and the scoping matters for fairness.** Making plain ascent global would have
+been the wrong call, and the check that caught it was noticing what it did to the *baseline*:
+
+| | Adam leaves out of [−1,1] | effect of switching to plain |
+|---|---|---|
+| pretrained CelebA, u = 0.15 | **11.1 %** | fixes the saturated prototypes |
+| Color-MNIST, u = 0.05–0.40 | **0.00 – 0.32 %** | ours F1 0.605 → 0.633, but `poe-guided` joint **0.839 → 0.739** for nothing in return (recall 0.001 either way) |
+
+Color-MNIST never had the problem plain ascent fixes, so the change there was buying our own arm an
+improvement while costing the companion method a tenth of its accuracy. **The paper's Adam stands on
+Color-MNIST**; `PAPER_CELEBA` carries `adam=False` because that is where the defect was measured.
+
+For the record, our Color-MNIST gain is *not* from the ascent at all — the rule comparison isolates
+it: `ll` → `cu` alone gives F1 0.606 → 0.633, which is the whole of it.
 
 ## 6. What this means for the results
 

@@ -46,8 +46,11 @@ def candidates_tree(snap, xq, top=None, per_depth_cap=None):
 # The companion paper's Table 6 columns, verbatim, for callers that want their budget.
 PAPER_COLORMNIST = dict(u_grid=tuple(round(t / 1000, 4) for t in range(50, 401, 25)),
                         n_starts=128, iters=150, lr=0.1, probes=4, init="hybrid")
+# `adam=False` is a DEVIATION from their Table 6 and applies to CelebA only: Adam leaves
+# 11.1% of each mode outside [-1,1] here, which clips to flat saturated colour, while on
+# Color-MNIST it leaves 0.00%-0.32% and the paper's optimizer is kept.
 PAPER_CELEBA = dict(u_grid=tuple(round(t / 1000, 3) for t in range(50, 501, 50)),
-                    n_starts=8, iters=100, lr=0.09, probes=4, init="query")
+                    n_starts=8, iters=100, lr=0.09, probes=4, init="query", adam=False)
 
 # The paper's Table 8 guidance columns.  These live here, next to Table 6, because they were
 # previously copy-pasted into six experiment files as a single constant named `PAPER_POE` holding
@@ -62,7 +65,8 @@ PAPER_POE_CELEBA = dict(schedule="variance", var_scale=1.0, w0=0.5, wmax=2.0, wm
 
 
 def candidates_ascent(field, xq, u_grid=(0.05, 0.1, 0.15, 0.2, 0.3, 0.4), n_starts=16, iters=150,
-                      lr=0.1, seed=0, probes=4, dedup_rmse=0.05, init="hybrid"):
+                      lr=0.1, seed=0, probes=4, dedup_rmse=0.05, init="hybrid",
+                      adam=True):
     """The paper's discovery route: mode ascent on p_t at several noise levels (their Eq. 4), a
     Laplace covariance at each mode from Hutchinson probes, pulled back to x0-space, deduplicated.
 
@@ -92,7 +96,7 @@ def candidates_ascent(field, xq, u_grid=(0.05, 0.1, 0.15, 0.2, 0.3, 0.4), n_star
         for k, (mode, ns) in enumerate(parts):
             if ns <= 0:
                 continue
-            xt, x0 = field.mode_ascent(xq, u, n_starts=ns, iters=iters, lr=lr,
+            xt, x0 = field.mode_ascent(xq, u, n_starts=ns, iters=iters, lr=lr, adam=adam,
                                        seed=seed + 1000 * k, init=mode)
             Ms.append(x0)
             Vs.append(field.laplace_diag(xt, u, probes=probes, seed=seed))
