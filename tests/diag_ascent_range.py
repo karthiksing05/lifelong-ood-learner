@@ -40,17 +40,20 @@ def main():
     xq = to_model(np.asarray(data["X"])[:1]).ravel()
 
     print(f"[range] pretrained backbone at {img}px; valid images live in [-1, 1]\n")
-    print(f"  {'u':>6s} {'mode':>8s} {'frac |x0|>1':>12s} {'max |x0|':>10s} {'mean |x0|':>10s}")
+    print(f"  {'u':>6s} {'mode':>15s} {'frac |x0|>1':>12s} {'max |x0|':>10s} {'mean |x0|':>10s}")
     rows = []
     for u in (0.05, 0.15, 0.3, 0.5):
+        # `tweedie, no clip` is the honest one: with clamp=True the returned x0 is clipped, so
+        # "fraction out of range = 0" would be true by construction and prove nothing.
         for mode, kw in (("rescale", dict(clamp=False, tweedie=False)),
-                         ("tweedie", dict(clamp=True, tweedie=True))):
+                         ("tweedie/noclip", dict(clamp=False, tweedie=True)),
+                         ("tweedie+clip", dict(clamp=True, tweedie=True))):
             _, x0 = field.mode_ascent(xq, u, n_starts=4, iters=100, lr=0.09, seed=0,
                                       init="query", **kw)
             clamp = mode
             x0 = np.asarray(x0)
             frac = float((np.abs(x0) > 1.0).mean())
-            print(f"  {u:6.2f} {str(clamp):>8s} {frac:12.4f} {np.abs(x0).max():10.3f} "
+            print(f"  {u:6.2f} {str(clamp):>15s} {frac:12.4f} {np.abs(x0).max():10.3f} "
                   f"{np.abs(x0).mean():10.3f}")
             rows.append((u, clamp, frac, float(np.abs(x0).max())))
     print("\n[range] a large out-of-range fraction means ascent is off the data's support, and the\n"
