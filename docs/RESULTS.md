@@ -3163,6 +3163,13 @@ compositions selected by the median-per-pair rule):
 1.0 keeps coverage and loses accuracy. `make_case_studies.py` therefore defaults to `--dial 0.9`, and
 the canonical figure is the one rendered at it. The tables are untouched, for the reason given above.
 
+*Which placement rule these were run under.* The sweep above predates `cu` becoming the default, so
+all three rows are `ll`. Re-rendering the selected setting under `cu` moves `ours` from 0.708 to
+**0.667** on the same four compositions — one case of the four drops, the other three are identical —
+which is the same small, mixed effect §24 reports for the rule change generally. The *selection* is
+unaffected: nothing in the ordering depends on the rule, and 0.9 remains the only setting near-best
+on both axes. The canonical figure is the `cu` render, matching the current defaults.
+
 Read the baseline columns alongside: `poe-guided` scores **0.833 joint at 0.000 recall** and
 `query-only` **0.875 at 0.000**. They are more accurate and produce *no coverage at all* — the same
 correct image repeatedly. That is the trade this project exists to name, and it is why accuracy alone
@@ -4031,35 +4038,63 @@ schedule, differing **only** in layout, at the real recipe (160 slots, `n_per_sl
 
 | | `permuted` (every backbone to date) | `hwc` (a real image) | |
 |---|---|---|---|
-| held-out ε-prediction loss | 0.01417 | **0.01011** | **−28.7 %** |
-| joint composition accuracy, trained slots | 0.714 | 0.745 | +0.031 &nbsp;*(unpaired — see below)* |
-| tv ratio vs real | **1.221** | 1.398 | +0.177 (worse) |
+| held-out ε-prediction loss | 0.01410 | **0.01012** | **−28.2 %** |
+| joint composition accuracy, trained slots | **0.724** | 0.661 | −0.062 |
+| paired over the same 24 slots | — | 4 better / **13 worse** / 7 tied | |
+| tv ratio vs real | **1.154** | 1.166 | +0.012 |
 
-**The training objective improves by 28.7 % for free.** That number is solid: the held-out loss is
-computed on the *same* split for both arms.
+**The training objective improves by ~28 % and the composition accuracy does not — it gets worse.**
+Both halves matter and they point in opposite directions.
 
-**The accuracy number is not yet, and the reason is a bug of mine worth recording.** The evaluation
-slot set was drawn *inside* the arm loop, so the RNG advanced between arms and the two layouts were
-scored on **different held-out compositions** — an unpaired comparison presented as a controlled one.
-Fixed (one draw, before the loop, with per-slot accuracies recorded so the delta can be reported
-paired and win/loss counted); the rerun is what the +0.031 has to survive. The
-roughness metric moves the other way — the fixed model produces *more* high-frequency texture, which
-overshoots real rather than undershooting it. A shorter 30-epoch run reproduced the loss effect
-almost exactly (−29.5 %), so it is not a single-run artefact.
+The loss result is solid and replicated: −28.7 % in a first run and −28.2 % here, on the same
+held-out split for both arms.
 
-**Why this is probably an understatement.** Color-MNIST is the *easiest possible case* for a
-scrambled CNN — a near-binary stroke on flat colour, almost all low-frequency, exactly the content a
+**The accuracy result reverses under a correct test, and that reversal is mine to own.** The first
+run drew its evaluation slots *inside* the arm loop, so the RNG advanced between arms and the two
+layouts were scored on **different held-out compositions**. That unpaired comparison read +0.031.
+Drawing the slots once, before the loop, and scoring both arms on the identical 24 compositions
+gives **−0.062**, with `hwc` losing 13 of 24 and winning 4. The apparent gain was an artefact of
+comparing different data.
+
+**So the honest statement is narrower than "fix the layout and everything improves."** Restoring the
+convolutional prior buys a large, replicated improvement in the *denoising objective* and does not
+buy conditional composition accuracy on this benchmark; on the paired test it costs some. A plausible
+reading — untested — is that a network denied spatial structure leans harder on the conditioning
+signal, because class identity is the only structure left to it, while a network that can actually
+model the image distribution relies on it less. That is a hypothesis, not a result.
+
+**What this does to the retraining question.** It weakens it considerably. A 28 % better objective is
+worth having and is the correct way to train a CNN, but the case for spending ~26 GPU-hours per
+CelebA backbone rested on expecting downstream quality to follow, and on this evidence it does not
+follow automatically.
+
+The roughness metric barely moves (1.154 → 1.166), and a shorter 30-epoch run reproduced the loss
+effect almost exactly (−29.5 %), so the loss half is not a single-run artefact.
+
+**Does the LOSS effect grow on a texture-rich dataset?** Color-MNIST is the *easiest possible case*
+for a scrambled CNN — a near-binary stroke on flat colour, almost all low-frequency, exactly the content a
 permuted network can still fit. CelebA is the opposite: dense local texture is most of the signal.
-The mechanism therefore predicts a substantially larger effect there, and that is the number that
-decides whether the CelebA backbones are worth retraining. `slurm/jobs/n45_celeba.sbatch` runs the
-matched pair.
+The mechanism therefore predicts a substantially larger effect there.
+
+**Attempted, and not resolved.** A matched 12-epoch CelebA pair
+(`slurm/jobs/n45_celeba.sbatch`) shows training loss 0.0728 → 0.0446, i.e. **−38.7 %**, larger than
+Color-MNIST's as predicted. But that number cannot be quoted, because a 12-epoch run is **468
+optimizer steps against an EMA time constant of 1000**, so the saved checkpoint retained **62.6 % of
+its random initialization** — which is why evaluating it returned a loss twelve times the training
+loss and a spurious −4.6 %. The training-loss comparison is between live weights and is suggestive;
+the checkpoint comparison is worthless. `train_ddpm` now ramps the EMA decay (ADM/Karras warmup) and
+warns on short runs, and a clean CelebA measurement needs a run long enough for the EMA to converge.
+Two earlier CelebA diagnostics are confounded the same way — the 15-epoch de-risk backbone is 585
+steps and 55.7 % initialization.
 
 **What this does and does not touch.** It does not touch any storage claim — 72 bytes against
 2.3 MB is arithmetic on tensor shapes. It does not touch bit-identity or the preservation guarantee,
 which are properties of optimizer scoping. What it does touch is every *image-quality* number
-produced on one of our own backbones, and it is the leading candidate for §29a's finding that our
-CelebA samples are too **smooth** (tv 0.727–0.781, i.e. blurrier than real): a network that cannot
-use spatial locality is exactly a network that renders low frequencies and omits texture.
+produced on one of our own backbones. Whether it *explains* §29a's finding that our CelebA samples
+are too **smooth** (tv 0.727–0.781, blurrier than real) is a hypothesis and is now weaker than it
+looked: the mechanism is right in kind — a network that cannot use spatial locality is one that
+renders low frequencies and omits texture — but on Color-MNIST the fix moved the roughness statistic
+by 0.012, which is nothing. It remains untested where it would matter.
 
 The fix is available and off by default (`layout="hwc"`), recorded per checkpoint, because turning it
 on silently invalidates every existing checkpoint — a model must be sampled in the layout it was

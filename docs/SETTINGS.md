@@ -177,7 +177,7 @@ that a photorealistic backbone still emits rough samples.
 A `layout` option (`"permuted"` default, `"hwc"` correct) is now threaded through `_as_img`/`_as_flat`,
 `train_ddpm`, `NeuralScoreField` and `n1_train`, **recorded in the checkpoint** and preferred over the
 process default by `load_field` — a checkpoint sampled in the other layout silently produces garbage.
-N45 measures what it costs.
+N45 measures what it costs: **-28 % on the denoising objective, replicated**, and **no** gain in conditional composition accuracy (paired, it costs 0.062). See RESULTS 30.
 
 ## 6. What this means for the results
 
