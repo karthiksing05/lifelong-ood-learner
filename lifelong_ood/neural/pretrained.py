@@ -139,13 +139,18 @@ class PretrainedScoreField(BaseScoreField):
     other would silently evaluate the frozen model.
     """
 
-    def __init__(self, model, scheduler=None, img=256, device="cuda", batch=4):
+    def __init__(self, model, scheduler=None, img=256, device="cuda", batch=4, layout="hwc"):
         unet = model.to(device).eval()
         for p in unet.parameters():
             p.requires_grad_(False)
         self.device = device
         self.img = int(img)
         self.batch = int(batch)
+        # DEFAULT "hwc" here, unlike our own backbones, and the asymmetry is deliberate.  A model we
+        # trained ourselves learned in whatever space we fed it, so its default must stay "permuted"
+        # or every existing checkpoint breaks.  A PRETRAINED model did not: its weights are fixed and
+        # were fitted to real images, so the only correct thing to hand it is a real image.
+        self.layout = str(layout)
         self.scheduler = scheduler
         unet.time_embedding = _CondTimeEmbedding(unet.time_embedding)
         # the timestep whose trained alpha_bar matches each queried u
@@ -201,6 +206,18 @@ class PretrainedScoreField(BaseScoreField):
             return float(cosine_abar(np.array([u]))[0])
         return float(self._abar[self._timestep(u)])
 
+    def _to_chw(self, t):
+        """flat rows -> (N, 3, H, W).  `layout="hwc"` transposes properly; "permuted" reshapes."""
+        if self.layout == "hwc":
+            return t.reshape(-1, self.img, self.img, 3).permute(0, 3, 1, 2).contiguous()
+        return t.reshape(-1, 3, self.img, self.img)
+
+    def _to_flat(self, t):
+        """(N, 3, H, W) -> flat rows in this repository's HWC convention.  Inverse of `_to_chw`."""
+        if self.layout == "hwc":
+            return t.permute(0, 2, 3, 1).reshape(len(t), -1)
+        return t.reshape(len(t), -1)
+
     @torch.no_grad()
     def eps(self, X, u, branch=None, emb=None):
         X = np.atleast_2d(np.asarray(X, np.float64))
@@ -214,9 +231,15 @@ class PretrainedScoreField(BaseScoreField):
         with ctx:
             for i0 in range(0, len(X), self.batch):
                 xb = torch.from_numpy(X[i0:i0 + self.batch]).float().to(self.device)
-                xb = xb.reshape(-1, 3, self.img, self.img)
+                # TRUE CHW.  This was a plain `.reshape(-1, 3, H, W)` of an HWC row, i.e. a pixel
+                # PERMUTATION -- see tests/diag_layout.py.  On OUR backbones that merely costs the
+                # convolutional prior, because training and sampling share the permutation.  Here it
+                # is worse in kind: `google/ddpm-celebahq-256` has FIXED weights learned on real
+                # images, so handing it scrambled input is not a lost prior but wrong input to a
+                # frozen function.  The paper's entire CelebA setup is built on this backbone.
+                xb = self._to_chw(xb)
                 e = self.model(xb, float(u), emb_override=ev)
-                out[i0:i0 + self.batch] = e.reshape(len(xb), -1).double().cpu().numpy()
+                out[i0:i0 + self.batch] = self._to_flat(e).double().cpu().numpy()
         return out
 
     @torch.no_grad()
@@ -243,8 +266,9 @@ class PretrainedScoreField(BaseScoreField):
         t_start = int(round(float(np.clip(u_start, 0.0, 1.0)) * (T - 1)))
         ts_seq = np.linspace(t_start, 0, steps + 1).round().astype(int)
         if x_init is not None:
-            xi = np.asarray(x_init, np.float32).reshape(-1, 3, self.img, self.img)
-            xi = torch.from_numpy(np.repeat(xi, n, 0) if len(xi) == 1 else xi[:n]).to(self.device)
+            xi = np.atleast_2d(np.asarray(x_init, np.float32))
+            xi = np.repeat(xi, n, 0) if len(xi) == 1 else xi[:n]
+            xi = self._to_chw(torch.from_numpy(xi).to(self.device))
             ab0 = (float(self._abar[t_start]) if self._abar is not None
                    else float(cosine_abar(np.array([t_start / T]))[0]))
             x = ab0 ** 0.5 * xi + (1 - ab0) ** 0.5 * x
@@ -267,19 +291,23 @@ class PretrainedScoreField(BaseScoreField):
                 # composition (composable diffusion, a PoE teacher) works on a pretrained backbone
                 # too.  `guide_eps` follows the repo convention: flat float64 rows, u in [0, 1].
                 uu = self._u_for_timestep(t)
-                gflat = np.asarray(guide_eps(x.reshape(n, -1).double().cpu().numpy(), uu))
-                ge = torch.from_numpy(gflat).float().to(self.device).reshape_as(x)
+                gflat = np.asarray(guide_eps(self._to_flat(x).double().cpu().numpy(), uu))
+                ge = self._to_chw(torch.from_numpy(gflat).float().to(self.device))
                 w = 1.0 if guide_w is None else float(np.asarray(guide_w(uu)).reshape(-1)[0])
                 e = e + w * (ge - e)
             x0 = (x - (1 - ab) ** 0.5 * e) / max(ab ** 0.5, 1e-8)
             if clip is not None:
                 x0 = x0.clamp(*clip)
             x = abn ** 0.5 * x0 + (1 - abn) ** 0.5 * e
-        return x.reshape(n, -1).double().cpu().numpy()
+        return self._to_flat(x).double().cpu().numpy()
 
 
-def load_pretrained(name="google/ddpm-celebahq-256", device="cuda", batch=4):
-    """-> (field, img).  Downloads on first use into HF_HOME."""
+def load_pretrained(name="google/ddpm-celebahq-256", device="cuda", batch=4, layout="hwc"):
+    """-> (field, img).  Downloads on first use into HF_HOME.
+
+    `layout` defaults to "hwc" -- a real image -- because these weights are FIXED and were fitted to
+    real images.  "permuted" reproduces the historical behaviour for comparison only.
+    """
     from diffusers import DDPMScheduler, UNet2DModel
     model = UNet2DModel.from_pretrained(name)
     try:
@@ -287,4 +315,5 @@ def load_pretrained(name="google/ddpm-celebahq-256", device="cuda", batch=4):
     except Exception:
         sched = None
     img = int(model.config.sample_size)
-    return PretrainedScoreField(model, sched, img=img, device=device, batch=batch), img
+    return PretrainedScoreField(model, sched, img=img, device=device, batch=batch,
+                                layout=layout), img

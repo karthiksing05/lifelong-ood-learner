@@ -379,6 +379,34 @@ rather than sampling a Gaussian. The paper's own table hints the same way: their
 analytic teacher does. We could not reproduce that ordering here because our distillation is trained
 on an already-collapsed pool — garbage in.
 
+### 30a. The CelebA banding artifact IS the permutation — confirmed with a control and a counter-control
+
+The samples show horizontal seams and rectangular patches cutting an otherwise coherent face. The
+permuted layout predicts exactly that, and predicts **where**: its three "channels" are image rows
+[0, H/3), [H/3, 2H/3), [2H/3, H), the first convolution treats channels independently, and nothing
+enforces continuity where the bands meet. For 64px that is **rows 21 and 43**.
+
+`tests/diag_band_artifact.py` scores the row-to-row difference at those two boundaries against the
+median elsewhere. 1.0 means no seam:
+
+| | seam score at rows 21 / 43 |
+|---|---|
+| **real CelebA** (control) | **0.906** — no seam |
+| our 64px backbone, `permuted` | **2.314** |
+| 12-epoch matched pair, `permuted` | 1.424 |
+| 12-epoch matched pair, **`hwc`** (counter-control) | **1.004** — seam gone |
+
+**The prediction was sharp and it held.** The discontinuity spikes at precisely the two rows the
+permutation implies, at 2.6× the level real data shows, and an otherwise identical backbone trained
+in the correct layout sits at the control's own value. This is the artifact, it is the layout, and it
+is fixable.
+
+It also explains why §30's accuracy test missed it. Joint composition accuracy asks whether the digit
+and the colours are right; it is indifferent to a seam across the face. **The layout fix should be
+judged on artifacts and on the training objective — where it wins decisively — not on ColorMNIST
+composition accuracy, where it does not.** §30's paired result stands; it was measuring the wrong
+thing for this question.
+
 **What this does and does not touch.** The lifelong machinery is unaffected: it consolidates
 faithfully whatever it is given (98% retention, bit-identical preservation). What is undermined is
 the *value* of consolidating, since a collapsed pool teaches an adapter one image. Composition gets
