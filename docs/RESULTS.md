@@ -379,6 +379,41 @@ rather than sampling a Gaussian. The paper's own table hints the same way: their
 analytic teacher does. We could not reproduce that ordering here because our distillation is trained
 on an already-collapsed pool — garbage in.
 
+### 30b. The pretrained backbone was being fed scrambled input, and it invalidates the whole pretrained track
+
+This is the more serious half, and it is the blocker for replicating the companion paper at all,
+because **their entire CelebA setup is a fine-tune of `google/ddpm-celebahq-256`.**
+
+On a backbone we train ourselves, the permutation costs the convolutional prior — bad, but the model
+at least learns *in* that space. On a **pretrained** model it is a different kind of error: the
+weights are fixed and were fitted to real images, so a permuted row is simply wrong input to a frozen
+function. `tests/diag_pretrained_layout.py` measures it three ways on the untouched model:
+
+| | `permuted` (what the repo did) | `hwc` (a real image) |
+|---|---|---|
+| one-step denoise of a real face, RMSE | 0.3796 | **0.0763** |
+| ... against a no-op baseline of | 0.6048 | 0.6048 |
+| unconditional samples | **a 3×3 tiled mosaic of greyscale faces** | photorealistic colour faces |
+
+**Under the permuted layout the field returned a 3×3 tiled greyscale mosaic** while `DDPMPipeline`
+sampling the *same weights* returns photorealistic faces (`figures/f25_pretrained_layout.png`). The
+one-step denoise recovers the target at RMSE 0.076 under `hwc` against 0.380 permuted — a 5× gap,
+and permuted is barely better than the 0.605 you get by doing nothing at all.
+
+**Consequences, stated plainly.**
+
+* **Every image-quality number measured through the pretrained field is void**, including §29a's
+  finding that the paper's own backbone still produced rough samples (tv 1.45–4.82). That was our
+  field being broken, not their backbone. **§29a's conclusion — "the damage is downstream of the
+  backbone" — is retracted.**
+* **The preservation claims survive**, because bit-identity is a property of optimizer scoping and
+  does not depend on what the input tensor looks like. §12's 0.000e+00 preservation still holds.
+* The 3×3 mosaic is the same failure mode §5o recorded on our own CelebA backbone in a different
+  guise, which is why it read as familiar and was mistaken for "undertrained".
+
+`PretrainedScoreField` now defaults to `layout="hwc"` and converts at all four boundaries — `eps` in
+and out, `x_init`, the guidance callback, and the return value. The pretrained track is being rerun.
+
 ### 30a. The CelebA banding artifact IS the permutation — confirmed with a control and a counter-control
 
 The samples show horizontal seams and rectangular patches cutting an otherwise coherent face. The
