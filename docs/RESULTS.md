@@ -4016,10 +4016,17 @@ schedule, differing **only** in layout, at the real recipe (160 slots, `n_per_sl
 | | `permuted` (every backbone to date) | `hwc` (a real image) | |
 |---|---|---|---|
 | held-out ε-prediction loss | 0.01417 | **0.01011** | **−28.7 %** |
-| joint composition accuracy, trained slots | 0.714 | **0.745** | **+0.031** |
+| joint composition accuracy, trained slots | 0.714 | 0.745 | +0.031 &nbsp;*(unpaired — see below)* |
 | tv ratio vs real | **1.221** | 1.398 | +0.177 (worse) |
 
-**The training objective improves by 28.7 % for free**, and conditional accuracy follows it up. The
+**The training objective improves by 28.7 % for free.** That number is solid: the held-out loss is
+computed on the *same* split for both arms.
+
+**The accuracy number is not yet, and the reason is a bug of mine worth recording.** The evaluation
+slot set was drawn *inside* the arm loop, so the RNG advanced between arms and the two layouts were
+scored on **different held-out compositions** — an unpaired comparison presented as a controlled one.
+Fixed (one draw, before the loop, with per-slot accuracies recorded so the delta can be reported
+paired and win/loss counted); the rerun is what the +0.031 has to survive. The
 roughness metric moves the other way — the fixed model produces *more* high-frequency texture, which
 overshoots real rather than undershooting it. A shorter 30-epoch run reproduced the loss effect
 almost exactly (−29.5 %), so it is not a single-run artefact.
