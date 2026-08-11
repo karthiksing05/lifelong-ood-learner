@@ -51,17 +51,19 @@ def main():
         xt = np.sqrt(a) * np.atleast_2d(x0) + np.sqrt(1 - a) * e
         return float(np.mean((field.eps(xt, u) - e) ** 2))
 
-    print(f"  {'u':>6s} {'optimizer':>10s} {'frac |x0|>1':>12s} {'max |x0|':>10s} "
+    print(f"  {'u':>6s} {'setting':>18s} {'frac |x0|>1':>12s} {'max |x0|':>10s} "
           f"{'eps error':>11s} {'(query)':>9s}")
     for u in (0.05, 0.1, 0.2, 0.3, 0.4):
         q = eps_err(np.clip(xq, -1, 1), u)
-        for lab, kw in (("Adam", dict(adam=True, clamp=False)),
-                        ("plain", dict(adam=False, clamp=False)),
-                        ("Adam+x0proj", dict(adam=True, clamp="x0"))):
-            _, x0 = field.mode_ascent(xq, u, n_starts=8, iters=150, lr=0.1, seed=0,
-                                      init="hybrid", tweedie=False, **kw)
+        # THE QUESTION: on CelebA, lr 0.02 dominates the paper's 0.09 -- fully in gamut AND a lower
+        # eps error.  If it is also no worse here, ONE global step size fixes CelebA and keeps the
+        # benchmarks on identical settings.  If it is worse here, the step is genuinely
+        # dataset-dependent and that has to be argued from the input, not from convenience.
+        for lab, lr in (("lr 0.10 (paper CM)", 0.10), ("lr 0.05", 0.05), ("lr 0.02", 0.02)):
+            _, x0 = field.mode_ascent(xq, u, n_starts=8, iters=150, lr=lr, seed=0,
+                                      init="hybrid", tweedie=False, clamp=False, adam=True)
             x0 = np.asarray(x0)
-            print(f"  {u:6.2f} {lab:>10s} {float((np.abs(x0) > 1).mean()):12.4f} "
+            print(f"  {u:6.2f} {lab:>18s} {float((np.abs(x0) > 1).mean()):12.4f} "
                   f"{float(np.abs(x0).max()):10.3f} {eps_err(np.clip(x0, -1, 1), u):11.4f} "
                   f"{q:9.4f}")
     print("\n[cm-gamut] a near-zero out-of-range fraction under Adam means ColorMNIST never had the\n"

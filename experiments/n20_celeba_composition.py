@@ -45,7 +45,7 @@ from lifelong_ood.evals import (attr_accuracy, density_coverage, frechet_distanc
                                 vendi_score)
 from lifelong_ood.neural import (NeuralLifelongLearner, load_field, sample_embedding,  # noqa: E402
                                  to_data, to_model)
-from lifelong_ood.compose import PAPER_POE_CELEBA                      # noqa: E402
+from lifelong_ood.compose import PAPER_CELEBA, PAPER_POE_CELEBA        # noqa: E402
 from lifelong_ood.neural.composable import compose_attributes_scores   # noqa: E402
 
 FIG = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "figures")
@@ -241,8 +241,16 @@ def main():
 
         # ── the published method, and its own weakest baseline ──────────────
         if not args.skip_poe:
-            t = L.compose(xq, u_grid=(0.1, 0.2, 0.3, 0.4),
-                          n_starts=4 if args.quick else 12, iters=20 if args.quick else 80)
+            # CelebA's ascent settings, imported.  This used to hardcode a 4-level grid with no
+            # `lr`, so it ran at candidates_ascent's ColorMNIST default of 0.1 -- LARGER than the
+            # 0.09 measured to overshoot into off-manifold modes on this backbone.  Our CelebA
+            # headline was therefore building its PoE teacher from prototypes that are not
+            # natural images: the inconsistency we inherit from Wang et al., made worse by using
+            # the other dataset's default.
+            _disc = dict(PAPER_CELEBA)
+            if args.quick:
+                _disc.update(n_starts=4, iters=20)
+            t = L.compose(xq, **_disc)
             # the published method in its published configuration -- see n9 for why this matters.
             # This said so while passing w0=1.2, the paper's COLOR-MNIST strength; Table 8 gives
             # CelebA w0=0.5, so the published method was being run at 2.4x its own guidance here.

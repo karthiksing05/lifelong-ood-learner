@@ -46,9 +46,10 @@ from lifelong_ood.neural import NeuralLifelongLearner, to_data, to_model        
 from lifelong_ood.neural.pretrained import load_pretrained                      # noqa: E402
 
 FIG = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "figures")
-# the paper's Table 6, CelebA column
-PAPER_DISC = dict(u_grid=tuple(round(t / 1000, 3) for t in range(50, 501, 50)),
-                  n_starts=8, iters=100, lr=0.09, init="query", probes=4)
+# the paper's Table 6 CelebA column -- IMPORTED, not re-typed.  A local copy of a shared constant
+# is how the w0 bug happened (six files each holding their own `PAPER_POE`), and it happened again
+# here: PAPER_CELEBA's ascent step was corrected to 0.02 and this file kept its own 0.09.
+from lifelong_ood.compose import PAPER_CELEBA as PAPER_DISC                    # noqa: E402
 OURS_DISC = dict(u_grid=(0.1, 0.2, 0.3, 0.4), n_starts=12, iters=80, lr=0.1,
                  init="hybrid", probes=4)
 # Table 8, CelebA column: w0=0.5.  This file previously used 1.2, the Color-MNIST value.

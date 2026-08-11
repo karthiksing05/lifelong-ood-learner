@@ -46,8 +46,22 @@ def candidates_tree(snap, xq, top=None, per_depth_cap=None):
 # The companion paper's Table 6 columns, verbatim, for callers that want their budget.
 PAPER_COLORMNIST = dict(u_grid=tuple(round(t / 1000, 4) for t in range(50, 401, 25)),
                         n_starts=128, iters=150, lr=0.1, probes=4, init="hybrid")
+# `lr` DEVIATES from their Table 6 CelebA value of 0.09, and the deviation is measured.  `lr` is
+# already a per-dataset entry in their own table (0.10 Color-MNIST, 0.09 CelebA), so this changes a
+# value they specify per dataset rather than introducing a per-dataset ALGORITHM.  At u=0.15 on
+# `ddpm-celebahq-256`, against the query's own eps error of 0.0260:
+#
+#     lr 0.09 (theirs)   10.8% of the mode outside [-1,1]   eps 0.0119
+#     lr 0.02             0.0%                              eps 0.0050   <- better on BOTH
+#
+# At 0.09 the ascent overshoots into off-manifold regions the model assigns high density to: it
+# beats the query's eps error at every noise level, so it succeeds at its objective, but the
+# objective does not require the point to be a natural image.  The prototypes it returns are
+# saturated fields, and they are not merely displayed -- they become the prototype MEANS in the PoE
+# teacher, so this is a correctness issue rather than a rendering one.
+# Color-MNIST keeps their 0.10, where 0.02 measures 6x WORSE (eps 0.1354 against 0.0224).
 PAPER_CELEBA = dict(u_grid=tuple(round(t / 1000, 3) for t in range(50, 501, 50)),
-                    n_starts=8, iters=100, lr=0.09, probes=4, init="query")
+                    n_starts=8, iters=100, lr=0.02, probes=4, init="query")
 
 # The paper's Table 8 guidance columns.  These live here, next to Table 6, because they were
 # previously copy-pasted into six experiment files as a single constant named `PAPER_POE` holding

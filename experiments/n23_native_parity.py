@@ -39,6 +39,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from common import CACHE, RESULTS, backbone_gains, ood_queries          # noqa: E402
 
 from lifelong_ood.datasets import load_colormnist                       # noqa: E402
+from lifelong_ood.compose import PAPER_CELEBA               # noqa: E402
 from lifelong_ood.evals import (composition_accuracy, fit_probes, precision_recall,  # noqa: E402
                                 sample_geometry, save_json)
 from lifelong_ood.neural import (NeuralLifelongLearner, load_field, to_data,  # noqa: E402
@@ -133,7 +134,7 @@ def main():
     Lp = NeuralLifelongLearner(field_p, steps=args.steps, seed=args.seed, device=dev, flat=True)
     for qi, q in enumerate(qs):
         xq = to_model(data["X"][q["query"]]).ravel()
-        t = Lp.compose(xq, u_grid=(0.1, 0.2, 0.3, 0.4),
+        t = Lp.compose(xq, **dict(PAPER_CELEBA, u_grid=PAPER_CELEBA['u_grid']),
                        n_starts=8 if args.quick else 16, iters=30 if args.quick else 120)
         pool = Lp.sample_teacher(t, n=48, seed=args.seed + qi)
         Lp.consolidate(pool, f"p{q['slot']}", mu=t["mu"], epochs=args.epochs)
