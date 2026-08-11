@@ -8,6 +8,29 @@ This repository argues that **composition is the mechanism that makes that possi
 the argument on two benchmarks (one where the factors occupy disjoint pixels, one where they overlap)
 and on a pretrained 113.7M-parameter diffusion model we did not train.
 
+## The architecture in one table
+
+Every arriving concept is priced by a router, and **only the last tier grows the model**:
+
+| tier | when it applies | cost | measured |
+|---|---|---|---|
+| **ADDRESS** | anything the factor basis already spans | **72 bytes** | **31,895× cheaper** than a block at *higher* F1 — 0.699 vs 0.572 (§25) |
+| **EXTEND BASIS** | a new *value* of a known factor | **1 KB** | F1 0.755 ± 0.037 at zero per-concept parameters, beating per-concept adapters at 0.658 (§5q) |
+| **BLOCK** | a genuinely new *factor*, or nothing factored | **69K** (rank 1) | the tier is real: conditioning-only routes score **0.000** here (§5q) |
+
+That is the whole thesis operationally. **Cost tracks the world's vocabulary, not the length of the
+stream** — routing an arrangement to the basis rather than a block is a **538×** difference, and it
+is the piece with no counterpart in the companion paper, whose pipeline spends a full LoRA on every
+query. Twenty-four concepts stored by addressing cost **1.7 KB** against **55 MB** of blocks, and the
+backbone is not merely preserved but never written to at all.
+
+**ADDRESS is the default; BLOCK is the exception the router escalates to.** Three caveats travel with
+the claim and are not buried: it needs a factor basis to exist (there is none on an unconditional
+pretrained model, §12); growth is monotone rather than constant, flattening only if vocabulary is
+finite; and both escape hatches are damaged — repeated merges destroy the model (§5r, 0.837 → 0.073)
+and deletion reclaims a median 0.250 of a path (§22a).
+
+
 ![the loop](figures/f1_loop.png)
 
 The full architecture, laid out against Figure 1 of the companion paper — their four stages unchanged in the top band, ours beside them, and the bank opened up to the tensors:

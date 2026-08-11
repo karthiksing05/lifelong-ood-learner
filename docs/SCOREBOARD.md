@@ -26,6 +26,7 @@ disfavour after audits found we were running a baseline weakly ([RESULTS.md](RES
 | **native parity** | **ours** | no baseline offers it |
 | **robustness as the grid thins** | **ours** | at 80/160 slots withheld the companion method drops 0.892 → 0.292; ours holds 0.467 |
 | **parameter economy** | ✗ `independent` | 7.16M vs our 8.82M at higher ACC; loss survives a fair rank sweep of both arms (§24d) |
+| **storage per concept (graded)** | **ours** | **ADDRESS 72 B** / EXTEND BASIS 1 KB / BLOCK 69K — 31,895× cheaper than a block at higher F1 (§25); no baseline offers a graded route |
 | **cost per new concept** | **ours** | routing makes an *arrangement* cost 1024 B against 551K — **538×** — so cost tracks vocabulary, not experience |
 
 Two losses, both stated in [../CONTRIBUTIONS.md](../CONTRIBUTIONS.md) rather than buried.
