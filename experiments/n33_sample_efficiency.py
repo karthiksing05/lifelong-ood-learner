@@ -45,7 +45,7 @@ from lifelong_ood.neural import (NeuralLifelongLearner, load_field,           # 
 from lifelong_ood.neural.idealwords import slot_factors                       # noqa: E402
 from lifelong_ood.neural.inversion import learn_embedding, sample_embedding   # noqa: E402
 
-PAPER_POE = dict(schedule="variance", var_scale=1.0, w0=1.2, wmax=2.0, wmin=0.0)
+from lifelong_ood.compose import PAPER_POE_COLORMNIST as PAPER_POE
 
 
 def combine_teachers(ts):

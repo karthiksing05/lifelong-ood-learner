@@ -51,7 +51,8 @@ PAPER_DISC = dict(u_grid=tuple(round(t / 1000, 3) for t in range(50, 501, 50)),
                   n_starts=8, iters=100, lr=0.09, init="query", probes=4)
 OURS_DISC = dict(u_grid=(0.1, 0.2, 0.3, 0.4), n_starts=12, iters=80, lr=0.1,
                  init="hybrid", probes=4)
-PAPER_POE = dict(schedule="variance", var_scale=1.0, w0=1.2, wmax=2.0, wmin=0.0)
+# Table 8, CelebA column: w0=0.5.  This file previously used 1.2, the Color-MNIST value.
+from lifelong_ood.compose import PAPER_POE_CELEBA as PAPER_POE
 
 
 def main():

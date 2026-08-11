@@ -49,6 +49,17 @@ PAPER_COLORMNIST = dict(u_grid=tuple(round(t / 1000, 4) for t in range(50, 401, 
 PAPER_CELEBA = dict(u_grid=tuple(round(t / 1000, 3) for t in range(50, 501, 50)),
                     n_starts=8, iters=100, lr=0.09, probes=4, init="query")
 
+# The paper's Table 8 guidance columns.  These live here, next to Table 6, because they were
+# previously copy-pasted into six experiment files as a single constant named `PAPER_POE` holding
+# w0=1.2 -- which is the paper's COLOR-MNIST value.  Table 8 gives CelebA **w0 = 0.5**, so every
+# CelebA run in this repository (n20, n44, diag_celeba_chain) guided at 2.4x the published strength
+# under a constant that claimed to be the paper's.  Over-guidance saturates and adds artifacts, and
+# it was applied to `poe-guided` -- the paper's own method -- which is a large part of why that arm
+# looked broken on CelebA relative to the published figures.  One definition per dataset, so the
+# next caller cannot pick the wrong one by accident.
+PAPER_POE_COLORMNIST = dict(schedule="variance", var_scale=1.0, w0=1.2, wmax=2.0, wmin=0.0)
+PAPER_POE_CELEBA = dict(schedule="variance", var_scale=1.0, w0=0.5, wmax=2.0, wmin=0.0)
+
 
 def candidates_ascent(field, xq, u_grid=(0.05, 0.1, 0.15, 0.2, 0.3, 0.4), n_starts=16, iters=150,
                       lr=0.1, seed=0, probes=4, dedup_rmse=0.05, init="hybrid"):

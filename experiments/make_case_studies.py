@@ -28,7 +28,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from common import CACHE, RESULTS, backbone_gains, ood_queries          # noqa: E402
 
 FIG = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "figures")
-PAPER_POE = dict(schedule="variance", var_scale=1.0, w0=1.2, wmax=2.0, wmin=0.0)
+from lifelong_ood.compose import PAPER_POE_COLORMNIST as PAPER_POE
 
 
 def panel(fig, gs_row, imgs, side, label, note="", n=6, cmap=None):
@@ -125,10 +125,18 @@ def colormnist(args):
         from lifelong_ood.compose import PAPER_COLORMNIST
         disc = (dict(PAPER_COLORMNIST) if args.paper_budget
                 else dict(u_grid=(0.1, 0.2, 0.3, 0.4), n_starts=16, iters=120))
-        t = L.compose(xq, **disc)
-        from lifelong_ood.compose import candidates_ascent
-        M, V, _ = candidates_ascent(field, xq, u_grid=(0.1, 0.2, 0.3, 0.4), n_starts=16,
-                                    iters=120, seed=args.seed)
+        # ONE ascent run feeding both the teacher and the prototypes row.  This used to call
+        # `L.compose(xq, **disc)` for `t` and a SECOND, separately-parameterized `candidates_ascent`
+        # for `M`, so `t["sel"]` indexed a different mode array than the one being displayed.  With
+        # matching settings and seed the two runs coincided and the bug was invisible; under
+        # `--paper-budget` the settings diverge and it raised IndexError (sel 503 into 50 modes).
+        # Every prototype panel rendered before this fix came from an ascent run that was only
+        # accidentally the same one the teacher selected from.
+        # K/tau/seed pulled from the learner config so this is byte-for-byte what `L.compose` did.
+        from lifelong_ood.compose import candidates_ascent, poe_teacher
+        M, V, meta = candidates_ascent(field, xq, seed=L.cfg["seed"], **disc)
+        t = poe_teacher(xq, M, V, K=L.cfg["K"], tau=L.cfg["tau"])
+        t["meta"] = meta
         got = {"real": R[:args.n_show],
                "prototypes": to_data(M[t["sel"]]).astype(np.float32),
                "poe-guided (paper Eq.14)": to_data(

@@ -49,7 +49,7 @@ from lifelong_ood.neural.idealwords import slot_factors                      # n
 
 FIG = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "figures")
 # the companion paper's own configuration for its teacher (RESULTS 5l-bis)
-PAPER_POE = dict(schedule="variance", var_scale=1.0, w0=1.2, wmax=2.0, wmin=0.0)
+from lifelong_ood.compose import PAPER_POE_COLORMNIST as PAPER_POE
 
 
 def main():

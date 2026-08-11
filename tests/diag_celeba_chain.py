@@ -41,7 +41,8 @@ from lifelong_ood.evals import attr_accuracy, fit_attr_probes, probe_usable    #
 from lifelong_ood.neural import load_field, to_data, to_model                  # noqa: E402
 
 CK = os.path.join(CACHE, "ddpm_celeba_factored.pt")
-PAPER_POE = dict(schedule="variance", var_scale=1.0, w0=1.2, wmax=2.0, wmin=0.0)
+# Table 8, CelebA column: w0=0.5.  This file previously used 1.2, the Color-MNIST value.
+from lifelong_ood.compose import PAPER_POE_CELEBA as PAPER_POE
 
 
 def main():

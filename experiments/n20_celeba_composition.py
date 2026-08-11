@@ -45,6 +45,7 @@ from lifelong_ood.evals import (attr_accuracy, density_coverage, frechet_distanc
                                 vendi_score)
 from lifelong_ood.neural import (NeuralLifelongLearner, load_field, sample_embedding,  # noqa: E402
                                  to_data, to_model)
+from lifelong_ood.compose import PAPER_POE_CELEBA                      # noqa: E402
 from lifelong_ood.neural.composable import compose_attributes_scores   # noqa: E402
 
 FIG = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "figures")
@@ -242,11 +243,11 @@ def main():
         if not args.skip_poe:
             t = L.compose(xq, u_grid=(0.1, 0.2, 0.3, 0.4),
                           n_starts=4 if args.quick else 12, iters=20 if args.quick else 80)
-            # the published method in its published configuration -- see n9 for why this matters
+            # the published method in its published configuration -- see n9 for why this matters.
+            # This said so while passing w0=1.2, the paper's COLOR-MNIST strength; Table 8 gives
+            # CelebA w0=0.5, so the published method was being run at 2.4x its own guidance here.
             got["poe-guided"] = to_data(L.sample_teacher(t, n=args.n_samples, seed=args.seed + ci,
-                                                         schedule="variance", var_scale=1.0,
-                                                         w0=1.2, wmax=2.0,
-                                                         wmin=0.0)).astype(np.float32)
+                                                         **PAPER_POE_CELEBA)).astype(np.float32)
             tq = L.baseline_teacher(xq, kind="query_only")
             got["query-only"] = to_data(L.sample_teacher(tq, n=args.n_samples,
                                                          seed=args.seed + ci)).astype(np.float32)
