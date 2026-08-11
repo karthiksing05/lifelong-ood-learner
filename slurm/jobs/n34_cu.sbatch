@@ -16,4 +16,9 @@ PY=$HOME/flash/miniconda3/envs/chunks/bin/python
 # and "THIS ancestor" stay distinguishable.
 srun $PY experiments/n34_reuse.py --quick --rule cu || exit 1
 srun $PY experiments/n34_reuse.py --k-family 3 --seed 0 --rule cu --tag _cu
-echo "exit=$? | $(date)"
+rc=$?
+# Propagate the real exit code.  `echo` as the last command always succeeds, so SLURM
+# reported COMPLETED for a run that bus-errored at epoch 34/90 and any monitor reading
+# sacct saw a success.
+echo "exit=$rc | $(date)"
+exit $rc

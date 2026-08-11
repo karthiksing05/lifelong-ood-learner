@@ -14,4 +14,9 @@ export PYTHONIOENCODING=utf-8
 # the loss comparison is readable.  4 blocks x 30 = 120 epochs puts every arm above the threshold.
 srun $HOME/flash/miniconda3/envs/chunks/bin/python experiments/n37_progressive_seal.py \
     --blocks 4 --epochs-per-block 30 --seed 0 --tag _e120
-echo "exit=$? | $(date)"
+rc=$?
+# Propagate the real exit code.  `echo` as the last command always succeeds, so SLURM
+# reported COMPLETED for a run that bus-errored at epoch 34/90 and any monitor reading
+# sacct saw a success.
+echo "exit=$rc | $(date)"
+exit $rc

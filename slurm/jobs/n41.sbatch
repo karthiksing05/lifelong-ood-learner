@@ -12,4 +12,9 @@ export PYTHONIOENCODING=utf-8
 PY=$HOME/flash/miniconda3/envs/chunks/bin/python
 srun $PY experiments/n41_addressing.py --quick || exit 1
 srun $PY experiments/n41_addressing.py --n-concepts 24 --seed 0
-echo "exit=$? | $(date)"
+rc=$?
+# Propagate the real exit code.  `echo` as the last command always succeeds, so SLURM
+# reported COMPLETED for a run that bus-errored at epoch 34/90 and any monitor reading
+# sacct saw a success.
+echo "exit=$rc | $(date)"
+exit $rc

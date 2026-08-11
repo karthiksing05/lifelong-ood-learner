@@ -13,4 +13,9 @@ PY=$HOME/flash/miniconda3/envs/chunks/bin/python
 # does the cu rule actually change the tree ON REAL TEACHER MEANS, not just planted ones?
 srun $PY experiments/n38_hierarchy_growth.py --n-concepts 40 --n-orders 5 --seed 0 \
     --rule cu --branch-max 16 --max-depth 6 --tag _cu
-echo "exit=$? | $(date)"
+rc=$?
+# Propagate the real exit code.  `echo` as the last command always succeeds, so SLURM
+# reported COMPLETED for a run that bus-errored at epoch 34/90 and any monitor reading
+# sacct saw a success.
+echo "exit=$rc | $(date)"
+exit $rc

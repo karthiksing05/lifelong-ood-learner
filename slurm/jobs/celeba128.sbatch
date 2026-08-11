@@ -16,10 +16,15 @@ export PYTHONIOENCODING=utf-8
 # disk, because they were launched before that fix existed.  --requeue lets SLURM restart them.
 if [ "$SPLIT" = "pair" ]; then
   srun $PY experiments/n19_celeba_train.py --img 128 --epochs 90 --batch 128 --base 64 --seed 0 \
-      --save-every 5 --holdout-pair Smiling Big_Nose \
+      --save-every 5 --resume --holdout-pair Smiling Big_Nose \
       --out results/cache/ddpm_celeba128_nopairSmiling-Big_Nose.pt
 else
   srun $PY experiments/n19_celeba_train.py --img 128 --epochs 90 --batch 128 --base 64 --seed 0 \
-      --save-every 5 --out results/cache/ddpm_celeba128.pt
+      --save-every 5 --resume --out results/cache/ddpm_celeba128.pt
 fi
-echo "exit=$? | $(date)"
+rc=$?
+# Propagate the real exit code.  `echo` as the last command always succeeds, so SLURM
+# reported COMPLETED for a run that bus-errored at epoch 34/90 and any monitor reading
+# sacct saw a success.
+echo "exit=$rc | $(date)"
+exit $rc

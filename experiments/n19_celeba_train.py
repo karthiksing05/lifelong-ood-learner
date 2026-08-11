@@ -81,6 +81,12 @@ def build_probes(data, seed, epochs, cache=True, layout="hwc"):
 def main():
     p = argparse.ArgumentParser()
     p.add_argument("--epochs", type=int, default=70)
+    p.add_argument("--resume", action="store_true",
+                   help="continue from <out>.partial if it exists, training only the epochs that "
+                        "remain.  Both 128px runs have now been killed mid-flight -- one preempted "
+                        "at 64/90 before checkpointing existed (total loss), one bus-errored at "
+                        "34/90 after (30 epochs recovered).  Without this the recovered epochs are "
+                        "on disk and still unusable.")
     p.add_argument("--save-every", type=int, default=5,
                    help="write a resumable snapshot to <out>.partial every N epochs; 0 disables. "
                         "At 128px an epoch is ~17 min and the run does not fit comfortably inside "
@@ -228,9 +234,24 @@ def main():
         os.replace(tmp + ".tmp", tmp)
         print(f"[n19] checkpoint at epoch {ep}/{args.epochs} -> {tmp}", flush=True)
 
+    start_ep = 0
+    part = args.out + ".partial"
+    if args.resume and os.path.exists(part):
+        pk = torch.load(part, map_location="cpu", weights_only=False)
+        start_ep = int(pk.get("epochs_done", 0))
+        model.load_state_dict({k: v.to(model.state_dict()[k].dtype)
+                               for k, v in pk["ema"].items()})
+        model.to(dev)
+        print(f"[n19] RESUMING from {os.path.basename(part)} at epoch {start_ep}/{args.epochs} "
+              f"-- {args.epochs - start_ep} to go.  Note the weights loaded are the EMA, which is a "
+              f"smoothed copy of the training state; the run continues from it rather than from the "
+              f"exact optimizer trajectory, and the EMA restarts fresh.", flush=True)
+    remaining = max(args.epochs - start_ep, 0)
+
     t0 = time.time()
-    ema = train_ddpm(model, data["X8"][tr], y, epochs=args.epochs, batch=args.batch, lr=args.lr,
-                     device=dev, seed=args.seed, tf32=True, on_epoch=checkpoint)
+    ema = train_ddpm(model, data["X8"][tr], y, epochs=remaining, batch=args.batch, lr=args.lr,
+                     device=dev, seed=args.seed + start_ep, tf32=True,
+                     on_epoch=lambda ep, e: checkpoint(ep + start_ep, e))
     mins = (time.time() - t0) / 60
     torch.save(package(ema, args.epochs), args.out)
     if os.path.exists(args.out + ".partial"):

@@ -18,4 +18,9 @@ srun $PY experiments/n35_competence.py --seed 0 --ckpts \
     $C/ddpm_colormnist_ladder_ep10.pt $C/ddpm_colormnist_ladder_ep20.pt \
     $C/ddpm_colormnist_ladder_ep40.pt $C/ddpm_colormnist_ladder_ep80.pt \
     $C/ddpm_colormnist_ladder_ep130.pt $C/ddpm_colormnist_ladder.pt
-echo "exit=$? | $(date)"
+rc=$?
+# Propagate the real exit code.  `echo` as the last command always succeeds, so SLURM
+# reported COMPLETED for a run that bus-errored at epoch 34/90 and any monitor reading
+# sacct saw a success.
+echo "exit=$rc | $(date)"
+exit $rc
