@@ -172,9 +172,13 @@ def main():
     fig.suptitle(
         f"CelebA on the backbone the companion paper actually used — pretrained {args.model}, "
         f"no training.\n"
-        f"Discovery = {'the paper''s Table 6 CelebA column' if args.paper_discovery else 'ours'}.  "
-        f"§29 audited fourteen setup differences; the from-scratch backbone was the one that "
-        f"determined image quality, and it penalised every arm equally.", fontsize=9)
+        f"Discovery = {'the paper' + chr(39) + 's Table 6 CelebA column' if args.paper_discovery else 'ours'}; "
+        f"guidance = their Table 8 w0=0.5; input layout corrected (RESULTS 30b).\n"
+        f"The PROTOTYPES row clips: unconstrained mode ascent — the paper's own Adam setting — "
+        f"leaves ~11% of a mode outside [-1,1], and clipping those for display is what the flat "
+        f"saturated colour is.\nIt is a rendering property, not a defect in the composition: the "
+        f"teacher and the guidance consume the raw values, and the samples below are at real-image "
+        f"texture (tv ~1.0).", fontsize=8)
     fig.tight_layout(rect=[0, 0, 1, 0.965])
     out = os.path.join(FIG, f"f18_celeba_paper{args.tag}.png")
     fig.savefig(out, dpi=130, bbox_inches="tight")
