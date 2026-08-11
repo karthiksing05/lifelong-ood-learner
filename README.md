@@ -68,12 +68,22 @@ lifelong learner:
 
 ```
 for each arriving query, forever:
-    COMPOSE      their four stages, unchanged
-    ROUTE        is this a new ARRANGEMENT of parts we have, or a genuinely new PART?
-    CONSOLIDATE  arrangement → a shared basis direction (1024 bytes)
-                 new part    → a new leaf in an insert-only adapter bank
-    CERTIFY      every previously consolidated concept is checked bit-identical
+    COMPOSE   their four stages, unchanged
+    ROUTE     price the arrival from the model's own denoising error — no labels
+    STORE     at the CHEAPEST tier that can hold it:
+                 ADDRESS        72 B   the factor basis already spans it →
+                                       store coordinates, move no parameter at all
+                 EXTEND BASIS    1 KB  a new VALUE of a known factor →
+                                       one shared direction, amortized over every
+                                       later concept that uses that value
+                 BLOCK          69 K   a new FACTOR, or nothing factored →
+                                       a low-rank block: THE ONLY TIER THAT GROWS THE MODEL
+    CERTIFY   every previously stored concept is checked bit-identical
 ```
+
+**ADDRESS is the default and BLOCK is the exception**, which is the inversion the companion paper's
+pipeline makes: it spends a full LoRA on every query. Cost then tracks the world's *vocabulary*
+rather than the length of the stream, because only the third tier is a function of arrivals.
 
 ---
 
@@ -238,8 +248,15 @@ def absorb(x_q):
     s_vocab = min_c  E_eps[ || eps_theta(noise(x_q, u=0.45), c) - eps ||^2 ]   # over basis compositions
 
     if   s_novel <= t_novel:  return                      # already in distribution: do nothing
-    elif s_vocab <= t_vocab:  kind = "new ARRANGEMENT"     # expressible in the factor basis
-    else:                     kind = "new VOCABULARY"      # a factor VALUE we do not have
+    elif s_vocab <= t_vocab:  tier = "ADDRESS"             # the basis SPANS it: 72 bytes, no weights
+    else:                     tier = "EXTEND or BLOCK"     # the basis lacks something
+
+    # HONEST GAP, stated because it is load-bearing: this router has three outcomes, and its third
+    # lumps EXTEND BASIS and BLOCK together.  Nothing here yet distinguishes "a new VALUE of a known
+    # factor" (1 KB) from "a genuinely new FACTOR" (69K) -- a 69x difference in cost decided by hand.
+    # The detectable version is testable and unbuilt: does the residual after the best basis fit lie
+    # INSIDE the span of the existing factor directions (a new value) or outside it (a new factor)?
+    # What IS measured is that the distinction is real, not how to detect it (§5q).
 
     # ── 2. COMPOSE — read the query IN THE FACTOR BASIS ─────────────────────
     # Not a free vector, and not a weighting over the ~120 entangled class embeddings: one softmax
@@ -249,10 +266,20 @@ def absorb(x_q):
     w = [softmax(logits_f) for f in factors]              # learned by inversion through the FROZEN model
     c_new = mu + sum_f  gain[f] * (w[f] @ V[f])           # gain[f] calibrated on TRAINED slots, label-free
 
-    if kind == "new VOCABULARY":
-        V[f] = concat(V[f], new_direction)                # extend the basis: 1024 bytes
-        # (measured: a genuinely new VALUE cannot be composed — it needs a weight update
-        #  from real images. §7c. The router's job is to tell these two cases apart.)
+    if tier == "ADDRESS":
+        STORE[name] = (w, gain)                           # 18 floats = 72 BYTES. Return here.
+        return                                            # nothing below this line runs, and no
+                                                          # parameter anywhere has moved.
+
+    if tier == "EXTEND BASIS":                            # a new VALUE of a known factor
+        V[f] = concat(V[f], new_direction)                # 1024 bytes, learned from REAL images
+        # Measured, and it is why this tier cannot be folded into ADDRESS: a genuinely new VALUE
+        # cannot be composed out of existing directions — conditioning-only routes score 0.000
+        # (§5q). It needs a weight update, and the pool must be REAL data: distilling the composer's
+        # own samples inherits the ceiling of whatever generated them. Once the direction exists,
+        # every later concept using that value is back to tier 1 and costs 72 bytes.
+
+    # tier == "BLOCK" falls through to the distillation below — the only path that grows the model.
 
     # ── 3. SAMPLE the pool FROM THE MANIFOLD, not from the teacher ──────────
     # The PoE teacher is a unimodal Gaussian: guiding toward it collapses every trajectory onto its

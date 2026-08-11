@@ -183,9 +183,12 @@ def main():
     tx, tw = 0.292, 0.262
     ax.text(tx + tw / 2, yb + hb - 0.070, "what a concept costs to STORE", ha="center",
             fontsize=9.8, fontweight="bold")
+    ax.text(tx + tw / 2, yb + hb - 0.098, "the router takes the CHEAPEST tier that fits; "
+            "only the last one grows the model", ha="center", fontsize=7.4,
+            style="italic", color="#444")
     classes = [(GREEN, "#D6ECD9", "ADDRESS  —  coordinates",
                 "72 bytes   ·   31,895× cheaper than a block",
-                "F1 0.699 against a block's 0.572 (§25)"),
+                "F1 0.678±.042 vs a block's 0.587, 3 seeds (§25)"),
                (GREEN, "#E3F0E4", "EXTEND BASIS  —  one direction",
                 "1 KB, once per new factor VALUE",
                 "covers every combination using it (§5q)"),
