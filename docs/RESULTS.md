@@ -3625,6 +3625,21 @@ Three storage classes, which the existing router already distinguishes (§6c):
 accuracy exactly (0.484) and *beats* it on F1 (0.699 vs 0.572), while tying `block-r1` within noise.
 Twenty-four concepts cost **1.7 KB**, against 55 MB.
 
+**Replicated over three seeds** (`slurm/jobs/n41_seeds.sbatch`, `--n-score 8`):
+
+| arm | F1 (3 seeds) | per-seed | paired Δ vs addressing |
+|---|---|---|---|
+| **`addressing`** | **0.678 ± 0.042** | 0.707 / 0.618 / 0.709 | — |
+| `block-r1` | 0.643 ± 0.042 | 0.701 / 0.600 / 0.629 | **+0.035**, 3/3 seeds |
+| `block-every` | 0.587 ± 0.020 | 0.606 / 0.560 / 0.595 | **+0.091**, 3/3 seeds |
+
+Addressing wins in **every seed against both blocks**, which the single-seed table above did not
+show — there `block-r1` scored 0.719 and led. That reversal is exactly the seed noise §5p measured
+(up to 0.07 F1 between two runs of the same command), and it is why the single-seed ordering should
+not be quoted. The defensible claim is the paired one: **addressing is not worse than a block at
+31,895× less storage**, with a consistent but sub-seed-spread edge over rank 1 (min paired gap
+0.006) and a clean one over rank 8 (min 0.058).
+
 ### 25a. The same question with blocks kept (N40)
 
 `addressing` removes weights entirely.  The complementary curve asks how far the *additive* setting

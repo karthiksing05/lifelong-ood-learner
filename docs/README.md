@@ -10,6 +10,7 @@ claims; this folder is the evidence behind them.
 | **[RESULTS.md](RESULTS.md)** | the complete lab record, in the order things were learned |
 | **[TABLES.md](TABLES.md)** | every headline number with error bars, regenerated from `results/` |
 | **[RELATED.md](RELATED.md)** | positioning, which baselines are fair for this setting, citation hazards |
+| **[SETTINGS.md](SETTINGS.md)** | every hyperparameter vs the companion paper's Tables 5–8, marked MATCH / DEVIATION / INFIDELITY |
 | **[ASSESSMENT.md](ASSESSMENT.md)** | publication readiness, assessed against what the numbers support |
 
 ---

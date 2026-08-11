@@ -14,7 +14,7 @@ Every arriving concept is priced by a router, and **only the last tier grows the
 
 | tier | when it applies | cost | measured |
 |---|---|---|---|
-| **ADDRESS** | anything the factor basis already spans | **72 bytes** | **31,895× cheaper** than a block at *higher* F1 — 0.699 vs 0.572 (§25) |
+| **ADDRESS** | anything the factor basis already spans | **72 bytes** | **31,895× cheaper** than a block, and not worse — F1 0.678 ± 0.042 vs 0.587 ± 0.020 over 3 seeds (§25) |
 | **EXTEND BASIS** | a new *value* of a known factor | **1 KB** | F1 0.755 ± 0.037 at zero per-concept parameters, beating per-concept adapters at 0.658 (§5q) |
 | **BLOCK** | a genuinely new *factor*, or nothing factored | **69K** (rank 1) | the tier is real: conditioning-only routes score **0.000** here (§5q) |
 
@@ -117,10 +117,13 @@ own conditioning space:
 | a new *value* of a known factor | one basis direction | 1024 bytes |
 | a new *factor*, or nothing factored | a low-rank block | the only case that grows the model |
 
-Measured over 24 concepts (§25): **72 bytes per concept against 2,296,467 — 31,895× — at F1 0.699
-against 0.572**, with the backbone not merely preserved but **never written to at all**. Twenty-four
-concepts cost 1.7 KB. The limit is real and stated: a genuinely new *factor* still needs a block,
-where conditioning-only routes score 0.000.
+Measured over 24 concepts (§25): **72 bytes per concept against 2,296,467 — 31,895×** — with the
+backbone not merely preserved but **never written to at all**. Twenty-four concepts cost 1.7 KB.
+Across **three seeds** (§25) addressing scores **F1 0.678 ± 0.042** against **0.587 ± 0.020** for a
+full rank-8 block and **0.643 ± 0.042** for rank 1, winning in *every* seed against both (+0.091 and
++0.035 paired). Read that as *addressing costs 31,895× less and is not worse*; the margin over rank 1
+is consistent in sign but smaller than the seed spread. The limit is real and stated: a genuinely new
+*factor* still needs a block, where conditioning-only routes score 0.000.
 
 **4. What a new part costs, when one is needed, is a knob currently set too high.** A block at rank 8 is 551K
 parameters; at **rank 1 it is 69K**, and across three seeds the accuracy is indistinguishable
@@ -605,6 +608,7 @@ bash reproduce.sh all
 | [docs/RESULTS.md](docs/RESULTS.md) | the complete record, including every refuted hypothesis |
 | [docs/TABLES.md](docs/TABLES.md) | every number with error bars, regenerated from `results/` |
 | [docs/RELATED.md](docs/RELATED.md) | positioning, which baselines are fair, citation hazards |
+| [docs/SETTINGS.md](docs/SETTINGS.md) | every hyperparameter vs the paper's Tables 5–8; what we match, what we deviate from on purpose, what was accidental |
 | [docs/ASSESSMENT.md](docs/ASSESSMENT.md) | publication readiness, assessed against the evidence |
 
 ## Layout
