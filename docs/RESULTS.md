@@ -3831,6 +3831,68 @@ lifelong one.
 matched comparisons — `score-add` across schemes, and `ours` vs `score-add` *within* a scheme — are
 the valid ones, and a budget difference is unlikely to close a 4.5× gap.
 
+## 29. Why CelebA looks worse here than in the companion paper: a full setup audit
+
+CelebA results here are visibly worse than the paper's — for **our** method and for **theirs** — and
+that has been noted several times without being localized. Reading the companion paper's Appendices
+B, C, D and F against our configuration finds **not one bug but fourteen differences**, three of
+which are large enough to explain the image quality on their own.
+
+### 29a. The three that dominate
+
+| | companion paper | this repository | why it matters |
+|---|---|---|---|
+| **backbone initialization** | **fine-tunes `google/ddpm-celebahq-256`** (sample_size overridden to 128) | **trained from scratch** | They begin from a model that already renders photorealistic faces. We ask a 21M-parameter UNet to learn faces *and* conditioning from nothing. This is the picture-quality gap, and no downstream setting can close it. |
+| **training budget** | **500,000 steps on 4× RTX 6000**, bf16, ≈50 h wall ⇒ ~200 GPU-hours | ~90 epochs on **1** A40, fp32, ≈26 GPU-hours | ~8× less compute, on a harder task. |
+| **benchmark size** | **74 realized classes** — 51 seen, 23 held out; 26,775 train images ⇒ **~525 img/class** | **911–1205 combos**, 111 held out; 88,184 train images ⇒ **~97 img/class** | Our benchmark is ~12× wider with ~5× fewer images per class, so the conditioning is estimated from far less evidence and the discrimination problem is far harder. |
+
+**These affect every arm equally, which is the point.** A weak backbone caps `poe-guided`, `ours`,
+and every baseline alike — the paper's method is not being reproduced badly so much as being run on a
+substrate a fraction as good.
+
+### 29b. The rest of the audit
+
+| axis | paper | ours | note |
+|---|---|---|---|
+| resolution | 128×128 | 64px (128 in training now) | being fixed |
+| diffusion schedule | **linear β**, T=1000 | **cosine ᾱ** | a real schedule mismatch, repo-wide |
+| precision | bf16 | fp32 | minor |
+| conditioning | class-embedding table, \|C\|+1 rows (52) | **factored** (per-attribute sum) | our deliberate deviation (§n19), justified there but *not* the paper's setup |
+| holdout design | each held-out class differs from a **seen** class by **one attribute** | held-out *pair* (`Smiling`×`Big_Nose`), or 24 random combos | ours is a far harder split, by design and not by accident |
+| ascent timestep grid | **[50, 500, 50]** → 10 levels | `(0.1, 0.2, 0.3, 0.4)` → **4 levels** | we search a coarser, narrower ladder |
+| ascent starts / timestep | 8 | 12 | we use more |
+| ascent iterations | 100 | 80 | we use fewer |
+| ascent step size | 0.09 | 0.1 | minor |
+| **ascent initialization** | **query-centered** | **hybrid (50% query / 50% random)** | our documented deviation — helpful on ColorMNIST, never re-validated on CelebA |
+| softmax temperature τ | **0.5 fixed** | **adaptive** | our documented deviation (§5-poe), justified on ColorMNIST |
+| queries per OOD class | **100** | far fewer | our error bars are wider than theirs |
+| K prototypes | 3 | 3 | matches |
+| Hutchinson probes | 4 | 4 | matches |
+
+### 29c. What this means, and what to do
+
+**The honest reading is that our CelebA numbers are not a reproduction of the paper's CelebA
+experiment.** They share a dataset name and little else: a from-scratch 21M backbone on 12× the
+classes with ~8× less compute, a different noise schedule, a different conditioning scheme, a harder
+holdout, and a coarser discovery ladder. Every CelebA comparison in this document should be read as
+*internally* valid — all arms share the substrate — and **not** as evidence about the companion
+method's published performance.
+
+The fix is ordered by expected effect:
+
+1. **Use the pretrained backbone.** `google/ddpm-celebahq-256` is already cached here and §12 already
+   proved our bank attaches to it with 0.000e+00 preservation. This is the single highest-value
+   change and it needs no training at all.
+2. **Rebuild the benchmark to the paper's shape** — ~74 realized classes, 23 holdouts chosen one
+   attribute away from a seen class.
+3. **Match discovery**: 10-level timestep grid, query-centered init, 100 iterations, τ = 0.5 — at
+   minimum as a `--paper-exact` arm so our deviations are measured against it rather than assumed
+   better.
+4. Linear β and bf16, if the backbone is retrained at all.
+
+Item 1 subsumes items 2 and 4 for image quality and is the only one that changes what the samples
+look like. It is also the setup the paper actually used for its own CelebA figures.
+
 ## 8. Where the numbers come from
 
 | experiment | file | scale run |

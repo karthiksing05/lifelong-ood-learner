@@ -131,7 +131,13 @@ def colormnist(args):
         L.learn_concept_factored(xq, f"c{q['slot']}", n_pool=48, epochs=args.epochs,
                                  inv_steps=args.inv_steps, seed=args.seed,
                                  guidance=args.guidance)
-        got["ours"] = to_data(L.sample_concept(f"c{q['slot']}", n=args.n_show, seed=args.seed))
+        # `--dial s` starts the reverse process from the prototype noised to level s instead of from
+        # pure noise (§20).  s=1.0 is the old behaviour -- unconstrained draws from the concept's
+        # conditional, which is what every table reports and what makes these panels look loose.
+        # §20b measured F1 across the dial: 0.410 at s=0.80, 0.669 at s=0.90, 0.599 at s=1.00.
+        got["ours"] = to_data(L.sample_concept(
+            f"c{q['slot']}", n=args.n_show, seed=args.seed, steps=args.steps,
+            u_start=args.dial, x_init=(t["mu"] if args.dial < 1.0 else None)))
         a0 = teacher_init_alpha(field, t, xq, seed=args.seed)
         got["nearest-class"] = to_data(field.sample(n=args.n_show, steps=args.steps,
                                                     seed=args.seed, clip=(-1, 1),
@@ -154,10 +160,12 @@ def colormnist(args):
         f"best.  Median joint over all 40 is 0.438, range [0.00, 0.94], and it is strongly "
         f"colour-dependent\n(green-on-navy 0.719 vs yellow-on-dark_brown 0.125).  `prototypes` are "
         f"what mode ascent discovered; the companion method runs on its OWN Eq. 14 schedule.  "
+        f"`ours` is sampled at prototype-distance dial s={args.dial:g} (§20).  "
         f"Accuracy is high where coverage is zero.  Sampled with {args.steps} steps "
         f"(tables use 50); the residual texture is the BACKBONE's -- it scores 1.59x real "
         f"on its own TRAINED classes, worse than anything downstream of it.", fontsize=8)
-    p = os.path.join(FIG, "f9_case_colormnist.png")
+    tag = "" if args.dial >= 1.0 else f"_s{args.dial:g}"
+    p = os.path.join(FIG, f"f9_case_colormnist{tag}.png")
     fig.savefig(p, dpi=145, bbox_inches="tight"); plt.close(fig)
     print(f"  wrote {p}")
 
@@ -192,6 +200,11 @@ def main():
                         "value the table does.  At the old implicit 1.0 some samples land "
                         "on the wrong background, and at 3.0 the colour factor breaks "
                         "entirely -- see tests/diag_ours_quality.py.")
+    p.add_argument("--dial", type=float, default=1.0,
+                   help="prototype-distance dial for the `ours` row (§20): the reverse "
+                        "process starts from the prototype noised to this level.  1.0 = "
+                        "pure noise (the tables' setting); lower ties samples to the "
+                        "prototype.  §20b measured F1 0.410 at 0.80 and 0.669 at 0.90.")
     p.add_argument("--seed", type=int, default=0)
     args = p.parse_args()
     os.makedirs(FIG, exist_ok=True)
