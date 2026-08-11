@@ -138,8 +138,12 @@ figures|all)
   "$PY" experiments/make_rank_frontier.py           # F12: quality-vs-parameters frontier
   # PYTHONIOENCODING: redirected stdout defaults to latin-1 on this cluster and the tables
   # contain em-dashes, so without it the file is written truncated at the first one.
-  PYTHONIOENCODING=utf-8 "$PY" experiments/make_paper_tables.py > TABLES.md \
-    && echo "  wrote TABLES.md"
+  # docs/TABLES.md, NOT ./TABLES.md: every link in README.md and docs/README.md points at the
+  # docs/ copy, so writing the root one left the linked file stale.  The two had already
+  # diverged -- the root copy carried the bold/underline notation block and the linked one
+  # did not.
+  PYTHONIOENCODING=utf-8 "$PY" experiments/make_paper_tables.py > docs/TABLES.md \
+    && echo "  wrote docs/TABLES.md"
   ;;
 *)
   echo "usage: $0 {tests|backbones|colormnist|celeba|analytic|supporting|figures|all}"; exit 1 ;;
