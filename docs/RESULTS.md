@@ -3517,6 +3517,51 @@ What it is *not* yet is validated end to end: a better-shaped tree is only worth
 §24b's transfer appear, and that has to be measured rather than assumed — the same mistake the
 reuse claim made before the `wrong-family` control was added.
 
+### 24j. The fix, measured: insert-only category utility recovers 91% of an offline oracle
+
+The §24i table said a criterion swap was available and unvalidated. It is now validated on the real
+teacher means, at the scale where the caterpillar appeared (40 concepts, `n39_placement.py`):
+
+| arm | balance | **purity (fg / bg)** | internal nodes | forced descents |
+|---|---|---|---|---|
+| `current` (**shipped**) | 0.512 | **0.27** | 4 | **36%** |
+| `caps` (bmax 16, dmax 6) | 0.851 | 0.31 | 5 | 27% |
+| `nodevar` (per-node variance) | 0.637 | 0.38 | 7 | 3% |
+| **`cu` insert-only** | **0.995** | **0.60** | **20** | **0%** |
+| `cu` at the *shipped* caps (4 / 3) | 0.995 | 0.60 | 20 | 0% |
+| `GaussianCobweb` (**with** merge + split) | 0.946 | 0.61 | 13 | — |
+| `agglom` (offline oracle, sees all 40) | 0.866 | **0.66** | 39 | — |
+| *random baseline* | — | *0.25* | — | — |
+
+Three things follow.
+
+**The shipped rule is at chance.** 0.27 against a random baseline of 0.25, on data where the offline
+oracle reaches 0.66 and the control (§24g Part 1) confirms colour genuinely clusters — silhouette
++0.178 for both fg and bg in μ-space. It is not finding structure that is demonstrably there.
+
+**Insert-only CU recovers essentially all of it.** 0.60 against full Cobweb's 0.61 — **98% of what
+merge and split buy** — and 91% of the offline oracle, while remaining insert-only and therefore
+compatible with the preservation certificate. The forbidden operators turn out to be worth ~0.01
+purity here; the criterion was worth 0.33.
+
+**And it needs no hyperparameter change.** `cu` at the shipped caps (branch_max 4, max_depth 3) scores
+identically to `cu` at 16/6. Once the criterion can choose "start a new group", saturation-forced
+descent never fires (0% forced, against 36% under `ll`) and the caps stop mattering. §24f blamed the
+caps; the caps were a symptom.
+
+The shape changes accordingly: balance 0.512 → **0.995**, and internal nodes 4 → **20**, so there are
+five times as many places where sharing could occur. Redrawing N38's tree under `rule="cu"` gives
+**16–17 shared nodes across every arrival order** against the 3 the shipped rule produced.
+
+**What is still not claimed.** A better-shaped tree is a means, not a result. §24b measured that
+routing a newcomer through its family transfers nothing *under the caterpillar*, where the "family"
+ancestor was shared by 32 of 40 concepts and so encoded nothing family-specific. Whether transfer
+appears once families are real is the experiment this makes possible and it has not been run. Asserting
+it would repeat exactly the error the `wrong-family` control was added to catch.
+
+`ConceptTree(rule="cu")` is implemented with `"ll"` as the default, so no existing number in this
+document moves; the full suite passes unchanged (11/11) after the change.
+
 ### 24e. What this means for the claims
 
 The hierarchy's *structural* properties hold and are the ones the certificates rest on: sealed nodes

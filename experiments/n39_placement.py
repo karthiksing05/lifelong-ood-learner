@@ -95,6 +95,8 @@ class InstrumentedTree(ConceptTree):
     def _descend(self, mu):
         if self.flat:
             return [0]
+        if self.rule == "cu":          # instrumentation is about the `ll` caps; cu has no forcing
+            return self._descend_cu(mu)
         path, cur = [0], 0
         for _ in range(self.max_depth):
             kids = list(self.children[cur])
@@ -194,16 +196,25 @@ def main():
 
     data = load_colormnist(n_per_slot=args.n_per_slot, seed=args.seed)
     qs = ood_queries(data, n_slots=args.n_concepts, seed=args.seed)[:args.n_concepts]
-    field = load_field(args.ckpt, device=dev)
-    L = NeuralLifelongLearner(field, steps=args.steps, seed=args.seed, device=dev)
-    mus, labels = [], []
-    print(f"[n39] composing {len(qs)} teachers", flush=True)
-    for i, q in enumerate(qs):
-        mus.append(np.ravel(L.compose(to_model(data["X"][q["query"]]).ravel())["mu"]))
-        labels.append(dict(d=int(q["d"]), f=int(q["f"]), b=int(q["b"])))
-    del field, L
-    torch.cuda.empty_cache()
-    M = np.stack(mus)
+    # Mode ascent over 40 queries is ~19 min and is the ONLY GPU cost here; the placement study
+    # varies nothing that affects it, so cache the means and let rule iteration be seconds.
+    cache = os.path.join(CACHE, f"n39_mus_{args.n_concepts}_{args.seed}.npz")
+    labels = [dict(d=int(q["d"]), f=int(q["f"]), b=int(q["b"])) for q in qs]
+    if os.path.exists(cache):
+        M = np.load(cache)["M"]
+        print(f"[n39] loaded {len(M)} cached teacher means from {os.path.basename(cache)}",
+              flush=True)
+    else:
+        field = load_field(args.ckpt, device=dev)
+        L = NeuralLifelongLearner(field, steps=args.steps, seed=args.seed, device=dev)
+        mus = []
+        print(f"[n39] composing {len(qs)} teachers", flush=True)
+        for q in qs:
+            mus.append(np.ravel(L.compose(to_model(data["X"][q["query"]]).ravel())["mu"]))
+        del field, L
+        torch.cuda.empty_cache()
+        M = np.stack(mus)
+        np.savez_compressed(cache, M=M)
 
     # ── PART 1: is there structure to find at all? ───────────────────────────
     from scipy.spatial.distance import pdist, squareform
@@ -233,7 +244,9 @@ def main():
     rows = []
     arms = [("current", dict(branch_max=4, max_depth=3, node_var=False)),
             ("caps", dict(branch_max=16, max_depth=6, node_var=False)),
-            ("nodevar", dict(branch_max=16, max_depth=6, node_var=True))]
+            ("nodevar", dict(branch_max=16, max_depth=6, node_var=True)),
+            ("cu-insertonly", dict(branch_max=16, max_depth=6, node_var=False, rule="cu")),
+            ("cu-shippedcaps", dict(branch_max=4, max_depth=3, node_var=False, rule="cu"))]
     for name, kw in arms:
         t = InstrumentedTree(var=0.1, **kw)
         paths = [t.insert(m)[0] for m in M]
