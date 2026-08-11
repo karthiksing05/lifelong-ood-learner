@@ -1,4 +1,13 @@
-"""Does ColorMNIST have the out-of-gamut problem that plain ascent was introduced to fix?
+"""Adam vs plain ascent on ColorMNIST, judged by the objective ascent exists to reduce.
+
+The settings must be the SAME on both benchmarks -- a per-dataset algorithmic choice is how a
+comparison stops being one -- so the choice needs an arm-neutral criterion measured on both.  On
+CelebA that was done: plain ascent left 0.0% of the mode out of gamut against Adam's 11.1%, and
+reached a lower eps error (0.0046 vs 0.0113) than Adam did.
+
+Only the GAMUT half was ever measured on ColorMNIST.  The eps error -- the quantity ascent is
+actually minimizing, and one that does not care which arm benefits -- was not, and it is the half
+that decides a global default.  This measures both.
 
 Plain gradient ascent replaced Adam because on the PRETRAINED CelebA backbone, Adam left 11.1% of
 each returned mode outside [-1,1] and those coordinates clip to flat saturated colour.  That change
@@ -33,14 +42,28 @@ def main():
     data = load_colormnist(n_per_slot=4, seed=0)
     xq = to_model(data["X"][:1]).ravel()
     print("[cm-gamut] ColorMNIST backbone; CelebA measured 11.1% out of range under Adam\n")
-    print(f"  {'u':>6s} {'optimizer':>10s} {'frac |x0|>1':>12s} {'max |x0|':>10s}")
+    from lifelong_ood.score import cosine_abar
+
+    def eps_err(x0, u, seed=1):
+        r = np.random.default_rng(seed)
+        a = float(cosine_abar(u))
+        e = r.standard_normal(np.atleast_2d(x0).shape)
+        xt = np.sqrt(a) * np.atleast_2d(x0) + np.sqrt(1 - a) * e
+        return float(np.mean((field.eps(xt, u) - e) ** 2))
+
+    print(f"  {'u':>6s} {'optimizer':>10s} {'frac |x0|>1':>12s} {'max |x0|':>10s} "
+          f"{'eps error':>11s} {'(query)':>9s}")
     for u in (0.05, 0.1, 0.2, 0.3, 0.4):
-        for lab, adam in (("Adam", True), ("plain", False)):
+        q = eps_err(np.clip(xq, -1, 1), u)
+        for lab, kw in (("Adam", dict(adam=True, clamp=False)),
+                        ("plain", dict(adam=False, clamp=False)),
+                        ("Adam+x0proj", dict(adam=True, clamp="x0"))):
             _, x0 = field.mode_ascent(xq, u, n_starts=8, iters=150, lr=0.1, seed=0,
-                                      init="hybrid", clamp=False, tweedie=True, adam=adam)
+                                      init="hybrid", tweedie=False, **kw)
             x0 = np.asarray(x0)
             print(f"  {u:6.2f} {lab:>10s} {float((np.abs(x0) > 1).mean()):12.4f} "
-                  f"{float(np.abs(x0).max()):10.3f}")
+                  f"{float(np.abs(x0).max()):10.3f} {eps_err(np.clip(x0, -1, 1), u):11.4f} "
+                  f"{q:9.4f}")
     print("\n[cm-gamut] a near-zero out-of-range fraction under Adam means ColorMNIST never had the\n"
           "           problem plain ascent fixes, and the paper's Adam should stand here.")
     return 0

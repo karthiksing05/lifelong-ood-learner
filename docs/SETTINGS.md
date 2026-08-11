@@ -15,6 +15,48 @@ Source: `poe-diffusion.pdf`, Tables 5–8 (backbone, discovery, distillation, sa
 
 ---
 
+## 0. The rule these tables are held to
+
+**Every benchmark runs the same core settings. A per-dataset difference is legitimate only when it
+reflects the input's dimensions** — resolution, channel count, or a cost that scales with them.
+Anything else is per-dataset algorithmic tuning, and a comparison whose algorithm changes with the
+dataset is not a comparison.
+
+Audited against that rule, the settings that differ between Color-MNIST and CelebA fall into three
+groups:
+
+| setting | Color-MNIST | CelebA | verdict |
+|---|---|---|---|
+| `u_grid`, `iters`, `lr`, `init` | 15 levels, 150, 0.10, hybrid | 10 levels, 100, 0.09, query | **the paper's own Table 6 columns** — reproduced, not chosen by us |
+| `n_starts` | 128 | 8 | their column, and cost-driven: per-step ascent on 128×128 is far dearer than on 32×32 |
+| PoE `w0` | 1.2 | 0.5 | their Table 8 columns |
+| `probes`, `wmax` | 4, 2.0 | 4, 2.0 | identical already |
+| `adam`, `clamp`, `tweedie` | Adam, off, off | Adam, off, off | **reverted to the paper's setting, uniform on both** |
+
+The last row is the one that needed fixing, and the fix was to **undo all three**. They were
+introduced from CelebA evidence during the 2026-08-11 artifact investigation and briefly applied per
+dataset, which meant our own algorithm differed between benchmarks. Judged on both benchmarks by a
+criterion that does not care which arm benefits — the eps error at the returned mode, the quantity
+ascent minimizes — no single alternative beats the paper's Adam:
+
+| | Color-MNIST, u=0.05 | pretrained CelebA, u=0.15 |
+|---|---|---|
+| **Adam** (their Table 6) | **0.0224** | 0.0113 |
+| plain gradient | 0.1505 | **0.0046** |
+| Adam + x₀ projection | 0.0696 | — |
+
+The optimizer that wins on one loses on the other, and the unified alternative loses on both. **And
+the change was never needed**: the CelebA artifact was the input layout, and fixing *that alone* took
+`poe-guided` from 2.50–3.88× real roughness to 1.00/0.89/1.23 with Adam untouched. Adding a clamp
+gave 1.04/0.94/1.20; adding plain ascent 1.02/0.82/1.11 — inside the noise of doing nothing further.
+
+What remains true is that Adam leaves ~11% of a CelebA mode outside [−1,1], so the **prototype panels
+show clipping when rendered**. That is a display property of unconstrained ascent, not a defect in
+the composition: the teacher and the guidance consume the raw values, and the samples are at
+real-image texture either way. §5c is retained as the record of a hypothesis that was tested and
+rejected.
+
+
 ## 1. Backbone training (their Table 5)
 
 | Parameter | Paper Color-MNIST | Ours | Paper CelebA | Ours | |

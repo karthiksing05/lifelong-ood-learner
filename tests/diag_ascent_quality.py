@@ -64,9 +64,11 @@ def main():
             ("Adam  lr 0.09   20it",             dict(lr=0.09, iters=20, adam=True)),
             ("plain lr 0.09  100it",             dict(lr=0.09, iters=100, adam=False)),
             ("plain lr 0.30  100it",             dict(lr=0.30, iters=100, adam=False)),
-            ("plain lr 1.00  100it",             dict(lr=1.00, iters=100, adam=False))):
-        _, x0 = field.mode_ascent(xq, u, n_starts=4, seed=0, init="query", clamp=False,
-                                  tweedie=True, **kw)
+            ("plain lr 1.00  100it",             dict(lr=1.00, iters=100, adam=False)),
+            ("Adam+x0proj lr 0.09 100it",        dict(lr=0.09, iters=100, adam=True, clamp="x0"))):
+        kw = dict(kw); cl = kw.pop("clamp", False)
+        _, x0 = field.mode_ascent(xq, u, n_starts=4, seed=0, init="query", clamp=cl,
+                                  tweedie=False, **kw)
         x0 = np.asarray(x0)
         frac = float((np.abs(x0) > 1.0).mean())
         err = eps_err(field, np.clip(x0, -1, 1), u, np.random.default_rng(1))

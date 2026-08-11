@@ -163,41 +163,25 @@ class BaseScoreField:
                     clamp=False, k_sigma=3.0, tweedie=False, adam=True):
         """Adam ascent on log p_t from noised copies of the query -> (modes in x_t space, x0-space).
 
-        `adam=True` is the default, matching the paper's Table 6.  `adam=False` -- PLAIN gradient
-        ascent -- is selected PER DATASET where it is needed, and the criterion is where the problem
-        it fixes actually occurs rather than where it happens to help:
+        `adam=True`, `clamp=False`, `tweedie=False` -- the paper's Table 6 setting, and the SAME on
+        every benchmark.  All three were briefly changed during the 2026-08-11 artifact
+        investigation and all three are reverted, because the measurements do not support them:
 
-            pretrained CelebA, u=0.15   Adam leaves 11.1% of the mode outside [-1,1]
-            Color-MNIST, u=0.05..0.40   Adam leaves 0.00%-0.32%
+          * the criterion is the eps error at the returned mode, which is what ascent minimizes and
+            does not care which arm benefits.  Adam wins it on Color-MNIST by a wide margin
+            (0.0224 against plain's 0.1505 at u=0.05) and loses it on the pretrained CelebA backbone
+            (0.0113 against 0.0046).  A per-dataset optimizer would be algorithmic tuning by
+            dataset, which is not a comparison; an `x0`-space projection was tried as a unified
+            alternative and is worse than either on Color-MNIST (0.0696).
+          * and the change was not needed.  The CelebA artifact was the INPUT LAYOUT: fixing that
+            alone took poe-guided from 2.50-3.88x real roughness to 1.00/0.89/1.23, with Adam and no
+            clamp.  Adding clamp gave 1.04/0.94/1.20 and plain ascent 1.02/0.82/1.11 -- inside the
+            noise of doing nothing further.
 
-        So Color-MNIST never had the out-of-gamut problem and keeps the paper's optimizer; CelebA
-        has it badly and uses plain ascent (`PAPER_CELEBA` sets `adam=False`).  That distinction
-        matters for fairness: switching Color-MNIST to plain ascent improved OUR arm and cost the
-        companion method 0.100 of joint accuracy for nothing in return (recall 0.001 either way),
-        which is not a change that should be made on a dataset that had no problem to fix.  Adam's update is normalized: every coordinate
-        moves by about `lr` per iteration however small its gradient is, so near a mode, where the
-        gradient vanishes, it keeps taking full-sized steps and marches past.  Measured on the
-        pretrained CelebA backbone at u=0.15, against the query's own eps error of 0.0260:
-
-            Adam  lr 0.09 100it (their column)   11.1% of x0 out of range   eps 0.0113
-            Adam  lr 0.02 100it                   0.0%                      eps 0.0056
-            plain lr 0.09 100it                   0.0%                      eps 0.0046
-            plain lr 1.00 100it                  32.9%                      eps 0.0469 (worse
-                                                                            than the query)
-
-        Plain ascent is better on BOTH axes: it stays entirely in gamut and finds a lower-error
-        mode.  That matters because out-of-range coordinates get clipped for display, and a large
-        fraction of them clipped to exactly +-1 is what made the prototypes posterize into flat
-        saturated colour -- clamping alone changed the numbers and not the pictures, because the
-        values still arrived at the edge.
-
-        `clamp` and `tweedie` are OFF by default for the same reason `adam` stays on: they were
-        introduced from CelebA evidence and they move Color-MNIST numbers, including the baseline's.
-        Restoring the paper's optimizer alone took `poe-guided` from 0.739 back to only 0.781, not
-        to its 0.839 -- the remaining 0.058 is these two, which change what a "mode" IS (a Tweedie
-        denoised estimate rather than the rescaled ascent point) and clip it to the valid range.
-        Both are defensible in principle and neither is free, so `PAPER_CELEBA` turns them on where
-        the out-of-gamut defect was measured and Color-MNIST keeps the original behaviour.
+        What remains true is that Adam leaves ~11% of a CelebA mode outside [-1,1], so the PROTOTYPE
+        PANELS show clipping when rendered.  That is a display property of unconstrained ascent, not
+        a defect in the composition: the teacher and the guidance consume the raw values, and the
+        samples they produce are at real-image texture either way.
 
         `clamp` keeps the ascent on the DATA'S SUPPORT, and without it this walks off into nonsense.
         Adam's update is normalized, so every coordinate moves by about `lr` per iteration whatever
@@ -235,7 +219,16 @@ class BaseScoreField:
                 # (1-abar) puts the step in x-units.  Unlike Adam this step SHRINKS as the gradient
                 # vanishes, which is what makes it settle at a mode instead of marching past it.
                 x = x + lr * (1.0 - a) * g
-            if clamp:
+            if clamp == "x0":
+                # PROJECT ONTO THE SUPPORT, in x0 space.  A valid x_t is sqrt(abar)*x0 + noise with
+                # x0 in [-1,1], so the constraint that actually means something is on the implied
+                # x0, not on x_t.  The earlier box on x_t (bound = sqrt(abar) + 3*sqrt(1-abar)) was
+                # loose enough that values still piled up at its edge, which is why clamping changed
+                # the numbers and not the pictures.  Projecting the Tweedie estimate and re-noising
+                # keeps the iterate on the manifold at every step instead of at the end.
+                x0h = (x + (1.0 - a) * g) / np.sqrt(a)
+                x = np.sqrt(a) * np.clip(x0h, -1.0, 1.0) + (x - np.sqrt(a) * x0h)
+            elif clamp:
                 x = np.clip(x, -bound, bound)
         # x0-space mode by TWEEDIE, not by rescaling.  `x / sqrt(abar)` is the noisy point divided
         # by sqrt(abar): it still CONTAINS the noise, amplified by 1/sqrt(abar).  Measured, that is

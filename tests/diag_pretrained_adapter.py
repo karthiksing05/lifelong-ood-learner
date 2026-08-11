@@ -61,11 +61,16 @@ def main():
           f"   <- anything far from this is destroying the model\n", flush=True)
 
     rows, panels = [], {"no adapter": base}
-    settings = [("rank 8, lr 1e-3, 40ep  (n26)", dict(rank=8, lr=1e-3, epochs=40)),
-                ("rank 8, lr 1e-4, 40ep",        dict(rank=8, lr=1e-4, epochs=40)),
-                ("rank 8, lr 1e-5, 40ep",        dict(rank=8, lr=1e-5, epochs=40)),
-                ("rank 1, lr 1e-3, 40ep",        dict(rank=1, lr=1e-3, epochs=40)),
-                ("rank 8, lr 1e-3,  5ep",        dict(rank=8, lr=1e-3, epochs=5))]
+    # `epochs` here is GRADIENT STEPS, and that is the axis the first pass missed.  At 40 steps the
+    # n26 setting left the model intact (tv 0.890 against a control of 0.973), so the perturbation
+    # magnitude is not the fault.  n26 runs 40 epochs over ~96 images, which is an order of
+    # magnitude more optimization -- so the sweep has to reach that far before it can say anything
+    # about n26's failure.
+    settings = [("rank 8, lr 1e-3,   40 steps (n26 hparams)", dict(rank=8, lr=1e-3, epochs=40)),
+                ("rank 8, lr 1e-3,  200 steps",               dict(rank=8, lr=1e-3, epochs=200)),
+                ("rank 8, lr 1e-3,  600 steps  (~n26)",       dict(rank=8, lr=1e-3, epochs=600)),
+                ("rank 8, lr 1e-4,  600 steps",               dict(rank=8, lr=1e-4, epochs=600)),
+                ("rank 1, lr 1e-3,  600 steps",               dict(rank=1, lr=1e-3, epochs=600))]
     for label, kw in settings:
         t0 = time.time()
         bank = HierarchicalAdapterBank(field.model, rank=kw["rank"], device=dev, flat=True,

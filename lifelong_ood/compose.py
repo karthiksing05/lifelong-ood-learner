@@ -46,11 +46,8 @@ def candidates_tree(snap, xq, top=None, per_depth_cap=None):
 # The companion paper's Table 6 columns, verbatim, for callers that want their budget.
 PAPER_COLORMNIST = dict(u_grid=tuple(round(t / 1000, 4) for t in range(50, 401, 25)),
                         n_starts=128, iters=150, lr=0.1, probes=4, init="hybrid")
-# `adam=False` is a DEVIATION from their Table 6 and applies to CelebA only: Adam leaves
-# 11.1% of each mode outside [-1,1] here, which clips to flat saturated colour, while on
-# Color-MNIST it leaves 0.00%-0.32% and the paper's optimizer is kept.
 PAPER_CELEBA = dict(u_grid=tuple(round(t / 1000, 3) for t in range(50, 501, 50)),
-                    n_starts=8, iters=100, lr=0.09, probes=4, init="query", adam=False, clamp=True, tweedie=True)
+                    n_starts=8, iters=100, lr=0.09, probes=4, init="query")
 
 # The paper's Table 8 guidance columns.  These live here, next to Table 6, because they were
 # previously copy-pasted into six experiment files as a single constant named `PAPER_POE` holding
