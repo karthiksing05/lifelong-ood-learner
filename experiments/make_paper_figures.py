@@ -19,6 +19,7 @@ n20_celeba_composition.py, which need the backbones; this script leaves them alo
 """
 import json
 import os
+import shutil
 import sys
 
 import numpy as np
@@ -312,13 +313,33 @@ def f6_parity(A):
 
 
 def f7_f8_rename():
-    for src, dst in (("n18_router.png", "f7_router.png"), ("n24_growth.png", "f8_growth.png"),
-                     ("n9_showdown.png", "f9_case_colormnist.png"),
-                     ("n20_celeba_composition_pair.png", "f10_case_celeba.png")):
-        s = os.path.join(FIG, src)
-        if os.path.exists(s):
-            os.replace(s, os.path.join(FIG, dst))
-            print(f"  wrote figures/{dst}")
+    """Give the raw experiment figures their paper names.
+
+    Two corrections here, both of which had silently stopped this doing its job:
+
+    * `n9_showdown.png -> f9_case_colormnist.png` COLLIDED with `make_case_studies.py`, which writes
+      `f9_case_colormnist.png` directly and is the actual case-study panel (real / prototypes / four
+      methods, annotated with accuracy AND coverage).  Whichever ran last won, so the README's case
+      study was whichever figure happened to be written most recently.  The showdown keeps its own
+      name now.
+    * The CelebA source is written under the run's TAG.  The canonical CelebA table is the
+      `_pairfull` run (reproduce.sh aliases it), so `n20_celeba_composition_pair.png` is not what
+      the 3-seed run produces and f10 stopped tracking it.  Both names are tried, newest first.
+    """
+    pairs = [("n18_router.png", "f7_router.png"), ("n24_growth.png", "f8_growth.png"),
+             ("n9_showdown.png", "f9b_showdown_colormnist.png"),
+             (("n20_celeba_composition_pairfull.png", "n20_celeba_composition_pair.png"),
+              "f10_case_celeba.png")]
+    for src, dst in pairs:
+        cands = [src] if isinstance(src, str) else list(src)
+        cands = [c for c in cands if os.path.exists(os.path.join(FIG, c))]
+        if not cands:
+            continue
+        # copy, do NOT move: os.replace consumed the source, so a second run of this script had
+        # nothing left to rename and the paper figure quietly went stale
+        newest = max(cands, key=lambda c: os.path.getmtime(os.path.join(FIG, c)))
+        shutil.copyfile(os.path.join(FIG, newest), os.path.join(FIG, dst))
+        print(f"  wrote figures/{dst}  (from {newest})")
 
 
 def main():

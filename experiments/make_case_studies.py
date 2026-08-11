@@ -193,7 +193,9 @@ def colormnist(args):
         f"Accuracy is high where coverage is zero.  Sampled with {args.steps} steps "
         f"(tables use 50); the residual texture is the BACKBONE's -- it scores 1.59x real "
         f"on its own TRAINED classes, worse than anything downstream of it.", fontsize=8)
-    tag = ("" if args.dial == DEFAULT_DIAL else f"_s{args.dial:g}") + ("_paper" if args.paper_budget else "")
+    # the canonical figure is the one rendered at the DEFAULTS; the tag marks deviation
+    tag = ("" if args.dial == DEFAULT_DIAL else f"_s{args.dial:g}") \
+        + ("" if args.paper_budget else "_ourbudget")
     p = os.path.join(FIG, f"f9_case_colormnist{tag}.png")
     fig.savefig(p, dpi=145, bbox_inches="tight"); plt.close(fig)
     print(f"  wrote {p}")
@@ -237,9 +239,13 @@ def main():
                         "value the table does.  At the old implicit 1.0 some samples land "
                         "on the wrong background, and at 3.0 the colour factor breaks "
                         "entirely -- see tests/diag_ours_quality.py.")
-    p.add_argument("--paper-budget", action="store_true",
-                   help="run the paper's Table 6 ColorMNIST discovery budget (15 levels x "
-                        "128 starts) instead of our 20x smaller one")
+    p.add_argument("--our-budget", dest="paper_budget", action="store_false", default=True,
+                   help="use our 4x16=64-chain discovery budget instead of the paper's Table 6 "
+                        "ColorMNIST column (15 levels x 128 starts = 1920).  The paper's budget "
+                        "is the DEFAULT here: at 64 chains the selected prototypes were routinely "
+                        "unrelated to the query, which is a POOL problem -- submodular selection "
+                        "can only pick from what ascent found -- and it is what made the "
+                        "prototypes row look broken.")
     p.add_argument("--dial", type=float, default=DEFAULT_DIAL,
                    help="prototype-distance dial for the `ours` row (§20): the reverse "
                         "process starts from the prototype noised to this level.  1.0 = "
