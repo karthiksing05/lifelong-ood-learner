@@ -3619,6 +3619,25 @@ Three storage classes, which the existing router already distinguishes (§6c):
 accuracy exactly (0.484) and *beats* it on F1 (0.699 vs 0.572), while tying `block-r1` within noise.
 Twenty-four concepts cost **1.7 KB**, against 55 MB.
 
+### 25a. The same question with blocks kept (N40)
+
+`addressing` removes weights entirely.  The complementary curve asks how far the *additive* setting
+can be pushed before giving them up — same 24-concept stream, blocks throughout, arrangement rate
+0.50 (conservative against §6c's measured rate):
+
+| arm | params | KB/arrival | vs pile | bit-identical | joint | F1 |
+|---|---|---|---|---|---|---|
+| `per-instance` (the pile) | 13.78M | 2242.6 | 1.0× | 1.000 | 0.484 | 0.560 |
+| `shipped` (hierarchical, r8) | 13.78M | 2242.6 | 1.0× | 1.000 | 0.453 | 0.627 |
+| `flat-r8` | 13.78M | 2242.6 | 1.0× | 1.000 | 0.484 | 0.560 |
+| `flat-r1` | 1.72M | 280.3 | **8.0×** | 1.000 | 0.531 | 0.707 |
+| **`flat-r1-routed`** | **1.03M** | **168.6** | **13.3×** | 1.000 | 0.500 | **0.719** |
+
+**13.3× cheaper and the best F1 in the table** (0.719 against the pile's 0.560), with bit-identity
+1.000 throughout. Rank and routing are separable and multiply: rank 1 alone is 8×, routing adds
+another 1.7× at this arrangement rate, and neither costs accuracy. The hierarchical arm is the *only*
+one that spends more than flat for no gain.
+
 `backbone drift` is **0.000e+00** for every arm, but it means something stronger for `addressing`:
 the other arms preserve the backbone while adding adapters to it, whereas addressing **never writes
 any parameter at all** — the entire lifelong state is a list of factor coordinates, and generation
