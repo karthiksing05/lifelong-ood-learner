@@ -400,6 +400,8 @@ sampling the *same weights* returns photorealistic faces (`figures/f25_pretraine
 one-step denoise recovers the target at RMSE 0.076 under `hwc` against 0.380 permuted — a 5× gap,
 and permuted is barely better than the 0.605 you get by doing nothing at all.
 
+![the paper's backbone, permuted vs real input](../figures/f25_pretrained_layout.png)
+
 **Consequences, stated plainly.**
 
 * **Every image-quality number measured through the pretrained field is void**, including §29a's
@@ -430,6 +432,8 @@ median elsewhere. 1.0 means no seam:
 | our 64px backbone, `permuted` | **2.314** |
 | 12-epoch matched pair, `permuted` | 1.424 |
 | 12-epoch matched pair, **`hwc`** (counter-control) | **1.004** — seam gone |
+
+![where CelebA samples discontinue](../figures/f24_band_artifact.png)
 
 **The prediction was sharp and it held.** The discontinuity spikes at precisely the two rows the
 permutation implies, at 2.6× the level real data shows, and an otherwise identical backbone trained
@@ -4089,6 +4093,8 @@ involved — for 64×64×3 the network's three "channels" are image **rows** 0�
 width axis is the **colour** axis, and its vertical axis is a **~22-pixel jump across the picture**,
 so a single 3×3 convolution reads real columns 3, 24 and 45 at once. `figures/f20_layout.png` shows
 a real face as the UNet sees it: a striped, colour-scrambled field with only low frequencies intact.
+
+![what the UNet actually convolves](../figures/f20_layout.png)
 
 `ddpm.py` had recorded this deliberately and argued it was harmless, because training and sampling
 share the permutation so "the model simply learns in the permuted space". That is correct for a
