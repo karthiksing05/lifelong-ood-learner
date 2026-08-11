@@ -3445,6 +3445,78 @@ is a redesign, not a tuning pass, and nothing in this repository currently claim
 works — but it does mean the hierarchy's failures measured above are **failures of this placement
 rule**, not evidence that hierarchical sharing cannot help.
 
+### 24g. The criterion, not the caps: what a placement rule would have to be (N39)
+
+§24f blamed the caps from reading the code. Planting the answer settles it
+(`tests/diag_placement_synthetic.py`): **four well-separated Gaussian families of ten, 64 dimensions,
+centres ~6 apart** — ancestor purity 1.00 is achievable by construction, chance is 0.25.
+
+| rule | branch_max | max_depth | biggest shared prefix | **ancestor purity** |
+|---|---|---|---|---|
+| `ll` (**shipped**) | 4 | 3 | **31 / 40** | **0.28** |
+| `ll` | 16 | 6 | 16 / 40 | 0.49 |
+| `cu` | 4 | 3 | 32 / 40 | **0.62** |
+| `cu` | 16 | 6 | 32 / 40 | 0.62 |
+
+**The shipped rule scores 0.28 against a chance of 0.25 on data with perfect planted structure**, and
+reproduces the caterpillar exactly — 31 of 40 on one prefix, the same figure N38 measured on real
+teacher means. That disposes of the alternative explanation completely: the degeneracy is intrinsic
+to the rule and has nothing to do with whether ColorMNIST's means cluster.
+
+It also corrects §24f's emphasis. Raising the caps helps the `ll` rule (0.28 → 0.49) but **category
+utility more than doubles purity at the shipped caps** (0.28 → 0.62) and makes the caps irrelevant
+(0.62 either way). The primary defect is the criterion, not the fan-out limit:
+
+* `ll` asks *"which existing child is nearest?"* — a point-to-point distance that can only ever route
+  a concept toward something, never decide it belongs on its own;
+* `cu` asks *"which partition of this node's children is most informative?"* — a partition-level
+  score, so "start a new group" is a move it can choose. That is what produces balance, and it is
+  what Cobweb has that this tree threw away.
+
+Two further defects in `_ll` are visible by inspection and are folded into the `cu` arm: a single
+global scalar `var`, so a node holding forty diverse concepts scores as tight as a singleton (Cobweb
+uses each node's own variance from its sufficient statistics), and a `mean` over dimensions where
+Cobweb sums, shrinking every likelihood difference by 1/D.
+
+### 24h. What insert-only costs on its own — and a re-reading of §5s
+
+The same probe isolates the part no criterion can fix. Presenting the identical families **grouped**
+(all of family 0, then family 1, …) versus **shuffled**:
+
+| rule | grouped | shuffled | gap |
+|---|---|---|---|
+| `ll` | 0.49 | 0.47 | +0.02 |
+| `cu` | 0.62 | **0.81** | **−0.19** |
+
+**Shuffled is better**, and substantially so once the criterion can act on it. The reason is
+structural: grouped arrival puts ten members of one family into the tree before any other family
+exists, so the top-level split forms around a single family and every later family has to hang off
+it. Cobweb repairs exactly this with merge and split; an insert-only tree cannot, and §24f explains
+why we cannot add them — they restructure nodes that already own sealed adapter parameters.
+
+This re-reads a result that has sat in the repository as evidence against the hierarchy. **§5s found
+`shuffled` (0.859) beats `clustered` (0.831)** and called it "the exact opposite of the hierarchy's
+premise, in the exact case built to favour it." The synthetic probe reproduces the same ordering on
+planted data with the same sign, which means §5s was not measuring *hierarchy is useless* — it was
+measuring **insert-only is hurt by grouped arrival**. Those are different claims, and the second one
+is a property of the constraint we adopted for preservation rather than of hierarchical sharing.
+
+### 24i. Where this leaves the redesign
+
+Best achieved here is **0.81** (cu, shuffled) against an achievable **1.00**, so a criterion swap
+does not close it either. Honest accounting of the three causes, in order of size:
+
+| cause | evidence | fixable while insert-only? |
+|---|---|---|
+| nearest-child criterion instead of a partition score | 0.28 → 0.62 at fixed caps | **yes** — `rule="cu"` |
+| saturation-forced descent (`branch_max`) | 0.28 → 0.49 under `ll`; irrelevant under `cu` | **yes** — raise the caps |
+| no merge/split to repair early splits | grouped 0.62 vs shuffled 0.81 | **no** — forbidden by §24f |
+
+`ConceptTree(rule="cu")` is implemented, with `"ll"` left as the default so no existing result moves.
+What it is *not* yet is validated end to end: a better-shaped tree is only worth having if it makes
+§24b's transfer appear, and that has to be measured rather than assumed — the same mistake the
+reuse claim made before the `wrong-family` control was added.
+
 ### 24e. What this means for the claims
 
 The hierarchy's *structural* properties hold and are the ones the certificates rest on: sealed nodes

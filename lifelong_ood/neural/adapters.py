@@ -173,12 +173,19 @@ class ConceptTree:
     tree actually forms levels instead of a star, which is what creates shared ancestors at all.
     """
 
-    def __init__(self, var=0.1, margin=0.0, branch_max=4, max_depth=3, flat=False):
+    def __init__(self, var=0.1, margin=0.0, branch_max=4, max_depth=3, flat=False, rule="ll",
+                 prior_var=0.05):
         self.var, self.margin = float(var), float(margin)
         self.branch_max, self.max_depth = int(branch_max), int(max_depth)
         self.flat = bool(flat)             # ablation: every concept hangs directly off the root
+        # `rule` selects the placement criterion.  "ll" is the shipped one and stays the default so
+        # no existing result moves; "cu" is Cobweb's category utility, added because N39 measured
+        # what "ll" actually builds -- see `_descend_cu`.
+        self.rule = str(rule)
+        self.prior_var = float(prior_var)
         self.mean = {0: None}                  # node id -> running mean (None = root, matches all)
         self.count = {0: 0}
+        self.sq = {0: None}                    # running sum of squares; only "cu" needs it
         self.children = {0: []}
         self._next = 1
 
@@ -193,15 +200,81 @@ class ConceptTree:
         self._next += 1
         self.mean[nid] = np.array(mu, np.float64)
         self.count[nid] = 1
+        self.sq[nid] = np.asarray(mu, np.float64) ** 2
         self.children[nid] = []
         self.children[parent].append(nid)
         return nid
+
+    _SQ4PI = 1.0 / (2.0 * np.sqrt(np.pi))
+
+    def _stats(self, nid):
+        """(n, sum, sumsq) for a node, or None for the empty root."""
+        if self.mean.get(nid) is None:
+            return None
+        n = max(self.count.get(nid, 1), 1)
+        return (float(n), self.mean[nid] * n, self.sq[nid])
+
+    def _score(self, st):
+        n, s, ss = st
+        m = s / n
+        var = np.maximum(ss / n - m * m, 0.0) + self.prior_var
+        return self._SQ4PI * float(np.mean(1.0 / np.sqrt(var)))
+
+    def _cu(self, stats):
+        """Category utility of a partition, given hypothetical child (n, sum, sumsq) triples."""
+        stats = [st for st in stats if st is not None]
+        if not stats:
+            return -np.inf
+        n_all = sum(st[0] for st in stats)
+        if n_all <= 0:
+            return -np.inf
+        base = self._score((n_all, sum(st[1] for st in stats), sum(st[2] for st in stats)))
+        return sum((st[0] / n_all) * (self._score(st) - base) for st in stats) / len(stats)
+
+    def _descend_cu(self, mu):
+        """Cobweb's criterion, insert-only: at each node choose between hosting `mu` in the best
+        child and starting a new child here, by CATEGORY UTILITY.
+
+        Why this exists.  The `ll` rule descends to the NEAREST child and, when a node already has
+        `branch_max` children, descends *regardless of fit* -- a cap meant to create levels instead
+        creates a chain, and N38 measured the result: 31 of 40 concepts on one path prefix, 3 shared
+        nodes, branching 10.  CU is a partition-level score rather than a point-to-point distance, so
+        it can prefer "this belongs in its own group" over "this is closest to that group", which is
+        what produces balance.  N39 measures both against the real `GaussianCobweb` and against an
+        offline oracle.
+
+        Cobweb's MERGE and SPLIT are still absent and still cannot be added: they restructure nodes
+        that already own sealed adapter parameters (§24f), so this is the host-or-create half only.
+        """
+        path, cur = [0], 0
+        x2 = mu * mu
+        for _ in range(self.max_depth):
+            kids = list(self.children[cur])
+            if not kids:
+                break
+            base = [self._stats(k) for k in kids]
+            if any(b is None for b in base):
+                break
+            add = lambda st: (st[0] + 1.0, st[1] + mu, st[2] + x2)
+            best, best_cu = None, -np.inf
+            for i, k in enumerate(kids):
+                cu = self._cu([add(b) if j == i else b for j, b in enumerate(base)])
+                if cu > best_cu:
+                    best, best_cu = k, cu
+            cu_new = self._cu(base + [(1.0, mu, x2)])     # start a new child HERE
+            if cu_new >= best_cu:
+                break
+            path.append(best)
+            cur = best
+        return path
 
     def _descend(self, mu):
         """Where would `mu` attach?  Returns the path of EXISTING nodes, root first.  No mutation,
         so a whole batch can be placed against one consistent snapshot of the tree."""
         if self.flat:
             return [0]
+        if self.rule == "cu":
+            return self._descend_cu(mu)
         path, cur = [0], 0
         for _ in range(self.max_depth):
             kids = list(self.children[cur])
@@ -217,13 +290,16 @@ class ConceptTree:
 
     def _touch(self, path, mu):
         """Ancestors track a running mean for PLACEMENT only; their adapter deltas stay frozen."""
+        x2 = mu * mu
         for nid in path:
             if self.mean[nid] is None:
                 self.mean[nid] = mu.copy()
                 self.count[nid] = 1
+                self.sq[nid] = x2.copy()
             else:
                 self.count[nid] += 1
                 self.mean[nid] += (mu - self.mean[nid]) / self.count[nid]
+                self.sq[nid] = x2 if self.sq.get(nid) is None else self.sq[nid] + x2
 
     def insert(self, mu):
         mu = np.asarray(mu, np.float64).ravel()

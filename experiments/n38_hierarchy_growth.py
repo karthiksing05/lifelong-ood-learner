@@ -112,6 +112,8 @@ def main():
     p.add_argument("--branch-max", type=int, default=4)
     p.add_argument("--max-depth", type=int, default=3)
     p.add_argument("--var", type=float, default=0.1)
+    p.add_argument("--rule", choices=["ll", "cu"], default="ll",
+                   help="placement criterion; 'cu' is Cobweb category utility (§24g)")
     p.add_argument("--params-per-node", type=int, default=551408,
                    help="adapter parameters per node at rank 8 on this backbone (measured)")
     p.add_argument("--seed", type=int, default=0)
@@ -144,7 +146,8 @@ def main():
                                         for _ in range(args.n_orders - 1)]
     curves, finals = [], None
     for oi, order in enumerate(orders):
-        tree = ConceptTree(var=args.var, branch_max=args.branch_max, max_depth=args.max_depth)
+        tree = ConceptTree(var=args.var, branch_max=args.branch_max,
+                           max_depth=args.max_depth, rule=args.rule)
         paths, traj = [], []
         for j in order:
             path, _ = tree.insert(mus[j])
