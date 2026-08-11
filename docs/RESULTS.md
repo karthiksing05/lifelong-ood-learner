@@ -309,7 +309,7 @@ renderings around one point rather than independent draws from the class.*
 Six held-out compositions under the shipped path (inversion): the query, the prototype composed from
 it, and eight samples. **Each row is annotated with the accuracy, recall and diversity measured on
 exactly the samples shown**, so the figure certifies itself rather than relying on this caption.
-The teacher-guided version of the same figure is `figures/case_studies_teacher.png`.
+The teacher-guided version of the same figure is no longer kept: it was a snapshot of a configuration this document supersedes, and regenerating it would mean re-adding an arm the analysis has already retired.
 
 Vetted by eye, and the rows disagree with each other in a way worth stating plainly:
 
@@ -327,7 +327,7 @@ they are — background.
 
 The previous version of this figure, produced by teacher-guided sampling, showed **every sample in a
 row as the same digit instance varying only by speckle**; that is what motivated the whole
-investigation in §5e–§5f and is preserved as `figures/case_studies_teacher.png` for comparison.
+investigation in §5e–§5f. The figure itself is not preserved; the numbers it illustrated are in those sections.
 
 ### 5e. Chasing the diversity gap — what it is not, and what it is
 
@@ -809,7 +809,7 @@ baselines do not change it.
 ## 5l. N9 showdown — every method on the same held-out compositions
 
 One OOD composition per row, every method on the same query, same backbone, same sampling budget,
-each panel annotated with what was measured on exactly those samples (`figures/n9_showdown.png`).
+each panel annotated with what was measured on exactly those samples (`figures/f9b_showdown_colormnist.png`, written the next time n9 runs).
 5 compositions × 24 samples, with an interference stream of **8 real-image concepts** run over the
 retention arms (real images, not composed pools — §5m explains why that distinction decides whether
 the stream tests anything at all):
