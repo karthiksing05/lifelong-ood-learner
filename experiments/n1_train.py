@@ -188,10 +188,20 @@ def main():
     os.makedirs(os.path.dirname(args.out), exist_ok=True)
 
     def package(ema, epochs_done):
+        # `split` records EXACTLY how the training data was built.  Without it an evaluation has to
+        # guess, and guessing wrong is silent: a diag scored two CelebA backbones with labels from a
+        # different loader (`load_celeba_comp`, per-combination) than training used (`load_celeba`,
+        # per-class), so both arms were mis-conditioned and the comparison between them meant
+        # nothing.  The only tell was a held-out loss ten times the training loss.
         return dict(ema=ema, n_classes=len(uniq), arch=arch,
                     remap=remap, concepts={}, n_per_slot=args.n_per_slot,
                     dataset=args.dataset, img=img, epochs_done=epochs_done,
-                    layout=args.layout)
+                    layout=args.layout,
+                    split=dict(loader=("load_celeba" if args.dataset == "celeba"
+                                       else "load_colormnist"),
+                               n_per_slot=args.n_per_slot, img=img, seed=args.seed,
+                               min_count=(25 if args.dataset == "celeba" else None),
+                               max_rows=getattr(args, "max_rows", None)))
 
     # A LADDER OF COMPETENCE FROM ONE RUN.  N35 asks how much backbone training the method needs,
     # which naively means training one backbone per rung -- but every rung is a PREFIX of the longest

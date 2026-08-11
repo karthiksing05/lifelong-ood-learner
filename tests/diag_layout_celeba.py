@@ -22,7 +22,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(
                                 "experiments"))
 from common import CACHE                                                       # noqa: E402
 
-from lifelong_ood.celeba import as_float, load_celeba_comp                     # noqa: E402
+from lifelong_ood.celeba import IMG_CELEBA, as_float, load_celeba              # noqa: E402
 from lifelong_ood.evals import speckle                                         # noqa: E402
 from lifelong_ood.neural import load_field, to_data                            # noqa: E402
 from lifelong_ood.neural.ddpm import train_ddpm                                # noqa: E402
@@ -34,14 +34,22 @@ ARMS = [("permuted (every backbone to date)", "ddpm_celeba_layout_permuted.pt"),
 
 def main():
     dev = "cuda" if torch.cuda.is_available() else "cpu"
-    img = 64
-    data = load_celeba_comp(img=img, max_rows=25000, min_count=60, n_holdout=24)
-    sp = data["split"]
+    # MUST be the loader and settings n1_train used.  The first version of this called
+    # `load_celeba_comp` (per-COMBINATION, min_count=60), while n1_train's celeba path calls
+    # `load_celeba` (per-CLASS, min_count=25) -- a different function producing a different class
+    # indexing, so `remap` mapped held-out labels into the wrong table and BOTH arms were scored
+    # mis-conditioned.  The tell was a held-out loss of 0.545 against a training loss of 0.045.
+    ck0 = torch.load(os.path.join(CACHE, ARMS[0][1]), map_location="cpu", weights_only=False)
+    img = int(ck0.get("img", IMG_CELEBA))
+    data = load_celeba(n_per_class=ck0.get("n_per_slot", 100), img=img, seed=0, min_count=25)
+    assert len(np.unique(data["cls"])) == ck0["n_classes"], (
+        f"split mismatch: {len(np.unique(data['cls']))} classes here vs "
+        f"{ck0['n_classes']} in the checkpoint -- the eval is not the training distribution")
     rng = np.random.default_rng(0)
-    hold = rng.permutation(len(data["X8"]))[:2000]
-    X = as_float(data["X8"][hold])
-    y = np.asarray(sp["combo_of"])[hold]
-    R = as_float(data["X8"][:512]).astype(np.float32)
+    hold = rng.permutation(len(data["X"]))[:2000]
+    X = np.asarray(data["X"])[hold]
+    y = np.asarray(data["cls"])[hold]
+    R = np.asarray(data["X"])[:512].astype(np.float32)
 
     out = []
     panels = {}
@@ -54,9 +62,11 @@ def main():
         lay = ck.get("layout", "permuted")
         field = load_field(p, device=dev, batch=32)
         # remap the held-out labels into the checkpoint's own class indexing
-        remap = ck["remap"]
-        keep = np.array([i for i, c in enumerate(y) if int(c) in remap])
-        yy = np.array([remap[int(c)] for c in y[keep]], np.int64)
+        remap = ck.get("remap") or {}
+        keep = np.array([i for i, c in enumerate(y) if int(c) in remap]) if remap \
+            else np.arange(len(y))
+        yy = (np.array([remap[int(c)] for c in y[keep]], np.int64) if remap
+              else np.asarray(y, np.int64))
         loss = train_ddpm(field.model, X[keep], yy, epochs=1, batch=32, device=dev,
                           seed=1, eval_only=True, layout=lay)
         S = to_data(field.sample(n=8, steps=50, seed=0, clip=(-1, 1))).astype(np.float32)
