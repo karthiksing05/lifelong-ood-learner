@@ -160,9 +160,11 @@ survived measurement**, and the reader should not treat the tree as central:
 | depth organizes abstraction coarse→fine | **refuted** (§24c) |
 | the placement rule clusters at all | **refuted** — 0.27 purity against a 0.25 random baseline (§24g) |
 
-The placement defect is understood and fixable — Cobweb's category utility raises purity to 0.60
-against an offline oracle's 0.66 (§24j) — but a better-shaped tree bought **no** downstream gain
-(n5 ACC −0.017, n9 F1 +0.026, both inside error bars) at +23% parameters. So the tree is presented
+The placement defect is understood and **fixed** — Cobweb's category utility raises purity to 0.60
+against an offline oracle's 0.66 (§24j), and `cu` is now the default rule — but a better-shaped tree
+bought **no** downstream gain (n5 ACC −0.019, n9 F1 +0.027, both inside error bars) at +23%
+parameters. It is adopted for tree *shape*, which is what the hierarchy claims are about, and not for
+performance there is no evidence for. So the tree is presented
 here as **bookkeeping that makes paths expressible**, not as a contribution. What is load-bearing is
 sealing plus routing, and the architecture the evidence supports is **flat, low-rank, and routed**,
 with at most a per-batch group node (§15, the one place sharing measurably pays).

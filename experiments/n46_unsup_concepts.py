@@ -61,6 +61,9 @@ def main():
     p.add_argument("--n-cases", type=int, default=6)
     p.add_argument("--n-control", type=int, default=6,
                    help="SEEN compositions used as the port-works control")
+    p.add_argument("--identity-check", action="store_true",
+                   help="sanity-test the composition machinery: library = the true class\n"
+                        "embedding, w one-hot, so Eq. 11 reduces to the class conditional")
     p.add_argument("--oracle", action="store_true",
                    help="let discovery see the held-out queries.  Not a fair baseline; it separates a library that cannot express the target from weights that cannot find it.")
     p.add_argument("--n-samples", type=int, default=16)
@@ -106,6 +109,38 @@ def main():
 
     d_emb = lib["C"].shape[1]
     rows, panels = [], {}
+
+    # ── IDENTITY CHECK: is the COMPOSITION MACHINERY itself correct? ─────────
+    # Independent of whether discovery works.  Put the backbone's OWN class embeddings in as the
+    # library and make w one-hot; then Eq. 11 collapses to eps_unsup = eps(x, t | c_class), the
+    # ordinary class conditional, so the samples must reproduce that class.  If THIS is at chance,
+    # the plumbing (score composition, sampling hook, layout) is broken and nothing else here can be
+    # interpreted.  If it passes, the plumbing is right and any failure is discovery or the method.
+    if args.identity_check:
+        import torch as _t
+        ck = _t.load(os.path.join(CACHE, "ddpm_colormnist.pt"), map_location="cpu",
+                     weights_only=False)
+        remap = ck["remap"]
+        cemb = ck["ema"]["cemb.weight"].numpy()
+        ident = []
+        for s_ in seen_slots[rng.permutation(len(seen_slots))[:args.n_control]]:
+            rows_s = np.where(data["slot"] == s_)[0]
+            i0 = rows_s[0]
+            cid = remap[int(s_)]
+            C1 = cemb[[cid]]                      # a library of exactly one: the true class
+            S = to_data(sample_unsup(field, C1, np.array([1.0]), n=args.n_samples,
+                                     steps=args.steps, seed=args.seed,
+                                     clip=(-1, 1))).astype(np.float32)
+            a = composition_accuracy(probes, S, int(data["digit"][i0]), int(data["fg"][i0]),
+                                     int(data["bg"][i0]))
+            ident.append(float(a["joint"]))
+        print(f"[n46] IDENTITY CHECK (library = the true class embedding, w one-hot): "
+              f"mean joint {np.mean(ident):.3f}  {[round(v,2) for v in ident]}")
+        print(f"[n46]   this MUST be high.  If it is at chance the fault is in the composition "
+              f"machinery, not in concept discovery.\n", flush=True)
+        rows.append(dict(slot=-1, arm="identity-check", K=1, joint=float(np.mean(ident)),
+                         digit=float("nan"), fg=float("nan"), bg=float("nan"),
+                         recall=float("nan"), bytes_per_concept=0, library_bytes=0))
 
     # ── CONTROL, and it runs FIRST ───────────────────────────────────────────
     # A baseline reported at 0.000 is worthless without evidence that the port works at all.  The
