@@ -438,10 +438,31 @@ What the numbers say about where to look next:
 
 The adapter reaches a training loss of **0.0002** — it is fitting its pool almost exactly — while
 preservation stays bit-identical, which is consistent and unhelpful: bit-identity is a property of
-optimizer scoping and cannot detect that the delta being learned is destructive. So the adapter is
-faithfully learning *something*; the open question is whether the pool it learns from is already bad,
-or whether a rank-8 delta on 24 attention projections at lr 1e-3 for 40 epochs is simply too large a
-perturbation for a 113.7M-parameter pretrained model.
+optimizer scoping and cannot detect that the delta being learned is destructive.
+
+**What a controlled sweep rules out** (`tests/diag_pretrained_adapter.py`). One concept, real images,
+the untouched backbone as control at tv **0.973**:
+
+| setting | tv | final loss |
+|---|---|---|
+| rank 8, lr 1e-3, 40 steps *(n26's hyperparameters)* | 0.770 | 0.0004 |
+| rank 8, lr 1e-3, 200 steps | 0.686 | 0.0003 |
+| rank 8, lr 1e-3, 600 steps *(≈ n26's full budget)* | **0.919** | 0.0002 |
+| rank 8, lr 1e-4 / 1e-5, 40 steps | 0.978 / 0.973 | — |
+| rank 1, lr 1e-3, 40 steps | 1.160 | — |
+
+**None of them destroys the model.** At n26's own rank, learning rate and optimization budget the
+samples stay near the control, so *the perturbation magnitude is not the fault* — which was the
+leading hypothesis and is now dead. Two others died with it: the pool is real CelebA photographs,
+not generated, so "it faithfully learned a bad pool" was never available; and `add_concept`'s `mu`
+argument feeds **tree placement**, not conditioning, so passing a pool mean there is correct rather
+than a dimension error.
+
+So the failure is specific to something in `n26`'s own setup that this sweep does not reproduce.
+The remaining candidates, none yet tested: the four-concept batch rather than one; `train_group`
+zeroing and excluding the concept embedding so identity rests entirely on the LoRA path; or the
+rendering call itself. **This is recorded as open, not as diagnosed** — three plausible explanations
+have already died here and a fourth guess would not be worth more than the three.
 
 **This is the honest state of "our method on a backbone we did not train" for image quality.** §12's
 preservation result stands — it never depended on the samples looking right — but the pretrained bank
