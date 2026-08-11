@@ -112,7 +112,7 @@ def main():
     p.add_argument("--branch-max", type=int, default=4)
     p.add_argument("--max-depth", type=int, default=3)
     p.add_argument("--var", type=float, default=0.1)
-    p.add_argument("--rule", choices=["ll", "cu"], default="ll",
+    p.add_argument("--rule", choices=["ll", "cu"], default="cu",
                    help="placement criterion; 'cu' is Cobweb category utility (§24g)")
     p.add_argument("--params-per-node", type=int, default=551408,
                    help="adapter parameters per node at rank 8 on this backbone (measured)")

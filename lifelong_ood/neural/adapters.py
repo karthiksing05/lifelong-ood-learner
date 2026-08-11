@@ -180,9 +180,22 @@ class ConceptTree:
         self.var, self.margin = float(var), float(margin)
         self.branch_max, self.max_depth = int(branch_max), int(max_depth)
         self.flat = bool(flat)             # ablation: every concept hangs directly off the root
-        # `rule` selects the placement criterion.  "ll" is the shipped one and stays the default so
-        # no existing result moves; "cu" is Cobweb's category utility, added because N39 measured
-        # what "ll" actually builds -- see `_descend_cu`.
+        # `rule` selects the placement criterion.  **"cu" is the default** -- Cobweb's category
+        # utility, insert-only -- because N39 measured what "ll" actually builds: a CATERPILLAR,
+        # 31 of 40 concepts strung along one prefix, at leaf purity 0.27 against an oracle's 0.66.
+        # Insert-only CU reaches 0.60, i.e. 98% of full Cobweb's 0.61 with none of its restructuring.
+        #
+        # State the trade, because it is not a free win.  The rule comparison (`rulecmp.sbatch`,
+        # 2 experiments x 2 rules x 3 seeds, env-set so the experiment code is byte-identical
+        # between arms) found the END-TASK effect small and MIXED:
+        #
+        #     n9 showdown   ours F1 0.606 -> 0.633,  joint 0.539 -> 0.556      (cu better)
+        #     n5 class-inc  A    0.845 -> 0.826,  params +6.3%                 (cu worse)
+        #     every non-bank baseline byte-identical under both               (the control held)
+        #
+        # So cu is adopted for tree SHAPE, which is what the hierarchy claims are about, not for a
+        # performance gain there is no evidence for.  Tables collected under "ll" and not yet re-run
+        # are marked as such in RESULTS rather than silently reattributed.
         #
         # LIFELONG_TREE_RULE overrides the default process-wide.  It exists so the WHOLE suite --
         # every test and every experiment, including the ones with no --rule flag -- can be re-run
@@ -191,7 +204,7 @@ class ConceptTree:
         # `rule=None` (the default) consults the env; an EXPLICIT rule always wins, including
         # rule="ll" -- a caller that names the shipped rule must get it even under an override,
         # or the override silently rewrites the control arm of its own comparison.
-        self.rule = str(rule) if rule is not None else os.environ.get("LIFELONG_TREE_RULE", "ll")
+        self.rule = str(rule) if rule is not None else os.environ.get("LIFELONG_TREE_RULE", "cu")
         self.prior_var = float(prior_var)
         self.mean = {0: None}                  # node id -> running mean (None = root, matches all)
         self.count = {0: 0}

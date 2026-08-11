@@ -92,7 +92,7 @@ def main():
     p.add_argument("--steps", type=int, default=50)
     p.add_argument("--seed", type=int, default=0)
     p.add_argument("--tag", default="")
-    p.add_argument("--rule", choices=["ll", "cu"], default="ll",
+    p.add_argument("--rule", choices=["ll", "cu"], default="cu",
                    help="placement criterion for the bank's tree (§24j)")
     p.add_argument("--quick", action="store_true")
     args = p.parse_args()

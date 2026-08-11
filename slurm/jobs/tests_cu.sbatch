@@ -14,6 +14,8 @@ PY=$HOME/flash/miniconda3/envs/chunks/bin/python
 # that matter: preservation is supposed to be a property of SEALING, not of placement, so a
 # placement change must not touch bit-identity.  If it does, cu is disqualified regardless of how
 # well-shaped its trees are.
+# cu is now the DEFAULT (adapters.py), so this runs the suite as shipped.  Kept
+# explicit so the job still states which rule it is validating.
 export LIFELONG_TREE_RULE=cu
 fail=0
 for t in test_layout test_speckle test_fid test_smoke test_neural test_merge test_ortho_merge \
