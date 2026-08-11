@@ -159,8 +159,22 @@ class BaseScoreField:
         return np.clip(x, clip[0], clip[1])
 
     # ── mode ascent on p_t (the paper's Eq. 4) ──────────────────────────────
-    def mode_ascent(self, xq, u, n_starts=16, iters=100, lr=0.05, seed=0, init="query"):
-        """Adam ascent on log p_t from noised copies of the query -> (modes in x_t space, x0-space)."""
+    def mode_ascent(self, xq, u, n_starts=16, iters=100, lr=0.05, seed=0, init="query",
+                    clamp=True, k_sigma=3.0):
+        """Adam ascent on log p_t from noised copies of the query -> (modes in x_t space, x0-space).
+
+        `clamp` keeps the ascent on the DATA'S SUPPORT, and without it this walks off into nonsense.
+        Adam's update is normalized, so every coordinate moves by about `lr` per iteration whatever
+        the gradient is: at the paper's CelebA settings (lr 0.09, 100 iterations) a pixel can travel
+        9.0 in a space where clean images live in [-1, 1], and nothing pulls it back.
+
+        The constraint is not a hack, it is the support.  A clean image x0 lies in [-1, 1]; at noise
+        level u a valid x_t is `sqrt(abar)*x0 + sqrt(1-abar)*eps`, so x_t is concentrated inside
+        `+-(sqrt(abar) + k*sqrt(1-abar))`.  p_t has vanishing mass outside that box, so a "mode"
+        found there is an artefact of unconstrained optimization rather than a mode of the
+        distribution -- and the x0-space value returned (`x / sqrt(abar)`) is out of gamut, which is
+        what saturated neon prototypes are.  `clamp=False` reproduces the old behaviour.
+        """
         rng = np.random.default_rng(seed)
         a = float(cosine_abar(u))
         D = self.dim
@@ -172,11 +186,14 @@ class BaseScoreField:
             x = rng.standard_normal((n_starts, D))
         m = np.zeros_like(x); v = np.zeros_like(x)
         b1, b2, eps = 0.9, 0.999, 1e-8
+        bound = np.sqrt(a) + k_sigma * np.sqrt(max(1.0 - a, 0.0))
         for i in range(1, iters + 1):
             g = self.score(x, u)
             m = b1 * m + (1 - b1) * g
             v = b2 * v + (1 - b2) * g * g
             x = x + lr * (m / (1 - b1 ** i)) / (np.sqrt(v / (1 - b2 ** i)) + eps)
+            if clamp:
+                x = np.clip(x, -bound, bound)
         return x, x / np.sqrt(a)
 
     def laplace_diag(self, xt, u, probes=4, delta=5e-3, seed=0, var_floor=1e-4, var_cap=1.0):

@@ -64,9 +64,11 @@ def main():
     print(f"[bands] {'REAL CelebA (control)':44s} seam score {s_real:.3f}")
     rows.append(("real", s_real, prof_real))
 
-    cands = [("ddpm_celeba_factored.pt", "our 64px backbone (permuted)"),
-             ("ddpm_celeba_layout_permuted.pt", "12-epoch matched pair: permuted"),
-             ("ddpm_celeba_layout_hwc.pt", "12-epoch matched pair: HWC (counter-control)")]
+    cands = [("ddpm_celeba_factored.pt", "our shipped 64px backbone (permuted)"),
+             ("ddpm_celeba_layout_permuted.pt", "12-epoch pair: permuted"),
+             ("ddpm_celeba_layout_hwc.pt", "12-epoch pair: HWC"),
+             ("ddpm_celeba_permuted.pt", "60-epoch pair: permuted"),
+             ("ddpm_celeba_hwc.pt", "60-epoch pair: HWC (the replacement backbone)")]
     for ckname, label in cands:
         p = os.path.join(CACHE, ckname)
         if not os.path.exists(p):
