@@ -19,6 +19,7 @@ disfavour after audits found we were running a baseline weakly ([RESULTS.md](RES
 | **retention at zero stored data** | **ours** (tied: `independent`) | SSS 1.000 vs `der++` 0.740, `ttt` 0.000 |
 | **composition, ColorMNIST** | **ours** | F1 0.605 vs 0.545 next-best, 0.003 for the companion method |
 | **composition, CelebA** | ✗ `composable-mcmc` | 0.965 vs our 0.903 |
+| **composition, given FACTORED conditioning** | ✗ `score-add` | F1 0.902 vs our 0.198 on a backbone conditioned per factor — our composer is for ENTANGLED backbones (§28) |
 | **coverage at comparable accuracy** | **ours** | recall 0.579 vs 0.483; diversity 1.068 vs 0.838 (real: 1.007) |
 | **batch addition** | **ours** | no baseline offers it; **2.15× faster at K=12** (3 seeds) at no cost to ACC (+0.035 ± 0.037, n.s.) or preservation |
 | **routing (arrangement vs part)** | **ours** | no baseline offers it; AUROC 0.980 / 0.995 |

@@ -380,9 +380,16 @@ is monotone, and flattens only if the world's vocabulary is finite (see below).
 
 Kept here rather than in a footnote, because several of these shaped the design.
 
-- **A better composition operator.** On CelebA, MCMC-corrected score addition (Du et al., ICML 2023)
-  reaches `pair` **0.965 ± 0.023** against our **0.903 ± 0.094** and is more accurate on every
-  accuracy metric, with zero parameters and no training. We keep an advantage in *coverage* (recall
+- **A better composition operator — and now we know when ours is needed at all.** §28 removed the
+  confound in §13 by training two ColorMNIST backbones that differ *only* in conditioning scheme.
+  Score addition goes from F1 **0.200** (entangled, one row per combination) to **0.902** (factored,
+  one embedding per factor value), while ours is unchanged (0.179 → 0.198). **Given a
+  compositionally-conditioned backbone, training-free score addition beats our composer by 4.5×.**
+  The composition half of this work is a workaround for entangled conditionals; the lifelong half
+  (routing, addressing, preservation) is orthogonal and unaffected. On CelebA — the one benchmark
+  here with a factored head — MCMC-corrected score addition (Du et al., ICML 2023) already reached
+  `pair` **0.965 ± 0.023** against our **0.903 ± 0.094**, which now has a mechanism rather than being
+  a benchmark-dependent curiosity. We keep an advantage in *coverage* (recall
   0.579 vs 0.483; content diversity 1.068 vs 0.838, where real data is 1.007). On ColorMNIST our
   operator is the only one that works at all. The composition result is **benchmark-dependent**.
 - **Order invariance.** Insert-only preservation suggests the same concepts in a different order

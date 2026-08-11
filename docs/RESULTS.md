@@ -3748,6 +3748,89 @@ backbone good enough" but "is the *weakest factor* good enough", because the pro
 the minimum. On this ladder `bg` sits at 0.344 while `fg` is 0.891 at the same rung, so a seal
 decision reading average competence would be reading the wrong statistic.
 
+## 28. Conditioning scheme decides composition — and decides whether our composer is needed (N43)
+
+§13 concluded that the *granularity of the conditionals* determines whether score addition works,
+from a comparison of entangled ColorMNIST against factored CelebA. That confounded the conditioning
+scheme with the dataset. N43 removes the confound: **two backbones, identical data, identical UNet,
+identical recipe and epoch count, differing only in how the model is told what to draw.**
+
+`class` gives one free embedding row per compositional slot (121 rows, 30,976 params).
+`factored` sums one learned embedding per (factor, value) — 30 rows, **7,680 params, 4.03× smaller** —
+so the conditioning is compositional *by construction*. Both reach comparable competence: the
+factored backbone scores unconditional validity 0.984 and conditional joint accuracy 0.828.
+
+### 28a. Factored conditioning produces local conditional scores
+
+The literature's proposed mechanism (arXiv:2509.16447) is that compositional structure is equivalent
+to **local conditional scores** — sparse dependence on pixels *and* conditioners. Perturbing one
+factor's conditioning contribution and measuring where `ε` moves:
+
+| perturbed factor | top-10% pixel share | | fg/bg selectivity | |
+|---|---|---|---|---|
+| | **class** | **factored** | **class** | **factored** |
+| digit | 0.416 | **0.487** | 4.565 | **6.526** |
+| fg | 0.376 | **0.415** | 4.272 | **5.083** |
+| bg | 0.251 | **0.258** | 1.263 | **2.083** |
+
+**Factored conditioning is more spatially concentrated and more selective on every factor.** The
+metric passes its own sanity check in both arms: perturbing `digit` or `fg` moves foreground pixels
+4–6.5× harder than background, while perturbing `bg` does not (1.26 / 2.08) — which is the correct
+answer for a background factor, and evidence the number is measuring what it claims.
+
+### 28b. Score addition flips from useless to excellent
+
+| scheme | arm | ideal-words R² | joint | recall | **F1** |
+|---|---|---|---|---|---|
+| `class` | `score-add` | 0.826 | 0.125 | 1.000 | **0.200** |
+| **`factored`** | **`score-add`** | **1.000** | **0.812** | 0.868 | **0.902** |
+| `class` | ours | 0.826 | 0.000 | 0.816 | 0.179 |
+| `factored` | ours | 1.000 | 0.125 | 0.974 | 0.198 |
+
+**Same dataset. Same architecture. Only the conditioning scheme changed, and score addition goes
+from 0.200 to 0.902.** §13's claim survives the removal of its confound, and the mechanism in §28a
+is the reason: adding scores is only meaningful when each conditional depends on its own factor
+sparsely, which is what factored conditioning produces and entangled conditioning does not.
+
+The ideal-words R² is **exactly 1.000** on the factored backbone against 0.826 on the class one —
+the embedding space *is* additively factorizable, because it was built that way.
+
+### 28c. Our composer estimates the right object — provably, for the first time
+
+On the factored backbone the **true** per-(factor, value) embeddings exist and are readable off
+`model.attr`. Our composer estimates exactly that object by ridge regression on class embeddings, so
+its estimate can be scored against the truth rather than against downstream accuracy:
+
+**cosine(estimated, true) = +1.000 for digit, +1.000 for fg, +1.000 for bg.**
+
+The ideal-words factorization is not an approximation that happens to be useful — when a ground-truth
+factor decomposition exists, ridge regression on the embeddings recovers it exactly. That validation
+is impossible on an entangled backbone, and it is the strongest evidence this repository has that the
+composer's *representation* is correct rather than merely effective.
+
+### 28d. The uncomfortable consequence: our composition machinery is a workaround
+
+Our method does **not** benefit from the better backbone — F1 0.179 → 0.198, essentially unchanged —
+while score addition goes to 0.902. **On a factored backbone, plain training-free score addition
+beats our composer by 4.5×.**
+
+Read plainly: the composition half of this work is a workaround for backbones whose conditionals are
+entangled. Given a model conditioned compositionally, the right thing to do is add scores and skip
+the mode ascent, the PoE teacher, the factor-basis inversion and the distillation entirely. That is
+consistent with §11c, where `composable-mcmc` already beat us on CelebA — the one benchmark here with
+a factored head — and it now has a mechanism rather than being a benchmark-dependent curiosity.
+
+**What this does not touch.** The lifelong half is orthogonal to all of it. Routing, addressing
+(§25), preservation, deletion and batch absorption operate on whatever conditioning the backbone has;
+§25's 72-bytes-per-concept result is *better* on a factored backbone, since the factor coordinates
+are then exact rather than a ridge estimate. What N43 narrows is the *composition* claim, not the
+lifelong one.
+
+**Caveat on the `ours` rows.** N43 runs the `ours` arm at reduced budget (25 epochs, 6 cases) against
+§11d's published configuration, so 0.179/0.198 should not be read against the headline F1 0.605. The
+matched comparisons — `score-add` across schemes, and `ours` vs `score-add` *within* a scheme — are
+the valid ones, and a budget difference is unlikely to close a 4.5× gap.
+
 ## 8. Where the numbers come from
 
 | experiment | file | scale run |
