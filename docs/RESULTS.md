@@ -3149,6 +3149,25 @@ thing being asked for is *exemplars of a concept*, which is the case-study figur
 This is the second time in this repository that a conclusion drawn from a coarse single-seed sweep
 did not survive replication (§14 was the first). Both are kept in the record.
 
+**Confirmed a third time, on the case-study renders themselves**, once those were run at the paper's
+discovery budget and at the calibrated pool guidance (`results/case_colormnist*.json`, 4 held-out
+compositions selected by the median-per-pair rule):
+
+| dial `s` | joint accuracy | recall (coverage) |
+|---|---|---|
+| 0.80 | 0.667 | 0.495 |
+| **0.90** | **0.708** | 0.881 |
+| 1.00 | 0.542 | **0.907** |
+
+**0.90 is the only setting that is near-best on both axes.** 0.8 buys accuracy by halving coverage;
+1.0 keeps coverage and loses accuracy. `make_case_studies.py` therefore defaults to `--dial 0.9`, and
+the canonical figure is the one rendered at it. The tables are untouched, for the reason given above.
+
+Read the baseline columns alongside: `poe-guided` scores **0.833 joint at 0.000 recall** and
+`query-only` **0.875 at 0.000**. They are more accurate and produce *no coverage at all* — the same
+correct image repeatedly. That is the trade this project exists to name, and it is why accuracy alone
+cannot separate composing from copying.
+
 **What this does not claim.** The dial does not create coverage that the concept does not have: at
 `s = 1.0` we are simply sampling the concept's conditional, which is what every other table in this
 document already reports. What is new is that the *near* end is reachable at all, and that the

@@ -28,6 +28,9 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from common import CACHE, RESULTS, backbone_gains, ood_queries          # noqa: E402
 
 FIG = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "figures")
+# the selected dial (see --dial); the canonical figure is the one rendered AT it, so the
+# tag marks deviation from the default rather than deviation from 1.0
+DEFAULT_DIAL = 0.9
 from lifelong_ood.compose import PAPER_POE_COLORMNIST as PAPER_POE
 
 
@@ -188,7 +191,7 @@ def colormnist(args):
         f"Accuracy is high where coverage is zero.  Sampled with {args.steps} steps "
         f"(tables use 50); the residual texture is the BACKBONE's -- it scores 1.59x real "
         f"on its own TRAINED classes, worse than anything downstream of it.", fontsize=8)
-    tag = ("" if args.dial >= 1.0 else f"_s{args.dial:g}") + ("_paper" if args.paper_budget else "")
+    tag = ("" if args.dial == DEFAULT_DIAL else f"_s{args.dial:g}") + ("_paper" if args.paper_budget else "")
     p = os.path.join(FIG, f"f9_case_colormnist{tag}.png")
     fig.savefig(p, dpi=145, bbox_inches="tight"); plt.close(fig)
     print(f"  wrote {p}")
@@ -235,11 +238,16 @@ def main():
     p.add_argument("--paper-budget", action="store_true",
                    help="run the paper's Table 6 ColorMNIST discovery budget (15 levels x "
                         "128 starts) instead of our 20x smaller one")
-    p.add_argument("--dial", type=float, default=1.0,
+    p.add_argument("--dial", type=float, default=DEFAULT_DIAL,
                    help="prototype-distance dial for the `ours` row (§20): the reverse "
                         "process starts from the prototype noised to this level.  1.0 = "
-                        "pure noise (the tables' setting); lower ties samples to the "
-                        "prototype.  §20b measured F1 0.410 at 0.80 and 0.669 at 0.90.")
+                        "pure noise; lower ties samples to the prototype.  Default 0.9 "
+                        "because the swept comparison at the paper's discovery budget "
+                        "(results/case_colormnist*.json) shows 0.9 DOMINATES: joint 0.708 "
+                        "vs 0.667 at 0.8 and 0.542 at 1.0, at recall 0.881 vs 0.495 and "
+                        "0.907.  0.8 buys accuracy by destroying coverage; 1.0 keeps "
+                        "coverage and loses accuracy; 0.9 is the only setting that is "
+                        "near-best on both.")
     p.add_argument("--seed", type=int, default=0)
     args = p.parse_args()
     os.makedirs(FIG, exist_ok=True)
