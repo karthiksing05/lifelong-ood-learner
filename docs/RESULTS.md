@@ -3382,6 +3382,69 @@ error. And a single-seed read taken earlier, that ACC decreases monotonically wi
 (0.844 → 0.766), **did not replicate**: at three seeds the curve is flat from r=1 to r=8 and only
 falls at r=16. It is recorded here because it was nearly written up.
 
+### 24f. Why: the tree is a caterpillar, not a hierarchy (N38)
+
+The three negatives above have a single structural cause, and drawing the tree makes it obvious
+(`figures/f14_hierarchy.png`). After 40 OOD concepts on the standard backbone:
+
+| | |
+|---|---|
+| nodes | 41 |
+| depth | 4 |
+| mean branching | **10.00** |
+| shared internal nodes | **3** |
+| concepts sharing a non-root ancestor | 98% |
+
+That last number sounds like the hierarchy working and is in fact the opposite. The actual shape:
+
+```
+node 0  (40 beneath, 1 child)
+  └ node 1  (40 beneath, 4 children)
+      └ node 3  (36 beneath, 4 children)
+          └ node 7  (32 beneath, 31 children)   <-- everything lands here
+```
+
+**31 of 40 concepts have the identical path prefix `(0, 1, 3, 7)`, and there are only 4 distinct
+prefixes in total.** The tree is a *caterpillar*: a short spine with one enormous fan-out at the
+bottom. There are no families. A "shared ancestor" is shared by essentially every concept, so it is a
+second root rather than a family node — and the structural learning curves say this is the fixed
+point, not a transient: shared nodes saturate at **3** by the tenth concept and never grow again,
+depth saturates at 4, while branching climbs linearly to 10 as one node absorbs every arrival.
+
+The mechanism is in `_descend`, and it is the interaction of two caps rather than a coding error:
+
+```python
+if ll(best, mu) < ll(cur, mu) + margin and len(children[cur]) < branch_max:
+    break                      # stay here
+path.append(best)              # otherwise DESCEND
+```
+
+Descent happens when the best child fits better **or** when the current node has `branch_max`
+children. So a node saturates at 4 children and then forces every subsequent arrival downward
+*regardless of fit* — the fan-out cap, meant to create levels, instead creates a chain. `max_depth=3`
+then stops the descent, and the deepest node has no cap that can fire, so it accumulates without
+limit. Chain plus dump.
+
+This retro-explains the rest of §24 without needing separate stories. **§24b** finds no transfer
+because the "family ancestor" a newcomer routes through is shared by 32 of 40 concepts and therefore
+encodes nothing family-specific — routing through it and routing through a *different* spine node are
+close to the same operation, which is exactly what the `wrong-family` control measured. **§24c**
+finds no coarse-to-fine organization because there is only one spine, not a hierarchy of abstraction
+levels. And **§5s** found clustered placement worst because the placement rule was never clustering.
+
+It also sharpens §23. All **5** arrival orders produce *identical* shape statistics — 41 nodes, depth
+4, branching 10.00, 3 shared, mean path 4.62 — while §23 measured only 5.6% of concepts keeping their
+path. Those are consistent and worth stating together: **order changes which concept lands where; it
+does not change the shape.** The caterpillar is what this rule builds from this data, always.
+
+**What would have to change.** Not the sealing discipline, which is untouched by any of this — the
+descent rule and its caps. `branch_max` forcing descent on saturation is the specific defect; a
+quality-gated descent, a much larger `branch_max`, and a `max_depth` above 3 are the obvious knobs,
+and Cobweb's merge/split would be the principled fix that §5s's insert-only requirement forbids. That
+is a redesign, not a tuning pass, and nothing in this repository currently claims the hierarchy
+works — but it does mean the hierarchy's failures measured above are **failures of this placement
+rule**, not evidence that hierarchical sharing cannot help.
+
 ### 24e. What this means for the claims
 
 The hierarchy's *structural* properties hold and are the ones the certificates rest on: sealed nodes
@@ -3395,6 +3458,7 @@ deletion is exact (§22). Its *functional* claims do not survive contact:
 | a newcomer benefits from routing through its family | **not supported** (§24b) |
 | depth organizes abstraction coarse→fine | **refuted** (§24c) |
 | clustered placement beats alternatives | **refuted** earlier (§5s) |
+| the tree forms families at all | **refuted** (§24f): 31/40 concepts share one path prefix |
 
 The honest summary is that **what is load-bearing is the sealing discipline — path-scoped
 optimization and private leaves — and not the tree's clustering judgment.** That is already how
