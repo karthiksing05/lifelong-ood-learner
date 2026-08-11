@@ -3995,6 +3995,53 @@ entirely** (`--mcmc-steps` defaults to 0, which disables it). It went unnoticed 
 against a stale aggregate and passing 37/37 while the files on disk disagreed. Aliases restored,
 outputs parked as `*_w05probe.json`. **Rebuild the aggregate before trusting `test_claims`.**
 
+## 30. The UNet has been trained on a pixel permutation the whole time (N45)
+
+Flat rows here are HWC; every consumer hands one to the UNet with a plain `.reshape(-1, 3, H, W)`.
+That is not an image. `tests/diag_layout.py` establishes it by exact index algebra, no model
+involved — for 64×64×3 the network's three "channels" are image **rows** 0–21 / 21–42 / 42–63, its
+width axis is the **colour** axis, and its vertical axis is a **~22-pixel jump across the picture**,
+so a single 3×3 convolution reads real columns 3, 24 and 45 at once. `figures/f20_layout.png` shows
+a real face as the UNet sees it: a striped, colour-scrambled field with only low frequencies intact.
+
+`ddpm.py` had recorded this deliberately and argued it was harmless, because training and sampling
+share the permutation so "the model simply learns in the permuted space". That is correct for a
+permutation-equivariant model and **wrong for a CNN**, whose entire inductive bias is locality.
+Images still *display* correctly, which is why it survived; what cannot survive is local texture.
+
+Proving the prior is destroyed is not proving it matters — a UNet can fit a permuted dataset by brute
+force. N45 measures it: two backbones identical in architecture, data, seed, epochs, batch, lr and
+schedule, differing **only** in layout, at the real recipe (160 slots, `n_per_slot` 200, 60 epochs).
+
+| | `permuted` (every backbone to date) | `hwc` (a real image) | |
+|---|---|---|---|
+| held-out ε-prediction loss | 0.01417 | **0.01011** | **−28.7 %** |
+| joint composition accuracy, trained slots | 0.714 | **0.745** | **+0.031** |
+| tv ratio vs real | **1.221** | 1.398 | +0.177 (worse) |
+
+**The training objective improves by 28.7 % for free**, and conditional accuracy follows it up. The
+roughness metric moves the other way — the fixed model produces *more* high-frequency texture, which
+overshoots real rather than undershooting it. A shorter 30-epoch run reproduced the loss effect
+almost exactly (−29.5 %), so it is not a single-run artefact.
+
+**Why this is probably an understatement.** Color-MNIST is the *easiest possible case* for a
+scrambled CNN — a near-binary stroke on flat colour, almost all low-frequency, exactly the content a
+permuted network can still fit. CelebA is the opposite: dense local texture is most of the signal.
+The mechanism therefore predicts a substantially larger effect there, and that is the number that
+decides whether the CelebA backbones are worth retraining. `slurm/jobs/n45_celeba.sbatch` runs the
+matched pair.
+
+**What this does and does not touch.** It does not touch any storage claim — 72 bytes against
+2.3 MB is arithmetic on tensor shapes. It does not touch bit-identity or the preservation guarantee,
+which are properties of optimizer scoping. What it does touch is every *image-quality* number
+produced on one of our own backbones, and it is the leading candidate for §29a's finding that our
+CelebA samples are too **smooth** (tv 0.727–0.781, i.e. blurrier than real): a network that cannot
+use spatial locality is exactly a network that renders low frequencies and omits texture.
+
+The fix is available and off by default (`layout="hwc"`), recorded per checkpoint, because turning it
+on silently invalidates every existing checkpoint — a model must be sampled in the layout it was
+trained in.
+
 ## 8. Where the numbers come from
 
 | experiment | file | scale run |
