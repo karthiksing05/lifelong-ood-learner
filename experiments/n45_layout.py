@@ -82,6 +82,11 @@ def main():
     facs = {int(s_): (int(data["digit"][i]), int(data["fg"][i]), int(data["bg"][i]))
             for i, s_ in enumerate(slots)}
 
+    # Drawn ONCE, before the arm loop.  Drawing inside it advanced `rng` between arms, so the
+    # two layouts were scored on DIFFERENT held-out compositions -- an unpaired comparison
+    # dressed as a controlled one.
+    pick = uniq[rng.permutation(len(uniq))[:args.n_eval]]
+    show_slot = int(pick[0])
     rows, panels = [], {}
     for layout in ("permuted", "hwc"):
         torch.manual_seed(args.seed)
@@ -97,7 +102,6 @@ def main():
         field = NeuralScoreField(model, device=dev, batch=64, layout=layout)
 
         accs, S_show = [], None
-        pick = uniq[rng.permutation(len(uniq))[:args.n_eval]]
         for s in pick:
             S = to_data(field.sample(n=8, steps=50, seed=args.seed,
                                      branch=int(remap[int(s)]), clip=(-1, 1))).astype(np.float32)
@@ -110,7 +114,10 @@ def main():
         sk = speckle(S_show, R, img=32)
         rows.append(dict(layout=layout, held_loss=loss, joint=float(np.nanmean(accs)),
                          tv_ratio=float(sk.get("tv_ratio", np.nan)),
-                         minutes=(time.time() - t0) / 60))
+                         minutes=(time.time() - t0) / 60,
+                         # per-slot, in `pick` order, so the two arms can be compared PAIRED
+                         per_slot=[float(v) for v in accs],
+                         slots=[int(v) for v in pick]))
         panels[layout] = S_show
         print(f"[n45] {layout:9s} held-out loss {loss:.5f}   joint acc "
               f"{np.nanmean(accs):.3f}   tv vs real {sk.get('tv_ratio', float('nan')):.3f}   "
@@ -119,8 +126,12 @@ def main():
         torch.cuda.empty_cache()
 
     a, b = rows[0], rows[1]
+    d = np.array(b["per_slot"]) - np.array(a["per_slot"])
     print(f"\n[n45] hwc minus permuted:  loss {b['held_loss'] - a['held_loss']:+.5f}   "
           f"joint {b['joint'] - a['joint']:+.3f}   tv {b['tv_ratio'] - a['tv_ratio']:+.3f}")
+    print(f"[n45] PAIRED over {len(d)} identical slots: mean {d.mean():+.3f}, "
+          f"hwc better on {int((d > 0).sum())}, worse on {int((d < 0).sum())}, "
+          f"tied on {int((d == 0).sum())}")
     print("[n45] a large gain for `hwc` means every backbone here trained with its convolutional "
           "prior switched off, and the fix is a retrain rather than a re-analysis.")
     save_json(dict(rows=rows, config=vars(args)),
@@ -129,9 +140,11 @@ def main():
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
+    real_rows = np.where(slots == show_slot)[0][:8]
     fig, axes = plt.subplots(3, 8, figsize=(11, 4.6))
     for c in range(8):
-        for r, (name, S) in enumerate([("real", X[hold[:8]].astype(np.float32)),
+        for r, (name, S) in enumerate([(f"real (slot {show_slot})",
+                                        X[real_rows].astype(np.float32)),
                                        ("permuted (current)", panels["permuted"]),
                                        ("hwc (true image)", panels["hwc"])]):
             axes[r][c].axis("off")
