@@ -73,6 +73,21 @@ amounts, which is what makes cost scale with vocabulary rather than with experie
   adapter per query, and the curve's slope is set by a *detector error rate* rather than by the
   arrival of experiences.
 
+**The price list is three tiers, not two, and the cheapest is the default.** §25 measured a route
+below basis extension: if the basis *already spans* the target, the concept is stored as factor
+**coordinates** and nothing is learned at all.
+
+| tier | when | cost | measured |
+|---|---|---|---|
+| **ADDRESS** | the basis already spans it | **72 B** | 31,895× cheaper than a block and not worse — F1 0.678 ± 0.042 vs 0.587 ± 0.020 over 3 seeds, winning every seed |
+| **EXTEND BASIS** | a new *value* of a known factor | **1 KB** | F1 0.755 ± 0.037 at zero per-concept parameters |
+| **BLOCK** | a new *factor*, or nothing factored | **69 K** (rank 1) | the tier is real: conditioning-only routes score 0.000 |
+
+**The honest gap in this claim.** The router has three outcomes and its third **lumps EXTEND BASIS
+and BLOCK together** — nothing here yet distinguishes a new *value* (1 KB) from a new *factor*
+(69 K), so a 69× cost difference is currently decided by hand. What is measured is that the
+distinction is *real* (§5q), not how to detect it.
+
 This is the piece with no counterpart in the companion paper, whose pipeline spends a LoRA on every
 query. A dedicated literature sweep found **no** paper combining product-of-experts composition with
 a growing adapter bank — an empty cell.
@@ -357,6 +372,7 @@ default configuration spends.
 
 | lever | effect | where |
 |---|---|---|
+| **addressing** a spanned composition instead of a new block | **72 B vs 2,296,467 B — 31,895×** | §25 |
 | **routing** an arrangement to the shared basis instead of a new block | **1024 B vs 551K — 538×** | §6c |
 | **rank 1** instead of the default rank 8 | **8×** fewer, ACC 0.840 ± 0.009 vs 0.842 ± 0.026 | §24d |
 | **flat** instead of hierarchical placement | ~20% fewer | §24d |
