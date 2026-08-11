@@ -160,7 +160,7 @@ class BaseScoreField:
 
     # ── mode ascent on p_t (the paper's Eq. 4) ──────────────────────────────
     def mode_ascent(self, xq, u, n_starts=16, iters=100, lr=0.05, seed=0, init="query",
-                    clamp=True, k_sigma=3.0, tweedie=True):
+                    clamp=True, k_sigma=3.0, tweedie=True, adam=True):
         """Adam ascent on log p_t from noised copies of the query -> (modes in x_t space, x0-space).
 
         `clamp` keeps the ascent on the DATA'S SUPPORT, and without it this walks off into nonsense.
@@ -189,9 +189,16 @@ class BaseScoreField:
         bound = np.sqrt(a) + k_sigma * np.sqrt(max(1.0 - a, 0.0))
         for i in range(1, iters + 1):
             g = self.score(x, u)
-            m = b1 * m + (1 - b1) * g
-            v = b2 * v + (1 - b2) * g * g
-            x = x + lr * (m / (1 - b1 ** i)) / (np.sqrt(v / (1 - b2 ** i)) + eps)
+            if adam:
+                m = b1 * m + (1 - b1) * g
+                v = b2 * v + (1 - b2) * g * g
+                x = x + lr * (m / (1 - b1 ** i)) / (np.sqrt(v / (1 - b2 ** i)) + eps)
+            else:
+                # plain gradient ascent, scaled by the noise level so `lr` means the same thing at
+                # every u: the score has magnitude ~1/sqrt(1-abar), so multiplying it back by
+                # (1-abar) puts the step in x-units.  Unlike Adam this step SHRINKS as the gradient
+                # vanishes, which is what makes it settle at a mode instead of marching past it.
+                x = x + lr * (1.0 - a) * g
             if clamp:
                 x = np.clip(x, -bound, bound)
         # x0-space mode by TWEEDIE, not by rescaling.  `x / sqrt(abar)` is the noisy point divided
