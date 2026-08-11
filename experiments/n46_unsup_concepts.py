@@ -109,6 +109,8 @@ def main():
 
     d_emb = lib["C"].shape[1]
     rows, panels = [], {}
+    # defined before BOTH the identity check and the control, since each draws from it
+    seen_slots = np.unique(data["slot"][seen])
 
     # ── IDENTITY CHECK: is the COMPOSITION MACHINERY itself correct? ─────────
     # Independent of whether discovery works.  Put the backbone's OWN class embeddings in as the
@@ -147,7 +149,6 @@ def main():
     # same library and the same weight-fitting, applied to SEEN compositions, must reproduce them:
     # those are in the discovery pool's own distribution, so anything near chance here indicts this
     # implementation rather than the method, and no held-out number below should be believed.
-    seen_slots = np.unique(data["slot"][seen])
     ctrl = []
     for s_ in seen_slots[rng.permutation(len(seen_slots))[:args.n_control]]:
         rows_s = np.where(data["slot"] == s_)[0]
