@@ -56,11 +56,13 @@ def main():
     print(f"[w0] {len(usable)}/{len(probes['_attrs'])} probes readable; guiding at "
           f"{[a for a, _ in ARMS]}\n", flush=True)
 
-    hold = np.asarray(data["hold_ids"])
+    # hold_ids / combo_of / all_combos live under `split`, not at top level -- the same trap n44 hit
+    sp = data["split"]
+    hold = np.asarray(sp["hold_ids"])
     rows, panels = [], {}
     for ci in range(4):
         h = int(hold[ci % len(hold)])
-        qrows = np.where(data["combo_of"] == h)[0]
+        qrows = np.where(sp["combo_of"] == h)[0]
         if len(qrows) < 8:
             continue
         xq = to_model(as_float(data["X8"][qrows[:1]])).ravel()
@@ -71,7 +73,7 @@ def main():
         for name, poe in ARMS:
             S = to_data(L.sample_teacher(t, n=16, seed=0, **poe)).astype(np.float32)
             sk = speckle(S, R, img=img)
-            acc = attr_accuracy(probes, S, data["all_combos"][h], attrs=usable)
+            acc = attr_accuracy(probes, S, sp["all_combos"][h], attrs=usable)
             m = float(np.mean([v for k, v in acc.items() if k in usable]))
             rows.append(dict(case=h, arm=name, w0=poe["w0"],
                              tv_ratio=float(sk.get("tv_ratio", np.nan)), attr=m))

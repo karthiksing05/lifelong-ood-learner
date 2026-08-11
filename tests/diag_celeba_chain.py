@@ -67,8 +67,12 @@ def main():
           f"attribute off REAL images")
     print(f"          unusable: {[a for a in names if a not in usable]}")
 
-    combos = data["all_combos"]
-    seen_ids = np.setdiff1d(np.arange(len(combos)), np.asarray(data["hold_ids"]))
+    # hold_ids / combo_of / all_combos live under `split`, not at top level.  This file read
+    # them off `data` and would have raised KeyError on the first access -- the same trap n44
+    # hit and documented.
+    sp = data["split"]
+    combos = sp["all_combos"]
+    seen_ids = np.setdiff1d(np.arange(len(combos)), np.asarray(sp["hold_ids"]))
     pick = seen_ids[rng.integers(len(seen_ids), size=4)]
     R = as_float(data["X8"][:400])
 
@@ -85,7 +89,7 @@ def main():
     for c in pick:
         if int(c) not in remap:
             continue
-        rows = np.where(data["combo_of"] == c)[0][:64]
+        rows = np.where(sp["combo_of"] == c)[0][:64]
         if len(rows) < 8:
             continue
         real_scores.append(score(as_float(data["X8"][rows]), combos[c], f"REAL images of combo {c}"))
@@ -104,8 +108,8 @@ def main():
 
     # ── 2. DISCOVERY ─────────────────────────────────────────────────────────
     print(f"\n[chain] 2. DISCOVERY -- are the ascent modes faces, and do they carry attributes?")
-    hq = int(np.asarray(data["hold_ids"])[0])
-    qrows = np.where(data["combo_of"] == hq)[0]
+    hq = int(np.asarray(sp["hold_ids"])[0])
+    qrows = np.where(sp["combo_of"] == hq)[0]
     xq = to_model(as_float(data["X8"][qrows[:1]])).ravel()
     for tag, kw in (("n20 settings  (4 lvl / 12 starts / 80 it)",
                      dict(u_grid=(0.1, 0.2, 0.3, 0.4), n_starts=12, iters=80)),
