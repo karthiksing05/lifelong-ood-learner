@@ -118,7 +118,14 @@ def colormnist(args):
     for q in qs:
         xq = to_model(data["X"][q["query"]]).ravel()
         R = data["X"][q["rest"][:100]].astype(np.float32)
-        t = L.compose(xq, u_grid=(0.1, 0.2, 0.3, 0.4), n_starts=16, iters=120)
+        # `--paper-budget` runs the companion paper's Table 6 ColorMNIST discovery budget: 15 noise
+        # levels x 128 starts = 1920 ascent chains, against the 4 x 16 = 64 this figure used before.
+        # The selected prototypes were often unrelated to the query, and that is a POOL problem --
+        # submodular selection can only pick from what ascent found.
+        from lifelong_ood.compose import PAPER_COLORMNIST
+        disc = (dict(PAPER_COLORMNIST) if args.paper_budget
+                else dict(u_grid=(0.1, 0.2, 0.3, 0.4), n_starts=16, iters=120))
+        t = L.compose(xq, **disc)
         from lifelong_ood.compose import candidates_ascent
         M, V, _ = candidates_ascent(field, xq, u_grid=(0.1, 0.2, 0.3, 0.4), n_starts=16,
                                     iters=120, seed=args.seed)
@@ -160,11 +167,12 @@ def colormnist(args):
         f"best.  Median joint over all 40 is 0.438, range [0.00, 0.94], and it is strongly "
         f"colour-dependent\n(green-on-navy 0.719 vs yellow-on-dark_brown 0.125).  `prototypes` are "
         f"what mode ascent discovered; the companion method runs on its OWN Eq. 14 schedule.  "
-        f"`ours` is sampled at prototype-distance dial s={args.dial:g} (§20).  "
+        f"`ours` is sampled at prototype-distance dial s={args.dial:g} (§20); discovery budget = "
+        f"{'the paper\'s 15x128=1920 chains' if args.paper_budget else 'ours, 4x16=64 chains'}.  "
         f"Accuracy is high where coverage is zero.  Sampled with {args.steps} steps "
         f"(tables use 50); the residual texture is the BACKBONE's -- it scores 1.59x real "
         f"on its own TRAINED classes, worse than anything downstream of it.", fontsize=8)
-    tag = "" if args.dial >= 1.0 else f"_s{args.dial:g}"
+    tag = ("" if args.dial >= 1.0 else f"_s{args.dial:g}") + ("_paper" if args.paper_budget else "")
     p = os.path.join(FIG, f"f9_case_colormnist{tag}.png")
     fig.savefig(p, dpi=145, bbox_inches="tight"); plt.close(fig)
     print(f"  wrote {p}")
@@ -200,6 +208,9 @@ def main():
                         "value the table does.  At the old implicit 1.0 some samples land "
                         "on the wrong background, and at 3.0 the colour factor breaks "
                         "entirely -- see tests/diag_ours_quality.py.")
+    p.add_argument("--paper-budget", action="store_true",
+                   help="run the paper's Table 6 ColorMNIST discovery budget (15 levels x "
+                        "128 starts) instead of our 20x smaller one")
     p.add_argument("--dial", type=float, default=1.0,
                    help="prototype-distance dial for the `ours` row (§20): the reverse "
                         "process starts from the prototype noised to this level.  1.0 = "

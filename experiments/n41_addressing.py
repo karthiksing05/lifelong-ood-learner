@@ -79,6 +79,8 @@ def main():
     p.add_argument("--epochs", type=int, default=25)
     p.add_argument("--steps", type=int, default=50)
     p.add_argument("--inv-steps", type=int, default=300)
+    p.add_argument("--n-score", type=int, default=8,
+                   help="how many of the absorbed concepts to sample and score at the end")
     p.add_argument("--seed", type=int, default=0)
     p.add_argument("--tag", default="")
     p.add_argument("--quick", action="store_true")
@@ -87,6 +89,7 @@ def main():
         args.tag = args.tag or "_smoke"
         args.n_concepts, args.n_per_slot, args.n_pool = 4, 20, 12
         args.epochs, args.steps, args.inv_steps, args.n_samples = 3, 20, 60, 8
+        args.n_score = 2
     dev = "cuda" if torch.cuda.is_available() else "cpu"
 
     data = load_colormnist(n_per_slot=args.n_per_slot, seed=args.seed)
@@ -141,7 +144,11 @@ def main():
 
         # quality of the last few absorbed concepts, by the route that arm used
         accs, f1s, vs = [], [], []
-        tail = (stored[-4:] if arm == "addressing" else learned[-4:])
+        # score the last --n-score concepts, not 4: the storage result is structural and needs
+        # no replication, but the QUALITY comparison is the contested one and four concepts
+        # at one seed is too thin to carry it.
+        k = args.n_score
+        tail = (stored[-k:] if arm == "addressing" else learned[-k:])
         for item in tail:
             if arm == "addressing":
                 nm = item["name"]

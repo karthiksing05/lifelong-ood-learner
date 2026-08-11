@@ -130,10 +130,11 @@ def main():
         for k, S in got.items():
             if S is None or k == "real query":
                 continue
-            sp = speckle(S, R, img=img)
-            rows.append(dict(case=h, arm=k, tv_ratio=float(sp.get("tv_ratio", np.nan)),
+            sk = speckle(S, R, img=img)   # NOT `sp` -- that is the split dict, and shadowing it
+            # made case 2 fail with KeyError: combo_of
+            rows.append(dict(case=h, arm=k, tv_ratio=float(sk.get("tv_ratio", np.nan)),
                              paper_discovery=bool(args.paper_discovery)))
-            print(f"[n44] case {h} {k:26s} tv vs real {sp.get('tv_ratio', float('nan')):.3f}",
+            print(f"[n44] case {h} {k:26s} tv vs real {sk.get('tv_ratio', float('nan')):.3f}",
                   flush=True)
         del L
         torch.cuda.empty_cache()

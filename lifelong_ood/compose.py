@@ -43,15 +43,29 @@ def candidates_tree(snap, xq, top=None, per_depth_cap=None):
     return M[keep], V[keep], dict(node=keep, depth=depth[keep], loglik=ll[keep])
 
 
+# The companion paper's Table 6 columns, verbatim, for callers that want their budget.
+PAPER_COLORMNIST = dict(u_grid=tuple(round(t / 1000, 4) for t in range(50, 401, 25)),
+                        n_starts=128, iters=150, lr=0.1, probes=4, init="hybrid")
+PAPER_CELEBA = dict(u_grid=tuple(round(t / 1000, 3) for t in range(50, 501, 50)),
+                    n_starts=8, iters=100, lr=0.09, probes=4, init="query")
+
+
 def candidates_ascent(field, xq, u_grid=(0.05, 0.1, 0.15, 0.2, 0.3, 0.4), n_starts=16, iters=150,
                       lr=0.1, seed=0, probes=4, dedup_rmse=0.05, init="hybrid"):
     """The paper's discovery route: mode ascent on p_t at several noise levels (their Eq. 4), a
     Laplace covariance at each mode from Hutchinson probes, pulled back to x0-space, deduplicated.
 
-    Defaults follow the paper's ColorMNIST column (their Table 6) rather than round numbers:
-    a low-noise timestep grid (their [50, 400] of T=1000 -> u in [0.05, 0.4]), 150 ascent iterations,
-    base step 0.1, 4 Hutchinson probes, and -- the detail that matters most -- HYBRID INITIALIZATION,
-    half the chains started from the noised query and half from pure noise.  A pool grown only from
+    THE DEFAULTS BELOW ARE NOT THE PAPER'S, and this docstring used to claim they were.  Their
+    Table 6 ColorMNIST column is a grid of [50, 400, step 25] -- FIFTEEN noise levels -- with **128
+    ascent starts per timestep**.  These defaults use six levels and sixteen starts: 96 chains
+    against their 1920, a **20x smaller discovery budget**.  That is visible in the case-study
+    figures, where the three selected prototypes are often unrelated to the query: submodular
+    selection can only choose from the pool ascent found, and a thin pool gives a bad choice.
+    Pass `PAPER_COLORMNIST` (below) to run their budget.
+
+    What IS carried over from their column: 150 ascent iterations, base step 0.1, 4 Hutchinson
+    probes, and -- the detail that matters most -- HYBRID INITIALIZATION, half the chains started
+    from the noised query and half from pure noise.  A pool grown only from
     the query explores one basin, and composition needs experts that DISAGREE with the query
     (the right background lives in a different basin from the right foreground).
 

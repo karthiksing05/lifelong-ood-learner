@@ -221,7 +221,7 @@ class PretrainedScoreField(BaseScoreField):
 
     @torch.no_grad()
     def sample(self, n=8, steps=50, seed=0, clip=(-1, 1), emb=None, branch=None, eta=0.0,
-               guide_eps=None, guide_w=None):
+               guide_eps=None, guide_w=None, u_start=1.0, x_init=None):
         """DDIM on the model's NATIVE timestep grid.
 
         An earlier version walked this repo's cosine u-grid and mapped each u to the nearest trained
@@ -234,7 +234,20 @@ class PretrainedScoreField(BaseScoreField):
         g = torch.Generator(device="cpu").manual_seed(seed)
         x = torch.randn(n, 3, self.img, self.img, generator=g).to(self.device)
         T = len(self._abar) if self._abar is not None else 1000
-        ts_seq = np.linspace(T - 1, 0, steps + 1).round().astype(int)
+        # `u_start` / `x_init` -- the prototype-distance dial (§20), and what `sample_teacher` needs
+        # to run at all.  Their absence here is why the pretrained track (§12) could only ever use
+        # adapters: the analytic-teacher route calls sample() with both, so `poe-guided` -- the
+        # companion paper's OWN method -- could not be run on a pretrained backbone.  Since this
+        # field integrates on the model's NATIVE timestep grid, u_start is converted to a start
+        # INDEX on that grid rather than used as a cosine-u directly.
+        t_start = int(round(float(np.clip(u_start, 0.0, 1.0)) * (T - 1)))
+        ts_seq = np.linspace(t_start, 0, steps + 1).round().astype(int)
+        if x_init is not None:
+            xi = np.asarray(x_init, np.float32).reshape(-1, 3, self.img, self.img)
+            xi = torch.from_numpy(np.repeat(xi, n, 0) if len(xi) == 1 else xi[:n]).to(self.device)
+            ab0 = (float(self._abar[t_start]) if self._abar is not None
+                   else float(cosine_abar(np.array([t_start / T]))[0]))
+            x = ab0 ** 0.5 * xi + (1 - ab0) ** 0.5 * x
         for i in range(steps):
             t, tn = int(ts_seq[i]), int(ts_seq[i + 1])
             ab = float(self._abar[t]) if self._abar is not None else float(cosine_abar(np.array([t / T]))[0])
