@@ -124,6 +124,12 @@ def train_ddpm(model, X01, labels, epochs=60, batch=128, lr=2e-4, wd=1e-6, p_dro
     # uint8 input is kept uint8 and converted per batch: the CelebA run trains on ~100k 64x64 images
     # and the float32 copy of that is 5 GB of host RAM, against 1.2 GB as uint8.
     lay = layout or LAYOUT_DEFAULT
+    _steps_planned = (len(np.asarray(X01)) // max(batch, 1)) * max(epochs, 1)
+    if not eval_only and _steps_planned < 3.0 / max(1e-9, 1.0 - ema_decay):
+        print(f"[ddpm] WARNING: {_steps_planned} steps against an EMA time constant of "
+              f"{1.0 / (1.0 - ema_decay):.0f}; warmup is on, but a run this short still "
+              f"gives the EMA little to average. Treat the checkpoint as provisional.",
+              flush=True)
     u8 = np.asarray(X01).dtype == np.uint8
     if u8:
         # MUST be the same reinterpretation the float path below performs -- a plain reshape of the
@@ -182,8 +188,20 @@ def train_ddpm(model, X01, labels, epochs=60, batch=128, lr=2e-4, wd=1e-6, p_dro
             torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
             opt.step()
             with torch.no_grad():
-                torch._foreach_mul_(ema_f, ema_decay)
-                torch._foreach_add_(ema_f, mod_f, alpha=1 - ema_decay)
+                # WARMUP.  A fixed decay of 0.999 has a ~1000-step time constant, so a run shorter
+                # than that returns an EMA that is mostly the RANDOM INITIALIZATION: the 12-epoch
+                # CelebA layout run is 468 steps and its checkpoint retained 62.6% of the init,
+                # which is why evaluating it gave a loss ~12x the training loss.  The 15-epoch
+                # CelebA de-risk backbone is 585 steps / 55.7% -- so its "conditioning is weak"
+                # reading is confounded by this and not a clean measurement of training.
+                # The standard fix (ADM/Karras): ramp the decay in, so early steps average over
+                # what exists rather than over noise.  Converges to `ema_decay` and leaves long
+                # runs -- every backbone in the tables -- MATERIALLY unchanged (their init contribution
+                # is already ~0 either way).  Not bit-identical: a retrained backbone will differ
+                # slightly from one trained before this change.
+                dk = min(ema_decay, (1.0 + step) / (10.0 + step))
+                torch._foreach_mul_(ema_f, dk)
+                torch._foreach_add_(ema_f, mod_f, alpha=1 - dk)
             tot += float(loss); nb += 1; step += 1
             if log_every and step % log_every == 0:
                 print(f"    ep {ep + 1} step {step}: loss {tot / max(nb, 1):.4f}", flush=True)

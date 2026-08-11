@@ -3982,8 +3982,24 @@ So the CelebA picture-quality question has three candidate causes and §29 named
 2. the input-layout permutation — **§31**, and the leading candidate for the blur
 3. the from-scratch backbone — still plausible, no longer established
 
-The CelebA tables are being rerun at the corrected w₀ in the canonical configuration
-(`slurm/jobs/n20_canon_w05.sbatch`, both splits × 3 seeds).
+**The CelebA tables have now been rerun at the corrected w₀**, both splits × 3 seeds in the canonical
+configuration (`--comp-scale 7.5 --mcmc-steps 10 --mcmc-lam 0.3`). The result is the cleanest possible
+confirmation that the fix was correctly scoped: **only the `poe-guided` rows moved.** Every other arm
+— ours, `composable-diff`, `composable-mcmc`, `query-only`, `nearest-class`, `real` — is unchanged to
+three decimals, because `w₀` is the analytic-PoE guidance strength and no other arm uses it.
+
+| CelebA, pair split | w₀ = 1.2 (what we ran) | w₀ = 0.5 (Table 8) |
+|---|---|---|
+| `poe-guided` pair | 0.645 ± 0.189 | 0.574 ± 0.212 |
+| `poe-guided` recall | 0.000 ± 0.000 | **0.004 ± 0.002** |
+| `poe-guided` F1 | 0.000 ± 0.000 | **0.008 ± 0.004** |
+| `poe-guided` diversity | 0.147 ± 0.004 | **0.405 ± 0.001** |
+
+Run at its own published guidance the companion method is **less collapsed** — diversity nearly
+triples and recall leaves exactly zero for the first time — but the qualitative finding is unchanged:
+it still has essentially no coverage of the held-out composition. That is the right kind of outcome
+for a fairness correction. It mattered, it moved the baseline in the baseline's favour, and no
+comparative claim in this repository rested on the collapse being total.
 
 **A caution recorded because it nearly became a silent error.** The first rerun used the experiment's
 *default* flags and wrote to `n20_celeba_composition.json` / `_pair.json`. Those are **alias
