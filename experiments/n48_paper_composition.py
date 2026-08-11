@@ -102,6 +102,22 @@ def main():
                       n_scored=0, tv_ratio=float("nan"))]
     print("", flush=True)
 
+    # ── OUR ROUTE: a factor basis over the backbone's OWN class embeddings ───
+    # This is the ADDRESS tier on the paper's backbone.  CelebA's factors are its 14 binary
+    # attributes, so a class embedding should be reconstructible as mu + sum_f V[f][value].  Fit
+    # that on the SEEN classes only, then a held-out combination is composed from vectors every one
+    # of which was estimated from data the model did see -- only their SUM is new.  Nothing is
+    # optimized per query and nothing is stored but the coordinates.
+    from lifelong_ood.neural.idealwords import compose as fac_compose, factorize
+    seen_cls_all = np.unique(np.asarray(data["cls"])[seen])
+    rows_seen = [remap[int(c)] for c in seen_cls_all if int(c) in remap]
+    lab_seen = np.stack([np.asarray(data["combos"][int(c)], int)
+                         for c in seen_cls_all if int(c) in remap])
+    fac = factorize(cemb[rows_seen], lab_seen)
+    print(f"[n48] factor basis over {len(rows_seen)} seen classes x {lab_seen.shape[1]} attributes: "
+          f"R^2 = {fac['r2']:.3f}  (this is the ceiling on what ADDRESS can express here)\n",
+          flush=True)
+
     hold = np.where(~seen)[0]
     hold_cls = np.unique(np.asarray(data["cls"])[hold])
     rng = np.random.default_rng(args.seed)
@@ -127,6 +143,12 @@ def main():
             n=args.n_samples, steps=args.steps, seed=args.seed, clip=(-1, 1),
             guide_eps=lambda x, u: np.repeat(xq[None], len(x), 0),
             guide_w=lambda u: PAPER_POE_CELEBA["w0"])).astype(np.float32)
+        # ADDRESS: 14 integer coordinates, no optimization, no weights.  The whole per-concept
+        # cost is `combo` itself.
+        c_addr = fac_compose(fac, np.asarray(combo, int))
+        got["ours (ADDRESS)"] = to_data(field.sample(
+            n=args.n_samples, steps=args.steps, seed=args.seed, clip=(-1, 1),
+            emb=c_addr)).astype(np.float32)
         got["unconditional"] = to_data(field.sample(
             n=args.n_samples, steps=args.steps, seed=args.seed, clip=(-1, 1))).astype(np.float32)
 
@@ -155,7 +177,8 @@ def main():
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
-    order = ["real", "prototypes", "poe-guided", "query-only", "unconditional"]
+    order = ["real", "prototypes", "ours (ADDRESS)", "poe-guided", "query-only",
+             "unconditional"]
     nrow = len(panels) * len(order)
     fig, axes = plt.subplots(nrow, args.n_show, figsize=(1.5 * args.n_show + 3.0, 1.55 * nrow))
     axes = np.atleast_2d(axes)
