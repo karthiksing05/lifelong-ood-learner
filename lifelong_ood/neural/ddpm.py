@@ -19,6 +19,8 @@ CONVENTION.  This field's x-space is the model's [-1, 1] space, as flat [N, 3072
 `to_model` / `to_data` convert to and from the [0, 1] pixel space the datasets and probes use;
 neural experiments convert at their boundaries.  (The analytic field works directly in [0, 1].)
 """
+import os
+
 import numpy as np
 import torch
 
@@ -40,15 +42,43 @@ def to_data(xm):
     return np.clip((x.reshape(len(x) if x.ndim > 1 else 1, -1) + 1.0) / 2.0, 0.0, 1.0)
 
 
-def _as_img(X, device, img=IMG):
+# ── flat row <-> image tensor ────────────────────────────────────────────────
+# Flat rows in this repository are HWC (both `rgb_img` and `celeba.rgb` display them as
+# `.reshape(img, img, 3)`).  There are two ways to hand one to a UNet:
+#
+#   "permuted"  a plain `.reshape(-1, 3, H, W)`.  This is NOT an image.  For 64x64x3 it makes the
+#               UNet's three "channels" out of image ROWS 0-21 / 21-42 / 42-63, its width axis out
+#               of the COLOUR axis, and its vertical axis a ~22-pixel jump ACROSS the image, so one
+#               3x3 convolution reads real columns 3, 24 and 45 at once.  Training and sampling
+#               share the permutation, so images still DISPLAY correctly -- which is why this
+#               survived -- but a CNN's entire inductive bias is locality, and there is none left
+#               at any scale.  See tests/diag_layout.py and figures/f20_layout.png.
+#   "hwc"       a real transpose.  The UNet sees an actual image.
+#
+# Every backbone trained before 2026-08-11 used "permuted", so that stays the default and each
+# checkpoint records which it used; a checkpoint must be sampled in the layout it was trained in.
+LAYOUT_DEFAULT = os.environ.get("LIFELONG_LAYOUT", "permuted")
+
+
+def _as_img(X, device, img=IMG, layout=None):
     X = np.atleast_2d(np.asarray(X, np.float32))
-    return torch.from_numpy(X).to(device).reshape(-1, CH, img, img)
+    T = torch.from_numpy(X).to(device)
+    if (layout or LAYOUT_DEFAULT) == "hwc":
+        return T.reshape(-1, img, img, CH).permute(0, 3, 1, 2).contiguous()
+    return T.reshape(-1, CH, img, img)
+
+
+def _as_flat(T, layout=None):
+    """(N, C, H, W) -> flat rows in the repository's HWC convention.  Inverse of `_as_img`."""
+    if (layout or LAYOUT_DEFAULT) == "hwc":
+        return T.permute(0, 2, 3, 1).reshape(len(T), -1)
+    return T.reshape(len(T), -1)
 
 
 # ── training ─────────────────────────────────────────────────────────────────
 def train_ddpm(model, X01, labels, epochs=60, batch=128, lr=2e-4, wd=1e-6, p_drop=0.1,
                device="cuda", ema_decay=0.999, seed=0, log_every=200, u_min=1e-3, tf32=False,
-               on_epoch=None, params=None, eval_only=False):
+               on_epoch=None, params=None, eval_only=False, layout=None):
     """Standard epsilon-prediction training with classifier-free-guidance dropout.
 
     Matches the paper's backbone recipe (AdamW, lr 2e-4, weight decay 1e-6, grad clip 1.0, null-token
@@ -93,6 +123,7 @@ def train_ddpm(model, X01, labels, epochs=60, batch=128, lr=2e-4, wd=1e-6, p_dro
     img = int(getattr(model, 'img', IMG))
     # uint8 input is kept uint8 and converted per batch: the CelebA run trains on ~100k 64x64 images
     # and the float32 copy of that is 5 GB of host RAM, against 1.2 GB as uint8.
+    lay = layout or LAYOUT_DEFAULT
     u8 = np.asarray(X01).dtype == np.uint8
     if u8:
         # MUST be the same reinterpretation the float path below performs -- a plain reshape of the
@@ -111,9 +142,13 @@ def train_ddpm(model, X01, labels, epochs=60, batch=128, lr=2e-4, wd=1e-6, p_dro
         # attributes, and the conditioning looked absent when it was merely being asked in the wrong
         # basis.  Consistency with the rest of the pipeline matters more than the layout being the
         # conventional one.
-        Xt = torch.from_numpy(np.ascontiguousarray(X01)).reshape(-1, CH, img, img)
+        Xt = torch.from_numpy(np.ascontiguousarray(X01))
+        Xt = (Xt.reshape(-1, img, img, CH).permute(0, 3, 1, 2).contiguous()
+              if lay == "hwc" else Xt.reshape(-1, CH, img, img))
     else:
-        Xt = torch.from_numpy(to_model(X01).astype(np.float32)).reshape(-1, CH, img, img)
+        Xt = torch.from_numpy(to_model(X01).astype(np.float32))
+        Xt = (Xt.reshape(-1, img, img, CH).permute(0, 3, 1, 2).contiguous()
+              if lay == "hwc" else Xt.reshape(-1, CH, img, img))
     Y = torch.from_numpy(np.asarray(labels, np.int64))
     n = len(Xt)
     g = torch.Generator().manual_seed(seed)
@@ -172,8 +207,11 @@ class NeuralScoreField(BaseScoreField):
     """
     dim = DIM
 
-    def __init__(self, model, device="cuda", batch=256, concepts=None, bank=None):
+    def __init__(self, model, device="cuda", batch=256, concepts=None, bank=None,
+                 layout=None):
         self.model = model.to(device).eval()
+        # a checkpoint MUST be sampled in the layout it was trained in -- see _as_img
+        self.layout = layout or LAYOUT_DEFAULT
         # resolution comes from the MODEL, not a module constant -- CelebA runs at 64x64 and a
         # class-level DIM bound at import time silently kept the sampler at 32x32
         self.img = int(getattr(model, "img", IMG))
@@ -231,13 +269,13 @@ class NeuralScoreField(BaseScoreField):
             emb = torch.as_tensor(np.asarray(emb), dtype=torch.float32, device=self.device)
         with ctx:
             for i0 in range(0, len(X), self.batch):
-                xb = _as_img(X[i0:i0 + self.batch], self.device, self.img)
+                xb = _as_img(X[i0:i0 + self.batch], self.device, self.img, self.layout)
                 ub = torch.full((len(xb),), float(u), device=self.device)
                 eo = emb
                 if eo is not None and eo.dim() == 2 and len(eo) == len(X):
                     eo = eo[i0:i0 + self.batch]      # per-image conditioning: slice with the batch
                 e = self.model(xb, ub, self._cond(len(xb), branch), emb_override=eo)
-                out[i0:i0 + self.batch] = e.reshape(len(xb), -1).double().cpu().numpy()
+                out[i0:i0 + self.batch] = _as_flat(e, self.layout).double().cpu().numpy()
         return out
 
     def loss_logp_proxy(self, X, u_grid=(0.1, 0.3, 0.5, 0.7), branch=None, seed=0):
@@ -273,4 +311,8 @@ def load_field(path, device="cuda", batch=256, **kw):
     ck = torch.load(path, map_location=device, weights_only=False)
     model = UNet(n_classes=ck["n_classes"], **ck.get("arch", {}))
     model.load_state_dict(ck["ema"])
+    # a checkpoint records the layout it was TRAINED in; sampling it in the other one silently
+    # produces garbage, so the checkpoint wins over the process default.  Checkpoints written
+    # before layouts existed have no key and are "permuted", which is what they used.
+    kw.setdefault("layout", ck.get("layout", "permuted"))
     return NeuralScoreField(model, device=device, batch=batch, concepts=ck.get("concepts"), **kw)

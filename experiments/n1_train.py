@@ -29,6 +29,14 @@ def main():
     p = argparse.ArgumentParser()
     p.add_argument("--n-per-slot", type=int, default=100)
     p.add_argument("--epochs", type=int, default=60)
+    p.add_argument("--layout", choices=["permuted", "hwc"], default="permuted",
+                   help="how a flat HWC row is handed to the UNet.  `permuted` is a plain\n"
+                        "reshape(3,H,W), which is NOT an image: it makes the UNet's channels\n"
+                        "out of horizontal bands and its width axis out of colour, so a 3x3\n"
+                        "conv reads pixels ~22 columns apart and the convolutional prior is\n"
+                        "gone.  Every backbone before 2026-08-11 used it, so it stays the\n"
+                        "default and the checkpoint records it; `hwc` transposes properly.\n"
+                        "See tests/diag_layout.py and figures/f20_layout.png.")
     p.add_argument("--batch", type=int, default=128)
     p.add_argument("--lr", type=float, default=2e-4)
     p.add_argument("--base", type=int, default=64)
@@ -182,7 +190,8 @@ def main():
     def package(ema, epochs_done):
         return dict(ema=ema, n_classes=len(uniq), arch=arch,
                     remap=remap, concepts={}, n_per_slot=args.n_per_slot,
-                    dataset=args.dataset, img=img, epochs_done=epochs_done)
+                    dataset=args.dataset, img=img, epochs_done=epochs_done,
+                    layout=args.layout)
 
     # A LADDER OF COMPETENCE FROM ONE RUN.  N35 asks how much backbone training the method needs,
     # which naively means training one backbone per rung -- but every rung is a PREFIX of the longest
@@ -206,7 +215,8 @@ def main():
 
     t0 = time.time()
     ema = train_ddpm(model, Xs, y, epochs=args.epochs, batch=args.batch, lr=args.lr,
-                     device=dev, seed=args.seed, on_epoch=on_epoch if snaps else None)
+                     device=dev, seed=args.seed, on_epoch=on_epoch if snaps else None,
+                     layout=args.layout)
     mins = (time.time() - t0) / 60
     torch.save(package(ema, args.epochs), args.out)
     print(f"[n1] trained in {mins:.1f} min -> {args.out}", flush=True)
