@@ -3700,6 +3700,48 @@ would separate familiar from novel. Measured as AUROC against in-distribution qu
 Best is 0.844, against the deployed router's **0.980 / 0.995** from denoising error alone (§6c). So
 greedy selection justifies K and does **not** improve routing; the density-based router stays.
 
+## 27. The competence threshold is a product law, not a threshold (N35 re-read)
+
+§35 found composition on the ladder is **step-like**: identically 0.000 until ~80 epochs, then it
+appears. C1 was recorded as "a competence threshold" without a mechanism. A literature check supplies
+one, and the data to test it was already collected.
+
+Okawa et al. (*Compositional Abilities Emerge Multiplicatively*, NeurIPS 2023, arXiv:2310.09336)
+report that compositional performance rises suddenly because it depends **multiplicatively** on the
+performance of its constituents. N35 records per-factor accuracy alongside joint, so the prediction
+`joint ≈ digit × fg × bg` is directly checkable:
+
+| epochs | digit | fg | bg | **product** | **joint** |
+|---|---|---|---|---|---|
+| 2–20 | 0.000 | 0.000–0.219 | 0.500 | 0.000 | 0.000 |
+| 40 | 0.031 | 0.500 | 0.438 | 0.007 | 0.016 |
+| 80 | 0.156 | 0.891 | 0.344 | 0.048 | 0.016 |
+| 130 | 0.547 | 0.984 | 0.531 | 0.286 | 0.266 |
+| 200 | 0.609 | 0.750 | 0.750 | 0.343 | 0.312 |
+
+**corr(joint, product) = +0.995, mean |joint − product| = 0.023.** The law holds on this dataset and
+setup, which is neither the one Okawa et al. used nor a replication attempt — it fell out of a ladder
+built for a different question.
+
+Two of §35's own findings are re-explained by it.
+
+**C1 was never a threshold.** Nothing switches on at 80 epochs. Composition is a product of three
+constituent abilities, so it is pinned near zero while *any* factor is weak and rises steeply once
+all three are simultaneously adequate. The step is the product of three sigmoids, not a phase change,
+and describing it as a threshold implied a mechanism that is not there.
+
+**C4's refutation now has a reason.** §35 measured that `seen_joint` predicts downstream composition
+better than `basis_r2` (+0.986 vs +0.781), against the thesis-shaped expectation. That is what a
+product law predicts: `seen_joint` **is** the joint accuracy of the constituents on trained slots —
+approximately the same product composition multiplies — so it is not a rival explanatory variable at
+all, it is the quantity itself measured on seen data. The comparison was closer to circular than to
+a test, and `basis_r2` losing it says less than §35 implied.
+
+**What this changes operationally.** It sharpens §37's sealing criterion: the question is not "is the
+backbone good enough" but "is the *weakest factor* good enough", because the product is governed by
+the minimum. On this ladder `bg` sits at 0.344 while `fg` is 0.891 at the same rung, so a seal
+decision reading average competence would be reading the wrong statistic.
+
 ## 8. Where the numbers come from
 
 | experiment | file | scale run |
