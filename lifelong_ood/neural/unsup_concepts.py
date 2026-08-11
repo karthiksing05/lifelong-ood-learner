@@ -30,7 +30,18 @@ Two honest notes about the port:
     is the same space our own factor basis lives in, which is what makes the storage comparison
     meaningful rather than an apples-to-oranges one.
   * The simplex constraint is theirs and is load-bearing: it is what makes w a *mixture* and lets a
-    one-hot w recover clustering.  Kept via softmax.
+    one-hot w recover clustering.  Kept via softmax, with `simplex=False` available as an
+    ABLATION, because the constraint has a consequence worth testing rather than assuming.
+    Under sum_k w_k = 1 the unconditional term of Eq. 11 cancels exactly:
+
+        eps_phi + sum_k w_k (eps_k - eps_phi) = sum_k w_k eps_k
+
+    so the composed score is a CONVEX COMBINATION -- a weighted AVERAGE of conditionals, not
+    a product.  That suits what the paper does with it (deciding which of K concepts an image
+    is, or splitting a scene into complementary global/local aspects) and it cannot express a
+    CONJUNCTION: on Color-MNIST a composition is digit AND foreground AND background at once,
+    and weights summing to one cannot hold three factors at full strength simultaneously.
+    Dropping the constraint tests whether that is what limits the method here.
 """
 import numpy as np
 import torch
@@ -52,7 +63,7 @@ def _eps_unsup(model, xt, u, C_lib, w, null_id):
 
 
 def discover_concepts(field, X01, K=8, n_steps=400, lr=0.05, batch=8, seed=0,
-                      u_range=(0.05, 0.95), verbose=False):
+                      u_range=(0.05, 0.95), verbose=False, simplex=True):
     """Algorithm 1: learn a shared library of K concepts and per-image simplex weights.
 
     `X01` are UNLABELLED images in [0,1], flat.  Nothing about their classes is used -- that is the
@@ -95,7 +106,7 @@ def discover_concepts(field, X01, K=8, n_steps=400, lr=0.05, batch=8, seed=0,
         ab = torch.from_numpy(cosine_abar(u.detach().cpu().numpy())).to(dev).float().view(-1, 1, 1, 1)
         e = torch.randn(x0.shape, generator=g).to(dev)
         xt = ab.sqrt() * x0 + (1 - ab).sqrt() * e
-        w = torch.softmax(logits[idx], dim=1)
+        w = torch.softmax(logits[idx], dim=1) if simplex else logits[idx]
         loss = ((e - _eps_unsup(model, xt, u, C_lib, w, model.null_id)) ** 2).mean()
         opt.zero_grad(set_to_none=True)
         loss.backward()
@@ -105,11 +116,12 @@ def discover_concepts(field, X01, K=8, n_steps=400, lr=0.05, batch=8, seed=0,
             print(f"      [liu] step {it:4d}  loss {float(loss):.4f}", flush=True)
     if was:
         model.train()
-    return dict(C=C_lib.detach().cpu().numpy(), W=torch.softmax(logits, 1).detach().cpu().numpy(),
-                hist=hist)
+    W = (torch.softmax(logits, 1) if simplex else logits).detach().cpu().numpy()
+    return dict(C=C_lib.detach().cpu().numpy(), W=W, hist=hist)
 
 
-def fit_weights(field, x01, C_lib, n_steps=200, lr=0.05, seed=0, u_range=(0.05, 0.95)):
+def fit_weights(field, x01, C_lib, n_steps=200, lr=0.05, seed=0, u_range=(0.05, 0.95),
+                simplex=True):
     """Concepts FROZEN, fit one image's simplex weights.  This is what a new query costs them.
 
     Their Algorithm 1 updates w_i and c_k jointly over the training set; at test time on a held-out
@@ -131,12 +143,12 @@ def fit_weights(field, x01, C_lib, n_steps=200, lr=0.05, seed=0, u_range=(0.05, 
         ab = torch.from_numpy(cosine_abar(u.detach().cpu().numpy())).to(dev).float().view(-1, 1, 1, 1)
         e = torch.randn(x0.shape, generator=g).to(dev)
         xt = ab.sqrt() * x0 + (1 - ab).sqrt() * e
-        w = torch.softmax(logits, dim=1)
+        w = torch.softmax(logits, dim=1) if simplex else logits
         loss = ((e - _eps_unsup(model, xt, u, Cl, w, model.null_id)) ** 2).mean()
         opt.zero_grad(set_to_none=True)
         loss.backward()
         opt.step()
-    return torch.softmax(logits, 1).detach().cpu().numpy()[0]
+    return (torch.softmax(logits, 1) if simplex else logits).detach().cpu().numpy()[0]
 
 
 @torch.no_grad()

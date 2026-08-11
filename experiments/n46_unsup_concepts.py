@@ -61,6 +61,11 @@ def main():
     p.add_argument("--n-cases", type=int, default=6)
     p.add_argument("--n-control", type=int, default=6,
                    help="SEEN compositions used as the port-works control")
+    p.add_argument("--no-simplex", action="store_true",
+                   help="ABLATION, not the paper: drop sum_k w_k = 1.  Under the constraint\n"
+                        "Eq. 11 collapses to a convex combination of conditionals -- a weighted\n"
+                        "AVERAGE, which cannot express a CONJUNCTION like digit AND fg AND bg.\n"
+                        "This tests whether that is what limits the method on ColorMNIST.")
     p.add_argument("--identity-check", action="store_true",
                    help="sanity-test the composition machinery: library = the true class\n"
                         "embedding, w one-hot, so Eq. 11 reduces to the class conditional")
@@ -103,7 +108,7 @@ def main():
           f"({args.disc_steps} steps)", flush=True)
     t0 = time.time()
     lib = discover_concepts(field, pool, K=args.K, n_steps=args.disc_steps, lr=args.lr,
-                            seed=args.seed, verbose=True)
+                            seed=args.seed, verbose=True, simplex=not args.no_simplex)
     print(f"[n46] library learned in {(time.time() - t0) / 60:.1f} min; "
           f"final loss {np.mean(lib['hist'][-20:]):.4f}", flush=True)
 
@@ -154,7 +159,8 @@ def main():
         rows_s = np.where(data["slot"] == s_)[0]
         xs = data["X"][rows_s[0]]
         i0 = rows_s[0]
-        w = fit_weights(field, xs, lib["C"], n_steps=args.fit_steps, lr=args.lr, seed=args.seed)
+        w = fit_weights(field, xs, lib["C"], n_steps=args.fit_steps, lr=args.lr, seed=args.seed,
+                        simplex=not args.no_simplex)
         S = to_data(sample_unsup(field, lib["C"], w, n=args.n_samples, steps=args.steps,
                                  seed=args.seed, clip=(-1, 1))).astype(np.float32)
         a = composition_accuracy(probes, S, int(data["digit"][i0]), int(data["fg"][i0]),
@@ -172,12 +178,14 @@ def main():
     for q in qs:
         xq = data["X"][q["query"]]
         R = data["X"][q["rest"][:100]].astype(np.float32)
-        w = fit_weights(field, xq, lib["C"], n_steps=args.fit_steps, lr=args.lr, seed=args.seed)
+        w = fit_weights(field, xq, lib["C"], n_steps=args.fit_steps, lr=args.lr,
+                        seed=args.seed, simplex=not args.no_simplex)
         S = to_data(sample_unsup(field, lib["C"], w, n=args.n_samples, steps=args.steps,
                                  seed=args.seed, clip=(-1, 1))).astype(np.float32)
         a = composition_accuracy(probes, S, q["d"], q["f"], q["b"])
         pr = precision_recall(S, R)
-        rows.append(dict(slot=int(q["slot"]), arm=("liu-unsup-oracle" if args.oracle else "liu-unsup"), K=args.K,
+        rows.append(dict(slot=int(q["slot"]), arm=("liu-unsup-oracle" if args.oracle else
+                              "liu-unsup-nosimplex" if args.no_simplex else "liu-unsup"), K=args.K,
                          joint=float(a["joint"]), digit=float(a["digit"]), fg=float(a["fg"]),
                          bg=float(a["bg"]), recall=float(pr["recall"]),
                          bytes_per_concept=int(args.K * 4),
