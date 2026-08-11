@@ -165,10 +165,24 @@ discarded after one query.
 
 ---
 
-## 5. The mechanism transfers to a model we did not train
+## 5. On a model we did not train: preservation transfers, acquisition does not
 
-**Claim.** Both halves — preservation and concept acquisition — work on `google/ddpm-celebahq-256`
-(113.7M parameters, 256×256, unconditional, trained by someone else).
+**Claim, as it stood, was that BOTH halves work on `google/ddpm-celebahq-256` (113.7M parameters,
+256×256, unconditional, trained by someone else). The acquisition half is RETRACTED (2026-08-11).**
+
+The evidence for it was measured through a field that handed that model a pixel *permutation*
+(RESULTS §30b): it returned 3×3 tiled greyscale mosaics, and the attribute probes were scoring
+those. With the input layout corrected, every generated arm scores **0.000** on "both attributes
+correct" — score-composed, path-union, each single-concept arm, and the untouched model alike,
+against a real-image ceiling of 1.000. So the bank is not adding measurable attribute control on
+this backbone; it is not that we lose to a baseline, it is that nothing renders the attributes.
+
+**Preservation is unaffected and is what this contribution now asserts.** It is a property of
+optimizer *scoping* — the parameters are absent from the optimizer — and holds regardless of what
+the samples look like. That independence is exactly why it stayed green while the images were
+nonsense, and it is the caution worth carrying: **a passing preservation test is not evidence that
+anything renders.** See §30d, where three explanations for the failure have been tested and are
+dead, and it is recorded as open.
 
 **Evidence.**
 
@@ -181,9 +195,8 @@ discarded after one query.
 | a freshly registered concept is a no-op | **0.000e+00** |
 | training a second concept moves the first | **0.000e+00** |
 
-*Acquisition*, after three faults were removed (§12b): each concept reaches **1.00** on its own
-attribute at a Vendi **above** the untouched model's 1.51 — no quality cost — producing recognizable
-256×256 faces.
+*Acquisition*: **retracted, see above.** The previously reported per-concept 1.00 and the composed
+0.417 were both measured through the broken field.
 
 **What this does not claim.** This does **not** restate the out-of-distribution claim: the model's
 training set is not ours to control, so we cannot say it never saw a smiling face in glasses. What
@@ -208,13 +221,20 @@ the wrong operator; combining their *predictions* is the right one.
 
 | setting | score composition | path union |
 |---|---|---|
-| pretrained backbone, 2 attributes — accuracy | both correct 0.417 ± 0.083 | **0.417 ± 0.083** (tie) |
-| pretrained backbone, 2 attributes — diversity | Vendi **1.436** (untouched: 1.456) | 1.280 |
+| ~~pretrained backbone, 2 attributes — accuracy~~ | ~~0.417 ± 0.083~~ | ~~0.417 ± 0.083~~ **both 0.000 once corrected** |
+| ~~pretrained backbone, 2 attributes — diversity~~ | ~~Vendi 1.436~~ | ~~1.280~~ **measured on mosaics** |
 | ColorMNIST factor concepts | joint **0.042**, F1 **0.490** | 0.000, F1 0.039 |
 
-**The accuracy claim did not replicate.** A single seed showed 0.50 against 0.17 on the pretrained
-backbone; at three seeds the two operators **tie on accuracy**. What survives is that path union
-*collapses diversity* (Vendi 1.280 against the untouched model's 1.456, where score composition holds
+**The two pretrained rows are retracted** (2026-08-11): they were measured through a field feeding
+the model a pixel permutation, so both operators were being compared on tiled mosaics. Corrected,
+every arm scores 0.000 there and the comparison has no signal to carry. **This contribution now rests
+on the ColorMNIST row alone**, which is unaffected — the ColorMNIST backbone is self-consistent in
+its layout, and re-deriving it under the current defaults left it unchanged.
+
+**The accuracy claim did not replicate, and then its substrate turned out to be broken as well.** A
+single seed showed 0.50 against 0.17 on the pretrained backbone; at three seeds the two operators
+tied; and the layout correction removed the measurement entirely. The diversity argument below is
+likewise from the retracted rows and does not survive (Vendi 1.280 against the untouched model's 1.456, where score composition holds
 1.436), and that on ColorMNIST factor concepts path union produces **nothing at all** while score
 composition produces something. The recommendation rests on those two, and the retracted number is
 kept in [docs/RESULTS.md](docs/RESULTS.md) §12e.
