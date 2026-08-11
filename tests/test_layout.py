@@ -52,5 +52,46 @@ if err3 > 1e-6:
     print("    FAIL: the [0,1] <-> [-1,1] conversion is not an involution")
     ok = False
 
+
+# --- the layout OPTION itself must round-trip in both modes -----------------
+from lifelong_ood.neural.ddpm import _as_flat                            # noqa: E402
+for lay in ("permuted", "hwc"):
+    T = _as_img(to_model(flat01), "cpu", img=IMG, layout=lay)
+    back = _as_flat(T, lay).numpy()
+    e = float(np.abs(back - to_model(flat01)).max())
+    print(f"  _as_img/_as_flat round trip, layout={lay:9s}: max |delta| = {e:.3e}")
+    if e > 1e-6:
+        print("    FAIL: the layout conversion is not invertible")
+        ok = False
+
+# --- "hwc" must actually be a real image, and "permuted" must not ----------
+# The whole point of the option: under `hwc`, channel 0 is the RED channel of the whole picture;
+# under `permuted` it is the top third of the image with the colours interleaved.  If these two
+# ever agree, the option has stopped meaning anything and RESULTS 30a/30b lose their mechanism.
+img_hwc = _as_img(to_model(flat01), "cpu", img=IMG, layout="hwc").numpy()
+true_chw = to_model(flat01).reshape(-1, IMG, IMG, CH).transpose(0, 3, 1, 2)
+e = float(np.abs(img_hwc - true_chw).max())
+print(f"  layout=hwc equals a true HWC->CHW transpose: max |delta| = {e:.3e}")
+if e > 1e-6:
+    print("    FAIL: layout='hwc' is not producing a true image")
+    ok = False
+img_perm = _as_img(to_model(flat01), "cpu", img=IMG, layout="permuted").numpy()
+if float(np.abs(img_perm - true_chw).max()) < 1e-6:
+    print("    FAIL: 'permuted' and 'hwc' agree -- the option is a no-op and the layout "
+          "mechanism in RESULTS 30a/30b cannot be what it claims")
+    ok = False
+
+# --- the PRETRAINED field must default to a real image ---------------------
+# Not a stylistic preference: those weights are frozen and were fitted to real images, so a
+# permuted row is wrong input to a fixed function.  Under the old default the field returned a
+# 3x3 tiled greyscale mosaic (RESULTS 30b).
+import inspect                                                          # noqa: E402
+from lifelong_ood.neural import pretrained as _pre                      # noqa: E402
+d = inspect.signature(_pre.PretrainedScoreField.__init__).parameters["layout"].default
+print(f"  PretrainedScoreField default layout = {d!r}")
+if d != "hwc":
+    print("    FAIL: a pretrained backbone must be fed a real image by default")
+    ok = False
+
 print(f"\nlayout: {'ok -- every path agrees' if ok else 'FAILED'}")
 sys.exit(0 if ok else 1)
