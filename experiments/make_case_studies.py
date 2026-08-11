@@ -115,6 +115,7 @@ def colormnist(args):
     fig = plt.figure(figsize=(1.05 * (args.n_show + 1), 1.15 * len(qs) * len(rows) + 1.2))
     gs = GridSpec(len(qs) * len(rows), args.n_show + 1, figure=fig, hspace=0.06, wspace=0.06)
     r = 0
+    scored = []
     for q in qs:
         xq = to_model(data["X"][q["query"]]).ravel()
         R = data["X"][q["rest"][:100]].astype(np.float32)
@@ -164,6 +165,13 @@ def colormnist(args):
                 a = composition_accuracy(probes, S, q["d"], q["f"], q["b"])
                 pr = precision_recall(S, R)
                 note = f"acc {a['joint']:.2f} | recall {pr['recall']:.2f}"
+                # also record it: the dial can only be CHOSEN by comparing renders, and reading
+                # four accuracies back off a 4000px figure is not a comparison
+                scored.append(dict(slot=int(q["slot"]), arm=name, dial=float(args.dial),
+                                   paper_budget=bool(args.paper_budget),
+                                   guidance=float(args.guidance), joint=float(a["joint"]),
+                                   digit=float(a["digit"]), fg=float(a["fg"]), bg=float(a["bg"]),
+                                   recall=float(pr["recall"])))
             panel(fig, [gs[r, c] for c in range(args.n_show + 1)], S, 32,
                   f"{name}\n{slot_name(q['d'], q['f'], q['b'])}" if name == "real" else name,
                   note, n=args.n_show)
@@ -184,6 +192,14 @@ def colormnist(args):
     p = os.path.join(FIG, f"f9_case_colormnist{tag}.png")
     fig.savefig(p, dpi=145, bbox_inches="tight"); plt.close(fig)
     print(f"  wrote {p}")
+    from lifelong_ood.evals import save_json
+    save_json(dict(rows=scored, config=vars(args)),
+              os.path.join(RESULTS, f"case_colormnist{tag}.json"), seed=args.seed)
+    for arm in ("ours", "poe-guided (paper Eq.14)", "query-only"):
+        sel = [x["joint"] for x in scored if x["arm"] == arm]
+        if sel:
+            print(f"  [dial s={args.dial:g}] {arm:26s} mean joint {np.mean(sel):.3f}  "
+                  f"{[round(v, 2) for v in sel]}")
 
 
 def main():
