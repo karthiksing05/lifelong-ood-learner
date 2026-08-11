@@ -416,6 +416,38 @@ and permuted is barely better than the 0.605 you get by doing nothing at all.
 `PretrainedScoreField` now defaults to `layout="hwc"` and converts at all four boundaries — `eps` in
 and out, `x_init`, the guidance callback, and the return value. The pretrained track is being rerun.
 
+### 30d. Open: the adapter bank still produces noise on the pretrained backbone (N26)
+
+Not everything downstream of the layout fix recovered. `n26_batch_pretrained` consolidates four
+attribute concepts into `google/ddpm-celebahq-256` through the LoRA bank, and its samples are
+**rainbow noise with fine horizontal striping** — before the layout work and after it, pixel for
+pixel the same failure (`figures/n26_batch_pretrained.png`).
+
+**It is not the layout, and the check is direct.** n26 carries its own CHW-flat convention
+end to end: it loads images with `.transpose(2,0,1).ravel()` and its own `train_group` un-flattens
+them with `.reshape(-1, 3, img, img)`, which is a true image. Training and sampling therefore agree,
+and re-running after the consolidation paths were made layout-aware produced an identical figure.
+
+What the numbers say about where to look next:
+
+| arm | attr | vendi | preservation | params |
+|---|---|---|---|---|
+| sequential | 0.67 | 1.55 | **exact 1.00** | 0.98 M |
+| batch | 0.58 | 1.53 | **exact 1.00** | 0.98 M |
+| batch-shared | 0.50 | 1.57 | **exact 1.00** | 1.18 M |
+
+The adapter reaches a training loss of **0.0002** — it is fitting its pool almost exactly — while
+preservation stays bit-identical, which is consistent and unhelpful: bit-identity is a property of
+optimizer scoping and cannot detect that the delta being learned is destructive. So the adapter is
+faithfully learning *something*; the open question is whether the pool it learns from is already bad,
+or whether a rank-8 delta on 24 attention projections at lr 1e-3 for 40 epochs is simply too large a
+perturbation for a 113.7M-parameter pretrained model.
+
+**This is the honest state of "our method on a backbone we did not train" for image quality.** §12's
+preservation result stands — it never depended on the samples looking right — but the pretrained bank
+is not currently producing usable images, and no claim in this document should be read as saying it
+is.
+
 ### 30c. Saturated prototypes: Adam was finding the boundary, not a mode
 
 With the layout fixed the pretrained CelebA samples became real faces, which exposed the fault

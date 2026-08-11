@@ -341,18 +341,22 @@ def load_paper_backbone(path, device="cuda", batch=4):
     unet = UNet2DModel.from_pretrained(ck["model"])
     unet.config.sample_size = int(ck["img"])
     unet.sample_size = int(ck["img"])
-    unet.time_embedding = _CondTimeEmbedding(unet.time_embedding)
-    missing, unexpected = unet.load_state_dict(ck["ema"], strict=False)
-    # the wrapper renames time_embedding.* -> time_embedding.inner.*, so those keys land in
-    # `missing` unless remapped; do it explicitly rather than trusting strict=False to be harmless
-    if any(k.startswith("time_embedding.") for k in missing):
-        remap = {k.replace("time_embedding.", "time_embedding.inner.", 1): v
-                 for k, v in ck["ema"].items() if k.startswith("time_embedding.")}
-        unet.load_state_dict(remap, strict=False)
     try:
         sched = DDPMScheduler.from_pretrained(ck["model"])
     except Exception:
         sched = None
+    # Build the field FIRST and load the weights after.  `PretrainedScoreField.__init__` wraps
+    # `time_embedding` in `_CondTimeEmbedding` itself and then reads `time_embedding.inner.linear_2`
+    # to size the conditioning; wrapping here as well double-wraps it, so `inner` becomes another
+    # wrapper and the read fails with AttributeError.  n47 saves its state dict from an already
+    # wrapped model, so the checkpoint's keys are the post-wrap ones and they line up exactly once
+    # the field has done its wrapping.
     field = PretrainedScoreField(unet, sched, img=int(ck["img"]), device=device, batch=batch,
                                  layout=ck.get("layout", "hwc"))
+    missing, unexpected = field.model.unet.load_state_dict(ck["ema"], strict=False)
+    hard = [k for k in missing if "time_embedding" not in k]
+    if hard:
+        raise RuntimeError(f"load_paper_backbone: {len(hard)} weights missing from the checkpoint, "
+                           f"e.g. {hard[:3]} -- this is not the model the checkpoint was written "
+                           f"from")
     return field, int(ck["img"]), ck["ema_cemb"].numpy(), ck["remap"]
