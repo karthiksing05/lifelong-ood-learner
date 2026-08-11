@@ -31,6 +31,8 @@ Placement uses a Cobweb-style descent over the concepts' PoE teacher means: desc
 child while descending still helps, then attach.  Insert-only, because a merge or split would
 restructure existing paths and destroy the guarantee above.
 """
+import os
+
 import numpy as np
 import torch
 import torch.nn as nn
@@ -173,7 +175,7 @@ class ConceptTree:
     tree actually forms levels instead of a star, which is what creates shared ancestors at all.
     """
 
-    def __init__(self, var=0.1, margin=0.0, branch_max=4, max_depth=3, flat=False, rule="ll",
+    def __init__(self, var=0.1, margin=0.0, branch_max=4, max_depth=3, flat=False, rule=None,
                  prior_var=0.05):
         self.var, self.margin = float(var), float(margin)
         self.branch_max, self.max_depth = int(branch_max), int(max_depth)
@@ -181,7 +183,15 @@ class ConceptTree:
         # `rule` selects the placement criterion.  "ll" is the shipped one and stays the default so
         # no existing result moves; "cu" is Cobweb's category utility, added because N39 measured
         # what "ll" actually builds -- see `_descend_cu`.
-        self.rule = str(rule)
+        #
+        # LIFELONG_TREE_RULE overrides the default process-wide.  It exists so the WHOLE suite --
+        # every test and every experiment, including the ones with no --rule flag -- can be re-run
+        # under a candidate criterion without editing call sites one at a time, which is how a
+        # comparison ends up accidentally mixing rules.  An explicit `rule=` argument still wins.
+        # `rule=None` (the default) consults the env; an EXPLICIT rule always wins, including
+        # rule="ll" -- a caller that names the shipped rule must get it even under an override,
+        # or the override silently rewrites the control arm of its own comparison.
+        self.rule = str(rule) if rule is not None else os.environ.get("LIFELONG_TREE_RULE", "ll")
         self.prior_var = float(prior_var)
         self.mean = {0: None}                  # node id -> running mean (None = root, matches all)
         self.count = {0: 0}
