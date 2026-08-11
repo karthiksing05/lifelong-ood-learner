@@ -3583,6 +3583,104 @@ optimization and private leaves — and not the tree's clustering judgment.** Th
 [../README.md](../README.md) frames it ("the bank's value is the constraint structure, not clustering
 magic"), and §24 is the evidence for that sentence rather than a new position.
 
+## 25. Addressing, not adapting: a lifelong setting that costs 72 bytes per concept (N41)
+
+Everything above is *additive*: a new part costs a low-rank block over a frozen backbone. That
+preserves, but storage grows at 551K per concept and §24 showed the hierarchy makes it worse rather
+than better. This section tests a different setting, and the argument for it is our own group's ACS
+paper (Wang, Singaravadivelan & MacLellan, *Diffusion Models and Concept Formation*):
+
+> A diffusion model's noisy marginals are Gaussian smoothings of the data distribution,
+> `p_t = p_data * N(0, (1−ᾱ_t)I)`, so each noise level is a kernel density estimate at a different
+> bandwidth — and the **modes** of those marginals across a ladder of noise levels form a hierarchy
+> of prototypes corresponding to a Cobweb tree.
+
+If that is right, **the concept hierarchy is already inside the frozen backbone.** We should not be
+building one out of adapters; we should be *addressing* the one that is there. A concept then costs a
+**pointer** — where in the model's own conditioning space it lives — not a private function.
+
+Three storage classes, which the existing router already distinguishes (§6c):
+
+| class | what it is | cost |
+|---|---|---|
+| `coord` | a concept expressible in the factor basis: one logit per factor value | **72 bytes** |
+| `basis` | a genuinely new *value* of an existing factor | 1024 bytes, and §5q measured one direction covering *every* combination using that value |
+| `block` | a genuinely new *factor*, or no factored description | a low-rank block — §5q measured conditioning-only routes at **0.000** here, so this class is real |
+
+24 concepts on ColorMNIST (`n41_addressing.py`):
+
+| arm | total storage | per concept | vs blocks | backbone | joint | **F1** |
+|---|---|---|---|---|---|---|
+| `block-every` (rank 8) | 55.115 MB | 2,296,467 B | 1× | **exact** | 0.484 | 0.572 |
+| `block-r1` (rank 1) | 6.889 MB | 287,058 B | 8× | **exact** | 0.531 | **0.719** |
+| **`addressing`** | **0.002 MB** | **72 B** | **31,895×** | **exact** | 0.484 | **0.699** |
+
+**Addressing costs four orders of magnitude less and is not worse.** It matches `block-every` on joint
+accuracy exactly (0.484) and *beats* it on F1 (0.699 vs 0.572), while tying `block-r1` within noise.
+Twenty-four concepts cost **1.7 KB**, against 55 MB.
+
+`backbone drift` is **0.000e+00** for every arm, but it means something stronger for `addressing`:
+the other arms preserve the backbone while adding adapters to it, whereas addressing **never writes
+any parameter at all** — the entire lifelong state is a list of factor coordinates, and generation
+recomputes `c = μ + Σ_f gain_f (w_f · V_f)` from the frozen basis at read time.
+
+**What this does not claim.** It is not unbounded: §5q's limit stands, and a genuinely new *factor*
+(or a concept with no factored description) still needs a block, scoring **0.000** by any
+conditioning-only route. So the honest statement is that the *combinatorial* case — which routing
+says is the overwhelming majority of a lifelong stream over a factored domain — is essentially free,
+and the vocabulary case is not. It is also untested where factors overlap spatially (§5o).
+
+## 26. Why K = 3?  Let the query decide (N42)
+
+Every composition here selects a fixed **K = 3** experts, a number nobody justified and a reviewer
+will ask about. It is also cognitively odd: Cobweb does not fix in advance how many concepts an
+instance needs; it descends until the instance is accounted for.
+
+Mode ascent already yields a dictionary of prototypes — in the ACS framing those modes *are* the
+hierarchy's concepts. So take them greedily instead of top-3: repeatedly keep the mode that explains
+most of what is still unexplained, and stop when the query is accounted for.
+
+```
+S ← {} ;  repeat:  S ← S + argmax_m expl(S ∪ {m}) ;  until expl(S) ≥ τ or the gain < ε
+expl(S) = 1 − Var(x_q − μ_T(S)) / Var(x_q)
+```
+
+`μ_T(S)` is the pipeline's own per-dimension product-of-experts mean, so the reconstruction is the
+object the pipeline actually goes on to use — this is matching pursuit over the model's own modes.
+
+| candidate pool | τ | mean K | K range | expl | expl at K=3 |
+|---|---|---|---|---|---|
+| 8 starts | 0.90 | 2.25 | 2–3 | 0.928 | 0.955 |
+| 8 starts | **0.95** | **3.12** | 2–4 | 0.959 | 0.955 |
+| 8 starts | 0.99 | 9.38 | 8–11 | 0.985 | 0.955 |
+| 16 starts | 0.90 | 2.25 | 2–3 | 0.931 | 0.954 |
+| 16 starts | **0.95** | **3.12** | 2–4 | 0.961 | 0.954 |
+| 16 starts | 0.99 | 10.25 | 9–12 | 0.987 | 0.954 |
+
+**K = 3 is what a 95%-explanation criterion picks.** Mean K is 3.12 at τ = 0.95, and it is
+*identical at both pool sizes* — so the number is set by the stopping threshold, not by how many
+candidates were generated, which is the robustness objection this invites. Composition quality is
+unchanged (greedy joint 0.742 vs fixed 0.750 on the same candidate pool), so choosing K per instance
+costs nothing and removes an unjustified constant.
+
+Two honest findings against the idea:
+
+**τ = 0.99 is unreachable.** Explained variance saturates at 0.985–0.987 and never hits 0.99, so K
+runs to the cap. The mode dictionary cannot fully account for a query; asking it to is a
+mis-specification, not a harder setting.
+
+**The residual is a poor novelty detector.** The hope was that "how many concepts did this need"
+would separate familiar from novel. Measured as AUROC against in-distribution queries:
+
+| | K_chosen | residual (1 − expl) |
+|---|---|---|
+| τ = 0.90 | 0.562 | 0.531 |
+| τ = 0.95 | 0.555 / 0.500 | 0.516 / 0.578 |
+| τ = 0.99 | 0.711 / 0.648 | 0.750 / **0.844** |
+
+Best is 0.844, against the deployed router's **0.980 / 0.995** from denoising error alone (§6c). So
+greedy selection justifies K and does **not** improve routing; the density-based router stays.
+
 ## 8. Where the numbers come from
 
 | experiment | file | scale run |

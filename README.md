@@ -81,13 +81,31 @@ That is a **538×** difference between the two update kinds, which is what makes
 *vocabulary* rather than *experience* — a 160-experience stream costs ~10× less than one adapter per
 query (§6c), and the slope is set by a detector error rate rather than by arrivals.
 
-**3. What a new part costs is a knob, and it is currently set too high.** A block at rank 8 is 551K
+**3. And a concept need not cost weights at all.** Our group's ACS paper argues that a diffusion
+model's noisy marginals *are* a Cobweb hierarchy — each noise level is a kernel density estimate of
+the data at a different bandwidth, and their modes are the prototypes. If so the hierarchy is
+**already inside the frozen backbone**, and a lifelong learner should *address* it rather than build
+another one out of adapters. Storing a concept then means storing **where it lives** in the model's
+own conditioning space:
+
+| what arrived | stored as | cost |
+|---|---|---|
+| a combination of known factor values | factor coordinates | **72 bytes** |
+| a new *value* of a known factor | one basis direction | 1024 bytes |
+| a new *factor*, or nothing factored | a low-rank block | the only case that grows the model |
+
+Measured over 24 concepts (§25): **72 bytes per concept against 2,296,467 — 31,895× — at F1 0.699
+against 0.572**, with the backbone not merely preserved but **never written to at all**. Twenty-four
+concepts cost 1.7 KB. The limit is real and stated: a genuinely new *factor* still needs a block,
+where conditioning-only routes score 0.000.
+
+**4. What a new part costs, when one is needed, is a knob currently set too high.** A block at rank 8 is 551K
 parameters; at **rank 1 it is 69K**, and across three seeds the accuracy is indistinguishable
 (0.840 ± 0.009 vs 0.842 ± 0.026) with bit-identity 1.000 at every rank (§24d). Flat placement costs
 ~20% less again. **Flat + rank 1 is 9.8× cheaper than this repository's default at no measured cost
 — 75K per concept against 735K.**
 
-**4. Preservation is the sealing discipline, and it is free.** Sealed nodes are absent from every
+**5. Preservation is the sealing discipline, and it is free.** Sealed nodes are absent from every
 future optimizer, so nothing an earlier concept depends on can move. That is a property of *how the
 optimizer is scoped*, not of how concepts are arranged.
 
