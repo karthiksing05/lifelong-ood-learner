@@ -13,8 +13,13 @@ The point of the figure is a contrast, not a score:
                 prototype has been destroyed and the process begins from essentially pure noise --
                 the samples still land 0.055 from the prototype with recall 0.000.
 
-    python experiments/make_n30_figure.py
+`--with-cases` adds the panel the curves are an abstraction OF: for one held-out composition, a
+strip of actual samples at every dial setting, drawn under the shared x-axis so a reader can see
+what "s" does rather than take the curve's word for it.  Needs the backbone and a GPU.
+
+    python experiments/make_n30_figure.py --with-cases
 """
+import argparse
 import glob
 import json
 import os
@@ -36,7 +41,55 @@ PANELS = [("f1", "F1  (coverage x precision)", None),
           ("dist_prototype", "RMS distance to the prototype", None)]
 
 
+def render_cases(strengths, seed=0, n_show=5, steps=50):
+    """Samples of ONE held-out composition at each dial setting.  -> (list of [n, D] arrays, label)"""
+    import torch
+    sys.path.insert(0, os.path.join(HERE, "experiments"))
+    from common import CACHE, ood_queries
+    from lifelong_ood.datasets import load_colormnist, slot_name
+    from lifelong_ood.neural import NeuralLifelongLearner, load_field, to_data, to_model
+    from lifelong_ood.neural.idealwords import slot_factors
+
+    dev = "cuda" if torch.cuda.is_available() else "cpu"
+    data = load_colormnist(n_per_slot=60, seed=seed)
+    ck = torch.load(os.path.join(CACHE, "ddpm_colormnist.pt"), map_location="cpu",
+                    weights_only=False)
+    remap = ck["remap"]; slots = np.array(sorted(remap))
+    C = ck["ema"]["cemb.weight"].numpy()[[remap[int(x)] for x in slots]]
+    field = load_field(os.path.join(CACHE, "ddpm_colormnist.pt"), device=dev)
+    L = NeuralLifelongLearner(field, steps=steps, seed=seed, device=dev)
+    L.attach_factorization(C, slot_factors(slots))
+    q = ood_queries(data, n_slots=1, seed=seed)[0]
+    xq = to_model(data["X"][q["query"]]).ravel()
+    t = L.compose(xq, u_grid=(0.1, 0.2, 0.3, 0.4), n_starts=16, iters=120)
+    L.learn_concept_factored(xq, "c0", n_pool=48, epochs=40, inv_steps=400, seed=seed)
+    out = []
+    for s_ in strengths:
+        # the dial IS u_start, with the teacher mean as the starting point below 1.0 -- the same
+        # call the tables use, so the strip cannot drift from the curve above it
+        S = to_data(L.sample_concept("c0", n=n_show, steps=steps, seed=seed,
+                                     u_start=float(s_),
+                                     x_init=(t["mu"] if s_ < 1.0 else None))).astype(np.float32)
+        out.append(S)
+    return out, slot_name(q["d"], q["f"], q["b"]), data["X"][q["rest"][:n_show]].astype(np.float32)
+
+
+def best_hint(S, runs):
+    """The dial setting the sweep selects -- same rule as the vline, so they agree."""
+    def c(s_):
+        v = [r["summary"][f"ours@{s_:g}"]["f1"] for r in runs
+             if f"ours@{s_:g}" in r["summary"]]
+        return float(np.mean(v)) if v else float("nan")
+    return S[int(np.argmax([c(x) for x in S]))]
+
+
 def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--with-cases", action="store_true",
+                    help="render a sample strip per dial setting under the curves (needs a GPU)")
+    ap.add_argument("--n-show", type=int, default=5)
+    ap.add_argument("--seed", type=int, default=0)
+    args = ap.parse_args()
     runs = [json.load(open(f)) for f in
             sorted(glob.glob(os.path.join(RESULTS, "n30_prototype_distance_fine__seed*.json")))]
     if not runs:
@@ -52,7 +105,34 @@ def main():
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
-    fig, axes = plt.subplots(1, 4, figsize=(16.5, 3.9))
+    cases = label = real = None
+    if args.with_cases:
+        print("[f11] rendering the sample strip (backbone + one consolidation)...", flush=True)
+        cases, label, real = render_cases(S, seed=args.seed, n_show=args.n_show)
+    if cases is None:
+        fig, axes = plt.subplots(1, 4, figsize=(16.5, 3.9))
+    else:
+        # curves on top, one sample column per dial setting underneath, sharing the x meaning
+        fig = plt.figure(figsize=(16.5, 6.4))
+        outer = fig.add_gridspec(2, 1, height_ratios=[3.9, 2.2], hspace=0.42)
+        axes = [fig.add_subplot(outer[0].subgridspec(1, 4, wspace=0.24)[i]) for i in range(4)]
+        strip = outer[1].subgridspec(args.n_show, len(S) + 1, wspace=0.04, hspace=0.04)
+        for r in range(args.n_show):
+            axr = fig.add_subplot(strip[r, 0])
+            axr.imshow(np.clip(real[r].reshape(32, 32, 3), 0, 1))
+            axr.set_xticks([]); axr.set_yticks([])
+            for sp in axr.spines.values():
+                sp.set_color("#666"); sp.set_linewidth(1.1)
+            if r == 0:
+                axr.set_title("real", fontsize=8)
+            for c, s_ in enumerate(S):
+                axc = fig.add_subplot(strip[r, c + 1])
+                axc.imshow(np.clip(cases[c][r].reshape(32, 32, 3), 0, 1))
+                axc.axis("off")
+                if r == 0:
+                    axc.set_title(f"s={s_:g}", fontsize=8,
+                                  color=("#1B7F4B" if s_ == best_hint(S, runs) else "#333"),
+                                  fontweight=("bold" if s_ == best_hint(S, runs) else "normal"))
     for ax, (key, title, _) in zip(axes, PANELS):
         for arm, (col, mk, lab) in ARMS.items():
             m = np.array([cell(arm, s, key)[0] for s in S])
