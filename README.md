@@ -637,6 +637,7 @@ bash reproduce.sh all
 | [docs/RESULTS.md](docs/RESULTS.md) | the complete record, including every refuted hypothesis |
 | [docs/TABLES.md](docs/TABLES.md) | every number with error bars, regenerated from `results/` |
 | [docs/RELATED.md](docs/RELATED.md) | positioning, which baselines are fair, citation hazards |
+| [docs/FINAL_REPORT.md](docs/FINAL_REPORT.md) | where this stands against every baseline, including what it loses |
 | [docs/SETTINGS.md](docs/SETTINGS.md) | every hyperparameter vs the paper's Tables 5–8; what we match, what we deviate from on purpose, what was accidental |
 | [docs/ASSESSMENT.md](docs/ASSESSMENT.md) | publication readiness, assessed against the evidence |
 
