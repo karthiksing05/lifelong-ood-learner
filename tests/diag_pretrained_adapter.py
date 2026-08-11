@@ -74,7 +74,7 @@ def main():
         field.bank = bank
         bank.add_concept("c", to_model(pool).mean(0))
         # the same objective n26 uses, inlined so the knobs are visible
-        opt = torch.optim.Adam([p for p in bank.parameters() if p.requires_grad], lr=kw["lr"])
+        opt = torch.optim.Adam(bank.trainable("c"), lr=kw["lr"])   # the bank exposes `trainable`
         Xp = torch.from_numpy(to_model(pool).astype(np.float32)).to(dev)
         Xp = Xp.reshape(-1, img, img, 3).permute(0, 3, 1, 2).contiguous()   # layout=hwc
         g = torch.Generator(device="cpu").manual_seed(0)

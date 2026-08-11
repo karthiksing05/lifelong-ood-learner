@@ -160,7 +160,7 @@ class BaseScoreField:
 
     # ── mode ascent on p_t (the paper's Eq. 4) ──────────────────────────────
     def mode_ascent(self, xq, u, n_starts=16, iters=100, lr=0.05, seed=0, init="query",
-                    clamp=True, k_sigma=3.0, tweedie=True, adam=True):
+                    clamp=False, k_sigma=3.0, tweedie=False, adam=True):
         """Adam ascent on log p_t from noised copies of the query -> (modes in x_t space, x0-space).
 
         `adam=True` is the default, matching the paper's Table 6.  `adam=False` -- PLAIN gradient
@@ -190,6 +190,14 @@ class BaseScoreField:
         fraction of them clipped to exactly +-1 is what made the prototypes posterize into flat
         saturated colour -- clamping alone changed the numbers and not the pictures, because the
         values still arrived at the edge.
+
+        `clamp` and `tweedie` are OFF by default for the same reason `adam` stays on: they were
+        introduced from CelebA evidence and they move Color-MNIST numbers, including the baseline's.
+        Restoring the paper's optimizer alone took `poe-guided` from 0.739 back to only 0.781, not
+        to its 0.839 -- the remaining 0.058 is these two, which change what a "mode" IS (a Tweedie
+        denoised estimate rather than the rescaled ascent point) and clip it to the valid range.
+        Both are defensible in principle and neither is free, so `PAPER_CELEBA` turns them on where
+        the out-of-gamut defect was measured and Color-MNIST keeps the original behaviour.
 
         `clamp` keeps the ascent on the DATA'S SUPPORT, and without it this walks off into nonsense.
         Adam's update is normalized, so every coordinate moves by about `lr` per iteration whatever
