@@ -41,15 +41,26 @@ def main():
     # mis-conditioned.  The tell was a held-out loss of 0.545 against a training loss of 0.045.
     ck0 = torch.load(os.path.join(CACHE, ARMS[0][1]), map_location="cpu", weights_only=False)
     img = int(ck0.get("img", IMG_CELEBA))
-    data = load_celeba(n_per_class=ck0.get("n_per_slot", 100), img=img, seed=0, min_count=25)
-    assert len(np.unique(data["cls"])) == ck0["n_classes"], (
-        f"split mismatch: {len(np.unique(data['cls']))} classes here vs "
-        f"{ck0['n_classes']} in the checkpoint -- the eval is not the training distribution")
+    data = load_celeba(n_per_class=ck0.get("n_per_slot", 100), img=img, seed=0, min_count=25,
+                       max_rows=25000)
+    # `cls` spans seen AND held-out classes (74); the backbone is trained on the SEEN ones (51),
+    # which is what n_classes counts.  Comparing the wrong one is what the first assertion caught.
+    seen_mask = np.asarray(data["seen"], bool)
+    n_seen = len(np.unique(np.asarray(data["cls"])[seen_mask]))
+    assert n_seen == ck0["n_classes"], (
+        f"split mismatch: {n_seen} seen classes here vs {ck0['n_classes']} in the checkpoint -- "
+        f"the eval is not the training distribution")
+    # NOTE ON WHAT THIS MEASURES.  n1_train picks its images with the same seed, so re-loading here
+    # reproduces the training set exactly -- there is no unseen-image split inside the seen classes
+    # to hold out.  This is therefore a loss ON THE TRAINING DISTRIBUTION, computed under an
+    # identical protocol for both arms (EMA weights, same images, same noise seed).  It is a fair
+    # BETWEEN-ARM comparison and is not a generalization measurement; it is labelled as such.
+    idx = np.where(seen_mask)[0]
     rng = np.random.default_rng(0)
-    hold = rng.permutation(len(data["X"]))[:2000]
-    X = np.asarray(data["X"])[hold]
-    y = np.asarray(data["cls"])[hold]
-    R = np.asarray(data["X"])[:512].astype(np.float32)
+    idx = idx[rng.permutation(len(idx))[:2000]]
+    X = np.asarray(data["X"])[idx]
+    y = np.asarray(data["cls"])[idx]
+    R = np.asarray(data["X"])[idx[:512]].astype(np.float32)
 
     out = []
     panels = {}
@@ -73,13 +84,13 @@ def main():
         sk = speckle(S, R, img=img)
         out.append((name, lay, float(loss), float(sk.get("tv_ratio", np.nan))))
         panels[name] = S
-        print(f"[layout-celeba] {name:36s} layout={lay:9s} held-out loss {float(loss):.5f}   "
+        print(f"[layout-celeba] {name:36s} layout={lay:9s} train-dist loss {float(loss):.5f}   "
               f"tv vs real {sk.get('tv_ratio', float('nan')):.3f}", flush=True)
         del field
         torch.cuda.empty_cache()
 
     a, b = out[0], out[1]
-    print(f"\n[layout-celeba] hwc is {100 * (a[2] - b[2]) / a[2]:+.1f}% on held-out loss "
+    print(f"\n[layout-celeba] hwc is {100 * (b[2] - a[2]) / a[2]:+.1f}% on train-distribution loss "
           f"({a[2]:.5f} -> {b[2]:.5f})")
     print("[layout-celeba] Color-MNIST measured -28.7%.  A LARGER effect here is the mechanism's own "
           "prediction: locality matters more where texture carries the signal.")
@@ -101,7 +112,7 @@ def main():
         for s_ in axes[r][0].spines.values():
             s_.set_visible(False)
     fig.suptitle(f"CelebA, same UNet / data / seed / 12 epochs — only the input layout differs.\n"
-                 f"held-out loss {a[2]:.4f} → {b[2]:.4f}  ({100 * (a[2] - b[2]) / a[2]:+.1f}%); "
+                 f"train-dist loss {a[2]:.4f} → {b[2]:.4f}  ({100 * (a[2] - b[2]) / a[2]:+.1f}%); "
                  f"Color-MNIST measured -28.7%", fontsize=9)
     fig.tight_layout(rect=[0, 0, 1, 0.9])
     o = os.path.join(FIG, "f23_layout_celeba.png")
