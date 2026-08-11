@@ -4049,6 +4049,74 @@ The fix is available and off by default (`layout="hwc"`), recorded per checkpoin
 on silently invalidates every existing checkpoint — a model must be sampled in the layout it was
 trained in.
 
+## 31. Liu et al. (ICCV 2023) unsupervised concept discovery: an attempted baseline, and why its numbers are not quotable (N46)
+
+**Which Liu et al.** This repository already runs `composable-diff` / `composable-mcmc`, which are
+**Liu et al. 2022** (Composable Diffusion): they compose concepts they are *given*. The **2023**
+follow-up *discovers* them from unlabelled pixels, which makes it the closest published baseline to
+what this project claims — it lands on the same shape of answer we do:
+
+> them — a shared library of K concept embeddings + a per-image weight vector on the simplex
+> us — a shared factor basis + a per-concept address (factor coordinates)
+
+Both store a small coordinate against a shared library and leave the backbone frozen, so the storage
+axis is directly comparable: their per-query cost is K floats against our 72 bytes.
+
+**The result, with its control.**
+
+| arm | SEEN control | held-out | |
+|---|---|---|---|
+| **identity check** (library = the true class embedding, `w` one-hot) | — | **0.802** | the machinery is correct |
+| K = 8 | 0.010 | 0.010 | at chance |
+| K = 18 (matched to 10+4+4 factor values) | 0.021 | 0.010 | at chance |
+| K = 18, simplex constraint dropped (*ablation, not the paper*) | 0.031 | 0.021 | at chance |
+| *chance* | 0.006 | 0.006 | |
+
+**These numbers must not be reported as a comparison, and the SEEN control is why.** The control
+applies the same library and the same weight fitting to compositions *inside the discovery pool's own
+distribution*. It sits at chance. A method that cannot reproduce what it was fitted on is not being
+measured on out-of-distribution composition — the port is failing, and any held-out number it emits
+is uninterpretable. Quoting "ours 0.539 against theirs 0.010" would be a fabricated win.
+
+**The composition machinery is not the fault.** The identity check settles that without involving
+discovery: put the backbone's own class embedding in as a library of one and make `w` one-hot, and
+Eq. 11 reduces to the ordinary class conditional. It scores **0.802** against chance 0.006. Score
+composition, the sampling hook and the layout handling are all correct.
+
+**Two things do bear on it, one structural and one about the setting.**
+
+*Structural.* Under their constraint Σ_k w_k = 1, the unconditional term of Eq. 11 cancels exactly:
+
+```
+eps_phi + sum_k w_k (eps_k - eps_phi)  =  sum_k w_k eps_k
+```
+
+so the composed score is a **convex combination** — a weighted *average* of conditionals, not a
+product. That suits what the paper uses it for (deciding which of K concepts an image is, or
+splitting a scene into complementary global and local aspects) and it cannot express a
+**conjunction**: a ColorMNIST composition is digit AND foreground AND background at once, and weights
+summing to one cannot hold three factors at full strength simultaneously. Dropping the constraint
+does move both numbers up (control 0.021 → 0.031, held-out 0.010 → 0.021) — so it is a contributing
+cause — but not off the floor, so it is not the whole story.
+
+*The setting, and this is the honest headline.* **The method's key enabler is absent on our
+backbones, and the paper says so itself.** They parameterize each concept as a word embedding in a
+pretrained text-to-image model, and give the reason directly: *"Directly discovering these score
+functions from scratch using a dataset of images is difficult as there may be substantial ambiguity
+on how images should be factored, with this difficulty compounded by the small dataset"*, and *"the
+semantic space of text eliminates a lot of ambiguity when discovering concepts."* Our backbone offers
+a **120-row class-embedding table trained from scratch** — precisely the regime their
+parameterization exists to avoid.
+
+**So the correct statement is that this baseline cannot be run faithfully here, not that it loses.**
+A fair comparison would require putting both methods on a backbone with a pretrained semantic
+conditioning space. That is a real gap in our baseline coverage and is recorded as one rather than
+resolved in our favour by a number that does not mean what it appears to mean.
+
+`lifelong_ood/neural/unsup_concepts.py` implements Algorithm 1 and Eq. 11 directly, with the simplex
+kept and `simplex=False` available as the ablation; `experiments/n46_unsup_concepts.py` runs it with
+the control and the identity check.
+
 ## 8. Where the numbers come from
 
 | experiment | file | scale run |

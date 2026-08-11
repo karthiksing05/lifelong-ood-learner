@@ -251,3 +251,23 @@ Recorded because two of these would be factual errors a reviewer catches immedia
 - **CLoRA ≠ C-LoRA.** [2403.19776](https://arxiv.org/abs/2403.19776) is contrastive test-time composition; [2304.06027](https://arxiv.org/abs/2304.06027) is continual self-regularized LoRA. One letter apart, unrelated.
 - **Venue corrections:** C-LoRA is **TMLR**, not a conference paper. STAMINA is **CVPR-W** (workshop). Both are routinely mis-cited.
 - **MoLE** (ICLR 2024, [2404.13628](https://arxiv.org/abs/2404.13628)) requires **training its gates**, so it is not training-free at composition time despite being widely cited as an MoE-of-LoRAs solution. A second, unrelated diffusion paper also uses the acronym.
+
+## Liu et al. 2023 vs Liu et al. 2022 — do not conflate them
+
+Two different papers by overlapping authors, and this repository relates to them differently.
+
+* **Liu, Li, Du, Torralba, Tenenbaum, "Compositional Visual Generation with Composable Diffusion
+  Models", ECCV 2022.** Composes concepts it is *given*. Run here as `composable-diff` /
+  `composable-mcmc`, and its score-composition rule (their Eq. 5) is adopted, not merely compared
+  against. It is handed ground-truth factor labels at composition time.
+* **Liu, Du, Li, Tenenbaum, Torralba, "Unsupervised Compositional Concepts Discovery with
+  Text-to-Image Generative Models", ICCV 2023.** *Discovers* the concepts from unlabelled pixels.
+  Structurally the closest published work to our addressing tier — a shared library plus a small
+  per-image coordinate, backbone frozen.
+
+The 2023 method was implemented (`lifelong_ood/neural/unsup_concepts.py`) and **could not be run
+faithfully on our backbones**; §31 gives the numbers, the controls, and the reason. Short version:
+its concepts are word embeddings in a pretrained text-to-image model, and the paper states that the
+semantic density of that space is what makes discovery tractable. Our from-scratch class-embedding
+table is the regime they designed around. Reporting our win over the failed port would be a
+fabricated comparison, so it is recorded as a gap in baseline coverage instead.
