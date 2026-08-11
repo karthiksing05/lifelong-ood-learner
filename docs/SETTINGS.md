@@ -145,6 +145,40 @@ changed — changing it would move every adapter number in the repository, and i
 direction for our claims (we look worse on quality, better on storage), so it wants a deliberate
 re-run rather than a quiet edit.
 
+## 5b. A difference that is in no table of theirs: the input layout
+
+The audit above compares hyperparameters. This one is not a hyperparameter — it is a difference in
+what the UNet is shown, and it has no counterpart in the paper because they hand `diffusers` a normal
+NCHW image.
+
+Flat rows in this repository are **HWC** (both `rgb_img` and `celeba.rgb` display them as
+`.reshape(img, img, 3)`), and every consumer turns one into a tensor with a plain
+`.reshape(-1, 3, H, W)`. That is not an image; it is a fixed permutation of the pixels. For 64×64×3,
+by exact index algebra (`tests/diag_layout.py`):
+
+* what the UNet calls **channels** 0 / 1 / 2 are image **rows** 0–21 / 21–42 / 42–63, not R/G/B
+* its **width** axis is the **colour** axis — adjacent positions are one pixel's R, G, B
+* its **vertical** axis is a **~22-pixel jump across the image**
+
+so one 3×3 convolution reads real columns **3, 24 and 45 simultaneously**. There is no spatial
+locality left at any scale, and downsampling compounds it. `figures/f20_layout.png` renders a real
+face as the UNet sees it: a striped, colour-scrambled field with only low-frequency structure intact.
+
+`ddpm.py` argued this was harmless because training and sampling share the permutation, so "the model
+simply learns in the permuted space". That is sound for a permutation-equivariant model. **A CNN is
+not one** — locality *is* its inductive bias. Images still *display* correctly, which is why it
+survived; what cannot survive is local texture.
+
+**`pretrained.py:217` and `:246` do the same reshape**, so `google/ddpm-celebahq-256` — trained on
+true CHW faces — is being fed permuted rows. That is a stronger failure than a lost prior, because
+its filters were learned on real images, and it is the most likely explanation for §29a's finding
+that a photorealistic backbone still emits rough samples.
+
+A `layout` option (`"permuted"` default, `"hwc"` correct) is now threaded through `_as_img`/`_as_flat`,
+`train_ddpm`, `NeuralScoreField` and `n1_train`, **recorded in the checkpoint** and preferred over the
+process default by `load_field` — a checkpoint sampled in the other layout silently produces garbage.
+N45 measures what it costs.
+
 ## 6. What this means for the results
 
 The deviations sort into three groups by what they do to our claims:
