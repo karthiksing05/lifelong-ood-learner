@@ -15,11 +15,12 @@ experiments/# slurm logs are noise, but the JOB SCRIPTS define how published res
 # re-include has to be staged: exclude the contents, re-admit the jobs dir, exclude ITS contents,
 # re-admit the scripts.
 slurm/*
+results/cache/
+experiments/slurm/
+slurm/*
 !slurm/jobs/
 slurm/jobs/*
 !slurm/jobs/*.sbatch
-results/cache/
-slurm/
 figures/*_smoke.png
 figures/*cscale*.png
 figures/*pairscale*.png
