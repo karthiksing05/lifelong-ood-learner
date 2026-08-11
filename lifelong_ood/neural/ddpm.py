@@ -221,11 +221,22 @@ class NeuralScoreField(BaseScoreField):
         out = np.empty_like(X)
         ctx = self.bank.activate(branch) if (self.bank is not None) else _null_ctx()
         emb = self._emb(branch) if emb is None else emb
+        if emb is not None and not torch.is_tensor(emb):
+            # Accept a numpy conditioning vector.  Callers that BUILD a vector rather than reading
+            # one off the bank naturally have numpy in hand -- composing from a factor basis, or
+            # perturbing one factor's contribution -- and the failure was
+            # `'numpy.ndarray' object has no attribute 'to'` from deep inside UNet.forward, which
+            # says nothing about the actual mistake.  Converting here fixed it in three call sites
+            # at once (n36, n41, n43).
+            emb = torch.as_tensor(np.asarray(emb), dtype=torch.float32, device=self.device)
         with ctx:
             for i0 in range(0, len(X), self.batch):
                 xb = _as_img(X[i0:i0 + self.batch], self.device, self.img)
                 ub = torch.full((len(xb),), float(u), device=self.device)
-                e = self.model(xb, ub, self._cond(len(xb), branch), emb_override=emb)
+                eo = emb
+                if eo is not None and eo.dim() == 2 and len(eo) == len(X):
+                    eo = eo[i0:i0 + self.batch]      # per-image conditioning: slice with the batch
+                e = self.model(xb, ub, self._cond(len(xb), branch), emb_override=eo)
                 out[i0:i0 + self.batch] = e.reshape(len(xb), -1).double().cpu().numpy()
         return out
 
