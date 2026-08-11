@@ -211,6 +211,28 @@ too: our reference set is **real held-out images of the target combination**, wh
 coverage meaningful, while precision-against-the-training-manifold would not be. The conjunctive
 probe accuracy is the primary metric for exactly this reason.
 
+## Compositionality in CONDITIONAL diffusion models (sweep for §43)
+
+The composition literature this project has cited is mostly about *operators* (Liu et al.'s score
+addition, Du et al.'s MCMC correction). A second literature asks what property of a **conditional**
+model makes composition possible at all, and it bears directly on §13's finding that granularity of
+the conditionals decides whether score addition works.
+
+| work | claim | how it lands here |
+|---|---|---|
+| **Local Mechanisms of Compositional Generalization in Conditional Diffusion** (arXiv:2509.16447) | Proves an equivalence between compositional structure ("conditional projective composition") and **local conditional scores** — sparse dependence on both *pixels* and *conditioners*. CLEVR models that generalize have them, failures do not, and a causal intervention enforcing locality restores generalization. | The mechanism §13 was missing. §13 measured *that* factored conditionals compose and entangled ones do not; this says *why*, and it is measurable. §43 measures conditioner locality directly on two backbones differing only in conditioning scheme. |
+| **Compositional Abilities Emerge Multiplicatively** (Okawa et al., NeurIPS 2023, arXiv:2310.09336) | Compositional performance depends **multiplicatively** on constituent abilities, producing sudden apparent emergence; low-frequency combinations need far more optimization. | Reproduced here without intending to: **corr(joint, digit×fg×bg) = +0.995** on §35's ladder (§27). It dissolves §35's "competence threshold" into a product of three sigmoids and explains why `seen_joint` beat `basis_r2` as a predictor. |
+| **Mechanisms of Projective Composition of Diffusion Models** (arXiv:2502.04549) | The companion theory to the locality result: when projective composition is and is not well defined. | Bounds what any score-addition method can claim, ours included. |
+| **CFG is not a well-defined diffusion model** (arXiv:2502.07849 and rel.) | Linear CFG generally does not correspond to a proper denoising diffusion model; it **overshoots the target and reduces diversity**, especially in low-dimensional settings. A correction term is required for consistency. | This is the failure we measured as a number. `poe-guided` scores joint **0.839 at recall 0.001** (§11d) — high fidelity, essentially zero diversity, which is textbook CFG overshoot. §5e recorded it as a property of guiding toward a unimodal teacher; the literature says the guidance form is *itself* ill-posed, so the collapse is over-determined. |
+| **What Drives Compositional Generalization?** (arXiv:2510.03075) | Compositional generalization is less stable under **quantized** conditioning than under continuous factor representations. | A caution against our own setup: our factor basis is quantized (discrete values per factor). It predicts our composition should be less stable than a continuous-conditioned equivalent, which we have not tested. |
+
+**What this changes about our framing.** Two of this project's results are instances of documented
+phenomena rather than novel findings, and should be presented as confirmations: the multiplicative
+emergence in §27, and the companion method's diversity collapse in §5e/§11d. What remains ours is the
+*lifelong* half — routing, addressing, preservation — plus the controlled conditioning comparison in
+§43, which the locality literature motivates but does not itself run (CLEVR length generalization is
+a different axis from held-out attribute combinations).
+
 ## Evaluation protocol precedent
 
 **Beyond Adapter Retrieval** ([2410.09908](https://arxiv.org/abs/2410.09908)) uses a leave-one-out
