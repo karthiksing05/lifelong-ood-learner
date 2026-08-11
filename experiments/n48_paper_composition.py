@@ -75,10 +75,37 @@ def main():
     usable = [a for a in probes["_attrs"] if probe_usable(probes, a)]
     print(f"[n48] {len(usable)}/{len(probes['_attrs'])} attribute probes readable\n", flush=True)
 
+    # ── DOES THE CONDITIONING ACTUALLY WORK? ─────────────────────────────────
+    # Run this BEFORE any composition number is produced.  N15 found that conditioning a pretrained
+    # UNet through one additive vector on a FROZEN network was too weak to move it; n47 fine-tunes
+    # the network together with the class table, which should fix that -- but "should" is not
+    # evidence.  If two different SEEN classes and the null token all render the same thing, the
+    # class table never took hold, every arm below will score identically, and the composition
+    # comparison is vacuous rather than negative.
+    #
+    # The smoke backbone shows exactly that failure (poe-guided = query-only = unconditional = 0.571)
+    # because three minutes of fine-tuning teaches no conditioning at all.  It is the right check.
+    seen_cls = np.unique(np.asarray(data["cls"])[seen])
+    ca, cb = int(seen_cls[0]), int(seen_cls[len(seen_cls) // 2])
+    Sa, Sb, Sn = (to_data(field.sample(n=6, steps=args.steps, seed=args.seed, clip=(-1, 1),
+                                       emb=(None if e is None else cemb[e]))).astype(np.float32)
+                  for e in (remap[ca], remap[cb], None))
+    d_ab = float(np.sqrt(np.mean((Sa - Sb) ** 2)))
+    d_an = float(np.sqrt(np.mean((Sa - Sn) ** 2)))
+    print(f"[n48] CONDITIONING CHECK  RMS(class {ca} vs class {cb}) = {d_ab:.4f}   "
+          f"RMS(class {ca} vs null) = {d_an:.4f}")
+    if d_ab < 0.02:
+        print(f"[n48]   the two class conditionals are indistinguishable -- the class table did not "
+              f"take hold, and every composition number below would be an artefact of that, not a "
+              f"result. Fine-tune longer or raise the conditioning capacity.", flush=True)
+    rows_head = [dict(cls=-1, arm="conditioning-check", mean_attr=d_ab, joint=d_an,
+                      n_scored=0, tv_ratio=float("nan"))]
+    print("", flush=True)
+
     hold = np.where(~seen)[0]
     hold_cls = np.unique(np.asarray(data["cls"])[hold])
     rng = np.random.default_rng(args.seed)
-    rows, panels = [], {}
+    rows, panels = list(rows_head), {}
     for ci in range(min(args.n_cases, len(hold_cls))):
         c = int(hold_cls[ci])
         idx = np.where(np.asarray(data["cls"]) == c)[0]
@@ -107,12 +134,19 @@ def main():
             if name in ("real", "prototypes"):
                 continue
             a = attr_accuracy(probes, S, combo, attrs=usable)
-            m = float(np.nanmean([v for k, v in a.items() if k in usable]))
+            # `attr_accuracy` returns dict(joint, mean_attr, per_attr, n_scored) -- the per-attribute
+            # numbers are NESTED under `per_attr`, so filtering the top level on attribute names gave
+            # an empty list and nanmean([]) = nan.  Take the aggregate it already computes.
+            m = float(a.get("mean_attr", float("nan")))
+            jt = float(a.get("joint", float("nan")))
             sk = speckle(S, R, img=img)
-            rows.append(dict(cls=c, arm=name, mean_attr=m,
+            rows.append(dict(cls=c, arm=name, mean_attr=m, joint=jt,
+                             n_scored=int(a.get("n_scored", 0)),
                              tv_ratio=float(sk.get("tv_ratio", np.nan))))
-            print(f"[n48] class {c:4d} {class_name(combo)[:34]:34s} {name:14s} "
-                  f"attr {m:.3f}  tv {sk.get('tv_ratio', float('nan')):.3f}", flush=True)
+            print(f"[n48] class {c:4d} {class_name(combo)[:30]:30s} {name:14s} "
+                  f"attr {m:.3f}  joint {jt:.3f}  tv "
+                  f"{sk.get('tv_ratio', float('nan')):.3f}  (n={a.get('n_scored', 0)})",
+                  flush=True)
         panels[c] = got
 
     save_json(dict(rows=rows, config=vars(args)),
