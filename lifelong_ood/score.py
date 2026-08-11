@@ -160,8 +160,26 @@ class BaseScoreField:
 
     # ── mode ascent on p_t (the paper's Eq. 4) ──────────────────────────────
     def mode_ascent(self, xq, u, n_starts=16, iters=100, lr=0.05, seed=0, init="query",
-                    clamp=True, k_sigma=3.0, tweedie=True, adam=True):
+                    clamp=True, k_sigma=3.0, tweedie=True, adam=False):
         """Adam ascent on log p_t from noised copies of the query -> (modes in x_t space, x0-space).
+
+        `adam=False` -- PLAIN gradient ascent -- is the default, and it is a measured deviation from
+        the paper's Table 6, which specifies Adam.  Adam's update is normalized: every coordinate
+        moves by about `lr` per iteration however small its gradient is, so near a mode, where the
+        gradient vanishes, it keeps taking full-sized steps and marches past.  Measured on the
+        pretrained CelebA backbone at u=0.15, against the query's own eps error of 0.0260:
+
+            Adam  lr 0.09 100it (their column)   11.1% of x0 out of range   eps 0.0113
+            Adam  lr 0.02 100it                   0.0%                      eps 0.0056
+            plain lr 0.09 100it                   0.0%                      eps 0.0046
+            plain lr 1.00 100it                  32.9%                      eps 0.0469 (worse
+                                                                            than the query)
+
+        Plain ascent is better on BOTH axes: it stays entirely in gamut and finds a lower-error
+        mode.  That matters because out-of-range coordinates get clipped for display, and a large
+        fraction of them clipped to exactly +-1 is what made the prototypes posterize into flat
+        saturated colour -- clamping alone changed the numbers and not the pictures, because the
+        values still arrived at the edge.
 
         `clamp` keeps the ascent on the DATA'S SUPPORT, and without it this walks off into nonsense.
         Adam's update is normalized, so every coordinate moves by about `lr` per iteration whatever

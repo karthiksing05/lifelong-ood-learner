@@ -57,7 +57,7 @@ w₀ infidelity (§5a, measured and fixed), and the input-layout permutation (§
 | Ascent starts per *t* | 128 | 8 | **12–16** | **DEVIATION** |
 | Ascent iterations | 150 | 100 | 80–120 | DEVIATION |
 | Ascent step size | 0.1 | 0.09 | 0.1 | MATCH (CM) |
-| Ascent optimizer | Adam | Adam | Adam | MATCH |
+| Ascent optimizer | Adam | Adam | **plain gradient** | **DEVIATION — measured, §5c** |
 | Initialization | hybrid (50/50) | query-centred | hybrid | MATCH (CM) |
 | Hutchinson probes | 4 | 4 | 4 | MATCH |
 | Hutchinson FD step | 5e-3 | 5e-3 | *not exposed* | **UNVERIFIED** |
@@ -183,6 +183,37 @@ A `layout` option (`"permuted"` default, `"hwc"` correct) is now threaded throug
 `train_ddpm`, `NeuralScoreField` and `n1_train`, **recorded in the checkpoint** and preferred over the
 process default by `load_field` — a checkpoint sampled in the other layout silently produces garbage.
 N45 measures what it costs: **-28 % on the denoising objective, replicated**, and **no** gain in conditional composition accuracy (paired, it costs 0.062). See RESULTS 30.
+
+
+## 5c. The ascent optimizer: a measured deviation from their Table 6
+
+Their Table 6 specifies **Adam** for mode ascent. We use **plain gradient ascent**, and the reason
+is a measurement rather than a preference.
+
+Adam's update is normalized: every coordinate moves by about `lr` per iteration however small its
+gradient is. Near a mode, where the gradient vanishes, a plain step vanishes with it and settles —
+Adam's does not, it keeps taking full-sized steps and marches past. On the pretrained CelebA backbone
+at u = 0.15, against the query's own eps error of **0.0260** as the bar:
+
+| setting | fraction of x₀ out of [−1,1] | eps error at the returned point |
+|---|---|---|
+| Adam, lr 0.09, 100 it *(their column)* | **11.1 %** | 0.0113 |
+| Adam, lr 0.02, 100 it | 0.0 % | 0.0056 |
+| Adam, lr 0.09, 20 it | 0.3 % | 0.0391 — *worse than the query* |
+| **plain, lr 0.09, 100 it** | **0.0 %** | **0.0046** |
+| plain, lr 1.00, 100 it | 32.9 % | 0.0469 — *worse than the query* |
+
+**Plain ascent wins on both axes**: it stays entirely in gamut *and* finds a lower-error mode than
+Adam does. The eps error is the right adjudicator here because it is the quantity ascent exists to
+reduce — a setting scoring worse than the query it started from has not found a mode of anything.
+
+Why it mattered visually: out-of-range coordinates are clipped for display, and a large fraction of
+them clipped to exactly ±1 is flat saturated colour. That is why the prototypes posterized, and why
+adding a range clamp changed the numbers without changing the pictures — the values still arrived at
+the edge, they just stopped there. Three earlier explanations of mine (runaway Adam steps, the
+x₀ estimator, the clamp) were each refuted by measurement before this one held.
+
+`adam=True` remains selectable to reproduce the paper's column exactly.
 
 ## 6. What this means for the results
 
