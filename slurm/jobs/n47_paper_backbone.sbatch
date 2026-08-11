@@ -15,7 +15,12 @@ PY=$HOME/flash/miniconda3/envs/chunks/bin/python
 # but fine-tuning a photorealistic model to accept conditioning is a far smaller ask than learning
 # the image distribution from scratch, which is what we were doing.
 srun $PY experiments/n47_paper_backbone.py --quick || exit 1
-srun $PY experiments/n47_paper_backbone.py --hours 14 --img 128 --batch 16
+# lr: their Table 5 says 2e-4, which is a from-scratch-scale setting at batch 128 across
+# four GPUs.  At batch 16 on one GPU it DIVERGED -- loss 0.013 at step 6400, exactly 1.0
+# by 8000, and 1.0 is what eps-prediction loss becomes when the network emits zero.  The
+# run now uses 5e-5 with warmup and aborts if the loss stays above 0.5, instead of
+# spending 14 h producing an unusable checkpoint.
+srun $PY experiments/n47_paper_backbone.py --hours 13 --img 128 --batch 16
 rc=$?
 echo "exit=$rc | $(date)"
 exit $rc

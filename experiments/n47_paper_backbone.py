@@ -53,7 +53,16 @@ def main():
     p.add_argument("--img", type=int, default=128)
     p.add_argument("--hours", type=float, default=10.0)
     p.add_argument("--batch", type=int, default=16)
-    p.add_argument("--lr", type=float, default=2e-4)
+    p.add_argument("--lr", type=float, default=5e-5,
+                   help="Their Table 5 says 2e-4, but that is their FROM-SCRATCH-scale\n"
+                        "setting at batch 128 across four GPUs.  At batch 16 on one GPU it\n"
+                        "diverged: loss 0.013 at step 6400 and exactly 1.0 by step 8000 --\n"
+                        "and 1.0 is what eps-prediction loss becomes when the network\n"
+                        "outputs zero, i.e. the fine-tune had destroyed the pretrained\n"
+                        "weights.  5e-5 with warmup is the usual fine-tuning range.")
+    p.add_argument("--warmup", type=int, default=500,
+                   help="linear LR warmup; a pretrained model takes its largest steps in\n"
+                        "the first few hundred, which is where it broke")
     p.add_argument("--wd", type=float, default=1e-6)
     p.add_argument("--p-drop", type=float, default=0.1)
     p.add_argument("--min-count", type=int, default=25)
@@ -122,7 +131,7 @@ def main():
     Yt = torch.from_numpy(y)
     n = len(Xt)
     g = torch.Generator().manual_seed(args.seed)
-    t0, step, tot, nb = time.time(), 0, 0.0, 0
+    t0, step, tot, nb, bad = time.time(), 0, 0.0, 0, 0
     budget = args.hours * 3600.0
     print(f"[n47] fine-tuning for {args.hours:.2f} h at {args.img}px, batch {args.batch}, "
           f"linear beta T=1000, bf16", flush=True)
@@ -148,7 +157,27 @@ def main():
             torch._foreach_mul_(ema_f, dk)
             torch._foreach_add_(ema_f, mod_f, alpha=1 - dk)
             ema_c.mul_(dk).add_(cemb.weight.detach().float(), alpha=1 - dk)
+        # linear warmup: the first steps are where a pretrained model is most fragile
+        if step < args.warmup:
+            for gpar in opt.param_groups:
+                gpar['lr'] = args.lr * (step + 1) / args.warmup
+        elif step == args.warmup:
+            for gpar in opt.param_groups:
+                gpar['lr'] = args.lr
         tot += float(loss); nb += 1; step += 1
+        # DIVERGENCE GUARD.  An eps-prediction loss of 1.0 means the network is emitting
+        # zero -- the pretrained weights are gone and no amount of further training brings
+        # them back.  Without this the run spends its whole wall-clock budget producing a
+        # checkpoint that cannot be used, which is exactly what happened.
+        if step > 200 and float(loss) > 0.5:
+            bad += 1
+            if bad >= 200:
+                print(f"[n47] ABORT at step {step}: loss has been > 0.5 for 200 steps "
+                      f"(now {float(loss):.4f}). The fine-tune has diverged; lower --lr.",
+                      flush=True)
+                return 2
+        else:
+            bad = 0
         if step % 200 == 0:
             el = (time.time() - t0) / 60
             print(f"    step {step:6d}  loss {tot / max(nb,1):.4f}  ({el:.1f} min / "
