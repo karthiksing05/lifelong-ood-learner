@@ -52,8 +52,8 @@ def main():
     ax = fig.add_axes([0, 0, 1, 1])
     ax.set_xlim(0, 1); ax.set_ylim(0, 1); ax.axis("off")
 
-    fig.text(0.5, 0.973, "The instantiated architecture: an insert-only concept bank on a frozen "
-             "diffusion model", ha="center", fontsize=15.5, fontweight="bold")
+    fig.text(0.5, 0.973, "The instantiated architecture: addressing the hierarchy a frozen "
+             "diffusion model already has", ha="center", fontsize=15.5, fontweight="bold")
     fig.text(0.5, 0.949, "Stages 1–4 are the companion paper's, used unchanged.  Stages 5–7 are this "
              "work, and are what turns a one-shot method into a lifelong learner.",
              ha="center", fontsize=10, color="#333333")
@@ -71,7 +71,7 @@ def main():
     stage(ax, xs[0], y1, w, h1, "1  DISCOVER",
           "mode ascent on $s_\\theta(x_t,t)$\nat several $t$\n→ candidate modes", INHERIT)
     stage(ax, xs[1], y1, w, h1, "2  SELECT",
-          "greedy submodular\nchoice of $K$\nprototypes", INHERIT)
+          "$K$ chosen per query\nby explaining it\nto 95% (§26)", INHERIT)
     stage(ax, xs[2], y1, w, h1, "3  COMPOSE",
           "per-dimension\nproduct of experts\n→ teacher $q_T$", INHERIT)
     stage(ax, xs[3], y1, w, h1, "4  SAMPLE",
@@ -80,7 +80,7 @@ def main():
     stage(ax, x5, y1, w, h1, "5  ROUTE",
           "arrangement, or\na new part?\nAUROC 0.980 / 0.995", OURS)
     stage(ax, x6, y1, w, h1, "6  CONSOLIDATE",
-          "a new leaf;\nancestors sealed\nand unreachable", OURS)
+          "coordinates (72 B),\na basis direction,\nor a block", OURS)
     stage(ax, x7, y1, w, h1, "7  CERTIFY",
           "every earlier concept\nbit-identical\n(==, not ≈)", OURS)
     for a, b in zip([xs[0], xs[1], xs[2], xs[3], x5, x6], [xs[1], xs[2], xs[3], x5, x6, x7]):
@@ -127,9 +127,9 @@ def main():
     panel(ax, 0.424, yr, 0.143, hr, "#F4F4F4", EDGE, 1.1, z=2)
     ax.text(0.4955, yr + hr - 0.020, "what each costs", ha="center", va="top", fontsize=10,
             fontweight="bold", zorder=3)
-    ax.text(0.4955, yr + 0.070, "arrangement:\nextend the factor basis\n**1024 bytes**".replace("**", ""),
+    ax.text(0.4955, yr + 0.070, "arrangement:\ncoordinates, 72 bytes\n(new value: 1 KB)".replace("**", ""),
             ha="center", va="center", fontsize=8.4, zorder=3, linespacing=1.5, color=GREEN)
-    ax.text(0.4955, yr + 0.026, "new vocabulary:\none adapter leaf\n551K parameters",
+    ax.text(0.4955, yr + 0.026, "new FACTOR:\none low-rank block\n551K (69K at rank 1)",
             ha="center", va="center", fontsize=8.4, zorder=3, linespacing=1.5, color=RED)
     ax.text(0.022, yr - 0.020, "the error is ONE-SIDED: 0 vocabulary items were sent down the free "
             "route in 120 queries — cost is over-spent, never under-spent",
@@ -138,10 +138,10 @@ def main():
     # ══ BAND 4 — the bank, and the step list ═══════════════════════════════
     yb, hb = 0.042, 0.470
     panel(ax, 0.022, yb, 0.545, hb, BANK, "#B9A87E", 1.3)
-    ax.text(0.038, yb + hb - 0.022, "STAGE 6 expanded — HierarchicalAdapterBank", fontsize=10.8,
+    ax.text(0.038, yb + hb - 0.022, "STAGE 6 expanded — CONSOLIDATE: what is stored, and what it costs", fontsize=10.8,
             fontweight="bold")
-    ax.text(0.038, yb + hb - 0.045, "the frozen backbone is never written to; a concept IS a path "
-            "through the tree", fontsize=8.6, style="italic", color="#5A5A5A")
+    ax.text(0.038, yb + hb - 0.045, "the frozen backbone is never written to — most concepts are "
+            "stored as coordinates INTO it, not as weights", fontsize=8.6, style="italic", color="#5A5A5A")
 
     # -- the frozen UNet
     ux, uy, uw, uh = 0.040, yb + 0.238, 0.232, 0.168
@@ -175,40 +175,41 @@ def main():
             "no weight copying, no re-injection", ha="center", va="center", fontsize=7.6,
             style="italic", color="#555", zorder=3, linespacing=1.4)
 
-    # -- the tree
+    # -- what a concept costs to STORE.
+    # This panel used to draw the concept tree as the centrepiece.  Section 24 measured that the
+    # hierarchy neither saves parameters (depth ADDS ~23%) nor transfers to newcomers, and section 25
+    # measured that a concept can be stored as COORDINATES for 72 bytes -- 31,895x less than a block,
+    # at higher F1.  So the figure leads with cost, and the tree is named as bookkeeping.
     tx, tw = 0.292, 0.262
-    ax.text(tx + tw / 2, yb + hb - 0.070, "the concept tree   (insert-only)", ha="center",
+    ax.text(tx + tw / 2, yb + hb - 0.070, "what a concept costs to STORE", ha="center",
             fontsize=9.8, fontweight="bold")
-    root = (tx + tw / 2, yb + 0.352)
-    kids = [(tx + 0.062, yb + 0.262), (tx + 0.131, yb + 0.262), (tx + 0.200, yb + 0.262)]
-    leaves = [(tx + 0.032, yb + 0.172), (tx + 0.092, yb + 0.172), (tx + 0.152, yb + 0.172),
-              (tx + 0.212, yb + 0.172)]
-    edges = [(0, 0), (0, 1), (1, 2), (2, 3)]
-    for k in kids:
-        ax.plot([root[0], k[0]], [root[1], k[1]], color="#A8A8A8", lw=1.0, zorder=2)
-    for ki, li in edges:
-        ax.plot([kids[ki][0], leaves[li][0]], [kids[ki][1], leaves[li][1]],
-                color="#A8A8A8", lw=1.0, zorder=2)
-    ax.plot([root[0], kids[2][0]], [root[1], kids[2][1]], color=GREEN, lw=2.8, zorder=2)
-    ax.plot([kids[2][0], leaves[3][0]], [kids[2][1], leaves[3][1]], color=GREEN, lw=2.8, zorder=2)
-    for c in [root] + kids[:2] + leaves[:3]:
-        ax.add_patch(Circle(c, 0.0135, fc=FROZEN, ec=EDGE, lw=1.1, zorder=3))
-    for c in (kids[2], leaves[3]):
-        ax.add_patch(Circle(c, 0.0145, fc=OURS, ec=GREEN, lw=2.2, zorder=3))
-    ax.text(leaves[3][0] + 0.026, leaves[3][1], "new\nleaf", ha="left", va="center", fontsize=7.4,
-            color=GREEN, fontweight="bold", linespacing=1.3)
-    ax.text(tx + tw / 2, yb + 0.140, 'state["path"] = [root, node, leaf]', ha="center",
-            fontsize=8.6, color=GREEN, fontweight="bold")
-    ax.text(tx + tw / 2, yb + 0.113, "grey = .frozen — sealed by an earlier insertion, absent from\n"
-            "every future optimizer        green = ._open — the ONLY trainables",
-            ha="center", va="center", fontsize=7.4, color="#444", linespacing=1.6)
+    classes = [(GREEN, "#D6ECD9", "ADDRESS  —  coordinates",
+                "72 bytes   ·   31,895× cheaper than a block",
+                "F1 0.699 against a block's 0.572 (§25)"),
+               (GREEN, "#E3F0E4", "EXTEND BASIS  —  one direction",
+                "1 KB, once per new factor VALUE",
+                "covers every combination using it (§5q)"),
+               (RED, "#FBE0DE", "BLOCK  —  low-rank delta",
+                "551K at rank 8   ·   69K at rank 1",
+                "only for a genuinely new FACTOR (§5q)")]
+    for k, (ec, fc, head, cost, note) in enumerate(classes):
+        by = yb + 0.286 - k * 0.076
+        panel(ax, tx + 0.006, by, tw - 0.012, 0.064, fc, ec, 1.3, z=2)
+        ax.text(tx + tw / 2, by + 0.047, head, ha="center", va="center", fontsize=8.8,
+                fontweight="bold", color=ec, zorder=3)
+        ax.text(tx + tw / 2, by + 0.029, cost, ha="center", va="center", fontsize=7.8, zorder=3)
+        ax.text(tx + tw / 2, by + 0.012, note, ha="center", va="center", fontsize=7.0,
+                style="italic", color="#555", zorder=3)
     panel(ax, tx + 0.010, yb + 0.044, tw - 0.020, 0.046, "white", "#C0A0A0", 1.1, z=2)
     ax.text(tx + tw / 2, yb + 0.078, "params = [p for n in path if n in ._open]", ha="center",
             va="center", fontsize=8.4, color=RED, fontweight="bold", zorder=3)
-    ax.text(tx + tw / 2, yb + 0.057, "the preservation guarantee, in one line:\n"
-            "ancestors are not in the optimizer, so no gradient can reach them",
+    ax.text(tx + tw / 2, yb + 0.057, "the preservation guarantee, in one line: sealed nodes are" "\n"
+            "absent from the optimizer, so no gradient can reach them",
             ha="center", va="center", fontsize=7.2, color=RED, style="italic", zorder=3,
             linespacing=1.4)
+    ax.text(tx + tw / 2, yb + 0.020, "the tree that arranges blocks is BOOKKEEPING: measured not to" "\n"
+            "transfer, and to cost +23% parameters, so placement is kept flat (§24)",
+            ha="center", va="center", fontsize=7.0, color="#777", style="italic", linespacing=1.4)
 
     # -- the step list
     rx, rw = 0.588, 0.392
@@ -239,7 +240,7 @@ def main():
         ("$K$", "BATCH ADDITION", "#F4F4F4",
          "._open holds $K$ leaves plus their shared node, and ONE optimizer sees all of them,\n"
          "so the ancestor learns from every member.  _seal() runs once for the whole batch, so\n"
-         "the guarantee is identical at any $K$: 2.14× faster AND +0.052 ACC at $K{=}12$."),
+         "the guarantee is identical at any $K$: 2.15× faster at no cost to ACC ($K{=}12$, 3 seeds)."),
     ]
     yy = yb + hb - 0.052
     for tag, head, tc, body in steps:
@@ -252,7 +253,7 @@ def main():
         yy -= 0.070
 
     fig.text(0.5, 0.016, "Every backbone parameter is frozen at construction and never re-enabled.  "
-             "A concept is a path of low-rank deltas plus one conditioning vector — and nothing an "
+             "Most concepts are stored as coordinates INTO the frozen model — 72 bytes — and nothing an "
              "earlier concept depends on is ever in an optimizer again.",
              ha="center", fontsize=8.8, style="italic", color="#555555")
 

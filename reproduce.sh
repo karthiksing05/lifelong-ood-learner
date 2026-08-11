@@ -135,6 +135,7 @@ figures|all)
   "$PY" experiments/make_architecture_figure.py     # F0: the architecture, no results needed
   "$PY" experiments/make_n30_figure.py              # F11: the prototype-distance dial
   "$PY" experiments/make_paper_figures.py
+  "$PY" experiments/make_rank_frontier.py           # F12: quality-vs-parameters frontier
   # PYTHONIOENCODING: redirected stdout defaults to latin-1 on this cluster and the tables
   # contain em-dashes, so without it the file is written truncated at the first one.
   PYTHONIOENCODING=utf-8 "$PY" experiments/make_paper_tables.py > TABLES.md \

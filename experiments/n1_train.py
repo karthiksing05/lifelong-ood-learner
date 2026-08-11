@@ -69,6 +69,14 @@ def main():
                         "claim 'a consolidated concept behaves as if it had been learned natively' "
                         "is unmeasurable without it.  Never use this checkpoint as a method's "
                         "backbone; its filename carries `_oracle` so a mix-up is visible.")
+    p.add_argument("--cond", choices=["class", "factored"], default="class",
+                   help="conditioning scheme.  `class` is one free embedding row per "
+                        "compositional slot -- the shipped ColorMNIST backbone, whose "
+                        "conditionals are ENTANGLED per combination.  `factored` sums one "
+                        "learned embedding per (factor, value), so the conditioning is "
+                        "compositional BY CONSTRUCTION.  Same data, same UNet, same recipe: "
+                        "the only difference is the conditioning scheme, which is what §13 "
+                        "could not isolate because it compared two different datasets.")
     p.add_argument("--snapshot-epochs", type=int, nargs="*", default=None,
                    help="also write <out>_ep<N>.pt at each of these epochs: a competence "
                         "ladder from ONE run, which is what N35 sweeps over")
@@ -144,9 +152,21 @@ def main():
 
     img = data.get("img", 32)
     # deeper stack at higher resolution so the spatial size still reaches the attention levels
-    arch = dict(base=args.base, img=img)
+    arch = dict(base=args.base, img=img, cond_mode=args.cond)
     if img >= 64:
         arch["mults"] = (1, 2, 2, 2)
+    if args.cond == "factored":
+        # one embedding per (factor, value), summed -- so the conditioning is compositional by
+        # construction rather than one entangled row per combination.  `class_attrs` maps each
+        # trained slot to its (digit, fg, bg) values; n_attr_vals is the widest factor.
+        from lifelong_ood.neural.idealwords import slot_factors
+        ca = slot_factors(uniq)
+        arch["class_attrs"] = ca
+        arch["n_attr_vals"] = int(ca.max()) + 1
+        print(f"[n1] FACTORED conditioning: {ca.shape[1]} factors, "
+              f"{arch['n_attr_vals']} values wide -> "
+              f"{ca.shape[1] * arch['n_attr_vals']} embedding rows instead of {len(uniq)}",
+              flush=True)
     model = UNet(n_classes=len(uniq), **arch)
     if img != 32:
         # CelebA runs at a larger resolution; the score field and UNet are resolution-agnostic

@@ -41,7 +41,11 @@
      "mean": 1.0739799522166134,
      "se": 0.04882803129144582,
      "n": 3
-    }
+    },
+    "vendi": null,
+    "memorized": null,
+    "density": null,
+    "coverage": null
    },
    "UNSEEN combo": {
     "joint": {
@@ -83,7 +87,11 @@
      "mean": 1.0133474050016829,
      "se": 0.023994977460318964,
      "n": 3
-    }
+    },
+    "vendi": null,
+    "memorized": null,
+    "density": null,
+    "coverage": null
    },
    "adapter (per concept)": {
     "joint": {
@@ -125,7 +133,11 @@
      "mean": 1.1160611875249922,
      "se": 0.05226430591559645,
      "n": 3
-    }
+    },
+    "vendi": null,
+    "memorized": null,
+    "density": null,
+    "coverage": null
    },
    "adapter on REAL images": {
     "joint": {
@@ -167,7 +179,11 @@
      "mean": 0.9568951939264627,
      "se": 0.008283426648968355,
      "n": 3
-    }
+    },
+    "vendi": null,
+    "memorized": null,
+    "density": null,
+    "coverage": null
    },
    "real (ceiling)": {
     "joint": {
@@ -209,7 +225,11 @@
      "mean": 1.0,
      "se": 0.0,
      "n": 3
-    }
+    },
+    "vendi": null,
+    "memorized": null,
+    "density": null,
+    "coverage": null
    }
   },
   "ceiling": {},
@@ -728,7 +748,11 @@
      "mean": 0.7736652198188118,
      "se": 0.031800318745593255,
      "n": 3
-    }
+    },
+    "vendi": null,
+    "memorized": null,
+    "density": null,
+    "coverage": null
    },
    "inversion": {
     "joint": {
@@ -770,7 +794,11 @@
      "mean": 1.1720915471955669,
      "se": 0.03210930432731222,
      "n": 3
-    }
+    },
+    "vendi": null,
+    "memorized": null,
+    "density": null,
+    "coverage": null
    },
    "inv rw=0.5": {
     "joint": {
@@ -812,7 +840,11 @@
      "mean": 1.1884446213271005,
      "se": 0.005665779609963188,
      "n": 3
-    }
+    },
+    "vendi": null,
+    "memorized": null,
+    "density": null,
+    "coverage": null
    },
    "inv@muT": {
     "joint": {
@@ -854,7 +886,11 @@
      "mean": 1.165453153513724,
      "se": 0.041481747648102765,
      "n": 3
-    }
+    },
+    "vendi": null,
+    "memorized": null,
+    "density": null,
+    "coverage": null
    },
    "inv@muT rw=0.5": {
     "joint": {
@@ -896,7 +932,11 @@
      "mean": 1.1298454607962707,
      "se": 0.06690336614066178,
      "n": 3
-    }
+    },
+    "vendi": null,
+    "memorized": null,
+    "density": null,
+    "coverage": null
    },
    "inv long": {
     "joint": {
@@ -938,7 +978,11 @@
      "mean": 1.1472420888148995,
      "se": 0.05770016116311513,
      "n": 3
-    }
+    },
+    "vendi": null,
+    "memorized": null,
+    "density": null,
+    "coverage": null
    },
    "inv rw=0.5 w=1.5": {
     "joint": {
@@ -980,7 +1024,11 @@
      "mean": 1.142546395063965,
      "se": 0.006071536853372406,
      "n": 3
-    }
+    },
+    "vendi": null,
+    "memorized": null,
+    "density": null,
+    "coverage": null
    },
    "region-composed": {
     "joint": {
@@ -1022,7 +1070,11 @@
      "mean": 1.187304736985312,
      "se": 0.0,
      "n": 1
-    }
+    },
+    "vendi": null,
+    "memorized": null,
+    "density": null,
+    "coverage": null
    },
    "nearest-class": {
     "joint": {
@@ -1064,7 +1116,11 @@
      "mean": 1.0629043114221997,
      "se": 0.04986402732502401,
      "n": 3
-    }
+    },
+    "vendi": null,
+    "memorized": null,
+    "density": null,
+    "coverage": null
    }
   },
   "ceiling": {
@@ -2461,7 +2517,11 @@
      "mean": 0.7421823448265137,
      "se": 0.0,
      "n": 1
-    }
+    },
+    "vendi": null,
+    "memorized": null,
+    "density": null,
+    "coverage": null
    },
    "inversion (class basis)": {
     "joint": {
@@ -2503,7 +2563,11 @@
      "mean": 1.0470858697661778,
      "se": 0.0,
      "n": 1
-    }
+    },
+    "vendi": null,
+    "memorized": null,
+    "density": null,
+    "coverage": null
    },
    "factored (ideal words)": {
     "joint": {
@@ -2545,7 +2609,11 @@
      "mean": 1.1096572640335989,
      "se": 0.0,
      "n": 1
-    }
+    },
+    "vendi": null,
+    "memorized": null,
+    "density": null,
+    "coverage": null
    },
    "ideal-words ORACLE": {
     "joint": {
@@ -2587,7 +2655,11 @@
      "mean": 1.0415978939312087,
      "se": 0.0,
      "n": 1
-    }
+    },
+    "vendi": null,
+    "memorized": null,
+    "density": null,
+    "coverage": null
    }
   },
   "ceiling": {},
@@ -3573,6 +3645,7 @@
      "se": 0.05635404227358931,
      "n": 3
     },
+    "vendi": null,
     "content_ratio": {
      "mean": 1.2608416334669217,
      "se": 0.012338518250154699,
@@ -3611,6 +3684,7 @@
      "se": 0.050961810405119136,
      "n": 3
     },
+    "vendi": null,
     "content_ratio": {
      "mean": 1.193643825360599,
      "se": 0.02745266430904626,
@@ -3649,6 +3723,7 @@
      "se": 0.05258000861782785,
      "n": 3
     },
+    "vendi": null,
     "content_ratio": {
      "mean": 1.2642918261796607,
      "se": 0.011088270187983047,
@@ -3687,6 +3762,7 @@
      "se": 0.051104953253757815,
      "n": 3
     },
+    "vendi": null,
     "content_ratio": {
      "mean": 1.195080882664004,
      "se": 0.026760380740832295,
@@ -3725,6 +3801,7 @@
      "se": 0.009902211398886133,
      "n": 3
     },
+    "vendi": null,
     "content_ratio": {
      "mean": 0.9887252703141535,
      "se": 0.03388518964629105,
@@ -3763,6 +3840,7 @@
      "se": 0.015258358688647848,
      "n": 3
     },
+    "vendi": null,
     "content_ratio": {
      "mean": 0.9944014700968427,
      "se": 0.007675724536707684,
@@ -3801,6 +3879,7 @@
      "se": 0.036018745150309166,
      "n": 3
     },
+    "vendi": null,
     "content_ratio": {
      "mean": 1.107431825531923,
      "se": 0.03222478837914667,

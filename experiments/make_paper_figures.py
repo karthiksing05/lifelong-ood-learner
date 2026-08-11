@@ -76,45 +76,67 @@ def save(fig, name):
 
 # ── F1 ────────────────────────────────────────────────────────────────────────
 def f1_loop(A):
-    fig, ax = plt.subplots(figsize=(11.5, 4.0))
-    ax.set_xlim(0, 106); ax.set_ylim(-4, 36); ax.axis("off")
-    boxes = [(2, "observe one\nOOD query", "#EEEEEE"),
-             (23, "ROUTE\n(no label, no probe)", "#DCE9F5"),
-             (46, "compose\n0 parameters", "#D6ECD9"),
-             (46, "weight update\nfrom REAL data", "#FBE0DE"),
-             (70, "REGISTER\nflat, insert-only", "#DCE9F5"),
-             (88, "CERTIFY\nbit-identical", "#E8E0F2")]
-    ys = [18, 18, 26, 8, 18, 18]
-    for (x, label, col), y in zip(boxes, ys):
-        ax.add_patch(FancyBboxPatch((x, y - 4.2), 14, 8.4, boxstyle="round,pad=0.4",
-                                    fc=col, ec="#666666", lw=0.9))
-        ax.text(x + 7, y, label, ha="center", va="center", fontsize=8.5)
-    def arrow(x0, y0, x1, y1, txt="", col="#444444", dy=1.4):
+    """The loop, with the THREE storage classes §25 measured rather than the old two.
+
+    The previous version showed composition as "0 parameters" and registration as the destination
+    for everything.  Both are now wrong: a concept expressible in the factor basis is stored as
+    COORDINATES (72 bytes, §25), a new factor VALUE as one basis direction (1024 bytes), and only a
+    genuinely new FACTOR costs a block.  Redrawn so the figure states the cost the measurements
+    support instead of the one the design originally assumed.
+    """
+    fig, ax = plt.subplots(figsize=(13.2, 5.6))
+    ax.set_xlim(0, 130); ax.set_ylim(-10, 53); ax.axis("off")
+    # Four routes fanning from one point cannot also carry four arrow labels without collisions, so
+    # the CONDITION goes inside its own box and the arrow carries only colour.
+    boxes = [(2, 20, "observe one\nOOD query", "#EEEEEE", None),
+             (25, 20, "ROUTE\nno label, no probe", "#DCE9F5", None),
+             (56, 38, "already expressible", "in distribution\n\u2192 do nothing", "#E6E6E6"),
+             (56, 26, "new ARRANGEMENT", "ADDRESS\ncoordinates \u2014 72 B", "#D6ECD9"),
+             (56, 14, "new VALUE", "EXTEND BASIS\none direction \u2014 1 KB", "#D6ECD9"),
+             (56, 2, "new FACTOR", "BLOCK\nlow-rank delta", "#FBE0DE"),
+             (88, 20, "REGISTER\nflat, insert-only", "#DCE9F5", None),
+             (110, 20, "CERTIFY\nbit-identical", "#E8E0F2", None)]
+    for b in boxes:
+        if b[4] is None:
+            x, y, label, col, _ = b
+            ax.add_patch(FancyBboxPatch((x, y - 4.4), 17, 8.8, boxstyle="round,pad=0.4",
+                                        fc=col, ec="#666666", lw=0.9))
+            ax.text(x + 8.5, y, label, ha="center", va="center", fontsize=8.4)
+        else:
+            x, y, cond, label, col = b
+            ax.add_patch(FancyBboxPatch((x, y - 5.0), 18, 10.0, boxstyle="round,pad=0.4",
+                                        fc=col, ec="#666666", lw=0.9))
+            ax.text(x + 9, y + 2.9, cond, ha="center", va="center", fontsize=6.9,
+                    style="italic", color="#555555")
+            ax.text(x + 9, y - 1.1, label, ha="center", va="center", fontsize=8.4)
+
+    def arrow(x0, y0, x1, y1, col="#444444"):
         ax.add_patch(FancyArrowPatch((x0, y0), (x1, y1), arrowstyle="-|>", mutation_scale=11,
                                      lw=1.1, color=col, shrinkA=0, shrinkB=0))
-        if txt:
-            ax.text((x0 + x1) / 2, (y0 + y1) / 2 + dy, txt, ha="center", fontsize=7.4, color=col)
-    arrow(16, 18, 23, 18)
-    arrow(37, 20, 46, 26, "new COMBINATION", "#2E7D32")
-    arrow(37, 16, 46, 8, "new VOCABULARY", "#C62828", dy=-2.6)
-    arrow(60, 26, 70, 20)
-    arrow(60, 8, 70, 16)
-    arrow(84, 18, 88, 18)
-    # feedback edge routed BELOW the row so it crosses nothing
-    ax.add_patch(FancyArrowPatch((95, 13.5), (95, -1.5), arrowstyle="-", lw=1.1, color="#999999"))
-    ax.add_patch(FancyArrowPatch((95, -1.5), (9, -1.5), arrowstyle="-", lw=1.1, color="#999999"))
-    ax.add_patch(FancyArrowPatch((9, -1.5), (9, 13.5), arrowstyle="-|>", mutation_scale=11,
+    arrow(19, 20, 25, 20)
+    for y, col in ((38, "#8A8A8A"), (26, "#2E7D32"), (14, "#2E7D32"), (2, "#C62828")):
+        arrow(42, 20, 56, y, col)
+    for y in (26, 14, 2):
+        arrow(74, y, 88, 20)
+    arrow(105, 20, 110, 20)
+    # feedback routed well below the lowest box (BLOCK spans y = -3 .. 7)
+    for seg in (((118, 15.5), (118, -7.5)), ((118, -7.5), (10, -7.5))):
+        ax.add_patch(FancyArrowPatch(*seg, arrowstyle="-", lw=1.1, color="#999999"))
+    ax.add_patch(FancyArrowPatch((10, -7.5), (10, 15.5), arrowstyle="-|>", mutation_scale=11,
                                  lw=1.1, color="#999999"))
-    ax.text(52, -3.2, "the registered concept is now a source for later composition",
+    ax.text(64, -9.3, "the registered concept becomes a source for later composition",
             ha="center", fontsize=7.6, color="#888888")
     r = A.get("n18_router", {}).get("table", {})
     auroc = m(r, "new-vocabulary vs new-combination", "auroc")
     leak = m(r, "vocab_sent_to_free")
-    ax.text(53, 33.0, f"router AUROC {auroc:.3f}   |   vocabulary sent down the free route: "
-                      f"{leak:.3f}   |   combinations cost 1024 bytes, vocabulary a kept delta",
-            ha="center", fontsize=8, color="#333333")
-    fig.suptitle("Lifelong OOD learning as repeated composition: the loop, and what each route costs",
-                 fontsize=10.5, y=1.02)
+    ax.text(65, 51.0, f"router AUROC {auroc:.3f}   |   vocabulary sent down a free route: "
+                      f"{leak:.3f}   |   24 concepts stored as coordinates cost 1.7 KB "
+                      f"against 55 MB of blocks (\u00a725)",
+            ha="center", fontsize=8.2, color="#333333")
+    ax.text(65, 47.6, "K is chosen per query by explaining it to 95% of its own variance, "
+                      "not fixed (\u00a726)", ha="center", fontsize=7.8, color="#666666")
+    fig.suptitle("Lifelong OOD learning as repeated composition: the loop, and what each route "
+                 "actually costs", fontsize=10.5, y=1.01)
     save(fig, "f1_loop.png")
 
 
