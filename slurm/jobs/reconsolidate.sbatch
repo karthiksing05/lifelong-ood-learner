@@ -11,6 +11,11 @@
 cd /coc/flash10/ksingara3/lifelong-ood-learner
 export PYTHONIOENCODING=utf-8
 PY=$HOME/flash/miniconda3/envs/chunks/bin/python
+# TAG COLLISION WARNING.  This script writes `_recon`, so re-running it with a different
+# configuration OVERWRITES the previous comparison rather than sitting beside it.  The
+# plain-ascent vs Adam comparison survived only because the earlier files were copied to
+# *_plainascent.json by hand first.  If you are comparing configurations, change the tag.
+
 # The two ColorMNIST headline tables re-run under TODAY'S defaults, which the stored results
 # predate on two counts: placement is now `cu` rather than `ll`, and mode ascent is plain gradient
 # rather than Adam.  Neither changed for a cosmetic reason -- cu because ll builds a caterpillar
