@@ -3554,6 +3554,12 @@ The shape changes accordingly: balance 0.512 → **0.995**, and internal nodes 4
 five times as many places where sharing could occur. Redrawing N38's tree under `rule="cu"` gives
 **16–17 shared nodes across every arrival order** against the 3 the shipped rule produced.
 
+![the tree under category utility](../figures/f14_hierarchy_cu.png)
+
+The same 40 concepts, same backbone, same arrival orders — only the placement criterion differs.
+Compare `figures/f14_hierarchy.png`, the caterpillar the shipped rule builds from the identical
+input.
+
 **What is still not claimed.** A better-shaped tree is a means, not a result. §24b measured that
 routing a newcomer through its family transfers nothing *under the caterpillar*, where the "family"
 ancestor was shared by 32 of 40 concepts and so encoded nothing family-specific. Whether transfer
