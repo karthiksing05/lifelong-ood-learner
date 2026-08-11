@@ -498,9 +498,18 @@ eps error (**0.0260**) as the bar, since eps error is the quantity ascent exists
 is now the default, recorded in `docs/SETTINGS.md §5c` as a measured deviation from their Table 6,
 with `adam=True` retained to reproduce their column.
 
-The result is visible rather than statistical: prototypes are now recognisable faces, and
-`poe-guided` on the paper's own backbone renders coherent faces at real-image texture (tv 0.82–1.11
-against real 1.0), where before it was 2.50–4.82.
+**Final numbers, under the single global setting** (the paper's Adam, no clamp, no Tweedie; their
+Table 8 `w0 = 0.5`; input layout corrected), on `google/ddpm-celebahq-256`:
+
+| arm | before any fix | after |
+|---|---|---|
+| prototypes (mode ascent) | 0.78 – 1.40 | 0.54 – 0.59 |
+| `poe-guided` | **2.50 – 4.82** | **0.89 – 1.23** |
+| `query-only` | 3.53 – 4.27 | 0.93 – 1.19 |
+
+`poe-guided` renders at real-image texture on the paper's own backbone. Note these are the numbers
+with **Adam restored** — they are indistinguishable from the ones the ascent changes produced
+(0.82–1.11), which is the evidence that those changes were never doing the work.
 
 ![the paper's pipeline on its own backbone, after the layout, guidance and ascent fixes](../figures/f18_celeba_paper_paperdisc_w05.png)
 
