@@ -3438,12 +3438,13 @@ path. Those are consistent and worth stating together: **order changes which con
 does not change the shape.** The caterpillar is what this rule builds from this data, always.
 
 **What would have to change.** Not the sealing discipline, which is untouched by any of this — the
-descent rule and its caps. `branch_max` forcing descent on saturation is the specific defect; a
-quality-gated descent, a much larger `branch_max`, and a `max_depth` above 3 are the obvious knobs,
-and Cobweb's merge/split would be the principled fix that §5s's insert-only requirement forbids. That
-is a redesign, not a tuning pass, and nothing in this repository currently claims the hierarchy
-works — but it does mean the hierarchy's failures measured above are **failures of this placement
-rule**, not evidence that hierarchical sharing cannot help.
+placement **criterion**. This paragraph originally named `branch_max` as the specific defect; §24g–j
+measured it and that emphasis was wrong. Saturation-forced descent is real (36% of descents) but it
+is a *symptom*: swapping the nearest-child criterion for category utility drives it to 0% and makes
+the caps irrelevant. Cobweb's merge/split would still be the principled completion and is still
+forbidden — but it turns out to be worth ~0.01 purity here against the criterion's 0.33 (§24j). The
+failures measured above are **failures of this placement rule**, not evidence that hierarchical
+sharing cannot help.
 
 ### 24g. The criterion, not the caps: what a placement rule would have to be (N39)
 
