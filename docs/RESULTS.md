@@ -2649,6 +2649,15 @@ the failure looks like a capacity or a learning-rate problem when it is neither.
 ### 12e. The case study, and what it says about our composition operator
 
 > **Corrected at 3 seeds.** The table below is seed 0. Replicated over three seeds, the accuracy
+> **RETRACTED 2026-08-11 — the numbers in this block were measured through a broken field.**
+> The pretrained UNet was being fed a pixel permutation (§30b), so it returned 3x3 tiled
+> greyscale mosaics and the attribute probes were scoring those. Re-run with the layout
+> corrected, EVERY generated arm scores `both` = **0.000** — score-composed, path-union, each
+> single-concept arm, and the untouched pretrained model alike, against a real-image ceiling
+> of 1.000. Preservation is unaffected and still exact; see §30d, which records the failure as
+> open. The original text is kept below, struck through by this note rather than deleted, so
+> the retraction is legible.
+>
 > advantage of score composition over path union **does not survive**: both reach `both` = 0.417 ±
 > 0.083. What survives is a **diversity** advantage — Vendi 1.436 ± 0.077 against 1.280 ± 0.019,
 > where the untouched model is 1.456 — and the ColorMNIST evidence in §13b, where path union produces

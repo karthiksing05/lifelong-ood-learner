@@ -4,9 +4,9 @@ A single place to read what the method does and does not beat, with the comparis
 each baseline was actually built for. Numbers are 3-seed means from `results/aggregate.json` unless
 marked otherwise.
 
-**Reading note.** Two of the tables below are being re-derived under defaults that changed on
-2026-08-11 (`cu` placement, plain-gradient mode ascent) and are marked **[re-deriving]**. They are
-shown at their last canonical values, which is what the rest of the documentation currently quotes.
+**Reading note.** Every table below was re-derived on 2026-08-11 under the current defaults, after
+a day of fault-finding. One result is **retracted** in §8 and the retraction is the most important
+line in this document.
 
 ---
 
@@ -36,20 +36,20 @@ router cannot yet tell EXTEND BASIS from BLOCK — a 69× cost decision currentl
 
 ## 3. Composition — against the methods built for it
 
-ColorMNIST, held-out compositions **[re-deriving]**:
+ColorMNIST, held-out compositions:
 
 | method | F1 | joint accuracy | recall |
 |---|---|---|---|
-| **ours** | **0.605** | 0.539 | 0.778 |
+| **ours** | **0.630** | 0.556 | 0.766 |
 | `poe-guided` (Wang et al., the companion paper) | 0.003 | **0.839** | 0.001 |
-| `inversion` (textual inversion, span-restricted) | 0.545 | 0.403 | 0.799 |
-| `inversion-free` (textual inversion, free vector) | 0.332 | 0.169 | **0.845** |
+| `inversion` (textual inversion, span-restricted) | 0.531 | 0.372 | 0.778 |
+| `inversion-free` (textual inversion, free vector) | 0.311 | 0.156 | **0.840** |
 | `composable-diff` (Liu et al. 2022) | 0.030 | 0.000 | 0.134 |
 | `composable-mcmc` (Du et al. 2023) | 0.000 | 0.003 | 0.134 |
 | `nearest-class` | 0.005 | 0.000 | 0.066 |
 
 **The honest reading is a trade, not a win.** `poe-guided` is *more accurate than us* — 0.839 against
-0.539 — and has **essentially no coverage** (recall 0.001). It renders one correct image repeatedly.
+0.556 — and has **essentially no coverage** (recall 0.001). It renders one correct image repeatedly.
 We give up accuracy for coverage and win on F1, which is the product of the two. Anyone who cares
 only about "is the attribute right" should prefer the companion method.
 
@@ -60,13 +60,13 @@ holds, `composable-mcmc` **beats us** (pair 0.965 against our 0.903).
 
 ## 4. Lifelong retention — against continual-learning baselines
 
-ColorMNIST class-incremental, 11 arms **[re-deriving]**:
+ColorMNIST class-incremental, 11 arms:
 
 | arm | ACC | FGT | bit-identical | params |
 |---|---|---|---|---|
 | `c-lora` | **0.847** | 0.004 | 0.250 | 7.16 M |
 | `independent` | 0.863 | **0.000** | **1.000** | **7.16 M** |
-| **ours** | 0.839 | **0.000** | **1.000** | 8.82 M |
+| **ours** | 0.825 | **0.000** | **1.000** | 8.82 M |
 | `mas` | 0.839 | **0.000** | 0.250 | 7.16 M |
 | `si` | 0.835 | 0.021 | 0.250 | 7.16 M |
 | `ttt` | 0.828 | 0.021 | **1.000** | 7.16 M (+768 images kept) |
@@ -74,7 +74,7 @@ ColorMNIST class-incremental, 11 arms **[re-deriving]**:
 | `gen-distill` | 0.800 | 0.047 | 0.250 | 7.16 M |
 | `finetune` | 0.752 | 0.123 | 0.250 | 7.16 M |
 | `ewc` | 0.760 | 0.112 | 0.250 | 7.16 M |
-| `replay` | 0.693 | 0.159 | 0.250 | 7.16 M |
+| `replay` | 0.708 | 0.159 | 0.250 | 7.16 M |
 
 **We do not win this table and should not claim to.** `independent` matches us on every column at
 **fewer parameters**. The separation that is real is *categorical rather than incremental*: arms that
@@ -112,8 +112,8 @@ This is the axis that was broken until 2026-08-11 and is the reason for the faul
 
 | arm | before | after |
 |---|---|---|
-| prototypes (mode ascent) | 0.78 – 1.40 | **0.56 – 0.69** |
-| `poe-guided` | **2.50 – 4.82** | **0.82 – 1.11** |
+| prototypes (mode ascent) | 0.78 – 1.40 | 0.60 – 0.86 *(and they clip when rendered — §30c)* |
+| `poe-guided` | **2.50 – 4.82** | **0.89 – 1.02** |
 | `query-only` | 3.53 – 4.27 | 0.93 – 1.19 |
 
 The companion method now renders coherent faces at real-image texture on its own backbone. A
@@ -130,17 +130,24 @@ the visible CelebA artifact:
 | 1 | the UNet was trained on a **pixel permutation** | seam at rows H/3, 2H/3: 2.509 → **0.908** (real 0.906) |
 | 2 | the **pretrained** backbone was fed permuted rows | 3×3 tiled mosaic; denoise RMSE 0.380 → **0.076** |
 | 3 | CelebA guided at **2.4× the published strength** | w₀ 1.2 (their Color-MNIST value) → 0.5 |
-| 4 | **Adam** marched past modes instead of finding them | 11.1% out-of-gamut → **0.0%**, eps 0.0113 → 0.0046 |
+| 4 | *(withdrawn)* I changed the ascent optimizer believing it fixed the artifact | the **layout fix alone** already had: poe-guided 2.50–3.88 → 1.00/0.89/1.23 with Adam untouched. Reverted; see §5c |
 | 5 | the fine-tune **diverged** at their lr | loss → exactly 1.0 (network emitting zero) |
 
 Faults 3 and 5 are cases where following the paper's stated setting was wrong *for our scale*, and
-both are recorded as measured deviations rather than silent changes.
+both are recorded as measured deviations rather than silent changes. Fault 4 is listed because it was
+*claimed and then withdrawn*: the repair had already been delivered by fault 1, and the unnecessary
+change was costing `poe-guided` 0.100 of accuracy on Color-MNIST. Every benchmark now runs one
+algorithm, with per-dataset settings only where they are the paper's own column or scale with the
+input's dimensions.
 
 ## 8. What is currently not supported
 
-* **The adapter bank on a pretrained backbone produces noise** (§30d). Preservation is bit-identical
-  and the adapter fits its pool to 0.0002 — which together prove only that bit-identity cannot detect
-  a destructive delta. The image-quality half of "works on a model we did not train" is open.
+* **"Works on a model we did not train" is now preservation-only.** The bank attaches to
+  `ddpm-celebahq-256` at exactly 0.000e+00 and bit-identity holds — but the composition result that
+  accompanied it (§12/N25, `both` = 0.417) was measured through a field feeding the UNet a pixel
+  permutation, and **corrected it is 0.000 for every generated arm**, the untouched model included.
+  Retracted 2026-08-11. The adapter fits its pool to 0.0002 while producing noise, which together
+  with exact preservation proves only that bit-identity cannot detect a destructive delta (§30d).
 * **The hierarchy earns nothing.** Insert-only category utility fixes the tree's *shape* (purity 0.27
   → 0.60) and buys no downstream gain (n5 −0.019, n9 +0.027, both inside error bars) at +23%
   parameters. It is bookkeeping, not a contribution.

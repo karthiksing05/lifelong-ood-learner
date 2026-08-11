@@ -603,13 +603,31 @@ Eleven CL arms, two datasets, 3 seeds. Only arms that *remove* shared parameters
 
 ![native parity](figures/f6_native_parity.png)
 
-### 6. It works on a model we did not train
-
-![pretrained case study](figures/n25_pretrained_case_final.png)
+### 6. On a model we did not train: preservation holds, composition does not — RETRACTED 2026-08-11
 
 `google/ddpm-celebahq-256`, 256×256. Two attributes learned as separate concepts, each blind to the
-other, then composed. The last two rows are the **same bank read two ways** — score composition and
-path union — which is the measurement behind contribution 6.
+other, then composed.
+
+**The composition result here has been retracted.** It was measured through a field that fed the
+pretrained UNet a pixel *permutation* (§30b), so the model returned 3×3 tiled greyscale mosaics
+rather than faces, and the attribute probes were scoring those. Re-run with the input layout
+corrected, **every generated arm scores 0.000** on "both attributes correct" — including the
+single-concept arms and the untouched pretrained model itself:
+
+| arm | both (corrected) | both (as previously reported) |
+|---|---|---|
+| *real images (ceiling)* | *1.000* | — |
+| `pretrained` (untouched) | 0.000 | — |
+| `Eyeglasses only` / `Smiling only` | 0.000 | — |
+| `ours (score-composed)` | **0.000** | 0.417 ± 0.083 |
+| `ours (path-union)` | **0.000** | 0.417 ± 0.083 |
+
+**What survives is preservation, and only preservation.** Attaching the bank to someone else's UNet
+still changes it by exactly **0.000e+00** and bit-identity still holds — those are properties of
+optimizer *scoping* and do not depend on what the samples look like, which is precisely why they
+stayed green while the images were nonsense. What is *not* supported is that the bank delivers
+attributes on a backbone we did not train. See §30d: three explanations have been tested and are
+dead, and it is recorded as open rather than diagnosed.
 
 ---
 

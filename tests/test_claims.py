@@ -22,15 +22,22 @@ HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 AGG = os.path.join(HERE, "results", "aggregate.json")
 
 # (cited value, tolerance, experiment, arm, metric, what the docs call it)
+#
+# REMOVED 2026-08-11: the four n25 pretrained-composition claims (score-composed and
+# path-union, `both` and `vendi`).  They were measured through a field that fed the
+# pretrained UNet a pixel permutation, so the samples were tiled mosaics and the probes
+# were scoring those.  Corrected, every generated arm scores 0.000 -- see RESULTS 30b/30d
+# and README section 6.  They are deleted rather than re-pinned because there is no
+# surviving positive result to assert.
 CLAIMS = [
     # ── composition, ColorMNIST (README §2, SCOREBOARD §2, RESULTS §11d) ──────
-    (0.605, .01, "n9_showdown", "ours", "f1", "ColorMNIST ours F1"),
-    (0.539, .01, "n9_showdown", "ours", "joint", "ColorMNIST ours joint"),
+    (0.630, .01, "n9_showdown", "ours", "f1", "ColorMNIST ours F1"),
+    (0.556, .01, "n9_showdown", "ours", "joint", "ColorMNIST ours joint"),
     (0.003, .01, "n9_showdown", "poe-guided", "f1", "ColorMNIST companion-method F1"),
     (0.839, .01, "n9_showdown", "poe-guided", "joint", "ColorMNIST companion-method joint"),
     (0.000, .01, "n9_showdown", "composable-diff", "joint", "ColorMNIST composable-diff joint"),
-    (0.545, .01, "n9_showdown", "inversion", "f1", "ColorMNIST inversion F1"),
-    (0.332, .02, "n9_showdown", "inversion-free", "f1", "ColorMNIST inversion-free F1"),
+    (0.531, .01, "n9_showdown", "inversion", "f1", "ColorMNIST inversion F1"),
+    (0.311, .02, "n9_showdown", "inversion-free", "f1", "ColorMNIST inversion-free F1"),
     # ── composition, CelebA strong split (README §2, SCOREBOARD §2, RESULTS §11c)
     (0.903, .01, "n20_celeba_composition_pair", "ours", "pair", "CelebA ours pair"),
     (0.934, .01, "n20_celeba_composition_pair", "composable-diff", "pair", "CelebA comp-diff pair"),
@@ -38,19 +45,15 @@ CLAIMS = [
     (0.579, .01, "n20_celeba_composition_pair", "ours", "recall", "CelebA ours recall"),
     (0.483, .01, "n20_celeba_composition_pair", "composable-mcmc", "recall", "CelebA mcmc recall"),
     # ── retention (CONTRIBUTIONS 1, SCOREBOARD §1) ───────────────────────────
-    (0.839, .01, "n5_classinc", "ours", "ACC", "n5 ours ACC"),
+    (0.825, .015, "n5_classinc", "ours", "ACC", "n5 ours ACC"),
     (0.863, .01, "n5_classinc", "independent", "ACC", "n5 independent ACC"),
     (1.000, .001, "n5_classinc", "ours", "retention_exact", "n5 ours bit-identical"),
     (0.250, .001, "n5_classinc", "ewc", "retention_exact", "n5 protection-based bit-identical"),
     (0.000, .001, "n5_classinc", "ours", "FGT", "n5 ours FGT"),
-    (0.693, .01, "n5_classinc", "replay", "ACC", "n5 generative-replay ACC"),
+    (0.708, .02, "n5_classinc", "replay", "ACC", "n5 generative-replay ACC"),
     (0.763, .01, "n22_celeba_lifelong", "ours", "ACC", "n22 ours ACC"),
     (1.000, .001, "n22_celeba_lifelong", "ours", "retention_exact", "n22 ours bit-identical"),
     # ── the pretrained backbone (CONTRIBUTIONS 5/6a, RESULTS §12e) ───────────
-    (0.417, .01, "n25_pretrained_case", "ours (score-composed)", "both", "n25 score-composed both"),
-    (0.417, .01, "n25_pretrained_case", "ours (path-union)", "both", "n25 path-union both"),
-    (1.436, .02, "n25_pretrained_case", "ours (score-composed)", "vendi", "n25 score-composed Vendi"),
-    (1.280, .02, "n25_pretrained_case", "ours (path-union)", "vendi", "n25 path-union Vendi"),
     (1.000, .001, "n26_batch_pretrained", "batch", "retention_exact", "n26 batch bit-identical"),
     # ── the analysis experiments (RESULTS §13b, §14) ─────────────────────────
     (0.042, .01, "n27_factor_conditionals", "factor-score", "joint", "n27 factor-score joint"),

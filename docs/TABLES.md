@@ -23,12 +23,12 @@ Ties share the bold, and the underline then goes to the next distinct value.
 | method | accuracy (joint) | recall | F1 | Vendi | content diversity |
 |---|---|---|---|---|---|
 | `real` | 0.864 ± 0.023 | 0.939 ± 0.008 | 0.969 ± 0.004 | 1.901 ± 0.035 | 0.991 ± 0.007 |
-| `ours` | <u>0.539 ± 0.025</u> | 0.778 ± 0.034 | **0.605 ± 0.043** | 1.942 ± 0.028 | 1.112 ± 0.035 |
+| `ours` | <u>0.556 ± 0.028</u> | 0.766 ± 0.031 | **0.630 ± 0.045** | 1.934 ± 0.032 | 1.090 ± 0.023 |
 | `poe-guided` | **0.839 ± 0.049** | 0.001 ± 0.001 | 0.003 ± 0.003 | 1.075 ± 0.010 | 0.269 ± 0.026 |
 | `composable-diff` | 0.000 ± 0.000 | 0.134 ± 0.054 | 0.030 ± 0.001 | 2.222 ± 0.050 | 1.223 ± 0.052 |
 | `composable-mcmc` | 0.003 ± 0.003 | 0.134 ± 0.067 | 0.000 ± 0.000 | 1.617 ± 0.147 | 0.678 ± 0.093 |
-| `inversion` | 0.403 ± 0.035 | <u>0.799 ± 0.027</u> | <u>0.545 ± 0.024</u> | 2.015 ± 0.089 | 1.075 ± 0.075 |
-| `inversion-free` | 0.169 ± 0.080 | **0.845 ± 0.035** | 0.332 ± 0.132 | 2.473 ± 0.176 | 1.244 ± 0.049 |
+| `inversion` | 0.372 ± 0.043 | <u>0.778 ± 0.024</u> | <u>0.531 ± 0.089</u> | 2.171 ± 0.053 | 1.156 ± 0.044 |
+| `inversion-free` | 0.156 ± 0.077 | **0.840 ± 0.043** | 0.311 ± 0.123 | 2.479 ± 0.163 | 1.258 ± 0.028 |
 | `nearest-class` | 0.000 ± 0.000 | 0.066 ± 0.066 | 0.005 ± 0.005 | 1.874 ± 0.097 | 1.050 ± 0.069 |
 
 `real` is held-out images, the ceiling. `poe-guided` is the published method: it scores *higher* accuracy than ours and F1 ~0 because it emits near-copies of the query. `composable-diff` is Composable Diffusion at its best swept scale and `composable-mcmc` adds Du et al.'s Langevin correction: both sit at 0.000 here because this backbone has no per-factor conditional for score addition to combine.
@@ -93,17 +93,17 @@ The learned conditioning vector is **not separated** from the untrained one; onl
 
 | method | final accuracy | A (whole stream) | forgetting (0 = none) | fraction bit-identical | SSS (stores nothing = 1) | MS (grows least = 1) | images kept |
 |---|---|---|---|---|---|---|---|
-| `ours` | 0.839 ± 0.025 | <u>0.842 ± 0.023</u> | **0.000 ± 0.000** | **1.000 ± 0.000** | **1.000 ± 0.000** | -- | **0.000 ± 0.000** |
-| `independent` | **0.863 ± 0.015** | **0.854 ± 0.016** | **0.000 ± 0.000** | **1.000 ± 0.000** | **1.000 ± 0.000** | -- | **0.000 ± 0.000** |
-| `ttt` | 0.828 ± 0.017 | 0.819 ± 0.008 | 0.021 ± 0.010 | **1.000 ± 0.000** | 0.000 ± 0.000 | -- | 768.000 ± 0.000 |
-| `c-lora` | <u>0.847 ± 0.020</u> | 0.836 ± 0.014 | <u>0.004 ± 0.002</u> | <u>0.250 ± 0.000</u> | **1.000 ± 0.000** | -- | **0.000 ± 0.000** |
-| `ewc` | 0.760 ± 0.021 | 0.773 ± 0.018 | 0.112 ± 0.019 | <u>0.250 ± 0.000</u> | **1.000 ± 0.000** | -- | **0.000 ± 0.000** |
-| `si` | 0.835 ± 0.025 | 0.825 ± 0.019 | 0.021 ± 0.009 | <u>0.250 ± 0.000</u> | **1.000 ± 0.000** | -- | **0.000 ± 0.000** |
-| `mas` | 0.839 ± 0.018 | 0.829 ± 0.013 | **0.000 ± 0.000** | <u>0.250 ± 0.000</u> | **1.000 ± 0.000** | -- | **0.000 ± 0.000** |
-| `der++` | 0.821 ± 0.015 | 0.823 ± 0.008 | 0.049 ± 0.002 | <u>0.250 ± 0.000</u> | <u>0.740 ± 0.000</u> | -- | <u>200.000 ± 0.000</u> |
-| `gen-distill` | 0.800 ± 0.017 | 0.802 ± 0.008 | 0.047 ± 0.009 | <u>0.250 ± 0.000</u> | **1.000 ± 0.000** | -- | **0.000 ± 0.000** |
-| `replay` | 0.693 ± 0.107 | 0.757 ± 0.058 | 0.159 ± 0.079 | <u>0.250 ± 0.000</u> | **1.000 ± 0.000** | -- | **0.000 ± 0.000** |
-| `finetune` | 0.752 ± 0.020 | 0.768 ± 0.016 | 0.123 ± 0.020 | <u>0.250 ± 0.000</u> | **1.000 ± 0.000** | -- | **0.000 ± 0.000** |
+| `ours` | 0.825 ± 0.024 | 0.826 ± 0.019 | **0.000 ± 0.000** | **1.000 ± 0.000** | **1.000 ± 0.000** | <u>0.559 ± 0.000</u> | **0.000 ± 0.000** |
+| `independent` | **0.863 ± 0.015** | **0.854 ± 0.016** | **0.000 ± 0.000** | **1.000 ± 0.000** | **1.000 ± 0.000** | **0.570 ± 0.000** | **0.000 ± 0.000** |
+| `ttt` | 0.828 ± 0.017 | 0.819 ± 0.008 | 0.021 ± 0.010 | **1.000 ± 0.000** | 0.000 ± 0.000 | **0.570 ± 0.000** | 768.000 ± 0.000 |
+| `c-lora` | <u>0.847 ± 0.020</u> | <u>0.835 ± 0.015</u> | <u>0.004 ± 0.002</u> | <u>0.250 ± 0.000</u> | **1.000 ± 0.000** | **0.570 ± 0.000** | **0.000 ± 0.000** |
+| `ewc` | 0.760 ± 0.021 | 0.773 ± 0.019 | 0.112 ± 0.018 | <u>0.250 ± 0.000</u> | **1.000 ± 0.000** | **0.570 ± 0.000** | **0.000 ± 0.000** |
+| `si` | 0.835 ± 0.025 | 0.826 ± 0.018 | 0.023 ± 0.011 | <u>0.250 ± 0.000</u> | **1.000 ± 0.000** | **0.570 ± 0.000** | **0.000 ± 0.000** |
+| `mas` | 0.839 ± 0.018 | 0.829 ± 0.013 | **0.000 ± 0.000** | <u>0.250 ± 0.000</u> | **1.000 ± 0.000** | **0.570 ± 0.000** | **0.000 ± 0.000** |
+| `der++` | 0.818 ± 0.013 | 0.820 ± 0.008 | 0.047 ± 0.002 | <u>0.250 ± 0.000</u> | <u>0.740 ± 0.000</u> | **0.570 ± 0.000** | <u>200.000 ± 0.000</u> |
+| `gen-distill` | 0.797 ± 0.014 | 0.797 ± 0.010 | 0.047 ± 0.009 | <u>0.250 ± 0.000</u> | **1.000 ± 0.000** | **0.570 ± 0.000** | **0.000 ± 0.000** |
+| `replay` | 0.708 ± 0.098 | 0.760 ± 0.054 | 0.148 ± 0.075 | <u>0.250 ± 0.000</u> | **1.000 ± 0.000** | **0.570 ± 0.000** | **0.000 ± 0.000** |
+| `finetune` | 0.752 ± 0.020 | 0.768 ± 0.016 | 0.123 ± 0.020 | <u>0.250 ± 0.000</u> | **1.000 ± 0.000** | **0.570 ± 0.000** | **0.000 ± 0.000** |
 
 Arms that structurally *remove* shared parameters sit at exactly 0.000; every arm that tries to *protect* them forgets, including the four added after the literature review (SI, MAS, DER++, generative distillation) and the continual-personalization baseline C-LoRA. `images kept` is the axis the accuracy columns hide: rehearsal buys its retention with a permanent buffer, and TTT keeps the whole stream.
 
@@ -126,24 +126,24 @@ Arms that structurally *remove* shared parameters sit at exactly 0.000; every ar
 
 ## 4. Batch addition, and the pretrained backbone
 
-### google/ddpm-celebahq-256 — 4 concepts, one update vs four  *(n = 3 seeds)*
+### google/ddpm-celebahq-256 — 4 concepts, one update vs four  *(n = 1 seeds)*
 
 | method | wall (s) | attribute rate | Vendi | fraction bit-identical | shared nodes |
 |---|---|---|---|---|---|
-| `sequential` | <u>775.052 ± 1.037</u> | **0.875 ± 0.072** | 1.406 ± 0.034 | **1.000 ± 0.000** | 3.000 ± 0.000 |
-| `batch` | **774.721 ± 1.083** | 0.819 ± 0.123 | 1.398 ± 0.011 | **1.000 ± 0.000** | 3.000 ± 0.000 |
-| `batch-shared` | 781.795 ± 1.031 | <u>0.847 ± 0.097</u> | 1.392 ± 0.036 | **1.000 ± 0.000** | 6.000 ± 0.000 |
+| `sequential` | **779.354** | **0.667** | 1.548 | **1.000** | 3.000 |
+| `batch` | <u>780.812</u> | <u>0.583</u> | 1.528 | **1.000** | 3.000 |
+| `batch-shared` | 788.895 | 0.500 | 1.570 | **1.000** | 6.000 |
 
 Preservation is exact on a 113.7M-parameter model we did not train, whichever way the concepts go in. There is no wall-clock saving here because these concepts train on REAL images: batching amortizes the generative pool sampling, and there is no pool. On ColorMNIST, where there is, K=12 in one update is 2.14x faster AND +0.052 accuracy (RESULTS 16b).
 
-### google/ddpm-celebahq-256 — two concepts learned blind to each other, then composed  *(n = 3 seeds)*
+### google/ddpm-celebahq-256 — two concepts learned blind to each other, then composed  *(n = 1 seeds)*
 
 | method | both attributes correct | Vendi |
 |---|---|---|
-| `real` | 0.917 ± 0.083 | 1.384 ± 0.000 |
-| `pretrained` | <u>0.167 ± 0.167</u> | 1.456 ± 0.030 |
-| `ours (score-composed)` | **0.417 ± 0.083** | 1.436 ± 0.077 |
-| `ours (path-union)` | **0.417 ± 0.083** | 1.280 ± 0.019 |
+| `real` | 1.000 | 1.384 |
+| `pretrained` | **0.000** | 1.528 |
+| `ours (score-composed)` | **0.000** | 1.825 |
+| `ours (path-union)` | **0.000** | 1.738 |
 
 The last two rows are the SAME bank read two ways. Score composition is Liu et al.'s rule applied to bank members; we adopt it. `pretrained` is the untouched model.
 
