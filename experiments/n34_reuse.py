@@ -92,6 +92,8 @@ def main():
     p.add_argument("--steps", type=int, default=50)
     p.add_argument("--seed", type=int, default=0)
     p.add_argument("--tag", default="")
+    p.add_argument("--rule", choices=["ll", "cu"], default="ll",
+                   help="placement criterion for the bank's tree (§24j)")
     p.add_argument("--quick", action="store_true")
     args = p.parse_args()
     if args.quick:
@@ -127,6 +129,7 @@ def main():
     # ── phase 1: the family, as one sealed batch ─────────────────────────────
     field = load_field(args.ckpt, device=dev)
     L = NeuralLifelongLearner(field, steps=args.steps, seed=args.seed, device=dev)
+    L.bank.tree.rule = args.rule
     names = [f"c{q['slot']}" for q in first]
     L.learn_concepts_batch([to_model(data["X"][q["query"]]).ravel() for q in first], names,
                            n_pool=args.n_pool, epochs=args.epoch_grid[-1])
@@ -145,6 +148,7 @@ def main():
     # the standalone arm's field, built once and reset between trials the same way
     field_s = load_field(args.ckpt, device=dev)
     L_s = NeuralLifelongLearner(field_s, steps=args.steps, seed=args.seed, device=dev)
+    L_s.bank.tree.rule = args.rule
 
     # ── phase 2: ONE pool for the newcomer, shared by every arm ──────────────
     xq = to_model(data["X"][newcomer["query"]]).ravel()
