@@ -35,6 +35,7 @@ import torch
 
 from ..score import cosine_abar
 from .ddpm import CH, IMG
+from .ddpm import _as_img as _layout_img  # layout-aware flat -> tensor
 
 
 def factorize(C, labels, ridge=1e-3):
@@ -121,7 +122,8 @@ def learn_factored(field, targets, fac, n_steps=300, lr=0.05, batch=8, seed=0, i
     opt = torch.optim.Adam(logits, lr=lr)
     gain = [1.0] * F if gains is None else [float(x) for x in gains]
 
-    X = torch.from_numpy(np.asarray(targets, np.float32)).to(dev).reshape(-1, CH, field.img, field.img)
+    X = _layout_img(np.asarray(targets, np.float32), dev, field.img,
+                    getattr(field, 'layout', None))
     g = torch.Generator(device="cpu").manual_seed(seed)
     torch.manual_seed(seed)
     model.eval()
@@ -257,7 +259,8 @@ def extend_basis(field, targets, labels, fac, factor, n_steps=400, lr=0.05, batc
     opt = torch.optim.Adam([v], lr=lr)
     target_norm = float(np.linalg.norm(np.asarray(fac["V"][factor], np.float64), axis=1).mean())
 
-    X = torch.from_numpy(np.asarray(targets, np.float32)).to(dev).reshape(-1, CH, field.img, field.img)
+    X = _layout_img(np.asarray(targets, np.float32), dev, field.img,
+                    getattr(field, 'layout', None))
     L = torch.as_tensor(np.asarray(labels, int), device=dev)
     g = torch.Generator(device="cpu").manual_seed(seed)
     torch.manual_seed(seed)
@@ -336,7 +339,8 @@ def learn_attr_value(field, targets, combos, attr_idx, value=1, n_steps=400, lr=
     opt = torch.optim.Adam([v], lr=lr)
 
     X = torch.from_numpy(np.asarray(targets, np.float32)).to(dev)
-    X = X.reshape(-1, CH, field.img, field.img)
+    X = _layout_img(X.detach().cpu().numpy() if torch.is_tensor(X) else np.asarray(X, np.float32),
+                    dev, field.img, getattr(field, 'layout', None))
     Cb = torch.as_tensor(np.asarray(combos, int), device=dev)
     g = torch.Generator(device="cpu").manual_seed(seed)
     torch.manual_seed(seed)
@@ -430,7 +434,9 @@ def learn_attribute_basis(field, groups, n_steps=400, lr=0.05, batch=2, seed=0,
         v = torch.zeros(d, device=field.device, requires_grad=True)
         opt = torch.optim.Adam([v], lr=lr)
         Xt = torch.from_numpy(np.asarray(X, np.float32)).to(field.device)
-        Xt = Xt.reshape(-1, CH, field.img, field.img)
+        Xt = _layout_img(Xt.detach().cpu().numpy() if torch.is_tensor(Xt) else
+                         np.asarray(Xt, np.float32), dev, field.img,
+                         getattr(field, 'layout', None))
         g = torch.Generator(device="cpu").manual_seed(seed + i)
         torch.manual_seed(seed + i)
         hist = []

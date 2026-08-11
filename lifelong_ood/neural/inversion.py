@@ -115,7 +115,11 @@ def learn_embedding(field, targets, n_steps=300, lr=0.05, batch=8, seed=0, init_
     a.requires_grad_(True)
     opt = torch.optim.Adam([a], lr=lr, weight_decay=(0.0 if simplex else weight_decay))
 
-    X = torch.from_numpy(np.asarray(targets, np.float32)).to(dev).reshape(-1, CH, field.img, field.img)
+    # the FIELD'S layout, not a plain reshape: on a pretrained field (layout='hwc') a plain
+    # reshape trains the embedding on a permutation of what the model is sampled with
+    from .ddpm import _as_img
+    X = _as_img(np.asarray(targets, np.float32), dev, field.img,
+                getattr(field, 'layout', None))
     only = None
     if region_mask is not None:
         # fit this embedding ONLY on the pixels it is responsible for

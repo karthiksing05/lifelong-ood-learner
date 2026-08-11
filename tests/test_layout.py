@@ -93,5 +93,26 @@ if d != "hwc":
     print("    FAIL: a pretrained backbone must be fed a real image by default")
     ok = False
 
+
+# --- no consolidation path may use a plain reshape --------------------------
+# The failure this catches: a pretrained field defaults to layout="hwc" while an adapter is trained
+# through a plain `.reshape(-1, CH, img, img)` (i.e. "permuted").  The model is then SAMPLED in one
+# layout and its adapter TRAINED in another -- which is the original sin this whole file exists for,
+# reappearing at a new boundary.  It produced rainbow noise from the pretrained bank while
+# preservation still reported 1.00, because bit-identity does not care what the input looks like.
+import re                                                               # noqa: E402
+BAD = re.compile(r"reshape\(-1,\s*(?:CH|3),\s*(?:field|self)\.(?:field\.)?img")
+for mod in ("lifelong_neural.py", "inversion.py", "idealwords.py"):
+    p = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                     "lifelong_ood", "neural", mod)
+    hits = [l.strip() for l in open(p, encoding="utf-8").read().splitlines()
+            if BAD.search(l) and not l.strip().startswith("#")]
+    print(f"  {mod:22s} plain-reshape sites: {len(hits)}")
+    for h in hits:
+        print(f"      {h[:96]}")
+    if hits:
+        print("    FAIL: this path ignores the field's layout")
+        ok = False
+
 print(f"\nlayout: {'ok -- every path agrees' if ok else 'FAILED'}")
 sys.exit(0 if ok else 1)

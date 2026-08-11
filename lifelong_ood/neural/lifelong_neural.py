@@ -22,6 +22,22 @@ from .adapters import HierarchicalAdapterBank
 from .ddpm import CH, IMG
 
 
+def _to_img(field, X, device):
+    """Flat rows -> (N, C, H, W) in THE FIELD'S OWN LAYOUT.
+
+    Every consolidation path used a plain `.reshape(-1, CH, img, img)`, which is the "permuted"
+    layout.  That was harmless while every field used it -- but a pretrained field now defaults to
+    "hwc" (RESULTS 30b), so an adapter trained through a plain reshape is trained on a permutation
+    of what the model is sampled with.  That is the exact "trained in one layout, sampled in
+    another" failure `tests/test_layout.py` was written for, reappearing at a new boundary: the
+    pretrained bank produced rainbow noise while preservation still reported 1.00, because
+    bit-identity does not care what the input looks like.
+    """
+    from .ddpm import _as_img
+    return _as_img(np.asarray(X, np.float32), device, field.img,
+                   getattr(field, "layout", None))
+
+
 class NeuralLifelongLearner:
     def __init__(self, field, rank=8, K=3, tau=0.05, wmin=0.8, wmax=2.0, w0=1.2,
                  schedule="anneal", u_start=1.0, teacher_var_scale=30.0,
@@ -158,8 +174,7 @@ class NeuralLifelongLearner:
         # snapshot before the first step; EWC does not define this hook and is unaffected.
         if ewc is not None and hasattr(ewc, "begin_task"):
             ewc.begin_task(params)
-        X = torch.from_numpy(np.asarray(pool, np.float32)).to(self.device)
-        X = X.reshape(-1, CH, self.field.img, self.field.img)
+        X = _to_img(self.field, pool, self.device)
         model = self.field.model
         model.train()
         n = len(X)
@@ -167,8 +182,7 @@ class NeuralLifelongLearner:
         curve = []
         reh = None
         if rehearse is not None:
-            Xr = torch.from_numpy(np.asarray(rehearse["x0"], np.float32)).to(self.device)
-            Xr = Xr.reshape(-1, CH, self.field.img, self.field.img)
+            Xr = _to_img(self.field, rehearse["x0"], self.device)
             Cr = [torch.as_tensor(np.asarray(c, np.float32), device=self.device)
                   for c in rehearse["conds"]]
             reh = dict(X=Xr, C=Cr, w=float(rehearse.get("w", 1.0)))
@@ -285,10 +299,8 @@ class NeuralLifelongLearner:
         # same pre-task snapshot for the batch path (see consolidate)
         if ewc is not None and hasattr(ewc, "begin_task"):
             ewc.begin_task(params)
-        pools = [torch.from_numpy(np.asarray(p, np.float32)).to(self.device).reshape(-1, CH, self.field.img, self.field.img)
-                 for _, p, _ in items]
-        pools += [torch.from_numpy(np.asarray(p, np.float32)).to(self.device).reshape(-1, CH, self.field.img, self.field.img)
-                  for _, p in replay]
+        pools = [_to_img(self.field, p, self.device) for _, p, _ in items]
+        pools += [_to_img(self.field, p, self.device) for _, p in replay]
         model = self.field.model
         model.train()
         g = torch.Generator(device="cpu").manual_seed(seed)
