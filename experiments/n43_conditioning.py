@@ -12,7 +12,7 @@ compositional structure and **local conditional scores** -- scores with *sparse 
 pixels and conditioners*.  Models that generalize compositionally have them; models that fail do not;
 and a causal intervention enforcing locality restores generalization.  Related results: compositional
 ability emerges multiplicatively with training (arXiv:2501.13241), improves with training in a way
-that is not gradual (arXiv:2502.12089 -- compare our own §35 competence ladder), and linear score
+that is not gradual (arXiv:2502.12089 -- compare our own N35 competence ladder), and linear score
 composition is only justified when the conditionals' supports factorize or are orthogonal, which is
 exactly the failure §13 measured.
 

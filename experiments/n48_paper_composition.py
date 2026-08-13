@@ -37,8 +37,8 @@ from common import CACHE, RESULTS                                              #
 from lifelong_ood.celeba import class_name, load_celeba                        # noqa: E402
 from lifelong_ood.compose import (PAPER_CELEBA, PAPER_POE_CELEBA,              # noqa: E402
                                   candidates_ascent, poe_teacher)
-from lifelong_ood.evals import (attr_accuracy, fit_attr_probes, probe_usable,  # noqa: E402
-                                save_json, speckle)
+from lifelong_ood.evals import (attr_accuracy, fit_attr_probes, paper_metrics,  # noqa: E402
+                                probe_usable, save_json, speckle)
 from lifelong_ood.neural import to_data, to_model                              # noqa: E402
 from lifelong_ood.neural.pretrained import load_paper_backbone                 # noqa: E402
 
@@ -49,6 +49,13 @@ def main():
     p = argparse.ArgumentParser()
     p.add_argument("--ckpt", default=os.path.join(CACHE, "ddpm_celeba_paper128.pt"))
     p.add_argument("--n-cases", type=int, default=6)
+    p.add_argument("--probe-features", default="pixel", choices=["pixel", "inception"],
+                   help="feature space the ATTRIBUTE PROBES are fitted in. `inception` reads 9 of "
+                        "14 CelebA attributes against pixels' 5 (tests/diag_probe_readability.py), "
+                        "which is what `joint` can see at all")
+    p.add_argument("--n-queries", type=int, default=16,
+                   help="queries per OOD class, pooled as their §4.2 does (they use 100); the "
+                        "query-independent arms draw n_queries*n_samples so sample counts match")
     p.add_argument("--n-samples", type=int, default=12)
     p.add_argument("--n-show", type=int, default=6)
     p.add_argument("--steps", type=int, default=50)
@@ -71,7 +78,8 @@ def main():
     data = load_celeba(n_per_class=100, img=img, seed=args.seed, min_count=25, max_rows=25000)
     seen = np.asarray(data["seen"], bool)
     probes = fit_attr_probes(dict(X=np.asarray(data["X"]), attrs=data["attrs"], img=img, seen=seen),
-                             seed=args.seed, epochs=8 if args.quick else 30)
+                             seed=args.seed, epochs=8 if args.quick else 30,
+                             features=args.probe_features, device=dev)
     usable = [a for a in probes["_attrs"] if probe_usable(probes, a)]
     print(f"[n48] {len(usable)}/{len(probes['_attrs'])} attribute probes readable\n", flush=True)
 
@@ -121,36 +129,74 @@ def main():
     hold = np.where(~seen)[0]
     hold_cls = np.unique(np.asarray(data["cls"])[hold])
     rng = np.random.default_rng(args.seed)
-    rows, panels = list(rows_head), {}
+    rows, panels, panel_meta = list(rows_head), {}, {}
     for ci in range(min(args.n_cases, len(hold_cls))):
         c = int(hold_cls[ci])
         idx = np.where(np.asarray(data["cls"]) == c)[0]
         if len(idx) < 4:
             continue
         combo = data["combos"][c]
-        xq = to_model(np.asarray(data["X"])[idx[rng.integers(len(idx))]:][:1]).ravel()
-        R = np.asarray(data["X"])[idx[:64]].astype(np.float32)
+        # THEIR PROTOCOL (§4.2): the framework is run independently on each of N queries and the
+        # generations are POOLED, then scored against two reference sets -- the queries themselves
+        # (Faithfulness) and other held-out images of the class (Generalization).  This script used
+        # to draw ONE query and score against `idx[:64]`, i.e. the Generalization half at 1/Nth of
+        # the query diversity, which on ColorMNIST is the single configuration that reads recall
+        # 0.000 for a method its authors report at 0.807 (RESULTS §5e-bis, SETTINGS §4b).
+        nq = int(np.clip(args.n_queries, 1, max(1, len(idx) - 8)))
+        q_idx, r_idx = idx[:nq], idx[nq:nq + 64]
+        QSEEN = np.asarray(data["X"])[q_idx].astype(np.float32)
+        R = np.asarray(data["X"])[r_idx].astype(np.float32)
+        if len(R) < 4:
+            print(f"[n48] class {c}: only {len(idx)} images, not enough for both reference sets")
+            continue
 
-        M, V, _ = candidates_ascent(field, xq, seed=args.seed, **PAPER_CELEBA)
-        t = poe_teacher(xq, M, V, K=3, tau=0.5, adaptive_tau=False)   # their fixed tau
-        got = {"real": R[:args.n_show],
-               "prototypes": to_data(np.asarray(M)[t["sel"]]).astype(np.float32)}
-        got["poe-guided"] = to_data(field.sample(
-            n=args.n_samples, steps=args.steps, seed=args.seed, clip=(-1, 1),
-            guide_eps=lambda x, u: np.repeat(np.asarray(t["mu"])[None], len(x), 0),
-            guide_w=lambda u: PAPER_POE_CELEBA["w0"])).astype(np.float32)
-        got["query-only"] = to_data(field.sample(
-            n=args.n_samples, steps=args.steps, seed=args.seed, clip=(-1, 1),
-            guide_eps=lambda x, u: np.repeat(xq[None], len(x), 0),
-            guide_w=lambda u: PAPER_POE_CELEBA["w0"])).astype(np.float32)
-        # ADDRESS: 14 integer coordinates, no optimization, no weights.  The whole per-concept
-        # cost is `combo` itself.
+        from lifelong_ood.compose import cfg_weight, query_only_teacher, teacher_eps
+        gw = {k: v for k, v in PAPER_POE_CELEBA.items() if k != "var_scale"}
+        per = {"poe-guided": [], "query-only": []}
+        protos = None
+        for qi, qrow in enumerate(q_idx):
+            xq = to_model(np.asarray(data["X"])[qrow:qrow + 1]).ravel()
+            M, V, _ = candidates_ascent(field, xq, seed=args.seed, **PAPER_CELEBA)
+            t = poe_teacher(xq, M, V, K=3, tau=0.5, adaptive_tau=False)   # their fixed tau
+            if protos is None:
+                protos = to_data(np.asarray(M)[t["sel"]]).astype(np.float32)
+            for nm, tt in (("poe-guided", t), ("query-only", query_only_teacher(xq))):
+                per[nm].append(to_data(field.sample(
+                    n=args.n_samples, steps=args.steps, seed=args.seed + qi, clip=(-1, 1),
+                    guide_eps=teacher_eps(tt), guide_w=cfg_weight(tt, **gw))).astype(np.float32))
+        got = {"real": R[:args.n_show], "prototypes": protos}
+        got.update({k: np.concatenate(v) for k, v in per.items()})
+        # Their Eq. 12 and Eq. 14, through the SHARED implementations.
+        #
+        # These two arms previously passed `t["mu"]` (and `xq`) straight in as `guide_eps`, and a
+        # constant `w0` as `guide_w`.  Both are wrong in a way that no output check would catch: mu
+        # lives in clean-data space and epsilon is a NOISE prediction, so handing one to the other's
+        # slot is a type error the sampler cannot detect -- it just guides toward a fixed vector at
+        # every timestep.  Eq. 12 is
+        #     eps_qT = sqrt(1-abar) * (x - sqrt(abar) mu) / (abar*Sigma_T + (1-abar))
+        # which depends on x and on t, and Eq. 14's weight is what cancels its implicit Sigma_t^-1.
+        # A constant weight leaves that uncancelled, which is the exact failure their §3.3 introduces
+        # Eq. 14 to prevent.  So the arm labelled "the published method" on the published backbone
+        # was neither.  `teacher_eps`/`cfg_weight` are the audited implementations used everywhere
+        # else; re-deriving them locally is how the w0 bug happened too.
+        # ADDRESS: 14 integer coordinates, no optimization, no weights.  The whole per-concept cost
+        # is `combo` itself -- and note it consumes NO QUERY at all, so pooling over queries adds it
+        # nothing.  It draws nq*n_samples in one go so the sample counts match the pooled arms;
+        # anything less would hand the guided arms a coverage advantage that is purely arithmetic.
+        n_pool = nq * args.n_samples
         c_addr = fac_compose(fac, np.asarray(combo, int))
         got["ours (ADDRESS)"] = to_data(field.sample(
-            n=args.n_samples, steps=args.steps, seed=args.seed, clip=(-1, 1),
+            n=n_pool, steps=args.steps, seed=args.seed, clip=(-1, 1),
             emb=c_addr)).astype(np.float32)
+        # The unconditional floor takes NO class input, so at a fixed seed it draws the identical
+        # images for every class -- classes 7 and 12 of the first full run came out at attr 0.699 /
+        # joint 0.120 apiece, differing only in the reference-set-dependent precision/recall. That
+        # is one draw reported six times: it wastes the sampling, and any error bar across classes
+        # would describe the scoring rather than the generator. Offset by the class so each class
+        # gets an independent draw.
         got["unconditional"] = to_data(field.sample(
-            n=args.n_samples, steps=args.steps, seed=args.seed, clip=(-1, 1))).astype(np.float32)
+            n=n_pool, steps=args.steps, seed=args.seed + 7919 * (ci + 1),
+            clip=(-1, 1))).astype(np.float32)
 
         for name, S in got.items():
             if name in ("real", "prototypes"):
@@ -162,14 +208,27 @@ def main():
             m = float(a.get("mean_attr", float("nan")))
             jt = float(a.get("joint", float("nan")))
             sk = speckle(S, R, img=img)
+            # Their Table 2 metrics, in the space they define them in.  This script previously
+            # reported attribute accuracy and speckle only -- neither of which appears in their
+            # tables -- so it could not be compared to the paper it exists to reproduce.  Both of
+            # their reference sets are scored: Faithfulness against the queries, Generalization
+            # against other held-out images of the class (their §4.2).
+            pm_f = paper_metrics(S, QSEEN, img=img, device=dev) if len(QSEEN) >= 2 else {}
+            pm_g = paper_metrics(S, R, img=img, device=dev)
             rows.append(dict(cls=c, arm=name, mean_attr=m, joint=jt,
                              n_scored=int(a.get("n_scored", 0)),
-                             tv_ratio=float(sk.get("tv_ratio", np.nan))))
+                             tv_ratio=float(sk.get("tv_ratio", np.nan)),
+                             **{f"faithful_{k}": v for k, v in pm_f.items() if k != "space"},
+                             **{f"general_{k}": v for k, v in pm_g.items() if k != "space"},
+                             space=pm_g.get("space", "?")))
             print(f"[n48] class {c:4d} {class_name(combo)[:30]:30s} {name:14s} "
                   f"attr {m:.3f}  joint {jt:.3f}  tv "
-                  f"{sk.get('tv_ratio', float('nan')):.3f}  (n={a.get('n_scored', 0)})",
-                  flush=True)
+                  f"{sk.get('tv_ratio', float('nan')):.3f}  |  F. P{pm_f.get('precision', float('nan')):.2f} "
+                  f"R{pm_f.get('recall', float('nan')):.2f}  G. P{pm_g['precision']:.2f} "
+                  f"R{pm_g['recall']:.2f}  (n={a.get('n_scored', 0)})", flush=True)
         panels[c] = got
+        panel_meta[c] = dict(combo=list(np.asarray(combo, int)), n_train=int(np.sum(
+            (np.asarray(data["cls"]) == c) & seen)), name=class_name(combo))
 
     save_json(dict(rows=rows, config=vars(args)),
               os.path.join(RESULTS, f"n48_paper_composition{args.tag}.json"), seed=args.seed)
@@ -191,7 +250,15 @@ def main():
                 if S is not None and k < len(S):
                     axes[r][k].imshow(np.clip(np.asarray(S[k], np.float32).reshape(img, img, 3),
                                               0, 1))
-            axes[r][0].set_ylabel(name, rotation=0, ha="right", va="center", fontsize=8)
+            # Spell out WHICH attribute combination was held out, on the `real` row.  Without it
+            # the reader has six blocks of faces and no way to check that the arms below reproduce
+            # the withheld combination rather than something adjacent -- which is the whole claim.
+            lab = name
+            if name == "real":
+                mt = panel_meta.get(c, {})
+                lab = (f"real - HELD OUT\n{mt.get('name', '')}\n"
+                       f"class {c} - {mt.get('n_train', 0)} training images")
+            axes[r][0].set_ylabel(lab, rotation=0, ha="right", va="center", fontsize=7)
             axes[r][0].axis("on")
             axes[r][0].set_xticks([]); axes[r][0].set_yticks([])
             for s_ in axes[r][0].spines.values():

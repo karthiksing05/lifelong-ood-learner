@@ -101,8 +101,19 @@ def celeba_stream(seed=0, cache=None):
         keys = keys[counts >= 25]
         idx = rng.permutation(len(keys))
         return [tuple(int(v) for v in keys[i]) for i in idx], [2] * A.shape[1]
-    combos = {tuple(int(v) for v in rng.integers(0, 2, 14)) for _ in range(1200)}
-    combos = list(combos)
+    # A FIXED number of unique combinations, not "however many survive deduplication".
+    #
+    # This used to be `{tuple(...) for _ in range(1200)}` -- a set built from 1200 draws, whose SIZE
+    # depends on how many collisions that seed happened to produce. Each seed therefore returned a
+    # different-length stream, the per-seed curves came out ragged, and `np.array([...], float)` in
+    # the plotting block raised `inhomogeneous shape` -- so `f8_growth.png` could not be regenerated
+    # at all. The cached branch above is deterministic; this one has to be too.
+    n_target = 1000
+    combos = set()
+    while len(combos) < n_target:
+        combos.update(tuple(int(v) for v in row)
+                      for row in rng.integers(0, 2, size=(n_target, 14)))
+    combos = sorted(combos)[:n_target]          # sorted() so the set's iteration order cannot leak
     rng.shuffle(combos)
     return combos, [2] * 14
 

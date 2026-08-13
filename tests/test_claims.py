@@ -33,8 +33,13 @@ CLAIMS = [
     # ── composition, ColorMNIST (README §2, SCOREBOARD §2, RESULTS §11d) ──────
     (0.630, .01, "n9_showdown", "ours", "f1", "ColorMNIST ours F1"),
     (0.556, .01, "n9_showdown", "ours", "joint", "ColorMNIST ours joint"),
-    (0.003, .01, "n9_showdown", "poe-guided", "f1", "ColorMNIST companion-method F1"),
-    (0.839, .01, "n9_showdown", "poe-guided", "joint", "ColorMNIST companion-method joint"),
+    # NOT the companion paper's published F1 (75.3).  This is their method measured under OUR
+    # protocol -- 24 samples from ONE query, one reference set, pixel features -- where §4.2 of the
+    # paper pools 100 queries against two reference sets in Inception-V3.  Under their protocol
+    # their method reproduces here (RESULTS §5e-bis).  Pinned because it is what n9 produces and
+    # every arm in that table shares the protocol; named so it cannot be quoted against their paper.
+    (0.003, .01, "n9_showdown", "poe-guided", "f1", "ColorMNIST poe-guided F1 (our 1-query protocol)"),
+    (0.839, .01, "n9_showdown", "poe-guided", "joint", "ColorMNIST poe-guided joint (our protocol)"),
     (0.000, .01, "n9_showdown", "composable-diff", "joint", "ColorMNIST composable-diff joint"),
     (0.531, .01, "n9_showdown", "inversion", "f1", "ColorMNIST inversion F1"),
     (0.311, .02, "n9_showdown", "inversion-free", "f1", "ColorMNIST inversion-free F1"),

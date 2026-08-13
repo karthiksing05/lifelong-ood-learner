@@ -99,7 +99,7 @@ def candidates_ascent(field, xq, u_grid=(0.05, 0.1, 0.15, 0.2, 0.3, 0.4), n_star
     different images sit ~190 apart in squared L2, so the old raw threshold of 1.0 deduplicated
     nothing and the pool was mostly copies of one mode.
     """
-    Ms, Vs, us = [], [], []
+    Ms, Vs, us, srcs = [], [], [], []
     half = max(1, n_starts // 2)
     for u in u_grid:
         parts = ([("query", n_starts - half), ("random", half)] if init == "hybrid"
@@ -113,14 +113,22 @@ def candidates_ascent(field, xq, u_grid=(0.05, 0.1, 0.15, 0.2, 0.3, 0.4), n_star
             Ms.append(x0)
             Vs.append(field.laplace_diag(xt, u, probes=probes, seed=seed))
             us.extend([u] * len(x0))
+            # WHERE each candidate's chain started.  Selection (Eq. 8-9) scores candidates by how
+            # well they explain the QUERY, so a chain that started AT the query is favoured by
+            # construction -- see RESULTS 5e-quater, where the first greedy pick sits closer to the
+            # query than two real images of the class sit to each other.  Carrying the provenance
+            # lets a caller select over the query-agnostic candidates only, which is the control
+            # that separates "found the composition" from "found the query".
+            srcs.extend([mode] * len(x0))
     M = np.concatenate(Ms); V = np.concatenate(Vs); us = np.array(us)
+    srcs = np.array(srcs)
     tol2 = (dedup_rmse ** 2) * M.shape[1]
     keep = []
     for i in range(len(M)):
         if all(np.sum((M[i] - M[j]) ** 2) > tol2 for j in keep):
             keep.append(i)
     keep = np.array(keep)
-    return M[keep], V[keep], dict(u=us[keep], n_raw=len(M))
+    return M[keep], V[keep], dict(u=us[keep], src=srcs[keep], n_raw=len(M))
 
 
 # ── steps 2-3: submodular selection + weighted PoE ────────────────────────────
@@ -145,7 +153,7 @@ def submodular_select(L, K=3):
     return np.array(sel)
 
 
-def poe_teacher(xq, M, V, K=3, tau=0.05, adaptive_tau=True, extent="mixture"):
+def poe_teacher(xq, M, V, K=3, tau=0.05, adaptive_tau=True, extent="mixture", eligible=None):
     """Select + weigh + multiply.  -> dict(mu, var, sel, w) with mu, var [D].
 
     ADAPTIVE TEMPERATURE is a documented deviation from the paper's Eq. 10, and it is the single
@@ -164,7 +172,19 @@ def poe_teacher(xq, M, V, K=3, tau=0.05, adaptive_tau=True, extent="mixture"):
     composition should approach a per-dimension argmax rather than a near-uniform blend.
     """
     L = loglik_perdim(xq, M, V)
-    sel = submodular_select(L, K)
+    # `eligible` restricts WHICH candidates selection may pick, without changing the pool the ascent
+    # produced.  Its purpose is the control in RESULTS 5e-quater: Eq. 8-9 scores a candidate by how
+    # well it explains the query, so a candidate whose chain STARTED at the query wins by
+    # construction, and the resulting teacher is anchored near the query -- which is the `query-only`
+    # baseline wearing the method's name.  Passing the query-agnostic subset here asks whether the
+    # composition survives when discovery cannot return its own initialization.
+    idx = np.arange(len(M))
+    if eligible is not None:
+        idx = np.asarray(eligible, int) if np.asarray(eligible).dtype != bool \
+            else np.where(np.asarray(eligible))[0]
+        if len(idx) < K:                      # not enough to choose from; fall back and say so
+            idx = np.arange(len(M))
+    sel = idx[submodular_select(L[idx], K)]
     Ls = L[sel]
     T = tau * max(float(Ls.std(0).mean()), 1e-6) if adaptive_tau else tau
     Z = Ls / T
@@ -277,26 +297,32 @@ def candidates_ascent_batch(field, xqs, u_grid=(0.05, 0.1, 0.15, 0.2, 0.3, 0.4),
             v0 = field.laplace_diag(xt, u, probes=probes, seed=seed)
             for k in range(K):
                 idx = np.arange(k, K * nq, K)
-                per[k].append((x0[idx], v0[idx], u))
+                per[k].append((x0[idx], v0[idx], u, "query"))
         if half > 0:
             xt, x0 = field.mode_ascent(None, u, n_starts=half, iters=iters, lr=lr,
                                        seed=seed + 1000, init="random")
             v0 = field.laplace_diag(xt, u, probes=probes, seed=seed)
             for k in range(K):
-                per[k].append((x0, v0, u))          # query-agnostic: shared, not recomputed
+                per[k].append((x0, v0, u, "random"))    # query-agnostic: shared, not recomputed
     out = []
     tol2 = None
     for k in range(K):
-        M = np.concatenate([m for m, _, _ in per[k]])
-        V = np.concatenate([v for _, v, _ in per[k]])
-        us = np.concatenate([np.full(len(m), u) for m, _, u in per[k]])
+        M = np.concatenate([m for m, _, _, _ in per[k]])
+        V = np.concatenate([v for _, v, _, _ in per[k]])
+        us = np.concatenate([np.full(len(m), u) for m, _, u, _ in per[k]])
+        # Provenance, carried here TOO.  `candidates_ascent` gained `src` so selection can be
+        # restricted to query-agnostic candidates (RESULTS 5e-quater); leaving the batch twin
+        # without it would mean the same experiment silently answers a different question
+        # depending on which discovery path a caller happens to use -- which is the divergence
+        # that produced the w0 bug and the n44 row-name bug.
+        srcs = np.concatenate([np.full(len(m), sc) for m, _, _, sc in per[k]])
         tol2 = (dedup_rmse ** 2) * M.shape[1]
         keep = []
         for i in range(len(M)):
             if all(np.sum((M[i] - M[j]) ** 2) > tol2 for j in keep):
                 keep.append(i)
         keep = np.array(keep)
-        out.append((M[keep], V[keep], dict(u=us[keep], n_raw=len(M))))
+        out.append((M[keep], V[keep], dict(u=us[keep], src=srcs[keep], n_raw=len(M))))
     return out
 
 
@@ -363,3 +389,116 @@ def topk_teacher(snap, xq, k=1, tau=1.0):
     prec = (w[:, None] / V[top]).sum(0)
     mu = (w[:, None] * M[top] / V[top]).sum(0) / prec
     return dict(mu=mu, var=1.0 / prec, sel=leaves[top], w=w)
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# C2 -- ITERATIVE concept selection, instead of picking K from a pool grown once.
+# ══════════════════════════════════════════════════════════════════════════════
+#
+# `poe_teacher` is the paper's Eq. 8-9: build a candidate pool with `candidates_ascent`, then greedily
+# take K.  `candidates_ascent`'s own docstring names the limitation --
+#
+#     "submodular selection can only choose from the pool ascent found, and a thin pool gives a bad
+#      choice"
+#
+# -- and the case studies show it: at our 20x-reduced discovery budget the selected prototypes are
+# often unrelated to the query.  The paper's answer is a bigger pool (their Table 6 grows 1920 chains).
+# That is expensive and, more importantly, it is undirected: every chain is grown before anything is
+# known about what the composition still needs.
+#
+# The alternative is to interleave.  Select one prototype, look at what the partial teacher STILL does
+# not explain, and grow the next round of chains from there.  The pool is then conditioned on the
+# selection so far rather than fixed in advance, which is the same move Cobweb makes when it revises
+# structure as evidence arrives rather than committing to a partition up front.
+#
+# Two details decide whether this is a real method or a way to spend more compute:
+#
+#   1. CANDIDATES ARE ALWAYS SCORED ON THE QUERY.  The objective is unchanged from Eq. 8-9 -- the
+#      marginal gain of a candidate is how much it improves the per-dimension max log-likelihood OF
+#      THE QUERY.  Only where candidates come FROM changes.
+#   2. THE BUDGET MUST BE MATCHED.  K rounds of (n_starts/K) chains costs what one round of n_starts
+#      costs.  `iterative_teacher` divides the budget by default, so any gain is from the direction of
+#      search and not from more of it.  `diag_iterative_select.py` runs both at the same total chains.
+
+def iterative_teacher(field, xq, K=3, n_starts=16, u_grid=(0.05, 0.1, 0.15, 0.2, 0.3, 0.4),
+                      seed=0, match_budget=True, regrow_from="residual", tau=0.05,
+                      adaptive_tau=True, extent="mixture", **ascent_kw):
+    """Alternate ascent and selection K times.  -> the same dict `poe_teacher` returns, plus `rounds`.
+
+    `regrow_from` chooses what each round after the first ascends from:
+
+      "residual"  the query with its EXPLAINED dimensions pulled toward the partial teacher, so the
+                  remaining chains see a query that already has the selected part accounted for and
+                  are free to find modes explaining the rest.  This is the intended method.
+      "teacher"   the partial teacher's mean -- explores around the composition assembled so far.
+      "query"     the query every round; equivalent to top-K with re-seeded ascent, and exists as the
+                  control that separates "iterating helps" from "more independent restarts help".
+
+    `match_budget` splits `n_starts` across the K rounds so total ascent chains equal the one-shot
+    call.  Set False only to measure what the method does with more compute, and say so if you do.
+    """
+    per_round = max(2, n_starts // K) if match_budget else n_starts
+    Ms, Vs, srcs = [], [], []
+    sel_local, best = [], None
+    x_grow = np.ravel(np.asarray(xq, np.float64))
+    rounds = []
+
+    for k in range(K):
+        M_k, V_k, meta_k = candidates_ascent(field, x_grow, u_grid=u_grid, n_starts=per_round,
+                                             seed=seed + 1013 * k, **ascent_kw)
+        base = len(Ms) and sum(len(m) for m in Ms) or 0
+        Ms.append(M_k)
+        Vs.append(V_k)
+        srcs.append(meta_k["src"])
+        M = np.concatenate(Ms)
+        V = np.concatenate(Vs)
+        # scored on the QUERY, always -- the objective never changes, only the pool
+        L = loglik_perdim(xq, M, V)
+        gains = (L if best is None else np.maximum(L, best[None, :])).sum(1)
+        gains[sel_local] = -np.inf
+        j = int(np.argmax(gains))
+        sel_local.append(j)
+        best = L[j] if best is None else np.maximum(best, L[j])
+        rounds.append(dict(round=k, picked=j, from_round=int(j >= base),
+                           pool=len(M), gain=float(gains[j])))
+
+        if k + 1 < K:
+            if regrow_from == "teacher":
+                t = _partial_poe(xq, M, V, np.array(sel_local), tau, adaptive_tau)
+                x_grow = t["mu"]
+            elif regrow_from == "residual":
+                # Pull the dimensions the partial teacher ALREADY explains toward it, and leave the
+                # rest at the query.  Ascending from this finds modes that explain what is left,
+                # rather than re-finding the part that is already covered.
+                t = _partial_poe(xq, M, V, np.array(sel_local), tau, adaptive_tau)
+                q = np.ravel(np.asarray(xq, np.float64))
+                ex = best - best.min()
+                ex = ex / (ex.max() + 1e-12)              # per-dimension "how explained", in [0, 1]
+                x_grow = q + ex * (t["mu"] - q)
+            else:
+                x_grow = np.ravel(np.asarray(xq, np.float64))
+
+    M = np.concatenate(Ms)
+    V = np.concatenate(Vs)
+    out = _partial_poe(xq, M, V, np.array(sel_local), tau, adaptive_tau, extent=extent)
+    out.update(rounds=rounds, pool=len(M), per_round=per_round,
+               src=np.concatenate(srcs), regrow_from=regrow_from)
+    return out
+
+
+def _partial_poe(xq, M, V, sel, tau, adaptive_tau, extent="mixture"):
+    """The Eq. 7/10 product over an ALREADY-CHOSEN index set.  Same algebra as `poe_teacher`."""
+    L = loglik_perdim(xq, M, V)
+    Ls = L[sel]
+    T = tau * max(float(Ls.std(0).mean()), 1e-6) if adaptive_tau else tau
+    Z = Ls / T
+    Z -= Z.max(0, keepdims=True)
+    w = np.exp(Z)
+    w /= w.sum(0, keepdims=True)
+    prec = (w / V[sel]).sum(0)
+    mu = (w * M[sel] / V[sel]).sum(0) / prec
+    var_poe = 1.0 / prec
+    between = ((M[sel] - mu[None]) ** 2 * w).sum(0)
+    var_mix = (w * V[sel]).sum(0) + between
+    return dict(mu=mu, var=var_mix if extent == "mixture" else var_poe, var_poe=var_poe,
+                var_mixture=var_mix, between=between, sel=sel, w=w, temperature=T)

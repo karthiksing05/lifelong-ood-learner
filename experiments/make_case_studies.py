@@ -32,17 +32,29 @@ from common import CACHE, RESULTS, backbone_gains, ood_queries          # noqa: 
 FIG = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "figures")
 # the selected dial (see --dial); the canonical figure is the one rendered AT it, so the
 # tag marks deviation from the default rather than deviation from 1.0
-DEFAULT_DIAL = 0.9
+DEFAULT_DIAL = 0.8
 from lifelong_ood.compose import PAPER_POE_COLORMNIST as PAPER_POE
 
 
-def panel(fig, gs_row, imgs, side, label, note="", n=6, cmap=None):
+def panel(fig, gs_row, imgs, side, label, note="", n=6, cmap=None, captions=None):
+    """`captions` labels INDIVIDUAL panels, which the prototypes row needs and nothing else does.
+
+    Readers of this figure have twice concluded that the held-out compositions leaked into training,
+    because the first prototype looks like a clean instance of the composition while the other two
+    look like noise.  It is not a leak -- the shown slots have 0 training rows and no embedding row --
+    it is that `init="hybrid"` starts half the ascent chains AT THE QUERY, and the selection objective
+    scores candidates on the query, so the query-seeded one is picked first every time.  The other
+    two come from random starts in unrelated basins.  That asymmetry is the entire explanation and
+    the figure was hiding it; now each prototype says which it is.
+    """
     import matplotlib.pyplot as plt
     for c in range(n):
         ax = fig.add_subplot(gs_row[c])
         if imgs is not None and c < len(imgs):
             ax.imshow(np.clip(np.asarray(imgs[c], np.float32).reshape(side, side, 3), 0, 1))
             ax.set_xticks([]); ax.set_yticks([])
+            if captions and c < len(captions) and captions[c]:
+                ax.set_xlabel(captions[c], fontsize=5.0, labelpad=1.5)
         else:
             # a row with fewer panels than the grid (K=3 prototypes against 6 sample columns)
             # should leave BLANK space, not empty framed boxes that read as failed generations
@@ -177,9 +189,31 @@ def colormnist(args):
                                    guidance=float(args.guidance), joint=float(a["joint"]),
                                    digit=float(a["digit"]), fg=float(a["fg"]), bg=float(a["bg"]),
                                    recall=float(pr["recall"])))
+            # Where each PROTOTYPE's ascent chain started, and at which noise level.  Without this
+            # the row invites the conclusion that the composition leaked into training: prototype 1
+            # looks like a clean instance of it because its chain began AT THE QUERY (a real held-out
+            # image) at the lowest noise level, and selection scores candidates on the query so that
+            # one is always picked first.  The slot itself has 0 training rows and no embedding.
+            caps = None
+            if name == "prototypes":
+                src = np.asarray(t["meta"].get("src", []))
+                uu = np.asarray(t["meta"].get("u", []))
+                caps = [f"{src[i]}-init, u={uu[i]:g}" if len(src) > i else ""
+                        for i in np.asarray(t["sel"])]
+            # The HELD-OUT COMBINATION, spelled out on the `real` row.  Asked for directly: a
+            # reader must be able to see WHICH combination was withheld, and check for themselves
+            # that the arms below are reproducing it rather than something adjacent.  The count of
+            # training rows is printed with it, because "held out" is a claim about the split and
+            # this is the place it can be verified at a glance (it is 0 by construction --
+            # `diag_holdout_leak` asserts it over the whole grid; here it is visible per panel).
+            lab = name
+            if name == "real":
+                n_train = int(np.sum((data["slot"] == q["slot"]) & data["seen"]))
+                lab = (f"real — HELD OUT\n{slot_name(q['d'], q['f'], q['b'])}\n"
+                       f"slot {q['slot']} · digit {q['d']}, fg {q['f']}, bg {q['b']}\n"
+                       f"{n_train} training images")
             panel(fig, [gs[r, c] for c in range(args.n_show + 1)], S, 32,
-                  f"{name}\n{slot_name(q['d'], q['f'], q['b'])}" if name == "real" else name,
-                  note, n=args.n_show)
+                  lab, note, n=args.n_show, captions=caps)
             r += 1
     rule = "explicit slots" if args.slots else args.select
     fig.suptitle(
@@ -192,7 +226,14 @@ def colormnist(args):
         f"{'the paper\'s 15x128=1920 chains' if args.paper_budget else 'ours, 4x16=64 chains'}.  "
         f"Accuracy is high where coverage is zero.  Sampled with {args.steps} steps "
         f"(tables use 50); the residual texture is the BACKBONE's -- it scores 1.59x real "
-        f"on its own TRAINED classes, worse than anything downstream of it.", fontsize=8)
+        f"on its own TRAINED classes, worse than anything downstream of it.\n"
+        f"EVERY composition shown is held out: 0 training rows and no class-embedding row, "
+        f"checked against the checkpoint's own remap.  Prototype 1 resembles the composition "
+        f"because its\nascent chain STARTED at the query (a real held-out image) at the lowest "
+        f"noise level and selection scores candidates on the query -- see the per-panel labels.  "
+        f"It moves ~1 class-width\nand ends nearer the TRAINING set than the query it started "
+        f"from; prototypes 2-3 start from noise, and the composition survives on those alone "
+        f"(RESULTS 5e-quater/quinquies).", fontsize=8)
     # the canonical figure is the one rendered at the DEFAULTS; the tag marks deviation
     tag = ("" if args.dial == DEFAULT_DIAL else f"_s{args.dial:g}") \
         + ("" if args.paper_budget else "_ourbudget")
@@ -249,13 +290,29 @@ def main():
     p.add_argument("--dial", type=float, default=DEFAULT_DIAL,
                    help="prototype-distance dial for the `ours` row (§20): the reverse "
                         "process starts from the prototype noised to this level.  1.0 = "
-                        "pure noise; lower ties samples to the prototype.  Default 0.9 "
+                        "pure noise; lower ties samples to the prototype.  **Default 0.8 "
+                        "since 2026-08-13, set deliberately for colour faithfulness in the "
+                        "renders and NOT by the metric, which prefers 0.9** -- the choice and "
+                        "its cost are recorded in RESULTS 20c.  Was 0.9 "
                         "because the swept comparison at the paper's discovery budget "
                         "(results/case_colormnist*.json) shows 0.9 DOMINATES: joint 0.708 "
                         "vs 0.667 at 0.8 and 0.542 at 1.0, at recall 0.881 vs 0.495 and "
                         "0.907.  0.8 buys accuracy by destroying coverage; 1.0 keeps "
                         "coverage and loses accuracy; 0.9 is the only setting that is "
-                        "near-best on both.")
+                        "near-best on both.  RE-CONFIRMED 2026-08-13 under current code at "
+                        "--guidance 1.5, n_cases 3, ours row: s=0.7 joint 0.833 / recall 0.116, "
+                        "s=0.8 0.792 / 0.427, s=0.9 0.583 / 0.854.  Lowering the dial buys "
+                        "accuracy by collapsing coverage onto the prototype -- at 0.7 recall "
+                        "0.116 is barely above poe-guided and query-only, which score 0.000 by "
+                        "re-emitting the query, so the panels look clean precisely BECAUSE the "
+                        "arm has stopped doing the thing it is claimed to do.  Judge this dial "
+                        "on both columns, never on the renders.\n"
+                        "AND READ IT WITH --guidance: the dial and the guidance interact "
+                        "strongly.  At s=0.9 the same code scores joint 0.583 at guidance 1.5 "
+                        "and 0.083 at 2.0.  reproduce.sh passed 2.0 for the figure while every "
+                        "number quoted here was measured at 1.5, so f9 was rendered at an "
+                        "operating point no table used and its `ours` row looked broken for "
+                        "that reason alone.  Fixed; do not re-add a --guidance override.")
     p.add_argument("--seed", type=int, default=0)
     args = p.parse_args()
     os.makedirs(FIG, exist_ok=True)

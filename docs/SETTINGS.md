@@ -86,7 +86,7 @@ rows**.
 §29a does not support it. Running the pipeline on the paper's *own* pretrained `ddpm-celebahq-256` —
 a backbone that renders photorealistic faces, untouched by us — still produced samples rougher than
 real, which the backbone story cannot explain. Three candidates are now live: this deviation, the
-w₀ infidelity (§5a, measured and fixed), and the input-layout permutation (§5b).
+w₀ infidelity (§5(a), measured and fixed), and the input-layout permutation (§5b).
 
 ## 2. Concept discovery (their Table 6)
 
@@ -158,10 +158,97 @@ including the baselines, so it compresses differences rather than favouring us.
 | Pool size | 256 | 256 | 48–64 | DEVIATION (§3) |
 | Variance-aware **w₀** | **1.2** | **0.5** | **1.2 everywhere** | **INFIDELITY — fixed** |
 | Variance-aware cap w_max | 2.0 | 2.0 | 2.0 | MATCH |
-| Variance mode | entropy-adaptive | entropy-adaptive | entropy-adaptive | MATCH |
+| Variance mode | entropy-adaptive | entropy-adaptive | Eq. 14 as printed | **UNDER-SPECIFIED (theirs)** |
 | LoRA sampling-w | 0.8 | 1.2 | swept {0.8, 1.0, 1.2} | MATCH |
+| **Saved gens per query** | **16** | **16** | **16–24 from ONE query** | **see §4b** |
+
+"Variance mode: entropy-adaptive" appears only in Table 8. No equation, symbol or sentence anywhere
+in the paper defines it, and Eq. 14 as printed — `w = min(w₀·(1/d)·tr(Σ_t), w_max)` — contains no
+entropy term. We implement the equation. This row previously read MATCH, which asserted agreement
+with something we cannot read; it is their gap to close, not ours to guess at.
 
 ---
+
+## 4b. The evaluation protocol — the deviation that mattered most, and is in none of their tables
+
+Sections 1–4 audit their Tables 5–8, hyperparameter by hyperparameter. That structure could not see
+this one, because the protocol lives in their prose (§4.2) and we had reimplemented their *metrics*
+without their *measurement*:
+
+| | Paper (§4.2, Table 8) | Ours, before | |
+|---|---|---|---|
+| Queries per OOD class | **100**, framework run independently on each | **1** | **INFIDELITY** |
+| Generations per query | 16 | 16–24 | MATCH |
+| **Generated set per class** | **1600 samples from 100 teachers** | **24 from 1 teacher** | **INFIDELITY** |
+| Feature space | **Inception-V3 pool3** | 2× pixel downsample (`evals._feat`) | **DEVIATION** |
+| Reference sets | **two**: Faithfulness *and* Generalization | one (Generalization only) | **INFIDELITY** |
+
+**Faithfulness** references the 100 query images themselves; **Generalization** references 100 other
+held-out images of the class. The paper reports both for every arm. We reported one — and it is the
+harder one.
+
+**What this cost.** Recall is a k-NN *manifold* estimate: it asks what fraction of the reference set
+falls inside the generated set's manifold. A generated set built from one teacher is a point cloud
+around one mean no matter how many samples are drawn from it, so its recall against 100 real images
+is near zero **by construction**. That is not a finding about the method; it is the protocol. And
+their sampler is DDIM at η=0 (Table 8) — deterministic given the teacher — so **their** method
+collapses per query too. Their diversity comes from the 100 different teachers, one per query, which
+is exactly the axis our protocol had set to 1.
+
+`tests/diag_paper_protocol.py` measures the correction directly, sweeping the query count on one OOD
+class with the generation held fixed (pixel features, our own space):
+
+| queries pooled | samples | Faithful. P / R / F1 | General. P / R / F1 |
+|---|---|---|---|
+| 1 | 16 | — / — / — | 0.938 / **0.000** / 0.000 |
+| 4 | 64 | 1.000 / 0.250 / 0.400 | 0.719 / **0.000** / 0.000 |
+| 16 | 256 | 1.000 / 0.438 / 0.609 | 0.770 / **0.000** / 0.000 |
+| 50 | 800 | 1.000 / 0.560 / 0.718 | 0.771 / **0.000** / 0.000 |
+| **100** (theirs) | **1600** | 1.000 / **0.580** / **0.734** | 0.829 / **0.000** / 0.000 |
+| *paper's PoE* | | *0.755 / 0.807 / **0.753*** | *0.670 / 0.698 / **0.630*** |
+
+**Their Faithfulness column reproduces**: F1 **0.734 against their 0.753**, in a different feature
+space and on a smaller backbone. The number this repository published for their method — recall
+0.001, F1 0.003 — is the *top-left cell of a table we had collapsed to a single entry*, and it is
+the single worst cell in it.
+
+**Their Generalization column does not reproduce**: recall stays 0.000 at every query count, against
+their 0.698. Our samples land on their own queries (precision 1.000 at Faithfulness) and never reach
+*other* instances of the class. Whether that residual is the metric space or a real limit is
+measured separately — `evals.paper_metrics` adds the Inception-V3 space they define their metrics
+in, since pixel distance calls two instances of the same digit far apart precisely when they differ
+by position, which is the failure mode under test.
+
+`experiments/n49_paper_protocol.py` runs all five of their arms plus ours under this protocol.
+
+### 4c. An inconsistency inside *their* results, which our reproduction surfaced
+
+Running their five arms (n49, 2 classes, Inception features) reproduces most of their Table 1
+closely — **top-1 precision 0.104 / 0.062 against their 0.095 / 0.053**, and PoE above both top-k
+arms on every column, as they report. One arm does not reproduce, and the disagreement is not ours:
+
+| `query-only` | Faithful. P / R / F1 | General. P / R / F1 |
+|---|---|---|
+| ours (ColorMNIST) | 0.677 / 0.708 / **0.692** | 0.354 / 0.460 / 0.399 |
+| **their Table 1** (ColorMNIST) | 0.005 / 0.025 / **0.000** | 0.000 / 0.012 / 0.000 |
+| **their Table 2** (CelebA) | 0.806 / 0.536 / **0.640** | 0.482 / 0.134 / 0.202 |
+
+Our result matches **their CelebA row and contradicts their ColorMNIST row**, and their two rows
+describe opposite behaviours for the same baseline. Their §4.3 explains the CelebA one exactly as we
+observe it — "Query-only attains the strongest Faithfulness scores … this gap indicates that q_xq
+captures the data point more than the held-out composition" — which is the *expected* behaviour of a
+Gaussian centred on x_q: it should reproduce the query, and score near-perfectly against a reference
+set that *is* the queries. Their ColorMNIST row instead puts it at the floor on every metric
+(FID 247 against PoE's 82), which their text attributes to "salt and pepper texture".
+
+Both cannot be the generic behaviour of N(x_q, σ²I). The mechanism that would produce speckle is
+visible in the equations: Eq. 12 divides by Σ_t = ᾱ_t σ² + (1−ᾱ_t), so at low noise the residual is
+amplified by 1/σ², and Eq. 14's weight w ∝ tr(Σ_t) is what cancels it. That cancellation is exact
+only in the mean; at very small σ the two large quantities cancel to a small difference of large
+numbers, and per-pixel noise survives. So their ColorMNIST row is consistent with a **much smaller σ
+than ours (0.01)**, which their paper never states — "a fixed small isotropic variance" is the whole
+specification. We therefore cannot reproduce their query-only ColorMNIST row and do not claim to;
+the value is unrecoverable from the paper.
 
 ## 5. The infidelities found, and what they touched
 
@@ -187,6 +274,27 @@ showing the modes that were actually selected. Now one ascent run feeds both.
 claimed its defaults were Table 6's Color-MNIST column. Docstring corrected earlier; the constants
 now exist; the remaining work is making the experiments *call* them.
 
+**(e) A 30× teacher-covariance inflation that is ours, not theirs — checked, and it changes nothing
+that is published.** `NeuralLifelongLearner` defaults to `teacher_var_scale=30.0`; the arm we report
+as the paper's is called with `var_scale=1.0`. An arm given 30× the covariance of the arm it is
+compared to would be a serious asymmetry, since covariance is what decides sample spread and spread
+is the axis the comparison turns on. Three measurements close it:
+
+* **It does not move the number.** `tests/diag_teacher_variance.py` runs the same method at both
+  values: recall **0.000 at 1.0 and 0.000 at 30.0** (vendi 1.06 either way). The margin our
+  composition table reports is not this knob.
+* **It is not on our headline path at all.** Our arm is `learn_concept_factored`, which draws its
+  pool from `sample_factored_pool` — the model's own conditional — and never calls `sample_teacher`.
+  The constant is live only in the teacher-pool experiments (n23, n31, n32, n34, the `e` track),
+  which measure preservation, deletion and ordering rather than sample coverage.
+* **But both premises it was calibrated under are gone.** `n0_tune` chose 30 because "the teacher's
+  σ comes out 0.0117 against a real intra-class spread of 0.1595". That was measured before
+  `poe_teacher` gained the mixture extent (which adds the between-prototype term and is ~15× larger)
+  and under `schedule="anneal"` rather than the paper's Eq. 14. At today's extent the teacher's σ is
+  **0.33–0.49× the real class spread**, so ×30 puts it at **1.8–2.7×** — it now over-disperses the
+  quantity it was introduced to under-correct. Left at 30 pending a re-run of `n0_tune`, and flagged
+  here rather than quietly changed, because it moves no published result in either direction.
+
 **(d) LoRA α is absent**, so our adapters are half-strength versus the paper at equal rank. Not yet
 changed — changing it would move every adapter number in the repository, and it is the more honest
 direction for our claims (we look worse on quality, better on storage), so it wants a deliberate
@@ -208,7 +316,7 @@ by exact index algebra (`tests/diag_layout.py`):
 * its **vertical** axis is a **~22-pixel jump across the image**
 
 so one 3×3 convolution reads real columns **3, 24 and 45 simultaneously**. There is no spatial
-locality left at any scale, and downsampling compounds it. `figures/f20_layout.png` renders a real
+locality left at any scale, and downsampling compounds it. `figures/additional/f20_layout.png` renders a real
 face as the UNet sees it: a striped, colour-scrambled field with only low-frequency structure intact.
 
 `ddpm.py` argued this was harmless because training and sampling share the permutation, so "the model

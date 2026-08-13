@@ -1,11 +1,12 @@
 #!/bin/bash
 # Reproduce every number and every figure in this repository.
 #
-#   bash reproduce.sh tests      # 11 assertions, ~8 min, no backbone needed
+#   bash reproduce.sh tests      # every tests/test_*.py, ~8 min, no backbone needed
 #   bash reproduce.sh backbones  # train the 5 backbones everything else loads (~12 GPU-hours)
 #   bash reproduce.sh colormnist # the ColorMNIST experiments, 3 seeds
 #   bash reproduce.sh celeba     # the CelebA experiments, 3 seeds
 #   bash reproduce.sh pretrained # google/ddpm-celebahq-256: preservation, acquisition, batch
+#   bash reproduce.sh paper      # the companion paper's OWN protocol (Tables 1-2); n47 alone is ~13 h
 #   bash reproduce.sh analytic   # the analytic (no-gradient) track, 3 seeds
 #   bash reproduce.sh supporting # the experiments behind the negative results and the cost claims
 #   bash reproduce.sh figures    # aggregate + all figures + TABLES.md  (CPU, seconds)
@@ -30,8 +31,9 @@ sync
 case "$STAGE" in
 tests|all)
   echo "== tests =="
-  for t in test_layout test_speckle test_fid test_smoke test_neural test_merge test_ortho_merge \
-           test_unbounded test_pretrained test_pretrained_bank; do gpu "tests/$t.py"; done
+  # ONE job that runs every tests/test_*.py and prints a line each, rather than a hardcoded list
+  # that silently stops covering new tests -- `test_figures_fresh` was missing from the old list.
+  gpu "tests/run_all.py"
   # CPU-only, and it gates the PROSE: every number the docs quote must match the aggregate
   "$PY" tests/test_claims.py
   [ "$STAGE" = tests ] && exit 0 ;;&
@@ -58,7 +60,13 @@ colormnist|all)
     gpu "experiments/n23_native_parity.py --seed $s"                             # native parity
   done
   for s in 0 1 2; do gpu "experiments/n5_classinc.py --seed $s --tag _full"; done  # forgetting, 11 arms
-  gpu "experiments/make_case_studies.py --n-cases 3 --guidance 2.0"              # F9 case study
+  # NO --guidance override.  The script defaults to 1.5 because that is what n9's label-free
+  # calibration selects on this backbone, and its own --guidance help says "the figure must use the
+  # same value the table does".  This line used to pass 2.0, which is the single reason f9's `ours`
+  # row looked broken: at s=0.9 the SAME code scores joint 0.583 at guidance 1.5 and **0.083** at
+  # 2.0, a 7x collapse, while the dial's documented justification was measured at 1.5 throughout.
+  # The figure and the table were being rendered at different operating points (2026-08-13).
+  gpu "experiments/make_case_studies.py --n-cases 3"                             # F9 case study
   gpu "tests/diag_poe_faithful.py"                                               # baseline fairness check
   gpu "tests/diag_composable_scale.py --n-cases 3 --n-samples 16"                # composable-diff scale
   gpu "tests/diag_ours_quality.py --n-cases 2 --n-samples 8"                     # pool-guidance choice
@@ -75,6 +83,22 @@ colormnist|all)
     gpu "experiments/n9_showdown.py --ckpt results/cache/ddpm_colormnist_sev$E.pt --seed 0 --tag _sev$E --mcmc-steps 10 --mcmc-lam 0.3"
   done
   [ "$STAGE" = colormnist ] && exit 0 ;;&
+
+shapes3d|all)
+  # THIRD DATASET, added 2026-08-13 to test factored.py's claim that a new dataset is a loader
+  # rather than a refactor.  Nothing below is new machinery: n1_train gains one `--dataset` value
+  # and n52 runs the existing composition/router code against the generic contract.
+  #
+  # One-time data fetch (255 MB, an exact Cartesian product of 6 factors):
+  #   mkdir -p ~/flash/data/shapes3d && curl -L -o ~/flash/data/shapes3d/3dshapes.h5 \
+  #     https://storage.googleapis.com/3d-shapes/3dshapes.h5
+  #
+  # --gres a40 and batch 64: a 64px DDPM at batch 128 OOMs a 2080 Ti (ColorMNIST is 32px and does not).
+  echo "== Shapes3D =="
+  sbatch --gres=gpu:a40:1 --export=ALL,SCRIPT="experiments/n1_train.py --dataset shapes3d --img 64 --layout hwc --n-per-slot 40 --epochs 60 --batch 64 --seed 0 --out results/cache/ddpm_shapes3d.pt" experiments/run_gpu.sh | tail -1
+  gpu "tests/diag_shapes3d_probes.py"          # check the instrument BEFORE trusting the measurement
+  gpu "experiments/n52_shapes3d.py --n-cases 24"
+  [ "$STAGE" = shapes3d ] && exit 0 ;;&
 
 celeba|all)
   echo "== CelebA =="
@@ -97,7 +121,32 @@ pretrained|all)
     gpu "experiments/n26_batch_pretrained.py --attrs Eyeglasses Smiling Wearing_Hat Male --seed $s --tag _v1"
   done
   gpu "tests/diag_pretrained_lora.py --epochs 30"                                # chooses rank/lr/noise range
+  gpu "tests/diag_pretrained_render.py"                                          # 30d-CLOSED: it was the renderer
   [ "$STAGE" = pretrained ] && exit 0 ;;&
+
+paper|all)
+  # ── REPRODUCING THE COMPANION PAPER, under ITS protocol rather than ours ──────
+  #
+  # This stage exists because every composition number elsewhere in this file is measured our way --
+  # 24 samples from ONE query, one reference set, pixel features -- while Wang et al. §4.2 pool 100
+  # queries x 16 generations against TWO reference sets in Inception-V3.  Measured their way their
+  # method reproduces here; measured ours it reads 0.001 against their published 0.807.  See
+  # docs/SETTINGS.md §4b and docs/RESULTS.md §5e-bis.
+  #
+  # N47 is the long pole: it fine-tunes google/ddpm-celebahq-256 at 128px, ~13 h on one A40, and it
+  # is NOT optional -- a CelebA backbone trained from scratch at this budget never learns the class
+  # conditioning at all (conditional 0.442 vs unconditional 0.444; RESULTS §29(d)), so N48 has
+  # nothing to measure without it.
+  echo "== the companion paper's own protocol (Tables 1-2) =="
+  export HF_HOME="${HF_HOME:-$HOME/flash/.cache/huggingface}"
+  gpu "tests/diag_paper_protocol.py"                            # the query-count sweep, both spaces
+  gpu "experiments/n49_paper_protocol.py --n-classes 6 --n-queries 100 --per-query 16 --distill-queries 4"
+  gpu "experiments/n47_paper_backbone.py"                       # ~13 h: their Table 5 CelebA column
+  gpu "experiments/n48_paper_composition.py --n-cases 6 --n-queries 16 --n-samples 12"
+  gpu "tests/diag_holdout_leak.py"                              # is the split honest? (§5e-quinquies)
+  gpu "tests/diag_selection_bias.py"                            # does discovery find the query? (§5e-quater)
+  "$PY" experiments/make_n49_figure.py                          # F29, built from the two JSONs above
+  [ "$STAGE" = paper ] && exit 0 ;;&
 
 supporting|all)
   echo "== supporting results (every number cited in README/TABLES that the stages above miss) =="
@@ -112,6 +161,10 @@ supporting|all)
   gpu "experiments/n2_composition.py"                           # composition on the neural backbone
   gpu "experiments/n4_batch.py"                                 # batch vs sequential addition
   "$PY" experiments/n24_growth.py                               # F8: the growth accounting (CPU)
+  # REPRESENTATIONAL strength, which every other experiment leaves out: they all score what the
+  # model GENERATES. This asks whether a concept ABSORBED into a frozen backbone yields a
+  # representation as separable as one the backbone was TRAINED on (RESULTS 6d).
+  gpu "experiments/n50_representation.py --n-per-slot 16 --n-concepts 12"
   [ "$STAGE" = supporting ] && exit 0 ;;&
 
 analytic|all)
@@ -142,9 +195,12 @@ figures|all)
   # docs/ copy, so writing the root one left the linked file stale.  The two had already
   # diverged -- the root copy carried the bold/underline notation block and the linked one
   # did not.
+  "$PY" experiments/make_n5_curves.py        # F31: the accuracy matrix n5 records, drawn
+  "$PY" experiments/make_mdl_figure.py       # F32: the tier a query warrants is a curve in N
+  "$PY" experiments/make_n49_figure.py       # F29: recall is a property of the protocol
   PYTHONIOENCODING=utf-8 "$PY" experiments/make_paper_tables.py > docs/TABLES.md \
     && echo "  wrote docs/TABLES.md"
   ;;
 *)
-  echo "usage: $0 {tests|backbones|colormnist|celeba|analytic|supporting|figures|all}"; exit 1 ;;
+  echo "usage: $0 {tests|backbones|colormnist|shapes3d|celeba|pretrained|paper|analytic|supporting|figures|all}"; exit 1 ;;
 esac

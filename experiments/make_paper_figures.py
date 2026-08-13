@@ -326,10 +326,15 @@ def f7_f8_rename():
       `_pairfull` run (reproduce.sh aliases it), so `n20_celeba_composition_pair.png` is not what
       the 3-seed run produces and f10 stopped tracking it.  Both names are tried, newest first.
     """
+    # f10_case_celeba is RETIRED (2026-08-13).  It aliased n20, which runs on
+    # `ddpm_celeba_factored.pt` -- 64 px and carrying no `layout` key, so it loads as `permuted` and
+    # renders with CNN grid artifacts.  **f26 already supersedes it**: same row structure (real /
+    # prototypes / ours / poe-guided / query-only / unconditional, one block per held-out class) on
+    # the companion paper's OWN backbone, `ddpm_celeba_paper128.pt`, which is `layout: hwc` at 128 px.
+    # Nothing needed retraining -- the right backbone was already on disk and already in use by n48.
+    # The old panel is in figures/archive/.
     pairs = [("n18_router.png", "f7_router.png"), ("n24_growth.png", "f8_growth.png"),
-             ("n9_showdown.png", "f9b_showdown_colormnist.png"),
-             (("n20_celeba_composition_pairfull.png", "n20_celeba_composition_pair.png"),
-              "f10_case_celeba.png")]
+             ("n9_showdown.png", "f9b_showdown_colormnist.png")]
     for src, dst in pairs:
         cands = [src] if isinstance(src, str) else list(src)
         cands = [c for c in cands if os.path.exists(os.path.join(FIG, c))]

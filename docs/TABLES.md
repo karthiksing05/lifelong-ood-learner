@@ -31,7 +31,7 @@ Ties share the bold, and the underline then goes to the next distinct value.
 | `inversion-free` | 0.156 ± 0.077 | **0.840 ± 0.043** | 0.311 ± 0.123 | 2.479 ± 0.163 | 1.258 ± 0.028 |
 | `nearest-class` | 0.000 ± 0.000 | 0.066 ± 0.066 | 0.005 ± 0.005 | 1.874 ± 0.097 | 1.050 ± 0.069 |
 
-`real` is held-out images, the ceiling. `poe-guided` is the published method: it scores *higher* accuracy than ours and F1 ~0 because it emits near-copies of the query. `composable-diff` is Composable Diffusion at its best swept scale and `composable-mcmc` adds Du et al.'s Langevin correction: both sit at 0.000 here because this backbone has no per-factor conditional for score addition to combine.
+`real` is held-out images, the ceiling. `poe-guided` is the published method: it scores *higher* accuracy than ours and F1 ~0 because it emits near-copies of the query. **Its recall here is OUR protocol, not their published 80.7** -- one query, one reference set, pixel features, where §4.2 of the paper pools 100 queries against two reference sets in Inception-V3. Under their protocol their method reproduces (Generalization precision 0.664 vs their 0.670; RESULTS §5e-bis, `n49_paper_protocol`). Every arm in this table shares the protocol, so the ranking stands; the number must not be quoted against their paper. `composable-diff` is Composable Diffusion at its best swept scale and `composable-mcmc` adds Du et al.'s Langevin correction: both sit at 0.000 here because this backbone has no per-factor conditional for score addition to combine.
 
 ### CelebA — `Smiling` x `Big_Nose` never co-occur in training  *(n = 3 seeds)*
 
@@ -41,7 +41,7 @@ Ties share the bold, and the underline then goes to the next distinct value.
 | `ours` | 0.903 ± 0.094 | 0.727 ± 0.081 | <u>0.579 ± 0.034</u> | **0.598 ± 0.013** | 1.068 ± 0.026 |
 | `composable-diff` | <u>0.934 ± 0.066</u> | <u>0.740 ± 0.084</u> | 0.280 ± 0.015 | 0.405 ± 0.014 | 0.750 ± 0.005 |
 | `composable-mcmc` | **0.965 ± 0.023** | **0.779 ± 0.105** | 0.483 ± 0.034 | 0.350 ± 0.023 | 0.838 ± 0.016 |
-| `poe-guided` | 0.574 ± 0.212 | 0.475 ± 0.105 | 0.004 ± 0.002 | 0.008 ± 0.004 | 0.405 ± 0.001 |
+| `poe-guided` | 0.554 ± 0.229 | 0.466 ± 0.108 | 0.012 ± 0.003 | 0.023 ± 0.007 | 0.401 ± 0.003 |
 | `query-only` | 0.777 ± 0.117 | 0.620 ± 0.132 | 0.018 ± 0.009 | 0.031 ± 0.014 | 0.295 ± 0.009 |
 | `nearest-class` | 0.355 ± 0.186 | 0.235 ± 0.071 | **0.630 ± 0.035** | <u>0.505 ± 0.014</u> | 1.212 ± 0.006 |
 

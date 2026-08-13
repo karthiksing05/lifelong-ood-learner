@@ -139,9 +139,15 @@ def main():
           label="ColorMNIST — held-out (digit, fg, bg) slots",
           note="`real` is held-out images, the ceiling. `poe-guided` is the published method: it "
                "scores *higher* accuracy than ours and F1 ~0 because it emits near-copies of the "
-               "query. `composable-diff` is Composable Diffusion at its best swept scale and "
-               "`composable-mcmc` adds Du et al.'s Langevin correction: both sit at 0.000 here "
-               "because this backbone has no per-factor conditional for score addition to combine.")
+               "query. **Its recall here is OUR protocol, not their published 80.7** -- one query, "
+               "one reference set, pixel features, where §4.2 of the paper pools 100 queries "
+               "against two reference sets in Inception-V3. Under their protocol their method "
+               "reproduces (Generalization precision 0.664 vs their 0.670; RESULTS §5e-bis, "
+               "`n49_paper_protocol`). Every arm in this table shares the protocol, so the ranking "
+               "stands; the number must not be quoted against their paper. `composable-diff` is "
+               "Composable Diffusion at its best swept scale and `composable-mcmc` adds Du et al.'s "
+               "Langevin correction: both sit at 0.000 here because this backbone has no "
+               "per-factor conditional for score addition to combine.")
     table(A, "n20_celeba_composition_pair",
           ["real", "ours", "composable-diff", "composable-mcmc", "poe-guided", "query-only",
            "nearest-class"],

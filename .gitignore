@@ -24,3 +24,4 @@ slurm/jobs/*
 figures/*_smoke.png
 figures/*cscale*.png
 figures/*pairscale*.png
+figures/archive

@@ -77,7 +77,7 @@ protection-based arm at 0.250.
 | **ours** | 0.539 ± 0.025 | 0.778 | **0.605 ± 0.043** | **1.942** |
 | `inversion` (span-restricted) | 0.403 | 0.799 | 0.545 | 2.015 |
 | `inversion-free` (Gal et al. as published) | 0.169 | 0.845 | 0.332 | 2.473 |
-| `poe-guided` (**the companion method**) | **0.839 ± 0.049** | 0.001 | 0.003 | 1.075 |
+| `poe-guided` (**the companion method**, measured our way — see note) | **0.839 ± 0.049** | 0.001 | 0.003 | 1.075 |
 | `composable-diff` (Liu et al. 2022) | 0.000 | 0.134 | 0.030 | 2.222 |
 | `composable-mcmc` (Du et al. 2023) | 0.003 | 0.134 | 0.000 | 1.617 |
 | `nearest-class` | 0.000 | 0.066 | 0.005 | 1.874 |
@@ -86,6 +86,14 @@ protection-based arm at 0.250.
 **0.001** — it emits near-copies of the query, which is the whole reason F1 rather than accuracy is
 the headline. Both score-addition methods are at **0.000**, and that is a structural fact about this
 backbone rather than a tuning failure: it has no per-factor conditional to add ([RESULTS.md](RESULTS.md) §13).
+
+> **`poe-guided`'s 0.001 is not Wang et al.'s published number and must not be quoted as one.** This
+> table measures every arm one way — 24 samples from **one** query, one reference set, pixel
+> features. Their §4.2 pools **100 queries × 16 gens** against **two** reference sets in
+> **Inception-V3**, and reports recall **80.7**. Their method reproduces here under their protocol:
+> Generalization precision **0.664 vs their 0.670**, Faithfulness F1 **0.689 vs their 0.753**
+> ([RESULTS.md](RESULTS.md) §5e-bis). The ranking *within this table* is unaffected — all arms share
+> the protocol, and the one asymmetry that existed was refuted by measurement.
 
 *(`finetune-stream`, at F1 0.626, is not a composition baseline — it is our own concept with the
 shared path left unprotected, and it matches us because on ColorMNIST the semantics live in the

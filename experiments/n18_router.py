@@ -45,6 +45,7 @@ from lifelong_ood.neural import load_field, to_data, to_model           # noqa: 
 from lifelong_ood.neural.idealwords import (compose, factorize, sample_factored_pool,  # noqa: E402
                                             slot_factors)
 from lifelong_ood.neural.router import (auroc, basis_assignments, calibrate,  # noqa: E402
+                                        calibrate_cost, leave_one_value_out,  # noqa: E402
                                         route, route_signals)
 
 FIG = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "figures")
@@ -140,12 +141,75 @@ def main():
     print(f"[n18] thresholds: t_novel {thr['t_novel']:.5f} (trained slots), "
           f"t_vocab {thr['t_vocab']:.5f} ({thr['calibrated_by']})", flush=True)
 
+    # ── calibration 3: the model's own samples from values the basis CANNOT express ──
+    #
+    # `calibrate` had only the NEGATIVE population (self-combinations) and had to take a quantile
+    # inside it, which puts the threshold at 0.01142 -- barely above the real new-combination mean of
+    # 0.01035 -- and sends 30% of combinations down the paid route. That single number is the whole
+    # oracle-vs-measured gap in N24 (3.8M against 10.1M), even though the SIGNAL separates the two
+    # classes at AUROC 0.995. The detector was never the problem; the operating point was.
+    #
+    # `synthetic_vocab_conds` manufactures the positive population by the same trick, on the axis the
+    # negative one holds fixed: a direction orthogonal to the span of a factor's known value-vectors
+    # is, by construction, a value the additive basis has no coordinate for. With both populations in
+    # hand the threshold can sit BETWEEN them, and `calibrate_cost` places it where expected BYTES
+    # are minimized rather than where a quantile falls -- because the two errors cost wildly
+    # different amounts and an accuracy criterion prices them the same.
+    # `synthetic_vocab_conds` was tried here first and FAILED: conditioning on an off-basis
+    # direction decodes to a generic blur, a blur is easy to denoise, so the manufactured positives
+    # scored BELOW the real negatives and cost-minimizing against them gave overspend 0.900 against
+    # the quantile rule's 0.333.  `leave_one_value_out` replaces it and manufactures nothing: it
+    # HIDES a value the system already has, refits the basis without it, and uses REAL images
+    # carrying that value as positives -- images whose factor value the reduced basis provably
+    # cannot express.  Choosing what to hide is a decision about its own representation, not a label.
+    loo = leave_one_value_out(C, labels, seed=args.seed, gains=gains)
+    thr_cost, cc = dict(thr), None
+    if loo is not None:
+        def sig_reduced(x01):
+            return route_signals(field, to_model(x01).ravel(), C, loo["conds"], **sig_kw)
+        rng_l = np.random.default_rng(args.seed)
+        take = lambda idx: rng_l.permutation(idx)[:args.n_selfcombo]      # noqa: E731
+        sig_loo_pos, sig_loo_neg = [], []
+        for j in take(loo["pos"]):
+            i = np.where(data["slot"] == int(slots_trained[j]))[0]
+            if len(i):
+                sig_loo_pos.append(sig_reduced(data["X"][i[0]]))
+        for j in take(loo["neg"]):
+            i = np.where(data["slot"] == int(slots_trained[j]))[0]
+            if len(i):
+                sig_loo_neg.append(sig_reduced(data["X"][i[0]]))
+        if sig_loo_pos and sig_loo_neg:
+            cc = calibrate_cost(sig_loo_neg, sig_loo_pos)
+            thr_cost["t_vocab"] = cc["t_vocab"]
+            thr_cost["calibrated_by"] = cc["calibrated_by"]
+            print(f"[n18] leave-one-value-out: hid factor {loo['factor']} value {loo['value']} "
+                  f"({len(sig_loo_pos)} pos, {len(sig_loo_neg)} neg under the reduced basis)",
+                  flush=True)
+            print(f"[n18] cost-calibrated t_vocab {cc['t_vocab']:.5f} "
+                  f"(held-out-value overspend {cc['overspend']:.2f}, "
+                  f"underspend {cc['underspend']:.2f}) -- vs quantile {thr['t_vocab']:.5f}",
+                  flush=True)
+
+    # The FALLBACK calibration, evaluated as a first-class arm rather than as a last resort.
+    # `calibrate`'s docstring ranks `sig_selfcombo` above `vocab_mult` and calls the latter "an
+    # explicit assumption".  Measured on the real populations the ranking inverts: the self-combo
+    # quantile lands at 0.01142 and overspends 33% of new combinations, while 2x the trained-slot
+    # quantile lands near 0.019 -- inside the separable gap (real combinations top out at 0.01758,
+    # real vocabulary starts at 0.01813) -- and overspends none of them. Overspend is exactly what
+    # N24 integrates into the 3.8M-vs-10.1M oracle gap, so which path is "preferred" is not a
+    # documentation detail.
+    thr_mult = calibrate(sig_calib)          # no sig_selfcombo -> vocab_mult path
+    print(f"[n18] fallback t_vocab {thr_mult['t_vocab']:.5f} ({thr_mult['calibrated_by']})",
+          flush=True)
+
     # ── evaluate ────────────────────────────────────────────────────────────
     rows = []
     for r in ROUTES:
         for q in queries(pops[r], args.n_per_route):
             s = sig_of_image(data["X"][q["i"]])
-            rows.append(dict(truth=r, slot=q["slot"], pred=route(s, thr), **s))
+            rows.append(dict(truth=r, slot=q["slot"], pred=route(s, thr),
+                             pred_cost=route(s, thr_cost),
+                             pred_mult=route(s, thr_mult), **s))
         print(f"[n18] {r}: scored", flush=True)
 
     def vals(r, k):
@@ -218,6 +282,26 @@ def main():
               f"{cost['combination_free_route_accuracy']:.2f} where it is correct); "
               f"{cost['combination_sent_to_weights']:.2f} of new combinations would spend "
               f"parameters they did not need", flush=True)
+
+        # THE COMPARISON THIS EXPERIMENT NOW EXISTS FOR.  Same signals, same queries, same held-out
+        # labels used for evaluation only -- the two rules differ solely in where t_vocab sits, and
+        # `overspend` is the number that becomes N24's oracle-vs-measured gap.
+        for nm, key in (("self-combo quantile  (the 'preferred' path)", "pred"),
+                        ("cost-min  (refuted; see router.synthetic_vocab_conds)", "pred_cost"),
+                        ("2x trained quantile  (the documented FALLBACK)", "pred_mult")):
+            over = np.mean([x[key] == "new-vocabulary" for x in rows
+                            if x["truth"] == "new-combination"]) if n_comb else float("nan")
+            under = np.mean([x[key] != "new-vocabulary" for x in rows
+                             if x["truth"] == "new-vocabulary"]) if n_vocab else float("nan")
+            acc_r = float(np.mean([x["truth"] == x[key] for x in rows]))
+            print(f"[n18]   {nm:52s} overspend {over:.3f}  underspend {under:.3f}  "
+                  f"accuracy {acc_r:.3f}", flush=True)
+        cost["overspend_quantile"] = float(np.mean([x["pred"] == "new-vocabulary" for x in rows
+                                                    if x["truth"] == "new-combination"]))
+        cost["overspend_costmin"] = float(np.mean([x["pred_cost"] == "new-vocabulary" for x in rows
+                                                   if x["truth"] == "new-combination"]))
+        cost["underspend_costmin"] = float(np.mean([x["pred_cost"] != "new-vocabulary" for x in rows
+                                                    if x["truth"] == "new-vocabulary"]))
     else:
         cost = {}
 

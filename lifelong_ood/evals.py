@@ -92,12 +92,22 @@ def _rmse(A, B):
 def _feat(X, img=IMG):
     """A cheap feature space for the k-NN density metrics: 2x downsample, unit-normalized.
 
-    The paper uses Inception-V3 features. We have no Inception here and it would be the wrong
-    detector for 32x32 recoloured MNIST anyway; what matters for these metrics is a space where
-    "same digit, same colours, different instance" is near and "different digit" is far, and a mild
-    low-pass over pixels does that on this dataset while ignoring the speckle that raw pixels count
-    as variety. Absolute values are therefore NOT comparable to the paper's; the ordering between
-    methods, which is what the comparison rests on, is.
+    The paper uses Inception-V3 features. This is a mild low-pass over pixels instead: a space where
+    "same digit, same colours, different instance" is meant to be near and "different digit" far,
+    while ignoring the speckle that raw pixels count as variety.
+
+    **This docstring used to claim that although absolute values differ from the paper's, "the
+    ordering between methods, which is what the comparison rests on" survives. That claim has since
+    been measured and it is not safe for RECALL.** Inception-V3 is now available here
+    (`lifelong_ood.inception`, weights already cached) and the two spaces disagree qualitatively on
+    the quantity the composition argument turns on: on the same 1600 generated images, Generalization
+    recall reads **0.000 in this space and 0.180 in Inception's** (RESULTS §5e-bis). Pixel distance
+    is dominated by spatial alignment, so it calls two instances of the same digit far apart exactly
+    when they differ in position -- which is the failure mode a recall metric exists to detect.
+
+    Kept because every historical number in this repository was computed here and changing it in
+    place would silently rewrite results whose provenance is recorded elsewhere. New work that
+    reports precision/recall against the paper should call `paper_metrics`, which names its space.
     """
     X = np.asarray(X, np.float64)
     n, d = X.shape[0], X.shape[1]
@@ -289,6 +299,73 @@ def frechet_distance(samples, reference):
     return float(((mu1 - mu2) ** 2).sum() + np.trace(s1 + s2 - 2 * covmean))
 
 
+def _prf_from_features(FS, FR, k=3):
+    """Kynkaanniemi precision/recall given features that are ALREADY in the target space."""
+    if len(FS) < 2 or len(FR) < 2:
+        return dict(precision=float("nan"), recall=float("nan"), f1=float("nan"))
+    rR, rS = _knn_radius(FR, k), _knn_radius(FS, k)
+    D = np.sqrt(((FS[:, None] - FR[None]) ** 2).sum(2))
+    precision = float((D <= rR[None, :]).any(1).mean())
+    recall = float((D.T <= rS[None, :]).any(1).mean())
+    f1 = 0.0 if (precision + recall) == 0 else 2 * precision * recall / (precision + recall)
+    return dict(precision=precision, recall=recall, f1=float(f1))
+
+
+def _frechet_from_features(FS, FR):
+    """Frechet distance given features already in the target space (see `frechet_distance`)."""
+    from scipy import linalg
+    if len(FS) < 4 or len(FR) < 4:
+        return float("nan")
+    d = int(min(64, len(FS) - 1, len(FR) - 1))
+    _, _, Vt = np.linalg.svd(FR - FR.mean(0), full_matrices=False)
+    A, B = FS @ Vt[:d].T, FR @ Vt[:d].T
+    mu1, mu2 = A.mean(0), B.mean(0)
+    s1, s2 = np.cov(A, rowvar=False), np.cov(B, rowvar=False)
+    eps = 1e-8 * np.eye(d)
+    covmean, _ = linalg.sqrtm((s1 + eps).dot(s2 + eps), disp=False)
+    if np.iscomplexobj(covmean):
+        covmean = covmean.real
+    return float(((mu1 - mu2) ** 2).sum() + np.trace(s1 + s2 - 2 * covmean))
+
+
+def paper_metrics(samples, reference, img=None, k=3, device=None, space="inception"):
+    """The companion paper's Table 1-2 metric row, in the feature space it defines them in.
+
+    Separate from `precision_recall` on purpose.  That function's space is `_feat` (a 2x pixel
+    downsample) and every number the repository has already published rests on it; changing it in
+    place would silently rewrite results whose provenance is recorded elsewhere.  This is the
+    reproduction path, and it says which space it used so the two can never be confused.
+
+    `space="inception"` matches the paper (2048-d pool3); it falls back to `_feat` with `space`
+    reported as "pixel" when torchvision or the cached weights are absent, so a run on a machine
+    without them degrades loudly rather than pretending.
+
+    `cos` stands in for the paper's CLIP image-image similarity -- mean cosine between each generated
+    sample and the reference set, in whichever space is in use.  It is NOT CLIP: no CLIP checkpoint
+    is on this machine, and an image-image cosine in Inception space measures a related but different
+    thing.  Reported because its ORDERING across arms is what their table uses it for, and labelled
+    so it is never quoted as a CLIP score.
+    """
+    S, R = np.atleast_2d(np.asarray(samples, np.float64)), \
+        np.atleast_2d(np.asarray(reference, np.float64))
+    used = space
+    if space == "inception":
+        from lifelong_ood import inception
+        if inception.available():
+            FS, FR = (inception.features(S, img=img, device=device),
+                      inception.features(R, img=img, device=device))
+        else:
+            used, FS, FR = "pixel(fallback)", _feat(S), _feat(R)
+    else:
+        used, FS, FR = "pixel", _feat(S), _feat(R)
+    nS = FS / (np.linalg.norm(FS, axis=1, keepdims=True) + 1e-9)
+    nR = FR / (np.linalg.norm(FR, axis=1, keepdims=True) + 1e-9)
+    out = dict(_prf_from_features(FS, FR, k=k))
+    out.update(fid=_frechet_from_features(FS, FR), cos=float((nS @ nR.T).mean()), space=used,
+               n_samples=int(len(S)), n_reference=int(len(R)))
+    return out
+
+
 def _content_rmse(X, img=IMG):
     """Mean pairwise RMSE after a 2x2 box downsample -- a crude low-pass.
 
@@ -437,7 +514,18 @@ def save_json(obj, path, seed=None):
 
 
 # ── CelebA: one binary probe per attribute ───────────────────────────────────
-def fit_attr_probes(data, n_train=None, seed=0, epochs=30, attrs=None):
+def _probe_features(X, mode, img=None, device=None):
+    """Feature space the attribute probes live in.  -> [N, D] float32."""
+    if mode != "inception":
+        return np.asarray(X, np.float32)
+    from . import inception
+    if not inception.available():
+        return np.asarray(X, np.float32)
+    return inception.features(np.asarray(X, np.float32), img=img, device=device)
+
+
+def fit_attr_probes(data, n_train=None, seed=0, epochs=30, attrs=None, features="pixel",
+                    device=None):
     """Train one binary probe per CelebA attribute on the SEEN classes only.
 
     ColorMNIST has three categorical factors and a natural "joint = all three correct".  CelebA has
@@ -445,6 +533,20 @@ def fit_attr_probes(data, n_train=None, seed=0, epochs=30, attrs=None):
     joint score over them.  Reporting the per-attribute validation accuracy alongside matters more
     here than it did there: several CelebA attributes are close to unlearnable at 64x64 from a few
     hundred examples, and an attribute the probe cannot read is not evidence about the generator.
+
+    `features="inception"` fits the probes on Inception-V3 pool3 activations instead of raw pixels,
+    and on CelebA it roughly doubles what the benchmark can see -- measured on real images with
+    `tests/diag_probe_readability.py`:
+
+        pixel       5/14 attributes readable
+        inception   9/14                       (+Black_Hair, Blond_Hair, Brown_Hair, Big_Nose)
+
+    A linear probe on raw pixels is the right instrument for ColorMNIST, whose factors are colour and
+    digit shape, and the wrong one for `Big_Lips` or `Wavy_Hair`: nine unreadable probes was a
+    statement about the probe, not about the generator. The hair colours matter most, because CelebA's
+    class definitions are built from them. The mode is recorded in the returned dict so
+    `attr_accuracy` featurizes generated samples the same way -- a probe fitted in one space and
+    applied in another would be silently meaningless.
     """
     from .celeba import ATTRS
     attrs = attrs or ATTRS
@@ -455,8 +557,10 @@ def fit_attr_probes(data, n_train=None, seed=0, epochs=30, attrs=None):
         seen = seen[:n_train]
     cut = int(0.9 * len(seen))
     tr, va = seen[:cut], seen[cut:]
-    X, A = data["X"], data["attrs"]
-    out = {}
+    A = data["attrs"]
+    img = data.get("img")
+    X = _probe_features(data["X"], features, img=img, device=device)
+    out = {"_features": features, "_img": img}
     for k, a in enumerate(attrs):
         pr = SoftmaxProbe(2, seed=seed, epochs=epochs).fit(X[tr], A[tr, k].astype(int))
         out[a] = pr
@@ -485,8 +589,23 @@ def probe_usable(probes, a, min_bal=0.65, min_tpr=0.5, min_val_acc=0.65):
     on both classes (`bal`), not merely accurate on an imbalanced test set.  Falls back to plain
     accuracy for probe dicts pickled before these statistics were recorded.
     """
+    # A DEGENERATE attribute is never usable, and the nan fallback below used to admit one.
+    #
+    # `Bald` has a base rate of **0.000** in the loaded CelebA split -- the attribute never occurs.
+    # With no positives, `tpr` is nan, which sent it down the `val_acc` branch, where a probe that
+    # answers "no" every time scores 1.000 and passes. It was then one of the five "readable" probes
+    # that `joint` requires to be simultaneously correct: a probe that cannot be wrong, contributing
+    # nothing but a free pass. The same trap catches any attribute that is always ON.
+    base = probes.get(f"{a}_base")
+    if base is not None and base == base and (base <= 0.0 or base >= 1.0):
+        return False
     bal, tpr = probes.get(f"{a}_bal"), probes.get(f"{a}_tpr")
     if bal is None or tpr is None or bal != bal or tpr != tpr:
+        # nan bal/tpr means one class was absent from validation, which is the degenerate case
+        # again; fall back to plain accuracy ONLY when the statistics are simply missing (probe
+        # dicts pickled before they were recorded), never when they are nan.
+        if (bal is not None and bal != bal) or (tpr is not None and tpr != tpr):
+            return False
         return probes.get(f"{a}_val_acc", 0.0) >= min_val_acc
     return bal >= min_bal and tpr >= min_tpr
 
@@ -498,12 +617,28 @@ def attr_accuracy(probes, samples, combo, attrs=None, min_val_acc=0.65):
     the joint score and reported separately -- scoring a generator on an attribute no probe can read
     measures the probe, not the generator.
     """
-    attrs = attrs or probes["_attrs"]
+    # `combo` is ordered by the CANONICAL attribute list, so an attribute's target must be looked up
+    # by its position THERE -- not by its position in whatever `attrs` the caller passed.
+    #
+    # This was `combo[k]` with `k` enumerating `attrs`, which is correct only when `attrs` is the full
+    # list. Two callers pass a PRE-FILTERED list (`attrs=usable`), and for them every probe was
+    # scored against a different attribute's target: with the pixel probes `usable` is
+    # [Gray_Hair, Wavy_Hair, No_Beard, Smiling, Male] at canonical positions [3,4,5,6,10], while
+    # combo[0..4] reads [Black_Hair, Blond_Hair, Brown_Hair, Gray_Hair, Wavy_Hair]. That silently
+    # produced the "conditioning on a class's own embedding scores below unconditional" result, which
+    # was then used to withdraw a whole column and to refute a hypothesis. Both have to be re-run.
+    canon = list(probes["_attrs"])
+    attrs = attrs or canon
+    # featurize the SAMPLES the same way the probes were fitted, or the probe is being applied in a
+    # space it never saw.  Defaults to pixels, so every existing caller is unaffected.
+    S = _probe_features(samples, probes.get("_features", "pixel"), img=probes.get("_img"))
     per, usable = {}, []
-    for k, a in enumerate(attrs):
+    for a in attrs:
         if not probe_usable(probes, a, min_val_acc=min_val_acc):
             continue
-        hit = probes[a].predict(np.asarray(samples, np.float32)) == int(combo[k])
+        if a not in canon:
+            continue
+        hit = probes[a].predict(S) == int(combo[canon.index(a)])
         per[a] = float(hit.mean())
         usable.append(hit)
     if not usable:
@@ -511,3 +646,83 @@ def attr_accuracy(probes, samples, combo, attrs=None, min_val_acc=0.65):
     U = np.stack(usable)
     return dict(joint=float(U.all(0).mean()), mean_attr=float(U.mean()),
                 per_attr=per, n_scored=len(usable))
+
+
+def fit_factor_probes(data, n_train=None, seed=0, epochs=30, min_val_acc=0.55):
+    """Generic per-FACTOR probes for any dataset satisfying `factored.py`'s contract.
+
+    `fit_probes` is ColorMNIST's (digit/fg/bg) and `fit_attr_probes` is CelebA's (14 binary
+    attributes).  Neither generalises, and a third dataset needing a third probe fitter is exactly
+    the duplication `factored.py` exists to stop.  This one reads `data["factors"]`, `sizes` and
+    `names`, so it works on ColorMNIST, CelebA and Shapes3D unchanged.
+
+    -> dict with one `SoftmaxProbe` per factor name, plus `_names`, `_sizes`, and `<name>_val` /
+    `<name>_base` diagnostics.
+
+    THE VALIDATION ACCURACY IS NOT DECORATION.  On CelebA, scoring compositions through probes that
+    could not read their attribute produced a headline negative that was purely a measurement
+    artifact (5e-sexies), and a probe with a degenerate base rate scored 1.000 by always answering
+    "no".  `probe_readable` below applies both guards, and any caller computing a joint accuracy
+    must filter with it or it is measuring its own probes.
+    """
+    F = np.asarray(data["factors"], int)
+    sizes = [int(s) for s in data["sizes"]]
+    names = list(data["names"])
+    seen = np.where(np.asarray(data["seen"], bool))[0]
+    rng = np.random.default_rng(seed)
+    rng.shuffle(seen)
+    if n_train:
+        seen = seen[:n_train]
+    cut = max(1, int(0.9 * len(seen)))
+    tr, va = seen[:cut], seen[cut:]
+    X = np.asarray(data["X"], np.float32)
+    out = {"_names": names, "_sizes": sizes}
+    for k, nm in enumerate(names):
+        y = F[:, k]
+        p = SoftmaxProbe(sizes[k], seed=seed, epochs=epochs).fit(X[tr], y[tr])
+        out[nm] = p
+        if len(va):
+            pred = p.predict(X[va])
+            out[f"{nm}_val"] = float((pred == y[va]).mean())
+            # the majority-class rate: a probe that cannot beat it has learned nothing
+            cnt = np.bincount(y[va], minlength=sizes[k])
+            out[f"{nm}_base"] = float(cnt.max() / max(cnt.sum(), 1))
+        else:
+            out[f"{nm}_val"] = float("nan")
+            out[f"{nm}_base"] = float("nan")
+    out["_min_val_acc"] = float(min_val_acc)
+    return out
+
+
+def probe_readable(probes, name, min_val_acc=None):
+    """Is this factor's probe good enough to score a composition with?  -> bool."""
+    v = probes.get(f"{name}_val")
+    b = probes.get(f"{name}_base")
+    thr = probes.get("_min_val_acc", 0.55) if min_val_acc is None else min_val_acc
+    if v is None or v != v:
+        return False
+    if b is not None and b == b and b >= 0.999:      # degenerate: one value is everything
+        return False
+    return bool(v >= thr and (b is None or b != b or v > b + 0.02))
+
+
+def factor_accuracy(probes, S, target, names=None):
+    """Per-factor and joint accuracy of samples `S` against a target factor row.  -> dict.
+
+    `target` is one value per factor, indexed by CANONICAL position in `probes["_names"]` -- the
+    same indexing bug that produced 5e-sexies' retracted negative is avoided by looking the name up
+    rather than enumerating a filtered list.
+    """
+    canon = list(probes["_names"])
+    names = names or canon
+    S = np.asarray(S, np.float32)
+    per, usable = {}, []
+    for nm in names:
+        if nm not in canon or not probe_readable(probes, nm):
+            continue
+        hit = probes[nm].predict(S) == int(target[canon.index(nm)])
+        per[nm] = float(np.mean(hit))
+        usable.append(hit)
+    per["joint"] = float(np.mean(np.all(np.stack(usable), 0))) if usable else float("nan")
+    per["n_usable"] = len(usable)
+    return per

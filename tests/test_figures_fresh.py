@@ -46,8 +46,19 @@ def generators():
             # only count files that actually WRITE an image
             if "savefig" not in src:
                 continue
-            # names written via savefig paths, f-strings included: capture the literal stem
-            for m in re.findall(r'["\']([a-zA-Z0-9_]*f\d+[a-zA-Z0-9_]*)\{?[^"\']*\.png["\']', src):
+            # Any .png literal, f-strings included: capture the stem up to the first brace.
+            #
+            # This used to require the name to contain `f<digits>`, which only matched the published
+            # `f0_`..`f30_` figures -- so every intermediate (`n18_router.png`, `n24_growth.png`,
+            # `n26_batch_pretrained.png`) was reported as "no generator found" and its staleness was
+            # never checked. Those are exactly the files `make_paper_figures.py` copies the published
+            # figures FROM, so an unchecked stale intermediate silently propagates into a cited
+            # figure -- the failure this test exists to prevent.
+            # GREEDY stem, then an optional f-string brace group, then `.png"`. The non-greedy
+            # version of this matched a one-character prefix of every name and attributed all 30
+            # figures to all 18 generators, which is a stricter test only in the sense that a stopped
+            # clock is a precise one.
+            for m in re.findall(r'["\']([A-Za-z0-9_]+)(?:\{[^"\']*\})?[A-Za-z0-9_]*\.png["\']', src):
                 out.setdefault(m, []).append(os.path.join(sub, fn))
     return out
 

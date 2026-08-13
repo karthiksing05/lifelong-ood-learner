@@ -22,6 +22,7 @@ from common import CACHE, RESULTS                                      # noqa: E
 
 from lifelong_ood.datasets import load_colormnist, slot_id             # noqa: E402
 from lifelong_ood.evals import fit_probes, save_grid, save_json        # noqa: E402
+from lifelong_ood.factored import decode_slot                          # noqa: E402
 from lifelong_ood.neural import NeuralScoreField, UNet, to_data, train_ddpm  # noqa: E402
 
 
@@ -44,11 +45,28 @@ def main():
     p.add_argument("--out", default=None,
                    help="defaults to results/cache/ddpm_<dataset>.pt -- do NOT default this "
                         "to a fixed name, a celeba run once overwrote the colormnist backbone")
-    p.add_argument("--dataset", choices=["colormnist", "celeba"], default="colormnist",
+    p.add_argument("--dataset", choices=["colormnist", "celeba", "shapes3d"],
+                   default="colormnist",
                    help="celeba is the paper's second benchmark, and the one whose attributes "
                         "OVERLAP spatially -- ColorMNIST's separability is load-bearing in several "
                         "of this repo's conclusions and CelebA is how they get tested")
     p.add_argument("--img", type=int, default=None)
+    p.add_argument("--value-stride", type=int, default=1,
+                   help="shapes3d only: keep every k-th VALUE of factors with >=8 values. "
+                        "Reduces the class count without dropping a factor -- 300 sparse classes "
+                        "left conditioning unlearned (embedding pairwise cos 0.007).")
+    p.add_argument("--n-holdout", type=int, default=100,
+                   help="shapes3d only: how many COMBINATIONS to hold out")
+    p.add_argument("--init-from", default=None,
+                   help="start from this checkpoint's UNet weights and train CONDITIONING into it "
+                        "-- the N47/CelebA recipe. A model that already renders the domain only has "
+                        "to learn the label channel; asking one network to learn images AND "
+                        "conditioning at once is what failed on shapes3d from scratch (its null gap "
+                        "went NEGATIVE: the null token explained training images better than their "
+                        "own class embedding, so the model did best ignoring the label).")
+    p.add_argument("--p-drop", type=float, default=0.1,
+                   help="CFG null-token dropout. Lower it when conditioning is what needs learning: "
+                        "every dropped label is a step that teaches the unconditional path instead.")
     p.add_argument("--max-rows", type=int, default=25000,
                    help="celeba parquet rows to scan; more rows -> more images per class, "
                         "which is the first thing to raise when conditioning is weak (5o)")
@@ -107,6 +125,21 @@ def main():
                            min_count=25, max_rows=args.max_rows)
         data["slot"] = data["cls"]
         globals()["_IMG"] = img
+    elif args.dataset == "shapes3d":
+        # Third dataset, same recipe -- no new trainer, no new architecture. `load_shapes3d` already
+        # emits factored.py's contract, and the only thing n1 needs from a dataset is X/slot/seen.
+        # Composition factors are (floor_hue, object_hue, shape); wall_hue/scale/orientation are
+        # nuisance and supply the within-composition variation that handwriting supplies on
+        # ColorMNIST -- see lifelong_ood/shapes3d.py for why that split is required rather than
+        # convenient.
+        from lifelong_ood.shapes3d import load_shapes3d
+        img = args.img or 64
+        data = load_shapes3d(n_per_slot=args.n_per_slot, seed=args.seed, img=img,
+                             value_stride=args.value_stride, n_holdout=args.n_holdout)
+        globals()["_IMG"] = img
+        print(f"[n1] shapes3d: {len(np.unique(data['slot']))} compositions over "
+              f"{data['names']} sizes {data['sizes']}, {len(data['X'])} images at {img}px",
+              flush=True)
     else:
         data = load_colormnist(n_per_slot=args.n_per_slot, seed=args.seed)
     seen = data["seen"]
@@ -176,6 +209,18 @@ def main():
               f"{ca.shape[1] * arch['n_attr_vals']} embedding rows instead of {len(uniq)}",
               flush=True)
     model = UNet(n_classes=len(uniq), **arch)
+    if args.init_from:
+        # Load the DOMAIN and relearn the LABEL. Everything except the class table is copied; the
+        # table is left fresh because its old rows correspond to a different class partition and
+        # carrying them over would start conditioning from a wrong answer rather than from none.
+        src = torch.load(args.init_from, map_location="cpu", weights_only=False)
+        sd = src.get("ema", src)
+        keep = {k: v for k, v in sd.items()
+                if not k.startswith("cemb.") and k in model.state_dict()
+                and model.state_dict()[k].shape == v.shape}
+        missing = model.load_state_dict(keep, strict=False)
+        print(f"[n1] init-from {os.path.basename(args.init_from)}: copied {len(keep)} tensors, "
+              f"class table left fresh ({len(missing.missing_keys)} keys not copied)", flush=True)
     if img != 32:
         # CelebA runs at a larger resolution; the score field and UNet are resolution-agnostic
         # except for these two module-level constants, which the loaders set.
@@ -226,7 +271,7 @@ def main():
     t0 = time.time()
     ema = train_ddpm(model, Xs, y, epochs=args.epochs, batch=args.batch, lr=args.lr,
                      device=dev, seed=args.seed, on_epoch=on_epoch if snaps else None,
-                     layout=args.layout)
+                     layout=args.layout, p_drop=args.p_drop)
     mins = (time.time() - t0) / 60
     torch.save(package(ema, args.epochs), args.out)
     print(f"[n1] trained in {mins:.1f} min -> {args.out}", flush=True)
@@ -258,6 +303,22 @@ def main():
             hits.append(a["joint"] if a["joint"] == a["joint"] else 0.0)
             grids.extend(list(Sc[:4]))
         valid = float("nan")
+    elif "digit" not in data:
+        # Any dataset satisfying factored.py's contract but not ColorMNIST's key names -- shapes3d
+        # today.  `fit_probes` is hardcoded to digit/fg/bg and raised KeyError here AFTER a 36-minute
+        # training run had already written a perfectly good checkpoint, which is the worst place to
+        # fail.  The generic probes read data["factors"]/["names"]/["sizes"] instead.
+        from lifelong_ood.evals import factor_accuracy, fit_factor_probes
+        probes = fit_factor_probes(data, seed=args.seed, epochs=8 if args.quick else 30)
+        probe_val = {nm: probes[f"{nm}_val"] for nm in probes["_names"]}
+        valid = float("nan")          # "is this a real slot" needs a slot decoder; not defined here
+        for s in picks:
+            tgt = decode_slot(np.array([int(s)]), data["sizes"])[0]
+            Sc = to_data(field.sample(n=8, steps=50, seed=args.seed, clip=(-1, 1),
+                                      branch=remap[int(s)])).astype(np.float32)
+            a = factor_accuracy(probes, Sc, tgt)
+            hits.append(a["joint"] if a["joint"] == a["joint"] else 0.0)
+            grids.extend(list(Sc[:4]))
     else:
         probes = fit_probes(data, seed=args.seed, epochs=8 if args.quick else 30)
         probe_val = dict(digit=probes["digit_val_acc"], fg=probes["fg_val_acc"],

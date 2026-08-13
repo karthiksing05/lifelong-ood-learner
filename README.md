@@ -55,8 +55,58 @@ mode-ascent discovery on the model's own score field
    → optionally distil the result into one LoRA + one embedding
 ```
 
-It answers *can a frozen model be steered to render a combination it never saw?* — and the per-query
-LoRA is then **discarded**. There is no second query in the protocol.
+It answers *can a frozen model be steered to render a combination it never saw?* The adapter is fit
+per OOD *class* and retained for inference on that class — but nothing carries across classes, and the
+protocol never presents a second one to the same model.
+
+### Stage 4 is the one inherited stage we do not run their way
+
+Stages 1–3 — mode-ascent discovery, submodular selection, the PoE teacher — are used **unchanged**.
+Stage 4, turning the teacher into images, is where the pipelines part, and it is the departure that
+makes a single query enough.
+
+**Theirs — guide the sampler toward the teacher.** Their Eq. 13 pushes the unconditional branch
+toward the analytic PoE score:
+
+> ε̂(x_t, t, c\*) = ε_θ(x_t, t, ∅) + w\*(t) · [ ε_{q_T}(x_t, t) − ε_θ(x_t, t, ∅) ]
+
+with w\*(t) the variance-aware schedule of Eq. 14. Two properties of that target decide everything
+downstream. The PoE teacher is a **product of Gaussians, so it is itself a single Gaussian**
+q_T = 𝒩(μ_T, Σ_T) — unimodal by construction. And their sampler is **DDIM at η = 0** (their Table 8),
+i.e. deterministic. A unimodal target under a deterministic sampler means the teacher *determines the
+trajectory*: one query yields essentially one image. We measure it — 24 draws from a fixed teacher
+score **vendi 1.06** (`tests/diag_teacher_variance.py`), i.e. 24 near-copies. Their §4.2 protocol is
+built around this: diversity comes from **100 different queries per class**, each with its own
+teacher, and the distillation pool is 256 samples drawn that way.
+
+**Ours — the teacher only says WHERE, the model generates.** We do not sample from q_T at all. μ_T is
+probe-read to identify *which* factor values the composition needs, and those are written as a point
+in the model's own conditioning space:
+
+> c_new = μ + Σ_f g_f · (w_f · V_f)
+
+Generation is then ordinary conditional sampling from **p_θ(x | c_new)** — the model's own learned
+conditional, which is **multimodal where q_T is one Gaussian**. Diversity comes from the model's
+distribution over that concept rather than from collecting more queries. A dial `s` optionally seeds
+the reverse process from a prototype noised to level s instead of from pure noise, trading coverage
+for accuracy along a measured curve (§20c); `s = 0.9` is the default and lowering it collapses
+coverage.
+
+**Why the difference matters, on their own axis.** Generalization recall, Inception-V3, their §4.2
+protocol (N49, 6 held-out classes):
+
+| query budget | ours | PoE (theirs) | query-only |
+|---|---|---|---|
+| **1 query** | **0.648** | 0.073 | 0.025 |
+| 4 queries | **0.797** | 0.137 | 0.080 |
+
+PoE needs on the order of **100 queries** to reach 0.300. This is the whole reason the pipeline can be
+lifelong: their Stage 4 needs a *population* of queries to produce a population of images, while ours
+needs one query to locate a concept the model can then generate from indefinitely. It is a trade, not
+a sweep — our Generalization *precision* is 0.195 against their 0.547, so our pool is more spread than
+the real class is (§5e-bis).
+
+There is no second query in their protocol; Stage 4 as they run it is why.
 
 **Where we pick it up.** Their limitation section names the gap exactly:
 
@@ -578,9 +628,15 @@ The figure the project turns on. A method that re-emits the query scores **high 
 `poe-guided` beats us on accuracy (0.839 vs 0.539) **and** precision, and its recall is **0.001**. Any
 evaluation reporting accuracy without coverage ranks it first.
 
+*The 0.001 is our protocol, not their published result.* It is one query, one reference set, pixel
+features; Wang et al. pool 100 queries against two reference sets in Inception-V3 and report 80.7.
+Their method reproduces here under their protocol (RESULTS §5e-bis). The point this figure makes —
+accuracy without coverage ranks a query-repeater first — stands on the arms being measured
+identically, which they are.
+
 ### 2. Composition recovers combinations never observed
 
-![composition](figures/f3_composition.png)
+![composition](figures/additional/f3_composition.png)
 ![ColorMNIST case study](figures/f9_case_colormnist.png)
 
 ColorMNIST **F1 0.605 ± 0.043** against the companion method's **0.003 ± 0.003**, with every baseline

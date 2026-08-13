@@ -409,10 +409,12 @@ def main():
                    help="store the result under this canonical key instead of the run name, so a "
                         "tagged re-run (n9_showdown_cal) feeds the figures and tables that ask for "
                         "the experiment (n9_showdown).  Only valid with a single name.")
+    p.add_argument("--force", action="store_true",
+                   help="overwrite a key that was last written by a DIFFERENT source (see below)")
     args = p.parse_args()
     if args.as_name and len(args.names) != 1:
         p.error("--as takes exactly one name")
-    summary = {}
+    summary, claimed = {}, {}
     for name in args.names:
         runs = load_seeds(name)
         if not runs:
@@ -431,7 +433,9 @@ def main():
             print(f"    no aggregator for {name}")
             continue
         try:
-            summary[args.as_name or name] = fn(runs)
+            key = args.as_name or name
+            summary[key] = fn(runs)
+            claimed[key] = name
         except Exception as e:                                  # noqa: BLE001
             print(f"    could not aggregate: {type(e).__name__}: {e}")
     if summary:
@@ -446,12 +450,44 @@ def main():
                     prev = json.load(fh)
             except (ValueError, OSError):
                 prev = {}
+
+        # DO NOT let a bare re-run silently demote an ALIASED canonical entry.
+        #
+        # `reproduce.sh` populates the canonical keys from tagged runs -- e.g.
+        #     aggregate.py n9_showdown_cal --as n9_showdown
+        # because the canonical Color-MNIST composition table is the `_cal` configuration.  But a
+        # stale, partial `results/n9_showdown.json` from an old smoke run also exists, and running
+        # `aggregate.py` with NO arguments re-derives every default key from same-named files -- so
+        # it quietly replaced the 3-seed canonical numbers with that 7 KB smoke run.  Nothing failed;
+        # `tests/test_claims.py` simply went from 33/33 to 23/33 and the documents looked wrong
+        # instead of the aggregate.  This makes that overwrite refuse rather than happen.
+        prov = prev.get("_provenance", {}) if isinstance(prev.get("_provenance"), dict) else {}
+        blocked = []
+        for k in list(summary):
+            was, now = prov.get(k), claimed[k]
+            if was and was != now and not args.force:
+                blocked.append((k, was, now))
+                del summary[k]
+        for k, was, now in blocked:
+            print(f"\n  REFUSED to overwrite `{k}`: it was aggregated from `{was}`, and this run "
+                  f"would replace it with `{now}`.\n"
+                  f"    That is the aliasing `reproduce.sh` sets up, so a bare re-run is almost "
+                  f"always a mistake.\n"
+                  f"    Intended?  `aggregate.py {now}"
+                  f"{'' if k == now else f' --as {k}'} --force`")
+        if not summary:
+            print("\nnothing written")
+            return
+        prov.update({k: claimed[k] for k in summary})
         prev.update(summary)
+        prev["_provenance"] = prov
         tmp = out + ".tmp"
         with open(tmp, "w") as fh:
             json.dump(prev, fh, indent=1, default=float)
         os.replace(tmp, out)
-        print(f"\nwrote {out} ({len(summary)} updated, {len(prev)} total)")
+        n_keys = len([k for k in prev if not k.startswith("_")])
+        print(f"\nwrote {out} ({len(summary)} updated, {n_keys} total"
+              f"{f', {len(blocked)} REFUSED' if blocked else ''})")
 
 
 if __name__ == "__main__":

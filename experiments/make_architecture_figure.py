@@ -74,8 +74,13 @@ def main():
           "$K$ chosen per query\nby explaining it\nto 95% (§26)", INHERIT)
     stage(ax, xs[2], y1, w, h1, "3  COMPOSE",
           "per-dimension\nproduct of experts\n→ teacher $q_T$", INHERIT)
-    stage(ax, xs[3], y1, w, h1, "4  SAMPLE",
-          "the MANIFOLD at $c_{new}$,\nnot the Gaussian\n(§5e)", INHERIT)
+    # Drawn inside the INHERITED band but marked, because it is the one stage we do not run their
+    # way -- see the "STAGE 4 expanded" panel.  It used to cite §5e, whose conclusion (that guiding
+    # a Gaussian cannot cover) was retracted in §5e-bis: their method DOES cover, once 100 queries
+    # are pooled as their protocol does.  What survives is the per-query statement, which is the
+    # one this architecture depends on.
+    stage(ax, xs[3], y1, w, h1, "4  SAMPLE  *",
+          "the MANIFOLD at $c_{new}$,\nnot the Gaussian\n(§5e-bis)", INHERIT)
     x5, x6, x7 = 0.600, 0.736, 0.872
     stage(ax, x5, y1, w, h1, "5  ROUTE",
           "arrangement, or\na new part?\nAUROC 0.980 / 0.995", OURS)
@@ -87,6 +92,8 @@ def main():
         arrow(ax, (a + w, y1 + h1 / 2), (b, y1 + h1 / 2), lw=1.8 if a == xs[3] else 1.4)
     ax.text(0.034, y1 - 0.017, "their pipeline distils a LoRA here — and discards it",
             fontsize=8.4, style="italic", color=RED)
+    ax.text(xs[3] + w, y1 - 0.017, "* stage 4 is inherited in POSITION only — we generate "
+            "differently (expanded below)", ha="right", fontsize=8.4, style="italic", color=BLUE)
 
     # the loop back, drawn as an explicit routed path in the clear band beneath the pipeline so it
     # crosses no box and no text
@@ -134,6 +141,63 @@ def main():
     ax.text(0.022, yr - 0.020, "the error is ONE-SIDED: 0 vocabulary items were sent down the free "
             "route in 120 queries — cost is over-spent, never under-spent",
             fontsize=8.4, style="italic", color=RED)
+
+    # ══ BAND 3b — STAGE 4, the one INHERITED stage we do not perform their way ═
+    #
+    # Stage 4 is drawn inside the blue "inherited" band, which is misleading without this: it is the
+    # single place our pipeline departs from theirs, and the departure is what makes one query
+    # enough.  Their Eq. 13 guides toward the analytic Gaussian; at DDIM eta=0 that is deterministic
+    # given the teacher, so a query yields ONE image and their diversity comes from running 100
+    # different queries (their §4.2).  We use the teacher only to LOCATE the concept and let the
+    # model's own learned conditional generate.  Numbers are n49 under their own protocol, so the
+    # claim is on their axis rather than ours.
+    y4, h4 = yr, hr
+    x4 = 0.600
+    ax.text(x4, y4 + h4 + 0.014, "STAGE 4 expanded — the one inherited stage we run DIFFERENTLY, "
+            "and why one query suffices", fontsize=9.8, fontweight="bold")
+    bw = 0.183
+    panel(ax, x4, y4 + 0.052, bw, h4 - 0.052, INHERIT, EDGE, 1.1, z=2)
+    ax.text(x4 + bw / 2, y4 + 0.140, "THEIRS — guide toward $q_T$", ha="center", va="top",
+            fontsize=9.2, fontweight="bold", zorder=3, color=BLUE)
+    ax.text(x4 + bw / 2, y4 + 0.120,
+            "$\\hat\\varepsilon=\\varepsilon_\\theta(x_t,\\varnothing)"
+            "+w^*(t)\\,[\\varepsilon_{q_T}-\\varepsilon_\\theta]$",
+            ha="center", va="top", fontsize=8.0, zorder=3)
+    # The box interior is [y4+0.052, y4+h4]; these offsets are measured from y4, so they must clear
+    # 0.052 or the text lands under the measurement strip drawn beneath the box.
+    ax.text(x4 + bw / 2, y4 + 0.101,
+            "$q_T$ is UNIMODAL and DDIM runs at $\\eta{=}0$,\n"
+            "so the teacher DETERMINES the trajectory:\n"
+            "one query → one image (vendi 1.06 of 24)",
+            ha="center", va="top", fontsize=7.3, zorder=3, linespacing=1.5)
+    ax.text(x4 + bw / 2, y4 + 0.058, "diversity must come from 100 DIFFERENT queries",
+            ha="center", va="top", fontsize=7.3, zorder=3, color=RED, style="italic")
+
+    x4b = x4 + bw + 0.012
+    panel(ax, x4b, y4 + 0.052, bw, h4 - 0.052, OURS, EDGE, 1.1, z=2)
+    ax.text(x4b + bw / 2, y4 + 0.140, "OURS — the teacher only says WHERE", ha="center",
+            va="top", fontsize=9.2, fontweight="bold", zorder=3, color=GREEN)
+    ax.text(x4b + bw / 2, y4 + 0.120,
+            "$c_{new}=\\mu+\\sum_f g_f\\,(w_f\\!\\cdot\\!V_f)$",
+            ha="center", va="top", fontsize=8.2, zorder=3)
+    ax.text(x4b + bw / 2, y4 + 0.101,
+            "$\\mu_T$ probe-reads the composition; the pool is\n"
+            "drawn from the model's OWN learned conditional,\n"
+            "which is MULTIMODAL where $q_T$ is one Gaussian",
+            ha="center", va="top", fontsize=7.3, zorder=3, linespacing=1.5)
+    ax.text(x4b + bw / 2, y4 + 0.058, "one query → a covering pool",
+            ha="center", va="top", fontsize=7.3, zorder=3, color=GREEN, style="italic")
+
+    # the measurement, on their protocol -- otherwise the two boxes above are just an assertion
+    panel(ax, x4, y4, 2 * bw + 0.012, 0.046, "#F7F7F7", EDGE, 1.0, z=2)
+    ax.text(x4 + bw + 0.006, y4 + 0.036,
+            "Generalization recall, Inception-V3, their protocol (N49, 6 OOD classes)",
+            ha="center", va="center", fontsize=7.4, fontweight="bold", zorder=3)
+    ax.text(x4 + bw + 0.006, y4 + 0.014,
+            "1 query:  ours $\\bf 0.648$  ·  PoE 0.073        "
+            "4 queries:  ours $\\bf 0.797$  ·  PoE 0.137        "
+            "PoE needs ~100 queries to reach 0.300",
+            ha="center", va="center", fontsize=7.4, zorder=3)
 
     # ══ BAND 4 — the bank, and the step list ═══════════════════════════════
     yb, hb = 0.042, 0.470

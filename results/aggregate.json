@@ -4125,48 +4125,48 @@
    },
    "poe-guided": {
     "pair": {
-     "mean": 0.5740740740740741,
-     "se": 0.21216891014818948,
+     "mean": 0.5543981481481481,
+     "se": 0.22857257918229532,
      "n": 3
     },
     "target": {
-     "mean": 0.47453703703703703,
-     "se": 0.1046734073443463,
+     "mean": 0.4664351851851851,
+     "se": 0.1082593626062278,
      "n": 3
     },
     "joint": {
-     "mean": 0.0798611111111111,
-     "se": 0.06097021847715705,
+     "mean": 0.13888888888888887,
+     "se": 0.0837902212858253,
      "n": 3
     },
     "mean_attr": {
-     "mean": 0.6763117283950617,
-     "se": 0.023647519939385766,
+     "mean": 0.7060185185185185,
+     "se": 0.0367784301977677,
      "n": 3
     },
     "precision": {
-     "mean": 0.9814814814814815,
-     "se": 0.011746402274412286,
+     "mean": 0.9976851851851851,
+     "se": 0.0023148148148148437,
      "n": 3
     },
     "recall": {
-     "mean": 0.004299717869660343,
-     "se": 0.001805883932412047,
+     "mean": 0.01169715509500989,
+     "se": 0.003422098748103282,
      "n": 3
     },
     "f1": {
-     "mean": 0.008391740184563666,
-     "se": 0.003504277315917839,
+     "mean": 0.022855918452492324,
+     "se": 0.006650291216830496,
      "n": 3
     },
     "vendi": {
-     "mean": 1.2405508084331254,
-     "se": 0.012077524950224069,
+     "mean": 1.250432383695328,
+     "se": 0.0120786031153015,
      "n": 3
     },
     "content_ratio": {
-     "mean": 0.40489382609308905,
-     "se": 0.0012936062704361885,
+     "mean": 0.40149240057831376,
+     "se": 0.0026131484169562135,
      "n": 3
     }
    },
@@ -8433,5 +8433,32 @@
    }
   },
   "n_seeds": 3
+ },
+ "_provenance": {
+  "n9_showdown": "n9_showdown_cal",
+  "n5_classinc": "n5_classinc_full",
+  "n22_celeba_lifelong": "n22_celeba_lifelong_full",
+  "n20_celeba_composition": "n20_celeba_composition_full",
+  "n20_celeba_composition_pair": "n20_celeba_composition_pairfull",
+  "n11_basis_extension_nmadapt": "n11_basis_extension_nmadapt",
+  "e2_composition": "e2_composition",
+  "n2_composition": "n2_composition",
+  "e3_lifelong": "e3_lifelong",
+  "n3_lifelong": "n3_lifelong",
+  "n7_inversion": "n7_inversion",
+  "n8_idealwords": "n8_idealwords",
+  "n18_router": "n18_router",
+  "n23_native_parity": "n23_native_parity",
+  "n21_celeba_vocabulary_Gray_Hair": "n21_celeba_vocabulary_Gray_Hair",
+  "n5_classinc_full": "n5_classinc_full",
+  "n22_celeba_lifelong_full": "n22_celeba_lifelong_full",
+  "n20_celeba_composition_pairfull": "n20_celeba_composition_pairfull",
+  "n20_celeba_composition_full": "n20_celeba_composition_full",
+  "n9_showdown_cal": "n9_showdown_cal",
+  "n27_factor_conditionals": "n27_factor_conditionals",
+  "n25_pretrained_case": "n25_pretrained_case",
+  "n28_update_rules": "n28_update_rules",
+  "n26_batch_pretrained": "n26_batch_pretrained",
+  "n30_prototype_distance_fine": "n30_prototype_distance_fine"
  }
 }

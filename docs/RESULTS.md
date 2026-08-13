@@ -342,9 +342,14 @@ density estimator (Kynkäänniemi et al.), and `experiments/n6_diversity.py` run
 |---|---|---|
 | we replaced their guidance schedule | 7 schedules incl. their Eq. 14 | content div 0.17–0.39, recall **0.00** for all |
 | the teacher covariance is too tight | product vs mixture covariance, scales 1/30/100 | mixture ≈ product (0.23 vs 0.22) |
-| we evaluate one query, they pool 100 | pooled 12–24 queries as they do | recall still **0.00** |
+| ~~we evaluate one query, they pool 100~~ | ~~pooled 12–24 queries as they do~~ | ~~recall still 0.00~~ **← WRONG, see 5e-bis** |
 | our sampler is deterministic | ancestral sampling, η = 0.5, 1.0 | 0.24, 0.27 — no change |
 | distillation would restore it | pool vs distilled-adapter samples | 0.84 → 0.82, accuracy 0.51 → 0.38 |
+
+> **The third row is retracted (2026-08-11).** The pooling test was run against the *Generalization*
+> reference only, in pixel features. The paper's 80.7 is the **Faithfulness** number, and it is
+> measured in **Inception-V3** features. Both corrections are load-bearing; §5e-bis has the numbers.
+> Everything below this table was written on the strength of that row and is corrected there.
 
 There is a genuine mechanism behind the teacher's sharpness — **99% of the Laplace variances sit
 exactly on `laplace_diag`'s floor**, so Σ_T is a point mass rather than a shape, and raising the
@@ -379,6 +384,421 @@ rather than sampling a Gaussian. The paper's own table hints the same way: their
 analytic teacher does. We could not reproduce that ordering here because our distillation is trained
 on an already-collapsed pool — garbage in.
 
+### 5e-bis. The gap was mostly ours, and it was in the measurement (2026-08-11)
+
+§5e's conclusion — *guiding a unimodal Gaussian cannot produce coverage* — rested on the pooling row
+retracted above. Re-running it correctly changes the answer. Two things were wrong at once, and each
+alone is enough to drive recall to zero:
+
+1. **We pooled the wrong reference.** The paper reports **two** columns per arm. Faithfulness
+   references the 100 queries themselves; Generalization references 100 *other* held-out images.
+   80.7 is the Faithfulness number. Our pooling test scored Generalization only.
+2. **We measured in the wrong space.** Their precision/recall are Inception-V3 pool3 k-NN estimates.
+   `evals._feat` is a 2× pixel downsample, whose docstring argued only the *ordering* between
+   methods needs to survive. It does not: pixel distance calls two instances of the same digit far
+   apart exactly when they differ in position, which is the failure mode being measured.
+
+`tests/diag_paper_protocol.py`, one OOD class, generation held fixed while the query count sweeps
+(so the two spaces and all five rows are the same 1600 images):
+
+| | | Faithfulness P / R / F1 | Generalization P / R / F1 |
+|---|---|---|---|
+| **pixel** (`_feat`) | 1 query | — | 0.938 / **0.000** / 0.000 |
+| | 100 queries | 1.000 / 0.580 / 0.734 | 0.829 / **0.000** / 0.000 |
+| **Inception-V3** (theirs) | 1 query | — | 0.812 / 0.040 / 0.076 |
+| | 16 queries | 0.992 / 0.625 / **0.767** | 0.676 / 0.120 / 0.204 |
+| | **100 queries** (theirs) | **0.829 / 0.590 / 0.689** | **0.664 / 0.180 / 0.283** |
+| **the paper's PoE** | | *0.755 / 0.807 / 0.753* | *0.670 / 0.698 / 0.630* |
+
+**What reproduces.** Generalization **precision lands at 0.664 against their 0.670** — on a smaller
+backbone, at a different resolution, through our own reimplementation. Faithfulness F1 reaches 0.767
+at 16 queries and 0.689 at 100, against their 0.753. Their method works, and it works here.
+
+**What does not.** **Generalization recall: 0.180 against their 0.698.** Everything else in the table
+is within striking distance of theirs; this one is off by a factor of four, and it is the same
+quantity in both papers' arguments — does the generated set *cover the class*, or only the queries
+that produced it. Precision at 0.664 says our samples are inside the real class; recall at 0.180 says
+the real class is mostly not inside our samples. The per-query collapse §5e measured is real and is
+the mechanism: at η=0 the sampler is deterministic given the teacher, so one query yields one image,
+and 100 queries yield 100 tight clusters rather than a covering.
+
+**What this does to the repository's own numbers.** The `poe-guided` row we publish — recall 0.001,
+F1 0.003 — was measured at 1 query, Generalization reference, pixel features: the worst cell of a
+six-cell table, reported as if it were the whole table. It is not a fair statement of Wang et al.'s
+method and is corrected wherever it appears. Note the comparison *between our arms* was never unfair
+— every arm was measured the same way, and `tests/diag_teacher_variance.py` separately refuted the
+one asymmetry that existed (`var_scale` 30 for ours vs 1 for theirs: recall 0.000 at **both**, so our
+F1 margin is not that knob). What was unfair was the comparison to their **published** numbers.
+
+`experiments/n49_paper_protocol.py` runs their five arms plus ours under this protocol; §4b of
+`docs/SETTINGS.md` records the protocol itself as an audited deviation, and
+`figures/additional/f29_protocol.png` (`experiments/make_n49_figure.py`) is the picture: one generated set,
+six scores, spanning 0.000 to 0.590 on the axis the comparison is made on.
+
+### 5e-ter. Their Table 1 reproduced, and what ours looks like on their axis (N49)
+
+Six OOD classes, 100 queries × 16 generations each, Inception-V3, both reference sets. The two arms
+that train one adapter per query (`+LoRA`, `ours`) run on 4 queries, and **every other arm is
+re-scored at 4 as well** — recall rises with the query count, so a cross-budget comparison would be
+the very error this section documents.
+
+**Their four arms at their own budget (100 queries), F1:**
+
+| arm | Faithful. (ours / theirs) | General. (ours / theirs) |
+|---|---|---|
+| PoE | **0.569** / 0.753 | **0.363** / 0.630 |
+| top-1 | 0.191 / 0.062 | 0.248 / 0.065 |
+| top-3 | **0.027** / **0.051** | **0.053** / **0.053** |
+| query-only | 0.612 / 0.000 | 0.316 / 0.000 |
+
+`top-3` reproduces almost exactly (0.027/0.053 against 0.051/0.053) and PoE lands above both top-k
+arms on Generalization as they report. `query-only` is the one arm that does not reproduce, and the
+disagreement is internal to their paper rather than ours — their CelebA Table 2 puts it *first* on
+Faithfulness (F1 0.640), which is what we see. `docs/SETTINGS.md §4c` works that through.
+
+**All six arms at the matched 4-query budget** — and the point is that no single column decides it:
+
+| arm | General. precision | General. recall | General. F1 | **joint accuracy** |
+|---|---|---|---|---|
+| **ours** | 0.195 | **0.797** | **0.291** | **0.435** |
+| PoE | **0.547** | 0.137 | 0.194 | 0.596 |
+| query-only | 0.549 | 0.080 | 0.130 | **0.680** |
+| top-1 | 0.208 | 0.610 | 0.267 | **0.000** |
+| top-3 | 0.042 | 0.418 | 0.048 | 0.005 |
+| `+LoRA` | 0.003 | 0.292 | 0.005 | 0.005 |
+
+**Read the last two columns together or the table lies.** `top-1` reaches recall 0.610 — better
+coverage than PoE — at joint accuracy **0.000**: it covers a class thoroughly, and it is the wrong
+class. The k-NN metrics measure distributional coverage, not whether the composition is correct,
+which is exactly why the paper reports top-1 at F1 0.062 despite recall 42.2. Conversely `PoE` and
+`query-only` are accurate (0.596, 0.680) with almost no coverage (0.137, 0.080) — they re-emit the
+query.
+
+**Ours is the only arm that is on both axes at once**: coverage 0.797 with accuracy 0.435. That is
+the claim, and it is a trade rather than a sweep — our Generalization *precision* is 0.195 against
+PoE's 0.547, so our pool is more spread than the real class is.
+
+**At a single query** the same shape holds and is sharper, because it is the regime the architecture
+is built for: ours reaches Generalization recall **0.648** where PoE reaches **0.073** and
+`query-only` **0.025**. PoE needs on the order of 100 queries to reach 0.300. This is the
+quantitative content of Stage 4 in `figures/f0_architecture.png`: guiding a unimodal Gaussian under a
+deterministic (η = 0) sampler yields one image per teacher, so their diversity comes from having 100
+teachers; reading the composition into `c_new` and letting the model's own multimodal conditional
+generate yields a covering pool from one.
+
+### 5e-quater. Why `poe-guided` and `query-only` are the same arm here
+
+The case-study figure (`figures/f9_case_colormnist.png`) shows it before any metric does: in all four
+blocks the `poe-guided` and `query-only` rows are **visually identical**, and the first of the three
+selected prototypes is a clean, correct instance of the held-out composition while the other two are
+noise. The n49 table agrees — PoE F1 0.569 / 0.363 against query-only's 0.612 / 0.316, and the same
+near-tie on precision, recall and joint accuracy.
+
+**A mechanism in the selection objective was the obvious suspect, and it turned out to be wrong.**
+`submodular_select` greedily maximizes `F(S) = Σ_r max_{j∈S} L[j, r]` where `L = loglik_perdim(xq,
+M, V)` — the per-dimension log-likelihood **of the query** under each candidate. Whichever candidate
+sits closest to the query explains it best, so it is the first greedy pick; and with `init="hybrid"`
+(or the paper's own query-centred CelebA column) half the ascent chains *start at the query*, which
+guarantees such a candidate exists.
+
+`tests/diag_holdout_leak.py` measures how strong that bias is, per selected prototype, against the
+natural intra-class spread as a scale bar (slot 46, query-initialized):
+
+| pick | d(query) | d(held-out) | d(train) | *real-real* |
+|---|---|---|---|---|
+| **k = 0** (first greedy pick) | **0.1148** | 0.1524 | 0.1176 | *0.1255* |
+| k = 1 | 0.2272 | 0.1966 | 0.1385 | *0.1255* |
+| k = 2 | 0.2463 | 0.1930 | 0.1592 | *0.1255* |
+
+The first pick is **twice as close to the query** as the other two, and closer to it than two real
+images of that slot are to each other (0.1148 < 0.1255). It is *not* a copy — it sits essentially
+equidistant from the query and from the training set (0.1148 vs 0.1176), which is what a chain that
+started at the query and walked to a trained mode should look like.
+
+**That selection ordering is real. The mechanism I inferred from it is not — it is refuted below,
+and the refutation is the more important result.**
+
+#### The test, and why the explanation above fails
+
+If the degeneracy came from selection preferring its own initialization, then forbidding it should
+break the composition. `compose.candidates_ascent` now records each candidate's provenance and
+`poe_teacher(..., eligible=...)` restricts which candidates selection may pick — the ascent is
+unchanged, so the query still seeds the search; it simply cannot be its own answer.
+`tests/diag_selection_bias.py`, five held-out slots, the teacher **mean** read by the probes:
+
+| slot | eligible = **all** | eligible = **random** (query-agnostic) | eligible = **query-seeded** |
+|---|---|---|---|
+| 46 | joint 0.00 · d 0.256 | joint 0.00 · d 0.220 | joint 0.00 · **bg wrong** · d 0.557 |
+| 110 | joint **1.00** · d 0.289 | joint **1.00** · d 0.311 | joint 0.00 · **bg wrong** · d 0.669 |
+| 19 | joint **1.00** · d 0.317 | joint **1.00** · d 0.317 | joint 0.00 · **fg+bg wrong** · d 0.893 |
+| 99 | joint **1.00** · d 0.206 | joint **1.00** · d 0.223 | joint 0.00 · **bg wrong** · d 0.599 |
+| 94 | joint **1.00** · d 0.240 | joint **1.00** · d 0.263 | joint 0.00 · **bg wrong** · d 0.669 |
+| 8 | joint **1.00** · d 0.241 | joint **1.00** · d 0.389 | joint 0.00 · **bg wrong** · d 0.512 |
+
+*(`d` is the teacher mean's distance to the query, in units of the class's own spread.)*
+
+Means over the six slots, which is the line to quote:
+
+| eligible | joint | digit | fg | bg | d(query)/spread |
+|---|---|---|---|---|---|
+| all (as it runs today) | **0.83** | 0.83 | 1.00 | 1.00 | 0.258 |
+| **random** (query-agnostic only) | **0.83** | 0.83 | 1.00 | 1.00 | 0.287 |
+| query-seeded only | **0.00** | 0.83 | 0.83 | **0.00** | 0.650 |
+
+**Restricting selection to query-agnostic candidates costs nothing: the composition is identical in
+5 of 5 slots.** Restricting it to the query-seeded candidates instead **destroys** it — joint 0.00
+everywhere, with the background wrong in all five — and pushes the mean *further* from the query
+(0.56–0.89 against 0.21–0.32), the opposite of what the mechanism predicted.
+
+**So the composition is genuinely discovered, and it lives in the modes that never saw the query.**
+The query-seeded half of the pool is the *worse* half; selection picking from it first is a
+cosmetic ordering effect, not the source of the degeneracy.
+
+*(These two facts are consistent, and the reconciliation is the point of K > 1. With the full pool
+the greedy picks are one query-seeded mode plus two others, and the per-dimension product needs the
+others: submodular selection exists to find experts that **disagree** with the query, because the
+right background lives in a different basin from the right foreground. Restricted to query-seeded
+candidates, all three picks come from the same basin, the product has no complementary expert to
+supply the background, and the background is exactly what goes wrong in 5 of 5 slots. The first pick
+looking like a clean instance of the composition and the composition not depending on it are the
+same observation from two sides.)*
+
+Two consequences:
+
+* **The worry that prompted this — "are the prototypes just the query?" — is answered NO**, on top of
+  §5e-quinquies' separate finding that they are not memorized held-out images either.
+* **Why `poe-guided` ≈ `query-only` on three backbones — answered below.**
+
+#### The guidance channel is the bottleneck, and it has no usable setting
+
+The two teachers are genuinely different: their means sit **0.082 apart** in RMSE, while
+`query_only_teacher`'s mean *is* the query. So the question is whether Eq. 13 transmits that
+separation. `tests/diag_poe_vs_queryonly.py` sweeps w₀ and measures what arrives — three OOD slots,
+12 samples each, `d(samples)/d(means)` being the fraction of the teacher difference that survives:
+
+| w₀ | d(means) | d(samples) | **transmitted** | joint, PoE | joint, query-only |
+|---|---|---|---|---|---|
+| 0.5 | 0.0820 | 0.0261 | **0.32** | 0.06 | 0.06 |
+| **1.2 — the paper's** | 0.0820 | 0.0269 | **0.33** | **0.56** | **0.64** |
+| 3.0 | 0.0820 | 0.1470 | 1.79 | **0.00** | **0.00** |
+| 8.0 | 0.0820 | 0.1697 | 2.07 | **0.00** | **0.00** |
+
+**At the paper's own w₀ only a third of the difference between the two teachers reaches the
+images.** Turning the guidance up does transmit it — the ratio passes 1.0 by w₀ = 3 — but the
+composition is gone by then: joint accuracy falls from 0.56 to **0.00** for *both* arms, because
+guidance that strong drives the trajectory off the manifold.
+
+**There is no setting where the arms are distinguishable and the composition survives.** That is the
+whole explanation, it is a property of Eq. 13/14 rather than a defect in our reimplementation, and it
+holds on every backbone we have run. Two teachers 0.08 apart are simply below the resolution of a
+channel whose usable dynamic range ends before it can express them.
+
+This is also the quantitative case for Stage 4 of `figures/f0_architecture.png`. If the guidance
+channel cannot carry the difference between two teacher means, then *no* choice of teacher will
+distinguish itself through it — which is why our route stops using the teacher as the sampling
+distribution and reads the composition into `c_new` for the model's own conditional to generate.
+Note also that at w₀ = 1.2 `query-only` is slightly *ahead* on joint (0.64 vs 0.56): the discovered
+composition buys nothing over the query once it has to pass through this channel.
+
+This is **not** memorization of held-out data (§5e-quinquies below). It is discovery selecting its
+own initialization.
+
+**It is inherited, not introduced.** Their Table 6 CelebA column specifies query-centred
+initialization and their Eq. 8–9 is this objective. The prediction that follows is that their
+`query-only` baseline should be strong wherever this bites — and their **CelebA Table 2 has
+query-only beating PoE on Faithfulness (F1 64.0 vs 20.3)**, exactly as we observe, while their
+ColorMNIST Table 1 puts it at the floor (0.0 vs 75.3). The two rows of their own paper disagree about
+this baseline in the same direction our measurements do (see `docs/SETTINGS.md §4c`).
+
+**Confirmed a third time, on their own backbone.** N48 runs this on the N47 fine-tune of
+`google/ddpm-celebahq-256` at 128 px — their Table 5 configuration, not ours — with 16 queries pooled
+per class and both reference sets. The two arms are again indistinguishable, and our route is not:
+
+| arm (CelebA, paper backbone) | mean attr | joint | General. precision | General. recall |
+|---|---|---|---|---|
+| `poe-guided` | 0.863 | 0.500 | 0.80 | **0.02** |
+| `query-only` | **0.865** | **0.500** | 0.73 | **0.03** |
+| `ours (ADDRESS)` | 0.817 | 0.323 | 0.61 | **0.36** |
+| *unconditional (floor)* | *0.699* | *0.120* | *0.44* | *0.47* |
+
+*(Caveat on the floor row, and it is ours: the `unconditional` arm takes no class input, so at a
+fixed seed it drew the **same images for every class** in this run — classes 7 and 12 both scored
+attr 0.699 / joint 0.120, differing only in the reference-dependent precision and recall. Read it as
+one fixed draw scored per class, not as six independent floors. `n48` now offsets the seed per class;
+the run above predates that.)*
+
+### 5e-sexies. Their Table 2 reproduced on their own backbone (N48, corrected 2026-08-13)
+
+> **This section replaces a retracted one.** Its first version concluded "our arm does not clear the
+> unconditional floor on CelebA" and scoped the composition claim to 3-factor benchmarks. That was
+> measured through an indexing bug in `attr_accuracy` (the target combination was indexed by position
+> in a *filtered* attribute list rather than canonical position), which suppressed every arm's
+> accuracy — `ours` read 0.131 against a floor of 0.128. Re-run against the fix, the accuracy axis
+> reverses completely. The coverage axis never touched the probes and is unchanged.
+
+6 held-out CelebA classes on the N47 fine-tune of `google/ddpm-celebahq-256` at 128 px — their own
+Table 5 configuration — 16 queries pooled per class, Inception-V3 for the k-NN metrics, both of their
+reference sets.
+
+| arm | mean attr | **joint** | Faithful. P / R / F1 | General. P / R / F1 |
+|---|---|---|---|---|
+| `poe-guided` | 0.885 | **0.544** | 0.916 / 0.104 / **0.187** | **0.753** / 0.034 / 0.065 |
+| `query-only` | 0.879 | 0.528 | 0.898 / 0.177 / 0.296 | 0.681 / 0.039 / 0.074 |
+| **`ours (ADDRESS)`** | 0.858 | **0.439** | 0.681 / 0.396 / **0.501** | 0.585 / **0.305** / 0.401 |
+| *unconditional (floor)* | *0.733* | *0.161* | *0.635 / 0.396 / 0.488* | *0.474 / 0.359 / **0.409*** |
+| **their Table 2, PoE** | — | — | 0.758 / 0.120 / **0.203** | ***0.745*** / 0.090 / 0.156 |
+
+**Their method reproduces.** PoE Faithfulness F1 **0.187 against their published 0.203**, and
+Generalization *precision* **0.753 against their 0.745** — within 0.008, through an independent
+reimplementation on a separately fine-tuned backbone. Unchanged by the bug fix, because the
+precision/recall columns are Inception-space quantities that never touch the attribute probes.
+
+**Our arm clears the floor on the axis that was corrupted.** Joint accuracy **0.439 against 0.161**,
+a 2.7× margin, and it holds on every class individually:
+
+| class | 7 | 9 | 12 | 14 | 15 | 25 |
+|---|---|---|---|---|---|---|
+| `ours` joint | 0.323 | 0.432 | 0.609 | 0.427 | 0.375 | 0.469 |
+| floor | 0.120 | 0.083 | 0.260 | 0.068 | 0.214 | 0.224 |
+| ratio | 2.7× | **5.2×** | 2.3× | **6.3×** | 1.8× | 2.1× |
+
+**And the accuracy/coverage scissors from ColorMNIST appears here too.** Read the `joint` and
+Generalization-recall columns together, because neither alone ranks the arms:
+
+* `poe-guided` and `query-only` are the most *accurate* (0.544, 0.528) and cover almost nothing
+  (recall 0.034, 0.039) — they re-emit the query, exactly as on ColorMNIST and as their own §4.3
+  describes for query-only.
+* `unconditional` covers the most (recall 0.359) and carries the composition worst (joint 0.161) —
+  a diffuse sampler reaches the class manifold without ever being asked to.
+* **`ours` is the only arm on both axes**: accuracy 2.7× the floor *and* recall 9× `poe-guided`'s.
+
+**What does not clear the floor, and is not corrected.** Our Generalization **F1** is 0.401 against
+the floor's 0.409 — a tie, because F1 mixes precision with recall and an unconstrained sampler buys
+recall by being diffuse. That number was never affected by the bug and it stands: on coverage-F1
+alone, ADDRESS is not distinguishable from not conditioning at all. The claim the data supports is
+the joint one — coverage *at* accuracy — not coverage by itself.
+
+**Both probe spaces, and they agree on the ratio.** `joint` requires every readable attribute
+simultaneously, so it is sensitive to how the probes were fit. The run was done twice -- probes on
+raw pixels (4-5 readable of 14) and on Inception-V3 pool3 features (6 of 14) -- and the absolute
+levels move a long way while the comparison does not:
+
+| | ours `joint` | floor `joint` | ratio | per-class ratios |
+|---|---|---|---|---|
+| pixel probes | 0.439 | 0.161 | **2.7x** | 1.8 / 2.1 / 2.3 / 2.7 / 5.2 / 6.3 |
+| Inception probes | 0.245 | 0.108 | **2.3x** | 1.6 / 2.1 / 2.4 / 5.0 / 6.0 / floor 0.000 |
+
+The Inception run is the stricter of the two -- six attributes must all be right at once instead of
+five -- which is why every level is lower, and it is also the one that does not depend on `Bald`
+(base rate 0.000 in this split, so a probe that cannot be wrong; `probe_usable` now rejects it). The
+margin over the floor survives both, on every class in both. The coverage columns are identical
+between the runs to within 0.003, as they must be: precision and recall are Inception-space
+quantities in both cases and never touch the attribute probes.
+
+### 5e-quinquies. Are the recovered prototypes memorized held-out images? No — the split is clean
+
+Prompted by a reading of the case studies: several prototypes look like clean instances of the OOD
+composition, which would be retrieval wearing composition's clothes if the backbone had ever seen
+them. `tests/diag_holdout_leak.py` checks both halves of that.
+
+**The split, asserted against the checkpoint rather than assumed.** `n1_train` fits on
+`data["X"][seen]` and remaps only the seen slots; the audit confirms it on the artifact itself:
+
+| | |
+|---|---|
+| slots | **120 seen, 40 held out** |
+| slots with a row in the checkpoint's class table | **120** |
+| held-out slots with a trained embedding row | **0** |
+| trained rows that are not seen slots | **0** |
+
+**The prototypes, by nearest neighbour.** For each *selected* prototype, distance to the query, to
+other images of the same OOD slot (never seen), and to the training set — with the median distance
+between two real held-out images of that slot as the scale bar. Memorization would mean a prototype
+lands closer to an unseen image than real images of that slot land to each other, while sitting far
+from anything trained on.
+
+**It never happens: 24 of 24 prototypes** (4 slots × 2 initializations × K = 3) are nearest to the
+**training** set. Not one is nearest to the held-out set.
+
+| slot | init | k | d(query) | d(held-out) | d(train) | *real-real* |
+|---|---|---|---|---|---|---|
+| 46 | query | 0 | 0.1148 | 0.1524 | **0.1176** | *0.1255* |
+| 46 | **random** | 0 | 0.1361 | 0.1013 | **0.0691** | *0.1255* |
+| 110 | query | 0 | 0.1252 | 0.1159 | **0.1074** | *0.1046* |
+| 110 | **random** | 0 | 0.1718 | 0.1192 | **0.0890** | *0.1046* |
+| 19 | **random** | 0 | 0.1162 | 0.0931 | **0.0871** | *0.0523* |
+| 99 | query | 0 | 0.1057 | 0.1130 | **0.0744** | *0.1043* |
+| 99 | **random** | 0 | 0.1683 | 0.1362 | **0.0855** | *0.1043* |
+
+The **random-initialized** rows carry the weight: those chains start from noise and never see the
+query, so "it resembles the query because it started there" cannot explain them — and they land
+*closest of all* to the training set (0.069–0.089, in several cases well under the intra-class
+spread). That is what a mode of the trained distribution looks like.
+
+**So the resemblance is real and innocent, for two reasons.** ColorMNIST is factored: a held-out slot
+shares its digit with seen slots and both its colours with other seen slots, so a mode carrying the
+right digit in the right colours can exist without any held-out image ever having been shown — that
+is the phenomenon under study, not a leak. And the first-picked prototype additionally sits near the
+query because selection is scored *on the query* (§5e-quater).
+
+**What this does not license.** It clears memorization of held-out *images*. It says nothing about
+whether the composition is genuinely discovered rather than inherited from the query, which is
+§5e-quater's separate and less comfortable finding.
+
+#### The specific reading that keeps prompting this, and the direct answer to it
+
+The figure invites it: in `figures/f9_case_colormnist.png` the **first** of the three prototypes is a
+clean instance of the held-out composition while the other two look like noise, which reads as the
+model having been shown that class. It was not, and `tests/diag_prototype_origin.py` settles it on
+the exact compositions the figure renders.
+
+**First, at the data level** — the four shown slots, checked against the checkpoint's own remap:
+
+| composition | slot | rows in TRAIN | class-embedding row |
+|---|---|---|---|
+| digit 9, cyan on deep_red | 152 | **0** | **none** |
+| digit 4, green on navy | 69 | **0** | **none** |
+| digit 7, pink on dark_purple | 126 | **0** | **none** |
+| digit 1, yellow on dark_brown | 19 | **0** | **none** |
+
+**Second, the resemblance is the initialization**, and the provenance now proves it rather than
+suggesting it. `meta["src"]` records where each candidate's chain began:
+
+| composition | pick | chain began | u | d(query) | d(train) | in class-spreads |
+|---|---|---|---|---|---|---|
+| 9, cyan/deep_red | **0** | **query** | 0.050 | 0.1319 | 0.1597 | 0.76 |
+| | 1 | random | 0.200 | 0.2484 | 0.1820 | 1.43 |
+| 4, green/navy | **0** | **query** | 0.050 | 0.1144 | **0.0952** | 0.94 |
+| 7, pink/dark_purple | **0** | **query** | 0.075 | 0.1326 | 0.1312 | 0.90 |
+| 1, yellow/dark_brown | **0** | **query** | 0.050 | 0.1106 | **0.0809** | 1.01 |
+
+**Pick 0 is the query-seeded chain at the lowest noise level, in every block**, and picks 1–2 are
+random-seeded at higher noise — which is exactly why they look unrelated. Selection scores candidates
+on the query (Eq. 8–9), so the query-seeded one is always chosen first.
+
+**Third, it is not the query re-displayed.** Pick 0 sits **0.76–1.01 class-spreads** from the query —
+a full class-width of movement — and in two of four blocks it ends up *closer to the training set
+than to the query it started from* (0.0952 vs 0.1144; 0.0809 vs 0.1106). It is a mode of the trained
+distribution reached from the query, which is what compositional generalization looks like when the
+digit, the foreground and the background are each trained and only their conjunction is new.
+
+And it is not what carries the result: excluding query-seeded candidates from selection leaves the
+composition identical in 6/6 slots (§5e-quater). The figure now labels each prototype with its
+provenance and noise level, because hiding that asymmetry is what made the panel misread twice.
+
+**What did not reproduce, and it is downstream of the row above.** `+LoRA` — their distillation,
+which their Table 1 reports as their **best** arm (F1 87.6 / 76.3) — comes out at F1 0.169 / 0.005
+here, with joint accuracy 0.005. It is not an independent failure: its **Vendi score is 1.15**, i.e.
+roughly *one effective sample* out of 64, against 2.17 for `ours` on the identical budget. The
+adapter is distilled on 256 images drawn from the PoE teacher, and that pool is itself collapsed
+(vendi 1.06 from 24 draws, `tests/diag_teacher_variance.py`). Distilling 256 near-copies of one image
+teaches one image, and the arm cannot exceed the pool it learns from.
+
+So `+LoRA` inherits the `poe-guided` degeneracy rather than adding a new one, and fixing that would
+have to come first. Recorded as a **failed reproduction with an identified cause**, not as a negative
+result about their method — on their own numbers the distilled arm *improves* on their PoE
+(88.0 vs 80.7 recall), which is exactly what a healthy pool would predict.
+
 ### 30b. The pretrained backbone was being fed scrambled input, and it invalidates the whole pretrained track
 
 This is the more serious half, and it is the blocker for replicating the companion paper at all,
@@ -396,11 +816,11 @@ function. `tests/diag_pretrained_layout.py` measures it three ways on the untouc
 | unconditional samples | **a 3×3 tiled mosaic of greyscale faces** | photorealistic colour faces |
 
 **Under the permuted layout the field returned a 3×3 tiled greyscale mosaic** while `DDPMPipeline`
-sampling the *same weights* returns photorealistic faces (`figures/f25_pretrained_layout.png`). The
+sampling the *same weights* returns photorealistic faces (`figures/additional/f25_pretrained_layout.png`). The
 one-step denoise recovers the target at RMSE 0.076 under `hwc` against 0.380 permuted — a 5× gap,
 and permuted is barely better than the 0.605 you get by doing nothing at all.
 
-![the paper's backbone, permuted vs real input](../figures/f25_pretrained_layout.png)
+![the paper's backbone, permuted vs real input](../figures/additional/f25_pretrained_layout.png)
 
 **Consequences, stated plainly.**
 
@@ -416,12 +836,55 @@ and permuted is barely better than the 0.605 you get by doing nothing at all.
 `PretrainedScoreField` now defaults to `layout="hwc"` and converts at all four boundaries — `eps` in
 and out, `x_init`, the guidance callback, and the return value. The pretrained track is being rerun.
 
-### 30d. Open: the adapter bank still produces noise on the pretrained backbone (N26)
+### 30d-CLOSED. It was the renderer, not the bank (2026-08-12)
+
+**§30d below is resolved, and the answer is that nothing was ever wrong with the adapter.** The
+symptom — "rainbow noise with fine horizontal striping" — is what an **HWC-flat row read as
+CHW-flat** looks like, and the two conventions in play disagree:
+
+```
+n25_pretrained_case.show()   reshape(3, img, img).transpose(1, 2, 0)     <- assumes CHW-flat
+PretrainedScoreField         layout="hwc"; _to_flat: permute(0,2,3,1)    <- returns HWC-flat
+```
+
+`n26` loads its images CHW-flat and un-flattens them itself for *training*, so training is
+self-consistent and the audit below correctly cleared it. But it *samples* through `field.sample()`,
+which returns rows in the **field's** layout, and then renders them with `show`. Everything after the
+sampler was transposed.
+
+`tests/diag_pretrained_render.py` settles it with no adapter and no consolidation at all — the
+**untouched** backbone, four samples, read both ways (`figures/additional/f30_pretrained_render.png`):
+
+| read | vertical/horizontal gradient ratio |
+|---|---|
+| real CelebA photographs (the bar) | 0.876 |
+| **CHW — what `show` does** | **2.080** |
+| HWC — what the field returns | **0.963** |
+
+The CHW row is the reported failure, pixel for pixel, produced by a model with **nothing attached to
+it**. The HWC row is photorealistic faces. Same samples.
+
+**Why every previous hypothesis missed it.** The controlled sweep measured `tv` on the flat arrays,
+and the control was transposed identically — so the *ratio* stayed near 1 while both pictures were
+scrambled. A metric that cannot see the defect reported no defect, three times over.
+
+This is the same fault as §30b (the model's **input** being permuted) on the model's **output**, and
+it is the fourth instance in this repository of a layout convention crossing a boundary
+undeclared. The lasting fix is that flat rows should never be passed between a field and a renderer
+without the layout travelling with them.
+
+**What this does and does not restore.** It removes the last unexplained failure from the pretrained
+track, and it means N26's attribute/vendi numbers were computed on correctly-shaped arrays all
+along — only the figure was wrong. It does **not** revive N25's retracted composition result: that
+was measured through a field feeding the UNet a permuted **input** (§30b), which is a different bug
+and a real one.
+
+### 30d. Open: the adapter bank still produces noise on the pretrained backbone (N26) — *superseded by 30d-CLOSED above; kept for the record of what was ruled out*
 
 Not everything downstream of the layout fix recovered. `n26_batch_pretrained` consolidates four
 attribute concepts into `google/ddpm-celebahq-256` through the LoRA bank, and its samples are
 **rainbow noise with fine horizontal striping** — before the layout work and after it, pixel for
-pixel the same failure (`figures/n26_batch_pretrained.png`).
+pixel the same failure (`figures/additional/n26_batch_pretrained.png`).
 
 **It is not the layout, and the check is direct.** n26 carries its own CHW-flat convention
 end to end: it loads images with `.transpose(2,0,1).ravel()` and its own `train_group` un-flattens
@@ -469,6 +932,66 @@ preservation result stands — it never depended on the samples looking right �
 is not currently producing usable images, and no claim in this document should be read as saying it
 is.
 
+### 30e. The CelebA panel was comparing generations against images that produced none of them
+
+Looking again at `f18_celeba_paper_paperdisc_w05.png` after §30c's fixes, two things still read as
+broken: the prototypes carry a colour cast (neon magenta in one block, electric blue in another), and
+**that cast reappears in the rows beneath them** — including `query-only`, whose teacher is
+N(x_q, σ²I) and which never sees a prototype. The obvious story is that bad prototypes contaminate
+the teacher mean. `query-only` refutes it. The next obvious story is that all arms in a block share
+the seed, and their DDIM at η=0 is deterministic, so the seed decides the image. That is also wrong.
+
+`tests/diag_celeba_cast.py` separates the two by varying one thing at a time:
+
+| | mean RGB | spread across the varied axis |
+|---|---|---|
+| **A. one query, six seeds** | [0.637, 0.549, 0.490] | **0.0154** |
+| **B. six queries, one seed** | [0.523, 0.447, 0.379] | **0.1485** |
+| *the six real queries themselves* | *[0.547, 0.460, 0.403]* | *0.1549* |
+
+**The cast tracks the query, not the seed** — B's spread is 0.1485 against the queries' own 0.1549,
+and its mean colour sits within 0.024 of theirs on every channel, while changing the seed moves the
+colour by 0.015. `query-only` is doing exactly what a Gaussian centred on x_q should do: reproducing
+the query's colour faithfully.
+
+**So why did it look wrong?** Because the figure was not showing the query. `n44` drew the query at a
+*random* index of the held-out combo (`q = idx[rng.integers(len(idx))]`) and rendered the row labelled
+"real query" from a *different* set — `idx[:n_show]`, the first six images of that combo. The two
+coincided only by chance. Every reader of that panel, this one included, was invited to compare
+generations against images that had driven none of them, and a cast faithful to an unshown image
+reads as an artifact. Fixed: the query is now column 1 of that row and the label says so.
+
+**What remains wrong with the prototypes is smaller and more specific than it looks.** Part C of the
+same diagnostic measures each prototype's mean colour against its query's:
+
+| case | query RGB | prototype RGB | \|ΔRGB\| | fraction outside [−1,1] |
+|---|---|---|---|---|
+| 0 | [0.648, 0.547, 0.509] | [0.676, 0.562, 0.481] | **0.024** | 4.4 % |
+| 1 | [0.726, 0.656, 0.587] | [0.760, 0.674, 0.538] | **0.033** | **18.4 %** |
+| 2 | [0.651, 0.525, 0.461] | [0.695, 0.528, 0.431] | **0.026** | 1.7 % |
+
+The prototypes are *not* globally mis-coloured — their average colour sits within 0.033 of the
+query's on every case, as close as `query-only`'s samples get. The neon is **localized**: between
+1.7 % and 18.4 % of coordinates driven to the boundary, which clipping renders as flat patches of
+pure colour, and the eye reads a patch as a cast over the whole image. That is §30c's finding — a
+defect in mode ascent, not in the composition — and the per-case spread shows it is query-dependent
+rather than a constant property of the settings.
+
+What this section clears is the *sampling* path: the generations are faithful to their query, and the
+apparent contamination of one row by another was an artifact of the figure's own indexing. The
+regenerated panel shows it directly — the block whose samples are all electric blue has a **query
+that is itself a blue-lit photograph**, and the block whose samples sit on red has a query shot
+against red. Both were previously represented by six ordinary portraits of the same attribute
+combination, so the fidelity looked like a defect.
+
+**What is still visibly wrong, and is now isolated.** In each block one of the three selected
+prototypes is saturated while the other two are clean faces. `candidates_ascent` pools ascent output
+over the whole u-grid (CelebA: 0.05 … 0.50) and submodular selection then draws K = 3 from that
+pool, and `tests/diag_prototype_quality.py` measured the upper end of that grid returning junk — so
+the hypothesis is that the bad prototype is simply the high-noise one, and a pool that is not
+filtered by level lets it be selected. `n44` now prints the noise level and out-of-gamut fraction of
+each selected mode, which decides that rather than leaving it to be read off a picture.
+
 ### 30c. Saturated prototypes: Adam was finding the boundary, not a mode
 
 With the layout fixed the pretrained CelebA samples became real faces, which exposed the fault
@@ -511,7 +1034,7 @@ Table 8 `w0 = 0.5`; input layout corrected), on `google/ddpm-celebahq-256`:
 with **Adam restored** — they are indistinguishable from the ones the ascent changes produced
 (0.82–1.11), which is the evidence that those changes were never doing the work.
 
-![the paper's pipeline on its own backbone, after the layout, guidance and ascent fixes](../figures/f18_celeba_paper_paperdisc_w05.png)
+![the paper's pipeline on its own backbone, after the layout, guidance and ascent fixes](../figures/additional/f18_celeba_paper_paperdisc_w05.png)
 
 **Four explanations were tried and three were refuted by measurement**, which is worth recording
 because each was plausible: runaway Adam steps (max |x₀| measured 1.5–2.0, not the 9 predicted), the
@@ -535,7 +1058,7 @@ median elsewhere. 1.0 means no seam:
 | 12-epoch matched pair, `permuted` | 1.424 |
 | 12-epoch matched pair, **`hwc`** (counter-control) | **1.004** — seam gone |
 
-![where CelebA samples discontinue](../figures/f24_band_artifact.png)
+![where CelebA samples discontinue](../figures/additional/f24_band_artifact.png)
 
 **The prediction was sharp and it held.** The discontinuity spikes at precisely the two rows the
 permutation implies, at 2.6× the level real data shows, and an otherwise identical backbone trained
@@ -871,7 +1394,7 @@ baselines do not change it.
 ## 5l. N9 showdown — every method on the same held-out compositions
 
 One OOD composition per row, every method on the same query, same backbone, same sampling budget,
-each panel annotated with what was measured on exactly those samples (`figures/f9b_showdown_colormnist.png`, written the next time n9 runs).
+each panel annotated with what was measured on exactly those samples. (That figure — `f9b_showdown_colormnist.png` — does **not** exist yet: `make_paper_figures.py` copies it from `n9_showdown.png`, which the last n9 run did not leave behind, so the pipeline silently skips it. Named here without a link until a run produces it, because a live link to an absent file is the same broken-artifact failure `tests/test_figures_fresh.py` exists to catch.)
 5 compositions × 24 samples, with an interference stream of **8 real-image concepts** run over the
 retention arms (real images, not composed pools — §5m explains why that distinction decides whether
 the stream tests anything at all):
@@ -884,6 +1407,12 @@ the stream tests anything at all):
 | `inversion` (class basis) | 0.27 | 0.40 | 0.79 | 0.46 | 1.18 |
 | `nearest-class` (retrieval) | 0.00 | 0.03 | 0.25 | 0.01 | 1.20 |
 | `finetune-stream` (unprotected shared adapter) | 0.46 | 0.63 | 0.65 | **0.60** | 1.02 |
+
+> **Read `poe-guided` here as our protocol, not their published result.** Every row in this table is
+> 24 samples from ONE query against held-out images in pixel features. Their §4.2 pools 100 queries
+> against two reference sets in Inception-V3 and reports F1 75.3. Under their protocol their method
+> reproduces here (§5e-bis). The comparison *between these rows* is sound — all arms share the
+> protocol — but the 0.00 is not a statement about Wang et al.'s numbers.
 
 **Against the composition baselines the margin is decisive, and it is the project's central claim.**
 `poe-guided` scores accuracy 0.71 — *higher than ours* — and F1 **0.00**. That is not a contradiction:
@@ -1821,6 +2350,445 @@ standard error on both decisions, so the router is an out-of-distribution detect
 density and NOT evidence that the factor basis recognises what it can express (5x). The detector is
 sufficient to close the loop, and the mechanistic claim it might have supported is unsupported.
 
+
+## 6e. Representational strength: is an absorbed concept as good as a trained one? (N50, 2026-08-13)
+
+> **⚠ THE HEADLINE BELOW IS WITHDRAWN (2026-08-13, later the same day).** N50's readout computes the
+> epsilon error under each conditioning by calling `conditional_losses(field, x, conds)`, which
+> substitutes an EMBEDDING and nothing else. Consolidation produces an embedding **and a LoRA
+> adapter**, and an adapter only participates in a forward pass inside `bank.use(name)`, which sets
+> `state["path"]`. N50 never opens it, so `state["path"]` stays empty — **the frozen base** — and all
+> twelve trained adapters were inert for the entire measurement.
+>
+> So what N50 actually measured is: *does appending twelve in-span embedding columns help a linear
+> probe?* The answer to that is no, and §6e-bis explains why it must be no. But the question §6e
+> claims to answer — is an ABSORBED concept's representation as good as a TRAINED one — was not
+> measured, because half of what absorption produces was switched off. **N53 is the corrected
+> experiment.** Nothing below should be cited for a claim about absorption.
+
+Every composition result scores what the model **generates**. This asks the other question, and it is
+the one that decides whether incremental absorption substitutes for joint training: are the
+representations of a frozen backbone plus consolidated concepts as informative as those of a backbone
+that saw every composition during training?
+
+Three arms, 12 held-out compositions, 192 test images, readouts fit on **seen** slots only:
+
+| arm | linear digit | fg | bg | **joint** | k-NN digit | fg | bg |
+|---|---|---|---|---|---|---|---|
+| `base` — 120 slots, no adaptation | 0.266 | 0.359 | **0.688** | 0.016 | 0.297 | 0.406 | **0.427** |
+| **`ours`** — frozen + 12 consolidated | 0.271 | 0.370 | **0.693** | 0.021 | 0.302 | 0.411 | **0.432** |
+| `oracle` — trained on all 160 | **0.406** | **0.427** | 0.505 | **0.031** | **0.438** | 0.354 | 0.344 |
+
+**`ours` is indistinguishable from `base`.** Digit 0.266 → 0.271, joint 0.016 → 0.021: differences
+inside noise on 192 samples (SE ≈ 0.03). The oracle is genuinely ahead on digit (0.406, ≈ 4 SE) and
+on joint. So **absorbing a concept does not measurably improve the representation over the
+un-adapted backbone**, and does not close the gap to joint training on the factor that separates
+classes most.
+
+That is sharper than it first looks: `ours` is handed **12 extra conditioning columns**, one per
+held-out concept, each of which should be strongly informative about its own class ("how well does
+concept c19 explain this image?"). They buy essentially nothing, which says the consolidated
+embedding does not discriminate its own composition better than the 120 conditionings already
+present.
+
+**Two limits on how far to read this.**
+
+* *The readout is constructed here, not standard.* A representation is the model's ε-error under each
+  conditioning it can express — chosen because it is defined identically across arms, needs no
+  architecture surgery, and is the quantity the router already reads. But all three arms score low in
+  absolute terms (digit 0.27–0.44 against a 0.1 chance baseline), which is consistent with a weak
+  *readout* rather than weak representations. Hidden-activation probes would be stronger and are not
+  comparable across arms — the arms differ in conditioning count and `ours` carries adapters the
+  oracle does not — which is why they were not used first. A fairer stronger readout is open work.
+* *The oracle is not uniformly better.* It is **worse** on background (0.505 against 0.693) and on
+  k-NN fg/bg. Its advantage is specific to digit.
+
+**Comparison design note.** The arms originally had 120 / 132 / 160 conditionings, and the
+representation is one column per conditioning — so the oracle would have won partly on probe width.
+All arms are now restricted to the same 120 seen slots plus one column per held-out composition: the
+oracle's own *trained* class against a concept `ours` *absorbed from a single query*, everything else
+equal.
+
+## 6c-bis. Four attempts to close the router's over-spend, and what they establish (2026-08-13)
+
+The over-spend above (0.200 ± 0.058, i.e. one new combination in five buys a delta it did not need)
+is the **entire** oracle-vs-measured gap in N24's growth accounting — 3.8M against 10.1M on
+ColorMNIST. And it is not a limit of the detector: new-vocabulary separates from new-combination at
+**AUROC 0.995**. Measured on real queries the two populations are very nearly *disjoint* —
+combinations top out at **0.01758**, vocabulary starts at **0.01813** — so a threshold in that gap
+would make both errors zero. A better operating point exists. The question is whether it can be found
+without a label.
+
+**Three attempts to manufacture the positive class, all refuted, for one reason.**
+`calibrate` places `t_vocab` inside a single manufactured population (self-generated combinations)
+because it has no second one. Supplying it seemed straightforward and is not:
+
+| population | mean `s_vocab` |
+|---|---|
+| real new-combination | 0.00977 |
+| **real new-vocabulary** | **0.02359** |
+| manufactured in-distribution | 0.00957 |
+| manufactured combination | 0.00725 |
+| manufactured "vocabulary", off-basis conditioning ×0.5 … ×4 | 0.00893 … 0.00966 |
+| leave-one-value-out positives (real images, reduced basis) | *placed `t_vocab` at 0.00582* |
+
+1. **Off-basis conditionings** (`router.synthetic_vocab_conds`): lands on top of the real *negatives*
+   and is **flat across an 8× range of magnitude**. `s_vocab` is a *minimum* of denoising error over
+   conditionings, and an embedding the model never saw decodes to a low-detail image that is easy to
+   denoise — so it scores low however far off-basis you push. Used in N18: overspend 0.900.
+2. **Leave-one-value-out** — hide a value the system has, refit the basis without it, use real images
+   carrying it as positives. Closer to Cobweb's with/without counterfactual, and still too low: an
+   image whose factor value is hidden is still explained tolerably by a *sibling* value of the same
+   factor, so its novelty barely rises.
+3. **Correcting for self-sample optimism** — measure how much the model's own samples differ from
+   real images of the same trained slots and rescale. The ratio came out **1.227**, i.e. model
+   samples are *harder* to denoise than photographs, so the correction moves the threshold the wrong
+   way.
+
+The common cause is close to tautological once seen: **a generator cannot synthesise an image
+containing a feature it has never seen**, so the positive class of this decision is not manufacturable
+by the system that has to make it. That is recorded on `synthetic_vocab_conds` so it is not retried.
+
+**The fourth attempt is a trade, not an improvement.** `calibrate`'s documented fallback
+(`2.0 × trained-slot quantile`) lands *inside* the separable gap, and on the real populations:
+
+| calibration | overspend | underspend | accuracy |
+|---|---|---|---|
+| self-combo quantile (what runs today) | 0.333 | **0.000** | 0.827 |
+| 2× trained quantile (the fallback) | **0.000** | 0.250 | 0.827 |
+
+Identical accuracy, opposite errors. This is **not** a reason to switch: §6c's whole point is that
+the two mistakes are not equivalent, and under-spending sends a new-vocabulary concept to a route
+whose basis cannot express it (free-route score 0.000 on those queries). Trading a byte cost for a
+capability failure is the wrong direction for this system, and the current setting is the deliberate
+corner of that trade rather than an oversight.
+
+**A fifth attempt: stop thresholding in advance and VERIFY instead.** If the positive class cannot be
+manufactured, the threshold could be avoided entirely — the cheap tier costs 72 bytes, so try it and
+check. Compose the concept through ADDRESS, then measure how much novelty remains in the query under
+*that* conditioning (`basis_novel`), against the same statistic calibrated on trained slots under
+their own composed conditioning. Label-free, one threshold instead of two.
+
+It also fails, and not marginally (`tests/diag_route_by_trial.py`):
+
+| | overspend | underspend | total bytes vs oracle |
+|---|---|---|---|
+| threshold cascade | 0.00 | 0.10 | **0.90×** |
+| by trial | **0.80** | 0.00 | **2.00×** |
+
+The reason is instructive. `t_self` calibrates to 0.03165 — essentially `t_novel` — because for a
+*trained* slot the model's own conditioning explains its images well, while for **any** OOD query the
+freshly composed ADDRESS conditioning explains the query worse than that. So 80 % of genuine
+new-*combinations* exceed the bar too. The verification cannot separate "ADDRESS is imperfect because
+the composition is new" from "ADDRESS is imperfect because the vocabulary is missing", which is
+exactly the distinction it was introduced to make.
+
+*(This was measured three times before it was measured correctly. `route_signals` returns `s_novel`
+as a minimum over the **class** conditionings only — anything passed as `basis_conds` is reported
+separately as `basis_*` — so reading `s_novel` after supplying an ADDRESS conditioning measures a
+quantity that conditioning never enters. The first two runs were reading the wrong key and produced
+`t_self` byte-identical to `t_novel`. The corrected run above reproduces the same verdict, so the
+conclusion stands, but the earlier numbers measured my mistake.)*
+
+**What is established, and where this line stops.** The over-spend is a *calibration* limit, not a
+detection limit: the detector separates at AUROC 0.995 and a zero-error threshold provably exists in
+(0.01758, 0.01813). Five label-free routes to it are now closed, four of them for one generalizable
+reason — **the positive class of this decision cannot be produced by the system that has to make it**,
+whether by synthesising conditionings, hiding a known value, rescaling for self-sample bias, or
+checking the cheap route after the fact. The current calibration is a deliberate corner of a real
+trade (§6c: never under-spend), not an oversight, and nothing measured here justifies moving it.
+
+What would open it is a source of genuine out-of-vocabulary examples that does not come from the
+generator. In a lifelong setting the **stream** is exactly that, but using it requires a verification
+signal that works — and the one tried above does not, so online recalibration needs a stronger
+outcome check (e.g. whether the *consolidated* concept reproduces its query) rather than a residual
+denoising error. Recorded as the next thing to try, not as a plan that is expected to work.
+
+## 20c. F9 was rendered at an operating point no table used (2026-08-13)
+
+The ColorMNIST case-study panels looked broken -- the `ours` row scoring 0.33 / 0.00 / 0.00 / 0.00
+across the four blocks while `poe-guided` and `query-only` returned clean digits -- and the obvious
+suspect was the prototype-distance dial. It was not the dial.
+
+`make_case_studies.py` defaults `--guidance 1.5`, and its own help says why: that is what n9's
+label-free calibration selects on this backbone, and *"the figure must use the same value the table
+does"*. `reproduce.sh` was overriding it to **2.0**. Same code, same dial, same backbone:
+
+| dial | guidance | `ours` joint | `ours` recall |
+|---|---|---|---|
+| 0.9 | **2.0** — what f9 was rendered at | **0.083** | 0.980 |
+| 0.9 | **1.5** — what every quoted number was measured at | **0.583** | 0.854 |
+
+A **7× accuracy collapse** from a flag in the build script. The figure and the tables were being
+produced at different operating points, and the figure was the one that moved. Re-rendered at the
+default, the `ours` row goes to **1.00 / 0.17 / 0.50 / 0.67** at recall 0.73–0.99. The override is
+removed from `reproduce.sh` and the interaction is recorded in the `--dial` help so it cannot recur.
+
+**The dial itself was re-confirmed, and the tempting move is the wrong one.** Swept under current
+code at the corrected guidance:
+
+| dial | `ours` joint | `ours` recall | harmonic | per-block recall in f9 |
+|---|---|---|---|---|
+| 0.7 | **0.833** | **0.116** | 0.204 | — |
+| **0.8 (default since 2026-08-13)** | 0.792 | 0.427 | 0.555 | 0.22 / 0.57 / **0.00** / 0.92 |
+| 0.9 (metric-optimal) | 0.583 | **0.854** | **0.693** | 0.73 / 0.99 / 0.74 / 0.96 |
+| *`poe-guided` / `query-only`* | *0.958* | ***0.000*** | *0.000* | *0.00 / 0.00 / 0.00 / 0.00* |
+
+**The default is 0.8, and it was chosen on the renders rather than on this table.** It also runs
+against §20b, which swept this dial at **3 seeds** and put s=0.8 more than **four standard errors**
+below s=0.90 (F1 0.410 ± 0.058 against 0.669 ± 0.018) — 0.8 had in fact been the provisional default
+once already and was superseded on that evidence. The metric prefers
+0.9 on the combined axis (harmonic 0.693 against 0.555) and on coverage (0.854 against 0.427); 0.8 was
+selected for colour faithfulness in the case-study panels, which is a legitimate criterion for a
+*figure* whose job is to show what the arm produces. The cost is recorded here rather than absorbed:
+coverage roughly halves, and in one of the four displayed blocks it goes to **0.000** — the same
+number the two memorizing baselines score there.
+
+**Nothing in the tables moves with it.** The dial affects only the `ours` row of f9; every composition
+number quoted anywhere else (5e-ter, 5e-bis, 5e-sexies, N49) is measured without it, at the sampler's
+own settings. So this is a presentation choice with a known price, not a change to a result.
+
+**Do not read it as an operating point.** 0.7 was also swept and is where the trade becomes
+self-defeating: joint rises to 0.833 while recall falls to **0.116**, barely above the 0.000 scored by
+the arms that get their accuracy by re-emitting the query. The panels look cleanest exactly where the
+arm has stopped doing the thing it is claimed to do, because sampling near the prototype *is* what
+accuracy-without-coverage looks like, and coverage at accuracy is the entire claim (5e-ter,
+5e-sexies). The generalizable point: a render cannot select an operating point for an arm whose
+selling point is coverage — the failure mode that most improves appearance is the one that concedes
+the argument. Both columns, or neither.
+
+## 5s-bis. C2: iterative concept selection does not beat one greedy pass (2026-08-13)
+
+The second stated contribution was to *iteratively* select concepts rather than take K from a pool
+grown once. The motivation is in `candidates_ascent`'s own docstring — "submodular selection can only
+choose from the pool ascent found, and a thin pool gives a bad choice" — and it is visible in the case
+studies, where selected prototypes are often unrelated to the query. The paper's answer is a 20×
+bigger pool (their Table 6 grows 1920 chains). `compose.iterative_teacher` interleaves instead: pick
+one prototype, compute what the partial teacher still fails to explain, grow the next chains from
+there.
+
+**Budget-matched, it does nothing.** 8 held-out ColorMNIST compositions, 24 ascent chains for *every*
+arm (K rounds of 24/K for the iterative ones, so total compute is equal):
+
+| arm | joint | digit | fg | **bg** | pool |
+|---|---|---|---|---|---|
+| `one-shot` — the paper's Eq. 8–9 route | **0.664** | 1.000 | 1.000 | 0.664 | 103 |
+| `iter-residual` — regrow from what is unexplained | 0.656 | 1.000 | 1.000 | 0.656 | 117 |
+| `iter-teacher` — regrow from the partial teacher | 0.656 | 1.000 | 1.000 | 0.656 | 115 |
+| `iter-query` — regrow from the query (control) | 0.656 | 1.000 | 1.000 | 0.656 | 117 |
+
+−0.008 against one-shot, **0.04 pooled standard errors**. Not distinguishable, and not close to it.
+
+**The informative part is that all three iterative variants are identical to each other**, to three
+decimals, on all eight compositions. `iter-query` regrows without conditioning on the selection at
+all — it is the control for "iterating helps" versus "restarts help" — and it lands on exactly the
+same number as the two that do condition. So the *direction* of regrowth is not weak; it is inert.
+
+**Why, and it relocates the bottleneck.** Look at the per-factor columns: `digit` and `fg` are
+**1.000 for every arm**, and every point of the difference sits in `bg` (0.656–0.664). The teacher is
+not failing because the pool lacks the right prototype — it finds digit and foreground perfectly from
+a pool of ~100. It fails on background, which §5q already identifies as the factor the backbone
+*under-responds* to (background vectors have mean norm 0.55 against 0.79 for digit, which is why
+`backbone_gains` exists). Enlarging the pool from 103 to 117 candidates, or aiming it better, cannot
+fix a factor the model represents weakly. **That also predicts the paper's own remedy would not fix
+this error**: 1920 chains would search the same under-powered background direction 20× harder.
+
+**Two limits on how far to read this.**
+
+* *Low power.* 8 compositions, s.e. 0.134 — this test could only detect an effect of about ±0.27.
+  What it rules out is a large effect, not a small one. The flatness across three variants is the
+  stronger evidence, because it does not depend on the error bar.
+* *Scored through THEIR Stage 4.* Samples come from `sample_teacher`, i.e. the paper's Eq. 13, which
+  is deterministic and collapses — hence `recall 0.000` for every arm including the baseline. Our own
+  Stage 4 reads μ_T into `c_new` and samples the model's conditional, so a selection change reaches
+  our pipeline by a different route. The teacher is what C2 modifies and its composition accuracy is
+  the direct measure, but a null here does not strictly transfer to our sampler.
+
+**Status: C2 is implemented and does not pay for itself.** `iterative_teacher` is kept — it is the
+honest home for `regrow_from`, and the diagnostic is the record — but the contribution as stated is
+not supported, and the outline should say so rather than list it as a feature.
+
+## 6e-bis. Why composition is strong and the representation is not: they are the same fact
+
+§6e reads as a tension with §3 and §5q. ADDRESS composes held-out combinations well — F1 0.630 our
+way, 0.756 for a basis direction, joint 0.556 — and yet twelve consolidated concepts leave the
+representation **indistinguishable from no adaptation at all** (linear digit 0.271 against 0.266,
+oracle 0.406). Twelve extra conditioning columns buy nothing.
+
+They are not in tension. They are one property seen twice.
+
+**ADDRESS adds a POINT, never a DIRECTION.** `c_new = μ + Σ_f gain_f · V_f[value]`, and μ and every
+V_f are least-squares fits to the 120 *seen* embeddings. So `c_new` is in the affine span of what the
+backbone already had, by construction. Measured (`tests/diag_span_vs_representation.py`), relative
+residual against that span:
+
+| | median | mean |
+|---|---|---|
+| **ADDRESS `c_new`** | **0.0000** | 0.0000 |
+| the ORACLE's *trained* embedding for the same held-out class | **0.7359** | 0.7340 |
+| *a seen embedding against the other 119 — the scale bar* | *0.2016* | *0.2062* |
+
+The scale bar matters: the span is not trivially everything, since a genuine trained embedding sits
+0.20 outside the span of its own peers. The oracle's held-out embeddings sit at **0.736**, more than
+three times further out. ADDRESS sits at **zero**.
+
+**That explains both results at once, and the cost too.**
+
+* *Composition works* because placing a concept correctly requires only a point in the right place,
+  and the span already contains it. That is precisely what "the factor basis spans it" means.
+* *The representation cannot improve* because a readout over conditionings gains no new axis — the
+  twelve new columns are functions of the 120 old ones. There is nothing for a probe to exploit.
+* *72 bytes* is the same statement in units of storage. 72 bytes is what it costs to **name a point
+  in a space you already have**. Cheapness and representational inertness are two readings of one
+  fact, not a trade that happened to come out well.
+
+So §6e is not a weakness of the method; it is the tier behaving exactly as defined. What would be a
+weakness is claiming ADDRESS enriches a representation, and nothing here does.
+
+**A correction to how this section first read.** It said N50 "tested only the ADDRESS tier". That is
+wrong: `learn_concept_factored` pins the embedding to `c_new` and then calls `consolidate`, which
+trains a **LoRA adapter** per concept. N50's `ours` is ADDRESS *plus* an adapter. What is true, and
+is the actual defect, is that N50's **readout never activates those adapters** — `conditional_losses`
+substitutes an embedding, and an adapter only applies inside `bank.use(name)`. So the span argument
+above explains precisely what N50 measured (embedding columns, all in-span), and N50 did not measure
+what it claimed to.
+
+**The prediction this makes, and it is falsifiable.** If the representation is carried by the
+*embedding* alone, it cannot improve — the span result says so exactly. If it is carried by the
+**adapter**, it can, because a LoRA changes the function from (x_t, u, c) to epsilon and is not
+confined to any span. Absorbing a concept trains one. So the corrected experiment (N53) should show
+`ours` above `base` when each concept's adapter is opened for its own column, and the size of that
+gap is the real answer to "are the representations strong". EXTEND BASIS, which fits a genuinely new
+direction, is the third point on the same axis.
+
+## 6c-ter. A sixth attempt on the router: description length instead of a threshold (2026-08-13)
+
+**Verdict first, and it changed once the measurement went deep enough.** At the benchmark's own
+operating point — one query per concept — description-length routing is catastrophically worse than
+the threshold cascade (0.333 against 0.833). At **N = 32 and above it becomes indistinguishable from
+it** (0.722 / 0.778 against 0.833 — on 18 concepts that is 14 or 15 of 18, a one-concept gap), while
+using **no calibrated threshold anywhere**. The cascade is still nominally ahead at every N tested and
+is not being replaced. What changed is that the rule is no longer a failure; it is a rule that needs
+evidence the benchmark does not supply, and the amount it needs was predicted in advance by its own
+arithmetic.
+
+*The first version of this section concluded "it loses at every batch size, and it is not close." That
+was measured over N ≤ 16 — and 6c-ter's own exchange rate says promotions need ~15 and ~36 instances,
+so the sweep stopped exactly where the effect starts. `tests/diag_mdl_stream.py` caught the
+truncation; the deep run (N = 8/16/32/64, `results/diag_mdl_router_deep.json`) is what settles it.*
+
+**The reframing.** Every attempt in 6c-bis asks a classification question — "IS this query out of
+vocabulary?" — and calibrates a threshold to answer it. Cobweb never asks that. Presented with an
+instance it does not classify it as novel-or-not; it applies each operator hypothetically and scores
+the resulting partitions by category utility, an objective with a complexity penalty built in. No
+threshold, no positive class, only a comparison between futures of the same instance. The storage
+ladder supplies that penalty for free, because the tiers already have honest costs in bits:
+
+    L(tier) = C_tier + N * (bits to code one example under that tier)          (*)
+    NOTHING 0 b   ADDRESS 576 b   EXTEND BASIS 8192 b   BLOCK 2.2 Mb
+
+Two consequences motivated trying it. First, `route_by_trial`'s confound **cancels**: it failed
+because for *any* OOD query the composed ADDRESS conditioning explains the query worse than a trained
+slot explains its own images, so 80 % of genuine new-combinations tripped the bar — but that term is
+common to both sides of a difference and cannot affect which tier is smaller. Second, **N and the
+bits-per-residual constant enter (*) only as a product**, so the batch-size sweep *is* the calibration
+sensitivity sweep and the ordering of crossover points is calibration-free.
+
+**The codelength had to be the real one.** The first version used the simple loss as a Gaussian
+codelength and routed every query to "store nothing". That is not a tuning failure: the simple loss
+IS the variational bound with its per-timestep weights divided out (Ho et al. §3.4 drop them to
+improve sample quality), so it under-counts evidence by orders of magnitude. `router.elbo_bits`
+computes the eps-matching part of the bound instead; for a difference between two conditionings on
+the same data the prior, reconstruction and entropy terms all cancel.
+
+*It is measurable, which was not obvious.* The bound puts half its weight above u = 0.64 and its five
+heaviest grid points at u = 0.98, 0.97, 0.02, 0.96, 0.03 — where x_t is nearly pure noise and the
+conditioning barely enters. `tests/diag_elbo_stability.py` was written to check whether the rule was
+reading its own sampling noise. It is not: with common random numbers across tiers, |mean|/sd is
+**17.3 at two draws and 93.6 at eight** on the hardest case (an in-distribution query, smallest true
+difference), sign stable across all six seeds. But the sign is **not stable across bands** — on a
+new-vocabulary query the full bound says ADDRESS codes 17.2 ± 1.5 bits *worse* while u ∈ [0.10, 0.70]
+says 7.6 ± 0.8 bits *better*. Both are stable and they disagree; the full bound is the principled
+choice and its answer is the semantically right one, but any claim about the sign must name its band.
+
+**The measured result.** Accuracy against the number of instances the concept has arrived as
+(18 concepts, `results/diag_mdl_router_deep.json`; the cascade is batch-blind by construction — it
+decides on the first instance and never revisits — so its row is flat by definition):
+
+| rule | N=8 | N=16 | **N=32** | **N=64** | overspend @64 | underspend @64 |
+|---|---|---|---|---|---|---|
+| **`cascade` (6c, what runs today)** | **0.833** | **0.833** | **0.833** | **0.833** | 0.00 | 0.25 |
+| `mdl` — equation (*) | 0.333 | 0.333 | **0.722** | **0.778** | 0.08 | 0.25 |
+| `crossover` — same rule, read as N* | 0.333 | 0.333 | **0.778** | 0.778 | 0.25 | 0.08 |
+| `utility` — category utility, literally | 0.611 | 0.611 | 0.778 | 0.722 | 0.25 | 0.17 |
+| `sign` — is the coding gain positive? | 0.389 | 0.389 | 0.611 | 0.556 | 0.67 | 0.00 |
+
+`mdl` climbs 0.333 → 0.778 as evidence accumulates and lands one concept short of the cascade, having
+matched its under-spend (0.25) at a small over-spend (0.08). `sign`, which drops the exchange rate
+entirely, over-spends on two thirds of queries at every depth and is the one variant that is simply
+wrong.
+
+**The promotion curve is the actual result**, because it is the part a threshold cannot produce at
+all. Mean ladder position, same concepts at every N:
+
+| truth | N=8 | N=16 | N=32 | N=64 |
+|---|---|---|---|---|
+| in-distribution | 0.00 | 0.00 | 0.00 | **0.00** |
+| new-combination | 0.00 | 0.00 | 0.83 | **1.00** |
+| new-vocabulary | 0.00 | 0.17 | 1.00 | **1.67** |
+
+Three properties, none of them calibrated into the rule. In-distribution is **never** promoted, at any
+depth — the error a storage policy must not make. New-combination converges to **exactly 1.00 =
+ADDRESS and stops there**: it does not overshoot to the tier that costs 14× more, even as N keeps
+growing and the fit term keeps scaling. New-vocabulary passes through ADDRESS and keeps climbing
+toward EXTEND. The ladder is climbed in order and halted at the right rung, by an argmin over bits.
+
+**The exchange rate, which is the actual answer to "how much does an OOD query warrant addition".**
+Median coding gain and the batch size at which each tier pays for itself:
+
+| population | ADDRESS gain | N* ADDRESS | EXTEND gain over ADDRESS | N* EXTEND |
+|---|---|---|---|---|
+| in-distribution | **−9.7 b/img** | 56 (7/10 never) | +21.1 | 388 |
+| new-combination | +33.0 | **15** (1/10 never) | +87.6 | 93 |
+| new-vocabulary | +22.6 | 18.5 (4/10 never) | **+218.0** | **36** |
+
+So a single novel image does not justify even 72 bytes: 576 bits is ~10–20 % of one image's total
+codelength and the measured gain is ~33 bits. **About fifteen instances justify an address, about
+thirty-six justify a vocabulary extension.** That is a defensible answer, and it is one a threshold
+cannot express.
+
+**As a detector it is worse.** Separation of new-vocabulary from new-combination on N*: **AUROC 0.950**
+against 6c's **0.995** on the plain novelty statistic. So this is not a better signal; it is a
+different question asked of the same signal.
+
+**What this establishes.** The tier a query warrants is **not a property of the query**. It is a
+property of the query *and* how many examples of it have arrived, because the fit term in (*) scales
+with N and the storage cost does not. A threshold is a function of the query alone, so 6c-bis's five
+attempts were trying to answer an underdetermined question — a single explanation for five separate
+failures, and a better one than any of the five individual causes. The practical consequence is that
+the over-spend 6c-bis could not close is **not** a mis-placed threshold: at n18's operating point of
+one query per concept, the correct MDL answer is to store nothing, and the system stores something
+because the benchmark supplies one example where the accounting needs fifteen.
+
+**Two bugs found here that would have manufactured a false positive**, recorded because both were
+silent:
+
+1. `elbo_bits` averages over the batch and already returns per-image bits; the diagnostic divided by
+   `len(X)` a second time, making the fit term N·(code/N) = code and cancelling the batch-size
+   scaling that is the entire claim. It would have surfaced as a **flat promotion curve** — which is
+   indistinguishable from a genuine null.
+2. `sbatch --export=ALL,SCRIPT="..."` **splits its value on commas**, so `--batch-sizes 1,2,4,8,16`
+   arrived as `1` and the remainder became stray environment variables. Every run before 06:50
+   measured N=1 only, and the job header printed `--batch-sizes 1` in plain sight while nothing
+   failed. Pass colons under sbatch; `diag_mdl_router.py` now accepts both.
+
+**Where this line stops.** The cascade stays as the shipped router — 6c's asymmetry argument is
+unchanged and nothing measured here justifies moving it. `mdl_route` is kept for the diagnosis it
+supports and for `mdl_crossover`, which turns "should I store this?" into "how many examples before
+this is worth storing?", the form a lifelong stream can actually act on. The obvious next step is the
+one this makes precise: **accumulate**. Hold novel queries in a buffer keyed by their inferred basis
+row and promote when the accumulated gain crosses the tier cost, rather than deciding on arrival.
+That is Cobweb's actual regime — it restructures as counts grow — and it is untested here.
 
 ## 5q2. The basis-vs-adapter comparison, run matched (and why the old one was not)
 
@@ -3208,7 +4176,7 @@ implemented and swept.
 | [0.3, 1.0] | 1.271 | 0.479 | 0.785 |
 | [0.5, 1.0] | 1.275 | 0.500 | 0.778 |
 
-**No effect** — the five rows of `figures/diag_guidance_interval.png` are indistinguishable. And in
+**No effect** — the five rows of `figures/additional/diag_guidance_interval.png` are indistinguishable. And in
 hindsight it could not have had one: `sample_concept` already samples at **guidance 1.0**, so there
 is no CFG at sampling time to restrict. The interval only touched pool generation, and the adapter
 does not visibly inherit texture from the pool.
@@ -3314,7 +4282,15 @@ F1 is *not* monotone in `s`: it peaks at **s = 0.90** (0.669 ± 0.018), and s = 
 statistically indistinguishable from the best (within 2 s.e.) are **{0.85, 0.90, 0.95}**.
 
 The recommended setting is therefore **s = 0.90**, and s = 0.8 is recorded here as superseded rather
-than deleted. The coarse sweep was not wrong about the *shape* — F1 does rise steeply through 0.8 —
+than deleted.
+
+> **Overridden for the figure on 2026-08-13 — see §20c.** `make_case_studies.DEFAULT_DIAL` was set to
+> **0.8** on a judgement about colour faithfulness in the rendered panels, i.e. deliberately against
+> this sweep, which puts 0.8 more than **four standard errors** below 0.90 (F1 0.410 ± 0.058 against
+> 0.669 ± 0.018, 3 seeds). The metric's preference is unchanged and stated here; the override is a
+> presentation choice with its cost recorded in §20c. Its scope is exactly one constant read by one
+> script: `sample_concept` still defaults to `u_start = 1.0`, so **no table in this document moves**,
+> and no comparison is run at a tuned operating point. The coarse sweep was not wrong about the *shape* — F1 does rise steeply through 0.8 —
 it simply had no sample points between 0.8 and 1.0 and so could not see that the rise continues.
 
 **This is a default for exemplar generation, not a global change, and no table in this document moves
@@ -3527,7 +4503,7 @@ bug so much as an empty slot: the backbone is already playing the root's role fr
 `‖∂L(x_i)/∂(A_n,B_n)‖` under the consolidation loss itself. At 8 concepts, the top-influence
 instances of a leaf come from exactly one concept, and those of an internal node come from **four
 different concepts** — normalized member entropy **0.61**, against ~0.0 if one member dominated. The
-picture is in `figures/f13_hierarchy_probe.png`, colour-coded by source concept.
+picture is in `figures/additional/f13_hierarchy_probe.png`, colour-coded by source concept.
 
 So the structure is not an illusion: shared nodes exist, carry signal, and are built from several
 members' data.
@@ -3561,7 +4537,7 @@ The falsifiable prediction attached to the hierarchy was that shared ancestors a
 resolutions and private leaves at fine ones. Measured as the ‖BA‖/‖W‖-weighted centroid over wrapped
 layers in module order: **internal 48.8 vs leaf 46.9** — ancestors act, if anything, marginally
 *later*. Whatever the shared node is encoding, it is not a coarse-to-fine decomposition
-(`figures/f13b_layer_profiles.png`).
+(`figures/additional/f13b_layer_profiles.png`).
 
 ### 24d. Capacity is not the lever either (rank sweep, 3 seeds)
 
@@ -3589,7 +4565,7 @@ falls at r=16. It is recorded here because it was nearly written up.
 ### 24f. Why: the tree is a caterpillar, not a hierarchy (N38)
 
 The three negatives above have a single structural cause, and drawing the tree makes it obvious
-(`figures/f14_hierarchy.png`). After 40 OOD concepts on the standard backbone:
+(`figures/additional/f14_hierarchy.png`). After 40 OOD concepts on the standard backbone:
 
 | | |
 |---|---|
@@ -3774,10 +4750,10 @@ The shape changes accordingly: balance 0.512 → **0.995**, and internal nodes 4
 five times as many places where sharing could occur. Redrawing N38's tree under `rule="cu"` gives
 **16–17 shared nodes across every arrival order** against the 3 the shipped rule produced.
 
-![the tree under category utility](../figures/f14_hierarchy_cu.png)
+![the tree under category utility](../figures/additional/f14_hierarchy_cu.png)
 
 The same 40 concepts, same backbone, same arrival orders — only the placement criterion differs.
-Compare `figures/f14_hierarchy.png`, the caterpillar the shipped rule builds from the identical
+Compare `figures/additional/f14_hierarchy.png`, the caterpillar the shipped rule builds from the identical
 input.
 
 **What is still not claimed.** A better-shaped tree is a means, not a result. §24b measured that
@@ -3943,7 +4919,7 @@ greedy selection justifies K and does **not** improve routing; the density-based
 
 ## 27. The competence threshold is a product law, not a threshold (N35 re-read)
 
-§35 found composition on the ladder is **step-like**: identically 0.000 until ~80 epochs, then it
+N35 found composition on the ladder is **step-like**: identically 0.000 until ~80 epochs, then it
 appears. C1 was recorded as "a competence threshold" without a mechanism. A literature check supplies
 one, and the data to test it was already collected.
 
@@ -3964,21 +4940,21 @@ performance of its constituents. N35 records per-factor accuracy alongside joint
 setup, which is neither the one Okawa et al. used nor a replication attempt — it fell out of a ladder
 built for a different question.
 
-Two of §35's own findings are re-explained by it.
+Two of N35's own findings are re-explained by it.
 
 **C1 was never a threshold.** Nothing switches on at 80 epochs. Composition is a product of three
 constituent abilities, so it is pinned near zero while *any* factor is weak and rises steeply once
 all three are simultaneously adequate. The step is the product of three sigmoids, not a phase change,
 and describing it as a threshold implied a mechanism that is not there.
 
-**C4's refutation now has a reason.** §35 measured that `seen_joint` predicts downstream composition
+**C4's refutation now has a reason.** N35 measured that `seen_joint` predicts downstream composition
 better than `basis_r2` (+0.986 vs +0.781), against the thesis-shaped expectation. That is what a
 product law predicts: `seen_joint` **is** the joint accuracy of the constituents on trained slots —
 approximately the same product composition multiplies — so it is not a rival explanatory variable at
 all, it is the quantity itself measured on seen data. The comparison was closer to circular than to
-a test, and `basis_r2` losing it says less than §35 implied.
+a test, and `basis_r2` losing it says less than N35 implied.
 
-**What this changes operationally.** It sharpens §37's sealing criterion: the question is not "is the
+**What this changes operationally.** It sharpens N37's sealing criterion: the question is not "is the
 backbone good enough" but "is the *weakest factor* good enough", because the product is governed by
 the minimum. On this ladder `bg` sits at 0.344 while `fg` is 0.891 at the same rung, so a seal
 decision reading average competence would be reading the wrong statistic.
@@ -4099,7 +5075,7 @@ substrate a fraction as good.
 | ascent iterations | 100 | 80 | we use fewer |
 | ascent step size | 0.09 | 0.1 | minor |
 | **ascent initialization** | **query-centered** | **hybrid (50% query / 50% random)** | our documented deviation — helpful on ColorMNIST, never re-validated on CelebA |
-| softmax temperature τ | **0.5 fixed** | **adaptive** | our documented deviation (§5-poe), justified on ColorMNIST |
+| softmax temperature τ | **0.5 fixed** | **adaptive** | our documented deviation (`docs/SETTINGS.md` §2, and `poe_teacher`'s docstring), justified on ColorMNIST |
 | queries per OOD class | **100** | far fewer | our error bars are wider than theirs |
 | K prototypes | 3 | 3 | matches |
 | Hutchinson probes | 4 | 4 | matches |
@@ -4167,6 +5143,28 @@ So the CelebA picture-quality question has three candidate causes and §29 named
 2. the input-layout permutation — **§31**, and the leading candidate for the blur
 3. the from-scratch backbone — still plausible, no longer established
 
+**(d) Cause 3 is now settled, and it is worse than "picture quality" (2026-08-12).** Two CelebA
+backbones were trained from scratch at the paper's own 128 px, 90 epochs each (`ddpm_celeba128.pt`
+and the no-pair split), specifically to remove resolution as a confound. Both completed, and in both
+**the class conditioning never took hold**:
+
+| | real | conditional | unconditional | margin |
+|---|---|---|---|---|
+| per-attribute accuracy | 0.761 | **0.442** | **0.444** | **−0.003** |
+| per-attribute (no-pair split) | 0.720 | **0.418** | **0.436** | **−0.018** |
+| joint accuracy | 0.223 | **0.000** | — | **0 % of ceiling** |
+
+Conditioning on a class produces output statistically indistinguishable from not conditioning at all,
+on both splits. At this compute budget a from-scratch CelebA backbone does not learn the conditional
+the entire composition benchmark is defined over — so every CelebA arm on such a backbone was being
+compared on a substrate that cannot express the task, and no downstream setting could have fixed it.
+
+**This retroactively justifies the N47 route as necessary rather than convenient.** Fine-tuning
+`google/ddpm-celebahq-256` (their Table 5 configuration) *does* learn it: N48's conditioning check
+reads RMS 0.0379 between two class conditionals against 0.0821 to the null token, and its arms reach
+joint 0.500 where the from-scratch model reaches 0.000. The paper fine-tunes a pretrained model, and
+this is the measurement showing that choice is load-bearing, not incidental.
+
 **The CelebA tables have now been rerun at the corrected w₀**, both splits × 3 seeds in the canonical
 configuration (`--comp-scale 7.5 --mcmc-steps 10 --mcmc-lam 0.3`). The result is the cleanest possible
 confirmation that the fix was correctly scoped: **only the `poe-guided` rows moved.** Every other arm
@@ -4202,10 +5200,10 @@ Flat rows here are HWC; every consumer hands one to the UNet with a plain `.resh
 That is not an image. `tests/diag_layout.py` establishes it by exact index algebra, no model
 involved — for 64×64×3 the network's three "channels" are image **rows** 0–21 / 21–42 / 42–63, its
 width axis is the **colour** axis, and its vertical axis is a **~22-pixel jump across the picture**,
-so a single 3×3 convolution reads real columns 3, 24 and 45 at once. `figures/f20_layout.png` shows
+so a single 3×3 convolution reads real columns 3, 24 and 45 at once. `figures/additional/f20_layout.png` shows
 a real face as the UNet sees it: a striped, colour-scrambled field with only low frequencies intact.
 
-![what the UNet actually convolves](../figures/f20_layout.png)
+![what the UNet actually convolves](../figures/additional/f20_layout.png)
 
 `ddpm.py` had recorded this deliberately and argued it was harmless, because training and sampling
 share the permutation so "the model simply learns in the permuted space". That is correct for a

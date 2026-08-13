@@ -114,10 +114,31 @@ def main():
         M, V, meta = candidates_ascent(field, xq, seed=args.seed, **disc)
         t = (poe_teacher(xq, M, V, K=3, tau=args.paper_tau, adaptive_tau=False)
              if args.paper_discovery else poe_teacher(xq, M, V, K=3))
-        print(f"[n44] case {h}: {len(M)} modes discovered, K=3 selected {list(t['sel'])}",
-              flush=True)
+        # Report the NOISE LEVEL each selected prototype came from, and how far out of gamut it is.
+        #
+        # In the rendered panels one of the three prototypes is saturated while the other two are
+        # clean faces, consistently across cases.  `candidates_ascent` pools ascent output over the
+        # whole u-grid (CelebA: 0.05 ... 0.50) and selection then draws K=3 from that pool, and
+        # `tests/diag_prototype_quality.py` measured the upper end of that grid returning junk.  So
+        # the hypothesis is that the bad prototype is the high-u one -- which this line tests
+        # directly instead of leaving it to be inferred from a picture.
+        us = np.asarray(meta.get("u", np.full(len(M), np.nan)))[t["sel"]]
+        oog = [float((np.abs(np.asarray(M)[s]) > 1).mean()) for s in t["sel"]]
+        print(f"[n44] case {h}: {len(M)} modes discovered, K=3 selected {list(t['sel'])} "
+              f"from u={np.round(us, 3).tolist()} with out-of-gamut "
+              f"{[round(o, 3) for o in oog]}", flush=True)
         got = {
-            "real query": as_float(data["X8"][idx[:args.n_show]]).astype(np.float32),
+            # THE QUERY FIRST, then other images of the same class.  This row used to be
+            # `idx[:n_show]` -- the first n_show images of the combo -- while every row beneath it
+            # was driven by `xq`, drawn at a RANDOM index of the same combo.  The two coincided only
+            # by chance, so the panel invited a comparison against images that had produced none of
+            # it, and `tests/diag_celeba_cast.py` shows why that matters: the samples' colour tracks
+            # the QUERY (spread 0.149, against 0.155 for the queries themselves) and barely moves
+            # with the seed (0.015).  A cast that looked unexplained was faithful to an image the
+            # figure did not show.
+            "QUERY (col 1)\n+ others of its class": as_float(
+                data["X8"][[q] + [int(i) for i in idx[:args.n_show - 1] if int(i) != q]]
+            ).astype(np.float32),
             "prototypes (mode ascent)": to_data(np.asarray(M)[t["sel"]]).astype(np.float32),
             "poe-guided (paper Eq.14)": to_data(L.sample_teacher(
                 t, n=args.n_show, seed=args.seed, **PAPER_POE)).astype(np.float32),
@@ -130,7 +151,7 @@ def main():
         from lifelong_ood.evals import speckle
         R = as_float(data["X8"][idx[:64]]).astype(np.float32)
         for k, S in got.items():
-            if S is None or k == "real query":
+            if S is None or k.startswith("QUERY"):     # the reference row, not an arm
                 continue
             sk = speckle(S, R, img=img)   # NOT `sp` -- that is the split dict, and shadowing it
             # made case 2 fail with KeyError: combo_of
@@ -149,7 +170,11 @@ def main():
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
     from lifelong_ood.datasets import rgb_img
-    order = ["real query", "prototypes (mode ascent)", "poe-guided (paper Eq.14)", "query-only"]
+    # Derived from the panels themselves, not re-typed.  A hardcoded copy of these row names went
+    # out of sync with the dict the moment the first row was relabelled, and `got.get(name)` returned
+    # None for it -- so the figure rendered a blank strip where the reference images belong, with no
+    # error anywhere.  Dicts preserve insertion order, so the construction order IS the row order.
+    order = list(next(iter(panels.values())).keys()) if panels else []
     nrow = len(panels) * len(order)
     fig, axes = plt.subplots(nrow, args.n_show,
                              figsize=(1.5 * args.n_show + 4.0, 1.55 * nrow))
@@ -175,11 +200,15 @@ def main():
         f"no training.\n"
         f"Discovery = {'the paper' + chr(39) + 's Table 6 CelebA column' if args.paper_discovery else 'ours'}; "
         f"guidance = their Table 8 w0=0.5; input layout corrected (RESULTS 30b).\n"
-        f"The PROTOTYPES row clips: unconstrained mode ascent — the paper's own Adam setting — "
-        f"leaves ~11% of a mode outside [-1,1], and clipping those for display is what the flat "
-        f"saturated colour is.\nIt is a rendering property, not a defect in the composition: the "
-        f"teacher and the guidance consume the raw values, and the samples below are at real-image "
-        f"texture (tv ~1.0).", fontsize=8)
+        f"Two defects are visible and neither is a rendering artifact. (1) The PROTOTYPES are off "
+        f"the colour manifold — mode ascent improves the\nscore while leaving the data, the "
+        f"likelihood/typicality gap. (2) Every generated row within a block collapses to nearly "
+        f"one face, and\npoe-guided and query-only agree even though query-only never sees a "
+        f"prototype — so within a block the output is dominated by something\nthey SHARE (the "
+        f"seed and the unconditional model), not by the teacher. Which of the two drives the "
+        f"colour cast is measured in\ntests/diag_celeba_cast.py, not asserted here. Discovery runs "
+        f"on an UNCONDITIONAL pretrained model; the paper's Figure 3 uses their\nfine-tuned "
+        f"CLASS-CONDITIONAL backbone, which is what N47 builds and N48 tests.", fontsize=8)
     fig.tight_layout(rect=[0, 0, 1, 0.965])
     out = os.path.join(FIG, f"f18_celeba_paper{args.tag}.png")
     fig.savefig(out, dpi=130, bbox_inches="tight")
