@@ -76,7 +76,11 @@ their published 0.807.
 | `diag_elbo_stability` | is that codelength measurable, or is it reading sampling noise? | measurable — paired \|mean\|/sd **17.3 → 93.6** on the hardest case; but its **sign flips between noise bands**, so any claim from it must name the band | §6c-ter |
 | `n52_shapes3d` | does the contract actually make a THIRD dataset cheap? | Shapes3D on the existing n1 recipe — ADDRESS vs nearest-class vs unconditional on 100 held-out compositions, plus the router's `s_novel` | §5t-bis |
 | `diag_shapes3d_probes` | can the Shapes3D factors be read from pixels before anything is scored with them? | yes at the settings n52 uses — floor_hue **0.999**, object_hue **1.000**, shape **0.973** vs base 0.130/0.114/0.260 | §5t-bis |
-| `lifelong_ood/factored.py` | one contract for any factored dataset | ColorMNIST's 3 named factors and CelebA's 14 binary attributes map onto the same shape, so adding Shapes3D/CLEVR is loader-sized rather than a refactor — **neither is registered or run** | `test_factored` |
+| `n55_dit_train` / `n56_dit_full_loop` | is the three-tier scheme UNet-specific? | **no** — a latent DiT recovers a basis at R² **0.832** (UNet 0.870) and `factorize`/`compose` run on it unchanged; full loop reads the composition from ONE query at **0.917** and scores joint **0.661** (oracle 0.859) | §7z |
+| `n54_ae_train` | does the latent space keep every factor the composition is scored on? | accepted on PROBES not MSE — a first fit had mse 0.00044 and lost foreground (1.000→0.835); the accepted one is mse 0.00020, worst drop +0.002 | §7z |
+| `n57` / `n58_shapes3d_results` | Shapes3D on a PRETRAINED unconditional backbone, the N47 recipe | `eurecom-ds/scoresdeve-ema-shapes3d-64` bridged VE→VP by `neural/ve_bridge.py`; conditioning gap reported FIRST because four from-scratch runs left the label decorative | §5t-bis |
+| `diag_ve_parameterisation` | what does a variance-exploding checkpoint actually predict? | measured, not guessed: ε = −out·σ on [0,1] inputs, MSE **0.0002** against 0.64–441 for every alternative | §5t-bis |
+| `lifelong_ood/data/factored.py` | one contract for any factored dataset | ColorMNIST's 3 named factors and CelebA's 14 binary attributes map onto the same shape, so adding Shapes3D/CLEVR is loader-sized rather than a refactor — **neither is registered or run** | `test_factored` |
 
 `factored.py` is additive — nothing existing changes. Its guarantee is asserted rather than assumed:
 its generic mixed-radix encoding reproduces ColorMNIST's own slot ids **exactly** and agrees with

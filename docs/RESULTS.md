@@ -1332,7 +1332,7 @@ factorization for the basis → factored inversion for the read → per-factor g
 
 ## 5j. CelebA — the benchmark whose factors overlap
 
-`lifelong_ood/celeba.py` implements the paper's Appendix B / Table 4 setup: 14 binary attributes,
+`lifelong_ood/data/celeba.py` implements the paper's Appendix B / Table 4 setup: 14 binary attributes,
 compositional classes as unique attribute combinations, **51 seen / 23 held out**, with the holdout
 tier chosen by the paper's own criterion (differing from a seen class on a single attribute). Data
 loads from HuggingFace parquet shards, so no 1.4 GB zip extraction is needed.
@@ -1531,7 +1531,7 @@ validity: its attributes **overlap spatially**, where ColorMNIST's digit / foreg
 not, and that separability is load-bearing in several conclusions above (§5h's factor basis in
 particular assumes the factors are close to independent).
 
-**Setup** (`lifelong_ood/celeba.py`, `experiments/n1_train.py --dataset celeba`). 14 binary
+**Setup** (`lifelong_ood/data/celeba.py`, `experiments/n1_train.py --dataset celeba`). 14 binary
 attributes; classes are attribute combinations with ≥25 examples, split 51 seen / 23 held-out, loaded
 from the HuggingFace `flwrlabs/celeba` parquet shards at 64×64. Backbone: 9.3M-parameter UNet, 60
 epochs, 21 minutes, 5051 images over 51 seen classes. 12 of the 14 attribute probes clear 0.65 on
@@ -2660,6 +2660,71 @@ confined to any span. Absorbing a concept trains one. So the corrected experimen
 `ours` above `base` when each concept's adapter is opened for its own column, and the size of that
 gap is the real answer to "are the representations strong". EXTEND BASIS, which fits a genuinely new
 direction, is the third point on the same axis.
+
+## 7z. Is the architecture UNet-specific?  A latent DiT says no (N55/N56, figures/dit/)
+
+Everything up to here runs on a pixel-space UNet whose class embedding is added to the time
+embedding.  The three-tier scheme is defined entirely over a **class embedding table** -- `factorize`
+fits `c ~ mu + sum_f V_f[value]` to it, ADDRESS composes a point in that basis, the router reads
+epsilon-error under candidate conditionings -- and none of that mentions convolutions.  If the scheme
+is architectural rather than incidental it should survive being moved onto a transformer that
+conditions through adaLN modulation and works on latent patches, which is the family
+vision-language-action models are built from.
+
+**The test is the reuse, not the reimplementation.**  `neural/dit.py` exposes the UNet's exact
+interface -- `cemb` table with a null row, and `emb_override` -- so `factorize` and `compose` run on
+it **unchanged**.  Anything that had needed a DiT-specific path would have marked a place the
+architecture was secretly UNet-specific.  Nothing did.
+
+| | pixel UNet | **latent DiT** |
+|---|---|---|
+| basis R^2 on the class table | 0.870 | **0.832** |
+| params / training | ~1 h | 7.5M, **6.8 min** |
+| conditioning path | class embedding added to the time embedding | adaLN-Zero off the same sum |
+
+The basis emerges just as strongly, and R^2 is a genuine like-for-like number: the same `factorize`
+call on the same kind of table.
+
+**The full loop, and a correction.**  N55 first reported "ADDRESS on the DiT, joint 0.807".  That
+number composed from factor values decoded from the held-out SLOT ID -- the ground truth.  It answers
+*can the basis express this composition*, not *can the system work out which composition is needed*;
+discovery was skipped, and reporting it alone overstates the pipeline.  N56 runs the loop the UNet
+actually runs (`learn_factored`, one softmax per factor, optimised so the composed conditioning
+explains the query):
+
+| | value |
+|---|---|
+| READ accuracy from **one query, no labels** | digit 0.917, fg 1.000, bg 1.000, **all three 0.917** |
+| **FULL-LOOP joint** | **0.661** |
+| ORACLE joint (ground-truth values) | 0.859 |
+| **what discovery costs** | **0.198** |
+
+So 18 parameters determined from a single query recover the composition 92 % of the time, and the
+honest end-to-end number is 0.661.
+
+**The autoencoder is accepted on PROBES, not MSE**, and that mattered twice.  A first fit reached
+mse 0.00044 -- excellent -- while the foreground probe fell 1.000 -> 0.835, because the digit stroke
+is a few hundred pixels against ~2800 of background and per-pixel MSE barely sees it.  A second fit,
+with foreground weighting, diverged to predicting black; the weighting had scaled the loss 8x without
+renormalising, which is an 8x learning-rate change in disguise.  The accepted AE is mse 0.00020 with
+a worst factor drop of +0.002.  Both guards are kept and they catch different failures: one finds
+"trained fine, lost a factor", the other finds "did not train at all".
+
+**Held out from the autoencoder too.**  The AE is fit on `X[seen]` only -- 24 000 of 32 000 images,
+120 compositions -- so the 40 held-out compositions never reached it.  Their latents come from
+encoding with a model that never trained on them.
+
+**What this does and does not license.**  It licenses "the three-tier scheme is a property of having
+a class-embedding table, not of the convolutional backbone", which is the claim that has to hold for
+this to reach VLA models.  It does not license a DiT-beats-UNet comparison: the two are measured on
+different sampling paths, and `figures/dit/d4_unet_vs_dit.png` is a like-for-like *render* rather than
+a matched protocol.
+
+*Open, and visible in `figures/dit/d5_dit_prototypes.png`:* latent mode ascent recovers clean modes
+from query-initialised chains, but the RANDOM-initialised chains collapse to the same two attractors
+for every composition.  That is a defect -- 5e-quinquies leans on random-init chains as the control
+that never sees the query -- and its likeliest cause is that the diagnostic seeds one generator per
+call, so every block gets identical random starts.
 
 ## 6c-ter. A sixth attempt on the router: description length instead of a threshold (2026-08-13)
 

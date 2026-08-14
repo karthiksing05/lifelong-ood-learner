@@ -43,6 +43,7 @@ evidence currently contradicts it.
 |---|---|---|---|---|
 | **C1** | Stages 1–3 unchanged from Wang et al.; **Stage 4 differs** — the teacher only *locates* the concept, the model's own conditional generates | **✔** | README "Stage 4…", §5e-bis, §5e-ter, N49 | **f0**, f2, f29 |
 | **C2** | **iteratively select concepts** rather than picking K from a fixed pool | **✔ built, ✘ no gain** | §5s-bis | — |
+| **C4** | *(added)* the scheme is **not tied to the UNet** — it transfers to a latent DiT | **✔** | §7z | `figures/dit/` |
 | **C3** | three-tier storage decided by `s_novel` / `s_vocab` | **✔** | §2, §6c, §25, §5q | **f16**, f7, f8, **f32** |
 
 **C1 is the load-bearing one and it is done.** Their Eq. 13 guides toward a PoE teacher that is a
@@ -75,8 +76,8 @@ one; the flatness across three variants is the stronger evidence.
 |---|---|---|
 | **ColorMNIST** | **✔** | the calm explanation; 3 named factors, disjoint pixels |
 | **CelebA** | **✔** | overlapping factors, 14 binary attributes; also the companion paper's own 128px backbone |
-| **Shapes3D** | **◐ registered + instrument verified, backbone training** | `lifelong_ood/shapes3d.py` — 480,000 images, 64×64, six factors [10,10,10,8,4,15] as an **exact Cartesian product**. Composition = (floor_hue, object_hue, shape) → **400 compositions**; wall_hue/scale/orientation are nuisance supplying within-composition variation, the role handwriting plays on ColorMNIST. 300 seen / 100 held out via `holdout_mask`, **no factor value starved** (asserted in `test_factored`, 6/6). Backbone trains on the **existing n1 recipe** — `n1_train --dataset shapes3d`, no new trainer or architecture. Probes verified BEFORE any scoring (`tests/diag_shapes3d_probes.py`, the 5e-sexies lesson): floor_hue **0.999**, object_hue **1.000**, shape **0.973** against base rates 0.130/0.114/0.260, so `joint` covers all three factors with no exclusions. |
-| **CLEVR** | **✘ not chosen** | The Composable-Diffusion repo publishes **no pretrained checkpoints**, only training commands, and its models are 128px/192-channel — more expensive than our n47 fine-tune, in exactly the from-scratch-at-128px regime §29(d) found conditioning failed to take hold. Its `clevr_rel` data *is* a genuine 6-factor discrete vocabulary (`--num_classes 4,3,9,3,3,7`) and would fit the contract if a backbone existed. Shapes3D was taken instead: same factored structure, 64px, one 255 MB file. |
+| **Shapes3D** | **◐ pretrained route running** | Registered against the contract (`lifelong_ood/data/shapes3d.py`); probes verified (0.955–1.000). **Four from-scratch conditional runs all failed the same way** — excellent samples, ignored label, and a NEGATIVE null gap (the null token explained training images better than their own class embedding). Cause: a composition varies internally over wall_hue × scale × orientation = 1200 combinations and wall hue repaints half the image, so within-class variance swamps the label. `fix_nuisance` pins wall_hue. The live route is N47's: fine-tune conditioning into `eurecom-ds/scoresdeve-ema-shapes3d-64`, a pretrained **unconditional** Shapes3D UNet, bridged from variance-exploding to our VP stack by `neural/ve_bridge.py` (convention **measured**, not assumed: ε = −out·σ on [0,1], MSE 0.0002). N58 produces the result set. |
+| **CLEVR** | **✘ ruled out** | Checkpoints do exist (`nanlliu/compose-visual-relations`, Dropbox, 128px) — but the model is a foreign EBM-style architecture conditioned on **relations**, and every CLEVR model on the HF Hub is a Stable-Diffusion LoRA conditioned on **text**. A class-embedding factor basis can read neither. Shapes3D was taken instead: same factored structure, 64 px, and a genuinely unconditional pretrained backbone exists for it. |
 
 "Strong performance on two datasets" is satisfied by ColorMNIST + CelebA.
 
@@ -151,11 +152,14 @@ for f in figures/f*.png; do b=$(basename $f); \
 The hierarchy panels (f13, f13b, f14, f14_cu) are **kept, not archived**, because §24 cites them as
 the evidence for the negative. They are outside the core set but they are not orphans.
 
-**Architecture** — f0 (the loop, with Stage 4 expanded), f1
-**Storage / cost** — f16 (addressing), f8 (growth), f34 (batch invariance)
-**Curves** — f31 (retention + plasticity), f32 (promotion + exchange rate)
-**Composition / OOD** — f2 (coverage vs copying), f3, f29 (protocol), f26 (CelebA on their backbone), f18
-**Representation** — f33
-**Case studies** — f9 (ColorMNIST), f26 (CelebA), f11 (the dial)
-**Preservation / parity** — f5, f6
-**Faults kept as evidence** — f20, f25, f30, f24
+**Architecture** — `01_architecture`, `02_lifelong_loop`
+**Storage / cost** — `03_storage_ladder`, `04_growth_per_concept`, `05_batch_invariance`
+**Curves** — `06_learning_curves`, `07_router_exchange_rate`
+**Composition / OOD** — `08_coverage_vs_copying`, `case_celeba`
+**Representation** — `09_representation`
+**Case studies** — `case_colormnist`, `case_celeba`, `case_shapes3d`, `case_prototype_distance`
+**Preservation / parity** — `10_preservation`, `11_native_parity`
+**The DiT track** — `figures/dit/` — d1 AE reconstruction, d2 training + ADDRESS, d3 DiT case study,
+d4 UNet vs DiT, d5 prototypes
+**Everything else** — `figures/extra/` (supporting evidence, ablations, fault post-mortems) and
+`figures/archive/` (superseded, gitignored)

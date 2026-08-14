@@ -46,6 +46,11 @@ FIG = os.path.join(HERE, "figures", "dit")
 
 def latent_mode_ascent(model, z_q, u, n_starts=8, iters=120, lr=0.05, seed=0, init="hybrid",
                        device="cuda"):
+    # NOTE ON `seed`: it must differ per CALL, not just per run.  The first version passed the same
+    # seed for every composition and every noise level, so every random-initialised chain started
+    # from the SAME noise -- and the figure showed it: the random-init columns were pixel-identical
+    # across all four blocks.  That silently empties the control 5e-quinquies depends on, which is
+    # precisely that random-init chains never see the query.  Callers now offset it.
     """Adam ascent on log p_t in LATENT space -> x0-space modes. The DiT analogue of
     `BaseScoreField.mode_ascent`, same parameterisation (Adam, no clamp, no Tweedie projection)."""
     g = torch.Generator(device=device).manual_seed(seed)
@@ -139,8 +144,10 @@ def main():
         i0 = int(np.where(data["slot"] == int(s))[0][0])
         zq = Z[i0].numpy()
         M, src, us_ = [], [], []
-        for u in args.u_grid:
-            z0, sr = latent_mode_ascent(dit, zq, u, n_starts=4, seed=args.seed, device=dev)
+        for ui, u in enumerate(args.u_grid):
+            # offset by BOTH the composition and the noise level, so no two ascent pools share starts
+            z0, sr = latent_mode_ascent(dit, zq, u, n_starts=4,
+                                        seed=args.seed + 9973 * int(s) + 131 * ui, device=dev)
             M.append(z0); src += sr; us_ += [u] * len(z0)
         M = torch.cat(M)
         P = decode(ae, M, scale=scale, device=dev).astype(np.float32)
