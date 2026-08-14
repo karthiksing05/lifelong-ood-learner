@@ -54,24 +54,33 @@ def represent(field, X01, cols, u_grid=(0.15, 0.45), n_noise=2, seed=0):
     """-> [N, M] epsilon error per image per column.
 
     `cols` is a list of (conditioning_vector, ctx_factory).  `ctx_factory` is a zero-argument
-    callable returning a context manager -- `bank.use(name)` for a consolidated concept, or a null
-    context for a plain conditioning.  THIS is the difference from N50, which had no context at all
-    and therefore measured every column on the frozen base.
+    callable returning a context manager -- `bank.use(name)` for a consolidated concept, or None.
+    THIS is the difference from N50, which had no context at all and therefore measured every column
+    on the frozen base with all adapters inert.
+
+    BATCHED BY CONTEXT.  The first version called `conditional_losses` once per column, which is 132
+    forward passes per image where N50 does 1, and it turned a ~10-minute job into hours.  Columns
+    that share a context (all the plain conditionings, adapters closed) go in ONE call; only the
+    handful with their own adapter path are done individually.
     """
     import contextlib
-    out = []
-    for x01 in X01:
+    plain_idx = [i for i, (_, c) in enumerate(cols) if c is None]
+    plain_conds = np.stack([np.asarray(cols[i][0]).ravel() for i in plain_idx]) if plain_idx else None
+    ctx_idx = [i for i, (_, c) in enumerate(cols) if c is not None]
+    out = np.zeros((len(X01), len(cols)), np.float64)
+    for r, x01 in enumerate(X01):
         x = to_model(x01).ravel()
-        row = []
-        for c, ctx in cols:
-            with (ctx() if ctx is not None else contextlib.nullcontext()):
+        if plain_conds is not None:
+            L = conditional_losses(field, x, plain_conds, u_grid=u_grid, n_noise=n_noise, seed=seed)
+            out[r, plain_idx] = np.asarray(L, np.float64)
+        for i in ctx_idx:
+            c, ctx = cols[i]
+            with ctx():
                 L = conditional_losses(field, x, np.asarray(c).reshape(1, -1),
                                        u_grid=u_grid, n_noise=n_noise, seed=seed)
-            row.append(float(L[0]))
-        out.append(row)
-    R = np.asarray(out, np.float64)
-    mu, sd = R.mean(0, keepdims=True), R.std(0, keepdims=True) + 1e-9
-    return (R - mu) / sd
+            out[r, i] = float(L[0])
+    mu, sd = out.mean(0, keepdims=True), out.std(0, keepdims=True) + 1e-9
+    return (out - mu) / sd
 
 
 def readouts(Rtr, ytr, Rte, yte, seed=0, epochs=200):

@@ -60,7 +60,7 @@ def _find(path=None):
 
 
 def load_shapes3d(n_per_slot=40, seed=0, comp_factors=DEFAULT_COMP, path=None, img=64,
-                  max_images=None, n_holdout=100, value_stride=1):
+                  max_images=None, n_holdout=100, value_stride=1, fix_nuisance=None):
     """-> dict(X, factors, names, sizes, slot, seen, img) plus `nuisance` for reference.
 
     `X` is [N, img*img*3] float32 in [0, 1], flat rows, matching every other loader here.
@@ -78,7 +78,7 @@ def load_shapes3d(n_per_slot=40, seed=0, comp_factors=DEFAULT_COMP, path=None, i
     # experiment calling this would pay it again. The key covers everything that changes the result.
     ck = os.path.join(os.path.dirname(p), f"cache_n{n_per_slot}_s{seed}_"
                       f"{'-'.join(comp_factors)}_{max_images}_h{n_holdout}"
-                      f"_v{value_stride}.npz")
+                      f"_v{value_stride}_f{fix_nuisance}.npz")
     if os.path.exists(ck):
         z = np.load(ck, allow_pickle=True)
         return dict(X=z["X"], factors=z["factors"], names=list(z["names"]),
@@ -95,6 +95,21 @@ def load_shapes3d(n_per_slot=40, seed=0, comp_factors=DEFAULT_COMP, path=None, i
         for k in range(L.shape[1]):
             u = np.unique(L[:, k])
             idx[:, k] = np.searchsorted(u, L[:, k])
+        # `fix_nuisance` pins named nuisance factors to value 0 instead of letting them vary.
+        #
+        # This is the fix for three failed Shapes3D runs.  A composition (floor_hue, object_hue,
+        # shape) varies internally over wall_hue x scale x orientation = 1200 combinations, and
+        # wall_hue is a FULL-FIELD colour change: the within-class variance swamps the between-class
+        # signal, so the label predicts almost nothing and the model correctly ignores it (measured:
+        # the null token explained training images BETTER than their own class embedding).  On
+        # ColorMNIST a slot varies only by handwriting, which is why the same recipe worked there.
+        # Pinning wall_hue leaves scale x orientation = 120, which is variation of the kind
+        # handwriting supplies rather than a repaint of half the image.
+        if fix_nuisance:
+            keep_rows = np.ones(len(idx), bool)
+            for nm in ([fix_nuisance] if isinstance(fix_nuisance, str) else list(fix_nuisance)):
+                keep_rows &= idx[:, FACTOR_NAMES.index(nm)] == 0
+            idx = idx[keep_rows]
         comp = idx[:, ci]
         sizes = [FACTOR_SIZES[k] for k in ci]
         # `value_stride` keeps every k-th VALUE of each composition factor.  This is how the number

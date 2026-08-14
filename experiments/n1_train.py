@@ -57,6 +57,10 @@ def main():
                         "left conditioning unlearned (embedding pairwise cos 0.007).")
     p.add_argument("--n-holdout", type=int, default=100,
                    help="shapes3d only: how many COMBINATIONS to hold out")
+    p.add_argument("--fix-nuisance", nargs="*", default=None,
+                   help="shapes3d only: pin these nuisance factors to one value. wall_hue is a "
+                        "full-field colour change, so leaving it free makes within-class variance "
+                        "swamp the label -- the cause of three failed runs.")
     p.add_argument("--init-from", default=None,
                    help="start from this checkpoint's UNet weights and train CONDITIONING into it "
                         "-- the N47/CelebA recipe. A model that already renders the domain only has "
@@ -135,7 +139,8 @@ def main():
         from lifelong_ood.shapes3d import load_shapes3d
         img = args.img or 64
         data = load_shapes3d(n_per_slot=args.n_per_slot, seed=args.seed, img=img,
-                             value_stride=args.value_stride, n_holdout=args.n_holdout)
+                             value_stride=args.value_stride, n_holdout=args.n_holdout,
+                             fix_nuisance=args.fix_nuisance)
         globals()["_IMG"] = img
         print(f"[n1] shapes3d: {len(np.unique(data['slot']))} compositions over "
               f"{data['names']} sizes {data['sizes']}, {len(data['X'])} images at {img}px",

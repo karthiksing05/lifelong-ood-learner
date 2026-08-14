@@ -86,7 +86,11 @@ def train_ae(X01, epochs=40, batch=256, lr=2e-3, zdim=4, base=64, img=32, ch=3,
                 # excellent MSE -- measured: mse 0.00044 with the fg probe at 0.835 against 1.000.
                 med = xb.median(dim=-1, keepdim=True).values.median(dim=-2, keepdim=True).values
                 w = 1.0 + (fg_weight - 1.0) * (xb - med).abs().amax(1, keepdim=True).gt(0.15).float()
-                loss = (w * (rec - xb) ** 2).mean()
+                # NORMALISE to mean 1. Without this the loss is ~8x larger than the unweighted one,
+                # which is an 8x learning-rate change in disguise: the first attempt diverged and
+                # collapsed to predicting black (mse 0.075 = the data variance, every probe exactly
+                # at chance). Weighting should change WHERE the error is counted, not how big it is.
+                loss = ((w / w.mean()) * (rec - xb) ** 2).mean()
             else:
                 loss = F.mse_loss(rec, xb)
             opt.zero_grad(set_to_none=True)

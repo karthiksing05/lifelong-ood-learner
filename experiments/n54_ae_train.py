@@ -61,6 +61,12 @@ def main():
                               fg_weight=args.fg_weight)
     print(f"[n54] final mse {hist[-1]:.5f}; latent scale {scale:.4f} "
           f"(latents normalised to unit variance)", flush=True)
+    if hist[-1] > 0.01:
+        # A collapsed AE predicts a constant, whose mse is the data variance (~0.075 here). Say so
+        # loudly rather than letting a black reconstruction grid be the first sign.
+        print(f"[n54] *** DIVERGED: mse {hist[-1]:.5f} is at data-variance scale, i.e. the decoder "
+              f"is predicting a constant. Lower --lr or --fg-weight; do NOT read the probes below "
+              f"as a statement about the latent space.", flush=True)
 
     Z = encode(m, X, scale=scale, device=dev)
     R = decode(m, Z, scale=scale, device=dev)
