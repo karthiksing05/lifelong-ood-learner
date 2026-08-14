@@ -2661,6 +2661,57 @@ confined to any span. Absorbing a concept trains one. So the corrected experimen
 gap is the real answer to "are the representations strong". EXTEND BASIS, which fits a genuinely new
 direction, is the third point on the same axis.
 
+## 5t-bis. Shapes3D: four from-scratch recipes fail, and what that isolates
+
+Shapes3D is registered against `lifelong_ood/data/factored.py`'s contract -- 480,000 images, six
+factors as an exact Cartesian product, split into composition and nuisance because a full 6-tuple has
+exactly ONE image and every coverage metric would otherwise be undefined.  `test_factored` asserts
+the split starves no factor value, and `tests/diag_shapes3d_probes.py` verifies the instrument before
+anything is scored with it: floor_hue **0.999**, object_hue **1.000**, shape **0.973** against base
+rates 0.130 / 0.114 / 0.260.
+
+**Then four attempts to train a conditional backbone on it all failed the same way**: excellent
+samples, ignored label.
+
+| recipe | seen-slot joint | note |
+|---|---|---|
+| 300 compositions, 40 images each, 60 epochs | **0.000** | classes too rare |
+| 100 compositions, 200 images each, 200 epochs | 0.070 | ColorMNIST's exact density |
+| stage-2 conditioning fine-tune from (2) | 0.062 | "learn images first" -- no gain |
+| `wall_hue` pinned, from scratch | **0.062** | within-class variance -- no gain |
+
+*chance is 0.010; ColorMNIST reaches ~0.86 on seen slots.*
+
+**The diagnosis, and it is not sample quality.**  `tests/diag_conditioning_gap.py` measures
+`loss(wrong class) - loss(right class)` on TRAINING images, plus the null gap:
+
+| backbone | gap | **null gap** |
+|---|---|---|
+| ColorMNIST (works) | +0.00140 | **+0.00018** |
+| nobg3 (works) | +0.00104 | **+0.00008** |
+| **Shapes3D from scratch** | +0.00082 | **−0.00088** |
+
+A negative null gap means the CFG null token explains training images **better than their own class
+embedding** -- the class channel is net-harmful, so the model does best ignoring it.  On a marginal
+as easy as flat-shaded rendered scenes the epsilon loss is nearly minimised without ever consulting
+the label.
+
+*(An earlier reading of mine, that a near-zero pairwise cosine between class embeddings showed they
+never differentiated, was wrong: ColorMNIST's is −0.0039 and it works.  Near-zero cosine is what
+256-dimensional embeddings do.  The null gap is the diagnostic; the cosine is not.)*
+
+**Two hypotheses were tested and both refuted.**  "Learn the domain first, then conditioning" (row 3)
+and "within-class variance swamps the label" (row 4) each gave 0.062.  So the failure is not
+explained by training order or by nuisance variance, and the remaining difference in N57 is the one
+that matters: **starting from a backbone that was pretrained on this domain**, which is exactly what
+made CelebA work (§29d: from-scratch conditional training at 128 px never learned conditioning
+either, and N47's fine-tune did).
+
+`n57` + `n58` run that route on `eurecom-ds/scoresdeve-ema-shapes3d-64`, bridged VE->VP by
+`neural/ve_bridge.py`.  **The conditioning gap is reported FIRST in N58**, because everything below it
+is meaningless if the label is still decorative -- which is the mistake these four rows exist to stop
+anyone repeating.
+
 ## 7z. Is the architecture UNet-specific?  A latent DiT says no (N55/N56, figures/dit/)
 
 Everything up to here runs on a pixel-space UNet whose class embedding is added to the time
