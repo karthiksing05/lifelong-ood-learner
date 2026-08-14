@@ -12,6 +12,7 @@ claims; this folder is the evidence behind them.
 | **[TABLES.md](TABLES.md)** | every headline number with error bars, regenerated from `results/` |
 | **[RELATED.md](RELATED.md)** | positioning, which baselines are fair for this setting, citation hazards |
 | **[FINAL_REPORT.md](FINAL_REPORT.md)** | where this stands against every baseline, on the axis each was built for |
+| **[CLEVR_VERDICT.md](CLEVR_VERDICT.md)** | why CLEVR does not fit the current task, what was checked, and why multi-object is the next formulation rather than a dataset swap |
 | **[VLA_PATH.md](VLA_PATH.md)** | what transfers to embodied policies, what does not, and the order to attack a diffusion policy |
 | **[SETTINGS.md](SETTINGS.md)** | every hyperparameter vs the companion paper's Tables 5–8, marked MATCH / DEVIATION / INFIDELITY |
 | **[ASSESSMENT.md](ASSESSMENT.md)** | publication readiness, assessed against what the numbers support |
