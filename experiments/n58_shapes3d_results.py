@@ -88,8 +88,16 @@ def main():
     print(f"\n[n58] CONDITIONING GAP  wrong-right {gap:+.5f}   null-right {ngap:+.5f}")
     print(f"[n58]   [from scratch: gap +0.00082, null gap -0.00088 = the label was decorative]")
     print(f"[n58]   [ColorMNIST, which works: gap +0.00140, null gap +0.00018]")
-    conditional = gap > 0 and ngap > 0
-    print(f"[n58]   -> {'CONDITIONAL' if conditional else 'STILL NOT CONDITIONAL'}", flush=True)
+    # A SIGN TEST IS NOT ENOUGH.  The first version asked only `gap > 0 and ngap > 0` and printed
+    # CONDITIONAL on a gap of +0.00003 -- 47x smaller than ColorMNIST's +0.00140 and indistinguishable
+    # from zero.  A backbone is only usefully conditional if the right class beats a wrong one by a
+    # margin comparable to one that demonstrably works, so the bar is a fraction of ColorMNIST's.
+    REF_GAP = 0.00140                      # ColorMNIST, which conditions and composes
+    conditional = gap > 0.25 * REF_GAP and ngap > 0
+    verdict = ("CONDITIONAL" if conditional else
+               "NOT USEFULLY CONDITIONAL" if gap > 0 else "NOT CONDITIONAL")
+    print(f"[n58]   -> {verdict}  (gap is {gap / REF_GAP:.2f}x ColorMNIST's; bar is 0.25x)",
+          flush=True)
 
     fac = factorize(C, decode_slot(slots_seen, sizes))
     print(f"[n58] basis R^2 {fac['r2']:.3f}   [ColorMNIST 0.870, CelebA 0.620]", flush=True)

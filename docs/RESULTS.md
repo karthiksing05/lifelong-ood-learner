@@ -2707,10 +2707,50 @@ that matters: **starting from a backbone that was pretrained on this domain**, w
 made CelebA work (§29d: from-scratch conditional training at 128 px never learned conditioning
 either, and N47's fine-tune did).
 
-`n57` + `n58` run that route on `eurecom-ds/scoresdeve-ema-shapes3d-64`, bridged VE->VP by
+`n57` + `n58` ran that route on `eurecom-ds/scoresdeve-ema-shapes3d-64`, bridged VE->VP by
 `neural/ve_bridge.py`.  **The conditioning gap is reported FIRST in N58**, because everything below it
-is meaningless if the label is still decorative -- which is the mistake these four rows exist to stop
-anyone repeating.
+is meaningless if the label is still decorative.
+
+**It is a fifth failure, and the cleanest of them.**  8815 fine-tuning steps, loss 0.0015:
+
+| | pretrained + fine-tune | from scratch | ColorMNIST (works) |
+|---|---|---|---|
+| conditioning gap | **+0.00007** (0.05x ColorMNIST) | +0.00082 | +0.00140 |
+| null gap | **+0.00067** | **-0.00088** | +0.00018 |
+| basis R^2 | **0.456** | -- | 0.870 |
+| router s_novel AUROC | **0.646** | -- | 0.980 |
+
+| arm | joint | floor_hue | shape |
+|---|---|---|---|
+| ours (ADDRESS) | 0.083 +/- 0.080 | 0.188 | 0.172 |
+| nearest-class | 0.078 | 0.177 | 0.167 |
+| *unconditional floor* | *0.073* | *0.172* | *0.156* |
+
+**ADDRESS is inside a standard error of the unconditional floor.**  0.083 against 0.073 on 12 held-out
+combinations with s.e. 0.080 is no effect at all.
+
+**One thing genuinely improved and it is worth keeping.**  The null gap went from **-0.00088 to
++0.00067**: the class embedding now explains its own training images better than the null token,
+which was not true of any from-scratch run.  So the pretrained route did fix the *pathology* -- the
+label is no longer net-harmful -- without making the label *useful*: the wrong-vs-right gap is still
+0.05x ColorMNIST's, and a basis at R^2 0.456 cannot support ADDRESS.
+
+*(N58's verdict line originally read CONDITIONAL on a gap of +0.00003, because it asked only
+`gap > 0`.  A sign test is not enough; the bar is now a quarter of a backbone that demonstrably
+works, and the ratio is printed so the number cannot hide behind a boolean.)*
+
+**What five failures isolate.**  Sparse classes, ColorMNIST-matched density, two-stage training,
+pinned nuisance, and a pretrained domain backbone all fail.  Training order and nuisance variance are
+refuted outright.  What remains is a property of Shapes3D itself: its marginal is so easy -- flat
+regions of constant colour -- that eps-prediction is nearly minimised without consulting the label,
+and 75 classes over 9000 images give each one too little pressure to change that.  **The scheme needs
+a dataset whose conditioning signal is a material fraction of its predictive loss**, and that is a
+statable precondition rather than a tuning failure.  ColorMNIST and CelebA both satisfy it; Shapes3D,
+under every recipe tried here, does not.
+
+*(Two of three probes are readable on this split -- `object_hue` drops out once `wall_hue` is pinned
+and the set shrinks to 9000 images -- so `joint` is a two-factor joint.  That weakens the metric but
+not the conclusion: every arm shares it, and ours sits on the floor.)*
 
 ## 7z. Is the architecture UNet-specific?  A latent DiT says no (N55/N56, figures/dit/)
 

@@ -105,6 +105,22 @@ def main():
     g = torch.Generator().manual_seed(args.seed)
     t0, step, tot, nb = time.time(), 0, 0.0, 0
     budget = args.hours * 3600.0
+
+    def _save(path):
+        """Write the checkpoint.  Called PERIODICALLY, not only at the end.
+
+        The first version saved once, after the whole budget.  A two-hour job that produces nothing
+        until its final second is hostage to its own wall clock -- and the loss here converges within
+        a couple of minutes, so almost all of that time was buying refinement that could not be
+        collected early."""
+        torch.save(dict(ema=ema, ema_cemb=ema_c.cpu(), n_classes=n_classes, null_id=null_id,
+                        remap=remap, img=args.img, model=args.model, layout="hwc",
+                        schedule="cosine", T=1000, steps=step, dataset="shapes3d",
+                        sizes=[int(v) for v in data["sizes"]], names=list(data["names"]),
+                        split=dict(n_per_slot=args.n_per_slot, value_stride=args.value_stride,
+                                   n_holdout=args.n_holdout, fix_nuisance=args.fix_nuisance,
+                                   seed=args.seed)),
+                   path)
     while time.time() - t0 < budget:
         idx = torch.randint(0, len(Xt), (args.batch,), generator=g)
         x0 = Xt[idx].to(dev)
@@ -126,18 +142,14 @@ def main():
                 ema[k].mul_(0.999).add_(sd[k].float(), alpha=0.001)
             ema_c.mul_(0.999).add_(cemb.weight.detach().float(), alpha=0.001)
         tot += float(loss); nb += 1; step += 1
+        if step % 2000 == 0:
+            _save(args.out)
+            print(f"    [checkpoint at step {step}]", flush=True)
         if step % 200 == 0:
             print(f"    step {step}: loss {tot / nb:.4f}  "
                   f"({(time.time() - t0) / 60:.0f}/{budget / 60:.0f} min)", flush=True)
             tot, nb = 0.0, 0
-    torch.save(dict(ema=ema, ema_cemb=ema_c.cpu(), n_classes=n_classes, null_id=null_id,
-                    remap=remap, img=args.img, model=args.model, layout="hwc",
-                    schedule="cosine", T=1000, steps=step, dataset="shapes3d",
-                    sizes=[int(v) for v in data["sizes"]], names=list(data["names"]),
-                    split=dict(n_per_slot=args.n_per_slot, value_stride=args.value_stride,
-                               n_holdout=args.n_holdout, fix_nuisance=args.fix_nuisance,
-                               seed=args.seed)),
-               args.out)
+    _save(args.out)
     print(f"[n57] {step} steps in {(time.time() - t0) / 60:.1f} min -> {args.out}", flush=True)
     return 0
 
