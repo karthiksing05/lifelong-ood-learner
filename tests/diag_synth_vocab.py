@@ -37,7 +37,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(
                                 "experiments"))
 from common import CACHE                                                       # noqa: E402
 
-from lifelong_ood.datasets import load_colormnist                              # noqa: E402
+from lifelong_ood.data.datasets import load_colormnist                              # noqa: E402
 from lifelong_ood.neural import load_field, to_data, to_model                  # noqa: E402
 from lifelong_ood.neural.idealwords import compose, factorize, sample_factored_pool, slot_factors
 from lifelong_ood.neural.router import (basis_assignments, route_signals,      # noqa: E402

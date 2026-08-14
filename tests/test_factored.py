@@ -1,6 +1,6 @@
 """The unified factored-dataset contract must be a DROP-IN, not a parallel truth.
 
-`lifelong_ood.factored` exists so that Shapes3D and CLEVR are a loader rather than a refactor. That
+`lifelong_ood.data.factored` exists so that Shapes3D and CLEVR are a loader rather than a refactor. That
 is only safe if its generic encoding agrees exactly with the per-dataset arithmetic already baked
 into the repository -- `idealwords.slot_factors` decodes ColorMNIST slots as (s // 16, (s % 16) // 4,
 s % 4), and 39 call sites read `data["slot"]`. If the generic version disagreed anywhere, adopting it
@@ -19,8 +19,8 @@ import numpy as np
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from lifelong_ood.datasets import load_colormnist                              # noqa: E402
-from lifelong_ood.factored import (as_factored, decode_slot, encode_slot,      # noqa: E402
+from lifelong_ood.data.datasets import load_colormnist                              # noqa: E402
+from lifelong_ood.data.factored import (as_factored, decode_slot, encode_slot,      # noqa: E402
                                    holdout_mask)
 from lifelong_ood.neural.idealwords import slot_factors                        # noqa: E402
 
@@ -68,7 +68,7 @@ def main():
     #    stops testing anything.
     n_checks = 5
     try:
-        from lifelong_ood.factored import load_factored
+        from lifelong_ood.data.factored import load_factored
         sh = load_factored("shapes3d", n_per_slot=4)
         n_checks = 6
         need = ("X", "factors", "names", "sizes", "slot", "seen", "img")

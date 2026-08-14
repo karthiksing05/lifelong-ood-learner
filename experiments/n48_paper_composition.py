@@ -34,7 +34,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from common import CACHE, RESULTS                                              # noqa: E402
 
-from lifelong_ood.celeba import class_name, load_celeba                        # noqa: E402
+from lifelong_ood.data.celeba import class_name, load_celeba                        # noqa: E402
 from lifelong_ood.compose import (PAPER_CELEBA, PAPER_POE_CELEBA,              # noqa: E402
                                   candidates_ascent, poe_teacher)
 from lifelong_ood.evals import (attr_accuracy, fit_attr_probes, paper_metrics,  # noqa: E402

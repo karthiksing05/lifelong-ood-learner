@@ -132,7 +132,7 @@ def main():
         f"(ColorMNIST, bg=3 withheld entirely).\nSeparation of new-vocabulary from new-combination "
         f"on N*: AUROC {a:.3f}" if a is not None else "", fontsize=8.5)
     fig.tight_layout(rect=[0, 0, 1, 0.90])
-    out = os.path.join(FIG, "f32_mdl_router.png")
+    out = os.path.join(FIG, "07_router_exchange_rate.png")
     fig.savefig(out, dpi=140, bbox_inches="tight")
     print(f"[f32] wrote {out}  ({len(rows)} query-decisions over N in {Ns})")
     return 0

@@ -57,7 +57,7 @@ their published 0.807.
 | `diag_paper_protocol` | how much of the gap is the protocol? | recall 0.000 → **0.590** as queries pool 1 → 100 | §5e-bis |
 | `n49_paper_protocol` | their Table 1, all five arms plus ours | top-3 F1 **0.027/0.053** vs their 0.051/0.053; ours covers from **one** query | §5e-ter |
 | `n47_paper_backbone` | their Table 5 CelebA column (~13 h) | fine-tune converges, loss 0.0104 — and it is **required**: from scratch never learns conditioning | §29(d) |
-| `n48_paper_composition` | their Table 2, on their own backbone (`figures/f26_paper_composition.png`) | PoE reproduces (F1 0.187 vs their 0.203; G-precision 0.753 vs 0.745) — **and ours clears the unconditional floor 2.7× on joint accuracy** (0.439 vs 0.161 pixel probes; 2.3× Inception), on every class in both spaces. Coverage-F1 still ties the floor (0.401 vs 0.409). | §5e-sexies |
+| `n48_paper_composition` | their Table 2, on their own backbone (`figures/case_celeba.png`) | PoE reproduces (F1 0.187 vs their 0.203; G-precision 0.753 vs 0.745) — **and ours clears the unconditional floor 2.7× on joint accuracy** (0.439 vs 0.161 pixel probes; 2.3× Inception), on every class in both spaces. Coverage-F1 still ties the floor (0.401 vs 0.409). | §5e-sexies |
 | `diag_holdout_leak` | are the prototypes memorized held-out images? | **no** — 24/24 nearest to TRAIN, split clean | §5e-quinquies |
 | `diag_selection_bias` | does discovery just find the query? | **no** — query-agnostic modes carry the composition intact | §5e-quater |
 
@@ -66,13 +66,13 @@ their published 0.807.
 | experiment | question | answer | § |
 |---|---|---|---|
 | `n50_representation` | is an ABSORBED concept's representation as separable as a TRAINED one? | **no, and it barely beats no adaptation**: ours 0.271 ≈ base 0.266 vs oracle 0.406 (linear digit) | §6e |
-| `make_n5_curves` | what do the incremental curves look like, not just their summary? | `figures/f31_learning_curves.png` — ours/independent are **exactly flat**, `finetune` falls 0.73→0.66 in one step | §10, §11 |
-| `make_performance_figures` | the two main performance tests that had numbers but no figure | `figures/f33_representation.png` — the honest negative drawn: `ours` sits on `base`; `figures/f34_batch_invariance.png` — ACC flat in K, **2.15× at K=12**, bit-identical at every point | §6e, §16/§16b |
+| `make_n5_curves` | what do the incremental curves look like, not just their summary? | `figures/06_learning_curves.png` — ours/independent are **exactly flat**, `finetune` falls 0.73→0.66 in one step | §10, §11 |
+| `make_performance_figures` | the two main performance tests that had numbers but no figure | `figures/09_representation.png` — the honest negative drawn: `ours` sits on `base`; `figures/05_batch_invariance.png` — ACC flat in K, **2.15× at K=12**, bit-identical at every point | §6e, §16/§16b |
 | `n4_batch` (figure) | does absorbing concepts in GROUPS cost anything? | no: accuracy flat within error, preservation exact at every K | §16, §16b |
-| `n18_router` (figure) | the three-way self-routing decision | `figures/additional/f7_router.png` — AUROC 0.980 / 0.995, self-routing 0.858 ± 0.018, **under-spend 0.000** | §6c |
-| `n11/n21` (figure) | what a new *vocabulary* item costs | `figures/additional/f4_vocabulary.png` — one shared direction at 1 KB beats per-concept adapters at 551 K | §5q, §7c |
+| `n18_router` (figure) | the three-way self-routing decision | `figures/extra/f7_router.png` — AUROC 0.980 / 0.995, self-routing 0.858 ± 0.018, **under-spend 0.000** | §6c |
+| `n11/n21` (figure) | what a new *vocabulary* item costs | `figures/extra/f4_vocabulary.png` — one shared direction at 1 KB beats per-concept adapters at 551 K | §5q, §7c |
 | `diag_iterative_select` | does selecting concepts iteratively beat one greedy pass over a fixed pool? | contribution C2, budget-matched against the paper's Eq. 8–9 route | `docs/OUTLINE.md` |
-| `diag_mdl_router` | can description length replace the router's two calibrated thresholds? | **not at one query per concept** (0.333 vs 0.833), but **at N≥32 it draws level** (0.722–0.778) with no calibrated threshold, and its promotion curve halts each population at the right rung. `figures/f32_mdl_router.png` | §6c-ter |
+| `diag_mdl_router` | can description length replace the router's two calibrated thresholds? | **not at one query per concept** (0.333 vs 0.833), but **at N≥32 it draws level** (0.722–0.778) with no calibrated threshold, and its promotion curve halts each population at the right rung. `figures/07_router_exchange_rate.png` | §6c-ter |
 | `diag_elbo_stability` | is that codelength measurable, or is it reading sampling noise? | measurable — paired \|mean\|/sd **17.3 → 93.6** on the hardest case; but its **sign flips between noise bands**, so any claim from it must name the band | §6c-ter |
 | `n52_shapes3d` | does the contract actually make a THIRD dataset cheap? | Shapes3D on the existing n1 recipe — ADDRESS vs nearest-class vs unconditional on 100 held-out compositions, plus the router's `s_novel` | §5t-bis |
 | `diag_shapes3d_probes` | can the Shapes3D factors be read from pixels before anything is scored with them? | yes at the settings n52 uses — floor_hue **0.999**, object_hue **1.000**, shape **0.973** vs base 0.130/0.114/0.260 | §5t-bis |

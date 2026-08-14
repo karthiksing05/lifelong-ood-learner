@@ -1,6 +1,6 @@
 """Why is prototype #1 always a clean instance of the composition, and #2/#3 noise?
 
-Reading `figures/f9_case_colormnist.png`, the first of the three selected prototypes looks like a
+Reading `figures/case_colormnist.png`, the first of the three selected prototypes looks like a
 correct in-distribution instance of the held-out composition in every block, while the other two look
 like noise.  The natural worry is that the composition was not held out.
 
@@ -36,10 +36,10 @@ sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(
 from common import CACHE                                                       # noqa: E402
 
 from lifelong_ood.compose import PAPER_COLORMNIST, candidates_ascent, poe_teacher  # noqa: E402
-from lifelong_ood.datasets import BG_NAMES, FG_NAMES, load_colormnist          # noqa: E402
+from lifelong_ood.data.datasets import BG_NAMES, FG_NAMES, load_colormnist          # noqa: E402
 from lifelong_ood.neural import load_field, to_data, to_model                  # noqa: E402
 
-# the four blocks rendered in f9_case_colormnist.png
+# the four blocks rendered in case_colormnist.png
 SHOWN = [(9, "cyan", "deep_red"), (4, "green", "navy"),
          (7, "pink", "dark_purple"), (1, "yellow", "dark_brown")]
 

@@ -89,3 +89,62 @@ class VEToVPUNet(nn.Module):
         self.unet.time_embedding.set_extra(ce)
         out = self.unet(x / a.sqrt(), sig).sample          # VE input; sigma as the timestep
         return -out * sig.view(-1, 1, 1, 1)                 # measured: eps = -score * sigma
+
+
+def load_ve_field(path, device="cuda"):
+    """Load an n57 checkpoint as a VP score field.  -> (field-like object, ck).
+
+    Returns something with `.model`, `.device`, `.img` and `.sample(...)`, which is the surface every
+    downstream tool touches (`conditional_losses`, `sample_factored_pool`, `route_signals`).  The
+    point of the bridge is that none of them need to know the backbone is variance-exploding.
+    """
+    import torch
+    from diffusers import UNet2DModel
+
+    ck = torch.load(path, map_location="cpu", weights_only=False)
+    unet = UNet2DModel.from_pretrained(ck["model"], subfolder="unet")
+    unet.config.sample_size = ck["img"]
+    unet.sample_size = ck["img"]
+    m = VEToVPUNet(unet, n_classes=ck["n_classes"])
+    missing = m.unet.load_state_dict({k: v for k, v in ck["ema"].items()}, strict=False)
+    with torch.no_grad():
+        m.cemb.weight.copy_(ck["ema_cemb"])
+    m = m.to(device).eval()
+    for q in m.parameters():
+        q.requires_grad_(False)
+
+    class _Field:
+        """The minimal score-field surface, in VP terms, over a VE backbone."""
+
+        def __init__(self, model, img, device):
+            self.model, self.img, self.device = model, img, device
+            self.layout = "hwc"
+
+        @torch.no_grad()
+        def sample(self, n=16, steps=50, seed=0, clip=(0.0, 1.0), branch=None,
+                   emb_override=None, guidance=1.0):
+            g = torch.Generator(device=self.device).manual_seed(seed)
+            sh = (n, 3, self.img, self.img)
+            us = np.linspace(1.0, 0.0, steps + 1)
+            a0 = float(cosine_abar(np.array([us[0]]))[0])
+            # start from the VP prior at u=1: x ~ N(0, 1-a) around zero mean in [0,1] space
+            x = 0.5 + ((1 - a0) ** 0.5) * torch.randn(sh, generator=g, device=self.device)
+            emb = None
+            if emb_override is not None:
+                emb = torch.as_tensor(np.asarray(emb_override, np.float32),
+                                      device=self.device).reshape(1, -1)
+            elif branch is not None:
+                emb = self.model.cemb.weight[int(branch)].reshape(1, -1)
+            for i in range(steps):
+                u, un = float(us[i]), float(us[i + 1])
+                a, an = (float(cosine_abar(np.array([u]))[0]),
+                         float(cosine_abar(np.array([un]))[0]))
+                e = self.model(x, torch.full((n,), u, device=self.device),
+                               emb_override=None if emb is None else emb.expand(n, -1))
+                x0 = (x - (1 - a) ** 0.5 * e) / (a ** 0.5)
+                if clip is not None:
+                    x0 = x0.clamp(*clip)
+                x = (an ** 0.5) * x0 + ((1 - an) ** 0.5) * e
+            return x.permute(0, 2, 3, 1).reshape(n, -1).cpu().numpy()
+
+    return _Field(m, int(ck["img"]), device), ck

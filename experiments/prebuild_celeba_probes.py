@@ -17,7 +17,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from common import CACHE                                                # noqa: E402
 from n19_celeba_train import build_probes                               # noqa: E402
 
-from lifelong_ood.celeba import IMG_CELEBA, load_celeba_comp            # noqa: E402
+from lifelong_ood.data.celeba import IMG_CELEBA, load_celeba_comp            # noqa: E402
 
 if __name__ == "__main__":
     seed = int(os.environ.get("SEED", 0))

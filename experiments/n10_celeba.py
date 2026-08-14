@@ -24,7 +24,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from common import CACHE, RESULTS                                     # noqa: E402
 
-from lifelong_ood.celeba import load_celeba                           # noqa: E402
+from lifelong_ood.data.celeba import load_celeba                           # noqa: E402
 from lifelong_ood.evals import attr_accuracy, fit_attr_probes, save_grid, save_json  # noqa: E402
 from lifelong_ood.neural import load_field, to_data                   # noqa: E402
 

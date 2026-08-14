@@ -36,7 +36,7 @@ MODEL = "google/ddpm-celebahq-256"
 
 
 def main():
-    from lifelong_ood.celeba import load_celeba
+    from lifelong_ood.data.celeba import load_celeba
     from lifelong_ood.neural import to_data, to_model
     from lifelong_ood.neural.pretrained import load_pretrained
     dev = "cuda" if torch.cuda.is_available() else "cpu"
@@ -114,7 +114,7 @@ def main():
     fig.suptitle(f"{MODEL} — fixed pretrained weights, fed a permuted row vs a real image.\n"
                  f"The companion paper's CelebA setup is a fine-tune of this model.", fontsize=9)
     fig.tight_layout(rect=[0, 0, 1, 0.95])
-    o = os.path.join(FIG, "f25_pretrained_layout.png")
+    o = os.path.join(FIG, "extra", "f25_pretrained_layout.png")
     fig.savefig(o, dpi=130, bbox_inches="tight")
     print(f"[pre-layout] wrote {o}")
     return 0

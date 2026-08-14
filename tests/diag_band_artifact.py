@@ -31,7 +31,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(
                                 "experiments"))
 from common import CACHE                                                       # noqa: E402
 
-from lifelong_ood.celeba import as_float, load_celeba                          # noqa: E402
+from lifelong_ood.data.celeba import as_float, load_celeba                          # noqa: E402
 from lifelong_ood.neural import load_field, to_data                            # noqa: E402
 
 FIG = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "figures")
@@ -104,7 +104,7 @@ def main():
     ax.legend(fontsize=8, frameon=False)
     ax.grid(alpha=0.25, lw=0.6)
     fig.tight_layout()
-    o = os.path.join(FIG, "f24_band_artifact.png")
+    o = os.path.join(FIG, "extra", "f24_band_artifact.png")
     fig.savefig(o, dpi=140, bbox_inches="tight")
     print(f"[bands] wrote {o}")
     return 0

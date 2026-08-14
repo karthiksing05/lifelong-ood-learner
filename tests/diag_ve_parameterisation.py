@@ -28,7 +28,7 @@ import torch
 HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, HERE)
 
-from lifelong_ood.factored import load_factored                        # noqa: E402
+from lifelong_ood.data.factored import load_factored                        # noqa: E402
 
 
 def main():

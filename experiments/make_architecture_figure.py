@@ -324,7 +324,7 @@ def main():
              "earlier concept depends on is ever in an optimizer again.",
              ha="center", fontsize=8.8, style="italic", color="#555555")
 
-    out = os.path.join(FIG, "f0_architecture.png")
+    out = os.path.join(FIG, "01_architecture.png")
     fig.savefig(out, dpi=155, bbox_inches="tight", facecolor="white")
     plt.close(fig)
     print(f"wrote {out}")

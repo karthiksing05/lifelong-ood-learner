@@ -35,7 +35,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from common import CACHE, RESULTS                                          # noqa: E402
 
-from lifelong_ood.celeba import ATTRS, load_celeba                         # noqa: E402
+from lifelong_ood.data.celeba import ATTRS, load_celeba                         # noqa: E402
 from lifelong_ood.evals import attr_accuracy, fit_attr_probes, save_json   # noqa: E402
 from lifelong_ood.neural.idealwords import (compose_attributes, learn_attribute_basis)  # noqa: E402
 from lifelong_ood.neural.pretrained import load_pretrained                 # noqa: E402

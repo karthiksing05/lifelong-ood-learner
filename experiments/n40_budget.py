@@ -40,7 +40,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from common import CACHE, RESULTS, backbone_gains, ood_queries                # noqa: E402
 
-from lifelong_ood.datasets import load_colormnist                             # noqa: E402
+from lifelong_ood.data.datasets import load_colormnist                             # noqa: E402
 from lifelong_ood.evals import (composition_accuracy, fit_probes,             # noqa: E402
                                 precision_recall, save_json)
 from lifelong_ood.neural import (NeuralLifelongLearner, load_field,           # noqa: E402

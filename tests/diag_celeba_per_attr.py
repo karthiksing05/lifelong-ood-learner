@@ -27,7 +27,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(
 from common import CACHE                                                # noqa: E402
 from n19_celeba_train import build_probes                               # noqa: E402
 
-from lifelong_ood.celeba import ATTRS, load_celeba_comp                 # noqa: E402
+from lifelong_ood.data.celeba import ATTRS, load_celeba_comp                 # noqa: E402
 from lifelong_ood.neural import load_field, sample_embedding, to_data   # noqa: E402
 from lifelong_ood.neural.idealwords import compose_attr                 # noqa: E402
 

@@ -13,7 +13,7 @@ Two things this fixes beyond layout:
   * every row is annotated with accuracy AND coverage, because the whole argument is that the first
     cannot distinguish composing from copying and the second can.
 
-Needs the backbones.  Writes figures/f9_case_colormnist.png (and a machine-readable
+Needs the backbones.  Writes figures/case_colormnist.png (and a machine-readable
 results/case_colormnist*.json).  The CelebA panel f10_case_celeba.png is NOT written here --
 make_paper_figures.py derives it from n20_celeba_composition_pair.png.
 """
@@ -101,7 +101,7 @@ def select_cases(data, args):
 
 
 def colormnist(args):
-    from lifelong_ood.datasets import load_colormnist, slot_name
+    from lifelong_ood.data.datasets import load_colormnist, slot_name
     from lifelong_ood.evals import composition_accuracy, fit_probes, precision_recall
     from lifelong_ood.neural import (NeuralLifelongLearner, learn_embedding, load_field,
                                      sample_embedding, teacher_init_alpha, to_data, to_model)
@@ -237,7 +237,10 @@ def colormnist(args):
     # the canonical figure is the one rendered at the DEFAULTS; the tag marks deviation
     tag = ("" if args.dial == DEFAULT_DIAL else f"_s{args.dial:g}") \
         + ("" if args.paper_budget else "_ourbudget")
-    p = os.path.join(FIG, f"f9_case_colormnist{tag}.png")
+    # The CANONICAL render (tag == "", i.e. defaults) is a core figure; any tagged sweep variant is
+    # supporting evidence and belongs in extra/, so a dial sweep cannot overwrite the published one.
+    p = (os.path.join(FIG, "case_colormnist.png") if not tag
+         else os.path.join(FIG, "extra", f"case_colormnist{tag}.png"))
     fig.savefig(p, dpi=145, bbox_inches="tight"); plt.close(fig)
     print(f"  wrote {p}")
     from lifelong_ood.evals import save_json

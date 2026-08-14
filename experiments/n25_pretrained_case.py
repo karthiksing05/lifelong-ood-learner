@@ -55,7 +55,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from common import CACHE, RESULTS                                      # noqa: E402
 
-from lifelong_ood.celeba import find_celeba                            # noqa: E402
+from lifelong_ood.data.celeba import find_celeba                            # noqa: E402
 from lifelong_ood.evals import save_json, vendi_score                  # noqa: E402
 from lifelong_ood.neural.adapters import HierarchicalAdapterBank       # noqa: E402
 from lifelong_ood.neural.composable import composable_eps              # noqa: E402
@@ -80,7 +80,7 @@ def load_hires(attrs_wanted, img=256, n_each=96, n_probe=4000, max_rows=60000, s
 
     import pyarrow.parquet as pq
     from PIL import Image
-    from lifelong_ood.celeba import _parquet_shards
+    from lifelong_ood.data.celeba import _parquet_shards
     root = find_celeba()
     A, B = attrs_wanted
     want = {"a_only": [], "b_only": [], "both": []}

@@ -30,7 +30,7 @@ HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, HERE)
 
 from lifelong_ood.evals import factor_accuracy, fit_factor_probes, probe_readable  # noqa: E402
-from lifelong_ood.factored import decode_slot, load_factored               # noqa: E402
+from lifelong_ood.data.factored import decode_slot, load_factored               # noqa: E402
 from lifelong_ood.neural.ddpm import load_field, to_data                   # noqa: E402
 from lifelong_ood.neural.idealwords import (compose, factorize,            # noqa: E402
                                             sample_factored_pool)

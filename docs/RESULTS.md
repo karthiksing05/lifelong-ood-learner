@@ -432,7 +432,7 @@ F1 margin is not that knob). What was unfair was the comparison to their **publi
 
 `experiments/n49_paper_protocol.py` runs their five arms plus ours under this protocol; §4b of
 `docs/SETTINGS.md` records the protocol itself as an audited deviation, and
-`figures/additional/f29_protocol.png` (`experiments/make_n49_figure.py`) is the picture: one generated set,
+`figures/extra/f29_protocol.png` (`experiments/make_n49_figure.py`) is the picture: one generated set,
 six scores, spanning 0.000 to 0.590 on the axis the comparison is made on.
 
 ### 5e-ter. Their Table 1 reproduced, and what ours looks like on their axis (N49)
@@ -481,14 +481,14 @@ PoE's 0.547, so our pool is more spread than the real class is.
 **At a single query** the same shape holds and is sharper, because it is the regime the architecture
 is built for: ours reaches Generalization recall **0.648** where PoE reaches **0.073** and
 `query-only` **0.025**. PoE needs on the order of 100 queries to reach 0.300. This is the
-quantitative content of Stage 4 in `figures/f0_architecture.png`: guiding a unimodal Gaussian under a
+quantitative content of Stage 4 in `figures/01_architecture.png`: guiding a unimodal Gaussian under a
 deterministic (η = 0) sampler yields one image per teacher, so their diversity comes from having 100
 teachers; reading the composition into `c_new` and letting the model's own multimodal conditional
 generate yields a covering pool from one.
 
 ### 5e-quater. Why `poe-guided` and `query-only` are the same arm here
 
-The case-study figure (`figures/f9_case_colormnist.png`) shows it before any metric does: in all four
+The case-study figure (`figures/case_colormnist.png`) shows it before any metric does: in all four
 blocks the `poe-guided` and `query-only` rows are **visually identical**, and the first of the three
 selected prototypes is a clean, correct instance of the held-out composition while the other two are
 noise. The n49 table agrees — PoE F1 0.569 / 0.363 against query-only's 0.612 / 0.316, and the same
@@ -593,7 +593,7 @@ whole explanation, it is a property of Eq. 13/14 rather than a defect in our rei
 holds on every backbone we have run. Two teachers 0.08 apart are simply below the resolution of a
 channel whose usable dynamic range ends before it can express them.
 
-This is also the quantitative case for Stage 4 of `figures/f0_architecture.png`. If the guidance
+This is also the quantitative case for Stage 4 of `figures/01_architecture.png`. If the guidance
 channel cannot carry the difference between two teacher means, then *no* choice of teacher will
 distinguish itself through it — which is why our route stops using the teacher as the sampling
 distribution and reads the composition into `c_new` for the model's own conditional to generate.
@@ -747,7 +747,7 @@ whether the composition is genuinely discovered rather than inherited from the q
 
 #### The specific reading that keeps prompting this, and the direct answer to it
 
-The figure invites it: in `figures/f9_case_colormnist.png` the **first** of the three prototypes is a
+The figure invites it: in `figures/case_colormnist.png` the **first** of the three prototypes is a
 clean instance of the held-out composition while the other two look like noise, which reads as the
 model having been shown that class. It was not, and `tests/diag_prototype_origin.py` settles it on
 the exact compositions the figure renders.
@@ -816,11 +816,11 @@ function. `tests/diag_pretrained_layout.py` measures it three ways on the untouc
 | unconditional samples | **a 3×3 tiled mosaic of greyscale faces** | photorealistic colour faces |
 
 **Under the permuted layout the field returned a 3×3 tiled greyscale mosaic** while `DDPMPipeline`
-sampling the *same weights* returns photorealistic faces (`figures/additional/f25_pretrained_layout.png`). The
+sampling the *same weights* returns photorealistic faces (`figures/extra/f25_pretrained_layout.png`). The
 one-step denoise recovers the target at RMSE 0.076 under `hwc` against 0.380 permuted — a 5× gap,
 and permuted is barely better than the 0.605 you get by doing nothing at all.
 
-![the paper's backbone, permuted vs real input](../figures/additional/f25_pretrained_layout.png)
+![the paper's backbone, permuted vs real input](../figures/extra/f25_pretrained_layout.png)
 
 **Consequences, stated plainly.**
 
@@ -853,7 +853,7 @@ which returns rows in the **field's** layout, and then renders them with `show`.
 sampler was transposed.
 
 `tests/diag_pretrained_render.py` settles it with no adapter and no consolidation at all — the
-**untouched** backbone, four samples, read both ways (`figures/additional/f30_pretrained_render.png`):
+**untouched** backbone, four samples, read both ways (`figures/extra/f30_pretrained_render.png`):
 
 | read | vertical/horizontal gradient ratio |
 |---|---|
@@ -884,7 +884,7 @@ and a real one.
 Not everything downstream of the layout fix recovered. `n26_batch_pretrained` consolidates four
 attribute concepts into `google/ddpm-celebahq-256` through the LoRA bank, and its samples are
 **rainbow noise with fine horizontal striping** — before the layout work and after it, pixel for
-pixel the same failure (`figures/additional/n26_batch_pretrained.png`).
+pixel the same failure (`figures/extra/n26_batch_pretrained.png`).
 
 **It is not the layout, and the check is direct.** n26 carries its own CHW-flat convention
 end to end: it loads images with `.transpose(2,0,1).ravel()` and its own `train_group` un-flattens
@@ -1034,7 +1034,7 @@ Table 8 `w0 = 0.5`; input layout corrected), on `google/ddpm-celebahq-256`:
 with **Adam restored** — they are indistinguishable from the ones the ascent changes produced
 (0.82–1.11), which is the evidence that those changes were never doing the work.
 
-![the paper's pipeline on its own backbone, after the layout, guidance and ascent fixes](../figures/additional/f18_celeba_paper_paperdisc_w05.png)
+![the paper's pipeline on its own backbone, after the layout, guidance and ascent fixes](../figures/extra/f18_celeba_paper_paperdisc_w05.png)
 
 **Four explanations were tried and three were refuted by measurement**, which is worth recording
 because each was plausible: runaway Adam steps (max |x₀| measured 1.5–2.0, not the 9 predicted), the
@@ -1058,7 +1058,7 @@ median elsewhere. 1.0 means no seam:
 | 12-epoch matched pair, `permuted` | 1.424 |
 | 12-epoch matched pair, **`hwc`** (counter-control) | **1.004** — seam gone |
 
-![where CelebA samples discontinue](../figures/additional/f24_band_artifact.png)
+![where CelebA samples discontinue](../figures/extra/f24_band_artifact.png)
 
 **The prediction was sharp and it held.** The discontinuity spikes at precisely the two rows the
 permutation implies, at 2.6× the level real data shows, and an otherwise identical backbone trained
@@ -4176,7 +4176,7 @@ implemented and swept.
 | [0.3, 1.0] | 1.271 | 0.479 | 0.785 |
 | [0.5, 1.0] | 1.275 | 0.500 | 0.778 |
 
-**No effect** — the five rows of `figures/additional/diag_guidance_interval.png` are indistinguishable. And in
+**No effect** — the five rows of `figures/extra/diag_guidance_interval.png` are indistinguishable. And in
 hindsight it could not have had one: `sample_concept` already samples at **guidance 1.0**, so there
 is no CFG at sampling time to restrict. The interval only touched pool generation, and the adapter
 does not visibly inherit texture from the pool.
@@ -4252,7 +4252,7 @@ mechanism.
 | 0.95 | 0.149±0.003 | 0.790±0.015 | 0.638±0.008 | 1.790 | 0.055±0.004 | 0.000 | 0.000 |
 | 1.00 | 0.165±0.003 | 0.843±0.018 | 0.599±0.015 | 1.884 | 0.055±0.004 | 0.000 | 0.000 |
 
-![the dial](../figures/f11_prototype_dial.png)
+![the dial](../figures/case_prototype_distance.png)
 
 ### 20a. The dial is ours alone
 
@@ -4503,7 +4503,7 @@ bug so much as an empty slot: the backbone is already playing the root's role fr
 `‖∂L(x_i)/∂(A_n,B_n)‖` under the consolidation loss itself. At 8 concepts, the top-influence
 instances of a leaf come from exactly one concept, and those of an internal node come from **four
 different concepts** — normalized member entropy **0.61**, against ~0.0 if one member dominated. The
-picture is in `figures/additional/f13_hierarchy_probe.png`, colour-coded by source concept.
+picture is in `figures/extra/f13_hierarchy_probe.png`, colour-coded by source concept.
 
 So the structure is not an illusion: shared nodes exist, carry signal, and are built from several
 members' data.
@@ -4537,7 +4537,7 @@ The falsifiable prediction attached to the hierarchy was that shared ancestors a
 resolutions and private leaves at fine ones. Measured as the ‖BA‖/‖W‖-weighted centroid over wrapped
 layers in module order: **internal 48.8 vs leaf 46.9** — ancestors act, if anything, marginally
 *later*. Whatever the shared node is encoding, it is not a coarse-to-fine decomposition
-(`figures/additional/f13b_layer_profiles.png`).
+(`figures/extra/f13b_layer_profiles.png`).
 
 ### 24d. Capacity is not the lever either (rank sweep, 3 seeds)
 
@@ -4565,7 +4565,7 @@ falls at r=16. It is recorded here because it was nearly written up.
 ### 24f. Why: the tree is a caterpillar, not a hierarchy (N38)
 
 The three negatives above have a single structural cause, and drawing the tree makes it obvious
-(`figures/additional/f14_hierarchy.png`). After 40 OOD concepts on the standard backbone:
+(`figures/extra/f14_hierarchy.png`). After 40 OOD concepts on the standard backbone:
 
 | | |
 |---|---|
@@ -4750,10 +4750,10 @@ The shape changes accordingly: balance 0.512 → **0.995**, and internal nodes 4
 five times as many places where sharing could occur. Redrawing N38's tree under `rule="cu"` gives
 **16–17 shared nodes across every arrival order** against the 3 the shipped rule produced.
 
-![the tree under category utility](../figures/additional/f14_hierarchy_cu.png)
+![the tree under category utility](../figures/extra/f14_hierarchy_cu.png)
 
 The same 40 concepts, same backbone, same arrival orders — only the placement criterion differs.
-Compare `figures/additional/f14_hierarchy.png`, the caterpillar the shipped rule builds from the identical
+Compare `figures/extra/f14_hierarchy.png`, the caterpillar the shipped rule builds from the identical
 input.
 
 **What is still not claimed.** A better-shaped tree is a means, not a result. §24b measured that
@@ -5200,10 +5200,10 @@ Flat rows here are HWC; every consumer hands one to the UNet with a plain `.resh
 That is not an image. `tests/diag_layout.py` establishes it by exact index algebra, no model
 involved — for 64×64×3 the network's three "channels" are image **rows** 0–21 / 21–42 / 42–63, its
 width axis is the **colour** axis, and its vertical axis is a **~22-pixel jump across the picture**,
-so a single 3×3 convolution reads real columns 3, 24 and 45 at once. `figures/additional/f20_layout.png` shows
+so a single 3×3 convolution reads real columns 3, 24 and 45 at once. `figures/extra/f20_layout.png` shows
 a real face as the UNet sees it: a striped, colour-scrambled field with only low frequencies intact.
 
-![what the UNet actually convolves](../figures/additional/f20_layout.png)
+![what the UNet actually convolves](../figures/extra/f20_layout.png)
 
 `ddpm.py` had recorded this deliberately and argued it was harmless, because training and sampling
 share the permutation so "the model simply learns in the permuted space". That is correct for a

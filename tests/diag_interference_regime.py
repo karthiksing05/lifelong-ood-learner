@@ -22,7 +22,7 @@ import numpy as np, torch
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "experiments"))
 from common import CACHE, ood_queries
-from lifelong_ood.datasets import load_colormnist
+from lifelong_ood.data.datasets import load_colormnist
 from lifelong_ood.evals import fit_probes
 from lifelong_ood.neural import NeuralLifelongLearner, load_field, to_model
 from lifelong_ood.neural.idealwords import slot_factors

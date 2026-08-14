@@ -32,7 +32,7 @@ import numpy as np
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
-from lifelong_ood.celeba import ATTRS, _parquet_shards, find_celeba          # noqa: E402
+from lifelong_ood.data.celeba import ATTRS, _parquet_shards, find_celeba          # noqa: E402
 from lifelong_ood.evals import SoftmaxProbe                                   # noqa: E402
 
 # ATTRS plus the salient, well-known ones it omits.  Eyeglasses in particular is both balanced and

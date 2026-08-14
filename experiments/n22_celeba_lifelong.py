@@ -32,7 +32,7 @@ from n4_batch import (cl_metrics, efficiency_metrics,                  # noqa: E
 from n19_celeba_train import build_probes                              # noqa: E402
 from n20_celeba_composition import score                               # noqa: E402
 
-from lifelong_ood.celeba import ATTRS, set_attrs, as_float, load_celeba_comp, nearest_seen  # noqa: E402
+from lifelong_ood.data.celeba import ATTRS, set_attrs, as_float, load_celeba_comp, nearest_seen  # noqa: E402
 from lifelong_ood.evals import frechet_distance, save_json             # noqa: E402
 from lifelong_ood.neural import (NeuralLifelongLearner, fingerprint, load_field,  # noqa: E402
                                  to_data, to_model)

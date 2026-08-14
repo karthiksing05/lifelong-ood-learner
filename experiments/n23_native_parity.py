@@ -38,7 +38,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from common import CACHE, RESULTS, backbone_gains, ood_queries          # noqa: E402
 
-from lifelong_ood.datasets import load_colormnist                       # noqa: E402
+from lifelong_ood.data.datasets import load_colormnist                       # noqa: E402
 from lifelong_ood.compose import PAPER_CELEBA               # noqa: E402
 from lifelong_ood.evals import (composition_accuracy, fit_probes, precision_recall,  # noqa: E402
                                 sample_geometry, save_json)

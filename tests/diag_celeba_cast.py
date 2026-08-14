@@ -53,7 +53,7 @@ def rgb(S, img):
 def main():
     dev = "cuda" if torch.cuda.is_available() else "cpu"
     field, img = load_pretrained("google/ddpm-celebahq-256", device=dev, batch=4)
-    from lifelong_ood.celeba import as_float, load_celeba_comp
+    from lifelong_ood.data.celeba import as_float, load_celeba_comp
     data = load_celeba_comp(img=img, max_rows=4000, min_count=20, n_holdout=8)
     L = NeuralLifelongLearner(field, steps=100, seed=0, device=dev)
 

@@ -27,7 +27,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(
                                 "experiments"))
 from common import CACHE, RESULTS                                              # noqa: E402
 
-from lifelong_ood.celeba import as_float, load_celeba_comp                     # noqa: E402
+from lifelong_ood.data.celeba import as_float, load_celeba_comp                     # noqa: E402
 from lifelong_ood.compose import PAPER_POE_CELEBA, PAPER_POE_COLORMNIST        # noqa: E402
 from lifelong_ood.evals import (attr_accuracy, fit_attr_probes, probe_usable,  # noqa: E402
                                 save_json, speckle)
@@ -118,7 +118,7 @@ def main():
     fig.suptitle("CelebA guidance strength: the paper's w0=0.5 vs the w0=1.2 this repo ran.\n"
                  "Same queries, same teacher, same seed -- only w0 differs.", fontsize=9)
     fig.tight_layout(rect=[0, 0, 1, 0.955])
-    out = os.path.join(FIG, "f19_celeba_w0.png")
+    out = os.path.join(FIG, "extra", "f19_celeba_w0.png")
     fig.savefig(out, dpi=130, bbox_inches="tight")
     print(f"[w0] wrote {out}")
     return 0

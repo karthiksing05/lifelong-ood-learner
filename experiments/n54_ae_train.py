@@ -26,7 +26,7 @@ sys.path.insert(0, os.path.join(HERE, "experiments"))
 
 from common import CACHE, RESULTS                                      # noqa: E402
 
-from lifelong_ood.datasets import load_colormnist                      # noqa: E402
+from lifelong_ood.data.datasets import load_colormnist                      # noqa: E402
 from lifelong_ood.evals import fit_probes, save_json                   # noqa: E402
 from lifelong_ood.neural.latent import decode, encode, train_ae        # noqa: E402
 

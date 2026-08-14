@@ -31,7 +31,7 @@ from lifelong_ood.score import cosine_abar                                     #
 
 
 def main():
-    from lifelong_ood.celeba import load_celeba
+    from lifelong_ood.data.celeba import load_celeba
     from lifelong_ood.neural import to_model
     from lifelong_ood.neural.pretrained import load_pretrained
     dev = "cuda" if torch.cuda.is_available() else "cpu"

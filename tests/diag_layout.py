@@ -82,7 +82,7 @@ def main():
     index_algebra()
 
     print("\n[layout] 2. PICTURE -- a real face as the UNet sees it")
-    from lifelong_ood.celeba import as_float, load_celeba_comp
+    from lifelong_ood.data.celeba import as_float, load_celeba_comp
     data = load_celeba_comp(img=64, max_rows=64, min_count=1, n_holdout=1)
     img = 64
     X = as_float(data["X8"][:4]).astype(np.float32)
@@ -128,7 +128,7 @@ def main():
                  "A plain .reshape(3,H,W) of an HWC row makes 'channels' out of horizontal bands "
                  "and the width axis out of colour.", fontsize=9)
     fig.tight_layout(rect=[0, 0, 1, 0.93])
-    out = os.path.join(FIG, "f20_layout.png")
+    out = os.path.join(FIG, "extra", "f20_layout.png")
     fig.savefig(out, dpi=130, bbox_inches="tight")
     print(f"\n[layout] wrote {out}")
     return 0

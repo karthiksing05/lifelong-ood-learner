@@ -92,7 +92,7 @@ def main():
     # and has no attribute labels, so the "held-out composition" here is a REAL FACE the model was
     # not conditioned on -- the same object the paper's query is, minus the attribute bookkeeping.
     # §12 established this is how the pretrained track poses the task.
-    from lifelong_ood.celeba import as_float, load_celeba_comp
+    from lifelong_ood.data.celeba import as_float, load_celeba_comp
     data = load_celeba_comp(img=img, max_rows=4000, min_count=20, n_holdout=8)
     sp = data["split"]          # hold_ids / combo_of / all_combos live here, not at top level
     hold = np.asarray(sp["hold_ids"])
@@ -169,7 +169,7 @@ def main():
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
-    from lifelong_ood.datasets import rgb_img
+    from lifelong_ood.data.datasets import rgb_img
     # Derived from the panels themselves, not re-typed.  A hardcoded copy of these row names went
     # out of sync with the dict the moment the first row was relabelled, and `got.get(name)` returned
     # None for it -- so the figure rendered a blank strip where the reference images belong, with no

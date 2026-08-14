@@ -22,7 +22,7 @@ CK = os.path.join(CACHE, "ddpm_colormnist.pt")
 ck = torch.load(CK, map_location="cpu", weights_only=False)
 C = ck["ema"]["cemb.weight"].numpy()
 
-from lifelong_ood.datasets import load_colormnist
+from lifelong_ood.data.datasets import load_colormnist
 from lifelong_ood.neural import to_model
 _d = load_colormnist(n_per_slot=20, seed=0)
 _seen = np.where(_d["seen"])[0]

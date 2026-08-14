@@ -136,7 +136,7 @@ def main():
         "Grey lines are the remaining baselines. Retention and plasticity are the two things a "
         "summary statistic cannot separate.", fontsize=8.5)
     fig.tight_layout(rect=[0, 0, 1, 0.88])
-    out = os.path.join(FIG, "f31_learning_curves.png")
+    out = os.path.join(FIG, "06_learning_curves.png")
     fig.savefig(out, dpi=140, bbox_inches="tight")
     print(f"[f31] wrote {out}  ({len(data)} arms, "
           f"{sum(len(v) for v in data.values())} arm-runs pooled)")

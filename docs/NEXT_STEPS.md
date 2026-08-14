@@ -36,7 +36,7 @@ The 3-factor scoping is **withdrawn**.
 
 ### 1b. The router: a sixth attempt, an honest negative, and a real diagnosis
 
-`RESULTS §6c-ter`, `figures/f32_mdl_router.png`. Reframed the decision the way Cobweb makes one —
+`RESULTS §6c-ter`, `figures/07_router_exchange_rate.png`. Reframed the decision the way Cobweb makes one —
 compare hypothetical operators under an objective with a built-in complexity penalty — using the
 storage ladder's own costs in bits:
 

@@ -38,7 +38,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(
                                 "experiments"))
 from common import CACHE                                                       # noqa: E402
 
-from lifelong_ood.celeba import load_celeba                                    # noqa: E402
+from lifelong_ood.data.celeba import load_celeba                                    # noqa: E402
 from lifelong_ood.evals import attr_accuracy, fit_attr_probes, probe_usable    # noqa: E402
 from lifelong_ood.neural import to_data                                        # noqa: E402
 from lifelong_ood.neural.idealwords import compose as fac_compose, factorize   # noqa: E402

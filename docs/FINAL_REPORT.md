@@ -25,7 +25,7 @@ below is an attempt to find out whether that holds and where it breaks.
 | BLOCK rank 8 (`block-every`) | 2,296,467 B | 1× | F1 0.587 ± 0.020 |
 
 Twenty-four concepts cost **1.7 KB against 55 MB**, and the backbone is never written to.
-`figures/f16_addressing.png` plots the three curves against concept count: four orders of magnitude
+`figures/03_storage_ladder.png` plots the three curves against concept count: four orders of magnitude
 apart on a log axis, and the gap widens with every concept absorbed.
 
 **Why this one is solid:** it is arithmetic on tensor shapes, not a measured quantity, and it did not
@@ -220,7 +220,7 @@ to stay on it cannot express a difference of 0.08. This is a property of Eq. 13/
 reimplementation.
 
 **Why this matters beyond a baseline row.** It is the quantitative case for the one place our
-pipeline departs from theirs (Stage 4 of `figures/f0_architecture.png`): if the guidance channel
+pipeline departs from theirs (Stage 4 of `figures/01_architecture.png`): if the guidance channel
 cannot carry the difference between two teacher means, then no choice of teacher distinguishes itself
 through it, and using the teacher as the *sampling distribution* is the wrong use of it. Reading the
 composition into `c_new` and letting the model's own multimodal conditional generate is what produces

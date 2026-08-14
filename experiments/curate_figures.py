@@ -1,4 +1,4 @@
-"""Keep `figures/` to the CORE set, put the supporting ones in `figures/additional/`, archive dead.
+"""Keep `figures/` to the CORE set, put the supporting ones in `figures/extra/`, archive dead.
 
 THREE tiers since 2026-08-13, because "cited somewhere" turned out to be too weak a filter: the
 directory still held layout ablations, renderer post-mortems and hierarchy panels that are real
@@ -8,7 +8,7 @@ headline from the footnote.
   CORE        `figures/` -- the graphics the argument is built on: architecture, storage/cost,
               learning curves, composition/OOD, representation, case studies, preservation.
               Enumerated in CORE below and mirrored in docs/OUTLINE.md's "core figure set".
-  ADDITIONAL  `figures/additional/` -- still cited, still evidence, but supporting: ablations,
+  ADDITIONAL  `figures/extra/` -- still cited, still evidence, but supporting: ablations,
               fault post-mortems, per-experiment intermediates the pipeline copies FROM.
   ARCHIVE     `figures/archive/` -- superseded or uncited; kept because each cost GPU time.
 
@@ -47,25 +47,25 @@ import sys
 HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 FIG = os.path.join(HERE, "figures")
 ARCH = os.path.join(FIG, "archive")
-ADD = os.path.join(FIG, "additional")
+ADD = os.path.join(FIG, "extra")
 
 # The core set, mirrored in docs/OUTLINE.md. Grouped by what the outline asks for, so that adding a
 # figure means deciding which part of the argument it serves rather than dropping it in the pile.
 CORE = {
     # architecture
-    "f0_architecture.png", "f1_loop.png",
+    "01_architecture.png", "02_lifelong_loop.png",
     # storage and cost -- the headline claim
-    "f16_addressing.png", "f8_growth.png", "f34_batch_invariance.png",
+    "03_storage_ladder.png", "04_growth_per_concept.png", "05_batch_invariance.png",
     # curves
-    "f31_learning_curves.png", "f32_mdl_router.png",
+    "06_learning_curves.png", "07_router_exchange_rate.png",
     # composition / OOD, on our protocol and on theirs
-    "f2_coverage_vs_copying.png", "f26_paper_composition.png",
+    "08_coverage_vs_copying.png", "case_celeba.png",
     # representation
-    "f33_representation.png",
+    "09_representation.png",
     # case studies -- instances at various distances from prototypes
-    "f9_case_colormnist.png", "f11_prototype_dial.png",
+    "case_colormnist.png", "case_prototype_distance.png",
     # preservation and parity
-    "f5_preservation.png", "f6_native_parity.png",
+    "10_preservation.png", "11_native_parity.png",
 }
 
 
@@ -122,7 +122,7 @@ def main():
               f"(regenerate, or fix CORE):")
         for f in missing:
             print(f"    {f}")
-    print(f"\n  ADDITIONAL {len(extra)} ({mb(extra):.1f} MB)  -> figures/additional/")
+    print(f"\n  ADDITIONAL {len(extra)} ({mb(extra):.1f} MB)  -> figures/extra/")
     for f in extra:
         why = "cited" if f in keep_ref else "pipeline input/output"
         print(f"    {f:44s} {why}")

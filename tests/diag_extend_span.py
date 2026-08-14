@@ -26,7 +26,7 @@ import torch
 HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, HERE)
 
-from lifelong_ood.datasets import load_colormnist                      # noqa: E402
+from lifelong_ood.data.datasets import load_colormnist                      # noqa: E402
 from lifelong_ood.neural.ddpm import load_field, to_model              # noqa: E402
 from lifelong_ood.neural.idealwords import (compose, extend_basis,     # noqa: E402
                                             factorize, slot_factors)

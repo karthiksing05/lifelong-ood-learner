@@ -20,9 +20,9 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from common import CACHE, RESULTS                                      # noqa: E402
 
-from lifelong_ood.datasets import load_colormnist, slot_id             # noqa: E402
+from lifelong_ood.data.datasets import load_colormnist, slot_id             # noqa: E402
 from lifelong_ood.evals import fit_probes, save_grid, save_json        # noqa: E402
-from lifelong_ood.factored import decode_slot                          # noqa: E402
+from lifelong_ood.data.factored import decode_slot                          # noqa: E402
 from lifelong_ood.neural import NeuralScoreField, UNet, to_data, train_ddpm  # noqa: E402
 
 
@@ -123,7 +123,7 @@ def main():
           f"{' (' + torch.cuda.get_device_name(0) + ')' if dev == 'cuda' else ''}", flush=True)
 
     if args.dataset == "celeba":
-        from lifelong_ood.celeba import IMG_CELEBA, load_celeba
+        from lifelong_ood.data.celeba import IMG_CELEBA, load_celeba
         img = args.img or IMG_CELEBA
         data = load_celeba(n_per_class=args.n_per_slot, img=img, seed=args.seed,
                            min_count=25, max_rows=args.max_rows)
@@ -136,7 +136,7 @@ def main():
         # nuisance and supply the within-composition variation that handwriting supplies on
         # ColorMNIST -- see lifelong_ood/shapes3d.py for why that split is required rather than
         # convenient.
-        from lifelong_ood.shapes3d import load_shapes3d
+        from lifelong_ood.data.shapes3d import load_shapes3d
         img = args.img or 64
         data = load_shapes3d(n_per_slot=args.n_per_slot, seed=args.seed, img=img,
                              value_stride=args.value_stride, n_holdout=args.n_holdout,
@@ -293,7 +293,7 @@ def main():
     hits, grids, probe_val = [], [], {}
 
     if args.dataset == "celeba":
-        from lifelong_ood.celeba import class_name
+        from lifelong_ood.data.celeba import class_name
         from lifelong_ood.evals import attr_accuracy, fit_attr_probes
         probes = fit_attr_probes(data, seed=args.seed, epochs=8 if args.quick else 30)
         probe_val = {a: probes[f"{a}_val_acc"] for a in probes["_attrs"]}

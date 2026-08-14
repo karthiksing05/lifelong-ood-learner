@@ -37,7 +37,7 @@ sys.path.insert(0, os.path.join(HERE, "experiments"))
 
 from common import CACHE                                               # noqa: E402
 
-from lifelong_ood.factored import load_factored                        # noqa: E402
+from lifelong_ood.data.factored import load_factored                        # noqa: E402
 from lifelong_ood.neural.ve_bridge import VEToVPUNet                    # noqa: E402
 from lifelong_ood.score import cosine_abar                             # noqa: E402
 

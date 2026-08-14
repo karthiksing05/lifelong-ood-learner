@@ -41,7 +41,7 @@ from common import CACHE, RESULTS                                       # noqa: 
 from n19_celeba_train import build_probes                               # noqa: E402
 from n20_celeba_composition import score                                # noqa: E402
 
-from lifelong_ood.celeba import ATTRS, as_float, load_celeba_comp       # noqa: E402
+from lifelong_ood.data.celeba import ATTRS, as_float, load_celeba_comp       # noqa: E402
 from lifelong_ood.evals import save_json                                # noqa: E402
 from lifelong_ood.neural import (NeuralLifelongLearner, load_field, sample_embedding,  # noqa: E402
                                  to_data, to_model)

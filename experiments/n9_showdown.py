@@ -41,7 +41,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from common import CACHE, RESULTS, backbone_gains, ood_queries         # noqa: E402
 
-from lifelong_ood.datasets import load_colormnist, slot_name           # noqa: E402
+from lifelong_ood.data.datasets import load_colormnist, slot_name           # noqa: E402
 from lifelong_ood.evals import (composition_accuracy, density_coverage, fit_probes,  # noqa: E402
                                 frechet_distance, memorization, precision_recall,
                                 sample_geometry, save_json, vendi_score)
@@ -303,7 +303,7 @@ def main():
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
-    from lifelong_ood.datasets import rgb_img
+    from lifelong_ood.data.datasets import rgb_img
     nrow = len(cases) * len(order)
     fig, axes = plt.subplots(nrow, args.n_show + 1, figsize=(1.05 * (args.n_show + 1), 1.1 * nrow))
     r = 0

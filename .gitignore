@@ -25,3 +25,8 @@ figures/*_smoke.png
 figures/*cscale*.png
 figures/*pairscale*.png
 figures/archive
+
+# Superseded figures. Kept in the tree because each cost GPU time and one that turns out to be
+# wanted is then a `git mv` away -- but out of git, because they are dead weight in a clone and a
+# reader opening figures/ should see the argument, not its history.
+figures/archive/

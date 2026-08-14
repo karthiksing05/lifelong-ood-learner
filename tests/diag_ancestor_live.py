@@ -18,7 +18,7 @@ import numpy as np, torch
 sys.path.insert(0, "/coc/flash10/ksingara3/lifelong-ood-learner")
 sys.path.insert(0, "/coc/flash10/ksingara3/lifelong-ood-learner/experiments")
 from common import CACHE, ood_queries
-from lifelong_ood.datasets import load_colormnist
+from lifelong_ood.data.datasets import load_colormnist
 from lifelong_ood.neural import NeuralLifelongLearner, load_field, to_model
 
 dev = "cuda" if torch.cuda.is_available() else "cpu"

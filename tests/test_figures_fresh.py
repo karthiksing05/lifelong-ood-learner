@@ -5,7 +5,7 @@ different accident:
 
   * `make_paper_figures` renamed with `os.replace`, which CONSUMED the source, so a second run had
     nothing left to rename and the paper figure quietly stopped tracking its experiment;
-  * two scripts both wrote `f9_case_colormnist.png`, so the README's case study was whichever ran
+  * two scripts both wrote `case_colormnist.png`, so the README's case study was whichever ran
     last;
   * an n44 process started at 17:30, the figure's caption was edited at 17:38, and the figure it
     wrote at 17:46 carried the OLD caption -- which asserted a claim the documents had just

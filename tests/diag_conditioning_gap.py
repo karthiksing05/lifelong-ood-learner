@@ -50,10 +50,10 @@ CASES = [
 
 def load_data(kind, n_per_slot=8):
     if kind == "colormnist":
-        from lifelong_ood.datasets import load_colormnist
+        from lifelong_ood.data.datasets import load_colormnist
         d = load_colormnist(n_per_slot=n_per_slot, seed=0)
         return np.asarray(d["X"]), np.asarray(d["slot"])
-    from lifelong_ood.factored import load_factored
+    from lifelong_ood.data.factored import load_factored
     d = load_factored("shapes3d", n_per_slot=max(n_per_slot, 40), seed=0,
                       value_stride=2, n_holdout=25)
     return np.asarray(d["X"]), np.asarray(d["slot"])

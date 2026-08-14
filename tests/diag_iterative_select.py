@@ -38,7 +38,7 @@ sys.path.insert(0, os.path.join(HERE, "experiments"))
 
 from lifelong_ood.compose import (PAPER_POE_COLORMNIST as PAPER_POE,  # noqa: E402
                                   candidates_ascent, iterative_teacher, poe_teacher)
-from lifelong_ood.datasets import load_colormnist                        # noqa: E402
+from lifelong_ood.data.datasets import load_colormnist                        # noqa: E402
 from lifelong_ood.evals import (composition_accuracy, fit_probes,        # noqa: E402
                                 precision_recall)
 from lifelong_ood.neural import NeuralLifelongLearner                    # noqa: E402

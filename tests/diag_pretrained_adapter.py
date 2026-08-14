@@ -42,7 +42,7 @@ FIG = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 
 
 
 def main():
-    from lifelong_ood.celeba import load_celeba
+    from lifelong_ood.data.celeba import load_celeba
     from lifelong_ood.evals import speckle
     from lifelong_ood.neural import to_data, to_model
     from lifelong_ood.neural.adapters import HierarchicalAdapterBank
@@ -127,7 +127,7 @@ def main():
     fig.suptitle("How much adapter can a pretrained backbone take before it stops rendering?\n"
                  "Pool is REAL images; the top row is the untouched model.", fontsize=9)
     fig.tight_layout(rect=[0, 0, 1, 0.93])
-    o = os.path.join(FIG, "f27_pretrained_adapter.png")
+    o = os.path.join(FIG, "extra", "f27_pretrained_adapter.png")
     fig.savefig(o, dpi=120, bbox_inches="tight")
     print(f"[adapter] wrote {o}")
     return 0

@@ -22,7 +22,7 @@ HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, HERE)
 
 from lifelong_ood.evals import save_grid                               # noqa: E402
-from lifelong_ood.factored import load_factored                        # noqa: E402
+from lifelong_ood.data.factored import load_factored                        # noqa: E402
 from lifelong_ood.neural.ddpm import load_field, to_data               # noqa: E402
 
 FIG = os.path.join(HERE, "figures")

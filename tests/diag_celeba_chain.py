@@ -35,7 +35,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(
                                 "experiments"))
 from common import CACHE                                                       # noqa: E402
 
-from lifelong_ood.celeba import ATTRS, as_float, load_celeba_comp              # noqa: E402
+from lifelong_ood.data.celeba import ATTRS, as_float, load_celeba_comp              # noqa: E402
 from lifelong_ood.compose import candidates_ascent, poe_teacher                # noqa: E402
 from lifelong_ood.evals import attr_accuracy, fit_attr_probes, probe_usable    # noqa: E402
 from lifelong_ood.neural import load_field, to_data, to_model                  # noqa: E402

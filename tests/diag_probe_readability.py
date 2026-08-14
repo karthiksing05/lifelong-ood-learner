@@ -36,7 +36,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(
                                 "experiments"))
 
 from lifelong_ood import inception                                             # noqa: E402
-from lifelong_ood.celeba import ATTRS, load_celeba                             # noqa: E402
+from lifelong_ood.data.celeba import ATTRS, load_celeba                             # noqa: E402
 from lifelong_ood.evals import SoftmaxProbe, probe_usable                      # noqa: E402
 
 

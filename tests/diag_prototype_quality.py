@@ -39,7 +39,7 @@ FIG = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 
 
 
 def main():
-    from lifelong_ood.celeba import load_celeba
+    from lifelong_ood.data.celeba import load_celeba
     from lifelong_ood.neural import to_data, to_model
     from lifelong_ood.neural.pretrained import load_pretrained
     dev = "cuda" if torch.cuda.is_available() else "cpu"
@@ -104,7 +104,7 @@ def main():
     fig.suptitle("Mode ascent output at each noise level of the paper's CelebA grid, before pooling "
                  "and selection.", fontsize=9)
     fig.tight_layout(rect=[0, 0, 1, 0.9])
-    o = os.path.join(FIG, "f28_prototype_by_level.png")
+    o = os.path.join(FIG, "extra", "f28_prototype_by_level.png")
     fig.savefig(o, dpi=130, bbox_inches="tight")
     print(f"[proto] wrote {o}")
     return 0

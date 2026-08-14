@@ -29,7 +29,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from common import RESULTS, base_parser, fresh_learner, load_all, ood_queries  # noqa: E402
 
 from e1_manifold import valid_rate                                     # noqa: E402
-from lifelong_ood.datasets import slot_name                            # noqa: E402
+from lifelong_ood.data.datasets import slot_name                            # noqa: E402
 from lifelong_ood.evals import composition_accuracy, save_grid, save_json  # noqa: E402
 
 

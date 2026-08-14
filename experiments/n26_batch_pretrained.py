@@ -40,7 +40,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from common import RESULTS                                              # noqa: E402
 from n25_pretrained_case import show, to_data, to_model                 # noqa: E402
 
-from lifelong_ood.celeba import find_celeba                             # noqa: E402
+from lifelong_ood.data.celeba import find_celeba                             # noqa: E402
 from lifelong_ood.evals import SoftmaxProbe, save_json, vendi_score      # noqa: E402
 from lifelong_ood.neural.adapters import HierarchicalAdapterBank        # noqa: E402
 from lifelong_ood.neural.pretrained import load_pretrained              # noqa: E402
@@ -52,7 +52,7 @@ def load_attr_groups(attrs, img=256, n_each=128, n_probe=4000, probe_img=128, ma
     """-> dict(attr -> [n, 3*img*img] CHW-flat of images WITH that attribute), plus a probe set."""
     import pyarrow.parquet as pq
     from PIL import Image
-    from lifelong_ood.celeba import _parquet_shards
+    from lifelong_ood.data.celeba import _parquet_shards
     root = find_celeba()
     want = {a: [] for a in attrs}
     pX, pY, n, done = [], [], 0, False

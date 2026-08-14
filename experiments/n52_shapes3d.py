@@ -36,7 +36,7 @@ sys.path.insert(0, os.path.join(HERE, "experiments"))
 
 from lifelong_ood.evals import (factor_accuracy, fit_factor_probes,  # noqa: E402
                                 precision_recall, probe_readable, save_json)
-from lifelong_ood.factored import decode_slot, load_factored          # noqa: E402
+from lifelong_ood.data.factored import decode_slot, load_factored          # noqa: E402
 from lifelong_ood.neural.ddpm import load_field, to_data, to_model     # noqa: E402
 from lifelong_ood.neural.idealwords import (compose, factorize,        # noqa: E402
                                             sample_factored_pool)

@@ -43,10 +43,10 @@ CASES = [
 
 def real_images(kind, n):
     if kind == "colormnist":
-        from lifelong_ood.datasets import load_colormnist
+        from lifelong_ood.data.datasets import load_colormnist
         d = load_colormnist(n_per_slot=8, seed=0)
     else:
-        from lifelong_ood.factored import load_factored
+        from lifelong_ood.data.factored import load_factored
         d = load_factored("shapes3d", n_per_slot=200, seed=0, value_stride=2, n_holdout=25)
     X = np.asarray(d["X"], np.float32)
     seen = np.asarray(d["seen"], bool)

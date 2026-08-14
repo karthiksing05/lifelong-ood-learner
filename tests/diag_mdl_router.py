@@ -34,7 +34,7 @@ sys.path.insert(0, os.path.join(HERE, "experiments"))
 
 from common import backbone_gains                                       # noqa: E402
 
-from lifelong_ood.datasets import load_colormnist                       # noqa: E402
+from lifelong_ood.data.datasets import load_colormnist                       # noqa: E402
 from lifelong_ood.evals import fit_probes                               # noqa: E402
 from lifelong_ood.neural.ddpm import load_field, to_model               # noqa: E402
 from lifelong_ood.neural.idealwords import (extend_basis, factorize,  # noqa: E402

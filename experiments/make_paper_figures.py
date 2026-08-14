@@ -138,7 +138,7 @@ def f1_loop(A):
                       "not fixed (\u00a726)", ha="center", fontsize=7.8, color="#666666")
     fig.suptitle("Lifelong OOD learning as repeated composition: the loop, and what each route "
                  "actually costs", fontsize=10.5, y=1.01)
-    save(fig, "f1_loop.png")
+    save(fig, "02_lifelong_loop.png")
 
 
 # ── F2 ────────────────────────────────────────────────────────────────────────
@@ -181,7 +181,7 @@ def f2_coverage_vs_copying(A):
                  "The baselines are run in their OWN published configuration and beat us on "
                  "accuracy AND precision;\nwhat they do not have is recall.", fontsize=10)
     fig.tight_layout(rect=[0, 0, 1, 0.90])
-    save(fig, "f2_coverage_vs_copying.png")
+    save(fig, "08_coverage_vs_copying.png")
 
 
 # ── F3 ────────────────────────────────────────────────────────────────────────
@@ -295,7 +295,7 @@ def f5_preservation(A):
                  "separates the arms — the bit-identical fraction separates them completely.",
                  fontsize=10)
     fig.tight_layout(rect=[0, 0, 1, 0.91])
-    save(fig, "f5_preservation.png")
+    save(fig, "10_preservation.png")
 
 
 # ── F6/F7/F8: already-good figures, redrawn here so one command rebuilds everything ──
@@ -306,8 +306,8 @@ def f6_parity(A):
                        capture_output=True, text=True)
     src = os.path.join(FIG, "n23_native_parity.png")
     if os.path.exists(src):
-        os.replace(src, os.path.join(FIG, "f6_native_parity.png"))
-        print("  wrote figures/f6_native_parity.png")
+        os.replace(src, os.path.join(FIG, "11_native_parity.png"))
+        print("  wrote figures/11_native_parity.png")
     else:
         print("  (parity figure unavailable)", r.stderr.strip()[:120])
 
@@ -317,8 +317,8 @@ def f7_f8_rename():
 
     Two corrections here, both of which had silently stopped this doing its job:
 
-    * `n9_showdown.png -> f9_case_colormnist.png` COLLIDED with `make_case_studies.py`, which writes
-      `f9_case_colormnist.png` directly and is the actual case-study panel (real / prototypes / four
+    * `n9_showdown.png -> case_colormnist.png` COLLIDED with `make_case_studies.py`, which writes
+      `case_colormnist.png` directly and is the actual case-study panel (real / prototypes / four
       methods, annotated with accuracy AND coverage).  Whichever ran last won, so the README's case
       study was whichever figure happened to be written most recently.  The showdown keeps its own
       name now.
@@ -333,7 +333,7 @@ def f7_f8_rename():
     # the companion paper's OWN backbone, `ddpm_celeba_paper128.pt`, which is `layout: hwc` at 128 px.
     # Nothing needed retraining -- the right backbone was already on disk and already in use by n48.
     # The old panel is in figures/archive/.
-    pairs = [("n18_router.png", "f7_router.png"), ("n24_growth.png", "f8_growth.png"),
+    pairs = [("n18_router.png", "f7_router.png"), ("n24_growth.png", "04_growth_per_concept.png"),
              ("n9_showdown.png", "f9b_showdown_colormnist.png")]
     for src, dst in pairs:
         cands = [src] if isinstance(src, str) else list(src)

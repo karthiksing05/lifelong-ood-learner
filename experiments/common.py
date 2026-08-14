@@ -13,7 +13,7 @@ import numpy as np
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from lifelong_ood.datasets import load_colormnist                     # noqa: E402
+from lifelong_ood.data.datasets import load_colormnist                     # noqa: E402
 from lifelong_ood.evals import fit_probes                             # noqa: E402
 from lifelong_ood.lifelong import LifelongLearner                     # noqa: E402
 

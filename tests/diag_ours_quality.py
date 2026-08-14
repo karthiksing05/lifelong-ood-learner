@@ -1,6 +1,6 @@
 """Why do OUR ColorMNIST samples look worse than every baseline's, and which knob fixes it?
 
-The case-study figure makes an uncomfortable point that the metrics hide: in `f9_case_colormnist.png`
+The case-study figure makes an uncomfortable point that the metrics hide: in `case_colormnist.png`
 the `ours` row is the ONLY row with malformed digits and wrong background colours, while
 `poe-guided`, `query-only` and `nearest-class` are all clean.  That is not a backbone limitation --
 `nearest-class` samples the same backbone and comes out clean -- so the degradation is introduced
@@ -31,7 +31,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "experiments"))
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 from common import CACHE, ood_queries                                         # noqa: E402
-from lifelong_ood.datasets import load_colormnist                             # noqa: E402
+from lifelong_ood.data.datasets import load_colormnist                             # noqa: E402
 from lifelong_ood.evals import (composition_accuracy, fit_probes,             # noqa: E402
                                 precision_recall, vendi_score)
 from lifelong_ood.neural import load_field, to_data, to_model                 # noqa: E402
@@ -106,7 +106,7 @@ def main():
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
-    from lifelong_ood.datasets import rgb_img
+    from lifelong_ood.data.datasets import rgb_img
     nrow, ncol = len(panels), 6
     fig, axes = plt.subplots(nrow, ncol, figsize=(1.15 * ncol + 2.6, 1.2 * nrow))
     axes = np.atleast_2d(axes)

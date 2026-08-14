@@ -39,7 +39,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from common import CACHE, RESULTS                                          # noqa: E402
 
-from lifelong_ood.datasets import load_colormnist, slot_id                 # noqa: E402
+from lifelong_ood.data.datasets import load_colormnist, slot_id                 # noqa: E402
 from lifelong_ood.evals import (composition_accuracy, fit_probes, precision_recall,  # noqa: E402
                                 sample_geometry, save_grid, save_json)
 from lifelong_ood.neural import (NeuralLifelongLearner, load_field, to_data,  # noqa: E402
@@ -251,7 +251,7 @@ def main():
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
-    from lifelong_ood.datasets import rgb_img
+    from lifelong_ood.data.datasets import rgb_img
     show = train_combos + eval_combos
     ncol = 7
     fig, axes = plt.subplots(len(show), ncol + 1, figsize=(1.05 * (ncol + 1), 1.15 * len(show)))

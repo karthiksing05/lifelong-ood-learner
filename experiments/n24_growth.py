@@ -106,7 +106,7 @@ def celeba_stream(seed=0, cache=None):
     # This used to be `{tuple(...) for _ in range(1200)}` -- a set built from 1200 draws, whose SIZE
     # depends on how many collisions that seed happened to produce. Each seed therefore returned a
     # different-length stream, the per-seed curves came out ragged, and `np.array([...], float)` in
-    # the plotting block raised `inhomogeneous shape` -- so `f8_growth.png` could not be regenerated
+    # the plotting block raised `inhomogeneous shape` -- so `04_growth_per_concept.png` could not be regenerated
     # at all. The cached branch above is deterministic; this one has to be too.
     n_target = 1000
     combos = set()

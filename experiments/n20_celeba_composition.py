@@ -38,7 +38,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from common import CACHE, RESULTS                                       # noqa: E402
 from n19_celeba_train import build_probes                               # noqa: E402
 
-from lifelong_ood.celeba import (ATTRS, set_attrs, as_float, class_name, load_celeba_comp,  # noqa: E402
+from lifelong_ood.data.celeba import (ATTRS, set_attrs, as_float, class_name, load_celeba_comp,  # noqa: E402
                                  nearest_seen)
 from lifelong_ood.evals import (attr_accuracy, density_coverage, frechet_distance,  # noqa: E402
                                 precision_recall, probe_usable, sample_geometry, save_json,

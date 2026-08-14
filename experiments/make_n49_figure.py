@@ -162,7 +162,7 @@ def main():
         "space, and published the result as their method's (recall 0.001 vs their 80.7).",
         fontsize=8.5)
     fig.tight_layout(rect=[0, 0, 1, 0.89])
-    out = os.path.join(FIG, "f29_protocol.png")
+    out = os.path.join(FIG, "extra", "f29_protocol.png")
     fig.savefig(out, dpi=140, bbox_inches="tight")
     print(f"[f29] wrote {out}"
           f"{'' if sweep else '  (LEFT PANEL IS A PLACEHOLDER)'}"

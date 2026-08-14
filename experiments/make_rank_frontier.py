@@ -163,7 +163,7 @@ def main():
     fig.suptitle("Shrinking the adapter: does it close the parameter loss to `independent`?",
                  fontsize=12)
     fig.tight_layout(rect=[0, 0, 1, 0.93])
-    out = os.path.join(FIG, "f12_rank_frontier.png")
+    out = os.path.join(FIG, "extra", "f12_rank_frontier.png")
     fig.savefig(out, dpi=150, bbox_inches="tight")
     print(f"[f12] wrote {out}")
     return 0

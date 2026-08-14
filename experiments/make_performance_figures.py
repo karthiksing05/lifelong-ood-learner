@@ -83,7 +83,7 @@ def f33_representation(plt):
                  "on digit. `ours` gets 12 extra conditioning columns and they buy nothing.",
                  fontsize=9)
     fig.tight_layout()
-    out = os.path.join(FIG, "f33_representation.png")
+    out = os.path.join(FIG, "09_representation.png")
     fig.savefig(out, dpi=140, bbox_inches="tight")
     plt.close(fig)
     print(f"[f33] wrote {out}")
@@ -166,7 +166,7 @@ def f34_batch(plt):
                  "CONCEPTS per update. Invariance in the number of INSTANCES per concept is a "
                  "different axis — f32.", fontsize=8.6)
     fig.tight_layout(rect=[0, 0, 1, 0.88])
-    out = os.path.join(FIG, "f34_batch_invariance.png")
+    out = os.path.join(FIG, "05_batch_invariance.png")
     fig.savefig(out, dpi=140, bbox_inches="tight")
     plt.close(fig)
     print(f"[f34] wrote {out}")

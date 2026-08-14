@@ -10,7 +10,7 @@ import numpy as np, torch
 sys.path.insert(0, "/coc/flash10/ksingara3/lifelong-ood-learner")
 sys.path.insert(0, "/coc/flash10/ksingara3/lifelong-ood-learner/experiments")
 from common import CACHE
-from lifelong_ood.datasets import load_colormnist
+from lifelong_ood.data.datasets import load_colormnist
 from lifelong_ood.evals import composition_accuracy, fit_probes, precision_recall, sample_geometry
 from lifelong_ood.neural import load_field, to_data
 

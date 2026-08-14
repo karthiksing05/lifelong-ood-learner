@@ -46,7 +46,7 @@ def render_cases(strengths, seed=0, n_show=5, steps=50):
     import torch
     sys.path.insert(0, os.path.join(HERE, "experiments"))
     from common import CACHE, ood_queries
-    from lifelong_ood.datasets import load_colormnist, slot_name
+    from lifelong_ood.data.datasets import load_colormnist, slot_name
     from lifelong_ood.neural import NeuralLifelongLearner, load_field, to_data, to_model
     from lifelong_ood.neural.idealwords import slot_factors
 
@@ -169,7 +169,7 @@ def main():
              "essentially pure noise.  poe-guided is flat because guidance toward the analytic "
              "teacher re-collapses the trajectory onto the mode regardless of where it began.",
              ha="center", fontsize=8, color="#555555")
-    out = os.path.join(FIG, "f11_prototype_dial.png")
+    out = os.path.join(FIG, "case_prototype_distance.png")
     fig.savefig(out, dpi=150, bbox_inches="tight")
     print(f"[f11] wrote {out}")
 

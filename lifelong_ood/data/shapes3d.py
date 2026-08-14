@@ -1,4 +1,4 @@
-"""Shapes3D as a third dataset, satisfying `factored.py`'s contract with no surgery anywhere else.
+"""Shapes3D as a third dataset, satisfying `lifelong_ood/data/factored.py`'s contract with no surgery anywhere else.
 
 Shapes3D (Burgess & Kim 2018) is the canonical disentanglement benchmark and it is an **exact
 Cartesian product**: 480,000 images at 64x64x3, labelled by six factors of sizes
@@ -29,7 +29,7 @@ The split is not cosmetic: it is what makes "hold out a COMBINATION without star
 meaningful here, which is the distinction the three-tier router exists to make (see
 `factored.holdout_mask`).
 
-    from lifelong_ood.shapes3d import load_shapes3d
+    from lifelong_ood.data.shapes3d import load_shapes3d
     d = load_shapes3d(n_per_slot=40)
     d["X"].shape, d["sizes"], d["names"]
 """

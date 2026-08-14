@@ -28,7 +28,7 @@ This module ADDS that view; it does not remove the old one.  `as_factored` wraps
 loader, so current experiments keep working untouched and new ones can be written against a contract
 that Shapes3D and CLEVR satisfy without further surgery.
 
-    from lifelong_ood.factored import as_factored, load_factored
+    from lifelong_ood.data.factored import as_factored, load_factored
     d = load_factored("colormnist", n_per_slot=50)
     d["factors"], d["sizes"], d["names"]
 """

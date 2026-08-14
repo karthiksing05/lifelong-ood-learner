@@ -27,7 +27,7 @@ from common import RESULTS, base_parser, load_all                      # noqa: E
 
 from lifelong_ood.evals import composition_accuracy, per_slot_metrics, save_grid, save_json  # noqa: E402
 from lifelong_ood.score import ScoreField, cosine_abar                 # noqa: E402
-from lifelong_ood.datasets import slot_id                              # noqa: E402
+from lifelong_ood.data.datasets import slot_id                              # noqa: E402
 
 
 def valid_rate(probes, samples, seen_slots):

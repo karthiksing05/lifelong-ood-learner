@@ -31,7 +31,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from common import RESULTS, base_parser, load_all, ood_queries         # noqa: E402
 
 from lifelong_ood.compose import cfg_weight, teacher_eps               # noqa: E402
-from lifelong_ood.datasets import slot_name                            # noqa: E402
+from lifelong_ood.data.datasets import slot_name                            # noqa: E402
 from lifelong_ood.evals import (composition_accuracy, sample_geometry, save_grid,  # noqa: E402
                                 save_json)
 

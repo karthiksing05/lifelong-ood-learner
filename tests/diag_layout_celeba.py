@@ -22,7 +22,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(
                                 "experiments"))
 from common import CACHE                                                       # noqa: E402
 
-from lifelong_ood.celeba import IMG_CELEBA, as_float, load_celeba              # noqa: E402
+from lifelong_ood.data.celeba import IMG_CELEBA, as_float, load_celeba              # noqa: E402
 from lifelong_ood.evals import speckle                                         # noqa: E402
 from lifelong_ood.neural import load_field, to_data                            # noqa: E402
 from lifelong_ood.neural.ddpm import train_ddpm                                # noqa: E402
@@ -115,7 +115,7 @@ def main():
                  f"train-dist loss {a[2]:.4f} → {b[2]:.4f}  ({100 * (a[2] - b[2]) / a[2]:+.1f}%); "
                  f"Color-MNIST measured -28.7%", fontsize=9)
     fig.tight_layout(rect=[0, 0, 1, 0.9])
-    o = os.path.join(FIG, "f23_layout_celeba.png")
+    o = os.path.join(FIG, "extra", "f23_layout_celeba.png")
     fig.savefig(o, dpi=130, bbox_inches="tight")
     print(f"[layout-celeba] wrote {o}")
     return 0

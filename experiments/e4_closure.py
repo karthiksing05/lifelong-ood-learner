@@ -34,7 +34,7 @@ import numpy as np
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from common import RESULTS, base_parser, fresh_learner, load_all      # noqa: E402
 
-from lifelong_ood.datasets import FG_NAMES, BG_NAMES, OOD_PAIRS       # noqa: E402
+from lifelong_ood.data.datasets import FG_NAMES, BG_NAMES, OOD_PAIRS       # noqa: E402
 from lifelong_ood.evals import composition_accuracy, sample_geometry, save_grid, save_json  # noqa: E402
 
 

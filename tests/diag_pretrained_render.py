@@ -57,7 +57,7 @@ def seam(A):
 
 def main():
     dev = "cuda" if torch.cuda.is_available() else "cpu"
-    from lifelong_ood.celeba import as_float, load_celeba
+    from lifelong_ood.data.celeba import as_float, load_celeba
     from lifelong_ood.neural.pretrained import load_pretrained
     field, img = load_pretrained("google/ddpm-celebahq-256", device=dev, batch=4)
     print(f"[render] field layout = {getattr(field, 'layout', '?')}, img = {img}\n")
@@ -101,7 +101,7 @@ def main():
                  "If the top row is noise, §30d's 'the bank renders nothing' was never about the "
                  "bank.", fontsize=9)
     fig.tight_layout(rect=[0, 0, 1, 0.93])
-    out = os.path.join(FIG, "f30_pretrained_render.png")
+    out = os.path.join(FIG, "extra", "f30_pretrained_render.png")
     fig.savefig(out, dpi=130, bbox_inches="tight")
     print(f"\n[render] wrote {out}")
     print("[render] a ratio near 1 is an image; a ratio far from 1 in the CHW row means the flat\n"

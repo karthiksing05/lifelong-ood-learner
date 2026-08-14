@@ -80,7 +80,7 @@ def main():
     torch.manual_seed(args.seed)
 
     from diffusers import UNet2DModel
-    from lifelong_ood.celeba import load_celeba
+    from lifelong_ood.data.celeba import load_celeba
     from lifelong_ood.neural.pretrained import _CondTimeEmbedding
 
     data = load_celeba(n_per_class=args.n_per_class, img=args.img, seed=args.seed,

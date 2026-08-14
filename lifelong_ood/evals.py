@@ -16,7 +16,7 @@ import os
 
 import numpy as np
 
-from .datasets import IMG, rgb_img
+from .data.datasets import IMG, rgb_img
 
 
 # ── numpy softmax probe ───────────────────────────────────────────────────────
