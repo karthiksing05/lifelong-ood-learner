@@ -127,8 +127,17 @@ def load_ve_field(path, device="cuda"):
             sh = (n, 3, self.img, self.img)
             us = np.linspace(1.0, 0.0, steps + 1)
             a0 = float(cosine_abar(np.array([us[0]]))[0])
-            # start from the VP prior at u=1: x ~ N(0, 1-a) around zero mean in [0,1] space
-            x = 0.5 + ((1 - a0) ** 0.5) * torch.randn(sh, generator=g, device=self.device)
+            # The VP prior at u=1 is CENTRED AT ZERO, not at the data mean.
+            #
+            #     x_t = sqrt(a) x0 + sqrt(1-a) eps   ->   a -> 0   ->   x_t -> eps ~ N(0, 1)
+            #
+            # The x0 term VANISHES, so there is no 0.5 offset even though the data lives in [0,1].
+            # The first version wrote `0.5 + sqrt(1-a0) * randn`, which starts every trajectory in
+            # the same biased basin; under deterministic DDIM (eta=0) they then funnel to one
+            # washed-out mean scene regardless of conditioning. That is exactly what the Shapes3D
+            # case study showed -- the SAME cyan-cube-on-orange image in every block and every arm,
+            # with `ours` equal to the unconditional floor to three decimals.
+            x = ((1 - a0) ** 0.5) * torch.randn(sh, generator=g, device=self.device)
             emb = None
             if emb_override is not None:
                 emb = torch.as_tensor(np.asarray(emb_override, np.float32),

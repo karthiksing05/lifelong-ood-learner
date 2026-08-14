@@ -38,8 +38,45 @@ from lifelong_ood.data.factored import decode_slot, load_factored          # noq
 from lifelong_ood.neural.idealwords import compose, factorize          # noqa: E402
 from lifelong_ood.neural.router import auroc, conditional_losses       # noqa: E402
 from lifelong_ood.neural.ve_bridge import load_ve_field                # noqa: E402
+from lifelong_ood.score import cosine_abar                             # noqa: E402
 
 FIG = os.path.join(HERE, "figures")
+
+
+def mode_ascent(field, x_img, u, n_starts=4, iters=120, lr=0.05, seed=0, init="hybrid"):
+    """Adam ascent on log p_t against the bridged field -> (x0-space modes, provenance).
+
+    The same Stage-1 discovery the ColorMNIST and CelebA case studies show in their `prototypes` row,
+    so the three figures can be read side by side.  Hybrid initialisation: half the chains from the
+    noised query, half from pure noise -- a pool grown only from the query explores one basin, and
+    composition needs experts that disagree with it.
+    """
+    dev = field.device
+    a = float(cosine_abar(np.array([u]))[0])
+    g = torch.Generator(device=dev).manual_seed(seed)
+    xq = torch.as_tensor(np.asarray(x_img, np.float32), device=dev).reshape(1, 3, field.img,
+                                                                            field.img)
+    half = n_starts // 2 if init == "hybrid" else n_starts
+    parts, src = [], []
+    if half:
+        e = torch.randn((half, *xq.shape[1:]), generator=g, device=dev)
+        parts.append((a ** 0.5) * xq.expand(half, -1, -1, -1) + ((1 - a) ** 0.5) * e)
+        src += ["query"] * half
+    if n_starts - half:
+        parts.append(torch.randn((n_starts - half, *xq.shape[1:]), generator=g, device=dev))
+        src += ["random"] * (n_starts - half)
+    xt = torch.cat(parts).clone().requires_grad_(True)
+    opt = torch.optim.Adam([xt], lr=lr)
+    for _ in range(iters):
+        eps = field.model(xt, torch.full((len(xt),), float(u), device=dev))
+        loss = (eps.detach() * xt).sum() / max((1 - a) ** 0.5, 1e-6)
+        opt.zero_grad(set_to_none=True)
+        loss.backward()
+        opt.step()
+    with torch.no_grad():
+        eps = field.model(xt, torch.full((len(xt),), float(u), device=dev))
+        x0 = (xt - ((1 - a) ** 0.5) * eps) / (a ** 0.5)
+    return x0.detach().permute(0, 2, 3, 1).reshape(len(x0), -1).cpu().numpy(), src
 
 
 def main():
@@ -148,7 +185,14 @@ def main():
               + " ".join(f"{k} {m[k]:.3f}" for k in names if k in m)
               + f" | recall {m['recall']:.3f}")
     a_nov = auroc(sig_h, sig_s)
-    print(f"[n58] router s_novel AUROC (held-out vs trained) {a_nov:.3f}   [ColorMNIST 0.980]")
+    m_ours = float(np.mean([r["joint"] for r in rows if r["arm"] == "ours (ADDRESS)"]))
+    m_unc = float(np.mean([r["joint"] for r in rows if r["arm"] == "unconditional"]))
+    ratio = m_ours / max(m_unc, 1e-9)
+    print(f"[n58] VERDICT: ADDRESS {m_ours:.3f} vs unconditional floor {m_unc:.3f} = {ratio:.1f}x "
+          f"-> {'COMPOSES' if ratio > 2 and m_ours > 0.2 else 'DOES NOT COMPOSE'}")
+    print(f"[n58] router s_novel AUROC (held-out vs trained) {a_nov:.3f}   [ColorMNIST 0.980]"
+          + ("   <- ROUTING does not transfer here even though COMPOSITION does"
+             if a_nov < 0.7 else ""))
 
     save_json(dict(rows=rows, summary=summary, basis_r2=float(fac["r2"]), gap=gap,
                    null_gap=ngap, conditional=bool(conditional), novel_auroc=float(a_nov),
@@ -160,7 +204,7 @@ def main():
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
-    order = ["real", "ours (ADDRESS)", "nearest-class", "unconditional"]
+    order = ["real", "prototypes", "ours (ADDRESS)", "nearest-class", "unconditional"]
     show = cases[:4]
     fig, axes = plt.subplots(len(show) * len(order), args.n_show,
                              figsize=(1.5 * args.n_show + 4.4, 1.5 * len(show) * len(order)))
@@ -172,7 +216,14 @@ def main():
         n_tr = int(np.sum((slots == int(s)) & data["seen"]))
         c_addr = compose(fac, tuple(int(v) for v in tgt))
         d2 = ((C - c_addr[None]) ** 2).sum(1)
+        # the prototypes Stage 1 discovers, at the same noise levels f9 shows
+        P, psrc = [], []
+        for ui, uu in enumerate((0.05, 0.15, 0.30)):
+            m, sr = mode_ascent(field, X[idx[0]].reshape(64, 64, 3).transpose(2, 0, 1), uu,
+                                n_starts=2, seed=args.seed + 9973 * int(s) + 131 * ui)
+            P.append(m); psrc += [f"{q}-init u={uu:g}" for q in sr]
         got = {"real": X[idx[:args.n_show]],
+               "prototypes": np.concatenate(P)[:args.n_show],
                "ours (ADDRESS)": field.sample(n=args.n_show, steps=args.steps, seed=args.seed,
                                               emb_override=c_addr),
                "nearest-class": field.sample(n=args.n_show, steps=args.steps, seed=args.seed,
@@ -183,18 +234,25 @@ def main():
         combo = ", ".join(f"{n}={int(v)}" for n, v in zip(names, tgt))
         for nm in order:
             S = np.asarray(got[nm], np.float32)
-            a = factor_accuracy(probes, S, tgt)
+            a = (factor_accuracy(probes, S, tgt) if nm != "prototypes"
+                 else {"joint": float("nan")})
             for k in range(args.n_show):
                 axes[r][k].axis("off")
                 if k < len(S):
                     axes[r][k].imshow(np.clip(S[k].reshape(64, 64, 3), 0, 1))
             lab = (f"real - HELD OUT\n{combo}\nslot {int(s)} - {n_tr} training images"
-                   if nm == "real" else nm)
+                   if nm == "real" else
+                   "prototypes\n(mode ascent)" if nm == "prototypes" else nm)
             axes[r][0].set_ylabel(lab, rotation=0, ha="right", va="center", fontsize=6.5)
             axes[r][0].axis("on"); axes[r][0].set_xticks([]); axes[r][0].set_yticks([])
             for sp_ in axes[r][0].spines.values():
                 sp_.set_visible(False)
-            axes[r][args.n_show - 1].set_title(f"joint {a['joint']:.2f}", fontsize=6.5, loc="right")
+            if nm == "prototypes":
+                for k in range(min(args.n_show, len(psrc))):
+                    axes[r][k].set_title(psrc[k], fontsize=5.5)
+            else:
+                axes[r][args.n_show - 1].set_title(f"joint {a['joint']:.2f}", fontsize=6.5,
+                                                   loc="right")
             r += 1
     fig.suptitle(
         f"Shapes3D on a PRETRAINED unconditional backbone ({ck['model']}), conditioning fine-tuned "

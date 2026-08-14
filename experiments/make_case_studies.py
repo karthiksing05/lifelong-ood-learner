@@ -32,7 +32,7 @@ from common import CACHE, RESULTS, backbone_gains, ood_queries          # noqa: 
 FIG = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "figures")
 # the selected dial (see --dial); the canonical figure is the one rendered AT it, so the
 # tag marks deviation from the default rather than deviation from 1.0
-DEFAULT_DIAL = 0.8
+DEFAULT_DIAL = 0.7
 from lifelong_ood.compose import PAPER_POE_COLORMNIST as PAPER_POE
 
 
@@ -293,10 +293,13 @@ def main():
     p.add_argument("--dial", type=float, default=DEFAULT_DIAL,
                    help="prototype-distance dial for the `ours` row (§20): the reverse "
                         "process starts from the prototype noised to this level.  1.0 = "
-                        "pure noise; lower ties samples to the prototype.  **Default 0.8 "
-                        "since 2026-08-13, set deliberately for colour faithfulness in the "
-                        "renders and NOT by the metric, which prefers 0.9** -- the choice and "
-                        "its cost are recorded in RESULTS 20c.  Was 0.9 "
+                        "pure noise; lower ties samples to the prototype.  **Default 0.7 "
+                        "since 2026-08-14, set by the user on the renders and NOT by the metric, "
+                        "which prefers 0.9** -- at 0.7 joint accuracy is 0.833 and recall is "
+                        "0.116, against 0.583/0.854 at 0.9, so colour faithfulness is bought by "
+                        "roughly a sevenfold loss of coverage.  The cost is recorded in RESULTS "
+                        "20c and the dial affects ONLY this figure -- `sample_concept` still "
+                        "defaults to u_start=1.0, so no table moves.  Was 0.9 "
                         "because the swept comparison at the paper's discovery budget "
                         "(results/case_colormnist*.json) shows 0.9 DOMINATES: joint 0.708 "
                         "vs 0.667 at 0.8 and 0.542 at 1.0, at recall 0.881 vs 0.495 and "

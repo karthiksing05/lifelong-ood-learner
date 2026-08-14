@@ -54,6 +54,13 @@ def main():
     p.add_argument("--batch", type=int, default=32)
     p.add_argument("--lr", type=float, default=1e-4)
     p.add_argument("--wd", type=float, default=1e-6)
+    p.add_argument("--emb-lr-mult", type=float, default=1.0,
+                   help="learning-rate multiplier for the CLASS TABLE alone. The pretrained backbone "
+                        "already denoises Shapes3D to loss 0.0015 within minutes, so the residual a "
+                        "label could explain is near zero and the table receives almost no gradient "
+                        "-- starting from a strong unconditional model makes conditioning HARDER on "
+                        "an easy domain, the opposite of the CelebA case. The UNet does not need to "
+                        "move; the table does.")
     p.add_argument("--p-drop", type=float, default=0.05)
     p.add_argument("--seed", type=int, default=0)
     p.add_argument("--out", default=os.path.join(CACHE, "ddpm_shapes3d_pre.pt"))
@@ -93,7 +100,15 @@ def main():
           f"{sum(q.numel() for q in unet.parameters()) / 1e6:.1f}M params, time-embed dim {d_emb}; "
           f"class table {n_classes + 1} x {d_emb}; VE<->VP bridge active", flush=True)
 
-    opt = torch.optim.AdamW(model.parameters(), lr=args.lr, weight_decay=args.wd)
+    emb_params = list(model.cemb.parameters())
+    emb_ids = {id(q) for q in emb_params}
+    rest = [q for q in model.parameters() if id(q) not in emb_ids]
+    opt = torch.optim.AdamW(
+        [{"params": rest, "lr": args.lr},
+         {"params": emb_params, "lr": args.lr * args.emb_lr_mult}],
+        weight_decay=args.wd)
+    print(f"[n57] class table lr {args.lr * args.emb_lr_mult:.2e} "
+          f"({args.emb_lr_mult:g}x the backbone's {args.lr:.2e})", flush=True)
     ema = {k: v.detach().clone().float() for k, v in unet.state_dict().items()}
     fkeys = [k for k, v in unet.state_dict().items() if v.dtype.is_floating_point]
     ema_c = cemb.weight.detach().clone().float()

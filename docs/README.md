@@ -11,6 +11,7 @@ claims; this folder is the evidence behind them.
 | **[TABLES.md](TABLES.md)** | every headline number with error bars, regenerated from `results/` |
 | **[RELATED.md](RELATED.md)** | positioning, which baselines are fair for this setting, citation hazards |
 | **[FINAL_REPORT.md](FINAL_REPORT.md)** | where this stands against every baseline, on the axis each was built for |
+| **[VLA_PATH.md](VLA_PATH.md)** | what transfers to embodied policies, what does not, and the order to attack a diffusion policy |
 | **[SETTINGS.md](SETTINGS.md)** | every hyperparameter vs the companion paper's Tables 5–8, marked MATCH / DEVIATION / INFIDELITY |
 | **[ASSESSMENT.md](ASSESSMENT.md)** | publication readiness, assessed against what the numbers support |
 
@@ -74,7 +75,8 @@ their published 0.807.
 | `diag_iterative_select` | does selecting concepts iteratively beat one greedy pass over a fixed pool? | contribution C2, budget-matched against the paper's Eq. 8–9 route | `docs/OUTLINE.md` |
 | `diag_mdl_router` | can description length replace the router's two calibrated thresholds? | **not at one query per concept** (0.333 vs 0.833), but **at N≥32 it draws level** (0.722–0.778) with no calibrated threshold, and its promotion curve halts each population at the right rung. `figures/07_router_exchange_rate.png` | §6c-ter |
 | `diag_elbo_stability` | is that codelength measurable, or is it reading sampling noise? | measurable — paired \|mean\|/sd **17.3 → 93.6** on the hardest case; but its **sign flips between noise bands**, so any claim from it must name the band | §6c-ter |
-| `n52_shapes3d` | does the contract actually make a THIRD dataset cheap? | Shapes3D on the existing n1 recipe — ADDRESS vs nearest-class vs unconditional on 100 held-out compositions, plus the router's `s_novel` | §5t-bis |
+| `n57_shapes3d_pretrained` / `n58_shapes3d_results` | does the scheme work on a THIRD dataset, on a pretrained backbone? | **yes** — ADDRESS **0.583 ± 0.113** vs an unconditional floor of **0.036 (16×)**, floor_hue 0.953, basis R² 0.538. Needed the class table on a **50× learning rate**: a strong pretrained backbone reaches loss 0.0015 in minutes, starving the conditioning pathway. `figures/case_shapes3d.png` | §5t-bis |
+| `diag_backbone_conventions` | does every measurement path agree with a backbone about layout and range? | asserts it per backbone — HWC-vs-CHW cost a **974×** eps-loss error and three results before this existed | §5t-bis |
 | `diag_shapes3d_probes` | can the Shapes3D factors be read from pixels before anything is scored with them? | yes at the settings n52 uses — floor_hue **0.999**, object_hue **1.000**, shape **0.973** vs base 0.130/0.114/0.260 | §5t-bis |
 | `n55_dit_train` / `n56_dit_full_loop` | is the three-tier scheme UNet-specific? | **no** — a latent DiT recovers a basis at R² **0.832** (UNet 0.870) and `factorize`/`compose` run on it unchanged; full loop reads the composition from ONE query at **0.917** and scores joint **0.661** (oracle 0.859) | §7z |
 | `n54_ae_train` | does the latent space keep every factor the composition is scored on? | accepted on PROBES not MSE — a first fit had mse 0.00044 and lost foreground (1.000→0.835); the accepted one is mse 0.00020, worst drop +0.002 | §7z |

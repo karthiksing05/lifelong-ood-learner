@@ -48,7 +48,7 @@ import numpy as np
 import torch
 
 from ..score import cosine_abar
-from .ddpm import CH
+from .ddpm import CH, _as_img
 
 
 @torch.no_grad()
@@ -63,7 +63,14 @@ def conditional_losses(field, xq, conds, u_grid=(0.15, 0.3, 0.45, 0.6), n_noise=
     swamped by the variance of the draw.
     """
     model, dev = field.model, field.device
-    x0 = torch.from_numpy(np.asarray(xq, np.float32).reshape(1, CH, field.img, field.img)).to(dev)
+    # LAYOUT-AWARE.  This used to hardcode `.reshape(1, CH, img, img)`, i.e. it read every flat row
+    # as CHW.  That is correct for a `permuted`-layout backbone and WRONG for an `hwc` one, where the
+    # row is H*W*C -- so the model was handed a scrambled image and no conditioning could explain it.
+    # It is the same fault class as RESULTS 30d ("the bank renders nothing" was a renderer reading
+    # HWC rows as CHW), and here it silently flattened the Shapes3D conditioning gap to +0.00007 and
+    # its router AUROC to 0.65, which read as "the dataset does not condition".
+    x0 = _as_img(np.asarray(xq, np.float32), dev, field.img,
+                 getattr(field, "layout", None))[:1]
     C = torch.as_tensor(np.asarray(conds), dtype=torch.float32, device=dev).reshape(len(conds), -1)
     M = len(C)
     tot = torch.zeros(M, device=dev)

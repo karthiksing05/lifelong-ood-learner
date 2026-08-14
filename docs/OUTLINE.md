@@ -76,10 +76,10 @@ one; the flatness across three variants is the stronger evidence.
 |---|---|---|
 | **ColorMNIST** | **✔** | the calm explanation; 3 named factors, disjoint pixels |
 | **CelebA** | **✔** | overlapping factors, 14 binary attributes; also the companion paper's own 128px backbone |
-| **Shapes3D** | **✘ five recipes, no conditioning** | Registered, probes verified, holdout asserted — the *plumbing* works. But no backbone learned to USE its label: four from-scratch recipes (0.000 / 0.070 / 0.062 / 0.062 against chance 0.010) and a pretrained+fine-tuned one (ADDRESS 0.083 vs an unconditional floor of 0.073, s.e. 0.080). The pretrained route did fix the *pathology* — null gap −0.00088 → +0.00067, so the label is no longer net-harmful — without making it *useful* (wrong-vs-right gap 0.05× ColorMNIST's, basis R² 0.456). §5t-bis states what this isolates: the scheme needs a dataset whose conditioning signal is a material fraction of its predictive loss, and Shapes3D's marginal is too easy to provide one. |
+| **Shapes3D** | **✔ works** | ADDRESS **0.583 ± 0.113** against an unconditional floor of **0.036 — 16×**, floor_hue 0.953, basis R² 0.538, on a pretrained backbone (`eurecom-ds/scoresdeve-ema-shapes3d-64`, VE→VP bridged) with the class table on a **50× learning rate**. Four earlier recipes failed and the reason is the lesson: a strong pretrained backbone reaches loss 0.0015 in minutes, leaving no residual for the label to explain, so the conditioning pathway must be trained on its own schedule. Two bugs of mine (sampler prior centred at 0.5 instead of 0; HWC rows read as CHW, a 974× loss error) produced an earlier 'cannot work' verdict that is **withdrawn**. §5t-bis. The **router does NOT transfer** — s_novel AUROC 0.354 against ColorMNIST's 0.980. |
 | **CLEVR** | **✘ ruled out** | Checkpoints do exist (`nanlliu/compose-visual-relations`, Dropbox, 128px) — but the model is a foreign EBM-style architecture conditioned on **relations**, and every CLEVR model on the HF Hub is a Stable-Diffusion LoRA conditioned on **text**. A class-embedding factor basis can read neither. Shapes3D was taken instead: same factored structure, 64 px, and a genuinely unconditional pretrained backbone exists for it. |
 
-"Strong performance on two datasets" is satisfied by ColorMNIST + CelebA.
+"Strong performance" now holds on **three** datasets — ColorMNIST, CelebA and Shapes3D — plus a latent DiT on ColorMNIST. `docs/VLA_PATH.md` carries the forward plan and what each dataset taught that the others could not.
 
 ---
 
