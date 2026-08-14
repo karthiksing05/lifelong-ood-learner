@@ -6,6 +6,7 @@ claims; this folder is the evidence behind them.
 
 | file | what it is |
 |---|---|
+| **[THE_TASK.md](THE_TASK.md)** | what the task actually is — read before any results document; it is not reconstruction and not representation learning |
 | **[SCOREBOARD.md](SCOREBOARD.md)** | every axis vs every baseline, with the winner named — start here |
 | **[RESULTS.md](RESULTS.md)** | the complete lab record, in the order things were learned |
 | **[TABLES.md](TABLES.md)** | every headline number with error bars, regenerated from `results/` |

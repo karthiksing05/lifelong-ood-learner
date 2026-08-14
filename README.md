@@ -8,6 +8,29 @@ This repository argues that **composition is the mechanism that makes that possi
 the argument on two benchmarks (one where the factors occupy disjoint pixels, one where they overlap)
 and on a pretrained 113.7M-parameter diffusion model we did not train.
 
+## The task, stated once
+
+**Given ONE example of a combination the model has never seen, produce NEW instances of it, store it
+for good, and damage nothing already learned.**
+
+The query says *which* composition is wanted; it is **not** a target to reproduce. That distinction is
+the whole design. `poe-guided` and `query-only` are *more accurate than us* — 0.958 against our lower
+number — and score **recall 0.000**, because they re-emit the query. A method that returned its input
+would score perfectly on accuracy and be useless for a lifelong learner, which is why coverage is a
+headline number here and not a footnote.
+
+It is also **not representation learning** — that is a separate probe (§6e, headline withdrawn; N53
+is the corrected version).
+
+Four axes, all load-bearing: **can you produce the combination** · **do you cover its distribution
+rather than copy the example** · **did absorbing it damage anything** · **what did it cost**. The
+fourth is the thesis; the first three are what stop it being trivially satisfiable, since storing
+nothing is free and copying the query is perfectly accurate.
+
+→ [docs/THE_TASK.md](docs/THE_TASK.md) states it in full, including the one-to-one translation to a
+diffusion policy. [docs/VLA_PATH.md](docs/VLA_PATH.md) carries the forward plan and what has and has
+not transferred.
+
 ## The architecture in one table
 
 Every arriving concept is priced by a router, and **only the last tier grows the model**:
