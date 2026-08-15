@@ -95,3 +95,43 @@ formulation rather than a detour, but it is a research direction, not a dataset 
 claim across two architectures and three factor structures. If multi-object is wanted, take it as the
 **next formulation** — with CLEVR as its natural benchmark, since the multi-object structure that
 disqualifies it here is exactly what that formulation would need.
+
+---
+
+## Followed up: the formulation is now open (N63/N64, 2026-08-15)
+
+The recommendation above was taken, on a substrate where the set label is exact **by construction**
+rather than filtered out of someone else's renders: `lifelong_ood/data/multiobject.py` composites two
+MNIST digits onto one canvas, so the label is the unordered set of digits present. Colour is
+randomised per object so identity is carried by SHAPE, and the side is randomised so the class is
+genuinely a set and a probe must be a detector. Everything this document asked for:
+
+| what this doc said multi-object needs | what was built |
+|---|---|
+| a label that is a **set**, not one composition | `objs` is a sorted 2-subset; 45 scenes over 10 objects |
+| probes that are **detectors** rather than whole-image classifiers | a 10-sigmoid CNN, trained on SEEN pairs and scored on HELD-OUT pairs — **top2 0.945** |
+| a coverage metric defined over sets | exact-set match under top-2, plus per-object recall |
+| the storage question | see below |
+
+**On the storage question, there is a real answer at the representation level.** The scene-conditional
+model gets one free embedding row per SCENE and is never told a scene contains objects — summing
+per-object embeddings would answer the question by construction. Fitting a *shared* object table over
+0/1 membership afterwards:
+
+| | R² |
+|---|---|
+| object-membership basis | **0.841** |
+| leave-one-scene-out CV | **0.711** |
+| permutation null | 0.252 ± 0.040 (max 0.359) |
+| ordered-pair control (2 tables, 2× the vectors) | 0.883 |
+
+So the freely-learned scene table **does** organise as a sum over object addresses, and the shared
+10-vector table nearly matches a 20-vector ordered control — the sharing is real, not a fit artefact.
+*(Measured on the first backbone, `ddpm_multiobject.pt`, 36 scene rows. The table is a property of
+the checkpoint, so these are re-measured on the longer run rather than carried over.)*
+
+**The generation-level claim is not yet measurable, and the control is what caught it.** Conditioned
+on its OWN trained row the first backbone scored 0.000, and the figure showed why: even unconditional
+samples were speckle. Undertrained, not miscomposed. A longer run is in progress; until it reproduces
+its own training scenes on demand, no ADDRESS number from it means anything. That control exists
+precisely because a low composition score otherwise has three indistinguishable causes.
