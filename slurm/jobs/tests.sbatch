@@ -10,11 +10,10 @@
 cd /coc/flash10/ksingara3/lifelong-ood-learner
 export PYTHONIOENCODING=utf-8
 PY=$HOME/flash/miniconda3/envs/chunks/bin/python
-fail=0
-for t in test_layout test_speckle test_fid test_smoke test_neural test_merge test_ortho_merge \
-         test_unbounded test_pretrained test_pretrained_bank test_claims; do
-  srun $PY tests/$t.py > /tmp/t_$t.log 2>&1
-  if [ $? -eq 0 ]; then echo "PASS $t"; else echo "FAIL $t"; tail -12 /tmp/t_$t.log; fail=1; fi
-done
-echo "===== $([ $fail -eq 0 ] && echo ALL PASS || echo SOME FAILED) ====="
+# run_all.py GLOBS tests/test_*.py.  This file used to hardcode the list, which silently drifted:
+# test_factored and test_figures_fresh existed on disk and were run by run_all, while this job
+# reported "ALL PASS" over 11 of 13.  A hardcoded list cannot fail to notice a test it does not
+# know about, so the glob is the single source of truth and this only launches it.
+srun $PY tests/run_all.py
+fail=$?
 echo "exit=$fail | $(date)"
