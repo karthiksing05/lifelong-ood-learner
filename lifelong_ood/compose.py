@@ -63,6 +63,30 @@ PAPER_COLORMNIST = dict(u_grid=tuple(round(t / 1000, 4) for t in range(50, 401, 
 PAPER_CELEBA = dict(u_grid=tuple(round(t / 1000, 3) for t in range(50, 501, 50)),
                     n_starts=8, iters=100, lr=0.02, probes=4, init="query")
 
+# CELEBA_DISCOVERY -- a MEASURED deviation from the column above, in one field: `init`.
+#
+# `init="query"` starts EVERY ascent chain at the query, so the pool contains no candidate that
+# disagrees with it and submodular selection has nothing complementary to choose from.  Eq. 8-9
+# exists precisely to find experts that disagree; handed only experts that agree, it returns three
+# near-copies and the per-dimension product over three copies of one mode IS that mode.  The
+# case-study panels showed this before any metric did -- three prototypes that are the same face in
+# the same pose while the three real held-out images are three different people.
+#
+# Measured (N68, 2 held-out classes, prototype spread as a fraction of the spread of REAL images of
+# the class -- 1.0 would mean prototypes vary as much as the class does):
+#
+#     init     n_starts   selected spread   query-agnostic candidates
+#     query           8             0.34x                          0
+#     query          64             0.37x                          0
+#     hybrid          8            *0.82x*                        30
+#     hybrid         64             0.60x                        251
+#
+# So the collapse is a SETTING, not the backbone -- and the setting that fixes it is the one the
+# paper itself uses on Color-MNIST.  This deviates from their CelebA column rather than from their
+# method.  It is NOT a free win: mu_T's attribute read is 0.750 at every setting swept, so this
+# repairs the mechanism and the figure without by itself moving the read.
+CELEBA_DISCOVERY = dict(PAPER_CELEBA, init="hybrid")
+
 # The paper's Table 8 guidance columns.  These live here, next to Table 6, because they were
 # previously copy-pasted into six experiment files as a single constant named `PAPER_POE` holding
 # w0=1.2 -- which is the paper's COLOR-MNIST value.  Table 8 gives CelebA **w0 = 0.5**, so every

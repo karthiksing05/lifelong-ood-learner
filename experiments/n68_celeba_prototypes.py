@@ -95,11 +95,16 @@ def main():
             ss.append(rmse_pairs(M[t["sel"]]) / scale)
             nr.append(int(np.sum(np.asarray(meta["src"]) == "random")))
             if probes is not None:
+                # `fit_attr_probes` keys by attribute NAME, not column index -- indexing it with an
+                # int raises KeyError.  Map each probe back to its column through ATTRS so the
+                # comparison is against the right attribute rather than a positional coincidence.
+                from lifelong_ood.data.celeba import ATTRS
                 mu = to_data(t["mu"]).reshape(1, -1)
                 tgt = A[int(idx[0])]
-                hit = np.mean([int(probes[k].predict(mu)[0]) == int(tgt[k])
-                               for k in range(len(probes))]) if len(probes) else float("nan")
-                rc.append(float(hit))
+                hits = [int(pr.predict(mu)[0]) == int(tgt[ATTRS.index(nm)])
+                        for nm, pr in probes.items() if nm in ATTRS
+                        and ATTRS.index(nm) < len(tgt)]
+                rc.append(float(np.mean(hits)) if hits else float("nan"))
         row = dict(init=cfg["init"], n_starts=cfg["n_starts"],
                    pool_spread=float(np.mean(ps)), sel_spread=float(np.mean(ss)),
                    n_random=float(np.mean(nr)),

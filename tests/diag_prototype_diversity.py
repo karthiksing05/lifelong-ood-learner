@@ -38,10 +38,18 @@ from lifelong_ood.compose import (PAPER_CELEBA, PAPER_COLORMNIST,      # noqa: E
 from lifelong_ood.neural.ddpm import load_field, to_model              # noqa: E402
 
 
-def rmse_pairs(A):
-    """Mean pairwise per-dimension RMSE -- comparable across resolutions, unlike raw L2."""
+def rmse_pairs(A, cap=24, seed=0):
+    """Mean pairwise per-dimension RMSE -- comparable across resolutions, unlike raw L2.
+
+    Subsamples at RANDOM rather than taking the first `cap`.  `candidates_ascent` emits candidates
+    grouped by noise level and, within a level, query-seeded before random-seeded, so a prefix slice
+    of a large pool is entirely query-seeded low-noise chains -- which made a 64-start hybrid pool
+    read as LESS diverse (0.14x) than an 8-start one (0.75x) when it is strictly a superset.
+    """
     if len(A) < 2:
         return float("nan")
+    if len(A) > cap:
+        A = A[np.random.default_rng(seed).choice(len(A), cap, replace=False)]
     d = [float(np.sqrt(np.mean((A[i] - A[j]) ** 2)))
          for i in range(len(A)) for j in range(i + 1, len(A))]
     return float(np.mean(d))
