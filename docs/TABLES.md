@@ -54,7 +54,7 @@ Ties share the bold, and the underline then goes to the next distinct value.
 | `real` | 0.459 ± 0.049 | 0.459 ± 0.035 | 0.856 ± 0.034 | 0.846 ± 0.008 | 0.915 ± 0.005 |
 | `ours` | <u>0.511 ± 0.054</u> | <u>0.589 ± 0.003</u> | <u>0.905 ± 0.013</u> | **0.622 ± 0.013** | **0.618 ± 0.009** |
 | `composable-diff` | **0.554 ± 0.039** | **0.628 ± 0.031** | **0.911 ± 0.022** | 0.306 ± 0.003 | 0.429 ± 0.009 |
-| `poe-guided` | 0.293 ± 0.075 | 0.288 ± 0.050 | 0.771 ± 0.072 | 0.007 ± 0.001 | 0.014 ± 0.002 |
+| `poe-guided` | 0.393 ± 0.058 | 0.385 ± 0.025 | 0.811 ± 0.051 | 0.008 ± 0.001 | 0.016 ± 0.002 |
 | `query-only` | 0.468 ± 0.066 | 0.439 ± 0.059 | 0.843 ± 0.026 | 0.022 ± 0.016 | 0.015 ± 0.004 |
 | `nearest-class` | 0.222 ± 0.037 | 0.181 ± 0.040 | 0.723 ± 0.050 | <u>0.590 ± 0.031</u> | <u>0.466 ± 0.015</u> |
 
@@ -210,11 +210,11 @@ A consolidated concept reaches most of native-level *coverage* at zero retrainin
 
 | quantity | value |
 |---|---|
-| self-routing accuracy | 0.858 ± 0.018 |
+| self-routing accuracy | 0.864 ± 0.019 |
 | new vocabulary sent down the FREE route | 0.000 ± 0.000 |
 | new combination sent to the WEIGHT route | 0.200 ± 0.058 |
 | quality if a vocabulary item takes the free route | 0.000 ± 0.000 |
-| quality where the free route is correct | 0.621 ± 0.015 |
+| quality where the free route is correct | 0.602 ± 0.031 |
 
 The error is one-sided in the safe direction: a new vocabulary item was never once routed to the free path, while some new combinations over-spend on an adapter they did not need. The unconditional ablation matches the conditional signal, so this is a density-based novelty detector and NOT evidence that the factor basis decides.
 

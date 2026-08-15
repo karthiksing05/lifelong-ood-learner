@@ -125,7 +125,10 @@ def main():
         print(line)
     print(f"[claims] {len(CLAIMS) - len(bad)}/{len(CLAIMS)} documented numbers match the aggregate")
     if bad:
-        print("[claims] FAIL — update the prose, or the claim is stale")
+        # ASCII, deliberately: stdout defaults to latin-1 on this cluster when redirected, so an
+        # em-dash here raised UnicodeEncodeError *in the failure branch only* -- the test crashed
+        # before it could print which claim was stale, which is the one moment it has a job to do.
+        print("[claims] FAIL -- update the prose, or the claim is stale")
         return 1
     print("[claims] PASS")
     return 0

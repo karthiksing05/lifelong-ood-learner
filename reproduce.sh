@@ -179,9 +179,15 @@ analytic|all)
 figures|all)
   echo "== aggregate, figures, tables (local, no GPU) =="
   "$PY" experiments/aggregate.py
-  # tagged re-runs feed the canonical keys the figures and tables ask for
-  "$PY" experiments/aggregate.py n9_showdown_cal            --as n9_showdown
-  "$PY" experiments/aggregate.py n5_classinc_full           --as n5_classinc
+  # Tagged re-runs feed the canonical keys the figures and tables ask for.
+  # These MUST name the run the documents actually quote.  They pointed at `n9_showdown_cal` and
+  # `n5_classinc_full` long after the two ColorMNIST headline tables were re-derived under today's
+  # defaults (cu placement, plain gradient ascent) and tagged `_recon` -- so running this script
+  # silently reverted the headline from 0.556/0.630 to 0.539/0.605 and n5 ACC from 0.825 to 0.839,
+  # and `test_claims.py` then failed against prose that had been correct.  The stored aggregate is
+  # what kept the docs passing; the reproduce path did not reproduce them.
+  "$PY" experiments/aggregate.py n9_showdown_recon            --as n9_showdown
+  "$PY" experiments/aggregate.py n5_classinc_recon           --as n5_classinc
   "$PY" experiments/aggregate.py n22_celeba_lifelong_full   --as n22_celeba_lifelong
   "$PY" experiments/aggregate.py n20_celeba_composition_full --as n20_celeba_composition
   "$PY" experiments/aggregate.py n20_celeba_composition_pairfull --as n20_celeba_composition_pair
