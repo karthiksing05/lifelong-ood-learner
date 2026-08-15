@@ -424,7 +424,8 @@ class NeuralLifelongLearner:
         self.fac_gains = list(gains) if gains is not None else [1.0] * len(self.fac["V"])
         return self.fac
 
-    def compose_factored(self, xq, inv_steps=400, inv_lr=0.05, seed=None, gains=None):
+    def compose_factored(self, xq, inv_steps=400, inv_lr=0.05, seed=None, gains=None,
+                         hard=False):
         """Read the composition off a single query IN THE FACTOR BASIS, then build the concept.
 
         This is the composer the investigation converged on, and each part is there for a measured
@@ -433,6 +434,11 @@ class NeuralLifelongLearner:
         (digit, fg, bg) exactly on 7 of 8 slots from ONE query.  The per-factor gain, because the
         model under-responds to its weakest factor direction -- unit gain gives bg 0.38 where
         doubling that one gain gives 0.87.
+
+        `hard=True` recomposes from the per-factor ARGMAX instead of returning the soft
+        weighted sum.  It is strictly better where measured (N67) and is opt-in only because every
+        stored ColorMNIST/CelebA table in this repository was produced with the soft path; flipping
+        the default silently would move numbers the documents quote.
 
         -> (c_new, per-factor weights, the argmax read of the composition).
         """
@@ -443,7 +449,20 @@ class NeuralLifelongLearner:
         c_new, ws, hist = learn_factored(self.field, np.atleast_2d(xq), self.fac,
                                          n_steps=inv_steps, lr=inv_lr, seed=seed,
                                          gains=gains if gains is not None else self.fac_gains)
-        return c_new, ws, [int(np.argmax(w)) for w in ws]
+        read = [int(np.argmax(w)) for w in ws]
+        if hard:
+            # HARD beats SOFT on the identical read, measured over 12 held-out ColorMNIST slots
+            # (N67): joint 0.493 -> 0.642, precision 0.562 -> 0.628, F1 0.690 -> 0.735, at a cost
+            # of 0.006 recall.  `learn_factored` returns a SOFTMAX per factor, and the residual
+            # mass on values the argmax already rejects drags the composed point off the class it
+            # names -- the optimiser has no reason to drive the softmax to a corner because a
+            # blended point can fit the query just as well.  Recomposing from the argmax keeps the
+            # read and discards only that residual, so it is strictly a projection of the answer
+            # the soft path already computed.
+            from .idealwords import compose
+            c_new = compose(self.fac, tuple(read),
+                            gains=gains if gains is not None else self.fac_gains)
+        return c_new, ws, read
 
     def learn_concept_factored(self, xq, name, n_pool=64, epochs=10, inv_steps=400, inv_lr=0.05,
                                seed=None, gains=None, guidance=1.0, interval=None, **kw):
