@@ -36,6 +36,11 @@ residual. Expect the conditioning pathway to need its own optimiser group from t
 read a low total loss as evidence that conditioning is being learned** — it is nearly independent of
 it.
 
+*Now measured rather than argued* (§5t-ter): across a 1×–100× ladder the ε-loss gap moves by
+**1.4 × 10⁻⁴** while composition moves from 1.8× the floor to 11.6×. Any multiplier ≥5× works, so the
+setting does not need tuning — but leaving it at 1× costs the entire result, silently, with a training
+curve that looks fine.
+
 ### 2. Convention mismatches are silent and expensive
 
 Three results were destroyed by two bugs that produced plausible numbers:
@@ -73,8 +78,13 @@ the analogue is worse — average action MSE will be dominated by the easy major
    a true three-factor number.
 3. **EXTEND BASIS on Shapes3D.** §6e-bis predicts the tier that adds a *direction* is where
    representational gain must come from; Shapes3D has clean held-out factor *values* to test it on.
-4. **Sweep the class-table learning rate.** 50× was a first guess that worked. The curve from 1× to
-   100× is the evidence for lesson 1 above and turns a lucky setting into a stated rule.
+4. ~~**Sweep the class-table learning rate.**~~ **DONE — and it is now a rule** (§5t-ter,
+   `figures/f_lr_ladder.png`). 1× reaches only **1.8×** the unconditional floor — it does not compose —
+   while every rung from 5× up reaches 10–14×. 50× is the **plateau**, not a tuned peak (50× and 100×
+   are identical at 0.542), so the setting was robust rather than lucky. Two things worth carrying to a
+   policy: the ε-loss gap is ~0.0001 at *every* rung including the failing one, and **basis R² does not
+   predict ADDRESS** (highest at 5×, where ADDRESS is near its worst). Neither the loss nor the R² is a
+   usable health check; only the composition margin is.
 
 ---
 

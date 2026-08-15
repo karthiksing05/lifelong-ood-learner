@@ -2924,6 +2924,44 @@ Shapes3D case, not the ColorMNIST one: strong generative model, conditioning add
 combinations that its density finds unremarkable.  That is the regime where the inherited constant
 fails (0.662) and the label-free calibration works (0.929).
 
+## 5t-ter. The class-table learning rate: from a lucky setting to a stated rule (N57 x5 / N58 x5)
+
+5t-bis found that a strong pretrained backbone starves the conditioning pathway, and fixed it by
+giving the class table its own learning rate at **50x**.  That was a first guess that worked, which is
+not the same as a rule.  The ladder, one training run per rung at a fixed 36-minute budget
+(`figures/f_lr_ladder.png`):
+
+| class-table LR | ADDRESS (held-out joint) | uncond floor | ratio | basis R² | eps-loss gap |
+|---|---|---|---|---|---|
+| **1x** | **0.083** | 0.047 | **1.8x** — does not compose | 0.452 | +0.00003 |
+| 5x | 0.323 | 0.031 | 10.3x | **0.637** | +0.00008 |
+| 20x | 0.453 | 0.031 | **14.5x** | 0.602 | +0.00011 |
+| 50x | **0.542** | 0.052 | 10.4x | 0.546 | +0.00017 |
+| 100x | **0.542** | 0.047 | 11.6x | 0.502 | +0.00011 |
+
+**1x genuinely fails and everything from 5x up composes.**  The default really does starve the
+pathway: at 1x the model reaches 1.8x its unconditional floor, below anything this repository calls
+composing, on the same data and the same number of steps as the rung that reaches 11.6x.
+
+**50x was robust, not tuned.**  It is the plateau -- 50x and 100x are identical at 0.542 -- so the
+original choice was not balanced on a peak.  What is established is **1x fails, >=5x works**; ADDRESS
+carries an SE of ~0.11 over 12 held-out cases, so the rungs that succeed are within about one SE of
+each other and their ORDERING is not established at one seed per rung.
+
+**The eps-loss gap is ~0.0001 at every rung, including the one that does not compose.**  Lessons 1
+and 3 of `docs/VLA_PATH.md` are the same fact seen twice: the training loss is nearly independent of
+whether conditioning was learned at all.  A rung that composes at 11.6x and a rung that does not are
+separated by 1.4e-4 of eps-loss gap.  **Never read a training loss as evidence that conditioning is
+being learned.**
+
+**And basis R² does not predict ADDRESS.**  R² is *highest* at 5x (0.637), where ADDRESS is 0.323 --
+its second-worst rung -- and *lowest* at 100x (0.502), where ADDRESS is at its best.  The additive fit
+quality of the embedding table is not what decides whether composition works, so it must not be used
+as the health check for a new backbone; only the composition margin can play that role.  (Each rung is
+a separate training run, so this trend carries run-to-run backbone variance -- §5p measured up to 0.07
+F1 between two runs of the *same* command -- which is why this is stated as "R² does not predict
+ADDRESS" and not as a monotone relationship.)
+
 ## 6c-ter. A sixth attempt on the router: description length instead of a threshold (2026-08-13)
 
 **Verdict first, and it changed once the measurement went deep enough.** At the benchmark's own
