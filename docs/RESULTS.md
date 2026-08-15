@@ -2713,11 +2713,14 @@ marginal this easy the average stays tiny however well the label steers generati
 reported as a diagnostic and the verdict rests on the composition margin, which is the thing actually
 claimed.
 
-**What does not transfer -- narrowed by a later sweep.**  Router `s_novel` AUROC reads **0.354** at
-the operating point inherited from ColorMNIST.  **That is the operating point, not the method:**
-sweeping the noise level finds **0.867 at u=0.90** (§6c-quater), so `U_NOVEL` is a per-backbone
-constant that needs calibrating like `backbone_gains` already is.  The original "the routing decision
-does not transfer" is withdrawn in favour of "its operating point does not transfer".
+**What does not transfer -- narrowed by a later sweep, then settled.**  Router `s_novel` AUROC reads
+**0.354** at the operating point inherited from ColorMNIST.  **That is the operating point, not the
+method:** at a calibrated `u` the same checkpoint scores **0.861 ± 0.043** on held-out queries with
+calibration and evaluation on disjoint slots, against a density ablation of 0.585, and the operating
+point is choosable from training data alone (§6c-quinquies, N61/N62/N65).  So `U_NOVEL` is a
+per-backbone constant calibrated like `backbone_gains`, now implemented as
+`router.calibrate_u_novel`.  The original "the routing decision does not transfer" is withdrawn in
+favour of "its operating point does not transfer, and can be calibrated".
 
 *(Two of three probes are readable on this split -- `object_hue` drops out once `wall_hue` is pinned
 and the set shrinks to 9000 images -- so `joint` is a two-factor joint.  Every arm shares it.)*
@@ -2863,6 +2866,63 @@ single seed and a single backbone; a 0.33 gap on that sample is a hypothesis.  W
 the same sweep at more queries and three seeds, plus the ColorMNIST sweep re-run at u=0.90 to check
 whether its ablation also separates there -- because if it does, the original finding was itself an
 artefact of reading one noise level.
+
+**That test has now run (N61/N62, below).  6c STANDS, and the answer is that the two backbones
+genuinely differ.**
+
+## 6c-quinquies. Settled: the operating point transfers, 6c holds, and u is calibratable (N61/N62/N65)
+
+The three experiments 6c-quater asked for, run at 3-4 seeds against 16-vs-16's one.
+
+**1. The ablation, read at the OPERATING POINT (N61, 3 seeds, 40 queries per population).**  N61's
+own printed verdict was wrong and is corrected in the script: it judged on the widest conditional-vs-
+unconditional gap *anywhere* on the grid, which for ColorMNIST is +0.174 at u=0.95 -- a noise level
+where the router has degraded from AUROC 1.000 to 0.754.  A wide gap where the router does not work
+says only that conditioning decays more slowly than density.  Read at each backbone's own best u:
+
+| backbone | u* | conditional | unconditional ablation | gap | reading |
+|---|---|---|---|---|---|
+| ColorMNIST | 0.05 | 1.000 | 1.000 | **-0.000** | density explains it -- **6c stands** |
+| Shapes3D (pretrained) | 0.85 | 0.932 | 0.614 | **+0.319** | the basis carries the decision |
+
+**2. Without selection bias (N62, 4 seeds).**  N61 chose u by maximising AUROC on the same queries it
+then scored, so its peak is inflated by exactly that selection -- not a basis on which to overturn a
+load-bearing negative.  N62 calibrates u on one population and reports on a **disjoint** one, split on
+SLOTS rather than images (two images of one composition are not independent, so an image split would
+leak the composition across the boundary).
+
+| backbone | u* | held-out AUROC | density ablation | at the shipped u=0.10 |
+|---|---|---|---|---|
+| ColorMNIST | 0.05 | **1.000 ± 0.001** | 1.000 ± 0.000 | 0.989 ± 0.007 |
+| Shapes3D | 0.86 | **0.861 ± 0.043** | 0.585 ± 0.107 | 0.669 ± 0.027 |
+
+So `0.354` was the **operating point, not the backbone**, and on Shapes3D the conditioning carries the
+decision by +0.276 over density.  6c is **not** amended: on ColorMNIST the ablation matches the
+conditional exactly on held-out queries, which is what 6c claimed.
+
+**3. Can the operating point be found WITHOUT held-out labels? (N65, 3 seeds.)**  N62 picks u using
+real held-out queries -- which a deployed router does not have, and would not need a novelty detector
+if it did.  `router.calibrate_u_novel` chooses u as the noise level where the class label is most
+legible (a query's loss under its own trained class vs its best wrong class), using only training
+images and their training labels.
+
+| backbone | label-free u | AUROC there | oracle u | oracle AUROC | shipped u=0.10 |
+|---|---|---|---|---|---|
+| Shapes3D | **0.85** | **0.929 ± 0.016** | 0.85 | 0.929 | 0.662 |
+| ColorMNIST | 0.82 | 0.826 ± 0.033 | 0.05 | 1.000 | 0.988 |
+
+**On Shapes3D it recovers the oracle's u exactly, on every seed, giving up 0.000.**  On ColorMNIST it
+does not -- and the reason is 6c itself: that router runs on density, and its class legibility sits at
+**chance (0.46-0.50) precisely where its novelty AUROC is 1.000**.  A legibility criterion has nothing
+to track there.  The two results agree rather than conflict, and the rule they give is the useful one:
+**calibrate where conditioning carries the decision -- which is exactly the case where the inherited
+constant fails.**  Comparing `uncond_novel` against `s_novel` says which regime a backbone is in
+before the criterion is trusted.
+
+**Why this is the router result that matters for VLA.**  A pretrained policy backbone is the
+Shapes3D case, not the ColorMNIST one: strong generative model, conditioning added afterwards, novel
+combinations that its density finds unremarkable.  That is the regime where the inherited constant
+fails (0.662) and the label-free calibration works (0.929).
 
 ## 6c-ter. A sixth attempt on the router: description length instead of a threshold (2026-08-13)
 

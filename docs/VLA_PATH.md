@@ -14,7 +14,8 @@ this is the forward plan.
 | **ADDRESS** composes held-out combinations at ~0 parameters | ColorMNIST joint 0.556 · CelebA 2.7× floor · Shapes3D **16× floor** · DiT 0.661 full-loop | **high** |
 | The scheme is **not tied to the UNet** | latent DiT, adaLN conditioning, `factorize`/`compose` unchanged (§7z) | **high** — this is the VLA-relevant one |
 | ADDRESS is **span-limited by construction** — a point, never a direction | affine residual 0.0000 vs a trained embedding's 0.7359 (§6e-bis) | **high** — it is algebra, then measured |
-| The **router** transfers | ColorMNIST AUROC 0.980 · Shapes3D **0.354** | **low** — does not transfer |
+| The **router** transfers | held-out AUROC: ColorMNIST **1.000**, Shapes3D **0.861 ± 0.043** at a calibrated u (§6c-quinquies) | **medium** — transfers once `u` is calibrated per backbone; 0.354 was the operating point |
+| The router's **operating point** can be chosen without held-out labels | Shapes3D: label-free `calibrate_u_novel` picks the oracle's u on 3/3 seeds, **0.929** vs the inherited constant's 0.662 | **medium** — exact on the pretrained backbone, fails on ColorMNIST for the reason §6c gives |
 | Absorption improves **representations** | N50 withdrawn; N53 corrected experiment | **unknown** — the honest state |
 
 ---
@@ -60,11 +61,13 @@ the analogue is worse — average action MSE will be dominated by the easy major
 
 ## Next, on Shapes3D specifically
 
-1. **The router does not transfer (AUROC 0.354, below chance).** ADDRESS composes but the
-   novelty/vocabulary decision fails. This is now measured through the corrected path, so it is a real
-   negative. Diagnose whether `s_novel` is the wrong signal here or whether the u-band (tuned on
-   ColorMNIST at u=0.10/0.45) simply does not locate the informative noise level for this domain — a
-   u-sweep is cheap and is the first thing to try.
+1. ~~**The router does not transfer (AUROC 0.354, below chance).**~~ **RESOLVED — it was the u-band,
+   exactly as this item guessed.** The sweep was cheap and it was the right first thing to try: at a
+   calibrated `u` the same checkpoint reaches **0.861 ± 0.043** on held-out queries against a density
+   ablation of 0.585, and the operating point itself is choosable **without held-out labels**
+   (`router.calibrate_u_novel` recovers the oracle's u on 3/3 seeds). §6c-quinquies. What remains open
+   is `U_VOCAB` — the three-way decision's second threshold has not been recalibrated the same way,
+   and no result yet depends on it.
 2. **Recover `object_hue`.** Pinning `wall_hue` shrank the set to 9000 images and cost that probe, so
    `joint` is a two-factor joint. More images per composition should restore it and make the headline
    a true three-factor number.
@@ -101,6 +104,17 @@ unconditional-policy floor, exactly as `n58` does now.
 
 **What to expect, honestly.** The storage claim should transfer — it is arithmetic on tensor shapes,
 and a 72-byte address is a 72-byte address whatever the backbone. Composition has now transferred
-across three datasets and two architectures. The **router** has not transferred once beyond
-ColorMNIST, and the **representation** question is open with its headline withdrawn. A policy paper
-resting on ADDRESS is supportable today; one resting on autonomous routing is not.
+across three datasets and two architectures. The **router** now transfers too, but only with its
+operating point calibrated per backbone (§6c-quinquies) — and note that the calibration was validated
+on two backbones, not on a policy, where the analogue of "class legibility" has still to be defined.
+The **representation** question remains open with its headline withdrawn. A policy paper resting on
+ADDRESS is supportable today; one resting on autonomous routing is now *plausible* rather than
+unsupported, and the honest way to present it is with the operating-point calibration as part of the
+method rather than as a hyperparameter that happened to work.
+
+**Stage F — calibrate the operating point before reading any routing number.** This is new, and it is
+the lesson with the highest chance of silently wasting a week: `U_NOVEL = 0.10` carried onto a
+pretrained backbone reads **0.354**, below chance, and looks exactly like a method that does not work.
+Run `router.calibrate_u_novel` on the policy first, and check `uncond_novel` against `s_novel` to see
+whether conditioning or density is carrying the decision — the calibration only works in the former
+regime, which is the one a pretrained policy should be in.

@@ -42,6 +42,7 @@ from .datasets import BG_COLORS, BG_NAMES, FG_COLORS, FG_NAMES, load_mnist
 IMG = 32
 HALF = 16
 N_OBJ = 10                      # digits 0..9 are the object vocabulary
+MNIST_PER_CLASS = 5400          # the rarest MNIST digit (5) has 5421 training images
 
 
 def scene_pairs():
@@ -102,8 +103,12 @@ def load_multiobject(n_per_scene=100, seed=0, n_holdout=9, bg="black", jitter=2)
     pairs = scene_pairs()
     held = set(holdout_scenes(n_holdout, seed))
     rng = np.random.default_rng(seed + 991)
-    # enough sources that no digit is reused more often than necessary
-    need = int(np.ceil(n_per_scene * len(pairs) * 2 / N_OBJ)) + 8
+    # Enough sources that no digit is reused more often than necessary -- but MNIST holds only
+    # ~5.4-6.7k images of each digit, and `load_mnist` raises rather than truncating when asked for
+    # more (`Cannot take a larger sample than population`).  Above the cap, sources are reused: the
+    # per-digit pool reshuffles when exhausted, so reuse is spread evenly instead of the first
+    # scenes taking every distinct image and the last ones repeating a handful.
+    need = min(MNIST_PER_CLASS, int(np.ceil(n_per_scene * len(pairs) * 2 / N_OBJ)) + 8)
     G, L = load_mnist(n_per_class=need, seed=seed)
     pool = {d: rng.permutation(np.where(L == d)[0]) for d in range(N_OBJ)}
     cur = {d: 0 for d in range(N_OBJ)}

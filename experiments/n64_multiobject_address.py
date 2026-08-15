@@ -49,6 +49,8 @@ from lifelong_ood.neural import NeuralScoreField, UNet                 # noqa: E
 from lifelong_ood.neural.inversion import sample_embedding             # noqa: E402
 
 IMG = 32
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+FIGS = os.path.join(ROOT, "figures")
 
 
 # ----------------------------------------------------------------------------- detector
@@ -60,36 +62,59 @@ class ObjectDetector(torch.nn.Module):
     scene-level texture score well without either object being present.
     """
 
-    def __init__(self, n_obj=N_OBJ, base=32):
+    def __init__(self, n_obj=N_OBJ, base=64):
         super().__init__()
-        self.net = torch.nn.Sequential(
-            torch.nn.Conv2d(3, base, 3, 2, 1), torch.nn.ReLU(),
-            torch.nn.Conv2d(base, base * 2, 3, 2, 1), torch.nn.ReLU(),
-            torch.nn.Conv2d(base * 2, base * 4, 3, 2, 1), torch.nn.ReLU(),
-            torch.nn.AdaptiveAvgPool2d(1), torch.nn.Flatten(),
-            torch.nn.Linear(base * 4, n_obj))
+
+        def blk(i, o):
+            return [torch.nn.Conv2d(i, o, 3, 1, 1), torch.nn.BatchNorm2d(o), torch.nn.ReLU(),
+                    torch.nn.Conv2d(o, o, 3, 2, 1), torch.nn.BatchNorm2d(o), torch.nn.ReLU()]
+        self.trunk = torch.nn.Sequential(*blk(3, base), *blk(base, base * 2),
+                                         *blk(base * 2, base * 4))
+        # AVERAGE pooling alone is the wrong readout for PRESENCE.  A 16x16 digit occupies a
+        # quarter of the canvas, so averaging over the map dilutes its evidence by the empty rest
+        # of the scene; max pooling asks "is it anywhere", which is the actual question.  Both are
+        # concatenated because average still carries how much of the object is there.
+        self.head = torch.nn.Linear(base * 8, n_obj)
 
     def forward(self, x):
-        return self.net(x)
+        h = self.trunk(x)
+        return self.head(torch.cat([h.amax((2, 3)), h.mean((2, 3))], 1))
 
 
 def _to_chw(X):
     return torch.as_tensor(np.asarray(X, np.float32).reshape(-1, IMG, IMG, 3)).permute(0, 3, 1, 2)
 
 
-def train_detector(Xtr, Ytr, Xva, Yva, epochs=18, lr=2e-3, batch=256, seed=0, dev="cuda"):
+def train_detector(Xtr, Ytr, Xva, Yva, epochs=40, lr=2e-3, batch=256, seed=0, dev="cuda",
+                   min_steps=40, verbose=True):
+    """Train the measuring instrument.  Steps per epoch are floored at `min_steps`.
+
+    Without that floor the schedule is `len(X) // batch` steps, which on a small run is 2 steps per
+    epoch -- 36 gradient steps in total, after which the detector predicts all-zeros and scores a
+    respectable-looking 0.800 per-object accuracy purely because only 2 of 10 objects are ever
+    present.  That is a metric that fails silently, which is the exact trap CLEVR_VERDICT records.
+    """
     torch.manual_seed(seed)
     det = ObjectDetector().to(dev)
     opt = torch.optim.AdamW(det.parameters(), lr=lr, weight_decay=1e-4)
     xt, yt = _to_chw(Xtr).to(dev), torch.as_tensor(Ytr, dtype=torch.float32, device=dev)
     rng = np.random.default_rng(seed)
+    steps = max(min_steps, len(xt) // batch)
+    sched = torch.optim.lr_scheduler.CosineAnnealingLR(opt, T_max=epochs * steps)
     for ep in range(epochs):
-        for _ in range(max(1, len(xt) // batch)):
+        for _ in range(steps):
             i = torch.as_tensor(rng.integers(0, len(xt), batch), device=dev)
             loss = torch.nn.functional.binary_cross_entropy_with_logits(det(xt[i]), yt[i])
             opt.zero_grad()
             loss.backward()
             opt.step()
+            sched.step()
+        if verbose and (ep + 1) % 10 == 0:
+            det.eval()
+            q = detector_scores(det, Xva, Yva, dev)
+            print(f"[n64]   detector ep{ep + 1}/{epochs} ({steps} steps/ep): "
+                  f"held-out-pair top2 {q['top2_exact']:.3f}", flush=True)
+            det.train()
     det.eval()
     return det, detector_scores(det, Xva, Yva, dev)
 
@@ -166,6 +191,7 @@ def main():
     p.add_argument("--n-per-scene", type=int, default=120)
     p.add_argument("--gains", type=float, nargs="*", default=[1.0, 1.5, 2.0, 3.0])
     p.add_argument("--seed", type=int, default=0)
+    p.add_argument("--det-epochs", type=int, default=40)
     p.add_argument("--det-gate", type=float, default=0.85,
                    help="minimum held-out detector top2 to treat the composition numbers as "
                         "findings rather than as uninterpretable")
@@ -186,7 +212,8 @@ def main():
     for i, s in enumerate(scene):
         a, b = P[int(s)]
         Yall[i, a] = Yall[i, b] = 1.0
-    det, dq = train_detector(X[seen], Yall[seen], X[~seen], Yall[~seen], seed=args.seed, dev=dev)
+    det, dq = train_detector(X[seen], Yall[seen], X[~seen], Yall[~seen], seed=args.seed,
+                             dev=dev, epochs=args.det_epochs)
     print(f"[n64] detector, trained on SEEN pairs only, scored on HELD-OUT pairs: "
           f"top2_exact {dq['top2_exact']:.3f}  recall@2 {dq['recall_at2']:.3f}  "
           f"per-obj acc {dq['per_obj_acc']:.3f}", flush=True)
@@ -225,6 +252,24 @@ def main():
         rc = np.mean([len(set(np.argsort(-q)[:2].tolist()) & tgt) / 2.0 for q in Pr])
         return float(ex), float(rc)
 
+    # ---- 2b. THE CONTROL THAT MAKES THE REST INTERPRETABLE --------------------------------------
+    # Condition on the model's OWN trained row for a seen scene.  Without this, a low composition
+    # score has three indistinguishable causes: the model never learned to condition, the detector
+    # cannot measure, or ADDRESS does not compose.  This arm is high only if the first two are fine,
+    # so it is what licenses reading the ADDRESS number as being about ADDRESS at all.
+    self_sc = []
+    for s in uniq[:6]:
+        j = int(np.searchsorted(uniq, int(s)))
+        im = sample_embedding(field, C[j], n=8, steps=args.steps, seed=args.seed, clip=(0.0, 1.0))
+        self_sc.append(score(np.asarray(im).reshape(len(im), -1), P[int(s)])[0])
+    self_mean = float(np.mean(self_sc))
+    print(f"[n64] CONTROL -- model conditioned on its OWN trained row, seen scenes: "
+          f"exact {self_mean:.3f}", flush=True)
+    if self_mean < 0.3:
+        print("[n64]   -> the backbone does not reproduce its OWN training scenes on demand. "
+              "Nothing downstream is about ADDRESS; fix conditioning or the detector first.",
+              flush=True)
+
     # ---- 3. calibrate the gain on SEEN scenes, refitting the basis WITHOUT each one -------------
     # Calibrating on a scene that is in the basis fit asks the model to reproduce something already
     # memorised, and gain 1.0 always suffices; the held-out pair then gets an under-delivered gain.
@@ -261,6 +306,38 @@ def main():
         print(f"[n64]   held-out {(a, b)}: exact {ex:.3f} (floor {fex:.3f})  "
               f"recall {rc:.3f} (floor {frc:.3f})", flush=True)
 
+    # ---- 5. LOOK at it.  Three numbers cannot distinguish "renders nothing", "renders one object
+    # twice", and "renders the wrong pair", and those call for different fixes.
+    try:
+        import matplotlib
+        matplotlib.use("Agg")
+        import matplotlib.pyplot as plt
+        show = held[:5]
+        fig, ax = plt.subplots(3, len(show), figsize=(2.1 * len(show), 6.6))
+        for col, h in enumerate(show):
+            a, b = P[int(h)]
+            real = X[scene == h][:1]
+            addr = np.asarray(sample_embedding(field, mu + gstar * (W[a] + W[b]), n=1,
+                                               steps=args.steps, seed=args.seed + int(h),
+                                               clip=(0.0, 1.0))).reshape(1, -1)
+            # a DIFFERENT unconditional draw per column -- reusing unc[:1] painted the same image
+            # five times, which reads as "the model collapsed" when it is just one sample repeated
+            for r, (im, lab) in enumerate(((real, f"REAL {(a, b)}"),
+                                           (addr, "ADDRESS"),
+                                           (unc[col:col + 1], "uncond"))):
+                ax[r, col].imshow(np.asarray(im[0], np.float32).reshape(IMG, IMG, 3))
+                ax[r, col].set_title(lab, fontsize=8)
+                ax[r, col].axis("off")
+        plt.suptitle(f"N64 multi-object: held-out pairs, g*={gstar}, "
+                     f"detector top2 {dq['top2_exact']:.2f}")
+        plt.tight_layout()
+        os.makedirs(os.path.join(FIGS, "multiobject"), exist_ok=True)
+        fp = os.path.join(FIGS, "multiobject", "n64_heldout_pairs.png")
+        plt.savefig(fp, dpi=120)
+        print(f"[n64] wrote {fp}", flush=True)
+    except Exception as e:                                   # a figure must never kill the result
+        print(f"[n64] figure skipped: {e}", flush=True)
+
     ex = float(np.mean([r["exact"] for r in rows]))
     fex = float(np.mean([r["floor_exact"] for r in rows]))
     rc = float(np.mean([r["recall"] for r in rows]))
@@ -283,7 +360,8 @@ def main():
     else:
         print("[n64]   NO membership structure in the scene table. On this backbone a k-object")
         print("[n64]   scene is NOT a composition over addresses -- the honest negative.")
-    save_json(dict(detector=dq, det_gate_passed=bool(ok), r2=r2, r2_cv=r2cv, r2_ordered=r2_ord,
+    save_json(dict(detector=dq, det_gate_passed=bool(ok), self_cond=self_mean,
+                   r2=r2, r2_cv=r2cv, r2_ordered=r2_ord,
                    perm_null_mean=float(np.mean(null)), perm_null_max=float(np.max(null)),
                    gain=gstar, gain_curve={str(g): float(np.mean(v)) for g, v in cal.items()},
                    held=rows, summary=dict(exact=ex, floor_exact=fex, recall=rc,

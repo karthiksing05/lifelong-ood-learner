@@ -124,8 +124,65 @@ def null_conditioning(model):
         return model.cemb.weight[model.null_id].detach().cpu().numpy().astype(np.float64)
 
 
-U_NOVEL = 0.10        # separates novel from in-distribution best (AUROC 0.985)
+U_NOVEL = 0.10        # ColorMNIST's operating point (AUROC 0.985) -- see calibrate_u_novel
 U_VOCAB = 0.45        # separates new-vocabulary from new-combination best (AUROC 0.995)
+
+
+def calibrate_u_novel(field, class_conds, X, slots, seen_slots, u_grid=None, n_noise=4, seed=0,
+                      n_q=24, null_cond=None, prep=None, verbose=False):
+    """Choose the novelty operating point for THIS backbone, using SEEN slots only.  -> (u, curve).
+
+    `U_NOVEL = 0.10` was tuned on a 32 px ColorMNIST backbone and does not transfer.  Carried over
+    unexamined to a 64 px pretrained Shapes3D backbone it produced AUROC **0.354** -- below chance --
+    and that number was recorded as "the router does not transfer" (5t-bis).  It was the constant,
+    not the method: at u=0.85 the same checkpoint scores **0.861** on held-out queries (N62).
+
+    The criterion is the noise level at which the CLASS LABEL IS MOST LEGIBLE -- AUROC separating a
+    query's loss under its own trained class from its loss under the best wrong class.  Label-free
+    in the sense `experiments/common.py:backbone_gains` established: only training images and the
+    labels they were trained with, never a held-out combination.  A deployed router cannot use
+    held-out examples to pick its own operating point; if it had them it would not need detecting.
+
+    MEASURED, INCLUDING WHERE IT FAILS (N65, 3 seeds):
+
+      | backbone | label-free u | AUROC there | oracle u | AUROC | shipped u=0.10 |
+      |---|---|---|---|---|---|
+      | Shapes3D (pretrained) | **0.85** | **0.929** | 0.85 | 0.929 | 0.662 |
+      | ColorMNIST | 0.82 | 0.826 | 0.05 | 1.000 | 0.988 |
+
+    On Shapes3D it recovers the oracle's choice EXACTLY, on every seed.  On ColorMNIST it does not,
+    and the reason is 6c: that router runs on the model's DENSITY, not on its conditioning -- its
+    class legibility sits at chance (0.46-0.50) precisely where its novelty AUROC is 1.000, so a
+    legibility criterion has nothing to track.  The two results agree rather than conflict, and the
+    practical rule falls out of them: **calibrate where conditioning carries the decision, which is
+    the case where the inherited constant fails.**  Compare `uncond_novel` against `s_novel` to tell
+    which regime a backbone is in before trusting this.
+    """
+    grid = (0.05, 0.10, 0.20, 0.30, 0.45, 0.60, 0.75, 0.85, 0.90, 0.95) if u_grid is None else u_grid
+    prep = (lambda x: x) if prep is None else prep
+    null = (null_conditioning(field.model) if null_cond is None
+            else np.asarray(null_cond)).reshape(1, -1)
+    allc = np.concatenate([null, np.asarray(class_conds)])
+    seen_sorted = np.asarray(sorted(int(v) for v in seen_slots))
+    rng = np.random.default_rng(seed)
+    picks = rng.permutation(seen_sorted)[:n_q]
+    curve = []
+    for u in grid:
+        corr, wrong = [], []
+        for s in picks:
+            idx = np.where(np.asarray(slots) == int(s))[0]
+            if not len(idx):
+                continue
+            L = conditional_losses(field, prep(X[int(idx[0])]), allc, u_grid=(u,),
+                                   n_noise=n_noise, seed=seed)
+            cls = L[1:]                                  # row 0 is the null token
+            j = int(np.searchsorted(seen_sorted, int(s)))
+            corr.append(float(cls[j]))
+            wrong.append(float(np.min(np.delete(cls, j))))
+        curve.append((float(u), auroc(np.array(wrong), np.array(corr))))
+        if verbose:
+            print(f"[calibrate_u_novel] u={u:<5g} class legibility {curve[-1][1]:.3f}", flush=True)
+    return max(curve, key=lambda t: t[1])[0], curve
 
 
 def route_signals(field, xq, class_conds, basis_conds=None, null_cond=None, n_noise=4, seed=0,

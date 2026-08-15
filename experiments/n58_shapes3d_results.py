@@ -87,6 +87,12 @@ def main():
     p.add_argument("--n-samples", type=int, default=16)
     p.add_argument("--steps", type=int, default=50)
     p.add_argument("--seed", type=int, default=0)
+    p.add_argument("--tag", default="",
+                   help="suffix for the JSON and the case-study figure.  Both output paths are "
+                        "otherwise FIXED, so evaluating a sweep of checkpoints through this script "
+                        "would overwrite the shipped figures/case_shapes3d.png with whichever rung "
+                        "ran last -- silently, since nothing errors.  Pass a tag for any run that "
+                        "is not the canonical backbone.")
     args = p.parse_args()
     dev = "cuda" if torch.cuda.is_available() else "cpu"
 
@@ -198,7 +204,7 @@ def main():
                    null_gap=ngap, conditional=bool(conditional), novel_auroc=float(a_nov),
                    readable=readable, names=names, sizes=sizes, backbone=ck["model"],
                    config=vars(args)),
-              os.path.join(RESULTS, "n58_shapes3d.json"), seed=args.seed)
+              os.path.join(RESULTS, f"n58_shapes3d{args.tag}.json"), seed=args.seed)
 
     # ── 3. the case study ───────────────────────────────────────────────────
     import matplotlib
@@ -260,7 +266,7 @@ def main():
         f"{gap:+.5f} and null gap {ngap:+.5f}. Basis R^2 {fac['r2']:.3f}.\nComposition factors are "
         f"{names}; wall hue is PINNED and scale/orientation vary within every block.", fontsize=8)
     fig.tight_layout(rect=[0, 0, 1, 0.95])
-    o = os.path.join(FIG, "case_shapes3d.png")
+    o = os.path.join(FIG, f"case_shapes3d{args.tag}.png")
     fig.savefig(o, dpi=130, bbox_inches="tight")
     print(f"[n58] wrote {o}")
     return 0

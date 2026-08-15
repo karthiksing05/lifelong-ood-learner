@@ -76,6 +76,20 @@ CLAIMS = [
     (0.058, .01, "n30_prototype_distance_fine", "poe-guided@0.6", "dist_prototype", "n30 poe d(proto) s=0.6"),
     (0.055, .01, "n30_prototype_distance_fine", "poe-guided@1", "dist_prototype", "n30 poe d(proto) s=1.0"),
     (0.000, .01, "n30_prototype_distance_fine", "poe-guided@1", "recall", "n30 poe recall at s=1.0"),
+    # ── the router's operating point (RESULTS §6c-quinquies, VLA_PATH, OUTLINE) ──────
+    # The claim that 0.354 was the OPERATING POINT and not the backbone.  Held-out queries,
+    # calibration and evaluation on DISJOINT slots.
+    (0.861, .02, "n62_router_calibrate", "Shapes3D(pretrained)", "auroc", "n62 Shapes3D held-out AUROC"),
+    (0.669, .02, "n62_router_calibrate", "Shapes3D(pretrained)", "shipped", "n62 Shapes3D at the shipped u=0.10"),
+    # 6c is NOT overturned: on ColorMNIST the density ablation still matches the conditional.
+    # Pinned so that a change which quietly separates them fails here instead of rewriting 6c.
+    (1.000, .01, "n62_router_calibrate", "ColorMNIST(nobg3)", "auroc", "n62 ColorMNIST held-out AUROC"),
+    (1.000, .01, "n62_router_calibrate", "ColorMNIST(nobg3)", "ablation", "n62 ColorMNIST density ablation"),
+    (0.585, .05, "n62_router_calibrate", "Shapes3D(pretrained)", "ablation", "n62 Shapes3D density ablation"),
+    # the label-free calibration: exact on Shapes3D, and expected NOT to help on ColorMNIST
+    (0.929, .02, "n65_u_labelfree", "Shapes3D(pretrained)", "auroc", "n65 Shapes3D label-free AUROC"),
+    (0.929, .02, "n65_u_labelfree", "Shapes3D(pretrained)", "oracle", "n65 Shapes3D oracle AUROC"),
+    (0.826, .03, "n65_u_labelfree", "ColorMNIST(nobg3)", "auroc", "n65 ColorMNIST label-free AUROC"),
 ]
 
 

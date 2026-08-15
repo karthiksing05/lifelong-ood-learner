@@ -8459,6 +8459,106 @@
   "n25_pretrained_case": "n25_pretrained_case",
   "n28_update_rules": "n28_update_rules",
   "n26_batch_pretrained": "n26_batch_pretrained",
-  "n30_prototype_distance_fine": "n30_prototype_distance_fine"
+  "n30_prototype_distance_fine": "n30_prototype_distance_fine",
+  "n62_router_calibrate": "n62_router_calibrate",
+  "n65_u_labelfree": "n65_u_labelfree"
+ },
+ "n62_router_calibrate": {
+  "table": {
+   "ColorMNIST(nobg3)": {
+    "u": {
+     "mean": 0.05,
+     "se": 0.0,
+     "n": 1
+    },
+    "auroc": {
+     "mean": 0.99953125,
+     "se": 0.0,
+     "n": 1
+    },
+    "ablation": {
+     "mean": 1.0,
+     "se": 0.0,
+     "n": 1
+    },
+    "shipped": {
+     "mean": 0.98859375,
+     "se": 0.0,
+     "n": 1
+    }
+   },
+   "Shapes3D(pretrained)": {
+    "u": {
+     "mean": 0.8624999999999999,
+     "se": 0.0,
+     "n": 1
+    },
+    "auroc": {
+     "mean": 0.8613782051282051,
+     "se": 0.0,
+     "n": 1
+    },
+    "ablation": {
+     "mean": 0.5849358974358975,
+     "se": 0.0,
+     "n": 1
+    },
+    "shipped": {
+     "mean": 0.6693910256410256,
+     "se": 0.0,
+     "n": 1
+    }
+   }
+  },
+  "n_seeds": 1
+ },
+ "n65_u_labelfree": {
+  "table": {
+   "ColorMNIST(nobg3)": {
+    "u": {
+     "mean": 0.8166666666666668,
+     "se": 0.0,
+     "n": 1
+    },
+    "auroc": {
+     "mean": 0.8263888888888888,
+     "se": 0.0,
+     "n": 1
+    },
+    "shipped": {
+     "mean": 0.9878472222222222,
+     "se": 0.0,
+     "n": 1
+    },
+    "oracle": {
+     "mean": 1.0,
+     "se": 0.0,
+     "n": 1
+    }
+   },
+   "Shapes3D(pretrained)": {
+    "u": {
+     "mean": 0.85,
+     "se": 0.0,
+     "n": 1
+    },
+    "auroc": {
+     "mean": 0.9293981481481483,
+     "se": 0.0,
+     "n": 1
+    },
+    "shipped": {
+     "mean": 0.6620370370370371,
+     "se": 0.0,
+     "n": 1
+    },
+    "oracle": {
+     "mean": 0.9293981481481483,
+     "se": 0.0,
+     "n": 1
+    }
+   }
+  },
+  "n_seeds": 1
  }
 }

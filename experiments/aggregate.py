@@ -227,6 +227,40 @@ def agg_n9(runs):
     return dict(table=table, n_seeds=len(runs))
 
 
+def agg_n62(runs):
+    """N62/N65 router operating point: held-out AUROC per backbone, and how it was chosen.
+
+    Reported per backbone rather than pooled, because the whole finding is that the two backbones
+    differ: ColorMNIST routes on DENSITY (its ablation matches its conditional) and Shapes3D routes
+    on CONDITIONING.  A mean over the two would erase exactly the thing being claimed.
+    """
+    out = {}
+    print(f"    {'backbone':24s}{'held-out AUROC':>16s}{'ablation':>12s}{'at u=0.10':>12s}")
+    for _, r in runs:
+        for name, d in (r.get("backbones") or {}).items():
+            m = d.get("mean", {})
+            def g(k):
+                v = m.get(k)
+                return float(v[0]) if isinstance(v, (list, tuple)) else (
+                    float(v) if v is not None else None)
+            row = dict(u=g("ustar") if "ustar" in m else g("u_lf"),
+                       auroc=g("eval_cond") if "eval_cond" in m else g("a_lf"),
+                       ablation=g("eval_unc"),
+                       shipped=g("eval_dflt") if "eval_dflt" in m else g("a_shipped"),
+                       oracle=g("a_oracle"))
+            # `table[arm][metric]` with a `mean`, because that is the shape tests/test_claims.py
+            # navigates.  A flat dict aggregates fine and then every claim against it reports
+            # MISSING rather than mismatching -- which reads as "no claim made" instead of "claim
+            # not checked".
+            out[name] = {k: stat([v]) for k, v in row.items() if v is not None}
+
+            def show(v):
+                return "-" if v is None else f"{v:.3f}"
+            print(f"    {name:24s}{show(row['auroc']):>16}{show(row['ablation']):>12}"
+                  f"{show(row['shipped']):>12}")
+    return dict(table=out, n_seeds=len(runs))
+
+
 def agg_n18(runs):
     """N18 router: the two AUROCs, their unconditional ablation, and routing accuracy."""
     keys = ["novel vs in-distribution", "new-vocabulary vs new-combination"]
@@ -389,7 +423,8 @@ def agg_n30(runs):
                                      "vendi"), width=18)
 
 
-AGG = {"e2_composition": agg_e2, "n2_composition": agg_e2,
+AGG = {"n62_router_calibrate": agg_n62, "n65_u_labelfree": agg_n62,
+       "e2_composition": agg_e2, "n2_composition": agg_e2,
        "e3_lifelong": agg_e3, "n3_lifelong": agg_n3, "n7_inversion": agg_n7,
        "n5_classinc": agg_n5, "n9_showdown": agg_n9, "n8_idealwords": agg_n7,
        "n18_router": agg_n18, "n20_celeba_composition": agg_n20,
