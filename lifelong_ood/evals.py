@@ -548,7 +548,11 @@ def fit_attr_probes(data, n_train=None, seed=0, epochs=30, attrs=None, features=
     `attr_accuracy` featurizes generated samples the same way -- a probe fitted in one space and
     applied in another would be silently meaningless.
     """
-    from .celeba import ATTRS
+    # `.data.celeba`, not `.celeba`: the loaders moved into the `data` subpackage and this deferred
+    # import was not updated with them, so `fit_attr_probes` raised ModuleNotFoundError for every
+    # caller that did not pass `attrs=` explicitly.  A function-local import fails only when the
+    # function runs, which is why nothing caught it at import time.
+    from .data.celeba import ATTRS
     attrs = attrs or ATTRS
     seen = np.where(data["seen"])[0]
     rng = np.random.default_rng(seed)

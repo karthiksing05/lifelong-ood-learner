@@ -64,7 +64,8 @@ from lifelong_ood.neural import (NeuralLifelongLearner, load_field,    # noqa: E
                                  sample_embedding, to_data, to_model)
 from lifelong_ood.neural.idealwords import compose, slot_factors       # noqa: E402
 
-ARMS = ("poe-guided", "ours-inversion", "ours-inversion-hard", "ours-prototypes", "unconditional")
+ARMS = ("poe-guided", "ours-inversion", "ours-inversion-hard", "ours-prototypes",
+        "ours-experts", "probe-query", "unconditional")
 
 
 def read_factors(probes, img_row):
@@ -138,6 +139,40 @@ def main():
             field, compose(fac, tuple(int(v) for v in read_i), gains=gains), n=args.n_samples,
             steps=args.steps, seed=args.seed + ci))
 
+        # PER-FACTOR read across the K selected experts -- the paper's actual mechanism, lifted
+        # from pixels to factors.  Eq. 8-9 selects experts that are complementary because each
+        # explains a DIFFERENT part of the query, so the right background may live in one expert
+        # and the right foreground in another; mu_T blends them per pixel, which can smear a factor
+        # that only one expert gets right.  Reading each factor from the expert that best explains
+        # the query ON THAT FACTOR uses the complementarity directly instead of averaging it away.
+        P = np.stack([to_data(M[j]) for j in t["sel"]])
+        per_expert = [read_factors(probes, row) for row in P]
+        xq_img = to_data(xq).reshape(1, -1)
+        read_e = []
+        for fi, pname in enumerate(("digit", "fg", "bg")):
+            # the expert whose value for this factor the QUERY most agrees with, scored by the
+            # probe's own margin on the query rather than by a vote (K=3 votes ties constantly)
+            pr = probes[pname].predict(xq_img)[0]
+            cand = [pe[fi] for pe in per_expert]
+            read_e.append(int(pr) if int(pr) in cand else int(cand[0]))
+        got["ours-experts"] = to_data(sample_embedding(
+            field, compose(fac, tuple(read_e), gains=gains), n=args.n_samples,
+            steps=args.steps, seed=args.seed + ci))
+
+        # THE CONTROL THAT DECIDES WHETHER ANY DISCOVERY IS NEEDED HERE.  Every read above runs a
+        # probe over an image -- mu_T for theirs, the inversion's argmax for ours.  The probes are
+        # trained on SEEN slots and generalise, so the simplest possible read is to probe the QUERY
+        # itself.  If that matches the best discovered read, then on this backbone the discovery
+        # apparatus buys nothing and saying so is the honest result; the value of discovery then has
+        # to be shown where a probe does NOT generalise, not asserted here.
+        read_q = read_factors(probes, to_data(xq))
+        got["probe-query"] = to_data(sample_embedding(
+            field, compose(fac, read_q, gains=gains), n=args.n_samples, steps=args.steps,
+            seed=args.seed + ci))
+        extra_reads = dict(from_experts=list(read_e), from_probe_query=list(read_q),
+                           experts_correct=bool(tuple(read_e) == tgt),
+                           probe_query_correct=bool(tuple(read_q) == tgt))
+
         got["unconditional"] = to_data(field.sample(n=args.n_samples, steps=args.steps,
                                                     seed=args.seed + 977 * (ci + 1),
                                                     clip=(-1, 1), branch=None))
@@ -145,11 +180,13 @@ def main():
         reads.append(dict(slot=int(q["slot"]), target=list(tgt), from_mu_T=list(read_p),
                           from_inversion=[int(v) for v in read_i],
                           mu_T_correct=bool(tuple(read_p) == tgt),
-                          inversion_correct=bool(tuple(read_i) == tgt)))
+                          inversion_correct=bool(tuple(read_i) == tgt), **extra_reads))
         print(f"[n67] case {ci + 1}/{len(qs)} slot {int(q['slot'])} target {tgt} | "
               f"mu_T {read_p} {'OK' if tuple(read_p) == tgt else 'WRONG'} | "
               f"inversion {tuple(read_i)} "
-              f"{'OK' if tuple(read_i) == tgt else 'WRONG'}", flush=True)
+              f"{'OK' if tuple(read_i) == tgt else 'WRONG'} | "
+              f"probe-query {read_q} "
+              f"{'OK' if tuple(read_q) == tgt else 'WRONG'}", flush=True)
 
         for arm in ARMS:
             S = np.asarray(got[arm], np.float32)
@@ -162,7 +199,7 @@ def main():
                   f"vendi {float(vendi_score(S)):.2f}", flush=True)
 
     print(f"\n[n67] {'=' * 70}")
-    print(f"{'arm':22s}{'joint':>9s}{'recall':>9s}{'precision':>11s}{'vendi':>8s}")
+    print(f"{'arm':22s}{'joint':>9s}{'recall':>9s}{'precision':>11s}{'F1':>8s}{'vendi':>8s}")
     summ = {}
     for arm in ARMS:
         g = [r for r in rows if r["arm"] == arm]
@@ -170,12 +207,17 @@ def main():
             continue
         summ[arm] = {k: float(np.mean([r[k] for r in g])) for k in
                      ("joint", "recall", "precision", "vendi")}
+        pr_, rc_ = summ[arm]["precision"], summ[arm]["recall"]
+        summ[arm]["f1"] = float(2 * pr_ * rc_ / max(pr_ + rc_, 1e-9))
         print(f"{arm:22s}{summ[arm]['joint']:>9.3f}{summ[arm]['recall']:>9.3f}"
-              f"{summ[arm]['precision']:>11.3f}{summ[arm]['vendi']:>8.2f}")
+              f"{summ[arm]['precision']:>11.3f}{summ[arm]['f1']:>8.3f}{summ[arm]['vendi']:>8.2f}")
 
-    n_mu = sum(1 for r in reads if r["mu_T_correct"])
-    n_in = sum(1 for r in reads if r["inversion_correct"])
-    print(f"\n[n67] READ accuracy -- mu_T {n_mu}/{len(reads)} | inversion {n_in}/{len(reads)}")
+    n = len(reads)
+    print(f"\n[n67] READ accuracy over {n} cases -- "
+          f"mu_T {sum(r['mu_T_correct'] for r in reads)}/{n} | "
+          f"inversion {sum(r['inversion_correct'] for r in reads)}/{n} | "
+          f"experts {sum(r['experts_correct'] for r in reads)}/{n} | "
+          f"probe-query {sum(r['probe_query_correct'] for r in reads)}/{n}")
     print("[n67] VERDICT")
     best = max((a for a in ARMS if a.startswith("ours")), key=lambda a: summ[a]["joint"])
     p_ = summ["poe-guided"]
