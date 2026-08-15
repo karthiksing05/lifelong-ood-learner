@@ -155,8 +155,30 @@ def colormnist(args):
         M, V, meta = candidates_ascent(field, xq, seed=L.cfg["seed"], **disc)
         t = poe_teacher(xq, M, V, K=L.cfg["K"], tau=L.cfg["tau"])
         t["meta"] = meta
+        # WHAT THE PROTOTYPES ROW SHOWS.  Selection (Eq. 8-9) scores candidates by how well they
+        # explain the query, so a chain that STARTED at the query wins the first greedy pick by
+        # construction: measured over 24 held-out slots, a query-seeded chain at u=0.05 returns the
+        # exact held-out combination 25% of the time, while a random-seeded chain never does at any
+        # noise level.  Three readers in a row have taken that first panel for the model recovering
+        # a combination it was never trained on, and the caption alone did not stop it.
+        #
+        # It is also the expert the composition does NOT need: 5e-quater measures selection
+        # restricted to query-agnostic candidates at joint 0.83, identical to unrestricted, and
+        # restricted to query-seeded candidates at joint 0.00 with the background wrong in 5 of 5
+        # slots.  The companion paper's own figure shows three COMPLEMENTARY prototypes -- one
+        # supplying the digit, one the foreground colour, one the background -- and none of them the
+        # query.  So the row now shows the query-agnostic selection by default: the experts the
+        # composition actually rests on, which is the same thing their figure shows.
+        t_show = t
+        if args.protos == "query-agnostic":
+            elig = np.where(np.asarray(meta["src"]) == "random")[0]
+            if len(elig) >= L.cfg["K"]:
+                t_show = poe_teacher(xq, M, V, K=L.cfg["K"], tau=L.cfg["tau"], eligible=elig)
+            else:
+                print(f"[case] only {len(elig)} query-agnostic candidates; showing unrestricted",
+                      flush=True)
         got = {"real": R[:args.n_show],
-               "prototypes": to_data(M[t["sel"]]).astype(np.float32),
+               "prototypes": to_data(M[t_show["sel"]]).astype(np.float32),
                "poe-guided (paper Eq.14)": to_data(
                    L.sample_teacher(t, n=args.n_show, seed=args.seed, **PAPER_POE)),
                "query-only": to_data(L.sample_teacher(L.baseline_teacher(xq, "query_only"),
@@ -266,6 +288,13 @@ def main():
     p.add_argument("--slots", nargs="*", default=None,
                    help="explicit slot ids, overriding --select")
     p.add_argument("--scan-tag", default="_v1")
+    p.add_argument("--protos", choices=["query-agnostic", "all"], default="query-agnostic",
+                   help="which candidates the PROTOTYPES ROW may show.  `all` reproduces the old "
+                        "figure, whose first panel is the query-seeded pick and is read as the "
+                        "model recovering a held-out combination.  `query-agnostic` shows the "
+                        "experts the composition actually rests on (5e-quater), which is also what "
+                        "the companion paper's own figure shows.  The TEACHER is unchanged either "
+                        "way -- this changes the display, not the method.")
     p.add_argument("--n-show", type=int, default=6)
     p.add_argument("--n-per-slot", type=int, default=100)
     p.add_argument("--steps", type=int, default=200,
