@@ -2713,10 +2713,11 @@ marginal this easy the average stays tiny however well the label steers generati
 reported as a diagnostic and the verdict rests on the composition margin, which is the thing actually
 claimed.
 
-**What genuinely does not transfer.**  Router `s_novel` AUROC is **0.354** against ColorMNIST's 0.980
--- below chance.  So ADDRESS composes on Shapes3D while the three-tier *routing* decision does not,
-and that separation is real rather than a measurement artefact this time: it is computed through the
-same corrected path that produces the working composition numbers.
+**What does not transfer -- narrowed by a later sweep.**  Router `s_novel` AUROC reads **0.354** at
+the operating point inherited from ColorMNIST.  **That is the operating point, not the method:**
+sweeping the noise level finds **0.867 at u=0.90** (§6c-quater), so `U_NOVEL` is a per-backbone
+constant that needs calibrating like `backbone_gains` already is.  The original "the routing decision
+does not transfer" is withdrawn in favour of "its operating point does not transfer".
 
 *(Two of three probes are readable on this split -- `object_hue` drops out once `wall_hue` is pinned
 and the set shrinks to 9000 images -- so `joint` is a two-factor joint.  Every arm shares it.)*
@@ -2785,6 +2786,83 @@ from query-initialised chains, but the RANDOM-initialised chains collapse to the
 for every composition.  That is a defect -- 5e-quinquies leans on random-init chains as the control
 that never sees the query -- and its likeliest cause is that the diagnostic seeds one generator per
 call, so every block gets identical random starts.
+
+## 7aa. The thesis on all four axes, three datasets, two architectures (N59, N60, N24)
+
+The four axes of `docs/THE_TASK.md` were covered unevenly: composition and coverage on everything,
+preservation and cost only on ColorMNIST and CelebA -- the two oldest settings.  A lifelong claim
+measured on half its settings is not a lifelong claim.  These fill the grid.
+
+| | 1. produce | 2. cover | 3. damage nothing | 4. cost |
+|---|---|---|---|---|
+| ColorMNIST (UNet) | F1 0.559 | recall 0.723 | FGT 0.000 | **9.5x** |
+| CelebA | 2.7x floor | — | bit-identical 1.00 | **12.4x** |
+| **Shapes3D** | **16x floor** | 0.698 | **bit-identical YES, FGT 0.000** | **8.9x** |
+| **ColorMNIST (DiT)** | 0.661 full loop | — | **bit-identical YES, FGT 0.000** | **864 B / 29.9 MB** |
+
+**Axis 3 -- preservation (N59 Shapes3D, N60 DiT).**  Twelve concepts absorbed one at a time, N5's
+protocol and metrics.  Both report a backbone **bit-identical by sha256 over every parameter**, FGT
+**0.000**, BWT **+0.000**, and `rows exactly unchanged 1.000` -- every retention row constant from the
+moment its concept was absorbed through eleven further absorptions.  Not "within noise": identical.
+
+*What could have failed, and is the reason these were run.*  For ADDRESS, weight preservation is true
+by construction -- 72 bytes of coordinates, no parameter written -- so the sha256 check tests only
+that the implementation honours the argument.  The risk that is NOT settled by construction is an
+early concept degrading through the **shared factor basis**, which is refit as vocabulary grows.  That
+is architecture-independent, it is what the retention matrix measures, and it does not happen on
+either backbone.
+
+*Scope, stated because it will otherwise be over-read.*  **These test the ADDRESS tier only.**  EXTEND
+BASIS and BLOCK do write parameters, and their preservation rests on the sealing discipline rather
+than on writing nothing.  That is measured on ColorMNIST (5w) and not on Shapes3D or the DiT.
+
+**Axis 4 -- the growth curve (N24, extended to Shapes3D).**  Cost over the full stream, against
+storing a block for every experience and against an oracle that pays only for genuinely new
+vocabulary:
+
+| | experiences | vocabulary | block-every | oracle | measured | saving |
+|---|---|---|---|---|---|---|
+| ColorMNIST | 160 | 18 | 95.5M | 3.8M | 10.1M | 9.5x |
+| **Shapes3D** | 100 | 14 | 59.7M | 3.0M | **6.7M** | **8.9x** |
+| CelebA | 1000 | 28 | 597.1M | 6.0M | 48.0M | 12.4x |
+
+The saturation point is the claim in its sharpest form: **Shapes3D's vocabulary is exhausted after
+experience 11 of 100 -- after which 89 % of the stream costs nothing.**  CelebA saturates at 21 of
+1000, so 98 % of that stream is free.  Cost tracks the vocabulary of the world, not the length of the
+stream, on all three benchmarks.
+
+## 6c-quater. The router's noise level is a per-backbone constant, and one ablation may not hold
+
+N58 reported Shapes3D router `s_novel` AUROC **0.354** -- below chance -- and 5t-bis recorded that the
+routing decision does not transfer even though composition does.  That conclusion was premature for a
+reason worth recording: `U_NOVEL = 0.10` and `U_VOCAB = 0.45` are **constants chosen on ColorMNIST**,
+on a 32 px backbone with three factors.  Nothing says the informative noise level is the same for a
+64 px pretrained backbone whose marginal is far easier.
+
+Sweeping u (`tests/diag_shapes3d_router_uband.py`, 16 held-out against 16 trained queries):
+
+| u | AUROC conditional | AUROC unconditional |
+|---|---|---|
+| 0.10 *(the ColorMNIST constant)* | 0.633 | 0.648 |
+| 0.30 | 0.695 | 0.703 |
+| 0.60 | 0.547 | 0.516 |
+| **0.90** | **0.867** | **0.535** |
+
+**So the constant was wrong, not the method.**  `U_NOVEL` should be calibrated per backbone exactly as
+`backbone_gains` already is, and 5t-bis's "the router does not transfer" is withdrawn in favour of
+"the router's operating point does not transfer".
+
+**And the second column may reverse a documented finding.**  6c states plainly that the unconditional
+ablation matches the conditional signal (0.985 against 0.985 on ColorMNIST), and therefore that the
+router is an OOD detector on the model's own density and **not** evidence that the factor basis
+recognises what it can express.  On Shapes3D at u=0.90 the conditional signal is **0.867** while the
+ablation is **0.535** -- the conditioning is carrying the decision, not the density.
+
+**This is suggestive, not established, and 6c is not yet amended.**  It is 16 versus 16 queries at a
+single seed and a single backbone; a 0.33 gap on that sample is a hypothesis.  What would settle it is
+the same sweep at more queries and three seeds, plus the ColorMNIST sweep re-run at u=0.90 to check
+whether its ablation also separates there -- because if it does, the original finding was itself an
+artefact of reading one noise level.
 
 ## 6c-ter. A sixth attempt on the router: description length instead of a threshold (2026-08-13)
 

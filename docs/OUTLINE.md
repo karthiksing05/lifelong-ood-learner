@@ -90,6 +90,8 @@ one; the flatness across three variants is the stronger evidence.
 | **Representational strength** — linear probe, k-NN, vs a model trained on everything | **✔ negative** | `ours` 0.271 ≈ `base` 0.266; oracle 0.406 (linear digit). Absorbing a concept does **not** measurably improve the representation over not adapting. | **f33** |
 | **Incremental strength** — learning curves, no catastrophic forgetting | **✔** | retention **exactly flat**, FGT **0.000**, bit-identical 1.00; `finetune` falls 0.73→0.66 in one step | **f31**, f5 |
 | **OOD strength** — FID / precision-recall, their metrics | **✔** | their protocol reproduces (G-precision 0.753 vs their 0.745); ours is the only arm on both coverage and accuracy | **f26**, f29, f3, f18 |
+| **Preservation on ALL settings** | **✔** | bit-identical by sha256 + FGT 0.000 on Shapes3D (N59) and the DiT (N60), joining ColorMNIST (N5) and CelebA (N22). ADDRESS tier only — EXTEND/BLOCK preservation rests on the sealing discipline and is measured on ColorMNIST. | §7aa |
+| **Cost curve on ALL settings** | **✔** | 9.5× / 8.9× / 12.4× against block-every; Shapes3D's vocabulary saturates at experience **11 of 100**, CelebA's at 21 of 1000 — after which the stream is free | §7aa |
 | **Batch-size invariance** | **✔** | ACC flat in K within error; **1.98× speedup at K=12**; bit-identical at every K | **f34** |
 | ↳ *instances per concept* (the other reading) | **✔** | the tier a concept warrants scales with instance count; ~15 justify ADDRESS, ~36 EXTEND | **f32** |
 | **Parameter count vs others** | **✔** | ADDRESS **31,895×** cheaper than a block; 24 concepts = 1.7 KB vs 55 MB | **f16**, f8 |

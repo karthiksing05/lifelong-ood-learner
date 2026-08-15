@@ -87,6 +87,19 @@ def colormnist_stream(seed=0):
     return slots, [10, 4, 4]
 
 
+def shapes3d_stream(seed=0):
+    """Shapes3D as (floor_hue, object_hue, shape); vocabulary = the 5 + 5 + 4 factor VALUES.
+
+    The split n57/n58/n59 actually train and measure on: `value_stride=2` thins the two 10-valued
+    hues to 5 each and spares `shape`, giving 100 compositions.  Using the full 10x10x4 here would
+    report a growth curve for a benchmark no result in this repository was measured on.
+    """
+    slots = [(a, b, c) for a in range(5) for b in range(5) for c in range(4)]
+    rng = np.random.default_rng(seed)
+    rng.shuffle(slots)
+    return slots, [5, 5, 4]
+
+
 def celeba_stream(seed=0, cache=None):
     """Realized CelebA attribute combinations; vocabulary = the 14 x 2 attribute VALUES.
 
@@ -168,6 +181,7 @@ def main():
     cache = os.path.join(RESULTS, "cache", "celeba_raw_img64_n0.npz")
     benches = {}
     for name, fn in (("ColorMNIST", colormnist_stream),
+                     ("Shapes3D", shapes3d_stream),
                      ("CelebA", lambda s: celeba_stream(s, cache=cache))):
         allc, allr, nv = [], [], []
         for s in range(1 if args.quick else args.seeds):
