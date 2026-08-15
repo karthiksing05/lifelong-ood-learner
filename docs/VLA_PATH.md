@@ -16,7 +16,7 @@ this is the forward plan.
 | ADDRESS is **span-limited by construction** — a point, never a direction | affine residual 0.0000 vs a trained embedding's 0.7359 (§6e-bis) | **high** — it is algebra, then measured |
 | The **router** transfers | held-out AUROC: ColorMNIST **1.000**, Shapes3D **0.861 ± 0.043** at a calibrated u (§6c-quinquies) | **medium** — transfers once `u` is calibrated per backbone; 0.354 was the operating point |
 | The router's **operating point** can be chosen without held-out labels | Shapes3D: label-free `calibrate_u_novel` picks the oracle's u on 3/3 seeds, **0.929** vs the inherited constant's 0.662 | **medium** — exact on the pretrained backbone, fails on ColorMNIST for the reason §6c gives |
-| A **multi-object scene** is a composition over addresses, not *k* separate blocks | scene table factorises over object membership (R² 0.931, CV **0.875** vs null 0.254); held-out PAIRS at 0.302 exact-set vs a 0.003 floor, recall 0.592 vs 0.156 (§7bb) | **medium** — one seed, 9 pairs, and 3 of the 9 fail outright |
+| A **multi-object scene** is a composition over addresses, not *k* separate blocks | scene table factorises over object membership (R² 0.931, CV **0.875** vs null 0.254); held-out PAIRS at **0.317 ± 0.008** exact-set, recall 0.608 vs a 0.178 floor (§7bb) | **medium** — replicates over 3 sampling seeds but ONE backbone; 4 of 9 pairs fail, 2 of them recoverably (§7bb-bis) |
 | Absorption improves **representations** | N50 withdrawn; N53 corrected experiment | **unknown** — the honest state |
 
 ---
@@ -150,7 +150,12 @@ scene-conditional model whose table organises as a *sum over per-object addresse
 combination of known objects is generated from a composed address and costs no new storage. For a
 policy this is the difference between "one address per task" and "one address per object, composed
 per scene" — the second is what scales, and it is the formulation to carry into a manipulation
-benchmark. Caveat it honestly: one seed, 9 held-out pairs, and 3 of them fail outright.
+benchmark. Caveat it honestly: 3 sampling seeds but one backbone, and 4 of 9 pairs fail. The failures
+are *diagnosable* (§7bb-bis): two are suppression that a larger gain recovers, and two are
+**destructive interference** between anti-aligned object directions (cos −0.50 and −0.75) that no
+gain can fix. That second kind is predictable from the basis geometry **before generating anything**,
+which for a policy is the difference between attempting a skill composition and knowing to store it
+instead — i.e. it is the routing decision, answerable by a dot product.
 
 **Stage F — calibrate the operating point before reading any routing number.** This is new, and it is
 the lesson with the highest chance of silently wasting a week: `U_NOVEL = 0.10` carried onto a

@@ -8461,7 +8461,8 @@
   "n26_batch_pretrained": "n26_batch_pretrained",
   "n30_prototype_distance_fine": "n30_prototype_distance_fine",
   "n62_router_calibrate": "n62_router_calibrate",
-  "n65_u_labelfree": "n65_u_labelfree"
+  "n65_u_labelfree": "n65_u_labelfree",
+  "n64_multiobject_address": "n64_multiobject_address"
  },
  "n62_router_calibrate": {
   "table": {
@@ -8560,5 +8561,63 @@
    }
   },
   "n_seeds": 1
+ },
+ "n64_multiobject_address": {
+  "table": {
+   "address": {
+    "exact": {
+     "mean": 0.3171296296296296,
+     "se": 0.008101851851851855,
+     "n": 3
+    },
+    "recall": {
+     "mean": 0.6082175925925927,
+     "se": 0.008163620358602968,
+     "n": 3
+    }
+   },
+   "floor": {
+    "exact": {
+     "mean": 0.0023148148148148147,
+     "se": 0.0011574074074074073,
+     "n": 3
+    },
+    "recall": {
+     "mean": 0.17824074074074073,
+     "se": 0.013608768537389869,
+     "n": 3
+    }
+   },
+   "basis": {
+    "r2": {
+     "mean": 0.9307934557981112,
+     "se": 0.0,
+     "n": 3
+    },
+    "r2_cv": {
+     "mean": 0.875108571064156,
+     "se": 0.0,
+     "n": 3
+    },
+    "perm_null": {
+     "mean": 0.25673560713608606,
+     "se": 0.0016903687421344963,
+     "n": 3
+    }
+   },
+   "controls": {
+    "detector": {
+     "mean": 0.9458024691358026,
+     "se": 0.00024691358024690285,
+     "n": 3
+    },
+    "self_cond": {
+     "mean": 0.8888888888888888,
+     "se": 0.025038550524055493,
+     "n": 3
+    }
+   }
+  },
+  "n_seeds": 3
  }
 }

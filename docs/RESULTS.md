@@ -2943,20 +2943,57 @@ construction; fitting a shared object table *afterwards* asks what the training 
 | leave-one-scene-out CV R² | **0.875** |
 | permutation null | 0.254 ± 0.037 (max 0.352) |
 | ordered-pair control (2 tables, 2× the vectors) | 0.948 |
-| self-conditioning control (own trained row) | **0.875** |
-| **ADDRESS on held-out pairs, exact-set** | **0.302** vs floor **0.003** |
-| ADDRESS on held-out pairs, per-object recall | **0.592** vs floor **0.156** (3.8×) |
+| self-conditioning control (own trained row) | **0.889 ± 0.025** |
+| **ADDRESS on held-out pairs, exact-set** | **0.317 ± 0.008** vs floor **0.002 ± 0.001** |
+| ADDRESS on held-out pairs, per-object recall | **0.608 ± 0.008** vs floor **0.178 ± 0.014** (3.4×) |
+
+*(± is standard error over 3 sampling seeds on one backbone. Training-seed variance is NOT measured —
+a different held-out split would need a retrained backbone, and §5p has measured up to 0.07 F1
+between two runs of the same command. Pinned in `test_claims.py` at 49/49.)*
 
 **So the freely-learned scene table organises as a SUM over per-object addresses**, and an unseen
 pair of known objects is generated from a composed address. A shared 10-vector table nearly matches
 a 20-vector ordered control, so the sharing is real: `{3,7}` and `{7,3}` use the same object vectors.
 **k known objects cost no new storage, not k blocks.**
 
-**Report the recall ratio, not the 87×.** The exact-set floor is 0.003 — an unconditional model
-almost never lands on one specific pair out of 45 — so that ratio is arithmetically large and
-uninformative. And **3 of the 9 held-out pairs score 0.000 exact**: this composes for most unseen
-pairs, not all. One seed, 9 pairs, 32 samples each; no error bars, and it is not yet pinned in
-`test_claims.py` for that reason.
+**Report the recall ratio, not the exact-set ratio.** The exact-set floor is ~0.002 — an
+unconditional model almost never lands on one specific pair out of 45 — so a ratio against it is
+arithmetically large and says nothing. One seed printed **329861.1×** from a floor of exactly zero,
+which is why `n64` now suppresses that ratio below a 0.01 floor and reports the recall multiple
+(3.4×, against a floor of 0.178 ≈ the chance of getting one object of two).
+
+## 7bb-bis. Why 4 of 9 pairs fail, and what that says about the number (N66)
+
+A mean over pairs that range from 0.844 to 0.000 is not a description of anything. Four hypotheses,
+each measured:
+
+| hypothesis | measurement | verdict |
+|---|---|---|
+| H1 thinly-seen objects (5–9 seen scenes each) | corr(min seen-count, exact) = **+0.22** | **refuted** |
+| H2 composed point at the wrong radius | corr(radius ratio, exact) = +0.39 | weak |
+| H3 one object missing, not both | corr(\|p_a − p_b\|, exact) = **−0.63** | **confirmed** |
+| H4 a global gain is wrong per pair | 2 of 4 rescued by a larger g (2.5, 4.0) | **partly** |
+| H5 magnitude imbalance between the summed directions | per-object ‖W‖ 0.71–1.00; unit-normalising performs the same as a scalar | **refuted** |
+
+**The failures are one-sided, and there are two distinct kinds.** In (1,4) object 1 appears in 94 %
+of samples and object 4 in **3 %**; in (4,7) it is 91 % against 9 %. Object 4 is not weak in general —
+it reaches 0.78 in (4,9). So one direction dominates the other in the sum.
+
+*Kind 1 — suppression, and gain rescues it.* (1,4) and (4,7) recover to 0.33 and 0.25 at g = 2.5–4.0
+against the calibrated g\* = 1.5. **So 0.317 is a floor, not a ceiling.**
+
+*Kind 2 — destructive interference, and nothing rescues it.* (0,5) and (2,9) fail at every gain, and
+they are exactly the two most **anti-aligned** pairs in the basis: cos(W_a, W_b) = **−0.50** and
+**−0.75**, against −0.29 for the worst pair that still works. Their sums are correspondingly short
+(‖W_a+W_b‖ = 0.95 and **0.61** against a 1.31 median). The mechanism is then obvious in hindsight and
+explains why gain cannot help: *g* scales a sum that has already cancelled.
+
+**Why this is worth more than the headline.** It is predictable from the basis geometry **before any
+image is generated** — a cheap dot product says which compositions this basis cannot address. For a
+policy that is the difference between attempting a skill composition and knowing to store it
+instead, which is exactly the routing decision. Stated carefully: n = 9, corr(cos, exact) = +0.46
+overall, so the *general* trend is suggestive; what is clean is that the two unrescuable pairs are
+the two most anti-aligned, and that H1 and H5 are refuted.
 
 **A false negative was avoided here, and the fault was ours.** Before correction both arms generated
 noise and the self-conditioning control read **0.000**, which reads exactly like "the basis

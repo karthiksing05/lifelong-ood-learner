@@ -227,6 +227,43 @@ def agg_n9(runs):
     return dict(table=table, n_seeds=len(runs))
 
 
+def agg_n64(runs):
+    """N64 multi-object: ADDRESS on held-out PAIRS, the basis fit, and the two controls.
+
+    The two controls are aggregated as arms in their own right because each one licenses the
+    headline rather than decorating it: `detector` is the instrument (a weak one poisons every
+    number downstream) and `self_cond` is the model conditioned on its OWN trained row (without it,
+    a low ADDRESS score cannot be told apart from a model that never learned to condition).
+    """
+    def g(r, *path, default=None):
+        for k in path:
+            r = (r or {}).get(k) if isinstance(r, dict) else None
+        return r if r is not None else default
+    out = {
+        "address": dict(
+            exact=stat([g(r, "summary", "exact") for _, r in runs]),
+            recall=stat([g(r, "summary", "recall") for _, r in runs])),
+        "floor": dict(
+            exact=stat([g(r, "summary", "floor_exact") for _, r in runs]),
+            recall=stat([g(r, "summary", "floor_recall") for _, r in runs])),
+        "basis": dict(
+            r2=stat([r.get("r2") for _, r in runs]),
+            r2_cv=stat([r.get("r2_cv") for _, r in runs]),
+            perm_null=stat([r.get("perm_null_mean") for _, r in runs])),
+        "controls": dict(
+            detector=stat([g(r, "detector", "top2_exact") for _, r in runs]),
+            self_cond=stat([r.get("self_cond") for _, r in runs])),
+    }
+    print(f"    {'arm':12s}{'exact':>10s}{'recall':>10s}")
+    for k in ("address", "floor"):
+        print(f"    {k:12s}{fmt(out[k]['exact']):>10s}{fmt(out[k]['recall']):>10s}")
+    print(f"    basis R2 {fmt(out['basis']['r2'])} | CV {fmt(out['basis']['r2_cv'])} | "
+          f"null {fmt(out['basis']['perm_null'])}")
+    print(f"    controls: detector {fmt(out['controls']['detector'])} | "
+          f"self-cond {fmt(out['controls']['self_cond'])}")
+    return dict(table=out, n_seeds=len(runs))
+
+
 def agg_n62(runs):
     """N62/N65 router operating point: held-out AUROC per backbone, and how it was chosen.
 
@@ -423,7 +460,7 @@ def agg_n30(runs):
                                      "vendi"), width=18)
 
 
-AGG = {"n62_router_calibrate": agg_n62, "n65_u_labelfree": agg_n62,
+AGG = {"n64_multiobject_address": agg_n64, "n62_router_calibrate": agg_n62, "n65_u_labelfree": agg_n62,
        "e2_composition": agg_e2, "n2_composition": agg_e2,
        "e3_lifelong": agg_e3, "n3_lifelong": agg_n3, "n7_inversion": agg_n7,
        "n5_classinc": agg_n5, "n9_showdown": agg_n9, "n8_idealwords": agg_n7,

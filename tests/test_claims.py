@@ -90,6 +90,21 @@ CLAIMS = [
     (0.929, .02, "n65_u_labelfree", "Shapes3D(pretrained)", "auroc", "n65 Shapes3D label-free AUROC"),
     (0.929, .02, "n65_u_labelfree", "Shapes3D(pretrained)", "oracle", "n65 Shapes3D oracle AUROC"),
     (0.826, .03, "n65_u_labelfree", "ColorMNIST(nobg3)", "auroc", "n65 ColorMNIST label-free AUROC"),
+    # ── multi-object: a scene of k known objects is a composition over addresses (§7bb) ──
+    # 3 sampling seeds on one backbone. Pinned now that it replicates; the ADDRESS number is the
+    # claim, and BOTH controls are pinned with it because each one licenses it: a weak detector
+    # poisons every downstream number, and without the self-conditioning control a low ADDRESS
+    # score cannot be told apart from a model that never learned to condition at all.
+    (0.317, .02, "n64_multiobject_address", "address", "exact", "7bb ADDRESS held-out pairs exact-set"),
+    (0.608, .02, "n64_multiobject_address", "address", "recall", "7bb ADDRESS held-out per-object recall"),
+    (0.178, .03, "n64_multiobject_address", "floor", "recall", "7bb unconditional recall floor"),
+    (0.946, .02, "n64_multiobject_address", "controls", "detector", "7bb detector on HELD-OUT pairs"),
+    (0.889, .05, "n64_multiobject_address", "controls", "self_cond", "7bb self-conditioning control"),
+    # the basis fit, against its own permutation null -- the null is pinned too, because an R² that
+    # drifts toward it would otherwise still 'match the docs' while meaning nothing
+    (0.931, .02, "n64_multiobject_address", "basis", "r2", "7bb object-membership basis R2"),
+    (0.875, .03, "n64_multiobject_address", "basis", "r2_cv", "7bb leave-one-scene-out CV R2"),
+    (0.257, .05, "n64_multiobject_address", "basis", "perm_null", "7bb permutation null"),
 ]
 
 

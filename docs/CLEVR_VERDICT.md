@@ -135,15 +135,25 @@ ADDRESS composes a held-out PAIR from `mu + g*(W[a] + W[b])`, gain calibrated on
 
 | | value |
 |---|---|
-| self-conditioning control (model on its OWN trained row) | **0.875** |
-| held-out pairs, exact-set match | **0.302** vs unconditional floor **0.003** |
-| held-out pairs, per-object recall | **0.592** vs floor **0.156** (3.8×) |
+| self-conditioning control (model on its OWN trained row) | **0.889 ± 0.025** |
+| held-out pairs, exact-set match | **0.317 ± 0.008** vs unconditional floor **0.002** |
+| held-out pairs, per-object recall | **0.608 ± 0.008** vs floor **0.178** (3.4×) |
 
-**Read the recall ratio, not the 87×.** The exact-set floor is 0.003 — an unconditional model almost
-never lands on one specific pair out of 45 — so the ratio it produces is arithmetically large and
-tells you little. The recall comparison (3.8×) and the absolute 0.302 are the honest numbers, and
-they carry a real limitation: **3 of the 9 held-out pairs score 0.000 exact**, so this composes for
-most unseen pairs, not all. One seed, 9 pairs, 32 samples each.
+*(± is standard error over 3 sampling seeds on one backbone; training-seed variance is not measured.)*
+
+**Read the recall ratio, not the exact-set ratio.** The exact-set floor is ~0.002 — an unconditional
+model almost never lands on one specific pair out of 45 — so the ratio it produces is arithmetically
+large and tells you nothing; one seed printed **329861.1×** from a floor of exactly zero. The recall
+comparison (3.4×) and the absolute 0.317 are the honest numbers, and they carry a real limitation:
+**4 of the 9 held-out pairs fail**, so this composes for most unseen pairs, not all.
+
+Those failures are diagnosed rather than left as noise (RESULTS §7bb-bis). They are **one-sided** —
+corr(|p_a − p_b|, exact) = −0.63 — and come in two kinds: two are *suppression*, which a larger gain
+recovers (so 0.317 is a floor), and two are **destructive interference** between anti-aligned object
+directions (cos −0.50 and −0.75, against −0.29 for the worst pair that still works), which no gain
+recovers because *g* scales a sum that has already cancelled. Thin data and magnitude imbalance were
+both tested and refuted. The useful part: the second kind is **predictable from a dot product before
+anything is generated**.
 
 ### The control earned its keep, and the fault was mine
 

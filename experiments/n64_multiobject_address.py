@@ -357,7 +357,13 @@ def main():
     frc = float(np.mean([r["floor_recall"] for r in rows]))
     print(f"\n[n64] {'=' * 66}")
     print(f"[n64] HELD-OUT PAIRS  exact-set {ex:.3f} vs floor {fex:.3f}  "
-          f"({ex / max(fex, 1e-6):.1f}x) | recall {rc:.3f} vs floor {frc:.3f}", flush=True)
+          # The exact-set floor is often 0.000 -- an unconditional model almost never lands on one
+          # specific pair out of 45 -- so a ratio against it is meaningless and prints things like
+          # "329861.1x", which is a number nobody should ever quote.  The RECALL ratio has a
+          # non-degenerate floor (~0.16, i.e. chance of one object of two), so that is the one
+          # reported as a multiple.
+          + (f"(floor ~0, ratio not meaningful)" if fex < 0.01 else f"({ex / fex:.1f}x)")
+          + f" | recall {rc:.3f} vs floor {frc:.3f} ({rc / max(frc, 1e-6):.1f}x)", flush=True)
     print("[n64] VERDICT")
     if not ok:
         print("[n64]   DETECTOR TOO WEAK -- not reportable. Fix the instrument before the claim.")
