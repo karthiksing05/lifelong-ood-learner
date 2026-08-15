@@ -130,8 +130,40 @@ So the freely-learned scene table **does** organise as a sum over object address
 *(Measured on the first backbone, `ddpm_multiobject.pt`, 36 scene rows. The table is a property of
 the checkpoint, so these are re-measured on the longer run rather than carried over.)*
 
-**The generation-level claim is not yet measurable, and the control is what caught it.** Conditioned
-on its OWN trained row the first backbone scored 0.000, and the figure showed why: even unconditional
-samples were speckle. Undertrained, not miscomposed. A longer run is in progress; until it reproduces
-its own training scenes on demand, no ADDRESS number from it means anything. That control exists
-precisely because a low composition score otherwise has three indistinguishable causes.
+**And the generation-level claim now holds: a scene of *k* known objects costs NO new storage.**
+ADDRESS composes a held-out PAIR from `mu + g*(W[a] + W[b])`, gain calibrated on seen scenes only:
+
+| | value |
+|---|---|
+| self-conditioning control (model on its OWN trained row) | **0.875** |
+| held-out pairs, exact-set match | **0.302** vs unconditional floor **0.003** |
+| held-out pairs, per-object recall | **0.592** vs floor **0.156** (3.8×) |
+
+**Read the recall ratio, not the 87×.** The exact-set floor is 0.003 — an unconditional model almost
+never lands on one specific pair out of 45 — so the ratio it produces is arithmetically large and
+tells you little. The recall comparison (3.8×) and the absolute 0.302 are the honest numbers, and
+they carry a real limitation: **3 of the 9 held-out pairs score 0.000 exact**, so this composes for
+most unseen pairs, not all. One seed, 9 pairs, 32 samples each.
+
+### The control earned its keep, and the fault was mine
+
+Before this, both arms generated pure noise and the model scored **0.000** conditioned on its own
+trained row. The obvious reading — "the basis factorises but ADDRESS cannot compose" — would have
+been a clean, plausible, entirely false negative about compositional storage. It was neither
+undertraining nor the model:
+
+* the backbone's eps-loss on real data is **0.0097**, matching its training loss and *better* than
+  the ColorMNIST reference (0.0164–0.023), and its layout is confirmed (`hwc` 0.0097 vs `permuted`
+  0.3818 on the same weights);
+* the fault was a **clip range passed to the sampler**. The field works in MODEL space [-1,1], so
+  `sample_embedding`'s default `clip=(-1,1)` is correct; passing the DATA range `(0.0,1.0)` clamped
+  away the entire negative half at every reverse step. These scenes are ~90 % black background,
+  which is **-1** in model space, so every trajectory was destroyed — and because the unconditional
+  arm broke identically, the failure looked like a badly trained model rather than a broken reader.
+
+A second wrong turn is worth recording with it: the diagnostic first declared the model "essentially
+unconditional" on an eps-loss conditioning gap of +0.0003 — but the *reference* backbone, whose
+router scores AUROC 1.000, has a gap of **+0.0001**. The gate would have condemned a backbone known
+to work. That is §5t-ter's lesson recurring: **the eps-loss gap is not a verdict statistic**, and
+adding a known-good reference is what caught it. All draws now route through one `draw()` helper so
+the model/data conversion lives in a single place.

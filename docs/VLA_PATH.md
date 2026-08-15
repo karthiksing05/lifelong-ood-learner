@@ -16,6 +16,7 @@ this is the forward plan.
 | ADDRESS is **span-limited by construction** — a point, never a direction | affine residual 0.0000 vs a trained embedding's 0.7359 (§6e-bis) | **high** — it is algebra, then measured |
 | The **router** transfers | held-out AUROC: ColorMNIST **1.000**, Shapes3D **0.861 ± 0.043** at a calibrated u (§6c-quinquies) | **medium** — transfers once `u` is calibrated per backbone; 0.354 was the operating point |
 | The router's **operating point** can be chosen without held-out labels | Shapes3D: label-free `calibrate_u_novel` picks the oracle's u on 3/3 seeds, **0.929** vs the inherited constant's 0.662 | **medium** — exact on the pretrained backbone, fails on ColorMNIST for the reason §6c gives |
+| A **multi-object scene** is a composition over addresses, not *k* separate blocks | scene table factorises over object membership (R² 0.931, CV **0.875** vs null 0.254); held-out PAIRS at 0.302 exact-set vs a 0.003 floor, recall 0.592 vs 0.156 (§7bb) | **medium** — one seed, 9 pairs, and 3 of the 9 fail outright |
 | Absorption improves **representations** | N50 withdrawn; N53 corrected experiment | **unknown** — the honest state |
 
 ---
@@ -53,6 +54,28 @@ Neither raised an exception; both produced numbers that read as "this dataset do
 `tests/diag_backbone_conventions.py` now asserts layout, range, and sampler prior per backbone.
 **Port that diagnostic before the first policy experiment**, because a policy adds more conventions to
 get wrong: action normalisation, chunk ordering, proprioception scaling, and the observation stack.
+
+### 2-bis. A broken READER looks exactly like a broken MODEL — check the unconditional arm
+
+Added 2026-08-15, after it cost a 109-minute retrain and a nearly-published false negative (§7bb).
+The multi-object samples came out as pure noise and the model scored **0.000** conditioned on its own
+trained row. That reads as "conditioning never learned". It was a **clip range**: the field works in
+MODEL space [-1,1] and the DATA range `(0.0,1.0)` was passed, clamping away the whole negative half
+at every reverse step — fatal because those scenes are ~90 % black background, i.e. **-1** in model
+space. The model was fine: eps-loss 0.0097, *better* than the reference backbone.
+
+**The tell was available immediately and was missed: the UNCONDITIONAL arm was equally broken.** A
+model that failed to learn *conditioning* still generates plausible unconditional samples. If both
+arms are broken, suspect the path, not the training. Three cheap checks, in this order:
+
+1. **eps-loss of real data through the same reader**, against a backbone known to work — an absolute
+   loss is uninterpretable, since eps-prediction is trivial at high noise and impossible at low.
+2. **the layout, by trying both** — `hwc` scored 0.0097 against `permuted`'s 0.3818 on identical
+   weights, which settles it in one run.
+3. **the range**, at every boundary: sampler out, detector in, probe in.
+
+For a policy this list grows — action normalisation, chunk ordering, proprioception scaling — and
+every one of them can produce a confident, wrong "the method does not transfer".
 
 ### 3. The verdict statistic has to be the thing you claim
 
@@ -121,6 +144,13 @@ The **representation** question remains open with its headline withdrawn. A poli
 ADDRESS is supportable today; one resting on autonomous routing is now *plausible* rather than
 unsupported, and the honest way to present it is with the operating-point calibration as part of the
 method rather than as a hyperparameter that happened to work.
+
+**Stage C-bis — a scene with several objects is now a solved shape, not an open one.** §7bb shows a
+scene-conditional model whose table organises as a *sum over per-object addresses*, so an unseen
+combination of known objects is generated from a composed address and costs no new storage. For a
+policy this is the difference between "one address per task" and "one address per object, composed
+per scene" — the second is what scales, and it is the formulation to carry into a manipulation
+benchmark. Caveat it honestly: one seed, 9 held-out pairs, and 3 of them fail outright.
 
 **Stage F — calibrate the operating point before reading any routing number.** This is new, and it is
 the lesson with the highest chance of silently wasting a week: `U_NOVEL = 0.10` carried onto a

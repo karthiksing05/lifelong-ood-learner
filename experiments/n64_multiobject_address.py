@@ -46,6 +46,7 @@ from lifelong_ood.data.multiobject import (N_OBJ, load_multiobject,    # noqa: E
                                            object_membership, scene_pairs)
 from lifelong_ood.evals import save_json                              # noqa: E402
 from lifelong_ood.neural import NeuralScoreField, UNet                 # noqa: E402
+from lifelong_ood.neural.ddpm import to_data                          # noqa: E402
 from lifelong_ood.neural.inversion import sample_embedding             # noqa: E402
 
 IMG = 32
@@ -141,6 +142,22 @@ def detector_scores(det, X, Y, dev="cuda"):
                 recall_at2=float(np.mean([len(set(np.argsort(-p)[:2].tolist())
                                               & set(np.where(Y[i] > 0)[0].tolist())) / 2.0
                                           for i, p in enumerate(P)])))
+
+
+def draw(field, c, n, steps, seed):
+    """Sample conditioned on `c` and return DATA-space rows in [0,1].
+
+    The field works in MODEL space [-1,1] -- `to_model` is a RANGE transform -- so
+    `sample_embedding` returns [-1,1] and its default clip=(-1,1) is the correct one.  Both
+    conversions were wrong here, and the second hid the first: passing clip=(0.0,1.0) clamped away
+    the entire negative half at every reverse step, and these scenes are ~90 % black background,
+    which is -1 in model space.  Every trajectory was destroyed, so BOTH the conditional and the
+    unconditional arms came out as noise and the model looked untrained -- while its eps-loss on
+    real data was 0.0097, better than the ColorMNIST reference.  The detector was then handed
+    model-space rows it read as [0,1].  Every draw goes through here so the two conventions live in
+    one place.
+    """
+    return np.asarray(to_data(sample_embedding(field, c, n=n, steps=steps, seed=seed)))
 
 
 # ----------------------------------------------------------------------------- object basis
@@ -260,8 +277,8 @@ def main():
     self_sc = []
     for s in uniq[:6]:
         j = int(np.searchsorted(uniq, int(s)))
-        im = sample_embedding(field, C[j], n=8, steps=args.steps, seed=args.seed, clip=(0.0, 1.0))
-        self_sc.append(score(np.asarray(im).reshape(len(im), -1), P[int(s)])[0])
+        im = draw(field, C[j], 8, args.steps, args.seed)
+        self_sc.append(score(im.reshape(len(im), -1), P[int(s)])[0])
     self_mean = float(np.mean(self_sc))
     print(f"[n64] CONTROL -- model conditioned on its OWN trained row, seen scenes: "
           f"exact {self_mean:.3f}", flush=True)
@@ -280,9 +297,8 @@ def main():
         a, b = P[int(s)]
         for g in args.gains:
             c_new = mu_k + g * (W_k[a] + W_k[b])
-            im = sample_embedding(field, c_new, n=8, steps=args.steps, seed=args.seed,
-                                  clip=(0.0, 1.0))
-            cal[g].append(score(np.asarray(im).reshape(len(im), -1), (a, b))[0])
+            im = draw(field, c_new, 8, args.steps, args.seed)
+            cal[g].append(score(im.reshape(len(im), -1), (a, b))[0])
     gstar = max(args.gains, key=lambda g: float(np.mean(cal[g])))
     print("[n64] gain calibration on SEEN scenes (basis refit without each): "
           + "  ".join(f"g={g}:{np.mean(v):.3f}" for g, v in cal.items())
@@ -290,16 +306,14 @@ def main():
 
     # ---- 4. ADDRESS on HELD-OUT pairs, against an unconditional floor ---------------------------
     null_vec = field.model.cemb.weight[field.model.null_id].detach().cpu().numpy()
-    unc = sample_embedding(field, null_vec, n=args.n_samples, steps=args.steps,
-                           seed=args.seed + 1, clip=(0.0, 1.0))
-    unc = np.asarray(unc).reshape(len(unc), -1)
+    unc = draw(field, null_vec, args.n_samples, args.steps,
+                args.seed + 1).reshape(args.n_samples, -1)
     rows = []
     for h in held:
         a, b = P[int(h)]
         c_new = mu + gstar * (W[a] + W[b])
-        im = sample_embedding(field, c_new, n=args.n_samples, steps=args.steps,
-                              seed=args.seed + int(h), clip=(0.0, 1.0))
-        ex, rc = score(np.asarray(im).reshape(len(im), -1), (a, b))
+        im = draw(field, c_new, args.n_samples, args.steps, args.seed + int(h))
+        ex, rc = score(im.reshape(len(im), -1), (a, b))
         fex, frc = score(unc, (a, b))
         rows.append(dict(scene=int(h), pair=[int(a), int(b)], exact=ex, recall=rc,
                          floor_exact=fex, floor_recall=frc))
@@ -317,9 +331,8 @@ def main():
         for col, h in enumerate(show):
             a, b = P[int(h)]
             real = X[scene == h][:1]
-            addr = np.asarray(sample_embedding(field, mu + gstar * (W[a] + W[b]), n=1,
-                                               steps=args.steps, seed=args.seed + int(h),
-                                               clip=(0.0, 1.0))).reshape(1, -1)
+            addr = draw(field, mu + gstar * (W[a] + W[b]), 1, args.steps,
+                        args.seed + int(h)).reshape(1, -1)
             # a DIFFERENT unconditional draw per column -- reusing unc[:1] painted the same image
             # five times, which reads as "the model collapsed" when it is just one sample repeated
             for r, (im, lab) in enumerate(((real, f"REAL {(a, b)}"),

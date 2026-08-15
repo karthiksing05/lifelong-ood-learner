@@ -2924,6 +2924,50 @@ Shapes3D case, not the ColorMNIST one: strong generative model, conditioning add
 combinations that its density finds unremarkable.  That is the regime where the inherited constant
 fails (0.662) and the label-free calibration works (0.929).
 
+## 7bb. Multi-object: a scene of k known objects is a COMPOSITION over addresses (N63/N64)
+
+The formulation `docs/CLEVR_VERDICT.md` closed on, and the storage question a VLA actually faces —
+a manipulation scene holds several objects and a policy must condition on the relevant one. Asked on
+a substrate where the set label is exact by construction (two MNIST digits per canvas, colour
+randomised per object so identity is carried by SHAPE, side randomised so the class is genuinely an
+unordered set): 45 scenes over 10 objects, 9 scenes held out, every object surviving in ≥5 seen ones.
+
+**The conditioning is deliberately NOT compositional.** One free embedding row per SCENE, never told
+that a scene contains objects. Summing per-object embeddings would answer the question by
+construction; fitting a shared object table *afterwards* asks what the training discovered.
+
+| | value |
+|---|---|
+| detector (trained on SEEN pairs, scored on HELD-OUT pairs) | **0.946** exact-set, recall@2 0.973 |
+| object-membership basis R² | **0.931** |
+| leave-one-scene-out CV R² | **0.875** |
+| permutation null | 0.254 ± 0.037 (max 0.352) |
+| ordered-pair control (2 tables, 2× the vectors) | 0.948 |
+| self-conditioning control (own trained row) | **0.875** |
+| **ADDRESS on held-out pairs, exact-set** | **0.302** vs floor **0.003** |
+| ADDRESS on held-out pairs, per-object recall | **0.592** vs floor **0.156** (3.8×) |
+
+**So the freely-learned scene table organises as a SUM over per-object addresses**, and an unseen
+pair of known objects is generated from a composed address. A shared 10-vector table nearly matches
+a 20-vector ordered control, so the sharing is real: `{3,7}` and `{7,3}` use the same object vectors.
+**k known objects cost no new storage, not k blocks.**
+
+**Report the recall ratio, not the 87×.** The exact-set floor is 0.003 — an unconditional model
+almost never lands on one specific pair out of 45 — so that ratio is arithmetically large and
+uninformative. And **3 of the 9 held-out pairs score 0.000 exact**: this composes for most unseen
+pairs, not all. One seed, 9 pairs, 32 samples each; no error bars, and it is not yet pinned in
+`test_claims.py` for that reason.
+
+**A false negative was avoided here, and the fault was ours.** Before correction both arms generated
+noise and the self-conditioning control read **0.000**, which reads exactly like "the basis
+factorises but ADDRESS cannot compose". The cause was a **clip range passed to the sampler**: the
+field works in MODEL space [-1,1], and the DATA range `(0.0,1.0)` clamped away the whole negative
+half at every reverse step — fatal here because these scenes are ~90 % black background, i.e. **-1**
+in model space. The unconditional arm broke identically, so it looked like a bad model rather than a
+bad reader. A second wrong turn: a diagnostic declared the model "essentially unconditional" at an
+eps-loss gap of +0.0003 when the *reference* backbone with router AUROC 1.000 has +0.0001 — §5t-ter's
+lesson again, and only a known-good reference caught it.
+
 ## 5t-ter. The class-table learning rate: from a lucky setting to a stated rule (N57 x5 / N58 x5)
 
 5t-bis found that a strong pretrained backbone starves the conditioning pathway, and fixed it by
