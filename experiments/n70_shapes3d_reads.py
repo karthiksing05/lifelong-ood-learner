@@ -53,6 +53,15 @@ def main():
     p.add_argument("--n-samples", type=int, default=16)
     p.add_argument("--steps", type=int, default=50)
     p.add_argument("--seed", type=int, default=0)
+    p.add_argument("--disc-starts", type=int, default=48,
+                   help="ascent starts per noise level.  The paper's Color-MNIST column is 128 over "
+                        "15 levels = 1920 chains, which costs ~24 min PER CASE at 64 px and makes "
+                        "a 16-slot comparison a 6-hour job.  48 starts over 8 levels is 384 chains "
+                        "-- still 4x the 96 this repo's own default used, and enough for selection "
+                        "to have complementary candidates, which is what the comparison turns on. "
+                        "The budget is an argument rather than a constant so the deviation is "
+                        "recorded in the saved config instead of being invisible.")
+    p.add_argument("--disc-levels", type=int, default=8)
     p.add_argument("--quick", action="store_true")
     args = p.parse_args()
     if args.quick:
@@ -113,8 +122,12 @@ def main():
         return tuple(t[i] for i in sidx)
 
     disc = dict(PAPER_COLORMNIST)
+    lv = np.linspace(0.05, 0.40, args.disc_levels)
+    disc.update(u_grid=tuple(round(float(v), 4) for v in lv), n_starts=args.disc_starts)
     if args.quick:
         disc.update(u_grid=(0.1, 0.3), n_starts=8, iters=40)
+    print(f"[n70] discovery budget: {len(disc['u_grid'])} levels x {disc['n_starts']} starts "
+          f"= {len(disc['u_grid']) * disc['n_starts']} chains", flush=True)
     rows, reads = [], []
     for ci, s in enumerate(held[:args.n_cases]):
         idx = np.where(slots == int(s))[0]
