@@ -181,7 +181,26 @@ def main():
     print(f"\n[n69] READ accuracy -- mu_T(paper) {mp:.3f} | mu_T(fixed) {mf:.3f} | "
           f"probe-query {pq:.3f}")
     print("[n69] VERDICT")
-    if mf > pq + 0.02:
+    # GATE ON THE BENCHMARK BEFORE READING THE ARMS.  Three ways this comparison can be incapable
+    # of answering, all of which occurred on the first full run:
+    #   * n is tiny -- this backbone has only TWO held-out classes, so a 0.036 gap in mean attribute
+    #     accuracy is half an attribute out of fourteen;
+    #   * the FLOOR is high -- unconditional scored attr 0.661 against 0.730 for the conditioned
+    #     arms and the BEST F1 of any arm, because most CelebA attributes are near-constant
+    #     (No_Beard almost always 1, Bald almost always 0) so a base-rate guess scores well;
+    #   * the arms COINCIDE -- identical reads give identical compositions and bit-identical
+    #     samples, which is a fact about the read, not a tie between methods.
+    fl_attr = summ["unconditional"]["attr"]
+    best_cond = max(summ[a_]["attr"] for a_ in ARMS if a_ != "unconditional")
+    if len(reads) < 4 or best_cond - fl_attr < 0.15:
+        print(f"[n69]   INCONCLUSIVE -- this benchmark cannot adjudicate the reads.")
+        print(f"[n69]     n = {len(reads)} held-out classes; conditioned attr {best_cond:.3f} vs an "
+              f"unconditional floor of {fl_attr:.3f} (separation {best_cond - fl_attr:+.3f}).")
+        print(f"[n69]     Read gaps of ~{abs(mf - pq):.3f} on 14 attributes are under a single "
+              f"attribute and must not be reported as a difference.")
+        print(f"[n69]     Use a benchmark with a low floor and many held-out combinations -- "
+              f"Shapes3D has 25 and a 0.036 floor (N70).")
+    elif mf > pq + 0.02:
         print("[n69]   READING A REPAIRED AGGREGATE BEATS READING THE QUERY. Their discovery earns")
         print("[n69]   its place where reading is hard, and 'best of both' is a real combination.")
     elif mf > mp + 0.02:

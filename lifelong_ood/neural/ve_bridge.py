@@ -156,4 +156,91 @@ def load_ve_field(path, device="cuda"):
                 x = (an ** 0.5) * x0 + ((1 - an) ** 0.5) * e
             return x.permute(0, 2, 3, 1).reshape(n, -1).cpu().numpy()
 
+        # ── the discovery surface ────────────────────────────────────────────
+        # Added so `compose.candidates_ascent` / `poe_teacher` -- the companion paper's Eq. 4 and
+        # Eq. 7-10 -- can run on this backbone at all.  Without them the shim exposed only
+        # `sample`, so the paper's discovery had NEVER been run on Shapes3D: N70's "mu_T" was a
+        # 4-start single-noise-level unweighted mean of modes standing in for it, which is not a
+        # fair test of their method and must not be reported as one.
+        #
+        # These are ports, not re-uses.  `NeuralScoreField`'s versions operate in MODEL space
+        # [-1,1] (`to_model` is a range transform); this field works in DATA space [0,1] -- its
+        # sampler clips x0 to (0,1) and `n61`'s loader passes rows through unchanged for exactly
+        # that reason.  Calling the inherited methods would be a silent convention mismatch of the
+        # kind that has cost this repository three results, so the arithmetic is repeated here
+        # against this field's own convention rather than shared.
+
+        def _as_chw(self, X):
+            X = np.atleast_2d(np.asarray(X, np.float32))
+            return torch.as_tensor(X, device=self.device).reshape(-1, self.img, self.img,
+                                                                  3).permute(0, 3, 1, 2)
+
+        @torch.no_grad()
+        def eps(self, X, u, branch=None, emb=None):
+            """Epsilon prediction for flat DATA-space rows.  -> [N, D] in the same layout."""
+            x = self._as_chw(X)
+            e = None
+            if emb is not None:
+                e = torch.as_tensor(np.asarray(emb, np.float32),
+                                    device=self.device).reshape(1, -1).expand(len(x), -1)
+            elif branch is not None:
+                e = self.model.cemb.weight[int(branch)].reshape(1, -1).expand(len(x), -1)
+            out = self.model(x, torch.full((len(x),), float(u), device=self.device),
+                             emb_override=e)
+            return out.permute(0, 2, 3, 1).reshape(len(x), -1).cpu().numpy()
+
+        def score(self, X, u, branch=None):
+            a = float(cosine_abar(np.array([float(u)]))[0])
+            return -self.eps(X, u, branch) / np.sqrt(max(1.0 - a, 1e-12))
+
+        def laplace_diag(self, xt, u, probes=4, delta=5e-3, seed=0, var_floor=1e-4, var_cap=1.0):
+            """Diagonal Laplace covariance via Hutchinson finite differences, pulled to x0-space."""
+            rng = np.random.default_rng(seed)
+            xt = np.atleast_2d(np.asarray(xt, np.float32))
+            a = float(cosine_abar(np.array([float(u)]))[0])
+            h = np.zeros_like(xt)
+            for _ in range(probes):
+                v = rng.choice([-1.0, 1.0], size=xt.shape)
+                h += v * (self.score(xt + delta * v, u)
+                          - self.score(xt - delta * v, u)) / (2 * delta)
+            h /= probes
+            neg = h < -1e-9
+            st = np.full_like(h, var_cap)
+            np.divide(-1.0, h, out=st, where=neg)
+            return np.clip((st - (1.0 - a)) / a, var_floor, var_cap)
+
+        def mode_ascent(self, xq, u, n_starts=16, iters=100, lr=0.05, seed=0, init="query",
+                        clamp=False, k_sigma=3.0, tweedie=False, adam=True):
+            """Adam ascent on log p_t.  -> (x_t rows, x_0 rows), both flat in this field's layout."""
+            a = float(cosine_abar(np.array([float(u)]))[0])
+            g = torch.Generator(device=self.device).manual_seed(int(seed))
+            xq_t = self._as_chw(xq)[:1]
+            half = n_starts // 2 if init == "hybrid" else (n_starts if init == "query" else 0)
+            parts = []
+            if half:
+                e = torch.randn((half, *xq_t.shape[1:]), generator=g, device=self.device)
+                parts.append((a ** 0.5) * xq_t.expand(half, -1, -1, -1) + ((1 - a) ** 0.5) * e)
+            if n_starts - half:
+                parts.append(torch.randn((n_starts - half, *xq_t.shape[1:]), generator=g,
+                                         device=self.device))
+            xt = torch.cat(parts).clone().requires_grad_(True)
+            opt = (torch.optim.Adam([xt], lr=lr) if adam
+                   else torch.optim.SGD([xt], lr=lr))
+            uu = torch.full((len(xt),), float(u), device=self.device)
+            for _ in range(iters):
+                with torch.enable_grad():
+                    ep = self.model(xt, uu)
+                    loss = (ep.detach() * xt).sum() / max((1 - a) ** 0.5, 1e-6)
+                opt.zero_grad(set_to_none=True)
+                loss.backward()
+                opt.step()
+                if clamp:
+                    with torch.no_grad():
+                        xt.clamp_(-k_sigma, 1.0 + k_sigma)
+            with torch.no_grad():
+                ep = self.model(xt, uu)
+                x0 = (xt - ((1 - a) ** 0.5) * ep) / (a ** 0.5)
+            flat = lambda z: z.detach().permute(0, 2, 3, 1).reshape(len(z), -1).cpu().numpy()
+            return flat(xt), flat(x0)
+
     return _Field(m, int(ck["img"]), device), ck
