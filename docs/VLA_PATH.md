@@ -17,6 +17,8 @@ this is the forward plan.
 | The **router** transfers | held-out AUROC: ColorMNIST **1.000**, Shapes3D **0.861 ± 0.043** at a calibrated u (§6c-quinquies) | **medium** — transfers once `u` is calibrated per backbone; 0.354 was the operating point |
 | The router's **operating point** can be chosen without held-out labels | Shapes3D: label-free `calibrate_u_novel` picks the oracle's u on 3/3 seeds, **0.929** vs the inherited constant's 0.662 | **medium** — exact on the pretrained backbone, fails on ColorMNIST for the reason §6c gives |
 | A **multi-object scene** is a composition over addresses, not *k* separate blocks | scene table factorises over object membership (R² 0.931, CV **0.875** vs null 0.254); held-out PAIRS at **0.317 ± 0.008** exact-set, recall 0.608 vs a 0.178 floor (§7bb) | **medium** — replicates over 3 sampling seeds but ONE backbone; 4 of 9 pairs fail, 2 of them recoverably (§7bb-bis) |
+| A concept read from ONE example can be **written into the model and sampled back**, not re-derived | `stored` joint **0.525** vs an `address` ceiling of 0.500, recall 0.808, forgetting **+0.000**, base bit-identical (§7cc) | **medium** — ColorMNIST only; Shapes3D and the DiT still recompose from ground-truth factors rather than storing |
+| The method **donates** a capability rather than locating an existing one | `nearest-class` — the backbone's own best existing embedding — scores **0.000** vs ADDRESS 0.599; samples sit as far from the query as two real images of the class (9.03 vs 9.06); 0.00 memorised (§7dd) | **medium** — four conditions all hold, ColorMNIST, one seed; the margin narrows on Shapes3D (0.516 vs 0.390) |
 | Absorption improves **representations** | N50 withdrawn; N53 corrected experiment | **unknown** — the honest state |
 
 ---

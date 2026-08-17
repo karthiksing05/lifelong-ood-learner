@@ -351,7 +351,7 @@ it is just sampling the concept's conditional, which is what every other table a
 new facts are that the near end is reachable at all, and that the companion method can neither reach
 it nor leave it.
 
-**Where:** [docs/RESULTS.md](docs/RESULTS.md) §20, `figures/f11_prototype_dial.png`.
+**Where:** [docs/RESULTS.md](docs/RESULTS.md) §20, `figures/initial/case_prototype_distance.png`.
 `experiments/n30_prototype_distance.py`.
 
 ---

@@ -220,8 +220,14 @@ def colormnist(args):
             if name == "prototypes":
                 src = np.asarray(t["meta"].get("src", []))
                 uu = np.asarray(t["meta"].get("u", []))
+                # INDEX THE SELECTION THAT IS ACTUALLY DRAWN.  The images come from
+                # `t_show["sel"]`, which under the default `--protos query-agnostic` is a
+                # DIFFERENT selection from `t["sel"]`; captioning from the latter labelled each
+                # panel with the provenance of a prototype that is not the one displayed.  These
+                # captions exist solely to state provenance, so a mismatch here is worse than
+                # having none.
                 caps = [f"{src[i]}-init, u={uu[i]:g}" if len(src) > i else ""
-                        for i in np.asarray(t["sel"])]
+                        for i in np.asarray(t_show["sel"])]
             # The HELD-OUT COMBINATION, spelled out on the `real` row.  Asked for directly: a
             # reader must be able to see WHICH combination was withheld, and check for themselves
             # that the arms below are reproducing it rather than something adjacent.  The count of
@@ -250,12 +256,16 @@ def colormnist(args):
         f"(tables use 50); the residual texture is the BACKBONE's -- it scores 1.59x real "
         f"on its own TRAINED classes, worse than anything downstream of it.\n"
         f"EVERY composition shown is held out: 0 training rows and no class-embedding row, "
-        f"checked against the checkpoint's own remap.  Prototype 1 resembles the composition "
-        f"because its\nascent chain STARTED at the query (a real held-out image) at the lowest "
-        f"noise level and selection scores candidates on the query -- see the per-panel labels.  "
-        f"It moves ~1 class-width\nand ends nearer the TRAINING set than the query it started "
-        f"from; prototypes 2-3 start from noise, and the composition survives on those alone "
-        f"(RESULTS 5e-quater/quinquies).", fontsize=8)
+        f"checked against the checkpoint's own remap.\nPROTOTYPES ARE THE QUERY-AGNOSTIC "
+        f"SELECTION (--protos): every chain shown started from NOISE, not from the query.  "
+        f"Selection (Eq. 8-9) scores candidates on the query, so a\nquery-seeded chain wins the "
+        f"first pick by construction -- measured over 24 held-out slots, such a chain at u=0.05 "
+        f"returns the exact held-out combination 25% of the time while a\nrandom-seeded chain "
+        f"never does.  Three readers took that panel for a training leak; it is not one (0 rows, "
+        f"no embedding row), and the composition rests on these agnostic\nexperts anyway -- "
+        f"restricting selection to them costs nothing (joint 0.83 either way) while restricting "
+        f"to query-seeded ones destroys it (0.00, background wrong in 5 of 5).\n"
+        f"RESULTS 5e-quater; per-panel labels give each chain's provenance.", fontsize=8)
     # the canonical figure is the one rendered at the DEFAULTS; the tag marks deviation
     tag = ("" if args.dial == DEFAULT_DIAL else f"_s{args.dial:g}") \
         + ("" if args.paper_budget else "_ourbudget")
