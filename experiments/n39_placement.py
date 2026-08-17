@@ -62,7 +62,7 @@ from lifelong_ood.neural import NeuralLifelongLearner, load_field, to_model   # 
 from lifelong_ood.neural.adapters import ConceptTree                          # noqa: E402
 from lifelong_ood.tree import GaussianCobweb                                  # noqa: E402
 
-FIG = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "figures")
+FIG = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "figures", "initial")
 FACTORS = ("d", "f", "b")
 NVALS = dict(d=10, f=4, b=4)
 

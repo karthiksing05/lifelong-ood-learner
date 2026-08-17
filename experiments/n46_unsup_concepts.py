@@ -49,7 +49,7 @@ from lifelong_ood.neural import load_field, to_data                             
 from lifelong_ood.neural.unsup_concepts import (discover_concepts, fit_weights,  # noqa: E402
                                                 sample_unsup)
 
-FIG = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "figures")
+FIG = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "figures", "initial")
 
 
 def main():

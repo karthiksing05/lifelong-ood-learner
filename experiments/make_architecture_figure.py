@@ -19,7 +19,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt                                             # noqa: E402
 from matplotlib.patches import Circle, FancyArrowPatch, FancyBboxPatch      # noqa: E402
 
-FIG = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "figures")
+FIG = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "figures", "initial")
 
 INHERIT, OURS, BANK = "#EAF1F8", "#E8F3EA", "#F7F2E6"
 FROZEN, HOT, EDGE = "#DCDCDC", "#F6DCDC", "#5A5A5A"

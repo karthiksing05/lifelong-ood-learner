@@ -48,7 +48,7 @@ from lifelong_ood.evals import save_json                                      # 
 from lifelong_ood.neural import NeuralLifelongLearner, load_field, to_model   # noqa: E402
 from lifelong_ood.neural.adapters import ConceptTree                          # noqa: E402
 
-FIG = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "figures")
+FIG = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "figures", "initial")
 
 
 def stats(tree, paths):

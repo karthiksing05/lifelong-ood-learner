@@ -34,7 +34,7 @@ from common import CACHE                                                       #
 from lifelong_ood.data.celeba import as_float, load_celeba                          # noqa: E402
 from lifelong_ood.neural import load_field, to_data                            # noqa: E402
 
-FIG = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "figures")
+FIG = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "figures", "initial")
 
 
 def seam_profile(S, img):

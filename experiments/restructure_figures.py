@@ -26,7 +26,7 @@ import shutil
 import sys
 
 HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-FIG = os.path.join(HERE, "figures")
+FIG = os.path.join(HERE, "figures", "initial")
 
 # old basename -> new basename.  Grouped by what the outline asks for.
 RENAME = {

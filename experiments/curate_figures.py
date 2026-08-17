@@ -45,7 +45,7 @@ import shutil
 import sys
 
 HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-FIG = os.path.join(HERE, "figures")
+FIG = os.path.join(HERE, "figures", "initial")
 ARCH = os.path.join(FIG, "archive")
 ADD = os.path.join(FIG, "extra")
 
@@ -74,7 +74,12 @@ def referenced():
     out = set()
     for f in [os.path.join(HERE, "README.md")] + sorted(glob.glob(os.path.join(HERE, "docs/*.md"))):
         with open(f, encoding="utf-8") as fh:
-            out |= set(re.findall(r"figures/([A-Za-z0-9_]+\.png)", fh.read()))
+            # `initial/` is optional in the pattern: every figure moved under figures/initial/
+            # when figures/vla/ was created for the next phase, and the docs were repointed with
+            # it.  Without the optional segment this regex matched nothing, so CITED figures --
+            # case_shapes3d.png and f_lr_ladder.png among them -- were proposed for ARCHIVE.
+            out |= set(re.findall(r"figures/(?:initial/)?(?:dit/|extra/|multiobject/)?"
+                                  r"([A-Za-z0-9_]+\.png)", fh.read()))
     return out
 
 

@@ -43,7 +43,7 @@ evidence currently contradicts it.
 |---|---|---|---|---|
 | **C1** | Stages 1–3 unchanged from Wang et al.; **Stage 4 differs** — the teacher only *locates* the concept, the model's own conditional generates | **✔** | README "Stage 4…", §5e-bis, §5e-ter, N49 | **f0**, f2, f29 |
 | **C2** | **iteratively select concepts** rather than picking K from a fixed pool | **✔ built, ✘ no gain** | §5s-bis | — |
-| **C4** | *(added)* the scheme is **not tied to the UNet** — it transfers to a latent DiT | **✔** | §7z | `figures/dit/` |
+| **C4** | *(added)* the scheme is **not tied to the UNet** — it transfers to a latent DiT | **✔** | §7z | `figures/initial/dit/` |
 | **C3** | three-tier storage decided by `s_novel` / `s_vocab` | **✔** | §2, §6c, §25, §5q | **f16**, f7, f8, **f32** |
 
 **C1 is the load-bearing one and it is done.** Their Eq. 13 guides toward a PoE teacher that is a
@@ -143,11 +143,11 @@ table moves**.
 
 ## The core figure set
 
-Graphs, curves and case studies the outline asks for. **Every figure in `figures/` is cited from at
+Graphs, curves and case studies the outline asks for. **Every figure in `figures/initial/` is cited from at
 least one document** — that is asserted, not assumed, and re-checkable in one line:
 
 ```bash
-for f in figures/f*.png; do b=$(basename $f); \
+for f in figures/initial/f*.png; do b=$(basename $f); \
   [ "$(grep -rl "$b" docs/*.md README.md | wc -l)" -eq 0 ] && echo "UNCITED: $b"; done
 ```
 
@@ -161,7 +161,7 @@ the evidence for the negative. They are outside the core set but they are not or
 **Representation** — `09_representation`
 **Case studies** — `case_colormnist`, `case_celeba`, `case_shapes3d`, `case_prototype_distance`
 **Preservation / parity** — `10_preservation`, `11_native_parity`
-**The DiT track** — `figures/dit/` — d1 AE reconstruction, d2 training + ADDRESS, d3 DiT case study,
+**The DiT track** — `figures/initial/dit/` — d1 AE reconstruction, d2 training + ADDRESS, d3 DiT case study,
 d4 UNet vs DiT, d5 prototypes
-**Everything else** — `figures/extra/` (supporting evidence, ablations, fault post-mortems) and
-`figures/archive/` (superseded, gitignored)
+**Everything else** — `figures/initial/extra/` (supporting evidence, ablations, fault post-mortems) and
+`figures/initial/archive/` (superseded, gitignored)

@@ -35,7 +35,7 @@ from lifelong_ood.neural import (NeuralLifelongLearner, load_field, to_data,   #
                                  to_model)
 
 CK = os.path.join(CACHE, "ddpm_celeba_factored.pt")
-FIG = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "figures")
+FIG = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "figures", "initial")
 ARMS = [("paper CelebA  w0=0.5", PAPER_POE_CELEBA),
         ("what we ran   w0=1.2", PAPER_POE_COLORMNIST)]
 

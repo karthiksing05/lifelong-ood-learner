@@ -27,7 +27,7 @@ import numpy as np
 
 HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 RES = os.path.join(HERE, "results")
-FIG = os.path.join(HERE, "figures")
+FIG = os.path.join(HERE, "figures", "initial")
 
 BLUE, GREEN, GREY, RED = "#1F4E79", "#2E7D32", "#888888", "#B03A2E"
 

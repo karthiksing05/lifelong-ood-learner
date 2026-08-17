@@ -227,6 +227,44 @@ def agg_n9(runs):
     return dict(table=table, n_seeds=len(runs))
 
 
+def agg_n71(runs):
+    """N71: the loop WITH storage -- address (ceiling) vs the consolidated concept, plus what
+    preservation and the stream did.  `stored` is the claim; `address` is the ceiling it is read
+    against, so both are kept as arms rather than collapsed into one headline."""
+    out = {}
+    for arm in ("address", "stored"):
+        out[arm] = {k: stat([r[k] for _, run in runs for r in run["rows"] if r["arm"] == arm])
+                    for k in ("joint", "recall", "precision", "vendi")}
+    out["stream"] = dict(forgetting=stat([run.get("forgetting") for _, run in runs]),
+                         frozen=stat([float(bool(run.get("frozen"))) for _, run in runs]))
+    print(f"    {'arm':10s}{'joint':>10s}{'recall':>10s}{'vendi':>9s}")
+    for arm in ("address", "stored"):
+        print(f"    {arm:10s}{fmt(out[arm]['joint']):>10s}{fmt(out[arm]['recall']):>10s}"
+              f"{fmt(out[arm]['vendi']):>9s}")
+    print(f"    forgetting {fmt(out['stream']['forgetting'])} | base frozen "
+          f"{fmt(out['stream']['frozen'])}")
+    return dict(table=out, n_seeds=len(runs))
+
+
+def agg_n72(runs):
+    """N72: the four donation conditions, as arms.  `nearest-class` is the adversarial control --
+    the model's own best existing embedding -- so its joint is the number that says whether the
+    capability was already there."""
+    arms = sorted({r["arm"] for _, run in runs for r in run["rows"]})
+    out = {a: {k: stat([r[k] for _, run in runs for r in run["rows"] if r["arm"] == a])
+               for k in ("joint", "recall", "precision", "vendi", "memorized", "d_query")}
+           for a in arms}
+    cond = {k: stat([float(bool(run["conditions"][k])) for _, run in runs])
+            for k in ("model_lacked_it", "new_point", "not_copies", "covers")}
+    out["conditions"] = cond
+    print(f"    {'arm':16s}{'joint':>10s}{'recall':>10s}{'memorized':>12s}{'d(query)':>11s}")
+    for a in arms:
+        print(f"    {a:16s}{fmt(out[a]['joint']):>10s}{fmt(out[a]['recall']):>10s}"
+              f"{fmt(out[a]['memorized']):>12s}{fmt(out[a]['d_query']):>11s}")
+    print("    conditions: " + " ".join(f"{k}={fmt(v)}" for k, v in cond.items()))
+    return dict(table=out, n_seeds=len(runs))
+
+
 def agg_n64(runs):
     """N64 multi-object: ADDRESS on held-out PAIRS, the basis fit, and the two controls.
 
@@ -460,7 +498,8 @@ def agg_n30(runs):
                                      "vendi"), width=18)
 
 
-AGG = {"n64_multiobject_address": agg_n64, "n62_router_calibrate": agg_n62, "n65_u_labelfree": agg_n62,
+AGG = {"n71_absorb_and_generate": agg_n71, "n72_donation": agg_n72,
+       "n64_multiobject_address": agg_n64, "n62_router_calibrate": agg_n62, "n65_u_labelfree": agg_n62,
        "e2_composition": agg_e2, "n2_composition": agg_e2,
        "e3_lifelong": agg_e3, "n3_lifelong": agg_n3, "n7_inversion": agg_n7,
        "n5_classinc": agg_n5, "n9_showdown": agg_n9, "n8_idealwords": agg_n7,

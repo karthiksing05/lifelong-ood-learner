@@ -65,7 +65,7 @@ from lifelong_ood.neural import (NeuralLifelongLearner, load_field,            #
 from lifelong_ood.neural.ddpm import CH, _as_img                               # noqa: E402
 from lifelong_ood.score import cosine_abar                                     # noqa: E402
 
-FIG = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "figures")
+FIG = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "figures", "initial")
 
 
 @contextlib.contextmanager

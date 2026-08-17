@@ -32,7 +32,7 @@ import sys
 import numpy as np
 
 HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-FIG = os.path.join(HERE, "figures")
+FIG = os.path.join(HERE, "figures", "initial")
 RESULTS = os.path.join(HERE, "results")
 RANKS = (1, 2, 4, 8, 16)
 # baselines to place as fixed points, and how to label them

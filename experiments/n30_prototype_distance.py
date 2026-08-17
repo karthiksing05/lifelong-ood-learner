@@ -47,7 +47,7 @@ from lifelong_ood.neural import (NeuralLifelongLearner, load_field,          # n
                                  to_data, to_model)
 from lifelong_ood.neural.idealwords import slot_factors                      # noqa: E402
 
-FIG = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "figures")
+FIG = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "figures", "initial")
 # the companion paper's own configuration for its teacher (RESULTS 5l-bis)
 from lifelong_ood.compose import PAPER_POE_COLORMNIST as PAPER_POE
 

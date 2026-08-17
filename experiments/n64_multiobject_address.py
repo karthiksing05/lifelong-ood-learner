@@ -51,7 +51,7 @@ from lifelong_ood.neural.inversion import sample_embedding             # noqa: E
 
 IMG = 32
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-FIGS = os.path.join(ROOT, "figures")
+FIGS = os.path.join(ROOT, "figures", "initial")
 
 
 # ----------------------------------------------------------------------------- detector

@@ -41,7 +41,7 @@ from lifelong_ood.compose import candidates_ascent, poe_teacher                #
 from lifelong_ood.neural import NeuralLifelongLearner, to_data, to_model       # noqa: E402
 from lifelong_ood.neural.pretrained import load_pretrained                     # noqa: E402
 
-FIG = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "figures")
+FIG = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "figures", "initial")
 
 
 def rgb(S, img):

@@ -42,7 +42,7 @@ from lifelong_ood.neural import (NeuralLifelongLearner, learn_embedding,  # noqa
 from lifelong_ood.neural.idealwords import (compose, factorize, learn_factored,  # noqa: E402
                                             slot_factors)
 
-FIG = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "figures")
+FIG = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "figures", "initial")
 
 
 def score(probes, S01, q, R, tag):

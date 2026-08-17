@@ -25,7 +25,7 @@ below is an attempt to find out whether that holds and where it breaks.
 | BLOCK rank 8 (`block-every`) | 2,296,467 B | 1× | F1 0.587 ± 0.020 |
 
 Twenty-four concepts cost **1.7 KB against 55 MB**, and the backbone is never written to.
-`figures/03_storage_ladder.png` plots the three curves against concept count: four orders of magnitude
+`figures/initial/03_storage_ladder.png` plots the three curves against concept count: four orders of magnitude
 apart on a log axis, and the gap widens with every concept absorbed.
 
 **Why this one is solid:** it is arithmetic on tensor shapes, not a measured quantity, and it did not
@@ -220,7 +220,7 @@ to stay on it cannot express a difference of 0.08. This is a property of Eq. 13/
 reimplementation.
 
 **Why this matters beyond a baseline row.** It is the quantitative case for the one place our
-pipeline departs from theirs (Stage 4 of `figures/01_architecture.png`): if the guidance channel
+pipeline departs from theirs (Stage 4 of `figures/initial/01_architecture.png`): if the guidance channel
 cannot carry the difference between two teacher means, then no choice of teacher distinguishes itself
 through it, and using the teacher as the *sampling distribution* is the wrong use of it. Reading the
 composition into `c_new` and letting the model's own multimodal conditional generate is what produces
@@ -273,7 +273,7 @@ correct and locates the failure in discovery, which is the reason this section r
 than a win. *(The figure that showed it, `f22_liu_unsup_ident`, was retired 2026-08-13 — it
 illustrates a baseline-coverage gap rather than any compositional claim, and the table above carries
 the whole argument. `experiments/n46_unsup_concepts.py` still produces it on demand; the panel is in
-`figures/archive/`.)* *(Re-run 2026-08-12 so the figure and
+`figures/initial/archive/`.)* *(Re-run 2026-08-12 so the figure and
 these numbers come from the same job: identity 0.750, SEEN control 0.010 against a chance of 0.006,
 held-out 0.062. The earlier run read 0.802 / 0.010; the conclusion is unchanged and the control is
 still at chance.)* The paper itself gives the likely reason: its concepts

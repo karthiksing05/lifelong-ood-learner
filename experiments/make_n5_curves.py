@@ -31,7 +31,7 @@ import numpy as np
 
 HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 RES = os.path.join(HERE, "results")
-FIG = os.path.join(HERE, "figures")
+FIG = os.path.join(HERE, "figures", "initial")
 
 # the arms worth drawing: ours, the strongest structural rival, and the classic regularizers.
 # Everything in the file is plotted, but these get labelled colours so the figure stays readable.

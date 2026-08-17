@@ -29,7 +29,7 @@ import numpy as np
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 RES = os.path.join(HERE, "results")
-FIG = os.path.join(HERE, "figures")
+FIG = os.path.join(HERE, "figures", "initial")
 
 # their Table 1, ColorMNIST -- (Faithfulness, Generalization) F1
 PAPER_T1 = {"top-1": (0.062, 0.065), "top-3": (0.051, 0.053), "query-only": (0.000, 0.000),

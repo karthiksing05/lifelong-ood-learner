@@ -60,7 +60,7 @@ their published 0.807.
 | `diag_paper_protocol` | how much of the gap is the protocol? | recall 0.000 → **0.590** as queries pool 1 → 100 | §5e-bis |
 | `n49_paper_protocol` | their Table 1, all five arms plus ours | top-3 F1 **0.027/0.053** vs their 0.051/0.053; ours covers from **one** query | §5e-ter |
 | `n47_paper_backbone` | their Table 5 CelebA column (~13 h) | fine-tune converges, loss 0.0104 — and it is **required**: from scratch never learns conditioning | §29(d) |
-| `n48_paper_composition` | their Table 2, on their own backbone (`figures/case_celeba.png`) | PoE reproduces (F1 0.187 vs their 0.203; G-precision 0.753 vs 0.745) — **and ours clears the unconditional floor 2.7× on joint accuracy** (0.439 vs 0.161 pixel probes; 2.3× Inception), on every class in both spaces. Coverage-F1 still ties the floor (0.401 vs 0.409). | §5e-sexies |
+| `n48_paper_composition` | their Table 2, on their own backbone (`figures/initial/case_celeba.png`) | PoE reproduces (F1 0.187 vs their 0.203; G-precision 0.753 vs 0.745) — **and ours clears the unconditional floor 2.7× on joint accuracy** (0.439 vs 0.161 pixel probes; 2.3× Inception), on every class in both spaces. Coverage-F1 still ties the floor (0.401 vs 0.409). | §5e-sexies |
 | `diag_holdout_leak` | are the prototypes memorized held-out images? | **no** — 24/24 nearest to TRAIN, split clean | §5e-quinquies |
 | `diag_selection_bias` | does discovery just find the query? | **no** — query-agnostic modes carry the composition intact | §5e-quater |
 
@@ -69,16 +69,16 @@ their published 0.807.
 | experiment | question | answer | § |
 |---|---|---|---|
 | `n50_representation` | is an ABSORBED concept's representation as separable as a TRAINED one? | **no, and it barely beats no adaptation**: ours 0.271 ≈ base 0.266 vs oracle 0.406 (linear digit) | §6e |
-| `make_n5_curves` | what do the incremental curves look like, not just their summary? | `figures/06_learning_curves.png` — ours/independent are **exactly flat**, `finetune` falls 0.73→0.66 in one step | §10, §11 |
-| `make_performance_figures` | the two main performance tests that had numbers but no figure | `figures/09_representation.png` — the honest negative drawn: `ours` sits on `base`; `figures/05_batch_invariance.png` — ACC flat in K, **2.15× at K=12**, bit-identical at every point | §6e, §16/§16b |
+| `make_n5_curves` | what do the incremental curves look like, not just their summary? | `figures/initial/06_learning_curves.png` — ours/independent are **exactly flat**, `finetune` falls 0.73→0.66 in one step | §10, §11 |
+| `make_performance_figures` | the two main performance tests that had numbers but no figure | `figures/initial/09_representation.png` — the honest negative drawn: `ours` sits on `base`; `figures/initial/05_batch_invariance.png` — ACC flat in K, **2.15× at K=12**, bit-identical at every point | §6e, §16/§16b |
 | `n4_batch` (figure) | does absorbing concepts in GROUPS cost anything? | no: accuracy flat within error, preservation exact at every K | §16, §16b |
-| `n18_router` (figure) | the three-way self-routing decision | `figures/extra/f7_router.png` — AUROC 0.980 / 0.995, self-routing 0.858 ± 0.018, **under-spend 0.000** | §6c |
-| `n11/n21` (figure) | what a new *vocabulary* item costs | `figures/extra/f4_vocabulary.png` — one shared direction at 1 KB beats per-concept adapters at 551 K | §5q, §7c |
+| `n18_router` (figure) | the three-way self-routing decision | `figures/initial/extra/f7_router.png` — AUROC 0.980 / 0.995, self-routing 0.858 ± 0.018, **under-spend 0.000** | §6c |
+| `n11/n21` (figure) | what a new *vocabulary* item costs | `figures/initial/extra/f4_vocabulary.png` — one shared direction at 1 KB beats per-concept adapters at 551 K | §5q, §7c |
 | `diag_iterative_select` | does selecting concepts iteratively beat one greedy pass over a fixed pool? | contribution C2, budget-matched against the paper's Eq. 8–9 route | `docs/OUTLINE.md` |
-| `diag_mdl_router` | can description length replace the router's two calibrated thresholds? | **not at one query per concept** (0.333 vs 0.833), but **at N≥32 it draws level** (0.722–0.778) with no calibrated threshold, and its promotion curve halts each population at the right rung. `figures/07_router_exchange_rate.png` | §6c-ter |
+| `diag_mdl_router` | can description length replace the router's two calibrated thresholds? | **not at one query per concept** (0.333 vs 0.833), but **at N≥32 it draws level** (0.722–0.778) with no calibrated threshold, and its promotion curve halts each population at the right rung. `figures/initial/07_router_exchange_rate.png` | §6c-ter |
 | `diag_elbo_stability` | is that codelength measurable, or is it reading sampling noise? | measurable — paired \|mean\|/sd **17.3 → 93.6** on the hardest case; but its **sign flips between noise bands**, so any claim from it must name the band | §6c-ter |
-| `n57_shapes3d_pretrained` / `n58_shapes3d_results` | does the scheme work on a THIRD dataset, on a pretrained backbone? | **yes** — ADDRESS **0.583 ± 0.113** vs an unconditional floor of **0.036 (16×)**, floor_hue 0.953, basis R² 0.538. Needed the class table on a **50× learning rate**: a strong pretrained backbone reaches loss 0.0015 in minutes, starving the conditioning pathway. `figures/case_shapes3d.png` | §5t-bis |
-| `make_lr_ladder_figure` (N57×5/N58×5) | is the 50× class-table learning rate a rule or a lucky setting? | **a rule, and a robust one** — 1× reaches only **1.8×** the floor (does not compose) while every rung ≥5× reaches 10–14×; 50× is the **plateau**, not a peak. The ε-loss gap is **~0.0001 at every rung including the failing one**, and basis R² does *not* predict ADDRESS. `figures/f_lr_ladder.png` | §5t-ter |
+| `n57_shapes3d_pretrained` / `n58_shapes3d_results` | does the scheme work on a THIRD dataset, on a pretrained backbone? | **yes** — ADDRESS **0.583 ± 0.113** vs an unconditional floor of **0.036 (16×)**, floor_hue 0.953, basis R² 0.538. Needed the class table on a **50× learning rate**: a strong pretrained backbone reaches loss 0.0015 in minutes, starving the conditioning pathway. `figures/initial/case_shapes3d.png` | §5t-bis |
+| `make_lr_ladder_figure` (N57×5/N58×5) | is the 50× class-table learning rate a rule or a lucky setting? | **a rule, and a robust one** — 1× reaches only **1.8×** the floor (does not compose) while every rung ≥5× reaches 10–14×; 50× is the **plateau**, not a peak. The ε-loss gap is **~0.0001 at every rung including the failing one**, and basis R² does *not* predict ADDRESS. `figures/initial/f_lr_ladder.png` | §5t-ter |
 | `n61`/`n62`/`n65` + `diag_calibrate_u` | does the router transfer, and can its operating point be found without held-out labels? | **both** — Shapes3D held-out **0.861 ± 0.043** at a calibrated u (density ablation 0.585) against 0.354 at the inherited u=0.10; `router.calibrate_u_novel` recovers the oracle's u on **3/3 seeds** (0.929 vs 0.662). §6c **stands**: ColorMNIST's ablation still matches its conditional (1.000/1.000) | §6c-quinquies |
 | `diag_backbone_conventions` | does every measurement path agree with a backbone about layout and range? | asserts it per backbone — HWC-vs-CHW cost a **974×** eps-loss error and three results before this existed | §5t-bis |
 | `diag_shapes3d_probes` | can the Shapes3D factors be read from pixels before anything is scored with them? | yes at the settings n52 uses — floor_hue **0.999**, object_hue **1.000**, shape **0.973** vs base 0.130/0.114/0.260 | §5t-bis |
@@ -155,14 +155,14 @@ reported at its own best.
 
 ### The figures
 
-`figures/` holds only what the documents cite, plus the intermediates `make_paper_figures.py` copies
+`figures/initial/` holds only what the documents cite, plus the intermediates `make_paper_figures.py` copies
 from. It had grown to 48 PNGs and 41 MB, of which 19 were referenced; the rest were smoke runs,
 superseded variants and one-off diagnostics that no reader — and no staleness check — could tell
 apart from the real ones.
 
 `python experiments/curate_figures.py` re-derives that split mechanically (cited by path from any
 markdown file, or named as a source in the rename map) and prints the plan; `--apply` moves the
-remainder to **`figures/archive/`**. Archived, not deleted: several came from runs whose checkpoints
+remainder to **`figures/initial/archive/`**. Archived, not deleted: several came from runs whose checkpoints
 are gone, so restoring one is a `git mv` rather than a re-run. It also reports figures a document
 cites but which do not exist, which is how the dangling `f9b_showdown_colormnist.png` reference was
 found.

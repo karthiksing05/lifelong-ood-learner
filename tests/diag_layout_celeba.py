@@ -27,7 +27,7 @@ from lifelong_ood.evals import speckle                                         #
 from lifelong_ood.neural import load_field, to_data                            # noqa: E402
 from lifelong_ood.neural.ddpm import train_ddpm                                # noqa: E402
 
-FIG = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "figures")
+FIG = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "figures", "initial")
 ARMS = [("permuted (every backbone to date)", "ddpm_celeba_layout_permuted.pt"),
         ("hwc (a real image)", "ddpm_celeba_layout_hwc.pt")]
 

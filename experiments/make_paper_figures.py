@@ -33,7 +33,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt                                         # noqa: E402
 from matplotlib.patches import FancyArrowPatch, FancyBboxPatch          # noqa: E402
 
-FIG = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "figures")
+FIG = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "figures", "initial")
 OURS, REAL, BASE1, BASE2, BASE3 = "#4C78A8", "#9E9E9E", "#E45756", "#F58518", "#72B7B2"
 # Composable Diffusion gets its own colour because it is the arm the coverage argument now rests
 # on: at its best scale it matches our ACCURACY on CelebA and loses on recall (RESULTS 9g).

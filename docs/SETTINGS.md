@@ -316,7 +316,7 @@ by exact index algebra (`tests/diag_layout.py`):
 * its **vertical** axis is a **~22-pixel jump across the image**
 
 so one 3×3 convolution reads real columns **3, 24 and 45 simultaneously**. There is no spatial
-locality left at any scale, and downsampling compounds it. `figures/extra/f20_layout.png` renders a real
+locality left at any scale, and downsampling compounds it. `figures/initial/extra/f20_layout.png` renders a real
 face as the UNet sees it: a striped, colour-scrambled field with only low-frequency structure intact.
 
 `ddpm.py` argued this was harmless because training and sampling share the permutation, so "the model

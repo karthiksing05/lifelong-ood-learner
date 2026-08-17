@@ -61,7 +61,7 @@ from lifelong_ood.neural.adapters import HierarchicalAdapterBank       # noqa: E
 from lifelong_ood.neural.composable import composable_eps              # noqa: E402
 from lifelong_ood.neural.pretrained import load_pretrained             # noqa: E402
 
-FIG = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "figures")
+FIG = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "figures", "initial")
 
 
 def load_hires(attrs_wanted, img=256, n_each=96, n_probe=4000, max_rows=60000, seed=0,

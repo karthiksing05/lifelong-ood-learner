@@ -48,7 +48,7 @@ from lifelong_ood.neural.router import (auroc, basis_assignments, calibrate,  # 
                                         calibrate_cost, leave_one_value_out,  # noqa: E402
                                         route, route_signals)
 
-FIG = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "figures")
+FIG = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "figures", "initial")
 ROUTES = ("in-distribution", "new-combination", "new-vocabulary")
 
 

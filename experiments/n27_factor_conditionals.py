@@ -64,7 +64,7 @@ from lifelong_ood.neural import (NeuralLifelongLearner, load_field,     # noqa: 
 from lifelong_ood.neural.idealwords import slot_factors                 # noqa: E402
 from lifelong_ood.neural.inversion import teacher_init_alpha            # noqa: E402
 
-FIG = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "figures")
+FIG = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "figures", "initial")
 
 
 def train_factor(L, name, X01, epochs=40, batch=16, lr=1e-3, seed=0):

@@ -39,7 +39,7 @@ from lifelong_ood.neural import NeuralLifelongLearner, load_field, to_data, to_m
 
 N_CASES = int(os.environ.get("DIAG_CASES", 4))
 N_SAMP = int(os.environ.get("DIAG_N", 24))
-FIG = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "figures")
+FIG = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "figures", "initial")
 
 # (label, schedule, var_scale, w0, wmax, wmin) -- the paper's own setting first
 CONFIGS = [

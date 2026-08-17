@@ -59,7 +59,7 @@ from lifelong_ood.neural import (NeuralLifelongLearner, load_field,           # 
 from lifelong_ood.neural.idealwords import (sample_factored_pool,               # noqa: E402
                                             slot_factors)
 
-FIG = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "figures")
+FIG = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "figures", "initial")
 
 
 def backbone_signature(field, seed=0, n=4, u_grid=(0.2, 0.5, 0.8)):

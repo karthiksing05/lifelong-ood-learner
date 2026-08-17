@@ -40,7 +40,7 @@ from lifelong_ood.neural.router import auroc, conditional_losses       # noqa: E
 from lifelong_ood.neural.ve_bridge import load_ve_field                # noqa: E402
 from lifelong_ood.score import cosine_abar                             # noqa: E402
 
-FIG = os.path.join(HERE, "figures")
+FIG = os.path.join(HERE, "figures", "initial")
 
 
 def mode_ascent(field, x_img, u, n_starts=4, iters=120, lr=0.05, seed=0, init="hybrid"):

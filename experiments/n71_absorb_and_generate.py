@@ -122,14 +122,22 @@ def main():
         S_addr = to_data(sample_embedding(field, c_hard, n=args.n_samples, steps=args.steps,
                                           seed=args.seed + ci))
 
-        # ABSORB: distil a pool from that address into a written adapter + embedding row
-        pool = to_data(sample_embedding(field, c_hard, n=args.n_pool, steps=args.steps,
-                                        seed=args.seed + 500 + ci))
+        # ABSORB: distil a pool from that address into a written adapter + embedding row.
+        #
+        # THE POOL STAYS IN MODEL SPACE.  `consolidate` trains the adapter against these rows as
+        # diffusion targets, and the field works in [-1,1]; `sample_factored_pool` -- the path
+        # `learn_concept_factored` uses -- returns `sample_embedding` output with no conversion for
+        # exactly that reason.  An earlier version wrapped this in `to_data`, so the adapter was
+        # distilled against [0,1] targets and the stored concept came back at joint 0.000 with
+        # vendi 1.05 (every sample identical) while the read was 5/5 and the address arm scored
+        # 0.500 -- i.e. it looked like "consolidation loses the concept" when it was a range
+        # mismatch. Only the SCORED arrays are converted, because the probes are trained on [0,1].
+        pool = np.asarray(sample_embedding(field, c_hard, n=args.n_pool, steps=args.steps,
+                                           seed=args.seed + 500 + ci), np.float32)
         # The sequence `learn_concept_factored` uses, with the composed address PINNED into the
         # concept's embedding before distillation -- otherwise consolidation is free to drift the
         # embedding off the address that was just read, and "stored" would no longer be storing the
         # thing that was composed.
-        pool = np.asarray(pool, np.float32)
         L.bank.add_concept(name, pool.mean(0))
         L.bank._emb_extra[name].data = torch.as_tensor(
             np.asarray(c_hard, np.float32), device=dev).clone()

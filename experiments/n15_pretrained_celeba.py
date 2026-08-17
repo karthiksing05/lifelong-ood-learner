@@ -40,7 +40,7 @@ from lifelong_ood.evals import attr_accuracy, fit_attr_probes, save_json   # noq
 from lifelong_ood.neural.idealwords import (compose_attributes, learn_attribute_basis)  # noqa: E402
 from lifelong_ood.neural.pretrained import load_pretrained                 # noqa: E402
 
-FIG = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "figures")
+FIG = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "figures", "initial")
 
 
 def main():

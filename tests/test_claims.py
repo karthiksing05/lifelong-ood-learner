@@ -105,6 +105,28 @@ CLAIMS = [
     (0.931, .02, "n64_multiobject_address", "basis", "r2", "7bb object-membership basis R2"),
     (0.875, .03, "n64_multiobject_address", "basis", "r2_cv", "7bb leave-one-scene-out CV R2"),
     (0.257, .05, "n64_multiobject_address", "basis", "perm_null", "7bb permutation null"),
+    # ── the loop WITH storage in it (§7cc, N71) ──────────────────────────────
+    # `stored` is the claim -- samples drawn from the CONSOLIDATED concept, not from the composed
+    # address. `address` is pinned beside it as the ceiling, so a future regression that quietly
+    # reports the pre-storage number instead would fail here rather than read as an improvement.
+    (0.525, .05, "n71_absorb_and_generate", "stored", "joint", "7cc stored-concept joint"),
+    (0.808, .05, "n71_absorb_and_generate", "stored", "recall", "7cc stored-concept recall"),
+    (0.500, .05, "n71_absorb_and_generate", "address", "joint", "7cc address ceiling joint"),
+    (0.000, .01, "n71_absorb_and_generate", "stream", "forgetting", "7cc forgetting over the stream"),
+    (1.000, .01, "n71_absorb_and_generate", "stream", "frozen", "7cc base bit-identical"),
+    # ── is the method DONATING a capability? (§7dd, N72) ─────────────────────
+    # nearest-class is the adversarial control: the model's OWN best existing embedding, chosen by
+    # proximity to our composed address. Pinned at 0.000 because that number is the whole claim --
+    # if it ever rises to meet ADDRESS, the capability was already there and we are rediscovering.
+    (0.599, .05, "n72_donation", "address", "joint", "7dd ADDRESS joint"),
+    (0.000, .02, "n72_donation", "nearest-class", "joint", "7dd nearest-class (already-had-it) joint"),
+    (0.871, .04, "n72_donation", "address", "recall", "7dd ADDRESS recall"),
+    (0.000, .02, "n72_donation", "address", "memorized", "7dd ADDRESS memorised fraction"),
+    # query-copy scores joint 1.000 at recall 0.000 -- perfect accuracy by copying. Pinned because
+    # it is the standing demonstration that accuracy alone cannot distinguish composing from
+    # copying, which is why recall is a headline number in this repository.
+    (1.000, .01, "n72_donation", "query-copy", "joint", "7dd query-copy joint (copying scores 1.0)"),
+    (0.000, .01, "n72_donation", "query-copy", "recall", "7dd query-copy recall (and covers nothing)"),
 ]
 
 

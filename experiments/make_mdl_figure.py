@@ -35,7 +35,7 @@ import numpy as np
 
 HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 RES = os.path.join(HERE, "results")
-FIG = os.path.join(HERE, "figures")
+FIG = os.path.join(HERE, "figures", "initial")
 
 ROUTES = ["in-distribution", "new-combination", "new-vocabulary"]
 COL = {"in-distribution": "#888888", "new-combination": "#1F4E79", "new-vocabulary": "#B03A2E"}

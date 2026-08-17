@@ -45,7 +45,7 @@ from lifelong_ood.evals import save_json                                        
 from lifelong_ood.neural import NeuralLifelongLearner, to_data, to_model        # noqa: E402
 from lifelong_ood.neural.pretrained import load_pretrained                      # noqa: E402
 
-FIG = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "figures")
+FIG = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "figures", "initial")
 # the paper's Table 6 CelebA column -- IMPORTED, not re-typed.  A local copy of a shared constant
 # is how the w0 bug happened (six files each holding their own `PAPER_POE`), and it happened again
 # here: PAPER_CELEBA's ascent step was corrected to 0.02 and this file kept its own 0.09.

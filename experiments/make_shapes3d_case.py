@@ -37,7 +37,7 @@ from lifelong_ood.neural.idealwords import (compose, factorize,       # noqa: E4
                                             sample_factored_pool)
 
 CACHE = os.path.join(HERE, "results", "cache")
-FIG = os.path.join(HERE, "figures")
+FIG = os.path.join(HERE, "figures", "initial")
 
 
 def main():

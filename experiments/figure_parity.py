@@ -17,7 +17,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from common import RESULTS                                              # noqa: E402
 
-FIG = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "figures")
+FIG = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "figures", "initial")
 ARMS = ["real", "native", "ours", "paper"]
 LABEL = {"real": "real held-out images", "native": "native (trained on this slot)",
          "ours": "ours (consolidated, no retraining)", "paper": "paper (per-query LoRA)"}

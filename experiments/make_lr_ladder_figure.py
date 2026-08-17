@@ -41,7 +41,7 @@ sys.path.insert(0, os.path.join(HERE, "experiments"))
 from common import RESULTS                                             # noqa: E402
 
 MULTS = (1, 5, 20, 50, 100)
-FIGS = os.path.join(HERE, "figures")
+FIGS = os.path.join(HERE, "figures", "initial")
 
 
 def main():

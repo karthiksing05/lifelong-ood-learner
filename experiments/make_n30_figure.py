@@ -30,7 +30,7 @@ import numpy as np
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-FIG = os.path.join(HERE, "figures")
+FIG = os.path.join(HERE, "figures", "initial")
 RESULTS = os.path.join(HERE, "results")
 
 ARMS = {"ours": ("#1B7F4B", "o", "ours"),

@@ -32,7 +32,7 @@ from lifelong_ood.neural.idealwords import (compose, factorize,        # noqa: E
 from lifelong_ood.neural.latent import ConvAE, decode                  # noqa: E402
 from n55_dit_train import ddim_latent                                  # noqa: E402
 
-FIG = os.path.join(HERE, "figures", "dit")
+FIG = os.path.join(HERE, "figures", "initial", "dit")
 
 
 def main():

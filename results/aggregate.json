@@ -8462,7 +8462,9 @@
   "n30_prototype_distance_fine": "n30_prototype_distance_fine",
   "n62_router_calibrate": "n62_router_calibrate",
   "n65_u_labelfree": "n65_u_labelfree",
-  "n64_multiobject_address": "n64_multiobject_address"
+  "n64_multiobject_address": "n64_multiobject_address",
+  "n71_absorb_and_generate": "n71_absorb_and_generate",
+  "n72_donation": "n72_donation"
  },
  "n62_router_calibrate": {
   "table": {
@@ -8619,5 +8621,221 @@
    }
   },
   "n_seeds": 3
+ },
+ "n71_absorb_and_generate": {
+  "table": {
+   "address": {
+    "joint": {
+     "mean": 0.5,
+     "se": 0.11102427162061856,
+     "n": 5
+    },
+    "recall": {
+     "mean": 0.8626262626262626,
+     "se": 0.027956267683026354,
+     "n": 5
+    },
+    "precision": {
+     "mean": 0.4999999999999999,
+     "se": 0.1200405024240661,
+     "n": 5
+    },
+    "vendi": {
+     "mean": 1.997388413230917,
+     "se": 0.0743048743073526,
+     "n": 5
+    }
+   },
+   "stored": {
+    "joint": {
+     "mean": 0.525,
+     "se": 0.08799463367476197,
+     "n": 5
+    },
+    "recall": {
+     "mean": 0.8080808080808082,
+     "se": 0.07156763468249838,
+     "n": 5
+    },
+    "precision": {
+     "mean": 0.5166666666666667,
+     "se": 0.11606990230986766,
+     "n": 5
+    },
+    "vendi": {
+     "mean": 2.0669274412508045,
+     "se": 0.07281973459326826,
+     "n": 5
+    }
+   },
+   "stream": {
+    "forgetting": {
+     "mean": 0.0,
+     "se": 0.0,
+     "n": 1
+    },
+    "frozen": {
+     "mean": 1.0,
+     "se": 0.0,
+     "n": 1
+    }
+   }
+  },
+  "n_seeds": 1
+ },
+ "n72_donation": {
+  "table": {
+   "address": {
+    "joint": {
+     "mean": 0.5989583333333333,
+     "se": 0.08293711610717246,
+     "n": 8
+    },
+    "recall": {
+     "mean": 0.8712121212121212,
+     "se": 0.025876138297877774,
+     "n": 8
+    },
+    "precision": {
+     "mean": 0.5833333333333333,
+     "se": 0.08333333333333331,
+     "n": 8
+    },
+    "vendi": {
+     "mean": 2.0304862547859597,
+     "se": 0.057369965851791584,
+     "n": 8
+    },
+    "memorized": {
+     "mean": 0.0,
+     "se": 0.0,
+     "n": 8
+    },
+    "d_query": {
+     "mean": 9.03310626745224,
+     "se": 0.5376029890709546,
+     "n": 8
+    }
+   },
+   "nearest-class": {
+    "joint": {
+     "mean": 0.0,
+     "se": 0.0,
+     "n": 8
+    },
+    "recall": {
+     "mean": 0.03787878787878788,
+     "se": 0.03787878787878788,
+     "n": 8
+    },
+    "precision": {
+     "mean": 0.015625,
+     "se": 0.015625,
+     "n": 8
+    },
+    "vendi": {
+     "mean": 1.7609475612504069,
+     "se": 0.03046451559751713,
+     "n": 8
+    },
+    "memorized": {
+     "mean": 0.0,
+     "se": 0.0,
+     "n": 8
+    },
+    "d_query": {
+     "mean": 11.860577940940857,
+     "se": 0.6674158204738436,
+     "n": 8
+    }
+   },
+   "query-copy": {
+    "joint": {
+     "mean": 1.0,
+     "se": 0.0,
+     "n": 8
+    },
+    "recall": {
+     "mean": 0.0,
+     "se": 0.0,
+     "n": 8
+    },
+    "precision": {
+     "mean": 0.75,
+     "se": 0.16366341767699427,
+     "n": 8
+    },
+    "vendi": {
+     "mean": 1.0000000000000002,
+     "se": 9.84107529275933e-17,
+     "n": 8
+    },
+    "memorized": {
+     "mean": 0.0,
+     "se": 0.0,
+     "n": 8
+    },
+    "d_query": {
+     "mean": 0.0,
+     "se": 0.0,
+     "n": 8
+    }
+   },
+   "unconditional": {
+    "joint": {
+     "mean": 0.0,
+     "se": 0.0,
+     "n": 8
+    },
+    "recall": {
+     "mean": 0.9684343434343434,
+     "se": 0.019508057335850915,
+     "n": 8
+    },
+    "precision": {
+     "mean": 0.005208333333333333,
+     "se": 0.005208333333333332,
+     "n": 8
+    },
+    "vendi": {
+     "mean": 3.5487816553549814,
+     "se": 0.03696933268297531,
+     "n": 8
+    },
+    "memorized": {
+     "mean": 0.0,
+     "se": 0.0,
+     "n": 8
+    },
+    "d_query": {
+     "mean": 12.569489479064941,
+     "se": 0.41792132993888653,
+     "n": 8
+    }
+   },
+   "conditions": {
+    "model_lacked_it": {
+     "mean": 1.0,
+     "se": 0.0,
+     "n": 1
+    },
+    "new_point": {
+     "mean": 1.0,
+     "se": 0.0,
+     "n": 1
+    },
+    "not_copies": {
+     "mean": 1.0,
+     "se": 0.0,
+     "n": 1
+    },
+    "covers": {
+     "mean": 1.0,
+     "se": 0.0,
+     "n": 1
+    }
+   }
+  },
+  "n_seeds": 1
  }
 }

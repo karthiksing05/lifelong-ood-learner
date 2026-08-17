@@ -32,7 +32,7 @@ from lifelong_ood.evals import paper_metrics                           # noqa: E
 from lifelong_ood.neural.ddpm import load_field, to_data, to_model     # noqa: E402
 
 CACHE = os.path.join(HERE, "results", "cache")
-FIG = os.path.join(HERE, "figures", "additional")
+FIG = os.path.join(HERE, "figures", "initial", "extra")
 
 CASES = [
     ("ddpm_colormnist.pt", "colormnist", 32),

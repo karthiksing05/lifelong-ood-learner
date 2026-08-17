@@ -45,7 +45,7 @@ from lifelong_ood.neural import NeuralScoreField, to_data                       
 from lifelong_ood.neural.ddpm import train_ddpm                                 # noqa: E402
 from lifelong_ood.neural.unet import UNet                                       # noqa: E402
 
-FIG = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "figures")
+FIG = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "figures", "initial")
 
 
 def main():

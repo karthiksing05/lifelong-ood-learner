@@ -42,7 +42,7 @@ from lifelong_ood.evals import (attr_accuracy, fit_attr_probes, paper_metrics,  
 from lifelong_ood.neural import to_data, to_model                              # noqa: E402
 from lifelong_ood.neural.pretrained import load_paper_backbone                 # noqa: E402
 
-FIG = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "figures")
+FIG = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "figures", "initial")
 
 
 def main():

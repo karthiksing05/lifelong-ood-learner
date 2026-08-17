@@ -45,7 +45,7 @@ from lifelong_ood.evals import SoftmaxProbe, save_json, vendi_score      # noqa:
 from lifelong_ood.neural.adapters import HierarchicalAdapterBank        # noqa: E402
 from lifelong_ood.neural.pretrained import load_pretrained              # noqa: E402
 
-FIG = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "figures")
+FIG = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "figures", "initial")
 
 
 def load_attr_groups(attrs, img=256, n_each=128, n_probe=4000, probe_img=128, max_rows=60000):

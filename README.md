@@ -54,11 +54,11 @@ finite; and both escape hatches are damaged — repeated merges destroy the mode
 and deletion reclaims a median 0.250 of a path (§22a).
 
 
-![the loop](figures/02_lifelong_loop.png)
+![the loop](figures/initial/02_lifelong_loop.png)
 
 The full architecture, laid out against Figure 1 of the companion paper — their four stages unchanged in the top band, ours beside them, and the bank opened up to the tensors:
 
-![the architecture](figures/01_architecture.png)
+![the architecture](figures/initial/01_architecture.png)
 
 ---
 
@@ -644,7 +644,7 @@ Full detail, with evidence and caveats for each: **[CONTRIBUTIONS.md](CONTRIBUTI
 
 ### 1. Attribute accuracy cannot tell composing from copying. Coverage can.
 
-![coverage vs copying](figures/08_coverage_vs_copying.png)
+![coverage vs copying](figures/initial/08_coverage_vs_copying.png)
 
 The figure the project turns on. A method that re-emits the query scores **high attribute accuracy**
 — the query is, after all, an image of the target — while covering none of the class. On ColorMNIST
@@ -659,8 +659,8 @@ identically, which they are.
 
 ### 2. Composition recovers combinations never observed
 
-![composition](figures/extra/f3_composition.png)
-![ColorMNIST case study](figures/case_colormnist.png)
+![composition](figures/initial/extra/f3_composition.png)
+![ColorMNIST case study](figures/initial/case_colormnist.png)
 
 ColorMNIST **F1 0.605 ± 0.043** against the companion method's **0.003 ± 0.003**, with every baseline
 run in *its own* best configuration. On CelebA, where `Smiling` and `Big_Nose` never co-occur in
@@ -669,18 +669,18 @@ which we report rather than bury (see [docs/RESULTS.md §11c](docs/RESULTS.md)).
 
 ### 3. Preservation is structural, not learned
 
-![preservation](figures/10_preservation.png)
+![preservation](figures/initial/10_preservation.png)
 
 Eleven CL arms, two datasets, 3 seeds. Only arms that *remove* shared parameters reach bit-identity;
 `ttt` also does but keeps all 768 stream images to manage it.
 
 ### 4. Cost scales with vocabulary, not experience
 
-![growth](figures/04_growth_per_concept.png)
+![growth](figures/initial/04_growth_per_concept.png)
 
 ### 5. A consolidated concept behaves like a trained one
 
-![native parity](figures/11_native_parity.png)
+![native parity](figures/initial/11_native_parity.png)
 
 ### 6. On a model we did not train: preservation holds, composition does not — RETRACTED 2026-08-11
 
@@ -745,7 +745,7 @@ lifelong_ood/      the library: score field, adapters, router, composition, eval
 experiments/       n1–n28, one file per question
 tests/             assertions and the diagnostics that CHOOSE configurations
 results/           per-seed JSON + the aggregate the figures are built from
-figures/           every figure in this README
+figures/initial/           every figure in this README
 docs/              the full record
 ```
 

@@ -57,7 +57,7 @@ from lifelong_ood.neural import (NeuralLifelongLearner, load_field,           # 
 from lifelong_ood.neural.idealwords import slot_factors                       # noqa: E402
 from lifelong_ood.neural.router import auroc                                  # noqa: E402
 
-FIG = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "figures")
+FIG = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "figures", "initial")
 
 
 def poe_mean(M, V, sel, xq, tau=0.05):

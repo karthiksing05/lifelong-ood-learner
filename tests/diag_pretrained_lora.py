@@ -37,7 +37,7 @@ from lifelong_ood.evals import SoftmaxProbe, vendi_score                        
 from lifelong_ood.neural.adapters import HierarchicalAdapterBank                    # noqa: E402
 from lifelong_ood.neural.pretrained import load_pretrained                          # noqa: E402
 
-FIG = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "figures")
+FIG = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "figures", "initial")
 
 
 def train(field, bank, name, X01, img, epochs, batch, lr, t_min, seed=0):

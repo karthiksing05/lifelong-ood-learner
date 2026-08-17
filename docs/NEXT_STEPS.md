@@ -36,7 +36,7 @@ The 3-factor scoping is **withdrawn**.
 
 ### 1b. The router: a sixth attempt, an honest negative, and a real diagnosis
 
-`RESULTS §6c-ter`, `figures/07_router_exchange_rate.png`. Reframed the decision the way Cobweb makes one —
+`RESULTS §6c-ter`, `figures/initial/07_router_exchange_rate.png`. Reframed the decision the way Cobweb makes one —
 compare hypothetical operators under an objective with a built-in complexity penalty — using the
 storage ladder's own costs in bits:
 
@@ -138,7 +138,7 @@ sign must name its band until this is understood.
   row structure (real / prototypes / ours / poe-guided / query-only / unconditional, one block per
   held-out class) on the companion paper's OWN backbone, `ddpm_celeba_paper128.pt`, `layout: hwc` at
   128 px, which n48 was already using. The correct backbone was on disk the whole time. f10 is in
-  `figures/archive/` and its alias is gone from `make_paper_figures.py`.
+  `figures/initial/archive/` and its alias is gone from `make_paper_figures.py`.
 
   *Audited while doing it:* every CelebA checkpoint's layout was checked. The whole
   `ddpm_celeba_factored*` family is 64 px/permuted and feeds n20/n21/n22 — but those are cited for
@@ -164,7 +164,7 @@ sign must name its band until this is understood.
 | evidence section by section | `docs/RESULTS.md` — CelebA §5e-sexies, router §6c, §6c-bis, §6c-ter |
 | what each experiment answers | `docs/README.md` |
 | tables | `docs/TABLES.md` |
-| figures | `figures/` — f32 is the router, f31 the learning curves, f0 the overview; superseded ones are in `figures/archive/` |
+| figures | `figures/initial/` — f32 is the router, f31 the learning curves, f0 the overview; superseded ones are in `figures/initial/archive/` |
 | reproduce | `./reproduce.sh {tests\|figures\|paper\|all}` |
 | this session's new code | `lifelong_ood/neural/router.py` (`elbo_bits`, `mdl_route`, `mdl_crossover`, `utility_route`), `tests/diag_mdl_router.py`, `tests/diag_elbo_stability.py`, `experiments/score_mdl_rules.py`, `experiments/make_mdl_figure.py` |
 

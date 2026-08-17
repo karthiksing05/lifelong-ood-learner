@@ -46,7 +46,7 @@ from lifelong_ood.neural import (NeuralLifelongLearner, load_field, to_data,  # 
                                  to_model)
 from lifelong_ood.neural.idealwords import slot_factors                 # noqa: E402
 
-FIG = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "figures")
+FIG = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "figures", "initial")
 
 
 def score(probes, S, q, R):

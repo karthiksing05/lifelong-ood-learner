@@ -41,7 +41,7 @@ from lifelong_ood.neural.latent import ConvAE, decode, encode          # noqa: E
 from lifelong_ood.score import cosine_abar                             # noqa: E402
 from n55_dit_train import ddim_latent                                  # noqa: E402
 
-FIG = os.path.join(HERE, "figures", "dit")
+FIG = os.path.join(HERE, "figures", "initial", "dit")
 
 
 def latent_mode_ascent(model, z_q, u, n_starts=8, iters=120, lr=0.05, seed=0, init="hybrid",

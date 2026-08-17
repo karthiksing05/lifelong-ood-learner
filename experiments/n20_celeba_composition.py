@@ -48,7 +48,7 @@ from lifelong_ood.neural import (NeuralLifelongLearner, load_field, sample_embed
 from lifelong_ood.compose import PAPER_CELEBA, PAPER_POE_CELEBA        # noqa: E402
 from lifelong_ood.neural.composable import compose_attributes_scores   # noqa: E402
 
-FIG = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "figures")
+FIG = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "figures", "initial")
 
 
 def attr_hits(probes, S01, combo, idx):

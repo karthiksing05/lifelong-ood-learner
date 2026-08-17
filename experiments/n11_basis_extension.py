@@ -47,7 +47,7 @@ from lifelong_ood.neural import (NeuralLifelongLearner, load_field, to_data,  # 
 from lifelong_ood.neural.idealwords import (compose_with, extend_basis, factorize,  # noqa: E402
                                             sample_factored_pool, slot_factors)
 
-FIG = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "figures")
+FIG = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "figures", "initial")
 
 
 def main():
