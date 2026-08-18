@@ -317,7 +317,14 @@ def main():
 
     # ── sanity: does it generate valid compositions? ─────────────────────────
     model.load_state_dict(ema)
-    field = NeuralScoreField(model, device=dev)
+    # LAYOUT MUST MATCH TRAINING.  `train_ddpm` is given `args.layout`; building the eval field
+    # without it silently falls back to `permuted`, so a model trained with `--layout hwc` is
+    # sampled through a different pixel ordering.  The samples then come out as TILED MOSAICS of
+    # miniature faces and every probe reads them as noise -- the celeba_grid run scored joint 0.111,
+    # exactly 1/9 chance over its nine seen classes, and the checkpoint was fine.  This is the same
+    # fault class as RESULTS 30d ("a renderer reading HWC rows as CHW") reappearing at the eval
+    # boundary rather than the render one.
+    field = NeuralScoreField(model, device=dev, layout=args.layout)
     n = 16 if args.quick else 64
     S = to_data(field.sample(n=n, steps=50, seed=args.seed, clip=(-1, 1)))
     save_grid(S[:32], os.path.join(RESULTS, f"n1_uncond_{args.dataset}.png"),
