@@ -45,7 +45,8 @@ def main():
     p.add_argument("--out", default=None,
                    help="defaults to results/cache/ddpm_<dataset>.pt -- do NOT default this "
                         "to a fixed name, a celeba run once overwrote the colormnist backbone")
-    p.add_argument("--dataset", choices=["colormnist", "celeba", "shapes3d"],
+    p.add_argument("--dataset", choices=["colormnist", "celeba", "celeba_grid",
+                                         "shapes3d"],
                    default="colormnist",
                    help="celeba is the paper's second benchmark, and the one whose attributes "
                         "OVERLAP spatially -- ColorMNIST's separability is load-bearing in several "
@@ -129,6 +130,38 @@ def main():
                            min_count=25, max_rows=args.max_rows)
         data["slot"] = data["cls"]
         globals()["_IMG"] = img
+    elif args.dataset == "celeba_grid":
+        # CelebA as a DENSE GRID with a DENSITY holdout -- the ColorMNIST setup, on faces.
+        #
+        # `--dataset celeba` uses `build_classes`, which keeps the 74 most frequent 14-attribute
+        # combinations and admits a held-out one only if it differs from a seen combination on
+        # exactly one attribute.  Almost none qualify, so the split lands at 51 seen / 2 held out,
+        # and two held-out classes cannot carry a composition claim (N69 returned INCONCLUSIVE on
+        # exactly that n).  More importantly, every CelebA result so far used a backbone FINE-TUNED
+        # from `google/ddpm-celebahq-256`, so held-out faces were already in the pretrained density
+        # and "held out" meant only "no embedding row" -- which is why mode ascent returns the query
+        # there, and why `nearest-class` is so strong on Shapes3D (same pretraining story).
+        #
+        # This trains from scratch on the seen cells ONLY, so a held-out combination is absent from
+        # the model the way it is on ColorMNIST.  The grid is hair(3) x Male(2) x Smiling(2); its
+        # size is bounded by measurement, not preference -- only four attributes are readable at
+        # 64px (Smiling +0.364, Male +0.266, Brown_Hair +0.131, Blond_Hair +0.112 over base rate;
+        # everything else under +0.10 for a CNN probe AND a linear one), and the two hair colours
+        # are mutually exclusive so they collapse into one categorical factor.
+        from lifelong_ood.data.celeba import load_celeba_grid
+        img = args.img or 64
+        # `--n-holdout` defaults to 100 because it was added for shapes3d, which has 100 slots.
+        # Passed through unclamped it held out EIGHT of eleven cells and left three seen classes,
+        # since the loader holds out as many as it can while keeping every factor value present.
+        # A grid of twelve wants three held out, so the shapes3d default is treated as "unset".
+        n_hold = args.n_holdout if args.n_holdout <= 6 else 3
+        data = load_celeba_grid(img=img, seed=args.seed, n_per_cell=args.n_per_slot,
+                                n_holdout=n_hold, max_rows=args.max_rows)
+        globals()["_IMG"] = img
+        print(f"[n1] celeba_grid: {len(data['live'])} live cells over {data['names']} "
+              f"sizes {data['sizes']}; held out {data['held']}; "
+              f"{int(np.sum(data['seen']))} training images, "
+              f"{int(np.sum(~np.asarray(data['seen'])))} never shown", flush=True)
     elif args.dataset == "shapes3d":
         # Third dataset, same recipe -- no new trainer, no new architecture. `load_shapes3d` already
         # emits factored.py's contract, and the only thing n1 needs from a dataset is X/slot/seen.
@@ -247,7 +280,8 @@ def main():
                     remap=remap, concepts={}, n_per_slot=args.n_per_slot,
                     dataset=args.dataset, img=img, epochs_done=epochs_done,
                     layout=args.layout,
-                    split=dict(loader=("load_celeba" if args.dataset == "celeba"
+                    split=dict(loader=("load_celeba_grid" if args.dataset == "celeba_grid"
+                                       else "load_celeba" if args.dataset == "celeba"
                                        else "load_colormnist"),
                                n_per_slot=args.n_per_slot, img=img, seed=args.seed,
                                min_count=(25 if args.dataset == "celeba" else None),
@@ -289,7 +323,10 @@ def main():
     save_grid(S[:32], os.path.join(RESULTS, f"n1_uncond_{args.dataset}.png"),
               title=f"DDPM unconditional samples ({args.dataset})")
     rng = np.random.default_rng(args.seed)
-    picks = rng.choice(uniq, 8 if args.quick else 16, replace=False)
+    # `uniq` is the SEEN class count, which is 120 on ColorMNIST but nine on the CelebA grid --
+    # asking for 16 without replacement then raises rather than sampling what exists.
+    n_pick = min(len(uniq), 8 if args.quick else 16)
+    picks = rng.choice(uniq, n_pick, replace=False)
     hits, grids, probe_val = [], [], {}
 
     if args.dataset == "celeba":

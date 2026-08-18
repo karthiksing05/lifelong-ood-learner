@@ -385,3 +385,105 @@ def class_name(combo):
 
 def rgb_img(vec, img=IMG_CELEBA):
     return np.clip(np.asarray(vec, np.float32).reshape(img, img, 3), 0, 1)
+
+
+# ── the ColorMNIST-style grid ────────────────────────────────────────────────
+# ColorMNIST works as a compositional benchmark because it is a DENSE GRID: 10 digits x 4 fg x 4 bg
+# = 160 cells, every cell populated, 120 seen and 40 held out, and the held-out images are removed
+# from training ENTIRELY so the combination is absent from the model's density rather than merely
+# missing an embedding row.
+#
+# `build_classes` above does not give that.  It keeps the 74 most frequent 14-attribute
+# combinations and admits a combination to the held-out tier only if it differs from a SEEN one on
+# exactly one attribute; with 14 binary attributes almost none qualify, and the split comes out at
+# 51 seen / 2 held out.  Two held-out classes cannot support a composition claim (N69 measured its
+# own verdict as INCONCLUSIVE on exactly that n).
+#
+# So this builds a grid instead, and its size is bounded by two measured facts rather than chosen:
+#
+#   1. ONLY FOUR ATTRIBUTES ARE READABLE at 64 px.  Held-out margin over base rate, CNN probe:
+#      Smiling +0.364, Male +0.266, Brown_Hair +0.131, Blond_Hair +0.112; every other candidate
+#      (Black_Hair +0.088, Wavy_Hair +0.053, Oval_Face +0.040, Big_Lips +0.019, No_Beard +0.027,
+#      Big_Nose +0.025) sits under 0.10.  A linear probe on pixels finds the SAME four, so this is a
+#      property of CelebA at this resolution, not of the reader -- a stronger probe does not buy a
+#      bigger grid.  An unreadable factor makes the benchmark untestable, which is what
+#      `object_hue` (0.239 against a 0.20 chance baseline) did to the Shapes3D joint score.
+#   2. TWO CELLS ARE STRUCTURALLY EMPTY.  CelebA has essentially no blond males, so `blond x male`
+#      holds 0 images at both Smiling values.  A held-out cell with no real images cannot be scored
+#      against anything, so those two are excluded rather than held out.
+#
+# That leaves hair(blond|brown|other) x Male x Smiling = 12 cells, 10 of them populated, minimum
+# support 229 images.  Smaller than ColorMNIST's 160 and honestly so; it is what the dataset
+# supports once the instrument is taken seriously.
+GRID_ATTRS = ("hair", "Male", "Smiling")
+GRID_HAIR = ("Blond_Hair", "Brown_Hair", "other")
+
+
+def celeba_grid_factors(A):
+    """Attribute rows -> [N, 3] integer factors (hair, Male, Smiling).
+
+    Hair is collapsed to ONE categorical because Blond_Hair and Brown_Hair are mutually exclusive:
+    carrying them as two independent binary factors would create cells that cannot exist by
+    construction, on top of the two that happen not to exist in the data.
+    """
+    import numpy as _np
+    i = {n: ATTRS.index(n) for n in ATTRS}
+    bl, br = A[:, i["Blond_Hair"]], A[:, i["Brown_Hair"]]
+    hair = _np.where(bl == 1, 0, _np.where(br == 1, 1, 2))
+    return _np.stack([hair, A[:, i["Male"]], A[:, i["Smiling"]]], 1).astype(int)
+
+
+def load_celeba_grid(img=64, seed=0, root=None, n_per_cell=400, n_holdout=3, min_cell=100,
+                     max_rows=None):
+    """CelebA as a dense compositional grid, with a DENSITY holdout.  -> dict like load_colormnist.
+
+    `seen` is False for every image whose cell is held out, and callers that train must filter on it
+    -- `n1_train.py` does (`Xs = data["X"][seen]`), which is what makes the combination absent from
+    the model rather than merely unlabelled.  That distinction is the whole point of this loader:
+    the pretrained CelebA and Shapes3D backbones have seen every combination during pretraining, so
+    a "held-out" combination there is a conditioning holdout only, and mode ascent returns the query
+    because the query is a high-density point.
+
+    The holdout keeps every FACTOR VALUE present among the seen cells, so a held-out cell is a new
+    ARRANGEMENT of known parts rather than an unseen part -- the same guarantee
+    `factored.holdout_mask` provides for ColorMNIST and Shapes3D.
+    """
+    import numpy as _np
+    # Same acquisition path as `load_celeba`: parquet shards when present, otherwise the attribute
+    # file plus on-demand image loading.  Images are materialised AFTER the cells are chosen, so a
+    # run only decodes the rows it will actually use.
+    root = root or find_celeba()
+    if _parquet_shards(root):
+        X_all, A = load_from_parquet(root, img=img, max_rows=max_rows)
+        fnames = None
+    else:
+        fnames, A = load_attributes(root)
+        X_all = None
+    F = celeba_grid_factors(A)
+    sizes = [3, 2, 2]
+    cell = F[:, 0] * 4 + F[:, 1] * 2 + F[:, 2]
+    counts = {int(c): int((cell == c).sum()) for c in _np.unique(cell)}
+    live = sorted([c for c, n in counts.items() if n >= min_cell])
+
+    rng = _np.random.default_rng(seed)
+    held = []
+    for c in rng.permutation(live):
+        if len(held) >= n_holdout:
+            break
+        rest = [x for x in live if x not in held + [int(c)]]
+        vals = {f: {F[cell == r, f][0] for r in rest} for f in range(3)}
+        if all(len(vals[f]) == len(set(F[_np.isin(cell, live), f])) for f in range(3)):
+            held.append(int(c))
+    held = sorted(held)
+
+    pick = []
+    for c in live:
+        idx = _np.where(cell == c)[0]
+        rng.shuffle(idx)
+        pick.append(idx[:n_per_cell])
+    pick = _np.concatenate(pick)
+    X = X_all[pick] if X_all is not None else load_images([fnames[i] for i in pick], root=root,
+                                                          img=img)
+    return dict(X=X, factors=F[pick], slot=cell[pick], attrs=A[pick],
+                seen=~_np.isin(cell[pick], held), held=held, live=live, counts=counts,
+                names=list(GRID_ATTRS), sizes=sizes, img=img)

@@ -56,7 +56,13 @@ def mode_ascent(field, x_img, u, n_starts=4, iters=120, lr=0.05, seed=0, init="h
     g = torch.Generator(device=dev).manual_seed(seed)
     xq = torch.as_tensor(np.asarray(x_img, np.float32), device=dev).reshape(1, 3, field.img,
                                                                             field.img)
-    half = n_starts // 2 if init == "hybrid" else n_starts
+    # `half` counts the QUERY-seeded chains, so the else-branch has to distinguish "query" from
+    # "random" -- it did not, and `init="random"` therefore produced n_starts QUERY chains, the
+    # exact opposite of the name.  That is why setting init="random" to fix the prototypes row
+    # changed nothing: it went from 2 query chains to 4.  `NeuralScoreField.mode_ascent` in the
+    # library gets this right (`if init == "query" ... else` random); this is a local copy that
+    # drifted, which is the cost of duplicating it here.
+    half = 0 if init == "random" else (n_starts // 2 if init == "hybrid" else n_starts)
     parts, src = [], []
     if half:
         e = torch.randn((half, *xq.shape[1:]), generator=g, device=dev)
@@ -81,7 +87,14 @@ def mode_ascent(field, x_img, u, n_starts=4, iters=120, lr=0.05, seed=0, init="h
 
 def main():
     p = argparse.ArgumentParser()
-    p.add_argument("--ckpt", default=os.path.join(CACHE, "ddpm_shapes3d_pre.pt"))
+    p.add_argument("--ckpt", default=os.path.join(CACHE, "ddpm_shapes3d_pre2.pt"),
+                   help="`_pre2`, NOT `_pre`. Every Shapes3D number the documents quote -- ADDRESS "
+                        "0.583 against a 0.036 floor, basis R^2 0.538 -- comes from _pre2, the run "
+                        "with the class table on its own 50x learning rate (5t-bis). The default "
+                        "still pointed at the superseded _pre, so a bare re-run silently rendered "
+                        "the case study from a backbone scoring R^2 0.456 and ADDRESS 0.17, tied "
+                        "with nearest-class. Same fault as reproduce.sh restoring pre-re-derivation "
+                        "aggregates: a default aimed at a superseded artifact.")
     p.add_argument("--n-cases", type=int, default=12)
     p.add_argument("--n-show", type=int, default=6)
     p.add_argument("--n-samples", type=int, default=16)
@@ -222,11 +235,35 @@ def main():
         n_tr = int(np.sum((slots == int(s)) & data["seen"]))
         c_addr = compose(fac, tuple(int(v) for v in tgt))
         d2 = ((C - c_addr[None]) ** 2).sum(1)
-        # the prototypes Stage 1 discovers, at the same noise levels f9 shows
+        # THE PROTOTYPES ROW SHOWS QUERY-AGNOSTIC CHAINS ONLY.
+        #
+        # `init="hybrid"` starts half the chains AT the query, and on this backbone such a chain
+        # returns the query at EVERY noise level shown -- the panels at u=0.05, 0.15 and 0.30 were
+        # each pixel-for-pixel the held-out scene, which reads as a training leak and is not one
+        # (0 training rows, no embedding row). Color-MNIST's figure was fixed this way first; this
+        # is the same fix, and CelebA's is below.
+        #
+        # It is not merely cosmetic: 5e-quater measures the composition surviving on the
+        # query-agnostic experts alone (joint 0.83 either way) and COLLAPSING when restricted to
+        # the query-seeded ones (0.00, background wrong in 5 of 5). The agnostic chains are what
+        # the composition actually rests on, so they are what the figure should show.
+        # HYBRID ascent, then DISPLAY the query-agnostic half -- the pattern ColorMNIST and
+        # CelebA use.  Forcing `init="random"` instead was wrong twice over: the ascent no longer
+        # matched what the method runs, and at u=0.05 a random start is far OFF-manifold (x_t
+        # should already look like a clean image at abar~0.99), so every chain fell into the same
+        # dominant basin and the row became one generic purple capsule repeated in every block --
+        # a different failure from showing the query, and no more informative.
+        #
+        # The displayed levels start at 0.15 for the same reason: a random start only means
+        # something where the noise level makes it a plausible x_t.
         P, psrc = [], []
-        for ui, uu in enumerate((0.05, 0.15, 0.30)):
+        for ui, uu in enumerate((0.15, 0.30, 0.40)):
             m, sr = mode_ascent(field, X[idx[0]].reshape(64, 64, 3).transpose(2, 0, 1), uu,
-                                n_starts=2, seed=args.seed + 9973 * int(s) + 131 * ui)
+                                n_starts=6, init="hybrid",
+                                seed=args.seed + 9973 * int(s) + 131 * ui)
+            keep = [i for i, q in enumerate(sr) if q == "random"]
+            if keep:
+                m, sr = np.asarray(m)[keep], [sr[i] for i in keep]
             P.append(m); psrc += [f"{q}-init u={uu:g}" for q in sr]
         got = {"real": X[idx[:args.n_show]],
                "prototypes": np.concatenate(P)[:args.n_show],

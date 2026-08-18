@@ -35,7 +35,8 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from common import CACHE, RESULTS                                              # noqa: E402
 
 from lifelong_ood.data.celeba import class_name, load_celeba                        # noqa: E402
-from lifelong_ood.compose import (PAPER_CELEBA, PAPER_POE_CELEBA,              # noqa: E402
+from lifelong_ood.compose import (CELEBA_DISCOVERY, PAPER_CELEBA,             # noqa: E402
+                                  PAPER_POE_CELEBA,
                                   candidates_ascent, poe_teacher)
 from lifelong_ood.evals import (attr_accuracy, fit_attr_probes, paper_metrics,  # noqa: E402
                                 probe_usable, save_json, speckle)
@@ -159,7 +160,29 @@ def main():
             M, V, _ = candidates_ascent(field, xq, seed=args.seed, **PAPER_CELEBA)
             t = poe_teacher(xq, M, V, K=3, tau=0.5, adaptive_tau=False)   # their fixed tau
             if protos is None:
-                protos = to_data(np.asarray(M)[t["sel"]]).astype(np.float32)
+                # THE PROTOTYPES ROW COMES FROM A REPAIRED DISCOVERY, AND SAYS SO.
+                #
+                # `PAPER_CELEBA` sets init="query", so EVERY chain starts at the query and the pool
+                # holds zero query-agnostic candidates (N68: selected spread 0.34x the spread of
+                # real images of the class, against Color-MNIST's 1.51x). Eq. 8-9 exists to find
+                # experts that DISAGREE and is handed only experts that agree, so the three panels
+                # came out as three near-copies of the query -- which is what a reader sees and
+                # reasonably objects to.
+                #
+                # `CELEBA_DISCOVERY` is the same column with init="hybrid" -- the setting the paper
+                # itself uses on Color-MNIST -- and repairs the pool to 0.82x. The teacher arms
+                # above are LEFT ON `PAPER_CELEBA` so the reproduction stays faithful; only the
+                # displayed prototypes use the repair, and the row is labelled accordingly.
+                Mr, Vr, mr = candidates_ascent(field, xq, seed=args.seed, **CELEBA_DISCOVERY)
+                elig = np.where(np.asarray(mr["src"]) == "random")[0]
+                tr = (poe_teacher(xq, Mr, Vr, K=3, tau=0.5, adaptive_tau=False, eligible=elig)
+                      if len(elig) >= 3 else t)
+                src_pool, sel_pool = (Mr, tr) if len(elig) >= 3 else (M, t)
+                protos = to_data(np.asarray(src_pool)[sel_pool["sel"]]).astype(np.float32)
+                print(f"[n48] prototypes row: {len(elig)} query-agnostic candidates available "
+                      f"(paper column gives 0); showing "
+                      f"{'repaired hybrid discovery' if len(elig) >= 3 else 'paper column'}",
+                      flush=True)
             for nm, tt in (("poe-guided", t), ("query-only", query_only_teacher(xq))):
                 per[nm].append(to_data(field.sample(
                     n=args.n_samples, steps=args.steps, seed=args.seed + qi, clip=(-1, 1),
