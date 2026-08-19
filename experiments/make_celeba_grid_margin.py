@@ -8,11 +8,22 @@ replicate the sampler rather than the claim.
 So this draws every `n73_celeba_grid_compose*` result it can find, one bar group per (backbone,
 cell), with:
 
-  * the PROBE CEILING as a horizontal band, because raw joint is uninterpretable without it -- the
-    factor probes read REAL images at ~0.41-0.57 depending on the seed, not at 1.0;
-  * CHANCE as a second line;
-  * the paired ADDRESS - nearest-class margin per cell in the right-hand panel, which is the
-    quantity the "donation, not retrieval" claim actually rests on.
+  * the PROBE CEILING as a per-backbone step, because raw joint is uninterpretable without it --
+    the factor probes read REAL images at ~0.41-0.57 depending on the seed, not at 1.0;
+  * CHANCE as a second step, since it is 1/n_seen and holding out five cells leaves seven, not nine;
+  * cells the instrument cannot READ dropped rather than drawn -- where real images of a cell score
+    at chance under that run's own probes, all three arms read ~0 and a three-way tie at zero would
+    be a picture of the instrument;
+  * the paired ADDRESS - nearest-class margin per cell in the right-hand panel.
+
+**The right panel's headline numbers come from `n75_grid_pooled.json`, not from this file.** N75
+gates per (cell, seed) while the left panel necessarily averages seeds per cell, so the two keep
+different subsets; letting this file compute its own summary printed a different margin beside the
+same bars. One artifact owns the number and the figure displays it.
+
+And the answer it displays is a split one: ADDRESS clears the unconditional floor
+(+0.242 +/- 0.069, won 12/16) and does not clear retrieval (+0.049 +/- 0.027, won 8/16). See
+RESULTS 7ee.
 
 Backbones differ in how many cells they hold out -- more held out means fewer seen, which is a real
 trade-off and is why they are shown separately rather than pooled into one bar.
@@ -90,7 +101,7 @@ def main():
             paired = [ad - nc for ad, nc in zip(vals["address"], vals["nearest-class"])]
             marg.append(float(np.mean(paired)))
 
-    fig, (ax, bx) = plt.subplots(1, 2, figsize=(max(11, 0.85 * len(cells) + 6), 4.6),
+    fig, (ax, bx) = plt.subplots(1, 2, figsize=(min(15, max(11, 0.85 * len(cells) + 6)), 5.6),
                                  gridspec_kw=dict(width_ratios=[2.3, 1]))
     x = np.arange(len(cells))
     w = 0.26
@@ -135,10 +146,11 @@ def main():
     if pooled:
         r = pooled["margin_vs_retrieval"]
         u = pooled["margin_vs_uncond"]
-        bx.set_title(f"POOLED over {pooled['n_readable']} readable of {pooled['n_total']} "
-                     f"measurements (N75)\n"
-                     f"vs retrieval {r['mean']:+.3f} +/- {r['se']:.3f}, won {r['won']}/{r['n']}"
-                     f"   |   vs floor {u['mean']:+.3f} +/- {u['se']:.3f}, won {u['won']}/{u['n']}",
+        # Three short lines, not two long ones: the right panel is a third of the figure width and
+        # a two-line version had its second line clipped, losing the floor margin entirely.
+        bx.set_title(f"POOLED, {pooled['n_readable']} readable of {pooled['n_total']} (N75)\n"
+                     f"vs retrieval {r['mean']:+.3f}$\\pm${r['se']:.3f}, won {r['won']}/{r['n']}\n"
+                     f"vs floor {u['mean']:+.3f}$\\pm${u['se']:.3f}, won {u['won']}/{u['n']}",
                      fontsize=8)
     else:
         bx.set_title(f"paired margin: {mm:+.3f} +/- {se:.3f} over {len(marg)} cells\n"
@@ -146,18 +158,19 @@ def main():
     bx.grid(axis="y", alpha=0.25)
 
     fig.suptitle(
-        "CelebA grid, DENSITY holdout: every cell shown has ZERO training images.\n"
-        "`nearest-class` is the adversarial control -- the backbone's own closest existing "
-        "embedding. ADDRESS clears the UNCONDITIONAL floor decisively and does NOT clear "
-        "RETRIEVAL (right panel): on ColorMNIST nearest-class scores 0.000, here it scores 0.273.\n"
-        "Backbones hold out different numbers of cells (more held out = fewer seen), so they are "
-        "shown separately rather than pooled.\n"
-        + (f"{len(blind)} cell(s) dropped: REAL images of them score at chance under that run's "
-           "own probes, so no arm can be judged there." if blind else ""), fontsize=8)
-    fig.tight_layout(rect=[0, 0, 1, 0.88])
+        "CelebA grid, DENSITY holdout: every cell shown has ZERO training images. ADDRESS clears "
+        "the UNCONDITIONAL floor and does NOT clear RETRIEVAL.\n"
+        "`nearest-class` is the backbone's own closest existing embedding: it scores 0.000 on "
+        "ColorMNIST and 0.273 here, which is what caps this dataset.\n"
+        + (f"{len(blind)} cell(s) dropped -- REAL images of them score at chance under that run's "
+           "own probes, so no arm can be judged there." if blind else ""), fontsize=8.5)
+    # NO `bbox_inches="tight"` on the save below. It recomputes the bounding box after
+    # `tight_layout` has already placed the axes, and the two together left a band of white between
+    # caption and axes taller than the caption itself. `tight_layout(rect=...)` alone places both.
+    fig.tight_layout(rect=[0, 0, 1, 0.94])
     os.makedirs(FIG, exist_ok=True)
     o = os.path.join(FIG, "f_celeba_grid_margin.png")
-    fig.savefig(o, dpi=140, bbox_inches="tight")
+    fig.savefig(o, dpi=140)
     print(f"[margin] {len(cells)} (backbone, cell) measurements over {len(runs)} backbones")
     if blind:
         print(f"[margin] {len(blind)} dropped as unreadable (real images at chance): {blind}")
