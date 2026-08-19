@@ -63,6 +63,18 @@ class VEToVPUNet(nn.Module):
     def class_table(self):
         return self.cemb.weight[:self.n_classes].detach()
 
+    @property
+    def emb_dim(self):
+        """Alias for `edim`, because `HierarchicalAdapterBank` asks for this name.
+
+        A pure naming mismatch, and it stopped the storage loop dead on this backbone --
+        `_register` does `torch.zeros(self.model.emb_dim)` and every other conditioning module here
+        (`UNet`, `DiT`, `CondUNetShim`) exposes `emb_dim` while this one exposes `edim`. It is the
+        smallest possible instance of the contract problem: what a backbone must implement to work
+        with the bank is written down nowhere, so each new family discovers it by traceback.
+        """
+        return self.edim
+
     @staticmethod
     def sigma_of(u):
         """our cosine u -> the VE sigma, clamped to the checkpoint's trained range."""

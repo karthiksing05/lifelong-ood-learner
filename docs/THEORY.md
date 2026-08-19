@@ -60,6 +60,17 @@ real rather than sample size alone.
 (factor values summed) before this claim can even be tested on it. That is a concrete design
 constraint on the benchmark, and it is cheap to check before any training.
 
+**But a high R² is NOT a precondition for ADDRESS to work, and §7jj is the sharpest evidence.** On
+the pretrained Shapes3D table the additive fit reads **0.516 in-sample against 0.454 leave-one-out**
+— agreeing, because the ratio is 16.4, so the number is trustworthy — and ADDRESS still reaches
+**0.983 against a real-image ceiling of 1.000**, with retrieval at 0.010. Composition works through
+a basis that explains *half* the embedding variance. §5t-ter found the same on a different axis: R²
+is highest at the learning-rate rung where ADDRESS is near its worst.
+
+So the size condition above is about **identifying** the basis, not about the basis explaining
+everything. Read this section as: the table must be big enough for the decomposition to be
+estimable, and the estimate must then be *checked by composing*, never by its own R².
+
 **What would kill it:** an R² at the permutation null on a new backbone, or a cross-validated R²
 far below the in-sample one at a healthy ratio. That is the first thing to run on a policy
 (`VLA_PATH` Stage A) precisely because everything below is void without it.

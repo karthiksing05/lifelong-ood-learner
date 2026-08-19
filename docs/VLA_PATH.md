@@ -10,6 +10,7 @@ this is the forward plan.
 
 | claim | evidence | confidence |
 |---|---|---|
+| **ADDRESS composes held-out combinations on a PRETRAINED backbone, and beats retrieval outright** | joint **0.983** against a real-image ceiling of 1.000, `nearest-class` **0.010**, floor 0.003; margins +0.972 / +0.979 against a resolution of 0.000; 12 of 12 held-out combinations, 0.00 memorised (§7jj) | **high** — this is the regime a policy is in, and it is the measurement CelebA could not make |
 | A conditional diffusion model's class table organises **compositionally** without being told the factors | basis R² 0.870 ColorMNIST · 0.538 Shapes3D · 0.832 **DiT**, and **cross-validated** 0.772 on ColorMNIST's 120-row table | **high on large tables, void on small ones** — the claim needs classes ≫ free vectors. The CelebA grid at 9 classes / 8 vectors reads 0.875 in-sample and **0.207** leave-one-out (§7ee), so it is excluded from this row |
 | **ADDRESS** composes held-out combinations at ~0 parameters | ColorMNIST joint 0.556 · Shapes3D **16× floor** · DiT 0.661 full-loop · CelebA density-holdout **+0.242 over the floor** (§7ee) | **high vs the unconditional floor** |
 | The scheme is **not tied to the UNet** | latent DiT, adaLN conditioning, `factorize`/`compose` unchanged (§7z) | **high** — this is the VLA-relevant one |
