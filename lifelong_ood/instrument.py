@@ -196,6 +196,52 @@ def to_data_space(field, X):
     return np.asarray(to_data(X), np.float32) if space == "model" else np.clip(X, 0.0, 1.0)
 
 
+def sample_conditioned(field, n=24, steps=200, seed=0, emb=None, branch=None, **kw):
+    """Sample any field on a conditioning vector or a class index -> rows in DATA space.
+
+    THE FOURTH FAULT OF THIS CLASS, and the reason this exists rather than another per-experiment
+    patch. Three sampler signatures disagree and none is wrong:
+
+        BaseScoreField.sample(branch=,       clip=(-0.2,1.2))   guide_eps, guide_w, eta, mcmc
+        PretrainedScoreField.sample(emb=,    clip=(-1,1))       eta
+        ve_bridge._Field.sample(emb_override=, clip=(0,1))      NO eta, NO guide_eps
+
+    `sample_embedding` routes a conditional through `guide_eps` at guidance 1.0 and passes `eta`, so
+    it raises TypeError on the VE bridge -- which is how n78 AND n77 each lost a run on a backbone
+    the rest of the repo samples happily. Declaring `data_space` fixed the RANGE half of the
+    divergence; this fixes the SIGNATURE half.
+
+    Only arguments the target actually accepts are forwarded, so adding a fourth backbone family is
+    one branch here rather than a new convention at every call site.
+    """
+    import inspect
+
+    sig = inspect.signature(field.sample).parameters
+    call = dict(n=n, steps=steps, seed=seed)
+    if emb is not None:
+        for name in ("emb_override", "emb"):
+            if name in sig:
+                call[name] = emb
+                break
+        else:
+            # THIRD PATH, and the regression check on ColorMNIST is what found it. The base
+            # sampler takes NO conditioning-vector argument: `NeuralScoreField` conditions through
+            # `guide_eps` at guidance 1.0, which is precisely what `sample_embedding` wraps. So the
+            # divergence runs both ways -- `sample_embedding` fails on the VE bridge, and
+            # `emb_override` does not exist on our own UNets -- and a dispatcher that handles only
+            # one direction just moves the fault.
+            from .neural.inversion import sample_embedding
+            extra = {k: v for k, v in kw.items() if k in ("guidance", "eta", "clip", "interval")}
+            return to_data_space(field, sample_embedding(field, emb, n=n, steps=steps, seed=seed,
+                                                         **extra))
+    if branch is not None:
+        call["branch"] = branch
+    for k, v in kw.items():
+        if k in sig:
+            call[k] = v
+    return to_data_space(field, field.sample(**call))
+
+
 # ── conventions ─────────────────────────────────────────────────────────────
 def convention_probe(field, X01, img=None, u=0.3, n=4, seed=0):
     """Measure a backbone's layout and range from data, rather than trusting its declaration.

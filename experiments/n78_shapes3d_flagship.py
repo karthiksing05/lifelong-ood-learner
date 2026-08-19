@@ -39,7 +39,6 @@ from lifelong_ood.data.shapes3d import load_shapes3d                  # noqa: E4
 from lifelong_ood.evals import (factor_accuracy, fit_factor_probes,   # noqa: E402
                                 memorization, precision_recall, save_json, vendi_score)
 from lifelong_ood.instrument import check_instrument, to_data_space   # noqa: E402
-from lifelong_ood.neural import sample_embedding                      # noqa: E402
 from lifelong_ood.neural.idealwords import compose, cv_r2, factorize  # noqa: E402
 from lifelong_ood.neural.ve_bridge import load_ve_field               # noqa: E402
 
@@ -96,14 +95,25 @@ def main():
         R = X[idx[:60]]
         c_new = compose(fac, tgt)
         j_near = int(np.argmin(((C - c_new[None]) ** 2).sum(1)))
+        # THE VE BRIDGE HAS ITS OWN SAMPLER SIGNATURE, and this is the third such divergence to
+        # cost a run: `_Field.sample` takes `emb_override=` and accepts neither `eta` nor
+        # `guide_eps`, so `sample_embedding` -- which routes the conditional through `guide_eps` at
+        # guidance 1.0 -- cannot be used here at all. n58 established the working path on this
+        # backbone and this mirrors it exactly rather than inventing a fourth convention.
+        #
+        # The unconditional arm uses the model's OWN null row (`ck["null_id"]`), not `branch=None`:
+        # this table was bolted on and trained with CFG dropout, so the null row is what "no class"
+        # means to it. `to_data_space` is a no-op here because the field declares DATA space -- kept
+        # so the call reads the same on every backbone.
         got = {
-            "address": to_data_space(field, sample_embedding(
-                field, c_new, n=args.n_samples, steps=args.steps, seed=args.seed + ci)),
+            "address": to_data_space(field, field.sample(
+                n=args.n_samples, steps=args.steps, seed=args.seed + ci, emb_override=c_new)),
             "nearest-class": to_data_space(field, field.sample(
                 n=args.n_samples, steps=args.steps, seed=args.seed + ci,
                 branch=remap[int(seen_slots[j_near])])),
             "unconditional": to_data_space(field, field.sample(
-                n=args.n_samples, steps=args.steps, seed=args.seed + 37 * (ci + 1), branch=None)),
+                n=args.n_samples, steps=args.steps, seed=args.seed + 37 * (ci + 1),
+                branch=ck["null_id"])),
         }
         train_ref = X[np.asarray(d["seen"], bool)][:600]
         for arm in ARMS:

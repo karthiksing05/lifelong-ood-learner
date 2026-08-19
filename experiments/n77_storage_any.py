@@ -42,10 +42,33 @@ from common import CACHE, RESULTS                                     # noqa: E4
 from lifelong_ood.data.factored import decode_slot, holdout_mask, load_factored  # noqa: E402
 from lifelong_ood.evals import (factor_accuracy, fit_factor_probes,   # noqa: E402
                                 precision_recall, save_json, vendi_score)
-from lifelong_ood.instrument import check_instrument, to_data_space   # noqa: E402
-from lifelong_ood.neural import (NeuralLifelongLearner, sample_embedding,  # noqa: E402
-                                 to_model)
+from lifelong_ood.instrument import (check_instrument, sample_conditioned,  # noqa: E402
+                                     to_data_space)
+from lifelong_ood.neural import NeuralLifelongLearner, to_model    # noqa: E402
 from lifelong_ood.neural.idealwords import compose, cv_r2, factorize  # noqa: E402
+
+
+def _raw_sample(field, n, steps, seed, emb):
+    """Sample WITHOUT converting to data space -- the pool `consolidate` distils against.
+
+    `consolidate` trains the adapter on these rows as diffusion targets, so they must be in the
+    space the field TRAINS in, not the space the probes read. Converting them cost a whole
+    ColorMNIST result once (the stored concept came back at joint 0.000 with every sample
+    identical). Signature dispatch is shared with `instrument.sample_conditioned`.
+    """
+    import inspect
+
+    sig = inspect.signature(field.sample).parameters
+    call = dict(n=n, steps=steps, seed=seed)
+    for name in ("emb_override", "emb"):
+        if name in sig:
+            call[name] = emb
+            break
+    else:
+        # our own UNets condition through `guide_eps`, and `sample_embedding` is that wrapper
+        from lifelong_ood.neural import sample_embedding
+        return sample_embedding(field, emb, n=n, steps=steps, seed=seed)
+    return field.sample(**call)
 
 
 def weight_hash(model, keys):
@@ -156,15 +179,22 @@ def main():
         S = {}
         # `oracle` never touches the read, so oracle -> address is the READ cost and
         # address -> stored is the STORAGE cost. Conflating them misread N74's first run.
-        S["oracle"] = to_data_space(field, sample_embedding(
-            field, compose(fac, tgt), n=args.n_samples, steps=args.steps, seed=args.seed + ci))
-        S["address"] = to_data_space(field, sample_embedding(
-            field, c_read, n=args.n_samples, steps=args.steps, seed=args.seed + ci))
+        #
+        # `sample_conditioned` rather than `sample_embedding`: the latter routes the conditional
+        # through `guide_eps` and passes `eta`, neither of which the VE bridge's sampler accepts,
+        # and that TypeError cost this experiment a full run on Shapes3D.
+        S["oracle"] = sample_conditioned(field, n=args.n_samples, steps=args.steps,
+                                         seed=args.seed + ci, emb=compose(fac, tgt))
+        S["address"] = sample_conditioned(field, n=args.n_samples, steps=args.steps,
+                                          seed=args.seed + ci, emb=c_read)
 
         # ABSORB. The pool stays in MODEL space -- `consolidate` trains the adapter against these
         # rows as diffusion targets; converting them cost a whole result on ColorMNIST once.
-        pool = np.asarray(sample_embedding(field, c_read, n=args.n_pool, steps=args.steps,
-                                           seed=args.seed + 500 + ci), np.float32)
+        # The pool is what `consolidate` distils against, so it must be in the space the field
+        # TRAINS in -- model space for our UNets, data space for the VE bridge. `field.sample`
+        # returns exactly that, before any `to_data` conversion.
+        pool = np.asarray(_raw_sample(field, n=args.n_pool, steps=args.steps,
+                                      seed=args.seed + 500 + ci, emb=c_read), np.float32)
         L.bank.add_concept(name, pool.mean(0))
         L.bank._emb_extra[name].data = torch.as_tensor(
             np.asarray(c_read, np.float32), device=dev).clone()

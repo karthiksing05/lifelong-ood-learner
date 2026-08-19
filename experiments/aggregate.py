@@ -674,7 +674,39 @@ def agg_n77(runs):
     return dict(table=out, n_seeds=len(runs))
 
 
+def agg_n78(runs):
+    """N78: the flagship -- composition on a PRETRAINED backbone whose table is big enough."""
+    arms = ("address", "nearest-class", "unconditional")
+    rows = [r for _, run in runs for r in run["rows"]]
+    out = {a: {k: stat([r[k] for r in rows if r["arm"] == a])
+               for k in ("joint", "recall", "precision", "vendi", "memorized")} for a in arms}
+    out["ceiling"] = {"joint": stat([run["ceiling"] for _, run in runs])}
+    out["basis"] = {"r2": stat([run["basis_r2"] for _, run in runs]),
+                    "r2_cv": stat([run["basis_r2_cv"] for _, run in runs])}
+    am = out["address"]["joint"]["mean"]
+    out["margin"] = {"vs_retrieval": dict(mean=am - out["nearest-class"]["joint"]["mean"],
+                                          se=0.0, n=1),
+                     "vs_floor": dict(mean=am - out["unconditional"]["joint"]["mean"],
+                                      se=0.0, n=1),
+                     "resolution": stat([run["min_detectable"] for _, run in runs])}
+    inst = [r.get("instrument", {}) for _, r in runs if isinstance(r, dict)]
+    ok = [float(bool(i.get("ok"))) for i in inst if i]
+    if ok:
+        out["_instrument"] = {"ok": stat(ok)}
+    print(f"    {'arm':16s}{'joint':>14s}{'recall':>14s}{'memorized':>12s}")
+    for a in arms:
+        print(f"    {a:16s}{fmt(out[a]['joint']):>14s}{fmt(out[a]['recall']):>14s}"
+              f"{fmt(out[a]['memorized']):>12s}")
+    print(f"    ceiling {fmt(out['ceiling']['joint'])} | margins: retrieval "
+          f"{out['margin']['vs_retrieval']['mean']:+.3f}, floor "
+          f"{out['margin']['vs_floor']['mean']:+.3f}, resolution "
+          f"{fmt(out['margin']['resolution'])}")
+    print(f"    basis R2 {fmt(out['basis']['r2'])} in-sample, {fmt(out['basis']['r2_cv'])} cv")
+    return dict(table=out, n_seeds=len(runs))
+
+
 AGG = {"n71_absorb_and_generate": agg_n71, "n72_donation": agg_n72,
+       "n78_shapes3d_flagship": agg_n78,
        "n77_storage_any": agg_n77,
        "n75_grid_pooled": agg_n75,
        "n73_celeba_grid_compose": agg_n73,
