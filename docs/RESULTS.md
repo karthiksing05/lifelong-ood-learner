@@ -3039,10 +3039,12 @@ held-out cells' images removed from training entirely. Three backbones — 9, 8 
 different training seeds — × three sampling seeds.
 
 **The holdout is real, and confirmed mechanically.** Even query-seeded mode ascent ends far from the
-query (85–93) where real images of the same class sit 34–51 away — the opposite of the pretrained
-backbones, where a query-seeded chain returned the query pixel-for-pixel. Nothing is copied:
-**0.000 memorised** (MOSAIC d_NN1/d_NN2 against the training set) and d(sample, query) **79.4**
-against a real-vs-real spread of **40.0**.
+query where real images of the same class sit closer — the opposite of the pretrained backbones,
+where a query-seeded chain returned the query pixel-for-pixel. Nothing is copied: **0.000
+memorised** (MOSAIC d_NN1/d_NN2 against the training set), and **d(sample, query) 42.1 against a
+real-vs-real spread of 40.0** — our samples sit as far from a real held-out image as two genuine
+images of that cell sit from each other. That is the same signature §7dd reports on ColorMNIST
+(9.03 against 9.06).
 
 ### The instrument had to be calibrated first, and it moved the result twice
 
@@ -3056,6 +3058,16 @@ probes, on 200 images — separate from the 24-image display arm, because 24 giv
 near 0.06 and this number decides whether a cell is scored at all. **Only 16 of 36 measurements
 survive it.**
 
+**And a third fault, found by looking at the case-study figure.** `n73` and its case figure sampled
+without `to_data`, so **model-space [-1,1] samples were scored by probes trained on [0,1]** — 49.3 %
+of sample pixels are negative — and `field.sample` was called at its default `clip=(-0.2, 1.2)`, a
+*data*-range clamp applied to a *model*-space trajectory at every reverse step. That second one is
+`VLA_PATH` lesson 2-bis, which had already cost a 109-minute retrain on the multi-object backbone.
+Both files were written fresh instead of copying §7dd's sampling block, which has it right. Every
+number in this section is post-fix; the pre-fix version reported +0.049 over retrieval and a
+d(query) of 79.4, the latter inflated purely by the range mismatch. *All 30 other experiment files
+convert correctly — the omission was confined to these two.*
+
 *A wrong mechanism was published internally in between and is corrected here.* The first blind cells
 were all brown-hair, and `diag_grid_factors` showed `Brown_Hair` scoring **−0.154** against its base
 rate as a binary probe, which made "brown is unreadable" irresistible. It is wrong: the benchmark
@@ -3067,12 +3079,12 @@ property of the fitted probe, not of a value that could be excluded once.
 
 | arm | joint (n = 16 readable) |
 |---|---|
-| **`address` (ours)** | **0.323** |
-| `nearest-class` — the backbone's own closest existing class | **0.273** |
-| `unconditional` | **0.081** |
+| **`address` (ours)** | **0.297** |
+| `nearest-class` — the backbone's own closest existing class | **0.279** |
+| `unconditional` | **0.117** |
 
-* **ADDRESS − unconditional = +0.242 ± 0.069, won 12/16.** Conditioning on a composed point works.
-* **ADDRESS − nearest-class = +0.049 ± 0.027, won 8/16.** A coin flip. **It does not beat
+* **ADDRESS − unconditional = +0.180 ± 0.058, won 12/16.** Conditioning on a composed point works.
+* **ADDRESS − nearest-class = +0.018 ± 0.011, won 6/16.** Below half. **It does not beat
   retrieval.**
 
 **Why, and it is diagnosable rather than mysterious.** On ColorMNIST `nearest-class` scores

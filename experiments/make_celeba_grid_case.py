@@ -59,7 +59,8 @@ def main():
 
     from lifelong_ood.data.celeba import load_celeba_grid
     from lifelong_ood.evals import factor_accuracy, fit_factor_probes, precision_recall
-    from lifelong_ood.neural import NeuralScoreField, UNet, sample_embedding
+    from lifelong_ood.neural import (NeuralScoreField, UNet, sample_embedding,
+                                     to_data, to_model)
     from lifelong_ood.neural.idealwords import compose, factorize
 
     ck = torch.load(args.ckpt, map_location="cpu", weights_only=False)
@@ -105,22 +106,31 @@ def main():
         c_new = compose(fac, tgt)
         j_near = int(np.argmin(((C - c_new[None]) ** 2).sum(1)))
         # query-agnostic prototypes: ascent from NOISE, never from the query
-        xq = X[int(idx[0])]
+        # EVERY GENERATED ROW GOES THROUGH `to_data`, and `field.sample` needs `clip=(-1,1)`.
+        #
+        # This figure drew model-space [-1,1] samples through `np.clip(S, 0, 1)`, which discards the
+        # 49.3% of pixels that are negative -- the visible colour destruction, and the reason the
+        # `real` row looked fine while every generated row did not. `field.sample` compounded it:
+        # its `clip` defaults to (-0.2, 1.2), a DATA-range clamp applied to a MODEL-space trajectory
+        # at every reverse step (`VLA_PATH` lesson 2-bis). `mode_ascent` takes and returns model
+        # space too, so the query goes in through `to_model` and the modes come back through
+        # `to_data`. n72 is the reference for all of this.
+        xq = to_model(X[int(idx[0])]).ravel()
         P = []
         for uu in (0.15, 0.30, 0.45):
             _, x0 = field.mode_ascent(xq, uu, n_starts=4, iters=120, lr=0.05,
                                       seed=args.seed + 17 * int(h), init="random")
-            P.append(np.asarray(x0)[:1])
+            P.append(to_data(np.asarray(x0))[:1])
         got = {
             "real": R[:args.n_show],
             "prototypes": np.concatenate(P),
-            "ours (ADDRESS)": np.asarray(sample_embedding(field, c_new, n=args.n_show,
-                                                          steps=args.steps, seed=args.seed)),
-            "nearest-class": np.asarray(field.sample(n=args.n_show, steps=args.steps,
-                                                     seed=args.seed,
-                                                     branch=remap[int(seen[j_near])])),
-            "unconditional": np.asarray(field.sample(n=args.n_show, steps=args.steps,
-                                                     seed=args.seed + 91, branch=None)),
+            "ours (ADDRESS)": to_data(sample_embedding(field, c_new, n=args.n_show,
+                                                       steps=args.steps, seed=args.seed)),
+            "nearest-class": to_data(field.sample(n=args.n_show, steps=args.steps,
+                                                  seed=args.seed, clip=(-1, 1),
+                                                  branch=remap[int(seen[j_near])])),
+            "unconditional": to_data(field.sample(n=args.n_show, steps=args.steps,
+                                                  seed=args.seed + 91, clip=(-1, 1), branch=None)),
         }
         combo = ", ".join(f"{n}={HAIR[v] if n == 'hair' else v}" for n, v in zip(names, tgt))
         for nm in order:

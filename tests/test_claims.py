@@ -135,14 +135,20 @@ CLAIMS = [
     # of 36 (backbone, cell, seed) measurements survive the gate, and on those ADDRESS beats the
     # unconditional floor decisively and RETRIEVAL not at all. Both are pinned so neither can be
     # quoted without the other.
-    (0.323, .01, "n75_grid_pooled", "address", "joint", "7ee grid ADDRESS (readable cells)"),
-    (0.273, .01, "n75_grid_pooled", "nearest-class", "joint", "7ee grid nearest-class"),
-    (0.081, .01, "n75_grid_pooled", "unconditional", "joint", "7ee grid unconditional floor"),
-    (0.242, .01, "n75_grid_pooled", "margin_vs_uncond", "joint", "7ee grid margin over the floor"),
-    (0.049, .01, "n75_grid_pooled", "margin_vs_retrieval", "joint",
+    (0.297, .01, "n75_grid_pooled", "address", "joint", "7ee grid ADDRESS (readable cells)"),
+    (0.279, .01, "n75_grid_pooled", "nearest-class", "joint", "7ee grid nearest-class"),
+    (0.117, .01, "n75_grid_pooled", "unconditional", "joint", "7ee grid unconditional floor"),
+    (0.180, .01, "n75_grid_pooled", "margin_vs_uncond", "joint", "7ee grid margin over the floor"),
+    (0.018, .01, "n75_grid_pooled", "margin_vs_retrieval", "joint",
      "7ee grid margin over RETRIEVAL (does not clear the bar)"),
-    (0.500, .01, "n75_grid_pooled", "margin_vs_retrieval", "won",
-     "7ee grid retrieval win rate (a coin flip)"),
+    (0.375, .01, "n75_grid_pooled", "margin_vs_retrieval", "won",
+     "7ee grid retrieval win rate (below half)"),
+    # The copying evidence, and the pair is the point: samples sit as far from the query as two
+    # REAL images of that cell sit from each other, which is the same signature 7dd reports on
+    # ColorMNIST (9.03 against 9.06). Before the range fix this read 79.4 against 40.0 -- the
+    # inflation was the model-space/data-space mismatch, not distance from the query.
+    (42.1, 0.5, "n75_grid_pooled", "copying", "d_query", "7ee grid d(sample, query)"),
+    (40.0, 0.5, "n75_grid_pooled", "copying", "real_spread", "7ee grid real-vs-real spread"),
     # the basis claim does NOT hold on this table, and the pair is what says so
     (0.875, .01, "n75_grid_pooled", "basis", "r2", "7ee grid basis R2 in-sample"),
     (0.207, .03, "n75_grid_pooled", "basis", "r2_cv", "7ee grid basis R2 leave-one-cell-out"),

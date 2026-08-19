@@ -49,7 +49,8 @@ from common import CACHE, RESULTS                                      # noqa: E
 from lifelong_ood.data.celeba import load_celeba_grid                  # noqa: E402
 from lifelong_ood.evals import (factor_accuracy, fit_factor_probes,    # noqa: E402
                                 memorization, precision_recall, save_json, vendi_score)
-from lifelong_ood.neural import NeuralScoreField, UNet, sample_embedding  # noqa: E402
+from lifelong_ood.neural import (NeuralScoreField, UNet,               # noqa: E402
+                                 sample_embedding, to_data)
 from lifelong_ood.neural.idealwords import compose, cv_r2, factorize   # noqa: E402
 
 ARMS = ("address", "nearest-class", "unconditional")
@@ -130,13 +131,27 @@ def main():
         R = X[idx[:60]]
         c_new = compose(fac, tgt)
         j_near = int(np.argmin(((C - c_new[None]) ** 2).sum(1)))
+        # RANGE AND CLIP, both of which this block had wrong and both of which are silent.
+        #
+        # The field works in MODEL space [-1,1]; the probes, `X`, and every `real` arm live in DATA
+        # space [0,1]. `sample_embedding` returns model space (its `clip` defaults to (-1,1)), so it
+        # needs `to_data` -- without it the probes saw a distribution shifted by -1 and scaled by 2,
+        # and 49.3% of sample pixels were negative.
+        #
+        # `field.sample` is worse, because its `clip` defaults to (-0.2, 1.2) -- a DATA-range clamp,
+        # applied to a MODEL-space trajectory at every reverse step. That is `VLA_PATH` lesson
+        # 2-bis, which already cost a 109-minute retrain on the multi-object backbone: it destroys
+        # the negative half of the range as the trajectory runs, and the result still looks like
+        # plausible images. `clip=(-1,1)` then `to_data`, exactly as n72 does.
         got = {
-            "address": sample_embedding(field, c_new, n=args.n_samples, steps=args.steps,
-                                        seed=args.seed + ci),
-            "nearest-class": field.sample(n=args.n_samples, steps=args.steps,
-                                          seed=args.seed + ci, branch=remap[int(seen[j_near])]),
-            "unconditional": field.sample(n=args.n_samples, steps=args.steps,
-                                          seed=args.seed + 37 * (ci + 1), branch=None),
+            "address": to_data(sample_embedding(field, c_new, n=args.n_samples, steps=args.steps,
+                                                seed=args.seed + ci)),
+            "nearest-class": to_data(field.sample(n=args.n_samples, steps=args.steps,
+                                                  seed=args.seed + ci, clip=(-1, 1),
+                                                  branch=remap[int(seen[j_near])])),
+            "unconditional": to_data(field.sample(n=args.n_samples, steps=args.steps,
+                                                  seed=args.seed + 37 * (ci + 1), clip=(-1, 1),
+                                                  branch=None)),
         }
         # THE INSTRUMENT'S OWN READING, on a DISJOINT set of real images of this same cell.  Every
         # column here needs a ceiling, not just `joint`: the first run scored precision 0.000 for
