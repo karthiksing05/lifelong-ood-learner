@@ -117,6 +117,41 @@ def _feat(X, img=IMG):
     return A / (np.linalg.norm(A, axis=1, keepdims=True) + 1e-9)
 
 
+def metric_features(X, space="pixel", img=IMG, device=None):
+    """Feature space for the k-NN density metrics, as a NAMED, RECORDED parameter.  -> (F, used).
+
+    `_feat` above is a pixel space and its own docstring records the retraction: Generalization
+    recall reads **0.000 in it and 0.180 in Inception's** on the same 1600 images (RESULTS 5e-bis).
+    Fifteen pinned claims are computed through it, four of which read exactly 0.000 -- and a k-NN
+    metric reading exactly zero is precisely what a wrong feature space produces.
+
+    So the space becomes a parameter rather than a decision.  **The default does not change in the
+    commit that introduces the parameter**: every existing number stays bit-identical, both spaces
+    can be reported side by side, and which one is right gets settled by
+    `tests/test_feature_space.py`, which calibrates them against arms whose answers are known.
+
+    Rows are L2-normalised in every space.  `_feat` normalises internally and `vendi_score` relies
+    on that -- its kernel `F @ F.T / n` is only a cosine kernel for unit rows, so an un-normalised
+    space would silently stop its eigenvalues being a probability vector.
+
+    `"inception"` is the torchvision port (`lifelong_ood.inception`), which is where the CelebA
+    readability evidence lives; FID/KID keep the pytorch-fid TF port in `lifelong_ood.fid`, whose
+    whole purpose is comparability to published numbers. The two are NOT interchangeable, which is
+    why the space each result used is recorded rather than assumed.
+    """
+    X = np.asarray(X, np.float64)
+    if space == "pixel":
+        return _feat(X, img=img), "pixel"
+    if space in ("inception", "inception-tv"):
+        from . import inception
+        if not inception.available():
+            return _feat(X, img=img), "pixel(fallback)"
+        F = np.asarray(inception.features(np.asarray(X, np.float32), img=img, device=device),
+                       np.float64)
+        return F / (np.linalg.norm(F, axis=1, keepdims=True) + 1e-9), "inception-tv"
+    raise ValueError(f"unknown feature space {space!r}")
+
+
 def speckle(samples, reference=None, img=IMG):
     """High-frequency energy relative to real data -- the "scattered pixels" artifact, quantified.
 
@@ -159,7 +194,7 @@ def speckle(samples, reference=None, img=IMG):
     return out
 
 
-def vendi_score(samples, q=1.0):
+def vendi_score(samples, q=1.0, space="pixel", img=IMG, device=None):
     """Diversity WITHOUT a reference set (Friedman & Dieng, TMLR 2023, arXiv:2210.02410).
 
     The exponential of the Shannon entropy of the eigenvalues of the normalized sample-similarity
@@ -173,7 +208,7 @@ def vendi_score(samples, q=1.0):
     setting this repository is about, and it is what distinguishes a method that covers a new
     combination from one that emits eight copies of a prototype.
     """
-    F = _feat(np.asarray(samples, np.float64))
+    F, _used = metric_features(samples, space, img, device)
     n = len(F)
     if n < 2:
         return 1.0
@@ -188,7 +223,7 @@ def vendi_score(samples, q=1.0):
     return float(np.exp(-(nz * np.log(nz)).sum()))
 
 
-def memorization(samples, train):
+def memorization(samples, train, space="pixel", img=IMG, device=None):
     """MOSAIC's copying test: a sample is memorized iff d_NN1 / d_NN2 < 1/3.
 
     Reported because "generated the held-out combination" and "retrieved a training image that
@@ -199,13 +234,14 @@ def memorization(samples, train):
 
     -> dict(frac_memorized, median_ratio).  `train` should be images the model actually saw.
     """
-    S, T = _feat(np.asarray(samples, np.float64)), _feat(np.asarray(train, np.float64))
+    S, _used = metric_features(samples, space, img, device)
+    T, _ = metric_features(train, space, img, device)
     if len(T) < 2 or not len(S):
         return dict(frac_memorized=float("nan"), median_ratio=float("nan"))
     D = np.sqrt(np.maximum(((S[:, None, :] - T[None, :, :]) ** 2).sum(-1), 0.0))
     part = np.sort(D, axis=1)[:, :2]
     ratio = part[:, 0] / np.maximum(part[:, 1], 1e-12)
-    return dict(frac_memorized=float((ratio < 1.0 / 3.0).mean()),
+    return dict(space=_used, frac_memorized=float((ratio < 1.0 / 3.0).mean()),
                 median_ratio=float(np.median(ratio)))
 
 
@@ -215,7 +251,7 @@ def _knn_radius(F, k):
     return np.sort(D, 1)[:, min(k, D.shape[1] - 1) - 1]
 
 
-def precision_recall(samples, reference, k=3):
+def precision_recall(samples, reference, k=3, space="pixel", img=IMG, device=None):
     """Improved precision & recall (Kynkaanniemi et al. 2019) -- the paper's coverage metric.
 
     PRECISION = fraction of generated samples that fall inside the reference manifold (are they
@@ -230,16 +266,17 @@ def precision_recall(samples, reference, k=3):
     S, R = np.asarray(samples, np.float64), np.asarray(reference, np.float64)
     if len(S) < 2 or len(R) < 2:
         return dict(precision=float("nan"), recall=float("nan"), f1=float("nan"))
-    FS, FR = _feat(S), _feat(R)
+    FS, _used = metric_features(S, space, img, device)
+    FR, _ = metric_features(R, space, img, device)
     rR, rS = _knn_radius(FR, k), _knn_radius(FS, k)
     D = np.sqrt(((FS[:, None] - FR[None]) ** 2).sum(2))          # [n_samples, n_ref]
     precision = float((D <= rR[None, :]).any(1).mean())          # sample inside SOME ref ball
     recall = float((D.T <= rS[None, :]).any(1).mean())           # ref inside SOME sample ball
     f1 = 0.0 if (precision + recall) == 0 else 2 * precision * recall / (precision + recall)
-    return dict(precision=precision, recall=recall, f1=float(f1))
+    return dict(precision=precision, recall=recall, f1=float(f1), space=_used)
 
 
-def density_coverage(samples, reference, k=3):
+def density_coverage(samples, reference, k=3, space="pixel", img=IMG, device=None):
     """Density & Coverage (Naeem et al. 2020), the modern replacement for precision & recall.
 
     Precision/recall (Kynkaanniemi et al. 2019) are known to be unstable to outliers: a single
@@ -259,7 +296,8 @@ def density_coverage(samples, reference, k=3):
     S, R = np.asarray(samples, np.float64), np.asarray(reference, np.float64)
     if len(S) < 2 or len(R) < 2:
         return dict(density=float("nan"), coverage=float("nan"))
-    FS, FR = _feat(S), _feat(R)
+    FS, _used = metric_features(S, space, img, device)
+    FR, _ = metric_features(R, space, img, device)
     rR = _knn_radius(FR, k)
     D = np.sqrt(((FS[:, None] - FR[None]) ** 2).sum(2))          # [n_samples, n_ref]
     inside = D <= rR[None, :]
@@ -268,7 +306,7 @@ def density_coverage(samples, reference, k=3):
     return dict(density=density, coverage=coverage)
 
 
-def frechet_distance(samples, reference):
+def frechet_distance(samples, reference, space="pixel", img=IMG, device=None):
     """Frechet distance in the same feature space the other coverage metrics use.
 
     NOT "FID": FID is defined on Inception-V3 pool3 features, and Inception is the wrong detector for
@@ -279,7 +317,8 @@ def frechet_distance(samples, reference):
     labelled as not comparable to published FID values.
     """
     from scipy import linalg
-    FS, FR = _feat(np.asarray(samples, np.float64)), _feat(np.asarray(reference, np.float64))
+    FS, _used = metric_features(samples, space, img, device)
+    FR, _ = metric_features(reference, space, img, device)
     if len(FS) < 4 or len(FR) < 4:
         return float("nan")
     # Project onto the reference's leading directions first.  With 24 samples in 768 dimensions the
@@ -652,7 +691,8 @@ def attr_accuracy(probes, samples, combo, attrs=None, min_val_acc=0.65):
                 per_attr=per, n_scored=len(usable))
 
 
-def fit_factor_probes(data, n_train=None, seed=0, epochs=30, min_val_acc=0.55):
+def fit_factor_probes(data, n_train=None, seed=0, epochs=30, min_val_acc=0.55,
+                      features="pixel", device=None):
     """Generic per-FACTOR probes for any dataset satisfying `factored.py`'s contract.
 
     `fit_probes` is ColorMNIST's (digit/fg/bg) and `fit_attr_probes` is CelebA's (14 binary
@@ -679,8 +719,15 @@ def fit_factor_probes(data, n_train=None, seed=0, epochs=30, min_val_acc=0.55):
         seen = seen[:n_train]
     cut = max(1, int(0.9 * len(seen)))
     tr, va = seen[:cut], seen[cut:]
-    X = np.asarray(data["X"], np.float32)
-    out = {"_names": names, "_sizes": sizes}
+    # FEATURE SPACE AS A RECORDED PARAMETER, mirroring `fit_attr_probes`. This fitter is the one
+    # every non-ColorMNIST dataset routes through and it was pixel-locked, while the CelebA-only
+    # fitter already supported Inception -- so the generic path could not use the stronger probe
+    # even where it was measured to read more attributes (5/14 -> 9/14 at 128px). `_features` and
+    # `_img` are stored so `factor_accuracy` re-featurises SAMPLES the same way; fitting in one
+    # space and applying in another is its own fault class and has bitten this repo before.
+    X = _probe_features(np.asarray(data["X"], np.float32), features,
+                        img=data.get("img"), device=device)
+    out = {"_names": names, "_sizes": sizes, "_features": features, "_img": data.get("img")}
     for k, nm in enumerate(names):
         y = F[:, k]
         p = SoftmaxProbe(sizes[k], seed=seed, epochs=epochs).fit(X[tr], y[tr])
@@ -719,7 +766,10 @@ def factor_accuracy(probes, S, target, names=None):
     """
     canon = list(probes["_names"])
     names = names or canon
-    S = np.asarray(S, np.float32)
+    # Re-featurise in the SAME space the probes were fitted in. Without this a probe fitted on
+    # Inception features would be handed raw pixels -- the fault `attr_accuracy` already guards.
+    S = _probe_features(np.asarray(S, np.float32), probes.get("_features", "pixel"),
+                        img=probes.get("_img"))
     per, usable = {}, []
     for nm in names:
         if nm not in canon or not probe_readable(probes, nm):

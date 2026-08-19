@@ -37,6 +37,28 @@ def cosine_abar(u, s=0.008):
     return np.clip(f / f0, 1e-5, 1.0)
 
 
+# Which numeric range a field's x-rows live in.  Declared per class rather than inferred, because
+# inferring it is what failed: `BaseScoreField.sample`'s default clip of (-0.2, 1.2) is a DATA-range
+# clamp, it is correct for exactly one field in this repository, and it is inherited by the ones it
+# is most wrong for.  Applied to a MODEL-space trajectory it clamps away the negative half at every
+# reverse step -- RESULTS 7ee and VLA_PATH lesson 2-bis, twice, at a cost of a 109-minute retrain
+# and a day of CelebA numbers.
+CLIP_BY_SPACE = {"model": (-1.0, 1.0), "data": (-0.2, 1.2)}
+
+
+def default_clip(field):
+    """The clip a field should use when the caller does not say.  -> (lo, hi).
+
+    A field may override with `clip_default` when its own convention is neither of the two generic
+    ones -- the VE bridge clamps to (0.0, 1.0), and mapping it to the generic data range would have
+    changed every Shapes3D number silently.
+    """
+    explicit = getattr(field, "clip_default", None)
+    if explicit is not None:
+        return tuple(explicit)
+    return CLIP_BY_SPACE[getattr(field, "data_space", "model")]
+
+
 class BaseScoreField:
     """Everything a diffusion manifold must provide, expressed in terms of ONE primitive: `eps`.
 
@@ -71,7 +93,7 @@ class BaseScoreField:
 
     # ── reverse-diffusion sampling (DDIM), with optional analytic guidance ───
     def sample(self, n=16, steps=50, seed=0, u_start=1.0, x_init=None,
-               guide_eps=None, guide_w=None, branch=None, clip=(-0.2, 1.2), eta=0.0,
+               guide_eps=None, guide_w=None, branch=None, clip="auto", eta=0.0,
                mcmc=None):
         """DDIM sampler, with `eta` interpolating to ancestral (stochastic) sampling.
 
@@ -112,6 +134,10 @@ class BaseScoreField:
 
         Costs (steps+1)x more network evaluations per denoising step; they report ~5x overall.
         """
+        # Resolve the clip from the field's DECLARED space rather than a class default that is
+        # right for one subclass and silently wrong for the others.
+        if isinstance(clip, str) and clip == "auto":
+            clip = default_clip(self)
         rng = np.random.default_rng(seed)
         D = self.dim
         a0 = float(cosine_abar(u_start))
@@ -265,6 +291,10 @@ class BaseScoreField:
 
 
 class ScoreField(BaseScoreField):
+    # The analytic Cobweb manifold works in DATA space [0,1]; `default_clip` therefore returns
+    # (-0.2, 1.2) here, which is bit-identical to the historical hardcoded default.
+    data_space = "data"
+
     def __init__(self, snap, mode="leaves", level_gamma=1.0, chunk=128):
         self.snap = snap
         self.mode = mode

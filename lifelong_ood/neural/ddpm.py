@@ -217,6 +217,11 @@ def train_ddpm(model, X01, labels, epochs=60, batch=128, lr=2e-4, wd=1e-6, p_dro
 
 
 class NeuralScoreField(BaseScoreField):
+    # MODEL space [-1,1]: `train_ddpm` calls `to_model(X01)`, so every checkpoint this wraps was
+    # fitted on [-1,1] rows. Inheriting the base class's (-0.2, 1.2) clamped the negative half away
+    # at every reverse step -- the fault behind RESULTS 7ee.
+    data_space = "model"
+
     """A trained UNet as a diffusion manifold.  See module docstring for the x-space convention.
 
     `branch` selects the conditioning: None -> the null token (the unconditional field), an int ->

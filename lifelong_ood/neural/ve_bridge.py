@@ -119,6 +119,12 @@ def load_ve_field(path, device="cuda"):
         def __init__(self, model, img, device):
             self.model, self.img, self.device = model, img, device
             self.layout = "hwc"
+            # DATA space [0,1] -- the VE backbone was trained on [0,1] images, which is why this
+            # class's `sample` clamps to (0.0, 1.0) rather than to either generic range. Declared
+            # explicitly so `instrument.assert_space` and `score.default_clip` agree with it; the
+            # generic data-space clip (-0.2, 1.2) would have changed every Shapes3D number.
+            self.data_space = "data"
+            self.clip_default = (0.0, 1.0)
 
         @torch.no_grad()
         def sample(self, n=16, steps=50, seed=0, clip=(0.0, 1.0), branch=None,

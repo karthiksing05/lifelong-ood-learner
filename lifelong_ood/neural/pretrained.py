@@ -127,6 +127,11 @@ class CondUNetShim(torch.nn.Module):
 
 
 class PretrainedScoreField(BaseScoreField):
+    # MODEL space [-1,1] -- diffusers UNet2DModel checkpoints are trained on [-1,1] images. This
+    # class already overrode `sample`'s clip default to (-1,1) for exactly this reason; declaring it
+    # makes the same fact available to `default_clip` and to `instrument.assert_space`.
+    data_space = "model"
+
     """A diffusers `UNet2DModel` behind the same `eps(x, u, ...)` primitive everything else uses.
 
     `u` is this repo's normalized noise level in [0, 1] under the cosine schedule; diffusers models
