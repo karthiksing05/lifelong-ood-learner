@@ -3028,6 +3028,39 @@ squarely at it. Distance to the query is what catches it.
 ADDRESS's 0.516 (§N70), so the margin over "already had it" is much narrower there and this
 four-condition result is demonstrated on ColorMNIST only.*
 
+## 7hh. The storage loop, backbone-agnostic and gated (N77)
+
+§7cc's loop is the one that carries the thesis — one example in, the concept **written** into the
+model, novel class-matching samples back out **by name**, every pre-existing weight bit-identical —
+and it was hardcoded to ColorMNIST in twelve lines of preamble. N77 is the same loop written against
+the `data/factored.py` contract, so it runs on any dataset satisfying it. N71 is left untouched: its
+numbers are pinned, and rewriting the experiment that produced them to prove a different point is how
+claims quietly drift.
+
+**ColorMNIST, 5 held-out concepts, all gate-readable:**
+
+| arm | joint | recall | vendi |
+|---|---|---|---|
+| `oracle` — composed from TRUE factors | 0.483 | 0.887 | 2.06 |
+| `address` — composed from factors READ off one example | 0.483 | 0.887 | 2.06 |
+| `stored` — the consolidated concept, sampled **by name** | 0.475 | 0.820 | 1.97 |
+
+* **read cost (oracle − address) = +0.000** — the read is exact, 5/5 concepts.
+* **storage cost (address − stored) = +0.008** — writing the concept into the model is very nearly
+  free.
+* **forgetting +0.000, base bit-identical**, +1092 new tensors.
+
+**The two costs are reported separately on purpose.** N74's first run scored `address` 0.167 where
+true-factor composition scores 0.375 on the same cell, which read as a weak composer and was a *bad
+read*. With an oracle arm the two are never confounded again.
+
+**This is the first experiment in `test_claims.GATED`**: its numbers may not be quoted unless the run
+that produced them carries an instrument report. The gate on this run reports what a *good* instrument
+looks like, and it is worth contrasting with the CelebA grid's line in §7gg: 120 classes over 16 free
+vectors (**ratio 7.5**, in-sample R² 0.826 against leave-one-out **0.772** — they agree), 5 of 5
+targets readable, and `warn:resolution` **0.091 ≤ 0.100**, i.e. at n = 24 this experiment's verdict
+bar *is* supported by its sample count. On the CelebA grid the same check reads 0.11–0.13 and is not.
+
 ## 7gg. The instrument gate, and the fourth fault it found in the process
 
 Every fault of 2026-08-19 was a measurement fault, and each was caught by a one-off `tests/diag_*.py`

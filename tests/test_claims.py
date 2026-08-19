@@ -183,6 +183,21 @@ CLAIMS = [
     # the density holdout itself, which is what CelebA does support
     (0.000, .01, "n75_grid_pooled", "copying", "memorized", "7ee grid memorised (nothing copied)"),
     (16.0, .01, "n75_grid_pooled", "coverage", "n_readable", "7ee grid readable measurements"),
+    # ── the storage loop, backbone-agnostic and GATED (RESULTS 7hh) ───────────
+    # n71 pins the same loop on ColorMNIST with the old dataset-specific plumbing; these pin the
+    # generic path, so the two must agree or one of them is wrong. The two COSTS are the point:
+    # reading the factors off one example is free where the instrument is good, and writing the
+    # concept into the model costs almost nothing.
+    (0.483, .02, "n77_storage_any", "oracle", "joint", "7hh oracle (true factors)"),
+    (0.483, .02, "n77_storage_any", "address", "joint", "7hh address (factors READ from one example)"),
+    (0.475, .02, "n77_storage_any", "stored", "joint", "7hh stored (sampled by name)"),
+    (0.000, .01, "n77_storage_any", "cost", "read", "7hh read cost (oracle - address)"),
+    (0.008, .02, "n77_storage_any", "cost", "storage", "7hh storage cost (address - stored)"),
+    (1.000, .001, "n77_storage_any", "stream", "read_ok", "7hh read accuracy"),
+    (0.000, .001, "n77_storage_any", "stream", "forgetting", "7hh forgetting over the stream"),
+    (1.000, .001, "n77_storage_any", "stream", "frozen", "7hh base bit-identical"),
+    (0.826, .01, "n77_storage_any", "basis", "r2", "7hh ColorMNIST basis R2 in-sample"),
+    (0.772, .01, "n77_storage_any", "basis", "r2_cv", "7hh ColorMNIST basis R2 leave-one-out"),
     (36.0, .01, "n75_grid_pooled", "coverage", "n_total", "7ee grid total measurements"),
 ]
 
@@ -191,7 +206,7 @@ CLAIMS = [
 # experiments are migrated onto `lifelong_ood.instrument`, so CI enforces the gate going forward
 # without failing the 73 claims that predate it. An entry here means: this experiment's numbers were
 # produced by a run that proved its own measuring device first.
-GATED = set()
+GATED = {"n77_storage_any"}
 
 
 def main():

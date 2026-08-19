@@ -6,6 +6,57 @@ what the next run should be.
 
 ---
 
+## PIVOT, 2026-08-19: pretrained backbones, and an instrument gate in front of everything
+
+**What changed and why.** The from-scratch density holdout is retired. CelebA could never support it
+(§7ee: 12 cells at ratio 1.1, a readout ceiling of ~0.55 against a 0.117 floor, and no enlargement
+possible at any resolution or probe strength), and chasing image quality there was answering the
+wrong question — quality was never the binding constraint, the instrument was. The pretrained regime
+is also the only one a VLA will ever be in.
+
+**The claim is restated.** Not *"the model never saw this combination"* but *"the conditioning
+interface cannot ADDRESS it; we make it addressable at ~0 parameters, from one example, without
+disturbing anything already learned."*
+
+### Settled this session
+
+* **`lifelong_ood/instrument.py`** — one gate every experiment calls before it measures: conventions,
+  per-target readout ceiling on 200 real images, dynamic range against an *empirical* floor, and the
+  classes-to-free-vectors ratio. `tests/test_instrument.py` calibrates it against known-broken
+  instruments and reproduces §7ee's mechanism in eight lines of numpy. Wired into N73, it recovers
+  the same 16-of-36 and every pooled number to three decimals.
+* **A fourth fault, retroactive** (§7gg): at n=24 the smallest resolvable margin is 0.11–0.13 and
+  N73 declares verdicts at +0.10. §7ee's ADDRESS-over-floor result (+0.180) is safe; the
+  ADDRESS-over-retrieval margin (+0.018) was never resolvable by any run.
+* **Conventions are declared, not defaulted** — `data_space` per field class, `clip="auto"` derived
+  from it. The analytic field stays bit-identical; the VE bridge keeps its own `(0,1)`.
+* **The feature-space migration was measured and mostly declined.** `tests/test_feature_space.py`
+  calibrates pixel against Inception on four arms with known answers. Both pass on ColorMNIST →
+  nuisance, keep pixel. Pixel *fails* on CelebA-grid data (it certifies scrambled pixels at
+  precision 0.375) → a fix there, but that dataset is retired. 15 pinned claims left untouched
+  because a calibration said so, not because nobody looked.
+* **Shapes3D is the flagship, and it passes the gate decisively.** At `value_stride=1`: 400 classes
+  against 25 free vectors (ratio 18.2), **every factor readable on real images** (floor_hue 1.000,
+  object_hue 1.000, shape 0.994), ceiling 0.994 against a chance of 1/400, 12/12 targets readable.
+  `object_hue`'s long-standing blindness was a *table-size* artifact — at stride 2 it reads 0.236.
+* **The addressing claim does NOT transfer to language conditioning** (§7ff). On 400 CLIP phrases,
+  composing ties the literal phrase (rank 36.00 vs 35.25 of 400). For a language-conditioned policy
+  the contribution must be **storage and routing**, not addressing.
+* **`n77_storage_any.py`** — the N71 loop against the generic contract, so it runs on any factored
+  backbone. N71 is untouched because its numbers are pinned.
+
+### Open
+
+1. **The Shapes3D flagship run itself.** The class table is training at the full readable design via
+   the N57 pattern (frozen backbone, `cemb` in its own optimiser group at 50× LR). Then: basis →
+   ADDRESS vs nearest-class vs unconditional → routing → N77 storage.
+2. **`router.calibrate_u_novel` is still called by no experiment**, and the inherited `U_NOVEL = 0.10`
+   reads AUROC 0.354 on a pretrained backbone against 0.861–0.932 calibrated.
+3. **EXTEND BASIS vs BLOCK is still decided by hand** — a 69× cost decision the router does not make.
+4. **Sequence-valued conditioning** is unsupported anywhere, and Phase 4 needs to know whether a
+   pooled instruction embedding costs task performance before that matters.
+
+
 ## 1. Settled this session
 
 ### 1a. The CelebA composition negative was a measurement bug, and it is reversed

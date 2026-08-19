@@ -638,7 +638,44 @@ def agg_n75(runs):
     return dict(table=out, n_seeds=len(runs))
 
 
+def agg_n77(runs):
+    """N77: the storage loop on any factored backbone. Three arms and the two costs between them.
+
+    `oracle` composes from TRUE factors, `address` from the factors READ off one example, `stored`
+    from the consolidated concept sampled by name -- so oracle-to-address is the READ cost and
+    address-to-stored is the STORAGE cost. They are kept separate because conflating them is how
+    N74's first run read as a weak composer when it was a bad read.
+    """
+    arms = ("oracle", "address", "stored")
+    rows = [r for _, run in runs for r in run["rows"]]
+    out = {a: {k: stat([r[k] for r in rows if r["arm"] == a])
+               for k in ("joint", "recall", "precision", "vendi")} for a in arms}
+    out["stream"] = dict(forgetting=stat([run.get("forgetting") for _, run in runs]),
+                         frozen=stat([float(bool(run.get("frozen"))) for _, run in runs]),
+                         read_ok=stat([float(r["read_ok"]) for r in rows if r["arm"] == "stored"]))
+    om = out["oracle"]["joint"]["mean"]
+    am = out["address"]["joint"]["mean"]
+    sm = out["stored"]["joint"]["mean"]
+    out["cost"] = {"read": dict(mean=om - am, se=0.0, n=1),
+                   "storage": dict(mean=am - sm, se=0.0, n=1)}
+    out["basis"] = {"r2": stat([run.get("basis_r2") for _, run in runs]),
+                    "r2_cv": stat([run.get("basis_r2_cv") for _, run in runs])}
+    inst = [r.get("instrument", {}) for _, r in runs if isinstance(r, dict)]
+    ok = [float(bool(i.get("ok"))) for i in inst if i]
+    if ok:
+        out["_instrument"] = {"ok": stat(ok)}
+    print(f"    {'arm':10s}{'joint':>14s}{'recall':>14s}{'vendi':>14s}")
+    for a in arms:
+        print(f"    {a:10s}{fmt(out[a]['joint']):>14s}{fmt(out[a]['recall']):>14s}"
+              f"{fmt(out[a]['vendi']):>14s}")
+    print(f"    read cost {om - am:+.3f} | storage cost {am - sm:+.3f} | "
+          f"read {fmt(out['stream']['read_ok'])} | forgetting {fmt(out['stream']['forgetting'])} | "
+          f"frozen {fmt(out['stream']['frozen'])}")
+    return dict(table=out, n_seeds=len(runs))
+
+
 AGG = {"n71_absorb_and_generate": agg_n71, "n72_donation": agg_n72,
+       "n77_storage_any": agg_n77,
        "n75_grid_pooled": agg_n75,
        "n73_celeba_grid_compose": agg_n73,
        "n64_multiobject_address": agg_n64, "n62_router_calibrate": agg_n62, "n65_u_labelfree": agg_n62,

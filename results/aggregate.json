@@ -8468,7 +8468,8 @@
   "n73_celeba_grid_compose": "n73_celeba_grid_compose",
   "n73_celeba_grid_compose_h5": "n73_celeba_grid_compose_h5",
   "n73_celeba_grid_compose_h4": "n73_celeba_grid_compose_h4",
-  "n75_grid_pooled": "n75_grid_pooled"
+  "n75_grid_pooled": "n75_grid_pooled",
+  "n77_storage_any": "n77_storage_any"
  },
  "n62_router_calibrate": {
   "table": {
@@ -9388,6 +9389,125 @@
     },
     "n_total": {
      "mean": 36.0,
+     "se": 0.0,
+     "n": 1
+    }
+   }
+  },
+  "n_seeds": 1
+ },
+ "n77_storage_any": {
+  "table": {
+   "oracle": {
+    "joint": {
+     "mean": 0.4833333333333334,
+     "se": 0.17310481731534158,
+     "n": 5
+    },
+    "recall": {
+     "mean": 0.8866666666666665,
+     "se": 0.04725815626252608,
+     "n": 5
+    },
+    "precision": {
+     "mean": 0.5166666666666667,
+     "se": 0.10172129679778084,
+     "n": 5
+    },
+    "vendi": {
+     "mean": 2.0574567712040355,
+     "se": 0.09258629743053234,
+     "n": 5
+    }
+   },
+   "address": {
+    "joint": {
+     "mean": 0.4833333333333334,
+     "se": 0.17310481731534158,
+     "n": 5
+    },
+    "recall": {
+     "mean": 0.8866666666666665,
+     "se": 0.04725815626252608,
+     "n": 5
+    },
+    "precision": {
+     "mean": 0.5166666666666667,
+     "se": 0.10172129679778084,
+     "n": 5
+    },
+    "vendi": {
+     "mean": 2.0574567712040355,
+     "se": 0.09258629743053234,
+     "n": 5
+    }
+   },
+   "stored": {
+    "joint": {
+     "mean": 0.475,
+     "se": 0.19302058036500783,
+     "n": 5
+    },
+    "recall": {
+     "mean": 0.82,
+     "se": 0.05512611802847075,
+     "n": 5
+    },
+    "precision": {
+     "mean": 0.4999999999999999,
+     "se": 0.09947780321927767,
+     "n": 5
+    },
+    "vendi": {
+     "mean": 1.9689671301014666,
+     "se": 0.10834902523646973,
+     "n": 5
+    }
+   },
+   "stream": {
+    "forgetting": {
+     "mean": 0.0,
+     "se": 0.0,
+     "n": 1
+    },
+    "frozen": {
+     "mean": 1.0,
+     "se": 0.0,
+     "n": 1
+    },
+    "read_ok": {
+     "mean": 1.0,
+     "se": 0.0,
+     "n": 5
+    }
+   },
+   "cost": {
+    "read": {
+     "mean": 0.0,
+     "se": 0.0,
+     "n": 1
+    },
+    "storage": {
+     "mean": 0.008333333333333415,
+     "se": 0.0,
+     "n": 1
+    }
+   },
+   "basis": {
+    "r2": {
+     "mean": 0.8262119949943534,
+     "se": 0.0,
+     "n": 1
+    },
+    "r2_cv": {
+     "mean": 0.772469900843757,
+     "se": 0.0,
+     "n": 1
+    }
+   },
+   "_instrument": {
+    "ok": {
+     "mean": 1.0,
      "se": 0.0,
      "n": 1
     }
