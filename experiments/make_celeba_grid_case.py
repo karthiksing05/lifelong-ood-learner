@@ -49,6 +49,7 @@ def main():
     p.add_argument("--n-show", type=int, default=6)
     p.add_argument("--steps", type=int, default=200)
     p.add_argument("--seed", type=int, default=0)
+    p.add_argument("--out", default=None, help="figure filename under figures/initial/")
     args = p.parse_args()
     dev = "cuda" if torch.cuda.is_available() else "cpu"
 
@@ -63,9 +64,20 @@ def main():
 
     ck = torch.load(args.ckpt, map_location="cpu", weights_only=False)
     sp = ck.get("split", {})
-    d = load_celeba_grid(img=int(ck.get("img", 64)), seed=int(sp.get("seed", 0)),
-                         n_per_cell=int(sp.get("n_per_slot", 3000)), n_holdout=3,
-                         max_rows=sp.get("max_rows"))
+
+    def grid(n_holdout):
+        return load_celeba_grid(img=int(ck.get("img", 64)), seed=int(sp.get("seed", 0)),
+                                n_per_cell=int(sp.get("n_per_slot", 3000)),
+                                n_holdout=int(n_holdout), max_rows=sp.get("max_rows"))
+
+    # Derived from the checkpoint and asserted, exactly as in n73 -- a figure drawn against the
+    # wrong held-out cells looks entirely normal, which is the worst kind of wrong for a figure.
+    d = grid(sp.get("n_holdout") or 3)
+    want = sorted(int(k) for k in ck["remap"])
+    if sorted(set(np.asarray(d["slot"])[np.asarray(d["seen"])].tolist())) != want:
+        d = grid(len(d["live"]) - len(want))
+    if sorted(set(np.asarray(d["slot"])[np.asarray(d["seen"])].tolist())) != want:
+        raise SystemExit("[case] split mismatch against the checkpoint -- refusing to draw")
     X, F, slot = np.asarray(d["X"], np.float32), np.asarray(d["factors"]), np.asarray(d["slot"])
     names = d["names"]
     probes = fit_factor_probes(d, seed=args.seed)
@@ -133,20 +145,27 @@ def main():
                     f"joint {j:.2f} = {j / max(ceil, 1e-9):.0%} of ceiling | recall {pr['recall']:.2f}",
                     fontsize=6.5, loc="right")
             r += 1
+    # EVERY number in this caption is read from the run.  They were hardcoded to the first
+    # backbone's values -- 12 cells, 9 seen / 3 held out, hair 0.568, "a raw joint of 0.29" -- and a
+    # caption that describes a different split than the figure draws is worse than no caption,
+    # because nothing about the picture looks wrong.
+    per_factor = " / ".join(f"{n} {probes[n + '_val']:.3f}"
+                            for n in names if n + "_val" in probes)
     fig.suptitle(
-        "CelebA as a GRID, trained FROM SCRATCH with a DENSITY holdout: the three cells shown have "
-        "ZERO training images.\n"
-        f"Grid is {names} = 12 cells, 9 seen / 3 held out; every factor value survives among the "
-        "seen cells, so a held-out cell is a new ARRANGEMENT of known parts.\n"
+        f"CelebA as a GRID, trained FROM SCRATCH with a DENSITY holdout: the {len(d['held'])} "
+        "cells shown have ZERO training images.\n"
+        f"Grid is {names} = {len(d['live'])} cells, {len(seen)} seen / {len(d['held'])} held out; "
+        "every factor value survives among the seen cells, so a held-out cell is a new ARRANGEMENT "
+        "of known parts.\n"
         f"READ AGAINST THE CEILING: the factor probes read REAL images at joint ~{ceil:.3f} "
-        f"(hair 0.568 / Male 0.849 / Smiling 0.859), and chance is {1/len(seen):.3f}. "
-        "A raw joint of 0.29 is ~70% of what this instrument can register.\n"
+        f"({per_factor}), and chance is {1 / len(seen):.3f} -- so a raw joint of "
+        f"{0.5 * ceil:.2f} is half of what this instrument can register.\n"
         "Prototypes are QUERY-AGNOSTIC chains: on the pretrained CelebA and Shapes3D backbones a "
         "query-seeded chain returns the query, because those models saw every combination in "
         "pretraining. This one did not.", fontsize=8)
     fig.tight_layout(rect=[0, 0, 1, 0.93])
     os.makedirs(FIG, exist_ok=True)
-    o = os.path.join(FIG, "case_celeba_grid.png")
+    o = os.path.join(FIG, args.out or "case_celeba_grid.png")
     fig.savefig(o, dpi=130, bbox_inches="tight")
     print(f"[case] wrote {o}")
     return 0

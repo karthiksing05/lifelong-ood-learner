@@ -8464,7 +8464,8 @@
   "n65_u_labelfree": "n65_u_labelfree",
   "n64_multiobject_address": "n64_multiobject_address",
   "n71_absorb_and_generate": "n71_absorb_and_generate",
-  "n72_donation": "n72_donation"
+  "n72_donation": "n72_donation",
+  "n73_celeba_grid_compose": "n73_celeba_grid_compose"
  },
  "n62_router_calibrate": {
   "table": {
@@ -8837,5 +8838,118 @@
    }
   },
   "n_seeds": 1
+ },
+ "n73_celeba_grid_compose": {
+  "table": {
+   "address": {
+    "joint": {
+     "mean": 0.20370370370370372,
+     "se": 0.04783328314761997,
+     "n": 9
+    },
+    "recall": {
+     "mean": 1.0,
+     "se": 0.0,
+     "n": 9
+    },
+    "precision": {
+     "mean": 0.0,
+     "se": 0.0,
+     "n": 9
+    },
+    "vendi": {
+     "mean": 13.388316701861122,
+     "se": 0.19701390632136953,
+     "n": 9
+    },
+    "joint_frac": {
+     "mean": 0.44145851643438155,
+     "se": 0.10816749037288036,
+     "n": 9
+    }
+   },
+   "nearest-class": {
+    "joint": {
+     "mean": 0.10185185185185185,
+     "se": 0.030358511686583337,
+     "n": 9
+    },
+    "recall": {
+     "mean": 0.9240740740740743,
+     "se": 0.018862545173577182,
+     "n": 9
+    },
+    "precision": {
+     "mean": 0.10648148148148148,
+     "se": 0.022081925958725598,
+     "n": 9
+    },
+    "vendi": {
+     "mean": 3.440342113720228,
+     "se": 0.05836577628480963,
+     "n": 9
+    },
+    "joint_frac": {
+     "mean": 0.22430351515616728,
+     "se": 0.07372402536990603,
+     "n": 9
+    }
+   },
+   "unconditional": {
+    "joint": {
+     "mean": 0.009259259259259259,
+     "se": 0.006124424331168034,
+     "n": 9
+    },
+    "recall": {
+     "mean": 0.922222222222222,
+     "se": 0.01800205749557738,
+     "n": 9
+    },
+    "precision": {
+     "mean": 0.1574074074074074,
+     "se": 0.02171488777696032,
+     "n": 9
+    },
+    "vendi": {
+     "mean": 3.503830465230079,
+     "se": 0.06389506183836467,
+     "n": 9
+    },
+    "joint_frac": {
+     "mean": 0.01881203677488963,
+     "se": 0.01259184793969514,
+     "n": 9
+    }
+   },
+   "ceiling": {
+    "mean": 0.47226334936694697,
+    "se": 0.04929432069883363,
+    "n": 3
+   },
+   "basis_r2": {
+    "mean": 0.8724357364276484,
+    "se": 0.0,
+    "n": 3
+   },
+   "margin_vs_retrieval": {
+    "mean": 0.10185185185185185,
+    "se": 0.04629629629629629,
+    "n": 3
+   },
+   "margin_pooled_cell_seed": {
+    "mean": 0.10185185185185186,
+    "se": 0.033384734032073975,
+    "n": 9
+   },
+   "cells_won": {
+    "mean": 1.0,
+    "se": 0.0,
+    "n": 3
+   },
+   "n_cells": 3,
+   "n_cell_seed_pairs": 9
+  },
+  "n_seeds": 3
  }
 }

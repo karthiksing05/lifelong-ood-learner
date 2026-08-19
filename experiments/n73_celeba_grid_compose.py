@@ -56,9 +56,27 @@ def main():
 
     ck = torch.load(args.ckpt, map_location="cpu", weights_only=False)
     sp = ck.get("split", {})
-    d = load_celeba_grid(img=int(ck.get("img", 64)), seed=int(sp.get("seed", 0)),
-                         n_per_cell=int(sp.get("n_per_slot", 3000)), n_holdout=3,
-                         max_rows=sp.get("max_rows"))
+
+    def grid(n_holdout):
+        return load_celeba_grid(img=int(ck.get("img", 64)), seed=int(sp.get("seed", 0)),
+                                n_per_cell=int(sp.get("n_per_slot", 3000)),
+                                n_holdout=int(n_holdout), max_rows=sp.get("max_rows"))
+
+    # DERIVE the holdout from the checkpoint; never assume it.  This used to be a hardcoded 3, which
+    # is right for the first backbone and silently wrong for any other -- every arm still runs, so
+    # the failure is a plausible number scored against the wrong cells.  Checkpoints written after
+    # 2026-08-19 record `n_holdout`; older ones are recovered from the seen-class count, and either
+    # way the seen set is ASSERTED against `remap` before anything is measured.
+    d = grid(sp.get("n_holdout") or 3)
+    want = sorted(int(k) for k in ck["remap"])
+    if sorted(set(np.asarray(d["slot"])[np.asarray(d["seen"])].tolist())) != want:
+        d = grid(len(d["live"]) - len(want))
+    got = sorted(set(np.asarray(d["slot"])[np.asarray(d["seen"])].tolist()))
+    if got != want:
+        raise SystemExit(f"[n73] split mismatch: checkpoint trained on cells {want}, this loader "
+                         f"gives {got}. The backbone and the evaluation disagree about which "
+                         f"combinations were held out -- refusing to report a number.")
+    print(f"[n73] {len(want)} seen cells, {len(d['held'])} held out: {d['held']}", flush=True)
     X, F, slot = (np.asarray(d["X"], np.float32), np.asarray(d["factors"]),
                   np.asarray(d["slot"]))
     names, sizes = d["names"], d["sizes"]

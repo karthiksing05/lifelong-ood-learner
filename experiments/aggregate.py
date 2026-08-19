@@ -498,7 +498,71 @@ def agg_n30(runs):
                                      "vendi"), width=18)
 
 
+def agg_n73(runs):
+    """N73: composition on the CelebA grid -- the only CelebA backbone with a DENSITY holdout.
+
+    Two things make this aggregation different from `agg_n72`.  First, `joint` must be read against
+    the `ceiling` each run carries: attribute probes on REAL images score 0.414 here, so an ADDRESS
+    joint of 0.194 is 47 % of what the instrument can register, not 19 % of the truth.  Second, the
+    number the claim rests on is the PAIRED per-cell margin of `address` over `nearest-class` --
+    the backbone's own best existing embedding -- because a pooled difference of means hides which
+    cells carry it, and at three cells one bad cell is a third of the evidence.
+    """
+    arms = ("address", "nearest-class", "unconditional")
+    rows = [r for _, run in runs for r in run["rows"]]
+    out = {a: {k: stat([r[k] for r in rows if r["arm"] == a])
+               for k in ("joint", "recall", "precision", "vendi")} for a in arms}
+    ceil = stat([run["ceiling"] for _, run in runs])
+    out["ceiling"] = ceil
+    out["basis_r2"] = stat([run["basis_r2"] for _, run in runs])
+
+    # NORMALISE WITHIN THE RUN before pooling.  The probe ceiling is refit per seed and moves a
+    # long way -- 0.414 to 0.570 across three seeds here -- so a pooled raw joint mixes runs whose
+    # instruments have different dynamic range.  `joint_frac` is each run's joint divided by ITS
+    # OWN ceiling, which is the quantity the claim is actually about.
+    for a in arms:
+        fr = [r["joint"] / max(run["ceiling"], 1e-9)
+              for _, run in runs for r in run["rows"] if r["arm"] == a]
+        out[a]["joint_frac"] = stat(fr)
+
+    # PAIRED, per cell.  Cells differ enormously in support (518 to 15349 images here), so an
+    # unpaired comparison is dominated by which cells a run happened to hold out.
+    per = {}
+    for _, run in runs:
+        by = {(r["arm"], r["cell"]): r["joint"] for r in run["rows"]}
+        for c in sorted({r["cell"] for r in run["rows"]}):
+            if ("address", c) in by and ("nearest-class", c) in by:
+                per.setdefault(c, []).append(by[("address", c)] - by[("nearest-class", c)])
+    # REPORT BOTH, and label them, because the two n's mean different things and only one of them
+    # is the evidence.  Pooling every (cell, seed) pair gives n=9 from three sampling seeds over the
+    # SAME three cells -- that is replication of the sampler, not of the claim, and quoting its
+    # error bar as though it were three times the evidence would be wrong.  The per-cell mean over
+    # DISTINCT held-out cells is the honest n; more of it means a backbone with a bigger holdout.
+    marg = [v for xs in per.values() for v in xs]
+    by_cell = [float(np.mean(xs)) for xs in per.values()]
+    out["margin_vs_retrieval"] = stat(by_cell)
+    out["margin_pooled_cell_seed"] = stat(marg)
+    out["cells_won"] = stat([float(v > 0) for v in by_cell])
+    out["n_cells"] = len(by_cell)
+    out["n_cell_seed_pairs"] = len(marg)
+
+    print(f"    {'arm':16s}{'joint':>14s}{'% ceil':>8s}{'recall':>14s}{'vendi':>14s}")
+    m = ceil["mean"] if isinstance(ceil, dict) else ceil
+    for a in arms:
+        j = out[a]["joint"]
+        jm = j["mean"] if isinstance(j, dict) else j
+        print(f"    {a:16s}{fmt(j):>14s}{100 * (out[a]['joint_frac']['mean'] if isinstance(out[a]['joint_frac'], dict) else out[a]['joint_frac']):>7.0f}%"
+              f"{fmt(out[a]['recall']):>14s}{fmt(out[a]['vendi']):>14s}")
+    print(f"    probe ceiling {fmt(ceil)} | basis R2 {fmt(out['basis_r2'])}")
+    print(f"    ADDRESS - nearest-class, paired over {out['n_cells']} DISTINCT cells: "
+          f"{fmt(out['margin_vs_retrieval'])}, won on {fmt(out['cells_won'])}")
+    print(f"      (over all {out['n_cell_seed_pairs']} cell x seed pairs: "
+          f"{fmt(out['margin_pooled_cell_seed'])} -- sampler replication, not more cells)")
+    return dict(table=out, n_seeds=len(runs))
+
+
 AGG = {"n71_absorb_and_generate": agg_n71, "n72_donation": agg_n72,
+       "n73_celeba_grid_compose": agg_n73,
        "n64_multiobject_address": agg_n64, "n62_router_calibrate": agg_n62, "n65_u_labelfree": agg_n62,
        "e2_composition": agg_e2, "n2_composition": agg_e2,
        "e3_lifelong": agg_e3, "n3_lifelong": agg_n3, "n7_inversion": agg_n7,

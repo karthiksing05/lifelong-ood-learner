@@ -285,6 +285,12 @@ def main():
                                        else "load_colormnist"),
                                n_per_slot=args.n_per_slot, img=img, seed=args.seed,
                                min_count=(25 if args.dataset == "celeba" else None),
+                               # RECORDED, because a reader that re-derives the split has to
+                               # reproduce the HOLDOUT too. Without it `n73` fell back to a
+                               # hardcoded 3 and would have scored an `n_holdout=5` backbone
+                               # against the wrong held-out cells -- silently, since the arms all
+                               # still run.  Readers additionally assert seen == sorted(remap).
+                               n_holdout=(n_hold if args.dataset == "celeba_grid" else None),
                                max_rows=getattr(args, "max_rows", None)))
 
     # A LADDER OF COMPETENCE FROM ONE RUN.  N35 asks how much backbone training the method needs,
