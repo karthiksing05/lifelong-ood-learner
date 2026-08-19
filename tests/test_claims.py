@@ -29,6 +29,34 @@ AGG = os.path.join(HERE, "results", "aggregate.json")
 # were scoring those.  Corrected, every generated arm scores 0.000 -- see RESULTS 30b/30d
 # and README section 6.  They are deleted rather than re-pinned because there is no
 # surviving positive result to assert.
+# ── THE PIXEL-FEATURE LEDGER, frozen 2026-08-19 ──────────────────────────────
+#
+# `evals._feat` is a PIXEL feature space, and its own docstring records a retraction: recall reads
+# 0.000 in pixel space and 0.180 in Inception's on the same 1600 images (RESULTS 5e-bis).  Every
+# claim below whose metric is `recall`, `f1`, `memorized`, `precision`, `density` or `coverage` is
+# computed through it -- FIFTEEN of them, traced individually:
+#
+#     n9_showdown          f1      x4   (ours, poe-guided, inversion, inversion-free)
+#     n20_celeba_..._pair  recall  x2   (ours, composable-mcmc)
+#     n27_factor_cond.     f1      x1
+#     n30_proto_dist_fine  f1      x2 + recall x1
+#     n71_absorb           recall  x1
+#     n72_donation         recall  x2 + memorized x1
+#     n75_grid_pooled      memorized x1
+#
+# NOT in the ledger, and the distinction matters: `joint`/`pair`/`ACC` come from probes, not `_feat`;
+# `dist_prototype`, `d_query` and `real_spread` are raw-pixel L2; and n64's `recall` is computed by a
+# trained multi-object DETECTOR, not by `precision_recall`.
+#
+# FOUR of the fifteen read exactly 0.000 (n30 poe recall, n72 address memorized, n72 query-copy
+# recall, n75 memorized) and a fifth reads 0.003.  That subclass is the dangerous one: a k-NN metric
+# reading exactly zero is precisely what a wrong feature space produces, so those numbers cannot be
+# CITED as evidence until an Inception twin exists -- even though they correctly describe what the
+# code produces today and must keep passing.
+#
+# The migration is additive: `space=` is added as a parameter with the default unchanged, so no
+# number here moves, and new claims are pinned on new keys (`*_inception`) rather than replacing
+# these.  See docs/NEXT_STEPS.md.
 CLAIMS = [
     # ── composition, ColorMNIST (README §2, SCOREBOARD §2, RESULTS §11d) ──────
     (0.630, .01, "n9_showdown", "ours", "f1", "ColorMNIST ours F1"),
