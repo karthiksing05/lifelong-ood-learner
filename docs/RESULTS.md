@@ -3028,6 +3028,61 @@ squarely at it. Distance to the query is what catches it.
 ADDRESS's 0.516 (§N70), so the margin over "already had it" is much narrower there and this
 four-condition result is demonstrated on ColorMNIST only.*
 
+## 7ff. Composing in a LANGUAGE space does not beat typing the sentence (N76)
+
+The pivot to pretrained backbones points at a language-conditioned diffusion policy, and the claim
+such a policy needs is **not** "we can address a held-out task". For a language-conditioned model the
+held-out task *already has an address* -- you type the sentence. So the claim has to be sharper:
+
+> Composing in the model's own conditioning geometry -- ideal words fitted over embeddings it was
+> actually trained on -- lands closer to the held-out concept than the LITERAL embedding of the
+> held-out phrase.
+
+That is the standard compositional-binding failure ("a red cube on a blue plate" rendering with the
+colours swapped) stated as a prediction. It needs no diffusion model: CLIP is a joint image-text
+space, so the vocabulary is built from text embeddings of SEEN combinations, the basis is fitted over
+those, and the candidates are scored against where the concept actually lives -- the mean CLIP
+**image** embedding of real held-out images. This is also a return to source: `idealwords.py` cites
+Trager et al., *Linear Spaces of Meanings*, whose setting is CLIP embedding space rather than a
+learned class table.
+
+**Shapes3D, 400 phrases against 25 free vectors (ratio 18.2), 12 held-out combinations:**
+
+| arm | mean rank of the true class (of 400) | top-1 | cosine |
+|---|---|---|---|
+| `address` | 36.00 | **0.17** | +0.3086 |
+| `literal` — CLIP's own embedding of the held-out phrase | **35.25** | 0.08 | +0.3053 |
+| `nearest` — the closest seen phrase (retrieval) | 48.92 | 0.08 | +0.3057 |
+| `centroid` — the mean of all seen phrases | 186.33 | 0.00 | **+0.3284** |
+
+**Composition ties the literal phrase.** ADDRESS is better on top-1 (0.17 against 0.08) and
+marginally worse on mean rank, and neither difference survives 12 held-out cells.
+
+**Judge on rank, not on cosine, and this table is why.** The `centroid` arm -- the mean of every seen
+phrase, which by construction says nothing about any particular target -- has the **highest cosine of
+any arm** while ranking 186th of 400. CLIP's text embeddings occupy a narrow cone, so a generic
+"a photo of ..." direction is close to every image and an absolute image-text cosine mostly measures
+that offset. The first version of this experiment's verdict was written on the cosine gain and would
+have reported the wrong thing in both directions.
+
+*The instrument is sound here: `centroid` at 186 of 400 is the near-middle rank an uninformative
+embedding must produce, and `nearest` at 48.92 is clearly worse than both real candidates, so the
+comparison does discriminate. It is a tie, not a blind measurement.*
+
+**On the CelebA grid the same test reports a small negative (−0.0016 cosine, both at rank 1 of 12),
+but that basis was fitted over 8 phrases against 5 free vectors — ratio 1.6.** By §7ee's own
+standard that table is too small to fit a basis, let alone to test one, so the Shapes3D number is the
+one that counts.
+
+### What this does to the VLA plan
+
+The addressing claim does not transfer to language conditioning, and it is better to know that from
+an afternoon with CLIP than from a robot simulator. **The contribution for a language-conditioned
+policy has to be STORAGE and ROUTING rather than addressing**: the literal instruction embedding is
+already a perfectly good address, and what a policy still cannot do is keep a skill cheaply, decide
+which tier it needs, and leave everything already learned bit-identical. That is the thesis
+(`docs/THE_TASK.md`) with the composition step demoted from headline to mechanism.
+
 ## 7ee. CelebA with a DENSITY holdout: what it supports, and what it does not (N73/N75)
 
 Every earlier CelebA result here used a backbone fine-tuned from `google/ddpm-celebahq-256`, so a

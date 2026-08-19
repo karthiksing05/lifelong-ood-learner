@@ -221,21 +221,35 @@ def main():
     print(f"{'-- image half':12s}{float(np.mean([r['ceiling'] for r in rows])):>15.4f}"
           f"{'(ceiling)':>12s}")
 
+    # JUDGE ON RANK, NOT ON RAW COSINE. Measured here and it is not a preference: on Shapes3D the
+    # `centroid` arm -- the mean of every seen phrase, which by construction says nothing about the
+    # target -- has the HIGHEST cosine of any arm while ranking 389th of 400. CLIP's text embeddings
+    # occupy a narrow cone, so a generic "a photo of ..." direction is close to every image, and an
+    # absolute image-text cosine mostly measures that offset. Rank is invariant to it.
     gain = m("address") - m("literal")
-    r_addr, r_lit = m("address", "ranks"), m("literal", "ranks")
+    r_addr, r_lit, r_cent = m("address", "ranks"), m("literal", "ranks"), m("centroid", "ranks")
+    n_cls = rows[0]["n_classes"]
     print("\n[n76] VERDICT")
-    if gain > 0.005 and r_addr <= r_lit:
-        print(f"[n76]   COMPOSING BEATS THE LITERAL PHRASE by {gain:+.4f} cosine and ranks the true")
-        print(f"[n76]   class {r_lit:.2f} -> {r_addr:.2f}. This is the assumption Phase 4 rests on,")
-        print("[n76]   and it holds in a language embedding space with no diffusion model involved.")
-    elif gain > 0.005:
-        print(f"[n76]   Composition is closer in cosine ({gain:+.4f}) but does not improve the rank")
-        print(f"[n76]   ({r_lit:.2f} -> {r_addr:.2f}). A partial result: report both.")
+    if r_cent < 0.25 * n_cls:
+        print(f"[n76]   INSTRUMENT WARNING: the centroid arm ranks {r_cent:.1f} of {n_cls}, so this")
+        print("[n76]   comparison is not discriminating -- an embedding that says nothing about the")
+        print("[n76]   target should rank near the middle. Read nothing below.")
+    elif r_addr < r_lit - 0.5:
+        print(f"[n76]   COMPOSING BEATS THE LITERAL PHRASE: it ranks the true class {r_addr:.2f} of")
+        print(f"[n76]   {n_cls} against the literal embedding's {r_lit:.2f}. That is the assumption")
+        print("[n76]   Phase 4 rests on, established in a language embedding space with no diffusion")
+        print("[n76]   model involved -- and the cosine column shows why rank is the statistic:")
+        print(f"[n76]   the centroid scores {m('centroid'):+.4f} cosine while ranking {r_cent:.0f}.")
+    elif r_addr <= r_lit + 0.5:
+        print(f"[n76]   COMPOSING TIES THE LITERAL PHRASE ({r_addr:.2f} vs {r_lit:.2f} of {n_cls}).")
+        print("[n76]   For a language-conditioned policy there is then no reason to compose an")
+        print("[n76]   address rather than type the sentence, and the contribution has to be")
+        print("[n76]   STORAGE and ROUTING rather than addressing.")
     else:
-        print(f"[n76]   COMPOSING DOES NOT BEAT THE LITERAL PHRASE ({gain:+.4f}). For a")
-        print("[n76]   language-conditioned policy the literal instruction embedding is then the")
-        print("[n76]   thing to use, and the contribution has to be STORAGE and routing rather than")
-        print("[n76]   addressing. Better learned here than after a simulator install.")
+        print(f"[n76]   COMPOSING IS WORSE THAN THE LITERAL PHRASE ({r_addr:.2f} vs {r_lit:.2f}).")
+        print("[n76]   Phase 4 should use the literal instruction embedding and claim storage only.")
+        print("[n76]   Better learned here than after a simulator install.")
+    print(f"[n76]   (cosine gain {gain:+.4f}, reported but not the basis of this verdict)")
     save_json(dict(rows=rows, dataset=args.dataset, model=args.model,
                    basis_r2=float(fac["r2"]), basis_r2_cv=float(r2cv), n_cv=int(n_cv),
                    n_seen=len(C), n_free=int(n_free), config=vars(args)),

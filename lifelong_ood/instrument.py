@@ -346,15 +346,33 @@ def check_instrument(*, tag, real, probes, targets=None, field=None, n_arm=24, n
                                 1.0 if conv["layout"] == want_layout else 0.0, 1.0,
                                 dict(measured=conv["layout"], declared=want_layout,
                                      l_hwc=conv["l_hwc"], l_chw=conv["l_chw"])))
-        checks.append(Check("convention:range", conv["range"] == want_range,
+        # RANGE IS REPORTED, NOT JUDGED, and the reason is measured rather than assumed
+        # (`tests/diag_range_probe.py`). Feeding a real image as [0,1] and as [-1,1] and taking
+        # whichever denoises better answers "[0,1]" at EVERY noise level for a backbone that
+        # `train_ddpm` provably trains on `to_model(X01)`. The comparison is confounded by input
+        # SCALE: a [0,1] image has half the amplitude, so x_t sits closer to pure noise and eps is
+        # trivially easier to predict. Normalising to a relative x0-reconstruction error does not
+        # rescue it -- the eps-loss gap is itself 1.5x, so the confound survives the normalisation.
+        #
+        # So this is a `warn:` check: it is outside the channels `require()` refuses on, because a
+        # gate that blocks on an unreliable measurement is worse than one that reports it. The
+        # authoritative range fact is a CODE fact (`train_ddpm` calls `to_model`), and the layout
+        # check above is unaffected -- it compares two orderings at identical scale and separates
+        # cleanly (0.030 vs 0.478).
+        checks.append(Check("warn:range", True,
                             1.0 if conv["range"] == want_range else 0.0, 1.0,
                             dict(measured=conv["range"], declared=want_range,
-                                 l_01=conv["l_01"], l_11=conv["l_11"])))
-        # the check the existing diag is missing, and the one that IS fault #1: does the sampler's
-        # own output land where the field says it does?
+                                 l_01=conv["l_01"], l_11=conv["l_11"],
+                                 note=("scale-confounded; declared value is authoritative"
+                                       if conv["range"] != want_range else "agrees"))))
+        # The sampler's output range is likewise NOT evidence about training: `clip` is applied at
+        # every reverse step, so it forces the range it would then be measured in. Recorded for the
+        # provenance of the samples that follow, and nothing more.
         try:
             S = field.sample(n=4, steps=20, seed=seed)
-            checks.append(assert_space(S, getattr(field, "data_space", "model"), "sampler_output"))
+            c = assert_space(S, getattr(field, "data_space", "model"), "sampler_output")
+            checks.append(Check("warn:sampler_output", True, c.value, c.bar,
+                                dict(c.detail, note="reflects the clip, not the training range")))
         except Exception as e:                                       # noqa: BLE001
             checks.append(Check("convention:sampler", False, 0.0, 1.0, dict(error=repr(e)[:200])))
 

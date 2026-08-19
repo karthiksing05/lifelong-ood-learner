@@ -153,6 +153,36 @@ strength measured — 64px pixel probes give 8 cells / 7 vectors, Inception feat
 128px is *worse* than 64px. So **count the task rows against (summed factor values) before training
 anything**; if the ratio is near 1, the basis number that comes out will be arithmetic.
 
+## The addressing claim does NOT transfer to language conditioning — measured (RESULTS 7ff)
+
+Added 2026-08-19, before any simulator was installed, and it changes what Stage A should aim at.
+
+For a language-conditioned policy the held-out task **already has an address**: you type the
+sentence. So the claim cannot be "we can address it" — it has to be that composing in the model's own
+conditioning geometry beats the LITERAL instruction embedding. That is testable today in CLIP's joint
+image-text space with no diffusion model at all, and on Shapes3D at 400 phrases (ratio 18.2):
+
+| arm | mean rank of the true class, of 400 | top-1 |
+|---|---|---|
+| `address` | 36.00 | **0.17** |
+| `literal` | **35.25** | 0.08 |
+| `nearest` (retrieval) | 48.92 | 0.08 |
+| `centroid` (uninformative) | 186.33 | 0.00 |
+
+**A tie.** The instrument discriminates — retrieval is clearly worse and an uninformative centroid
+lands mid-table — so this is a real negative, not a blind measurement.
+
+**Consequence: for a language-conditioned policy the contribution is STORAGE and ROUTING, not
+addressing.** The text encoder already supplies the address. What a policy still cannot do is keep a
+skill for ~72 bytes, decide which tier it needs *before* spending anything, and leave every
+previously-learned weight bit-identical. Aim Stage A at the substrate and then go straight at the
+storage claim, rather than spending rollouts trying to beat a text encoder at its own job.
+
+*Judge on RANK, not cosine.* The `centroid` arm has the highest cosine of any arm while ranking 186th
+of 400 — CLIP's text embeddings occupy a narrow cone, so an absolute image-text cosine mostly
+measures that offset. The first version of that experiment's verdict was written on cosine and would
+have reported the wrong thing in both directions.
+
 ## The order to attack a diffusion policy
 
 **Stage A — establish the substrate exists.** Take a pretrained diffusion policy and ask the only
