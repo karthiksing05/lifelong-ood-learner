@@ -517,6 +517,7 @@ def agg_n73(runs):
     ceil = stat([run["ceiling"] for _, run in runs])
     out["ceiling"] = ceil
     out["basis_r2"] = stat([run["basis_r2"] for _, run in runs])
+    out["basis_r2_cv"] = stat([run.get("basis_r2_cv") for _, run in runs])
 
     # NORMALISE WITHIN THE RUN before pooling.  The probe ceiling is refit per seed and moves a
     # long way -- 0.414 to 0.570 across three seeds here -- so a pooled raw joint mixes runs whose
@@ -555,7 +556,8 @@ def agg_n73(runs):
         jm = j["mean"] if isinstance(j, dict) else j
         print(f"    {a:16s}{fmt(j):>14s}{100 * (out[a]['joint_frac']['mean'] if isinstance(out[a]['joint_frac'], dict) else out[a]['joint_frac']):>7.0f}%"
               f"{fmt(out[a]['recall']):>14s}{fmt(out[a]['vendi']):>14s}")
-    print(f"    probe ceiling {fmt(ceil)} | basis R2 {fmt(out['basis_r2'])}")
+    print(f"    probe ceiling {fmt(ceil)} | basis R2 {fmt(out['basis_r2'])} in-sample"
+          + (f", {fmt(out['basis_r2_cv'])} leave-one-cell-out" if out["basis_r2_cv"] else ""))
     # The copying pair, each against the only scale bar that makes it readable.
     if out["address"].get("memorized"):
         print(f"    copying: address memorized {fmt(out['address']['memorized'])} | "

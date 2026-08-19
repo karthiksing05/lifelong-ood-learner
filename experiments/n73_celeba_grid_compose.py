@@ -50,7 +50,7 @@ from lifelong_ood.data.celeba import load_celeba_grid                  # noqa: E
 from lifelong_ood.evals import (factor_accuracy, fit_factor_probes,    # noqa: E402
                                 memorization, precision_recall, save_json, vendi_score)
 from lifelong_ood.neural import NeuralScoreField, UNet, sample_embedding  # noqa: E402
-from lifelong_ood.neural.idealwords import compose, factorize          # noqa: E402
+from lifelong_ood.neural.idealwords import compose, cv_r2, factorize   # noqa: E402
 
 ARMS = ("address", "nearest-class", "unconditional")
 
@@ -105,7 +105,12 @@ def main():
     C = ck["ema"]["cemb.weight"].numpy()[[remap[int(s)] for s in seen]]
     lab = np.stack([F[slot == int(s)][0] for s in seen])
     fac = factorize(C, lab)
-    print(f"[n73] ideal-words basis R^2 {fac['r2']:.3f} over {len(seen)} seen cells", flush=True)
+    # BOTH R^2s.  In-sample is a real statement about a 120-row ColorMNIST table and close to
+    # arithmetic on a 7-row one -- which is what a bigger holdout leaves -- so the leave-one-cell-out
+    # number is the one that says whether the table is compositional rather than merely fitted.
+    r2cv, n_cv = cv_r2(C, lab)
+    print(f"[n73] ideal-words basis R^2 {fac['r2']:.3f} in-sample over {len(seen)} seen cells | "
+          f"{r2cv:.3f} leave-one-cell-out over {n_cv} of them", flush=True)
 
     field = NeuralScoreField(UNet(n_classes=ck["n_classes"], **ck["arch"]), device=dev,
                              layout=ck.get("layout"))
@@ -161,7 +166,9 @@ def main():
         print(f"[n73] cell {h} {tgt}: address {r['address']['joint']:.3f} | "
               f"nearest-class {r['nearest-class']['joint']:.3f} | "
               f"uncond {r['unconditional']['joint']:.3f} | "
-              f"address recall {r['address']['recall']:.3f}", flush=True)
+              f"REAL {r['real']['joint']:.3f}"
+              f"{'  <- INSTRUMENT BLIND ON THIS CELL' if r['real']['joint'] <= 1.0 / len(seen) + 0.02 else ''}",
+              flush=True)
 
     def m(arm, k):
         v = [x[k] for x in rows if x["arm"] == arm]
@@ -191,17 +198,37 @@ def main():
           + "   <- arms in order, then REAL")
     print("[n73] VERDICT")
     a_, n_, u_ = m("address", "joint"), m("nearest-class", "joint"), m("unconditional", "joint")
-    if a_ > max(n_, u_) + 0.10:
+    r_ = m("real", "joint")
+    chance = 1.0 / len(seen)
+
+    # GATE ON THE REAL ARM, NOT ON THE GLOBAL CEILING.  `ceil` is the product of per-factor probe
+    # accuracies over ALL cells, and held-out cells are the RAREST combinations in CelebA -- the
+    # ones the probes are worst at.  On the 7-seen backbone the global ceiling reads 0.524 while
+    # REAL images of the held-out cells score 0.142 against a chance of 0.143, i.e. the instrument
+    # cannot read those cells at all and no arm's number there means anything.  The right
+    # denominator for judging composition on a cell is what real images of THAT cell score.
+    if r_ <= chance + 0.02:
+        print(f"[n73]   THE INSTRUMENT IS BLIND ON THESE CELLS: REAL images of the held-out cells")
+        print(f"[n73]   score joint {r_:.3f} against a chance of {chance:.3f} (the global probe")
+        print(f"[n73]   ceiling of {ceil:.3f} is measured over ALL cells and does not apply here --")
+        print(f"[n73]   held-out cells are the rarest combinations, so they are the hardest to")
+        print(f"[n73]   read). NO arm can be judged from this run, ADDRESS's {a_:.3f} included.")
+    elif a_ > max(n_, u_) + 0.10:
         print("[n73]   COMPOSES A COMBINATION THE MODEL NEVER SAW. The held-out cells have zero")
         print("[n73]   training images, so this is a DENSITY holdout -- the first CelebA result")
         print("[n73]   here that is not merely a missing embedding row.")
+        print(f"[n73]   ADDRESS {a_:.3f} is {a_ / max(r_, 1e-9):.0%} of what REAL images of these")
+        print(f"[n73]   cells score ({r_:.3f}), against retrieval's {n_:.3f}.")
     elif a_ > u_ + 0.10:
         print("[n73]   Beats the floor but not nearest-class: the composition is close enough to a")
         print("[n73]   seen cell that retrieval explains it. Report as such.")
     else:
-        print("[n73]   Does not clear the floor. With 9 seen cells and a 0.414 probe ceiling this")
-        print("[n73]   backbone may simply be too weak -- judge against the ceiling, not 1.0.")
-    save_json(dict(rows=rows, ceiling=ceil, basis_r2=float(fac["r2"]), held=d["held"],
+        print(f"[n73]   Does not clear the floor. With {len(seen)} seen cells, real images of the")
+        print(f"[n73]   held-out cells at {r_:.3f} and chance at {chance:.3f}, this backbone may")
+        print("[n73]   simply be too weak -- judge against the real-image arm, not against 1.0.")
+    save_json(dict(rows=rows, ceiling=ceil, real_joint=r_, chance=chance,
+                   basis_r2=float(fac["r2"]),
+                   basis_r2_cv=float(r2cv), n_cv=int(n_cv), n_seen=len(seen), held=d["held"],
                    real_spread=real_spread, config=vars(args)),
               os.path.join(RESULTS, f"n73_celeba_grid_compose{args.tag}.json"), seed=args.seed)
     return 0

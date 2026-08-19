@@ -73,7 +73,7 @@ def main():
             # Chance is 1/n_seen and n_seen DIFFERS by backbone -- holding out five cells leaves
             # seven, not nine. Every backbone here shares the same 12-cell grid, so the seen count
             # follows from the holdout.
-            n_seen = 12 - len(rs[0]["held"])
+            n_seen = rs[0].get("n_seen") or (12 - len(rs[0]["held"]))
             cells.append(dict(tag=tag, cell=c, ceil=ceil,
                               target=[r["target"] for run in rs for r in run["rows"]
                                       if r["cell"] == c][0],
