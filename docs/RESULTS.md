@@ -3087,11 +3087,28 @@ property of the fitted probe, not of a value that could be excluded once.
 * **ADDRESS − nearest-class = +0.018 ± 0.011, won 6/16.** Below half. **It does not beat
   retrieval.**
 
-**Why, and it is diagnosable rather than mysterious.** On ColorMNIST `nearest-class` scores
-**0.000** against ADDRESS's 0.599 (§7dd): the nearest seen class differs by one factor and the
-probes read that factor cleanly, so it scores zero. Here it scores 0.273 — a sample conditioned on
-the *neighbouring* cell often reads as the held-out one. That is loose conditioning in a
-9.3M-parameter UNet trained for half an hour, and it caps what this dataset can discriminate.
+**Why — and the obvious explanation is measured and REFUTED.** The tempting reading is that a
+12-cell table puts the composed address on top of a trained row, so ADDRESS *is* retrieval by
+geometry. It does not. `tests/diag_grid_geometry.py` measures the distance from the composed point
+to the nearest trained embedding, over the median spacing between trained rows:
+
+| backbone | cells | spacing | d(composed, nearest) | ratio |
+|---|---|---|---|---|
+| CelebA grid, 9 seen | 9 | 0.581 | 0.473 | **0.81** |
+| CelebA grid, 8 seen | 8 | 0.545 | 0.455 | **0.84** |
+| CelebA grid, 7 seen | 7 | 0.537 | 0.436 | **0.81** |
+| ColorMNIST | 120 | 1.059 | 0.924 | **0.87** |
+
+**The composed address is as genuinely new on CelebA as on ColorMNIST.** Same geometry, opposite
+discriminability — so the cause is downstream of the composer, in what the backbone renders from
+that displacement and what the probes can resolve from the render.
+
+The instrument is the part that is measured. On the cells the probes CAN read, real images score
+only ~0.55, against an unconditional floor of 0.117 — a total dynamic range of about 0.43, inside
+which ADDRESS (0.297) and `nearest-class` (0.279) are not separable. ColorMNIST's probes read real
+images near 1.0 and its `nearest-class` scores **0.000**, so the same relative displacement in
+embedding space is fully resolvable there. **CelebA at 64px does not have the dynamic range to
+discriminate composition from retrieval**, whatever the composer does.
 
 ### The basis claim does not hold on this table, and the reason is structural
 

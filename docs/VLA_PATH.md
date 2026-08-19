@@ -119,6 +119,14 @@ Added 2026-08-19, from the CelebA density-holdout grid (§7ee), where both were 
 expensive way — a margin was reported, then withdrawn, then reported again and withdrawn again,
 each time because the *instrument* had not been characterised.
 
+**A scalar cannot show you a convention fault; a picture can.** The CelebA grid's generated arms
+were sampled in MODEL space and scored by DATA-space probes, and `field.sample` was called at its
+default `clip=(-0.2, 1.2)` — a data-range clamp on a model-space trajectory, at every reverse step.
+This is lesson 2 again, third occurrence. Nothing in the table looked wrong: a margin of 0.049 and
+the corrected 0.018 read identically as numbers. **The case-study figure was the only artifact that
+could reveal it**, because half the pixels were being clipped away and faces visibly fell apart. For
+a policy the analogue is rendered rollouts, not a success-rate column — budget for looking at them.
+
 **Every metric needs a REAL-DATA arm, per unit of evaluation.** Not a global ceiling: real data of
 *the specific held-out combination*, scored by *that run's* probes. A global probe ceiling read
 0.524 on a backbone where real images of the held-out cells scored **0.142 against a chance of
@@ -127,6 +135,16 @@ each time because the *instrument* had not been characterised.
 entirely an artifact of them. For a policy the analogue is a success detector: verify it fires on
 *human demonstrations of the held-out task* before reading any rollout number, and per task rather
 than averaged over the suite.
+
+**Check the composed point's GEOMETRY before blaming the composer.** When ADDRESS failed to beat
+retrieval on CelebA, the obvious reading was that a 12-cell table puts the composed address on top
+of a trained row. Measured, it does not: the composed point sits 0.81–0.84 of the trained-row
+spacing from its nearest neighbour, against ColorMNIST's 0.87 — as genuinely new on one dataset as
+the other. The cause was downstream, in dynamic range: CelebA's probes read real held-out images at
+~0.55 against a 0.117 floor, a resolvable band of ~0.43 inside which 0.297 and 0.279 are the same
+number. **A benchmark whose real-data ceiling is close to its floor cannot discriminate anything**,
+and one cheap dot-product check separates "the composer did not move" from "nothing downstream can
+see that it moved".
 
 **A basis claim needs classes ≫ free vectors, and this is checkable before training.** In-sample R²
 and leave-one-out R² agree at ColorMNIST's ratio of 6.3 (0.826 / 0.772) and diverge completely at

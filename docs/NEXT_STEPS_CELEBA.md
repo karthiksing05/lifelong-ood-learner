@@ -41,15 +41,21 @@ Read `docs/RESULTS.md` §7ee for the full account. The short version:
 
 **What CelebA supports.** A genuine DENSITY holdout — the only non-ColorMNIST backbone here where
 held-out combinations were never in the model. ADDRESS beats the unconditional floor by
-**+0.242 ± 0.069, won 12/16**, nothing is copied (0.000 memorised; d(query) 79.4 against a
-real-vs-real spread of 40.0), and storage preserves every pre-existing weight bit-identically with
-+0.000 forgetting.
+**+0.180 ± 0.058, won 12/16**, nothing is copied (0.000 memorised; **d(query) 42.1 against a
+real-vs-real spread of 40.0**, the same signature §7dd reports on ColorMNIST at 9.03/9.06), and
+storage preserves every pre-existing weight bit-identically with +0.000 forgetting.
 
-**What it does NOT support.** Donation over retrieval. **ADDRESS − nearest-class = +0.049 ± 0.027,
-won 8/16** — a coin flip. On ColorMNIST the same control scores 0.000 against ADDRESS's 0.599; here
-it scores 0.273, because a sample conditioned on the NEIGHBOURING cell often reads as the held-out
-one. That is loose conditioning in a 9.3M-parameter UNet trained half an hour, and it caps what this
-dataset can discriminate.
+**What it does NOT support.** Donation over retrieval. **ADDRESS − nearest-class = +0.018 ± 0.011,
+won 6/16.** On ColorMNIST the same control scores 0.000 against ADDRESS's 0.599; here it scores
+0.279, statistically level with ADDRESS's 0.297.
+
+**And the reason is NOT the composer or the small table** — that was measured and refuted. The
+composed address lands 0.81–0.84 of the trained-row spacing from its nearest trained row, against
+ColorMNIST's 0.87: as genuinely new a point on one dataset as the other. What differs is the
+dynamic range available downstream. On the cells the probes can read, real images score only ~0.55
+against a 0.117 floor, so the whole resolvable band is ~0.43 and 0.297 vs 0.279 sits inside it.
+ColorMNIST's probes read real images near 1.0. **CelebA at 64px cannot discriminate composition
+from retrieval whatever the composer does.**
 
 **Nor the basis claim.** 0.875 in-sample against **0.207** leave-one-cell-out, at 9 classes over 8
 free vectors. ColorMNIST's 6.3 ratio gives 0.826 / 0.772.
@@ -63,6 +69,19 @@ free vectors. ColorMNIST's 6.3 ratio gives 0.826 / 0.772.
 | Inception, 64px | + Wavy_Hair | 16 / 9 | **1.8** |
 
 All well below the ~4 where in-sample and cross-validated R² start to agree.
+
+## A THIRD fault, found by looking at the case-study figure
+
+`n73` and `make_celeba_grid_case` sampled without `to_data` and called `field.sample` at its default
+`clip=(-0.2, 1.2)` — a data-range clamp on a model-space trajectory, applied every reverse step
+(`VLA_PATH` lesson 2-bis). Model-space samples were scored by `[0,1]` probes, and the figure's
+`clip(S, 0, 1)` discarded the 49.3% of pixels that are negative. Both files were written fresh
+instead of copying n72's sampling block; all 30 other experiment files are correct.
+
+Fixing it moved every number and *improved* the copying evidence (d(query) 79.4 → 42.1 against a
+40.0 spread). **The lesson: the case-study figure was the only artifact that could show this.** No
+scalar in the table looked wrong — a 0.049 margin and a 0.018 margin read the same. Keep drawing the
+pictures.
 
 ## Two measurement rules this cost, both now standing artifacts
 
