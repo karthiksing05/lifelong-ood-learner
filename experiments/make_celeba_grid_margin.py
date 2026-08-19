@@ -66,15 +66,14 @@ def main():
         rs = runs[tag]
         for c in sorted({r["cell"] for run in rs for r in run["rows"]}):
             vals = {a: [r["joint"] for run in rs for r in run["rows"]
-                        if r["arm"] == a and r["cell"] == c] for a in ARMS + ("real",)}
+                        if r["arm"] == a and r["cell"] == c] for a in ARMS + ("real-gate",)}
             if not vals["address"]:
                 continue
-            # DROP A BLIND CELL rather than draw it. Where REAL images of the cell score at chance
-            # the probes cannot read that combination -- the grid's hair factor has an unreadable
-            # `brown` value (diag_grid_factors) -- and every arm reads ~0 there. Plotting it as a
-            # tie between three arms would be reporting the instrument, not the model.
+            # DROP A BLIND CELL rather than draw it. Where REAL images of the cell score at
+            # chance, that run's probes cannot read that combination and every arm reads ~0 there;
+            # plotting it as a three-way tie would be drawing the instrument, not the model.
             ch = 1.0 / (rs[0].get("n_seen") or (12 - len(rs[0]["held"])))
-            if vals["real"] and float(np.mean(vals["real"])) <= ch + 0.02:
+            if vals["real-gate"] and float(np.mean(vals["real-gate"])) <= ch + 0.02:
                 blind.append((tag, c))
                 continue
             ceil = float(np.mean([run["ceiling"] for run in rs]))
@@ -133,9 +132,8 @@ def main():
         "embedding. Where ADDRESS beats it, the capability was not already there to retrieve.\n"
         "Backbones hold out different numbers of cells (more held out = fewer seen), so they are "
         "shown separately rather than pooled.\n"
-        + (f"{len(blind)} cell(s) dropped: REAL images of them score at chance, so no arm can be "
-           "judged there -- the grid's `brown` hair value is unreadable by the benchmark's own "
-           "probe." if blind else ""), fontsize=8)
+        + (f"{len(blind)} cell(s) dropped: REAL images of them score at chance under that run's "
+           "own probes, so no arm can be judged there." if blind else ""), fontsize=8)
     fig.tight_layout(rect=[0, 0, 1, 0.88])
     os.makedirs(FIG, exist_ok=True)
     o = os.path.join(FIG, "f_celeba_grid_margin.png")

@@ -59,6 +59,10 @@ def main():
     p = argparse.ArgumentParser()
     p.add_argument("--ckpt", default=os.path.join(CACHE, "ddpm_celeba_grid.pt"))
     p.add_argument("--n-samples", type=int, default=24)
+    p.add_argument("--n-gate", type=int, default=200,
+                   help="real images used for the per-cell READABILITY gate. Separate from "
+                        "--n-samples because the gate decides whether a cell is scored at all and "
+                        "24 images give it a standard error near 0.06.")
     p.add_argument("--steps", type=int, default=200)
     p.add_argument("--seed", type=int, default=0)
     p.add_argument("--tag", default="",
@@ -150,6 +154,21 @@ def main():
         xq = X[idx[0]]
         got["real"] = X[idx[60:60 + args.n_samples]] if len(idx) >= 60 + args.n_samples \
             else X[idx[-args.n_samples:]]
+
+        # THE READABILITY GATE NEEDS MORE SAMPLES THAN THE ARM COMPARISON DOES.  The `real` arm is
+        # held to `n_samples` so its vendi and precision are comparable to the generated arms, but
+        # 24 images give a joint accuracy with a standard error near 0.06 -- and this number decides
+        # whether a cell is scored at all.  So the gate reads a larger disjoint set.  It is worth
+        # separating: on the 9-seen backbone the readable cell is the BROWN one while blond and
+        # `other` read blind, and on the 7-seen backbone it was the reverse, so per-cell readability
+        # is a property of the fitted probe and this particular cell -- not of a hair value that
+        # could be excluded once and for all.
+        big = X[idx[60:60 + args.n_gate]] if len(idx) >= 60 + args.n_gate else X[idx[-args.n_gate:]]
+        gate = factor_accuracy(probes, np.asarray(big, np.float32), tgt)
+        gate_j = float(gate["joint"]) if gate["joint"] == gate["joint"] else 0.0
+        rows.append(dict(arm="real-gate", cell=int(h), target=list(tgt), joint=gate_j,
+                         n=int(len(big)), recall=float("nan"), precision=float("nan"),
+                         vendi=float("nan"), memorized=float("nan"), d_query=float("nan")))
         for arm in ARMS + ("real",):
             S = np.asarray(got[arm], np.float32)
             a = factor_accuracy(probes, S, tgt)
@@ -166,8 +185,8 @@ def main():
         print(f"[n73] cell {h} {tgt}: address {r['address']['joint']:.3f} | "
               f"nearest-class {r['nearest-class']['joint']:.3f} | "
               f"uncond {r['unconditional']['joint']:.3f} | "
-              f"REAL {r['real']['joint']:.3f}"
-              f"{'  <- INSTRUMENT BLIND ON THIS CELL' if r['real']['joint'] <= 1.0 / len(seen) + 0.02 else ''}",
+              f"REAL {r['real-gate']['joint']:.3f} (n={r['real-gate']['n']})"
+              f"{'  <- INSTRUMENT BLIND ON THIS CELL' if r['real-gate']['joint'] <= 1.0 / len(seen) + 0.02 else ''}",
               flush=True)
 
     def m(arm, k):
@@ -196,10 +215,13 @@ def main():
     print(f"{'  precision':16s}" + "".join(f"{m(a, 'precision'):>9.3f}"
                                           for a in ARMS + ("real",))
           + "   <- arms in order, then REAL")
-    print("[n73] VERDICT")
     a_, n_, u_ = m("address", "joint"), m("nearest-class", "joint"), m("unconditional", "joint")
-    r_ = m("real", "joint")
+    # the GATE arm, not the display arm -- the verdict must use the larger sample
+    r_ = m("real-gate", "joint")
     chance = 1.0 / len(seen)
+    print(f"[n73] readability gate: REAL joint {r_:.3f} on {args.n_gate} images per cell, "
+          f"chance {chance:.3f}")
+    print("[n73] VERDICT")
 
     # GATE ON THE REAL ARM, NOT ON THE GLOBAL CEILING.  `ceil` is the product of per-factor probe
     # accuracies over ALL cells, and held-out cells are the RAREST combinations in CelebA -- the

@@ -528,19 +528,21 @@ def agg_n73(runs):
               for _, run in runs for r in run["rows"] if r["arm"] == a]
         out[a]["joint_frac"] = stat(fr)
 
-    # DROP CELLS THE INSTRUMENT CANNOT READ, and say how many.  The grid's hair factor is
-    # {Blond, Brown, other} and Brown is UNREADABLE by the benchmark's own probe (-0.154 against
-    # base rate, `diag_grid_factors`), while `probe_readable` guards per FACTOR and so cannot see
-    # it: hair's overall accuracy of 0.568 clears the bar because two values out of three carry it.
-    # A brown cell is therefore scored by a probe that cannot tell, and every arm reads ~0 there --
-    # which DEPRESSES ADDRESS and flatters nothing, but is noise either way.  The `real` arm is the
-    # pre-registered test: a cell where REAL images of that cell score at chance is a cell no arm
-    # can be judged on.
+    # DROP CELLS THE INSTRUMENT CANNOT READ, and say how many.  `probe_readable` guards per
+    # FACTOR -- the grid's hair factor scores 0.568 overall and clears the bar -- and cannot see
+    # that a factor's accuracy is carried by some of its values and not others.  Per-cell
+    # readability turns out not to be a fixed property of a value either: on the 9-seen backbone
+    # the one readable held-out cell is the BROWN one while blond and `other` read blind, and on
+    # the 7-seen backbone it was the reverse, because the probe is refit per seed and per seen set.
+    # So it has to be MEASURED per cell per run, which is what the `real-gate` arm does: real
+    # images of that cell, scored by that run's probes.  Where they read at chance, every arm reads
+    # ~0 and none can be judged.  The gate uses a larger sample than the display arm because 24
+    # images give a joint accuracy with a standard error near 0.06.
     blind = set()
     for _, run in runs:
         ch = run.get("chance") or (1.0 / max(run.get("n_seen", 9), 1))
         for r in run["rows"]:
-            if r["arm"] == "real" and r["joint"] <= ch + 0.02:
+            if r["arm"] == "real-gate" and r["joint"] <= ch + 0.02:
                 blind.add((id(run), r["cell"]))
 
     # PAIRED, per cell.  Cells differ enormously in support (518 to 15349 images here), so an
