@@ -49,6 +49,7 @@ from common import CACHE, RESULTS                                      # noqa: E
 from lifelong_ood.data.celeba import load_celeba_grid                  # noqa: E402
 from lifelong_ood.evals import (factor_accuracy, fit_factor_probes,    # noqa: E402
                                 memorization, precision_recall, save_json, vendi_score)
+from lifelong_ood.instrument import check_instrument                  # noqa: E402
 from lifelong_ood.neural import (NeuralScoreField, UNet,               # noqa: E402
                                  sample_embedding, to_data)
 from lifelong_ood.neural.idealwords import compose, cv_r2, factorize   # noqa: E402
@@ -121,6 +122,18 @@ def main():
                              layout=ck.get("layout"))
     field.model.load_state_dict(ck["ema"])
     field.model.eval()
+
+    # ── THE INSTRUMENT GATE, before anything is sampled ──────────────────────
+    # This experiment is where the gate's design came from, so it is also the run that validates
+    # it: at the legacy bar it must reproduce the readable set n75 already pooled (16 of 36 across
+    # three backbones x three seeds), and at the strict +0.10 bar it should report a SMALLER one --
+    # which is the honest number and has never been quoted.
+    gate = check_instrument(
+        tag="n73", real=d, probes=probes, field=field,
+        targets={int(h): tuple(int(v) for v in F[slot == int(h)][0]) for h in d["held"]},
+        n_arm=args.n_samples, n_gate=args.n_gate, table=C, labels=lab, seed=args.seed)
+    print(gate.summary("n73"), flush=True)
+    gate.require("n73")
 
     rows = []
     for ci, h in enumerate(d["held"]):
@@ -263,7 +276,7 @@ def main():
         print(f"[n73]   Does not clear the floor. With {len(seen)} seen cells, real images of the")
         print(f"[n73]   held-out cells at {r_:.3f} and chance at {chance:.3f}, this backbone may")
         print("[n73]   simply be too weak -- judge against the real-image arm, not against 1.0.")
-    save_json(dict(rows=rows, ceiling=ceil, real_joint=r_, chance=chance,
+    save_json(dict(rows=rows, instrument=gate.as_dict(), ceiling=ceil, real_joint=r_, chance=chance,
                    basis_r2=float(fac["r2"]),
                    basis_r2_cv=float(r2cv), n_cv=int(n_cv), n_seen=len(seen), held=d["held"],
                    real_spread=real_spread, config=vars(args)),

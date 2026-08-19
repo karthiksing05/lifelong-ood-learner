@@ -363,11 +363,15 @@ def check_instrument(*, tag, real, probes, targets=None, field=None, n_arm=24, n
         held = np.unique(np.asarray(real["slot"])[~seen]) if "slot" in real else []
         targets = [tuple(int(v) for v in F[np.asarray(real["slot"]) == h][0]) for h in held]
         keys = [int(h) for h in held]
+    elif isinstance(targets, dict):
+        # {class id -> factor row}: the caller's own keys are kept, so a report can be indexed by
+        # the cell id the experiment already uses. This branch has to come BEFORE the sequence one,
+        # or iterating the dict yields its keys and the tuple conversion walks integers.
+        keys = list(targets)
+        targets = [tuple(int(v) for v in t) for t in targets.values()]
     else:
         targets = [tuple(int(v) for v in t) for t in targets]
         keys = list(range(len(targets)))
-    if isinstance(targets, dict):
-        keys, targets = list(targets), list(targets.values())
 
     gates = {}
     for k, t in zip(keys, targets):

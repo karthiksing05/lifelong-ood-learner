@@ -117,7 +117,22 @@ def _feat(X, img=IMG):
     return A / (np.linalg.norm(A, axis=1, keepdims=True) + 1e-9)
 
 
-def metric_features(X, space="pixel", img=IMG, device=None):
+def _infer_img(X, img=None):
+    """Side length of a flat RGB row.  -> int.
+
+    The module default `IMG` is ColorMNIST's 32, and passing it for a 64px image reinterprets that
+    image as 32x32 with TWELVE channels -- `_feat` then low-passes over the wrong neighbourhood and
+    Inception rejects the tensor outright. Inferring from the row length is the only thing that is
+    right for every dataset here (ColorMNIST 32, the CelebA grid 64, CelebA 128).
+    """
+    if img:
+        return int(img)
+    d = int(np.asarray(X).shape[1])
+    side = int(round((d / 3.0) ** 0.5))
+    return side if side * side * 3 == d else IMG
+
+
+def metric_features(X, space="pixel", img=None, device=None):
     """Feature space for the k-NN density metrics, as a NAMED, RECORDED parameter.  -> (F, used).
 
     `_feat` above is a pixel space and its own docstring records the retraction: Generalization
@@ -140,6 +155,7 @@ def metric_features(X, space="pixel", img=IMG, device=None):
     why the space each result used is recorded rather than assumed.
     """
     X = np.asarray(X, np.float64)
+    img = _infer_img(X, img)
     if space == "pixel":
         return _feat(X, img=img), "pixel"
     if space in ("inception", "inception-tv"):
@@ -194,7 +210,7 @@ def speckle(samples, reference=None, img=IMG):
     return out
 
 
-def vendi_score(samples, q=1.0, space="pixel", img=IMG, device=None):
+def vendi_score(samples, q=1.0, space="pixel", img=None, device=None):
     """Diversity WITHOUT a reference set (Friedman & Dieng, TMLR 2023, arXiv:2210.02410).
 
     The exponential of the Shannon entropy of the eigenvalues of the normalized sample-similarity
@@ -223,7 +239,7 @@ def vendi_score(samples, q=1.0, space="pixel", img=IMG, device=None):
     return float(np.exp(-(nz * np.log(nz)).sum()))
 
 
-def memorization(samples, train, space="pixel", img=IMG, device=None):
+def memorization(samples, train, space="pixel", img=None, device=None):
     """MOSAIC's copying test: a sample is memorized iff d_NN1 / d_NN2 < 1/3.
 
     Reported because "generated the held-out combination" and "retrieved a training image that
@@ -251,7 +267,7 @@ def _knn_radius(F, k):
     return np.sort(D, 1)[:, min(k, D.shape[1] - 1) - 1]
 
 
-def precision_recall(samples, reference, k=3, space="pixel", img=IMG, device=None):
+def precision_recall(samples, reference, k=3, space="pixel", img=None, device=None):
     """Improved precision & recall (Kynkaanniemi et al. 2019) -- the paper's coverage metric.
 
     PRECISION = fraction of generated samples that fall inside the reference manifold (are they
@@ -276,7 +292,7 @@ def precision_recall(samples, reference, k=3, space="pixel", img=IMG, device=Non
     return dict(precision=precision, recall=recall, f1=float(f1), space=_used)
 
 
-def density_coverage(samples, reference, k=3, space="pixel", img=IMG, device=None):
+def density_coverage(samples, reference, k=3, space="pixel", img=None, device=None):
     """Density & Coverage (Naeem et al. 2020), the modern replacement for precision & recall.
 
     Precision/recall (Kynkaanniemi et al. 2019) are known to be unstable to outliers: a single
@@ -306,7 +322,7 @@ def density_coverage(samples, reference, k=3, space="pixel", img=IMG, device=Non
     return dict(density=density, coverage=coverage)
 
 
-def frechet_distance(samples, reference, space="pixel", img=IMG, device=None):
+def frechet_distance(samples, reference, space="pixel", img=None, device=None):
     """Frechet distance in the same feature space the other coverage metrics use.
 
     NOT "FID": FID is defined on Inception-V3 pool3 features, and Inception is the wrong detector for

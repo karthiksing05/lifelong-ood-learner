@@ -52,6 +52,36 @@ def ok(cond, msg):
         FAIL.append(msg)
 
 
+def real_datasets(seed=0):
+    """REAL images from the datasets whose claims are at stake, one class at a time.
+
+    The synthetic stand-in below is a fallback, not the evidence: the documented failure
+    (recall 0.000 pixel vs 0.180 Inception) was measured on real CelebA at 128px, and a fixture of
+    moving blobs at 32px is handled fine by pixel distance. A decision about whether to migrate 15
+    pinned claims has to be made on the data those claims were computed from.
+
+    -> {name: [N, D] rows of ONE class}, skipping any dataset not present on this machine.
+    """
+    out = {}
+    try:
+        from lifelong_ood.data.datasets import load_colormnist
+        d = load_colormnist(n_per_slot=120, seed=seed)
+        sl = np.asarray(d["slot"])
+        pick = np.bincount(sl).argmax()
+        out["colormnist"] = np.asarray(d["X"], np.float32)[sl == pick]
+    except Exception as e:                                            # noqa: BLE001
+        print(f"[space] colormnist unavailable: {type(e).__name__}")
+    try:
+        from lifelong_ood.data.celeba import load_celeba_grid
+        d = load_celeba_grid(img=64, seed=seed, n_per_cell=400, n_holdout=0, max_rows=40000)
+        sl = np.asarray(d["slot"])
+        pick = np.bincount(sl).argmax()
+        out["celeba_grid"] = np.asarray(d["X"], np.float32)[sl == pick]
+    except Exception as e:                                            # noqa: BLE001
+        print(f"[space] celeba_grid unavailable: {type(e).__name__}")
+    return {k: v for k, v in out.items() if len(v) >= N_REF + N_ARM}
+
+
 def colormnist_like(n=200, img=32, seed=0):
     """A stand-in with the structure the metrics care about: a class with genuine within-class
     variety (position jitter) plus colour identity. Position jitter is exactly what pixel distance
@@ -98,40 +128,53 @@ def verdict(res):
 def main():
     from lifelong_ood import inception
     have_incep = inception.available()
-    X = colormnist_like()
-    A, ref = arms(X)
     spaces = ["pixel"] + (["inception"] if have_incep else [])
-    print(f"[space] {N_ARM} samples against a {N_REF}-row reference; "
-          f"spaces: {spaces}{'' if have_incep else '  (inception unavailable)'}")
+    datasets = real_datasets()
+    datasets["synthetic"] = colormnist_like()
+    print(f"[space] {N_ARM} samples against a {N_REF}-row reference; spaces: {spaces}"
+          f"{'' if have_incep else '  (inception unavailable)'}")
+    print(f"[space] datasets: {list(datasets)}  (synthetic is a FALLBACK, not the evidence)")
 
-    table = {}
-    for sp in spaces:
-        res = {}
-        for name, S in A.items():
-            pr = precision_recall(S, ref, space=sp)
-            mem = memorization(S, ref, space=sp)
-            res[name] = dict(precision=pr["precision"], recall=pr["recall"],
-                             memorized=mem["frac_memorized"], used=pr.get("space", sp))
-        table[sp] = res
-
-    print(f"\n[space] {'arm':12s}" + "".join(f"{sp:>26s}" for sp in spaces))
-    print(f"[space] {'':12s}" + "".join(f"{'prec   rec   mem':>26s}" for sp in spaces))
-    for name in A:
-        line = f"[space] {name:12s}"
+    verdicts, tables = {}, {}
+    for ds, X in datasets.items():
+        A, ref = arms(X)
+        table = {}
         for sp in spaces:
-            r = table[sp][name]
-            line += f"{r['precision']:>10.3f}{r['recall']:>8.3f}{r['memorized']:>8.3f}"
-        print(line)
+            res = {}
+            for name, S in A.items():
+                pr = precision_recall(S, ref, space=sp)
+                mem = memorization(S, ref, space=sp)
+                res[name] = dict(precision=pr["precision"], recall=pr["recall"],
+                                 memorized=mem["frac_memorized"], used=pr.get("space", sp))
+            table[sp] = res
+        tables[ds] = table
 
-    print()
-    verdicts = {}
-    for sp in spaces:
-        good, notes = verdict(table[sp])
-        verdicts[sp] = good
-        print(f"[space] {sp:10s} {'PASSES all four arms' if good else 'FAILS: ' + '; '.join(notes)}")
+        print(f"\n[space] --- {ds} ({len(X)} images of one class, {X.shape[1]}-d) ---")
+        print(f"[space] {'arm':12s}" + "".join(f"{sp:>26s}" for sp in spaces))
+        print(f"[space] {'':12s}" + "".join(f"{'prec   rec   mem':>26s}" for sp in spaces))
+        for name in A:
+            line = f"[space] {name:12s}"
+            for sp in spaces:
+                r = table[sp][name]
+                line += f"{r['precision']:>10.3f}{r['recall']:>8.3f}{r['memorized']:>8.3f}"
+            print(line)
+        for sp in spaces:
+            good, notes = verdict(table[sp])
+            verdicts.setdefault(sp, {})[ds] = good
+            print(f"[space]   {sp:10s} {'PASSES' if good else 'FAILS: ' + '; '.join(notes)}")
+
+    # A space is only usable if it passes on every REAL dataset measured; the synthetic arm cannot
+    # rescue it and is excluded from the decision.
+    real = [d for d in datasets if d != "synthetic"]
+    verdicts = {sp: all(v[d] for d in real) if real else None for sp, v in verdicts.items()}
+    A = arms(datasets[real[0] if real else "synthetic"])[0]
+    table = tables[real[0] if real else "synthetic"]
 
     print(f"\n[space] {'=' * 68}")
-    if not have_incep:
+    if not real:
+        print("[space] NO REAL DATASET was available, so no decision is made. The synthetic arm is")
+        print("[space]   a smoke test for the harness, not evidence about 15 pinned claims.")
+    elif not have_incep:
         print("[space] Only the pixel space could be measured, so no decision is available. The")
         print("[space] rule stands unapplied; install/enable Inception weights to run it.")
     elif verdicts.get("inception") and not verdicts.get("pixel"):
@@ -148,8 +191,9 @@ def main():
         print("[space]   DELETED rather than re-pinned in a second wrong space (the n25 precedent).")
 
     # This file reports; it does not gate. Only an inability to compute is a failure.
-    ok(all(np.isfinite(table[sp][n]["precision"]) for sp in spaces for n in A),
-       "every arm produced a finite number in every space")
+    ok(all(np.isfinite(tables[ds][sp][n]["precision"])
+           for ds in tables for sp in spaces for n in A),
+       "every arm produced a finite number in every space and dataset")
     print(f"\n[space] {'PASS' if not FAIL else 'FAIL: ' + '; '.join(FAIL)}")
     return 1 if FAIL else 0
 

@@ -126,6 +126,11 @@ def main():
        f"and the joint is computed over fewer factors ({n_noise} vs {n_clean}) -- a joint that "
        f"RISES because the instrument narrowed")
 
+    print("\n[instrument] targets may be given as a dict keyed by the caller's own class ids")
+    rd = check_instrument(tag="t", real=d, probes=probes, targets={7: (0, 0), 9: (1, 1)}, n_arm=24)
+    ok(set(rd.targets) == {7, 9}, "the report is indexed by the caller's keys, not by position")
+    ok(rd.targets[7].target == (0, 0), "and each keeps its factor row")
+
     print("\n[instrument] a blind target takes the report down with it")
     db = make_data()
     # relabel the held-out target to a combination no real image carries
