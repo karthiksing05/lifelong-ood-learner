@@ -61,6 +61,11 @@ def main():
     p.add_argument("--n-samples", type=int, default=24)
     p.add_argument("--steps", type=int, default=200)
     p.add_argument("--seed", type=int, default=0)
+    p.add_argument("--tag", default="",
+                   help="suffix for the result filename. REQUIRED when pointing --ckpt at a "
+                        "different backbone: without it every backbone writes the same "
+                        "`n73_celeba_grid_compose.json` and the last run silently replaces the others, which pools "
+                        "as though it were one experiment.")
     args = p.parse_args()
     dev = "cuda" if torch.cuda.is_available() else "cpu"
 
@@ -198,7 +203,7 @@ def main():
         print("[n73]   backbone may simply be too weak -- judge against the ceiling, not 1.0.")
     save_json(dict(rows=rows, ceiling=ceil, basis_r2=float(fac["r2"]), held=d["held"],
                    real_spread=real_spread, config=vars(args)),
-              os.path.join(RESULTS, "n73_celeba_grid_compose.json"), seed=args.seed)
+              os.path.join(RESULTS, f"n73_celeba_grid_compose{args.tag}.json"), seed=args.seed)
     return 0
 
 

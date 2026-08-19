@@ -35,13 +35,36 @@ Even QUERY-SEEDED chains end far from the query — farther than genuine other i
 class. On the pretrained backbones they returned the query pixel-for-pixel. That is the density
 holdout working: the query is not a mode of a model that never saw its combination.
 
+## Added 2026-08-19
+
+**Three sampling seeds** (`n73` seeds 0/1/2, same backbone): ADDRESS 0.204 +/- 0.048, nearest-class
+0.102 +/- 0.030, unconditional 0.009 +/- 0.006.  The paired margin over ADDRESS's retrieval control
+is **0.102 +/- 0.046 over three DISTINCT cells, won on 3/3** -- so it clears the +0.10 bar, but the
+n that matters is 3, not the 9 cell x seed pairs.  Two more backbones (`_h5`, 5 held-out cells,
+train seed 1; `_h4`, 4 cells, train seed 2) are training to raise it to twelve.
+
+**The copying pair, both clean.** ADDRESS memorises **0.00** of the training set and sits **87.4
++/- 2.3** from a real held-out image where two real images of that cell sit **40.05** apart.  Not a
+copy of the training set, and not a copy of the query.
+
+**Instrument calibration is now part of every run.** A disjoint set of REAL images of the held-out
+cell runs through the identical scoring pipeline, so precision / vendi / recall each have a measured
+ceiling.  Prompted by ADDRESS scoring precision 0.000 against 0.083 for the other arms, which reads
+as "off-manifold" and cannot be read at all until real data is scored the same way.
+
+**The read, not the composer, is the CelebA bottleneck.** Gradient inversion (`learn_factored`)
+recovered 1 of 3 held-out cells at 400 steps, and each wrong read drags the whole downstream loop:
+N74's first full run scored address 0.167 on a cell where N73's true-factor composition scores 0.375.
+Two fixes are in: `read_by_enumeration` scores all twelve candidates on common random draws, which is
+exact on a grid this size, and N74 gained an `oracle` arm so read cost and storage cost are separable
+rather than confounded.
+
 ## Open, in priority order
 
-1. **Statistical power.** ADDRESS beats nearest-class on 2 of 3 cells (0.375 vs 0.292; 0.208 vs
-   0.083) but the mean margin is **0.069**, under the +0.10 bar, at n=3. Fix by holding out MORE
-   cells (a second backbone at `n_holdout=5` leaves 7 seen) and by a second training seed. The grid
-   is capped at 12 cells by attribute readability, so beyond that it needs a second grid over a
-   different readable factor set rather than a bigger one.
+1. **Statistical power.** The margin is 0.102 +/- 0.046 at n=3 distinct cells -- over the bar, but
+   on three cells from one backbone. The `_h5` and `_h4` backbones take it to twelve cells over
+   three training seeds. Note the trade: more held-out cells means FEWER seen cells, and at 7 seen
+   rows against 5 free basis vectors the in-sample R^2 stops being evidence -- report `cv_r2`.
 2. **Cell 2 fails for every arm** (blond·male·not-smiling, 518 images — the smallest cell). Either
    raise its support or report it as a support floor.
 3. **Storage + donation on this backbone.** N71 (absorb, then sample the stored concept) and N72

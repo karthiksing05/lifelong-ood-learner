@@ -74,6 +74,11 @@ def main():
     p.add_argument("--inv-steps", type=int, default=400)
     p.add_argument("--n-pool", type=int, default=48)
     p.add_argument("--seed", type=int, default=0)
+    p.add_argument("--tag", default="",
+                   help="suffix for the result filename. REQUIRED when pointing --ckpt at a "
+                        "different backbone: without it every backbone writes the same "
+                        "`n74_celeba_grid_absorb.json` and the last run silently replaces the others, which pools "
+                        "as though it were one experiment.")
     p.add_argument("--reader", choices=("enumerate", "invert"), default="enumerate",
                    help="how the factors are read off the single query. `enumerate` scores all "
                         "combinations on common random draws -- exact on a 12-cell grid; `invert` "
@@ -264,7 +269,7 @@ def main():
                    basis_r2=float(fac["r2"]), basis_r2_cv=float(r2cv), n_cv=int(n_cv),
                    reader=args.reader, held=d["held"], read_ok=int(n_read),
                    base_hash=base_hash, final_hash=final_hash, config=vars(args)),
-              os.path.join(RESULTS, "n74_celeba_grid_absorb.json"), seed=args.seed)
+              os.path.join(RESULTS, f"n74_celeba_grid_absorb{args.tag}.json"), seed=args.seed)
     return 0
 
 
