@@ -18,10 +18,20 @@ Arms are the ones that make the claim falsifiable, matching N72:
   nearest-class  the closest SEEN class embedding -- if this matches ADDRESS the model already had it
   unconditional  the floor
 
-Read every number against the PROBE CEILING, not against 1.0: the factor probes score
-hair 0.568 / Male 0.849 / Smiling 0.859 on REAL images, so a perfect generator caps near 0.414 joint
-and chance is 1/9 = 0.111.  Reporting raw joint without that ceiling would understate a working
-model and overstate a broken one.
+and two COPYING tests, which is what makes the ADDRESS number evidence of a donation rather than of
+retrieval: `memorized` (MOSAIC's d_NN1/d_NN2 against the TRAINING set) and `d_query` (distance to a
+real held-out image, read against the real-vs-real spread of that cell).  Neither can see the
+other's failure -- the NN test is structurally blind to a sample copied from the query, because the
+query was never trained on.
+
+Read every number against the PROBE CEILING, not against 1.0: the factor probes score around
+hair 0.57 / Male 0.85 / Smiling 0.86 on REAL images, so a perfect generator caps near 0.41 joint
+against a chance of 1/n_seen.  The exact ceiling is refit per seed and moves a long way -- 0.414 to
+0.570 across three -- so it is printed by every run rather than quoted from one.  Reporting raw
+joint without it would understate a working model and overstate a broken one.
+
+The grid and the holdout are DERIVED from the checkpoint, so this runs unchanged on any
+`celeba_grid` backbone.
 
     python experiments/n73_celeba_grid_compose.py
 """
@@ -38,7 +48,7 @@ from common import CACHE, RESULTS                                      # noqa: E
 
 from lifelong_ood.data.celeba import load_celeba_grid                  # noqa: E402
 from lifelong_ood.evals import (factor_accuracy, fit_factor_probes,    # noqa: E402
-                                precision_recall, save_json, vendi_score)
+                                memorization, precision_recall, save_json, vendi_score)
 from lifelong_ood.neural import NeuralScoreField, UNet, sample_embedding  # noqa: E402
 from lifelong_ood.neural.idealwords import compose, factorize          # noqa: E402
 
@@ -71,11 +81,11 @@ def main():
     want = sorted(int(k) for k in ck["remap"])
     if sorted(set(np.asarray(d["slot"])[np.asarray(d["seen"])].tolist())) != want:
         d = grid(len(d["live"]) - len(want))
-    got = sorted(set(np.asarray(d["slot"])[np.asarray(d["seen"])].tolist()))
-    if got != want:
+    seen_cells = sorted(set(np.asarray(d["slot"])[np.asarray(d["seen"])].tolist()))
+    if seen_cells != want:
         raise SystemExit(f"[n73] split mismatch: checkpoint trained on cells {want}, this loader "
-                         f"gives {got}. The backbone and the evaluation disagree about which "
-                         f"combinations were held out -- refusing to report a number.")
+                         f"gives {seen_cells}. The backbone and the evaluation disagree about "
+                         f"which combinations were held out -- refusing to report a number.")
     print(f"[n73] {len(want)} seen cells, {len(d['held'])} held out: {d['held']}", flush=True)
     X, F, slot = (np.asarray(d["X"], np.float32), np.asarray(d["factors"]),
                   np.asarray(d["slot"]))
@@ -114,14 +124,34 @@ def main():
             "unconditional": field.sample(n=args.n_samples, steps=args.steps,
                                           seed=args.seed + 37 * (ci + 1), branch=None),
         }
-        for arm in ARMS:
+        # THE INSTRUMENT'S OWN READING, on a DISJOINT set of real images of this same cell.  Every
+        # column here needs a ceiling, not just `joint`: the first run scored precision 0.000 for
+        # `address` against 0.083 for the other two arms, which reads as "our samples are
+        # off-manifold" -- and is unreadable until real images of the cell are scored the same way
+        # and turn out to be near the same floor.  Four verdicts in this repository have already
+        # fired on a metric that could not discriminate; this arm is what makes that impossible
+        # here.  It is NOT a competitor: it is real data, and it is excluded from the arm table.
+        # TWO copying tests, because neither can see the other's failure -- the pair N72 settled on.
+        # MOSAIC's d_NN1/d_NN2 compares against the TRAINING set, so it can catch a sample copied
+        # from a seen cell; it is structurally BLIND to a sample copied from the query, because the
+        # query is held out and was never trained on. `d_query` covers that, read against the
+        # real-vs-real spread of the held-out cell rather than against zero.
+        train_ref = X[np.asarray(d["seen"])][:600]
+        xq = X[idx[0]]
+        got["real"] = X[idx[60:60 + args.n_samples]] if len(idx) >= 60 + args.n_samples \
+            else X[idx[-args.n_samples:]]
+        for arm in ARMS + ("real",):
             S = np.asarray(got[arm], np.float32)
             a = factor_accuracy(probes, S, tgt)
             pr = precision_recall(S, R)
+            mem = memorization(S, train_ref)
             rows.append(dict(arm=arm, cell=int(h), target=list(tgt),
                              joint=float(a["joint"]) if a["joint"] == a["joint"] else 0.0,
                              recall=pr["recall"], precision=pr["precision"],
-                             vendi=float(vendi_score(S))))
+                             vendi=float(vendi_score(S)),
+                             memorized=float(mem["frac_memorized"]),
+                             d_query=float(np.mean([np.linalg.norm(np.asarray(s, np.float32)
+                                                                   - xq) for s in S]))))
         r = {x["arm"]: x for x in rows if x["cell"] == int(h)}
         print(f"[n73] cell {h} {tgt}: address {r['address']['joint']:.3f} | "
               f"nearest-class {r['nearest-class']['joint']:.3f} | "
@@ -132,11 +162,28 @@ def main():
         v = [x[k] for x in rows if x["arm"] == arm]
         return float(np.mean(v)) if v else float("nan")
 
-    print(f"\n[n73] {'=' * 66}")
-    print(f"{'arm':16s}{'joint':>9s}{'/ceiling':>10s}{'recall':>9s}{'vendi':>8s}")
+    # THE SCALE BAR for d_query: how far two REAL images of a held-out cell sit from each other.
+    # Without it a distance is uninterpretable -- "the sample is 34 from the query" says nothing
+    # until you know real images of the same class are 34 apart too.
+    rr = []
+    for h in d["held"]:
+        ix = np.where(slot == int(h))[0][:12]
+        rr += [float(np.linalg.norm(X[a_] - X[b_])) for i_, a_ in enumerate(ix) for b_ in ix[i_ + 1:]]
+    real_spread = float(np.mean(rr)) if rr else float("nan")
+
+    print(f"\n[n73] {'=' * 78}")
+    print(f"{'arm':16s}{'joint':>9s}{'/ceiling':>10s}{'recall':>9s}{'vendi':>8s}"
+          f"{'memorized':>11s}{'d(query)':>10s}")
     for arm in ARMS:
         print(f"{arm:16s}{m(arm, 'joint'):>9.3f}{m(arm, 'joint') / max(ceil, 1e-9):>10.2f}"
-              f"{m(arm, 'recall'):>9.3f}{m(arm, 'vendi'):>8.2f}")
+              f"{m(arm, 'recall'):>9.3f}{m(arm, 'vendi'):>8.2f}"
+              f"{m(arm, 'memorized'):>11.2f}{m(arm, 'd_query'):>10.2f}")
+    print(f"{'--- REAL images':16s}{m('real', 'joint'):>9.3f}{m('real', 'joint') / max(ceil, 1e-9):>10.2f}"
+          f"{m('real', 'recall'):>9.3f}{m('real', 'vendi'):>8.2f}"
+          f"{m('real', 'memorized'):>11.2f}{m('real', 'd_query'):>10.2f}")
+    print(f"{'  precision':16s}" + "".join(f"{m(a, 'precision'):>9.3f}"
+                                          for a in ARMS + ("real",))
+          + "   <- arms in order, then REAL")
     print("[n73] VERDICT")
     a_, n_, u_ = m("address", "joint"), m("nearest-class", "joint"), m("unconditional", "joint")
     if a_ > max(n_, u_) + 0.10:
@@ -150,7 +197,7 @@ def main():
         print("[n73]   Does not clear the floor. With 9 seen cells and a 0.414 probe ceiling this")
         print("[n73]   backbone may simply be too weak -- judge against the ceiling, not 1.0.")
     save_json(dict(rows=rows, ceiling=ceil, basis_r2=float(fac["r2"]), held=d["held"],
-                   config=vars(args)),
+                   real_spread=real_spread, config=vars(args)),
               os.path.join(RESULTS, "n73_celeba_grid_compose.json"), seed=args.seed)
     return 0
 

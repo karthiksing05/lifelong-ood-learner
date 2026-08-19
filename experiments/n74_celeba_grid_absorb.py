@@ -45,7 +45,8 @@ from lifelong_ood.evals import (factor_accuracy, fit_factor_probes,     # noqa: 
                                 precision_recall, save_json, vendi_score)
 from lifelong_ood.neural import (NeuralLifelongLearner, NeuralScoreField,  # noqa: E402
                                  UNet, sample_embedding, to_data, to_model)
-from lifelong_ood.neural.idealwords import compose, factorize           # noqa: E402
+from lifelong_ood.neural.idealwords import (compose, cv_r2, factorize,   # noqa: E402
+                                             read_by_enumeration)
 
 
 def weight_hash(model, keys):
@@ -73,11 +74,17 @@ def main():
     p.add_argument("--inv-steps", type=int, default=400)
     p.add_argument("--n-pool", type=int, default=48)
     p.add_argument("--seed", type=int, default=0)
+    p.add_argument("--reader", choices=("enumerate", "invert"), default="enumerate",
+                   help="how the factors are read off the single query. `enumerate` scores all "
+                        "combinations on common random draws -- exact on a 12-cell grid; `invert` "
+                        "is the gradient path `learn_factored` uses, kept for comparison and for "
+                        "vocabularies too large to enumerate.")
+    p.add_argument("--n-draws", type=int, default=64)
     p.add_argument("--quick", action="store_true")
     args = p.parse_args()
     if args.quick:
         (args.n_samples, args.steps, args.epochs, args.inv_steps,
-         args.n_pool) = 8, 40, 4, 40, 8
+         args.n_pool, args.n_draws) = 8, 40, 4, 40, 8, 16
     dev = "cuda" if torch.cuda.is_available() else "cpu"
 
     ck = torch.load(args.ckpt, map_location="cpu", weights_only=False)
@@ -109,7 +116,11 @@ def main():
     C = ck["ema"]["cemb.weight"].numpy()[[ck["remap"][int(s)] for s in seen]]
     lab = np.stack([F[slot == int(s)][0] for s in seen])
     fac = factorize(C, lab)
-    print(f"[n74] ideal-words basis R^2 {fac['r2']:.3f}", flush=True)
+    # BOTH R^2s.  In-sample is near-arithmetic once the table is small (7 cells against 5 free
+    # vectors), so the leave-one-cell-out number is the one that says anything about structure.
+    r2cv, n_cv = cv_r2(C, lab)
+    print(f"[n74] ideal-words basis R^2 {fac['r2']:.3f} in-sample | {r2cv:.3f} "
+          f"leave-one-cell-out over {n_cv} of {len(want)} cells", flush=True)
 
     field = NeuralScoreField(UNet(n_classes=ck["n_classes"], **ck["arch"]), device=dev,
                              layout=ck.get("layout"))
@@ -136,12 +147,22 @@ def main():
         R = X[[j for j in idx if j != qi][:60]]
         xq = to_model(X[qi]).ravel()
 
-        c_soft, ws, read = L.compose_factored(xq, inv_steps=args.inv_steps, seed=args.seed,
-                                              hard=True)
-        read_t = tuple(int(v) for v in read)
+        if args.reader == "enumerate":
+            read_t, _ = read_by_enumeration(field, to_model(X[qi]), fac, n_draws=args.n_draws,
+                                            seed=args.seed)
+        else:
+            _, _, read = L.compose_factored(xq, inv_steps=args.inv_steps, seed=args.seed, hard=True)
+            read_t = tuple(int(v) for v in read)
         c_hard = compose(fac, read_t)
         read_ok = read_t == tgt
 
+        # THREE arms, so a bad number is ATTRIBUTABLE. `oracle` composes from the TRUE factors and
+        # never touches the read, so oracle -> address is what the READ costs and address -> stored
+        # is what STORAGE costs. Without it the two are confounded: the first full run scored
+        # address 0.167 where n73's true-factor composition scores 0.375 on the same cell, which
+        # reads as a weak composer and was a wrong read.
+        S_oracle = to_data(sample_embedding(field, compose(fac, tgt), n=args.n_samples,
+                                            steps=args.steps, seed=args.seed + ci))
         S_addr = to_data(sample_embedding(field, c_hard, n=args.n_samples, steps=args.steps,
                                           seed=args.seed + ci))
         # THE POOL STAYS IN MODEL SPACE -- `consolidate` trains the adapter against these rows as
@@ -161,7 +182,7 @@ def main():
 
         S_store = to_data(L.sample_concept(name, n=args.n_samples, steps=args.steps,
                                            seed=args.seed + ci))
-        for tag, S in (("address", S_addr), ("stored", S_store)):
+        for tag, S in (("oracle", S_oracle), ("address", S_addr), ("stored", S_store)):
             S = np.asarray(S, np.float32)
             a = factor_accuracy(probes, S, tgt)
             pr = precision_recall(S, R)
@@ -206,7 +227,7 @@ def main():
 
     print(f"\n[n74] {'=' * 70}")
     print(f"{'arm':10s}{'joint':>9s}{'/ceiling':>10s}{'recall':>9s}{'vendi':>8s}")
-    for arm in ("address", "stored"):
+    for arm in ("oracle", "address", "stored"):
         print(f"{arm:10s}{m(arm, 'joint'):>9.3f}{m(arm, 'joint') / max(ceil, 1e-9):>10.2f}"
               f"{m(arm, 'recall'):>9.3f}{m(arm, 'vendi'):>8.2f}")
     print(f"\n[n74] read accuracy {n_read}/{len(order)} | forgetting over the stream {fgt:+.3f}")
@@ -240,7 +261,8 @@ def main():
 
     save_json(dict(rows=rows, after=after, forgetting=fgt, frozen=bool(frozen_ok),
                    n_new_tensors=int(n_new), ceiling=ceil, chance=chance,
-                   basis_r2=float(fac["r2"]), held=d["held"], read_ok=int(n_read),
+                   basis_r2=float(fac["r2"]), basis_r2_cv=float(r2cv), n_cv=int(n_cv),
+                   reader=args.reader, held=d["held"], read_ok=int(n_read),
                    base_hash=base_hash, final_hash=final_hash, config=vars(args)),
               os.path.join(RESULTS, "n74_celeba_grid_absorb.json"), seed=args.seed)
     return 0

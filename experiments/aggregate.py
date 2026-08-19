@@ -510,8 +510,10 @@ def agg_n73(runs):
     """
     arms = ("address", "nearest-class", "unconditional")
     rows = [r for _, run in runs for r in run["rows"]]
-    out = {a: {k: stat([r[k] for r in rows if r["arm"] == a])
-               for k in ("joint", "recall", "precision", "vendi")} for a in arms}
+    keys = ("joint", "recall", "precision", "vendi", "memorized", "d_query")
+    out = {a: {k: stat([r[k] for r in rows if r["arm"] == a and k in r]) for k in keys}
+           for a in arms}
+    out["real_spread"] = stat([run.get("real_spread") for _, run in runs])
     ceil = stat([run["ceiling"] for _, run in runs])
     out["ceiling"] = ceil
     out["basis_r2"] = stat([run["basis_r2"] for _, run in runs])
@@ -554,6 +556,11 @@ def agg_n73(runs):
         print(f"    {a:16s}{fmt(j):>14s}{100 * (out[a]['joint_frac']['mean'] if isinstance(out[a]['joint_frac'], dict) else out[a]['joint_frac']):>7.0f}%"
               f"{fmt(out[a]['recall']):>14s}{fmt(out[a]['vendi']):>14s}")
     print(f"    probe ceiling {fmt(ceil)} | basis R2 {fmt(out['basis_r2'])}")
+    # The copying pair, each against the only scale bar that makes it readable.
+    if out["address"].get("memorized"):
+        print(f"    copying: address memorized {fmt(out['address']['memorized'])} | "
+              f"d(query) {fmt(out['address']['d_query'], 2)} against a real-vs-real spread of "
+              f"{fmt(out['real_spread'], 2)}")
     print(f"    ADDRESS - nearest-class, paired over {out['n_cells']} DISTINCT cells: "
           f"{fmt(out['margin_vs_retrieval'])}, won on {fmt(out['cells_won'])}")
     print(f"      (over all {out['n_cell_seed_pairs']} cell x seed pairs: "

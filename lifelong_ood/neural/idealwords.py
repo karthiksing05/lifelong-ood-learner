@@ -76,6 +76,35 @@ def factorize(C, labels, ridge=1e-3):
                 r2_per_dim=1 - ((C - pred) ** 2).sum(0) / np.maximum(((C - C.mean(0)) ** 2).sum(0), 1e-12))
 
 
+def cv_r2(C, labels, ridge=1e-3):
+    """Leave-one-class-out R^2 of the same additive fit: predicts embeddings it never saw.
+
+    In-sample `r2` is the right number when there are many more classes than free parameters --
+    ColorMNIST fits 120 rows with ~18 vectors, so 0.870 there is a real statement about the table.
+    It stops being one as the table shrinks.  A CelebA grid of hair(3) x Male(2) x Smiling(2) has
+    at most 12 cells and, once several are held out, as few as 7 rows against 5 free vectors; an
+    in-sample R^2 near 1 is then most of the way to arithmetic and says little about compositional
+    structure.
+
+    This holds out one class, refits, and predicts it -- which is exactly the question ADDRESS
+    asks of a held-out combination, so it is the honest quantity to report on a small table.  A
+    class whose factor value appears nowhere else cannot be predicted and is skipped, since its
+    error would measure the split rather than the basis.
+    """
+    C, L = np.asarray(C, np.float64), np.asarray(labels, int)
+    res, tot, used = 0.0, 0.0, 0
+    for i in range(len(C)):
+        k = np.ones(len(C), bool)
+        k[i] = False
+        if any(L[i, f] not in set(L[k, f].tolist()) for f in range(L.shape[1])):
+            continue
+        fac = factorize(C[k], L[k], ridge)
+        res += float(((C[i] - compose(fac, tuple(int(v) for v in L[i]))) ** 2).sum())
+        tot += float(((C[i] - C[k].mean(0)) ** 2).sum())
+        used += 1
+    return (float(1.0 - res / max(tot, 1e-12)) if used else float("nan")), used
+
+
 def compose(fac, assignment, gains=None):
     """Build a concept vector from factor values, with no query and no optimization.
 
@@ -157,6 +186,56 @@ def learn_factored(field, targets, fac, n_steps=300, lr=0.05, batch=8, seed=0, i
             ws.append(w.detach().cpu().numpy())
             c_new = c_new + gain[f] * (w @ Vt[f])
     return c_new.detach(), ws, hist
+
+
+def read_by_enumeration(field, x, fac, n_draws=64, seed=0, gains=None, u_range=(0.05, 0.95),
+                        max_candidates=512):
+    """Read a query's factor assignment by SCORING every combination, not by gradient inversion.
+
+    `learn_factored` optimises a softmax per factor, which is the only option when the vocabulary is
+    large -- ColorMNIST's 10 x 4 x 4 is 160 candidates and a policy's will be far worse.  On a small
+    grid it is the wrong tool: hair(3) x Male(2) x Smiling(2) is TWELVE candidates, and enumerating
+    them turns an optimisation with local minima into an argmin over an exhaustive list.  It matters
+    here -- gradient inversion read 1 of 3 held-out CelebA cells correctly at 400 steps, and a wrong
+    read makes every downstream number a measurement of the reader rather than of composition.
+
+    COMMON RANDOM NUMBERS.  Every candidate is scored on the SAME (u, epsilon) draws.  The
+    eps-objective is noisy enough that independent draws per candidate can reorder them outright,
+    which would reintroduce exactly the unreliability this replaces.
+
+    Label-free: it only ever asks the model how well each candidate embedding denoises the query.
+
+    -> (assignment tuple, per-candidate losses keyed by assignment).
+    """
+    import itertools
+
+    sizes = [len(v) for v in fac["V"]]
+    n_cand = int(np.prod(sizes))
+    if n_cand > max_candidates:
+        raise ValueError(f"{n_cand} candidates exceeds max_candidates={max_candidates}; "
+                         f"use learn_factored for a vocabulary this size")
+    dev, model = field.device, field.model
+    # FLATTENED ROWS, in MODEL space -- what `_layout_img` expects and what `learn_factored`
+    # hands it.  `np.atleast_2d` on an (H, W, C) image is a no-op, so passing an unflattened image
+    # here silently reinterprets the first axis as the batch.
+    X = _layout_img(np.asarray(x, np.float32).reshape(1, -1), dev, field.img,
+                    getattr(field, "layout", None))
+    g = torch.Generator(device="cpu").manual_seed(seed)
+    u = (torch.rand(n_draws, generator=g) * (u_range[1] - u_range[0]) + u_range[0]).to(dev)
+    ab = torch.from_numpy(cosine_abar(u.detach().cpu().numpy())).to(dev).float().view(-1, 1, 1, 1)
+    x0 = X[0:1].expand(n_draws, -1, -1, -1)
+    e = torch.randn(x0.shape, generator=g).to(dev)
+    xt = ab.sqrt() * x0 + (1 - ab).sqrt() * e
+
+    losses = {}
+    model.eval()
+    with torch.no_grad():
+        for cand in itertools.product(*[range(s) for s in sizes]):
+            c = torch.as_tensor(np.asarray(compose(fac, cand, gains=gains), np.float32), device=dev)
+            losses[cand] = float(torch.nn.functional.mse_loss(
+                model(xt, u, emb_override=c), e))
+    best = min(losses, key=losses.get)
+    return tuple(int(v) for v in best), losses
 
 
 def slot_factors(slots):
