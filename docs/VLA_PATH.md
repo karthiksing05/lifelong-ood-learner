@@ -10,15 +10,15 @@ this is the forward plan.
 
 | claim | evidence | confidence |
 |---|---|---|
-| A conditional diffusion model's class table organises **compositionally** without being told the factors | basis R² 0.870 ColorMNIST · 0.620 CelebA · 0.538 Shapes3D · 0.832 **DiT** | **high** — four backbones, three datasets, two architectures |
-| **ADDRESS** composes held-out combinations at ~0 parameters | ColorMNIST joint 0.556 · CelebA 2.7× floor · Shapes3D **16× floor** · DiT 0.661 full-loop | **high** |
+| A conditional diffusion model's class table organises **compositionally** without being told the factors | basis R² 0.870 ColorMNIST · 0.538 Shapes3D · 0.832 **DiT**, and **cross-validated** 0.772 on ColorMNIST's 120-row table | **high on large tables, void on small ones** — the claim needs classes ≫ free vectors. The CelebA grid at 9 classes / 8 vectors reads 0.875 in-sample and **0.207** leave-one-out (§7ee), so it is excluded from this row |
+| **ADDRESS** composes held-out combinations at ~0 parameters | ColorMNIST joint 0.556 · Shapes3D **16× floor** · DiT 0.661 full-loop · CelebA density-holdout **+0.242 over the floor** (§7ee) | **high vs the unconditional floor** |
 | The scheme is **not tied to the UNet** | latent DiT, adaLN conditioning, `factorize`/`compose` unchanged (§7z) | **high** — this is the VLA-relevant one |
 | ADDRESS is **span-limited by construction** — a point, never a direction | affine residual 0.0000 vs a trained embedding's 0.7359 (§6e-bis) | **high** — it is algebra, then measured |
 | The **router** transfers | held-out AUROC: ColorMNIST **1.000**, Shapes3D **0.861 ± 0.043** at a calibrated u (§6c-quinquies) | **medium** — transfers once `u` is calibrated per backbone; 0.354 was the operating point |
 | The router's **operating point** can be chosen without held-out labels | Shapes3D: label-free `calibrate_u_novel` picks the oracle's u on 3/3 seeds, **0.929** vs the inherited constant's 0.662 | **medium** — exact on the pretrained backbone, fails on ColorMNIST for the reason §6c gives |
 | A **multi-object scene** is a composition over addresses, not *k* separate blocks | scene table factorises over object membership (R² 0.931, CV **0.875** vs null 0.254); held-out PAIRS at **0.317 ± 0.008** exact-set, recall 0.608 vs a 0.178 floor (§7bb) | **medium** — replicates over 3 sampling seeds but ONE backbone; 4 of 9 pairs fail, 2 of them recoverably (§7bb-bis) |
 | A concept read from ONE example can be **written into the model and sampled back**, not re-derived | `stored` joint **0.525** vs an `address` ceiling of 0.500, recall 0.808, forgetting **+0.000**, base bit-identical (§7cc) | **medium** — ColorMNIST only; Shapes3D and the DiT still recompose from ground-truth factors rather than storing |
-| The method **donates** a capability rather than locating an existing one | `nearest-class` — the backbone's own best existing embedding — scores **0.000** vs ADDRESS 0.599; samples sit as far from the query as two real images of the class (9.03 vs 9.06); 0.00 memorised (§7dd) | **medium** — four conditions all hold, ColorMNIST, one seed; the margin narrows on Shapes3D (0.516 vs 0.390) |
+| The method **donates** a capability rather than locating an existing one | `nearest-class` — the backbone's own best existing embedding — scores **0.000** vs ADDRESS 0.599; samples sit as far from the query as two real images of the class (9.03 vs 9.06); 0.00 memorised (§7dd) | **ColorMNIST only, and now known not to generalise** — the margin narrows on Shapes3D (0.516 vs 0.390) and **vanishes on the CelebA density holdout: +0.049 ± 0.027, won 8/16** (§7ee) |
 | Absorption improves **representations** | N50 withdrawn; N53 corrected experiment | **unknown** — the honest state |
 
 ---
@@ -112,6 +112,28 @@ the analogue is worse — average action MSE will be dominated by the easy major
    usable health check; only the composition margin is.
 
 ---
+
+### 4. Two things a benchmark must prove about ITSELF before it can test the method
+
+Added 2026-08-19, from the CelebA density-holdout grid (§7ee), where both were learned the
+expensive way — a margin was reported, then withdrawn, then reported again and withdrawn again,
+each time because the *instrument* had not been characterised.
+
+**Every metric needs a REAL-DATA arm, per unit of evaluation.** Not a global ceiling: real data of
+*the specific held-out combination*, scored by *that run's* probes. A global probe ceiling read
+0.524 on a backbone where real images of the held-out cells scored **0.142 against a chance of
+0.143** — held-out combinations are the rarest ones, hence the ones the probes read worst. Twenty of
+36 measurements turned out to be unreadable, and the pre-gate margin (+0.102, won 3/3) was almost
+entirely an artifact of them. For a policy the analogue is a success detector: verify it fires on
+*human demonstrations of the held-out task* before reading any rollout number, and per task rather
+than averaged over the suite.
+
+**A basis claim needs classes ≫ free vectors, and this is checkable before training.** In-sample R²
+and leave-one-out R² agree at ColorMNIST's ratio of 6.3 (0.826 / 0.772) and diverge completely at
+the grid's 1.1 (0.875 / **0.207**). CelebA cannot reach a usable ratio at any resolution or probe
+strength measured — 64px pixel probes give 8 cells / 7 vectors, Inception features 16 / 9 = 1.8,
+128px is *worse* than 64px. So **count the task rows against (summed factor values) before training
+anything**; if the ratio is near 1, the basis number that comes out will be arithmetic.
 
 ## The order to attack a diffusion policy
 

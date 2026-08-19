@@ -7,25 +7,34 @@
     Black_Hair  +0.021   NOT readable
     Gray_Hair   +0.000   NOT readable
 
-The grid in use is hair(3) = {Blond, Brown, other}, so ONE OF ITS THREE FACTOR VALUES IS UNREADABLE.
-`probe_readable` guards at the level of a FACTOR -- hair's overall validation accuracy is 0.568,
-which clears the 0.55 bar -- and cannot see that the accuracy is carried by two values out of three.
-Every cell with hair = brown is therefore scored by a probe that cannot tell, which is why real
-images of the held-out cells read at chance on the 7-seen backbone and why the brown cells scored
-0.000 for every arm including `unconditional`.
+The grid in use is hair(3) = {Blond, Brown, other}, so one of its three factor values is one the
+benchmark's own probe cannot separate.  `probe_readable` guards at the level of a FACTOR -- hair's
+overall validation accuracy is 0.568, which clears the 0.55 bar -- and cannot see that the accuracy
+is carried by some values and not others.
 
-So before any more CelebA training, the ceiling has to be measured rather than assumed: which
-attributes a probe can read, PER VALUE, at each resolution the benchmark could plausibly use.
-Resolution is the interesting axis -- 64px is cheap enough for from-scratch training with a density
-holdout, and if 128px unlocks enough attributes to build a table whose classes outnumber its free
-vectors, that is worth four times the training cost (see `diag_basis_cv` for why the ratio decides
-whether the basis claim is testable at all).
+*Do not read that table as "brown cells are the blind ones".*  These are BINARY one-vs-rest probes,
+and the benchmark scores hair with a single 3-way softmax refit per seed and per seen set.  Measured
+per cell, the 9-seen backbone's one READABLE held-out cell is the brown one while blond and `other`
+read blind, and the 7-seen backbone gives the reverse.  Which cells are legible is a property of the
+fitted probe, so it is measured per cell per run by n73's `real-gate` arm and cannot be fixed by
+dropping a value here.  What this file settles is the different question of how BIG a readable grid
+could be.
+
+So before any more CelebA training, the ceiling is measured rather than assumed: which attributes a
+probe separates, at each resolution and in each feature space the benchmark could plausibly use.
+Resolution turned out to be the wrong axis to hope on -- 128px reads FEWER attributes than 64px, not
+more, because the probe is linear over raw pixels and its dimensionality grows with the image while
+the data does not.  Feature space is the live question (`--features inception`), and if a stronger
+probe unlocks enough attributes to build a table whose classes outnumber its free vectors, the
+benchmark should ADOPT that probe rather than merely cite it (see `diag_basis_cv` for why the ratio
+decides whether the basis claim is testable at all).
 
 MARGIN OVER BASE RATE, always. Attributes here are wildly imbalanced -- Gray_Hair is 3% -- so raw
 accuracy certifies a probe that has learned nothing.
 
     python tests/diag_grid_factors.py --img 64
     python tests/diag_grid_factors.py --img 128
+    python tests/diag_grid_factors.py --img 64 --features inception
 """
 import argparse
 import os
@@ -37,7 +46,7 @@ HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, HERE)
 
 from lifelong_ood.data.celeba import ATTRS, load_celeba_grid          # noqa: E402
-from lifelong_ood.evals import SoftmaxProbe                           # noqa: E402
+from lifelong_ood.evals import SoftmaxProbe, _probe_features          # noqa: E402
 
 MIN_MARGIN = 0.10
 MIN_SHARE = 0.05          # below this a value cannot fill a cell at any reasonable dataset size
@@ -49,13 +58,22 @@ def main():
     p.add_argument("--n-per-cell", type=int, default=1200)
     p.add_argument("--max-rows", type=int, default=120000)
     p.add_argument("--seed", type=int, default=0)
+    p.add_argument("--features", choices=("pixel", "inception"), default="pixel",
+                   help="feature space for the probe. `pixel` is what `fit_factor_probes` uses "
+                        "today, so it is what the benchmark can actually see; `inception` asks "
+                        "whether a STRONGER probe would unlock more factors -- and if it does, the "
+                        "benchmark should adopt it rather than the result being quoted from it.")
     args = p.parse_args()
 
     d = load_celeba_grid(img=args.img, seed=args.seed, n_per_cell=args.n_per_cell,
                          n_holdout=0, max_rows=args.max_rows)
     X, A = np.asarray(d["X"], np.float32), np.asarray(d["attrs"])
-    print(f"[factors] {len(X)} images at {args.img}px, probed exactly as the benchmark does "
-          f"(SoftmaxProbe on raw pixels)", flush=True)
+    Xf = _probe_features(X, args.features, img=args.img)
+    if args.features == "inception" and Xf.shape[1:] == X.shape[1:]:
+        print("[factors] inception features UNAVAILABLE -- fell back to pixels. The comparison "
+              "below is not the one requested; install the weights or read this as a pixel run.")
+    print(f"[factors] {len(X)} images at {args.img}px, {args.features} features "
+          f"(dim {int(np.prod(Xf.shape[1:]))})", flush=True)
 
     rng = np.random.default_rng(args.seed)
     idx = rng.permutation(len(X))
@@ -70,8 +88,8 @@ def main():
         share = float(y.mean())
         if len(set(y[tr].tolist())) < 2 or len(set(y[te].tolist())) < 2:
             continue
-        pr = SoftmaxProbe(2, seed=args.seed, epochs=30).fit(X[tr], y[tr])
-        acc = float((pr.predict(X[te]) == y[te]).mean())
+        pr = SoftmaxProbe(2, seed=args.seed, epochs=30).fit(Xf[tr], y[tr])
+        acc = float((pr.predict(Xf[te]) == y[te]).mean())
         cnt = np.bincount(y[te], minlength=2)
         base = float(cnt.max() / max(cnt.sum(), 1))
         marg = acc - base
@@ -83,7 +101,7 @@ def main():
 
     # Every readable attribute is BINARY, so k of them make a 2^k grid against 1 + 2k free vectors.
     # The ratio is what decides whether the ideal-words basis claim can be tested here at all.
-    print(f"\n[factors] {len(ok)} readable at {args.img}px: {ok}")
+    print(f"\n[factors] {len(ok)} readable at {args.img}px / {args.features}: {ok}")
     for k in range(2, max(3, len(ok) + 1)):
         cells, free = 2 ** k, 1 + 2 * k
         mark = "  <- available" if k <= len(ok) else ""

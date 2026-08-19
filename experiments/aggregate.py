@@ -595,7 +595,43 @@ def agg_n73(runs):
     return dict(table=out, n_seeds=len(runs))
 
 
+def agg_n75(runs):
+    """N75: the CelebA-grid measurements pooled across backbones, READABLE cells only.
+
+    N75 has already done the pooling and the gating -- it exists precisely because that has to be
+    one artifact rather than something recomputed per table -- so this only reshapes its summary
+    into the arm/metric form `test_claims` asserts against.  The two margins are kept as separate
+    pseudo-arms because they carry opposite verdicts and collapsing them would hide that.
+    """
+    run = runs[0][1]
+    out = {a: {"joint": stat([r[k] for r in run["rows"] if r["readable"]])}
+           for a, k in (("address", "address"), ("nearest-class", "nearest"),
+                        ("unconditional", "uncond"))}
+    for name, key in (("margin_vs_retrieval", "margin_vs_retrieval"),
+                      ("margin_vs_uncond", "margin_vs_uncond")):
+        m = run[key]
+        out[name] = {"joint": dict(mean=m["mean"], se=m["se"], n=m["n"]),
+                     "won": dict(mean=m["won"] / max(m["n"], 1), se=0.0, n=m["n"])}
+    out["basis"] = {"r2": stat([r["basis_r2"] for r in run["rows"]]),
+                    "r2_cv": stat([r["basis_r2_cv"] for r in run["rows"]])}
+    out["copying"] = {"memorized": stat([r["memorized"] for r in run["rows"] if r["readable"]]),
+                      "d_query": stat([r["d_query"] for r in run["rows"] if r["readable"]]),
+                      "real_spread": stat([r["real_spread"] for r in run["rows"]])}
+    out["coverage"] = {"n_readable": dict(mean=float(run["n_readable"]), se=0.0, n=1),
+                       "n_total": dict(mean=float(run["n_total"]), se=0.0, n=1)}
+    print(f"    readable {run['n_readable']} of {run['n_total']} measurements")
+    for a in ("address", "nearest-class", "unconditional"):
+        print(f"    {a:16s}{fmt(out[a]['joint']):>14s}")
+    print(f"    ADDRESS - nearest-class {fmt(out['margin_vs_retrieval']['joint'])} "
+          f"(won {out['margin_vs_retrieval']['won']['mean']:.2f})")
+    print(f"    ADDRESS - unconditional {fmt(out['margin_vs_uncond']['joint'])} "
+          f"(won {out['margin_vs_uncond']['won']['mean']:.2f})")
+    print(f"    basis R2 {fmt(out['basis']['r2'])} in-sample, {fmt(out['basis']['r2_cv'])} cv")
+    return dict(table=out, n_seeds=len(runs))
+
+
 AGG = {"n71_absorb_and_generate": agg_n71, "n72_donation": agg_n72,
+       "n75_grid_pooled": agg_n75,
        "n73_celeba_grid_compose": agg_n73,
        "n64_multiobject_address": agg_n64, "n62_router_calibrate": agg_n62, "n65_u_labelfree": agg_n62,
        "e2_composition": agg_e2, "n2_composition": agg_e2,

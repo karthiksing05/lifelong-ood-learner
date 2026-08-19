@@ -3028,6 +3028,86 @@ squarely at it. Distance to the query is what catches it.
 ADDRESS's 0.516 (§N70), so the margin over "already had it" is much narrower there and this
 four-condition result is demonstrated on ColorMNIST only.*
 
+## 7ee. CelebA with a DENSITY holdout: what it supports, and what it does not (N73/N75)
+
+Every earlier CelebA result here used a backbone fine-tuned from `google/ddpm-celebahq-256`, so a
+"held-out" combination was held out from the *conditioning* while its images sat in the pretrained
+density the whole time. That is why mode ascent handed the query back at every noise level there,
+and why the case studies showed prototypes identical to the query. `ddpm_celeba_grid.pt` fixes it:
+trained **from scratch** on the seen cells of a `hair(3) × Male(2) × Smiling(2)` grid, with the
+held-out cells' images removed from training entirely. Three backbones — 9, 8 and 7 seen cells,
+different training seeds — × three sampling seeds.
+
+**The holdout is real, and confirmed mechanically.** Even query-seeded mode ascent ends far from the
+query (85–93) where real images of the same class sit 34–51 away — the opposite of the pretrained
+backbones, where a query-seeded chain returned the query pixel-for-pixel. Nothing is copied:
+**0.000 memorised** (MOSAIC d_NN1/d_NN2 against the training set) and d(sample, query) **79.4**
+against a real-vs-real spread of **40.0**.
+
+### The instrument had to be calibrated first, and it moved the result twice
+
+**A global probe ceiling is the wrong denominator.** `ceil` is the product of per-factor probe
+accuracies over *all* cells, but held-out cells are the rarest combinations in CelebA and so the
+ones the probes read worst. On the 7-seen backbone the global ceiling reads 0.524 while **real
+images of the held-out cells score 0.142 against a chance of 0.143**.
+
+**So the real-image arm became the gate.** Real images of *that cell*, scored by *that run's*
+probes, on 200 images — separate from the 24-image display arm, because 24 gives a standard error
+near 0.06 and this number decides whether a cell is scored at all. **Only 16 of 36 measurements
+survive it.**
+
+*A wrong mechanism was published internally in between and is corrected here.* The first blind cells
+were all brown-hair, and `diag_grid_factors` showed `Brown_Hair` scoring **−0.154** against its base
+rate as a binary probe, which made "brown is unreadable" irresistible. It is wrong: the benchmark
+scores hair with a single 3-way softmax refit per seed, and measured per cell the 9-seen backbone's
+one *readable* held-out cell is the brown one while blond and `other` read blind. Legibility is a
+property of the fitted probe, not of a value that could be excluded once.
+
+### The result, on cells the instrument can read
+
+| arm | joint (n = 16 readable) |
+|---|---|
+| **`address` (ours)** | **0.323** |
+| `nearest-class` — the backbone's own closest existing class | **0.273** |
+| `unconditional` | **0.081** |
+
+* **ADDRESS − unconditional = +0.242 ± 0.069, won 12/16.** Conditioning on a composed point works.
+* **ADDRESS − nearest-class = +0.049 ± 0.027, won 8/16.** A coin flip. **It does not beat
+  retrieval.**
+
+**Why, and it is diagnosable rather than mysterious.** On ColorMNIST `nearest-class` scores
+**0.000** against ADDRESS's 0.599 (§7dd): the nearest seen class differs by one factor and the
+probes read that factor cleanly, so it scores zero. Here it scores 0.273 — a sample conditioned on
+the *neighbouring* cell often reads as the held-out one. That is loose conditioning in a
+9.3M-parameter UNet trained for half an hour, and it caps what this dataset can discriminate.
+
+### The basis claim does not hold on this table, and the reason is structural
+
+| | classes | free vectors | ratio | R² | R² leave-one-out |
+|---|---|---|---|---|---|
+| ColorMNIST | 120 | 19 | 6.3 | 0.826 | **0.772** |
+| CelebA grid | 9 | 8 | 1.1 | 0.875 | **0.207** |
+
+An additive model with almost as many parameters as observations fits anything. **And the grid
+cannot be enlarged.** Sweeping every attribute with the benchmark's own probe, only `Smiling`
+(+0.344), `Male` (+0.237) and `Blond_Hair` (+0.103) clear a +0.10 margin at 64px — three binary
+factors, 8 cells against 7 free vectors, ratio 1.1. At 128px it is *worse* (two attributes), because
+the probe is linear over raw pixels and its dimensionality grows with the image while the data does
+not.
+
+### What this section claims
+
+**CelebA supports the density-holdout claim and not the donation-over-retrieval claim.** The
+donation result stays where it was demonstrated — ColorMNIST, §7dd, where the retrieval control
+scores 0.000. Reported the other way round it would be the third headline in this repository to be
+retracted under replication, and the readability gate is now a standing artifact
+(`experiments/n75_grid_pooled.py`) so it cannot drift back.
+
+*Also refuted here: that the composed address is off-manifold because its norm is atypical. It sits
+at 1.00–1.10× the trained median embedding norm, and rescaling moves precision by **+0.000**. The
+realism gap — precision 0.000 composed against real images' 0.833 — belongs to the backbone, and
+`nearest-class`, a trained class, scoring only ~0.20 is the evidence for that.*
+
 ## 7bb-bis. Why 4 of 9 pairs fail, and what that says about the number (N66)
 
 A mean over pairs that range from 0.844 to 0.000 is not a description of anything. Four hypotheses,

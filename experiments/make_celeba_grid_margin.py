@@ -113,6 +113,16 @@ def main():
     ax.legend(fontsize=7, ncol=2)
     ax.grid(axis="y", alpha=0.25)
 
+    # THE HEADLINE COMES FROM N75, NOT FROM THIS FILE.  N75 gates per (cell, seed); averaging the
+    # gate over seeds first -- which the left panel does, because it draws one bar group per cell --
+    # keeps a different subset and would print a different margin beside the same bars.  One
+    # artifact owns the number; the figure displays it.
+    pooled = None
+    pp = os.path.join(RESULTS, "n75_grid_pooled.json")
+    if os.path.exists(pp):
+        with open(pp) as fh:
+            pooled = json.load(fh)
+
     bx.axhline(0, color="k", lw=1.0)
     bx.bar(x, marg, 0.62, color=["#1f77b4" if m > 0 else "#d62728" for m in marg])
     mm = float(np.mean(marg))
@@ -122,14 +132,24 @@ def main():
     bx.set_xticklabels([str(c["cell"]) for c in cells], fontsize=7)
     bx.set_xlabel("held-out cell")
     bx.set_ylabel("ADDRESS - nearest-class")
-    bx.set_title(f"paired margin: {mm:+.3f} +/- {se:.3f} over {len(marg)} cells\n"
-                 f"won on {sum(1 for m in marg if m > 0)}/{len(marg)}", fontsize=9)
+    if pooled:
+        r = pooled["margin_vs_retrieval"]
+        u = pooled["margin_vs_uncond"]
+        bx.set_title(f"POOLED over {pooled['n_readable']} readable of {pooled['n_total']} "
+                     f"measurements (N75)\n"
+                     f"vs retrieval {r['mean']:+.3f} +/- {r['se']:.3f}, won {r['won']}/{r['n']}"
+                     f"   |   vs floor {u['mean']:+.3f} +/- {u['se']:.3f}, won {u['won']}/{u['n']}",
+                     fontsize=8)
+    else:
+        bx.set_title(f"paired margin: {mm:+.3f} +/- {se:.3f} over {len(marg)} cells\n"
+                     f"won on {sum(1 for m in marg if m > 0)}/{len(marg)}", fontsize=9)
     bx.grid(axis="y", alpha=0.25)
 
     fig.suptitle(
         "CelebA grid, DENSITY holdout: every cell shown has ZERO training images.\n"
         "`nearest-class` is the adversarial control -- the backbone's own closest existing "
-        "embedding. Where ADDRESS beats it, the capability was not already there to retrieve.\n"
+        "embedding. ADDRESS clears the UNCONDITIONAL floor decisively and does NOT clear "
+        "RETRIEVAL (right panel): on ColorMNIST nearest-class scores 0.000, here it scores 0.273.\n"
         "Backbones hold out different numbers of cells (more held out = fewer seen), so they are "
         "shown separately rather than pooled.\n"
         + (f"{len(blind)} cell(s) dropped: REAL images of them score at chance under that run's "

@@ -35,48 +35,58 @@ Even QUERY-SEEDED chains end far from the query — farther than genuine other i
 class. On the pretrained backbones they returned the query pixel-for-pixel. That is the density
 holdout working: the query is not a mode of a model that never saw its combination.
 
-## Added 2026-08-19
+## RESOLVED 2026-08-19 — and the headline changed twice under measurement
 
-**Three sampling seeds** (`n73` seeds 0/1/2, same backbone): ADDRESS 0.204 +/- 0.048, nearest-class
-0.102 +/- 0.030, unconditional 0.009 +/- 0.006.  The paired margin over ADDRESS's retrieval control
-is **0.102 +/- 0.046 over three DISTINCT cells, won on 3/3** -- so it clears the +0.10 bar, but the
-n that matters is 3, not the 9 cell x seed pairs.  Two more backbones (`_h5`, 5 held-out cells,
-train seed 1; `_h4`, 4 cells, train seed 2) are training to raise it to twelve.
+Read `docs/RESULTS.md` §7ee for the full account. The short version:
 
-**The copying pair, both clean.** ADDRESS memorises **0.00** of the training set and sits **87.4
-+/- 2.3** from a real held-out image where two real images of that cell sit **40.05** apart.  Not a
-copy of the training set, and not a copy of the query.
+**What CelebA supports.** A genuine DENSITY holdout — the only non-ColorMNIST backbone here where
+held-out combinations were never in the model. ADDRESS beats the unconditional floor by
+**+0.242 ± 0.069, won 12/16**, nothing is copied (0.000 memorised; d(query) 79.4 against a
+real-vs-real spread of 40.0), and storage preserves every pre-existing weight bit-identically with
++0.000 forgetting.
 
-**Instrument calibration is now part of every run.** A disjoint set of REAL images of the held-out
-cell runs through the identical scoring pipeline, so precision / vendi / recall each have a measured
-ceiling.  Prompted by ADDRESS scoring precision 0.000 against 0.083 for the other arms, which reads
-as "off-manifold" and cannot be read at all until real data is scored the same way.
+**What it does NOT support.** Donation over retrieval. **ADDRESS − nearest-class = +0.049 ± 0.027,
+won 8/16** — a coin flip. On ColorMNIST the same control scores 0.000 against ADDRESS's 0.599; here
+it scores 0.273, because a sample conditioned on the NEIGHBOURING cell often reads as the held-out
+one. That is loose conditioning in a 9.3M-parameter UNet trained half an hour, and it caps what this
+dataset can discriminate.
 
-**The read, not the composer, is the CelebA bottleneck.** Gradient inversion (`learn_factored`)
-recovered 1 of 3 held-out cells at 400 steps, and each wrong read drags the whole downstream loop:
-N74's first full run scored address 0.167 on a cell where N73's true-factor composition scores 0.375.
-Two fixes are in: `read_by_enumeration` scores all twelve candidates on common random draws, which is
-exact on a grid this size, and N74 gained an `oracle` arm so read cost and storage cost are separable
-rather than confounded.
+**Nor the basis claim.** 0.875 in-sample against **0.207** leave-one-cell-out, at 9 classes over 8
+free vectors. ColorMNIST's 6.3 ratio gives 0.826 / 0.772.
 
-## Open, in priority order
+**And the grid cannot be enlarged to fix it.** Measured, not assumed:
 
-1. **Statistical power.** The margin is 0.102 +/- 0.046 at n=3 distinct cells -- over the bar, but
-   on three cells from one backbone. The `_h5` and `_h4` backbones take it to twelve cells over
-   three training seeds. Note the trade: more held-out cells means FEWER seen cells, and at 7 seen
-   rows against 5 free basis vectors the in-sample R^2 stops being evidence -- report `cv_r2`.
-2. **Cell 2 fails for every arm** (blond·male·not-smiling, 518 images — the smallest cell). Either
-   raise its support or report it as a support floor.
-3. **Storage + donation on this backbone.** N71 (absorb, then sample the stored concept) and N72
-   (the four donation conditions) have only ever run on ColorMNIST. This backbone is the first
-   non-ColorMNIST one where they would mean anything, because it is the first with a density
-   holdout.
+| probe | readable attributes | best table | ratio |
+|---|---|---|---|
+| pixel, 64px | Smiling, Male, Blond_Hair | 8 cells / 7 vectors | 1.1 |
+| pixel, 128px | Smiling, Male | 4 / 5 | 0.8 |
+| Inception, 64px | + Wavy_Hair | 16 / 9 | **1.8** |
 
-## Traps already paid for here
+All well below the ~4 where in-sample and cross-validated R² start to agree.
 
-* `n1_train.py` passed `layout` to `train_ddpm` but not to its eval field, which defaulted to
-  `permuted` against an `hwc` model. The run self-reported joint **0.111 — exactly 1/9 chance** on a
-  checkpoint that scores 0.292. `tests/diag_grid_layout.py` re-scores a checkpoint both ways.
-* `--n-holdout` defaults to 100 (added for shapes3d) and held out 8 of 11 cells.
-* The eval hardcoded `rng.choice(uniq, 16, replace=False)`, fatal for a 9-class grid.
-* `--max-rows 25000` shrinks the smallest cell below `min_cell` and drops it from the grid.
+## Two measurement rules this cost, both now standing artifacts
+
+1. **`n75_grid_pooled.py` gates on a real-data arm** — real images of *that cell*, scored by *that
+   run's* probes, on 200 images. 20 of 36 measurements fail it. The pre-gate margin (+0.102, won
+   3/3) was almost entirely those cells.
+2. **`diag_basis_cv.py` reports the classes-to-free-vectors ratio** beside every R². Below ~4, quote
+   only the cross-validated number.
+
+Both are pinned in `tests/test_claims.py` so the withdrawn margin cannot drift back.
+
+## A wrong mechanism, corrected
+
+The first blind cells were all brown-hair and `Brown_Hair` scores −0.154 as a binary probe, so
+"brown is unreadable" looked settled. It is wrong — the benchmark scores hair with one 3-way softmax
+refit per seed, and on the 9-seen backbone the single READABLE held-out cell is the brown one while
+blond and `other` read blind. Legibility is a property of the fitted probe and must be measured per
+cell per run.
+
+## Still open
+
+* **N74 (storage) has only run on the h3 backbone at `--quick` scale.** The loop closes — base
+  bit-identical, +0.000 forgetting — but its ceiling arm has never cleared the gate at full scale,
+  and the enumeration reader (2/3 vs gradient inversion's 1/3) has not been measured at 64 draws.
+* **The realism gap is the backbone's** (precision 0.000 composed, ~0.20 for a TRAINED class, 0.833
+  for real images) and would need a bigger/longer-trained UNet, not a better composer — the norm
+  hypothesis is refuted at +0.000.

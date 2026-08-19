@@ -127,6 +127,29 @@ CLAIMS = [
     # copying, which is why recall is a headline number in this repository.
     (1.000, .01, "n72_donation", "query-copy", "joint", "7dd query-copy joint (copying scores 1.0)"),
     (0.000, .01, "n72_donation", "query-copy", "recall", "7dd query-copy recall (and covers nothing)"),
+    # ── CelebA grid, the DENSITY holdout (RESULTS §7ee) ───────────────────────
+    #
+    # These are pinned because they are a SCOPED NEGATIVE and negatives drift back most easily.
+    # The margin over retrieval was reported at +0.102 won 3/3 before the readability gate existed;
+    # it was measured on cells whose REAL images score at chance, where every arm reads ~0. Only 16
+    # of 36 (backbone, cell, seed) measurements survive the gate, and on those ADDRESS beats the
+    # unconditional floor decisively and RETRIEVAL not at all. Both are pinned so neither can be
+    # quoted without the other.
+    (0.323, .01, "n75_grid_pooled", "address", "joint", "7ee grid ADDRESS (readable cells)"),
+    (0.273, .01, "n75_grid_pooled", "nearest-class", "joint", "7ee grid nearest-class"),
+    (0.081, .01, "n75_grid_pooled", "unconditional", "joint", "7ee grid unconditional floor"),
+    (0.242, .01, "n75_grid_pooled", "margin_vs_uncond", "joint", "7ee grid margin over the floor"),
+    (0.049, .01, "n75_grid_pooled", "margin_vs_retrieval", "joint",
+     "7ee grid margin over RETRIEVAL (does not clear the bar)"),
+    (0.500, .01, "n75_grid_pooled", "margin_vs_retrieval", "won",
+     "7ee grid retrieval win rate (a coin flip)"),
+    # the basis claim does NOT hold on this table, and the pair is what says so
+    (0.875, .01, "n75_grid_pooled", "basis", "r2", "7ee grid basis R2 in-sample"),
+    (0.207, .03, "n75_grid_pooled", "basis", "r2_cv", "7ee grid basis R2 leave-one-cell-out"),
+    # the density holdout itself, which is what CelebA does support
+    (0.000, .01, "n75_grid_pooled", "copying", "memorized", "7ee grid memorised (nothing copied)"),
+    (16.0, .01, "n75_grid_pooled", "coverage", "n_readable", "7ee grid readable measurements"),
+    (36.0, .01, "n75_grid_pooled", "coverage", "n_total", "7ee grid total measurements"),
 ]
 
 
