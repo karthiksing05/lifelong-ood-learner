@@ -528,14 +528,34 @@ def agg_n73(runs):
               for _, run in runs for r in run["rows"] if r["arm"] == a]
         out[a]["joint_frac"] = stat(fr)
 
+    # DROP CELLS THE INSTRUMENT CANNOT READ, and say how many.  The grid's hair factor is
+    # {Blond, Brown, other} and Brown is UNREADABLE by the benchmark's own probe (-0.154 against
+    # base rate, `diag_grid_factors`), while `probe_readable` guards per FACTOR and so cannot see
+    # it: hair's overall accuracy of 0.568 clears the bar because two values out of three carry it.
+    # A brown cell is therefore scored by a probe that cannot tell, and every arm reads ~0 there --
+    # which DEPRESSES ADDRESS and flatters nothing, but is noise either way.  The `real` arm is the
+    # pre-registered test: a cell where REAL images of that cell score at chance is a cell no arm
+    # can be judged on.
+    blind = set()
+    for _, run in runs:
+        ch = run.get("chance") or (1.0 / max(run.get("n_seen", 9), 1))
+        for r in run["rows"]:
+            if r["arm"] == "real" and r["joint"] <= ch + 0.02:
+                blind.add((id(run), r["cell"]))
+
     # PAIRED, per cell.  Cells differ enormously in support (518 to 15349 images here), so an
     # unpaired comparison is dominated by which cells a run happened to hold out.
-    per = {}
+    per, n_blind = {}, 0
     for _, run in runs:
         by = {(r["arm"], r["cell"]): r["joint"] for r in run["rows"]}
         for c in sorted({r["cell"] for r in run["rows"]}):
-            if ("address", c) in by and ("nearest-class", c) in by:
-                per.setdefault(c, []).append(by[("address", c)] - by[("nearest-class", c)])
+            if ("address", c) not in by or ("nearest-class", c) not in by:
+                continue
+            if (id(run), c) in blind:
+                n_blind += 1
+                continue
+            per.setdefault(c, []).append(by[("address", c)] - by[("nearest-class", c)])
+    out["n_blind_dropped"] = n_blind
     # REPORT BOTH, and label them, because the two n's mean different things and only one of them
     # is the evidence.  Pooling every (cell, seed) pair gives n=9 from three sampling seeds over the
     # SAME three cells -- that is replication of the sampler, not of the claim, and quoting its
@@ -565,6 +585,9 @@ def agg_n73(runs):
               f"{fmt(out['real_spread'], 2)}")
     print(f"    ADDRESS - nearest-class, paired over {out['n_cells']} DISTINCT cells: "
           f"{fmt(out['margin_vs_retrieval'])}, won on {fmt(out['cells_won'])}")
+    if n_blind:
+        print(f"      ({n_blind} cell x seed measurement(s) DROPPED: real images of that cell "
+              f"score at chance, so no arm can be judged there)")
     print(f"      (over all {out['n_cell_seed_pairs']} cell x seed pairs: "
           f"{fmt(out['margin_pooled_cell_seed'])} -- sampler replication, not more cells)")
     return dict(table=out, n_seeds=len(runs))

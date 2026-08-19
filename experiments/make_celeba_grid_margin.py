@@ -61,13 +61,21 @@ def main():
         return 0
 
     # (tag, cell) -> per-arm mean over sampling seeds, and the per-cell paired margin
-    cells, marg = [], []
+    cells, marg, blind = [], [], []
     for tag in sorted(runs):
         rs = runs[tag]
         for c in sorted({r["cell"] for run in rs for r in run["rows"]}):
             vals = {a: [r["joint"] for run in rs for r in run["rows"]
-                        if r["arm"] == a and r["cell"] == c] for a in ARMS}
+                        if r["arm"] == a and r["cell"] == c] for a in ARMS + ("real",)}
             if not vals["address"]:
+                continue
+            # DROP A BLIND CELL rather than draw it. Where REAL images of the cell score at chance
+            # the probes cannot read that combination -- the grid's hair factor has an unreadable
+            # `brown` value (diag_grid_factors) -- and every arm reads ~0 there. Plotting it as a
+            # tie between three arms would be reporting the instrument, not the model.
+            ch = 1.0 / (rs[0].get("n_seen") or (12 - len(rs[0]["held"])))
+            if vals["real"] and float(np.mean(vals["real"])) <= ch + 0.02:
+                blind.append((tag, c))
                 continue
             ceil = float(np.mean([run["ceiling"] for run in rs]))
             # Chance is 1/n_seen and n_seen DIFFERS by backbone -- holding out five cells leaves
@@ -124,12 +132,17 @@ def main():
         "`nearest-class` is the adversarial control -- the backbone's own closest existing "
         "embedding. Where ADDRESS beats it, the capability was not already there to retrieve.\n"
         "Backbones hold out different numbers of cells (more held out = fewer seen), so they are "
-        "shown separately rather than pooled.", fontsize=8)
+        "shown separately rather than pooled.\n"
+        + (f"{len(blind)} cell(s) dropped: REAL images of them score at chance, so no arm can be "
+           "judged there -- the grid's `brown` hair value is unreadable by the benchmark's own "
+           "probe." if blind else ""), fontsize=8)
     fig.tight_layout(rect=[0, 0, 1, 0.88])
     os.makedirs(FIG, exist_ok=True)
     o = os.path.join(FIG, "f_celeba_grid_margin.png")
     fig.savefig(o, dpi=140, bbox_inches="tight")
     print(f"[margin] {len(cells)} (backbone, cell) measurements over {len(runs)} backbones")
+    if blind:
+        print(f"[margin] {len(blind)} dropped as unreadable (real images at chance): {blind}")
     print(f"[margin] paired margin {mm:+.3f} +/- {se:.3f}, won on "
           f"{sum(1 for m in marg if m > 0)}/{len(marg)}")
     print(f"[margin] wrote {o}")
