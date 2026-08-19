@@ -202,8 +202,8 @@ def main():
         # is a property of the fitted probe and this particular cell -- not of a hair value that
         # could be excluded once and for all.
         big = X[idx[60:60 + args.n_gate]] if len(idx) >= 60 + args.n_gate else X[idx[-args.n_gate:]]
-        gate = factor_accuracy(probes, np.asarray(big, np.float32), tgt)
-        gate_j = float(gate["joint"]) if gate["joint"] == gate["joint"] else 0.0
+        gate_acc = factor_accuracy(probes, np.asarray(big, np.float32), tgt)
+        gate_j = float(gate_acc["joint"]) if gate_acc["joint"] == gate_acc["joint"] else 0.0
         rows.append(dict(arm="real-gate", cell=int(h), target=list(tgt), joint=gate_j,
                          n=int(len(big)), recall=float("nan"), precision=float("nan"),
                          vendi=float("nan"), memorized=float("nan"), d_query=float("nan")))
