@@ -1,0 +1,243 @@
+"""N77 -- the storage loop on ANY factored backbone, gated. The generalisation of N71.
+
+N71 closes the loop that carries the thesis -- one example in, the concept WRITTEN into the model,
+novel class-matching samples back out by name, every pre-existing weight bit-identical -- and it is
+hardcoded to ColorMNIST in twelve lines of preamble: `load_colormnist`, a positional `(digit, fg,
+bg)` target, `fit_probes`/`composition_accuracy`, `ck["ema"]["cemb.weight"]`, and
+`backbone_gains(..., factor=2)` where 2 literally means "background".
+
+This is the same loop written against the contract in `lifelong_ood/data/factored.py`, so it runs on
+ColorMNIST, Shapes3D or any future dataset that satisfies it. N71 is left untouched: its numbers are
+pinned, and rewriting the experiment that produced them to prove a different point is how claims
+quietly drift.
+
+WHAT IS DELIBERATELY DIFFERENT FROM N71, and each is a lesson from 2026-08-19:
+
+  * THE INSTRUMENT GATE RUNS FIRST. Targets whose real images cannot be read are not sampled, not
+    scored, and not counted -- with the reason in the JSON. On the CelebA grid that removed 20 of 36
+    measurements after the fact; here it happens before.
+  * NO GAIN CALIBRATION. `backbone_gains` cannot run off ColorMNIST without rewriting three
+    functions, and n59 already skips it and passes `gains=None`. Whether it is needed at all is
+    reported (`oracle` vs `address`) rather than assumed.
+  * THE ORACLE ARM SEPARATES READ COST FROM STORAGE COST. `oracle` composes from TRUE factors and
+    never touches the read, so oracle -> address is what the READ costs and address -> stored is what
+    STORAGE costs. Without it a bad read reads as a weak composer, which is exactly how N74's first
+    run was misread.
+
+    python experiments/n77_storage_any.py --dataset colormnist
+    python experiments/n77_storage_any.py --dataset shapes3d --ckpt results/cache/ddpm_s3d_full.pt
+"""
+import argparse
+import hashlib
+import os
+import sys
+
+import numpy as np
+import torch
+
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from common import CACHE, RESULTS                                     # noqa: E402
+
+from lifelong_ood.data.factored import decode_slot, holdout_mask, load_factored  # noqa: E402
+from lifelong_ood.evals import (factor_accuracy, fit_factor_probes,   # noqa: E402
+                                precision_recall, save_json, vendi_score)
+from lifelong_ood.instrument import check_instrument, to_data_space   # noqa: E402
+from lifelong_ood.neural import (NeuralLifelongLearner, sample_embedding,  # noqa: E402
+                                 to_model)
+from lifelong_ood.neural.idealwords import compose, cv_r2, factorize  # noqa: E402
+
+
+def weight_hash(model, keys):
+    """SHA-256 over the parameters named in `keys` only.
+
+    `keys` is captured BEFORE the first absorption, because consolidation ADDS tensors. Hashing the
+    whole state_dict afterwards compares different key sets and reports "changed" for a model whose
+    original weights never moved -- the opposite of the claim.
+    """
+    sd = model.state_dict()
+    h = hashlib.sha256()
+    for k in sorted(keys):
+        h.update(k.encode())
+        h.update(sd[k].detach().cpu().numpy().tobytes())
+    return h.hexdigest()
+
+
+def load_backbone(dataset, ckpt, dev):
+    """-> (field, C, labels_of_C, seen_slots, remap). The one dataset-specific hop."""
+    from lifelong_ood.neural import load_field
+    ck = torch.load(ckpt, map_location="cpu", weights_only=False)
+    remap = ck["remap"]
+    seen_slots = np.array(sorted(int(k) for k in remap))
+    if "ema_cemb" in ck:                       # the VE-bridge / pretrained-table form (n57)
+        from lifelong_ood.neural.ve_bridge import load_ve_field
+        field, _ = load_ve_field(ckpt, device=dev)
+        C = np.asarray(ck["ema_cemb"])[[remap[int(s)] for s in seen_slots]]
+    else:                                      # our own UNet checkpoints
+        field = load_field(ckpt, device=dev)
+        C = ck["ema"]["cemb.weight"].numpy()[[remap[int(s)] for s in seen_slots]]
+    return field, C, seen_slots, ck
+
+
+def main():
+    p = argparse.ArgumentParser()
+    p.add_argument("--dataset", default="colormnist")
+    p.add_argument("--ckpt", default=None)
+    p.add_argument("--n-concepts", type=int, default=5)
+    p.add_argument("--n-samples", type=int, default=24)
+    p.add_argument("--steps", type=int, default=200)
+    p.add_argument("--n-per-slot", type=int, default=100)
+    p.add_argument("--epochs", type=int, default=40)
+    p.add_argument("--n-pool", type=int, default=48)
+    p.add_argument("--n-holdout", type=int, default=12)
+    p.add_argument("--seed", type=int, default=0)
+    p.add_argument("--tag", default="")
+    p.add_argument("--quick", action="store_true")
+    args = p.parse_args()
+    if args.quick:
+        (args.n_concepts, args.n_samples, args.steps, args.n_per_slot,
+         args.epochs, args.n_pool) = 2, 8, 40, 40, 4, 8
+    dev = "cuda" if torch.cuda.is_available() else "cpu"
+    ckpt = args.ckpt or os.path.join(CACHE, f"ddpm_{args.dataset}.pt")
+
+    # ── data, through the generic contract ──────────────────────────────────
+    kw = dict(n_per_slot=args.n_per_slot, seed=args.seed)
+    d = load_factored(args.dataset, **kw)
+    sizes = [int(s) for s in d["sizes"]]
+    if "seen" not in d or bool(np.all(np.asarray(d["seen"]))):
+        seen, _ = holdout_mask(np.asarray(d["factors"]), sizes, args.n_holdout, seed=args.seed)
+        d["seen"] = np.asarray(seen, bool)
+    X, F, slot = (np.asarray(d["X"], np.float32), np.asarray(d["factors"], int),
+                  np.asarray(d["slot"], int))
+    seen_mask = np.asarray(d["seen"], bool)
+    probes = fit_factor_probes(d, seed=args.seed)
+
+    field, C, seen_slots, ck = load_backbone(args.dataset, ckpt, dev)
+    lab = np.asarray(decode_slot(seen_slots, sizes), int)
+    fac = factorize(C, lab)
+    r2cv, n_cv = cv_r2(C, lab)
+    print(f"[n77] {args.dataset}: {len(seen_slots)} seen classes, factors {d['names']} {sizes}; "
+          f"basis R2 {fac['r2']:.3f} in-sample, {r2cv:.3f} leave-one-out", flush=True)
+
+    held = [s for s in sorted(set(slot.tolist())) if s not in set(seen_slots.tolist())]
+    held = [h for h in held if (slot == h).sum() >= 8][:args.n_concepts]
+    if not held:
+        print("[n77] no held-out class with enough images")
+        return 0
+
+    # ── the gate, before anything is sampled ────────────────────────────────
+    gate = check_instrument(tag="n77", real=d, probes=probes, field=field,
+                            targets={int(h): tuple(int(v) for v in F[slot == h][0]) for h in held},
+                            n_arm=args.n_samples, table=C, labels=lab, seed=args.seed)
+    print(gate.summary("n77"), flush=True)
+    gate.require("n77")
+    held = [h for h in held if gate.readable(int(h))]
+    print(f"[n77] {len(held)} readable concepts to absorb: {held}", flush=True)
+
+    L = NeuralLifelongLearner(field, steps=args.steps, seed=args.seed, device=dev)
+    L.attach_factorization(C, lab)
+    base_keys = sorted(field.model.state_dict().keys())
+    base_hash = weight_hash(field.model, base_keys)
+
+    rows, order = [], []
+    rng = np.random.default_rng(args.seed)
+    for ci, h in enumerate(held):
+        idx = np.where(slot == int(h))[0]
+        name = f"c{int(h)}"
+        tgt = tuple(int(v) for v in F[idx[0]])
+        qi = int(rng.choice(idx))
+        R = X[[j for j in idx if j != qi][:60]]
+        xq = to_model(X[qi]).ravel()
+
+        _, _, read = L.compose_factored(xq, seed=args.seed, hard=True)
+        read_t = tuple(int(v) for v in read)
+        c_read = compose(fac, read_t)
+
+        S = {}
+        # `oracle` never touches the read, so oracle -> address is the READ cost and
+        # address -> stored is the STORAGE cost. Conflating them misread N74's first run.
+        S["oracle"] = to_data_space(field, sample_embedding(
+            field, compose(fac, tgt), n=args.n_samples, steps=args.steps, seed=args.seed + ci))
+        S["address"] = to_data_space(field, sample_embedding(
+            field, c_read, n=args.n_samples, steps=args.steps, seed=args.seed + ci))
+
+        # ABSORB. The pool stays in MODEL space -- `consolidate` trains the adapter against these
+        # rows as diffusion targets; converting them cost a whole result on ColorMNIST once.
+        pool = np.asarray(sample_embedding(field, c_read, n=args.n_pool, steps=args.steps,
+                                           seed=args.seed + 500 + ci), np.float32)
+        L.bank.add_concept(name, pool.mean(0))
+        L.bank._emb_extra[name].data = torch.as_tensor(
+            np.asarray(c_read, np.float32), device=dev).clone()
+        L.consolidate(pool, name, mu=pool.mean(0), epochs=args.epochs, seed=args.seed,
+                      freeze_embedding=True, already_registered=True)
+        S["stored"] = to_data_space(field, L.sample_concept(
+            name, n=args.n_samples, steps=args.steps, seed=args.seed + ci))
+
+        for arm, Sx in S.items():
+            Sx = np.asarray(Sx, np.float32)
+            a = factor_accuracy(probes, Sx, tgt)
+            pr = precision_recall(Sx, R)
+            j = float(a["joint"])
+            rows.append(dict(concept=name, slot=int(h), arm=arm, target=list(tgt),
+                             joint=j if j == j else 0.0, recall=pr["recall"],
+                             precision=pr["precision"], vendi=float(vendi_score(Sx)),
+                             read=list(read_t), read_ok=bool(read_t == tgt), space=pr.get("space")))
+        g = {r["arm"]: r for r in rows if r["concept"] == name}
+        print(f"[n77] {name} {tgt} read {read_t} {'OK' if read_t == tgt else 'WRONG'} | "
+              f"oracle {g['oracle']['joint']:.3f} -> address {g['address']['joint']:.3f} "
+              f"-> STORED {g['stored']['joint']:.3f} (recall {g['stored']['recall']:.3f})",
+              flush=True)
+        order.append((name, int(h), tgt))
+
+    print(f"\n[n77] re-sampling all {len(order)} stored concepts AFTER the stream", flush=True)
+    after = []
+    for ci, (name, h, tgt) in enumerate(order):
+        idx = np.where(slot == int(h))[0]
+        Sx = np.asarray(to_data_space(field, L.sample_concept(
+            name, n=args.n_samples, steps=args.steps, seed=args.seed + ci)), np.float32)
+        a = factor_accuracy(probes, Sx, tgt)
+        j = float(a["joint"])
+        pr = precision_recall(Sx, X[idx[:60]])
+        after.append(dict(concept=name, joint=j if j == j else 0.0, recall=pr["recall"]))
+        first = [r for r in rows if r["concept"] == name and r["arm"] == "stored"][0]
+        print(f"[n77]   {name}: {first['joint']:.3f} -> {after[-1]['joint']:.3f}", flush=True)
+
+    final_hash = weight_hash(field.model, base_keys)
+    frozen = base_hash == final_hash
+    n_new = len(field.model.state_dict()) - len(base_keys)
+
+    def m(arm, k="joint"):
+        v = [r[k] for r in rows if r["arm"] == arm]
+        return float(np.mean(v)) if v else float("nan")
+
+    fgt = float(np.mean([[r for r in rows if r["concept"] == a_["concept"]
+                          and r["arm"] == "stored"][0]["joint"] - a_["joint"] for a_ in after])) \
+        if after else float("nan")
+    n_read = sum(1 for r in rows if r["arm"] == "stored" and r["read_ok"])
+
+    print(f"\n[n77] {'=' * 70}")
+    print(f"{'arm':10s}{'joint':>9s}{'recall':>9s}{'vendi':>8s}")
+    for arm in ("oracle", "address", "stored"):
+        print(f"{arm:10s}{m(arm):>9.3f}{m(arm, 'recall'):>9.3f}{m(arm, 'vendi'):>8.2f}")
+    print(f"\n[n77] read {n_read}/{len(order)} | forgetting {fgt:+.3f} | "
+          f"base bit-identical {frozen} (+{n_new} new tensors)")
+    print(f"[n77] read cost (oracle - address) {m('oracle') - m('address'):+.3f} | "
+          f"storage cost (address - stored) {m('address') - m('stored'):+.3f}")
+
+    print("[n77] VERDICT")
+    if m("stored") >= 0.5 * m("oracle") and m("stored", "recall") > 0.3 and abs(fgt) < 0.1:
+        print(f"[n77]   THE LOOP CLOSES ON {args.dataset.upper()}. One example is read, composed,")
+        print("[n77]   WRITTEN, and sampled back by name -- stream intact, base bit-identical.")
+    else:
+        print(f"[n77]   Does not close: stored {m('stored'):.3f} against an oracle of "
+              f"{m('oracle'):.3f}, forgetting {fgt:+.3f}.")
+    save_json(dict(rows=rows, after=after, forgetting=fgt, frozen=bool(frozen),
+                   n_new_tensors=int(n_new), instrument=gate.as_dict(), dataset=args.dataset,
+                   basis_r2=float(fac["r2"]), basis_r2_cv=float(r2cv), read_ok=int(n_read),
+                   base_hash=base_hash, final_hash=final_hash, config=vars(args)),
+              os.path.join(RESULTS, f"n77_storage_any{args.tag}.json"), seed=args.seed)
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

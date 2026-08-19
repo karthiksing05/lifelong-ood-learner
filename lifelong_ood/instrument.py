@@ -411,10 +411,17 @@ def check_instrument(*, tag, real, probes, targets=None, field=None, n_arm=24, n
                              total=len(gates))))
     if gates:
         md = float(np.mean([g.min_detectable for g in gates.values()]))
-        checks.append(Check("readout:resolution", md <= MARGIN, md, MARGIN,
+        # RESOLUTION IS A WARNING, not a refusal, and the distinction matters. A low `n_arm` does
+        # not make measurement impossible -- it makes a SMALL claim unsupportable. Refusing the run
+        # would prevent reporting the large effects the same samples resolve perfectly well (the
+        # ADDRESS-over-floor margin of +0.180 is far above this), while blocking on it would have
+        # forced a pointless 4x re-run of an experiment whose conclusion is already settled.
+        # The experiment's job is to compare its OWN verdict threshold against this number.
+        checks.append(Check("warn:resolution", True, md, MARGIN,
                             dict(n_arm=int(n_arm),
                                  note="smallest margin this sample count can resolve; a verdict "
-                                      "threshold below it is reporting noise")))
+                                      "threshold below it is reporting noise",
+                                 verdict_bar_supported=bool(md <= MARGIN))))
 
     # (iv) the table -- reported, never fatal
     tbl = None

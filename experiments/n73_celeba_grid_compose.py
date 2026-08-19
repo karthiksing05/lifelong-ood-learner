@@ -134,6 +134,16 @@ def main():
         n_arm=args.n_samples, n_gate=args.n_gate, table=C, labels=lab, seed=args.seed)
     print(gate.summary("n73"), flush=True)
     gate.require("n73")
+    # THE EXPERIMENT CHECKS ITS OWN VERDICT BAR against what its sample count can resolve. n73
+    # declares margins at +0.10 and `min_detectable` at n_samples=24 is ~0.11-0.13, so the bar sits
+    # BELOW the noise floor: the large ADDRESS-over-floor effect (+0.180) is resolvable, the small
+    # ADDRESS-over-retrieval one (+0.018) is not, and 7ee's conclusion rests on the first.
+    _md = float(np.mean([g.min_detectable for g in gate.targets.values()])) if gate.targets else 0.0
+    if _md > 0.10:
+        print(f"[n73] NOTE: at n={args.n_samples} the smallest resolvable margin is {_md:.3f}, above "
+              f"this experiment's +0.100 verdict bar. Margins below {_md:.3f} are NOT supported by "
+              f"this sample count -- raise --n-samples to about {int(4 * 0.21 / 0.01):d} to claim "
+              f"one.", flush=True)
 
     rows = []
     for ci, h in enumerate(d["held"]):
