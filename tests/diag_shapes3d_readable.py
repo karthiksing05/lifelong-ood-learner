@@ -76,14 +76,17 @@ def main():
             n_cls = int(np.prod(sizes))
             # hold out COMBINATIONS while guaranteeing every factor VALUE survives -- the ADDRESS
             # vs EXTEND distinction, and the reason this helper exists rather than a random split
-            seen = holdout_mask(np.asarray(d["factors"]), sizes, args.n_holdout, seed=args.seed)
-            d["seen"] = seen
+            # `holdout_mask` returns (seen_mask, held_slots) -- both, because a caller almost
+            # always needs the slot ids too.
+            seen, held_ids = holdout_mask(np.asarray(d["factors"]), sizes, args.n_holdout,
+                                          seed=args.seed)
+            d["seen"] = np.asarray(seen, bool)
             probes = fit_factor_probes(d, seed=args.seed)
             per = {n: float(probes.get(f"{n}_val", float("nan"))) for n in d["names"]}
             base = {n: float(probes.get(f"{n}_base", float("nan"))) for n in d["names"]}
             n_read = sum(1 for n in d["names"] if probe_readable(probes, n))
 
-            held_slots = np.unique(np.asarray(d["slot"])[~seen])[:args.n_holdout]
+            held_slots = np.asarray(held_ids, int)[:args.n_holdout]
             F, slot = np.asarray(d["factors"]), np.asarray(d["slot"])
             rep = check_instrument(
                 tag="s3d", real=d, probes=probes, n_arm=args.n_arm,
