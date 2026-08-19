@@ -183,6 +183,22 @@ CLAIMS = [
     # the density holdout itself, which is what CelebA does support
     (0.000, .01, "n75_grid_pooled", "copying", "memorized", "7ee grid memorised (nothing copied)"),
     (16.0, .01, "n75_grid_pooled", "coverage", "n_readable", "7ee grid readable measurements"),
+    # ── THE FLAGSHIP: composition on a PRETRAINED backbone (RESULTS 7jj) ──────
+    # The measurement 7ee could not make. 12 held-out combinations on a 400-class table at ratio
+    # 16.4, gate passed before anything was sampled, and BOTH margins clear the sample count's
+    # resolution by three orders of magnitude -- which is the check 7ee failed.
+    (0.983, .01, "n78_shapes3d_flagship", "address", "joint", "7jj ADDRESS on a pretrained backbone"),
+    (0.010, .01, "n78_shapes3d_flagship", "nearest-class", "joint", "7jj retrieval control"),
+    (0.003, .01, "n78_shapes3d_flagship", "unconditional", "joint", "7jj unconditional floor"),
+    (1.000, .01, "n78_shapes3d_flagship", "ceiling", "joint", "7jj REAL-image ceiling"),
+    (0.972, .01, "n78_shapes3d_flagship", "margin", "vs_retrieval", "7jj margin over retrieval"),
+    (0.979, .01, "n78_shapes3d_flagship", "margin", "vs_floor", "7jj margin over the floor"),
+    (0.000, .01, "n78_shapes3d_flagship", "address", "memorized", "7jj nothing copied"),
+    # The basis is only HALF additive and composition still reaches 98% of the ceiling. Pinned
+    # because it cuts against the natural reading of THEORY section 1: a high basis R^2 is not a
+    # precondition for ADDRESS -- 5t-ter found the same on a learning-rate ladder.
+    (0.516, .01, "n78_shapes3d_flagship", "basis", "r2", "7jj basis R2 in-sample"),
+    (0.454, .01, "n78_shapes3d_flagship", "basis", "r2_cv", "7jj basis R2 leave-one-out"),
     # ── the storage loop, backbone-agnostic and GATED (RESULTS 7hh) ───────────
     # n71 pins the same loop on ColorMNIST with the old dataset-specific plumbing; these pin the
     # generic path, so the two must agree or one of them is wrong. The two COSTS are the point:
@@ -206,7 +222,7 @@ CLAIMS = [
 # experiments are migrated onto `lifelong_ood.instrument`, so CI enforces the gate going forward
 # without failing the 73 claims that predate it. An entry here means: this experiment's numbers were
 # produced by a run that proved its own measuring device first.
-GATED = {"n77_storage_any"}
+GATED = {"n77_storage_any", "n78_shapes3d_flagship"}
 
 
 def main():

@@ -3028,6 +3028,56 @@ squarely at it. Distance to the query is what catches it.
 ADDRESS's 0.516 (§N70), so the margin over "already had it" is much narrower there and this
 four-condition result is demonstrated on ColorMNIST only.*
 
+## 7jj. THE FLAGSHIP: composition on a pretrained backbone, ADDRESS 0.983 against retrieval 0.010 (N78)
+
+The measurement the pivot to pretrained backbones was for, and the one §7ee could not make. A
+`eurecom-ds/scoresdeve-ema-shapes3d-64` backbone, frozen, with a 400-class table trained on top in
+its own optimiser group at 50× LR (the §5t-bis recipe). Twelve held-out combinations, every one
+readable, gate passed before anything was sampled.
+
+| arm | joint | / ceiling | recall | memorised |
+|---|---|---|---|---|
+| **`address` (ours)** | **0.983** | **0.98** | 0.958 | **0.00** |
+| `nearest-class` — the backbone's own closest existing class | **0.010** | 0.01 | 0.333 | 0.06 |
+| `unconditional` | 0.003 | 0.00 | 0.908 | 0.01 |
+| *REAL images of the held-out combination* | *1.000* | | | |
+
+* **margin over retrieval +0.972**, **over the floor +0.979**, against a resolution
+  (`2·√(p(1−p)/n)`) of **0.000** — both clear what the sample count can resolve by three orders of
+  magnitude. This is the check §7gg introduced and §7ee failed.
+* **12 of 12 held-out combinations**, no cell dropped, against the CelebA grid's 16 of 36.
+* nothing copied: `address` memorises **0.00** of the training set.
+
+Per-cell, the result is not an average hiding a spread — ten of twelve read 0.958 or 1.000 and the
+other two are identical in kind:
+
+```
+slot   5 (0,1,1)  address 1.000 | nearest 0.042 | uncond 0.042
+slot  18 (0,4,2)  address 0.958 | nearest 0.000 | uncond 0.000
+slot  19 (0,4,3)  address 1.000 | nearest 0.083 | uncond 0.000
+slot  55 (1,3,3)  address 1.000 | nearest 0.000 | uncond 0.000
+slot  88 (2,2,0)  address 1.000 | nearest 0.000 | uncond 0.000
+slot 133 (3,3,1)  address 1.000 | nearest 0.000 | uncond 0.000
+```
+
+**This is the ColorMNIST signature — `nearest-class` at 0.000 — reproduced on a PRETRAINED
+backbone.** §7ee's honest conclusion was that CelebA could not discriminate composition from
+retrieval *whatever the composer did*, because its readable band was 0.43 wide and its table was
+ratio 1.1. Given a band of ~1.0 and a table at ratio 16.4, the discrimination is total.
+
+### And it works where the basis is only half-additive
+
+The ideal-words fit on this table reads **R² 0.516 in-sample against 0.454 leave-one-out**. Those
+*agree*, which is what a ratio of 16.4 should produce, so the number is trustworthy rather than
+flattering — and it is far below ColorMNIST's 0.826. **Composition reaches 98 % of the ceiling
+through a basis that explains half the embedding variance.**
+
+That is worth stating plainly because it cuts against the natural reading of §1 of `docs/THEORY.md`.
+A high basis R² is *not* a precondition for ADDRESS to work; §5t-ter already found that R² does not
+predict the composition margin across a learning-rate ladder, and this is the same finding on a
+different axis. What the table needs is enough classes to identify the basis (ratio), not a basis
+that explains everything.
+
 ## 7ii. `object_hue` was never unreadable — it was a table-size artifact (Shapes3D readiness)
 
 Every Shapes3D result in this repository reports a **two-factor** joint, with a footnote that
