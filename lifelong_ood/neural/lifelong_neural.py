@@ -559,10 +559,35 @@ class NeuralLifelongLearner:
         if xi is not None and var:
             rng = np.random.default_rng(c["seed"] if seed is None else seed)
             xi = np.atleast_2d(xi) + np.sqrt(var) * rng.standard_normal((n, np.size(xi)))
-        return self.field.sample(
-            n=n, steps=steps or c["steps"], seed=c["seed"] if seed is None else seed,
-            u_start=u_start, x_init=xi, clip=(-1, 1),
-            guide_eps=lambda x, u: self.field.eps(x, u, name), guide_w=lambda u: guidance)
+        # DISPATCH ON WHAT THE FIELD'S SAMPLER ACCEPTS. The `guide_eps` route below IS classifier-
+        # free guidance between the concept's path and the frozen base, and it is the right thing on
+        # every field that supports guidance callbacks. The VE bridge supports none of them -- it has
+        # no `guide_eps`, `u_start` or `x_init` -- so on that backbone the concept is sampled by
+        # handing its embedding straight to the conditional instead. That is the same distribution at
+        # `guidance=1.0` (the measured default: joint 0.38 at w=1.0, 0.12 at 1.5, 0.00 at >=2.0), so
+        # nothing is lost where guidance is not being used; a caller asking for w != 1 on a backbone
+        # that cannot honour it gets an error rather than a silently different number.
+        import inspect
+
+        sig = inspect.signature(self.field.sample).parameters
+        seed_ = c["seed"] if seed is None else seed
+        if "guide_eps" in sig:
+            return self.field.sample(
+                n=n, steps=steps or c["steps"], seed=seed_,
+                u_start=u_start, x_init=xi, clip=(-1, 1),
+                guide_eps=lambda x, u: self.field.eps(x, u, name), guide_w=lambda u: guidance)
+        if abs(float(guidance) - 1.0) > 1e-9:
+            raise NotImplementedError(
+                f"{type(self.field).__name__}.sample has no guidance callback, so guidance="
+                f"{guidance} cannot be honoured; only guidance=1.0 is available on this backbone.")
+        emb = self.bank.embedding(name)
+        emb = emb.detach().cpu().numpy() if hasattr(emb, "detach") else np.asarray(emb)
+        for kw in ("emb_override", "emb"):
+            if kw in sig:
+                return self.field.sample(n=n, steps=steps or c["steps"], seed=seed_, **{kw: emb})
+        raise NotImplementedError(
+            f"{type(self.field).__name__}.sample offers neither a guidance callback nor a "
+            f"conditioning-vector argument; a stored concept cannot be sampled from it.")
 
     def sample_composed(self, names, n=16, steps=None, seed=None, scale=1.0, weights=None,
                         u_start=1.0):

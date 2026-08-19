@@ -140,7 +140,30 @@ def load_ve_field(path, device="cuda"):
 
         @torch.no_grad()
         def sample(self, n=16, steps=50, seed=0, clip=(0.0, 1.0), branch=None,
-                   emb_override=None, guidance=1.0):
+                   emb_override=None, guidance=1.0, **unsupported):
+            """DDIM over the VE backbone in VP terms.
+
+            `**unsupported` ACCEPTS the wider keyword surface every other field in this repository
+            offers, and is deliberately not a silent swallow. Five separate runs died here on
+            TypeErrors -- `eta`, then `u_start` from inside `sample_concept` -- because this
+            sampler's signature is narrower than `BaseScoreField`'s and callers reasonably assume
+            otherwise. Patching each caller moved the fault rather than fixing it.
+
+            An argument at its DEFAULT is a no-op and is ignored. An argument at a NON-default value
+            would change the result, so it raises: silently dropping `eta=0.5` or a `guide_eps`
+            would produce a plausible number computed by a different method, which is the exact
+            failure mode this file's own history is made of.
+            """
+            NOOP = {"u_start": 1.0, "x_init": None, "eta": 0.0,
+                    "guide_eps": None, "guide_w": None, "mcmc": None}
+            for k, v in unsupported.items():
+                if k not in NOOP:
+                    raise TypeError(f"_Field.sample got an unexpected keyword {k!r}")
+                if v is not None and v != NOOP[k]:
+                    raise NotImplementedError(
+                        f"_Field.sample cannot honour {k}={v!r} -- this VE backbone implements "
+                        f"neither guidance callbacks nor stochastic/partial trajectories. Passing "
+                        f"it would silently change the method behind the number.")
             g = torch.Generator(device=self.device).manual_seed(seed)
             sh = (n, 3, self.img, self.img)
             us = np.linspace(1.0, 0.0, steps + 1)
