@@ -3028,6 +3028,41 @@ squarely at it. Distance to the query is what catches it.
 ADDRESS's 0.516 (§N70), so the margin over "already had it" is much narrower there and this
 four-condition result is demonstrated on ColorMNIST only.*
 
+## 7ii. `object_hue` was never unreadable — it was a table-size artifact (Shapes3D readiness)
+
+Every Shapes3D result in this repository reports a **two-factor** joint, with a footnote that
+`object_hue` "drops out once `wall_hue` is pinned and the set shrinks to 9000 images" (§5t-bis, N70:
+`floor_hue 0.997, object_hue 0.239, shape 0.714`). That footnote has been carried for months and it
+attributes the blindness to the *dataset size*. It is wrong.
+
+Sweeping table size against class density **before** training anything
+(`tests/diag_shapes3d_readable.py`), with `wall_hue` pinned throughout:
+
+| `value_stride` | per slot | classes | images | floor_hue | object_hue | shape | ceiling | readable | ratio |
+|---|---|---|---|---|---|---|---|---|---|
+| 2 | 40 | 100 | 4 000 | 1.000 | **0.324** | 0.994 | 0.977 | 12/12 | 8.3 |
+| 2 | 120 | 100 | 12 000 | 1.000 | **0.236** | 0.952 | 0.968 | 12/12 | 8.3 |
+| 2 | 480 | 100 | 12 000 | 1.000 | **0.236** | 0.952 | 0.968 | 12/12 | 8.3 |
+| **1** | **40** | **400** | 16 000 | **1.000** | **1.000** | **0.994** | **0.994** | **12/12** | **18.2** |
+
+**`value_stride=2` was the cause.** It keeps every other value of the two 10-valued hues, and it was
+introduced for a good measured reason — at 400 classes and 40 images each, every class was too rare
+for conditioning to take hold and the model ignored its label (embedding pairwise cosine 0.007). But
+halving the hue values makes the *surviving* hues adjacent-but-merged, and a probe cannot separate
+them. More images at stride 2 does not help (0.324 → 0.236 going from 4 000 to 12 000); a finer hue
+axis fixes it completely.
+
+Nobody had measured the trade because readability was checked **after** training rather than before.
+It is a clean instance of §7gg's rule: a factor that reads at chance is not a fact about the data
+until the instrument has been varied.
+
+**What this gives the flagship.** 400 classes over 25 free vectors (**ratio 18.2**, against
+ColorMNIST's 7.5 and the CelebA grid's 1.8), every factor readable on real images, a joint ceiling of
+**0.994** against a chance of **1/400**, and **12 of 12** held-out combinations readable — where the
+CelebA grid managed 16 of 36. A dynamic range of ~0.99 against the grid's 0.43. And the backbone is
+pretrained, so this is the regime a policy will actually be in rather than a from-scratch density
+holdout that forces a small, weak model.
+
 ## 7hh. The storage loop, backbone-agnostic and gated (N77)
 
 §7cc's loop is the one that carries the thesis — one example in, the concept **written** into the
