@@ -36,8 +36,33 @@ are *objects in a set* rather than attributes of one object.
 factor supervision, and it is scored against a permutation null and leave-one-out CV where the
 sample is small enough for R² to come cheap.
 
-**What would kill it:** an R² at the permutation null on a new backbone. That is the first thing to
-run on a policy (`VLA_PATH` Stage A) precisely because everything below is void without it.
+**The claim has a size condition, and it is now measured.** In-sample R² is a fit statistic; how
+much it is worth depends on how far the classes outnumber the free vectors. `tests/diag_basis_cv.py`
+reports both, per backbone:
+
+| backbone | classes | free vectors | ratio | R² | R² leave-one-out |
+|---|---|---|---|---|---|
+| ColorMNIST | 120 | 19 | 6.3 | 0.826 | **0.772** |
+| ColorMNIST (no-bg3) | 90 | 18 | 5.0 | 0.870 | **0.816** |
+| ColorMNIST (stream) | 56 | 15 | 3.7 | 0.883 | **0.818** |
+| CelebA grid, 9 seen | 9 | 8 | 1.1 | 0.872 | **0.474** |
+| CelebA grid, 7 seen | 7 | 8 | 0.9 | 0.883 | **0.038** |
+
+Above a ratio of ~4 the two agree and the in-sample number is a real statement about the table.
+At a ratio near 1 they diverge completely — an additive model with almost as many parameters as
+observations fits anything, and the CelebA grid's 0.872 is mostly arithmetic. **So §1 rests on
+ColorMNIST, the multi-object table and the DiT, not on the CelebA grid**, whose contribution is the
+*density* holdout (§7ee) rather than the basis. The ladder makes the same point from the other side:
+CV R² tracks training almost exactly (−0.145 at 2 epochs → 0.790 at 130), so it measures something
+real rather than sample size alone.
+
+**The VLA consequence.** A policy's task table must have several times more task rows than
+(factor values summed) before this claim can even be tested on it. That is a concrete design
+constraint on the benchmark, and it is cheap to check before any training.
+
+**What would kill it:** an R² at the permutation null on a new backbone, or a cross-validated R²
+far below the in-sample one at a healthy ratio. That is the first thing to run on a policy
+(`VLA_PATH` Stage A) precisely because everything below is void without it.
 
 ## 2. A held-out combination is a POINT, not a direction
 
