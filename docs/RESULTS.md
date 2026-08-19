@@ -3028,6 +3028,66 @@ squarely at it. Distance to the query is what catches it.
 ADDRESS's 0.516 (§N70), so the margin over "already had it" is much narrower there and this
 four-condition result is demonstrated on ColorMNIST only.*
 
+## 7gg. The instrument gate, and the fourth fault it found in the process
+
+Every fault of 2026-08-19 was a measurement fault, and each was caught by a one-off `tests/diag_*.py`
+that `tests/run_all.py` never runs -- it globs `test_*.py` only. `lifelong_ood/instrument.py` makes
+them one thing an experiment calls **before it measures**, and `tests/test_instrument.py` calibrates
+the gate itself against instruments whose answers are known, because a gate that is merely plausible
+would just join the verdicts that already fired on metrics which could not discriminate.
+
+**The four checks, and why each is shaped the way it is:**
+
+| check | what it does | the fault it exists for |
+|---|---|---|
+| `convention:layout` | feeds a real image both orderings | eps-loss 0.030 vs 0.478 — separates cleanly |
+| `readout:<target>` | 200 REAL images of *that* class under *this* run's probes | a GLOBAL ceiling read 0.524 where the cells read 0.142 |
+| dynamic range | ceiling minus an **empirical** floor | `1/n_classes` ignores probe bias and would hide it |
+| `table:ratio` | classes over free vectors, in-sample **and** leave-one-out R² | 0.875 vs 0.207 at ratio 1.8 |
+
+**Refusal is asymmetric and lives at the experiment boundary**, never inside `evals` — a metric that
+refuses to compute makes the broken case unmeasurable, and diagnostics must be able to measure the
+broken case. A convention fault is fatal; a partly-blind readout only removes the blind targets.
+
+**The gate reproduces §7ee exactly.** Wired into N73 and re-run over three backbones × three seeds,
+it recovers the same 16-of-36 readable measurements and every pooled number to three decimals
+(ADDRESS 0.297, nearest-class 0.279, unconditional 0.117). That is the validation: a device designed
+after a result independently rederives it.
+
+### The fourth fault: verdict thresholds below the measurement's resolution
+
+The smallest margin `n` samples can resolve is `2·√(p(1−p)/n)`. At N73's **n = 24** and p ≈ 0.3 that
+is **0.11–0.13**, and N73 declares verdicts at **+0.10**. *The verdict bar sat below the noise floor
+of its own sample size.* This does not overturn §7ee — it sharpens it. The ADDRESS-over-floor margin
+(**+0.180**) is comfortably resolvable; the ADDRESS-over-retrieval margin (**+0.018**) never was, at
+any point, by any of the runs. §7ee's conclusion rested on the first and correctly declined the
+second, but it declined it for the right reason by luck rather than by measurement.
+
+The gate reports this per run as `warn:resolution`, and the experiment checks its own bar against it.
+It is a **warning, not a refusal**: a low sample count does not make measurement impossible, it makes
+a *small claim* unsupportable, and refusing the run would have blocked reporting the large effects
+the same samples resolve perfectly well.
+
+### Two checks that had to be demoted, because they cannot do what they claim
+
+*Both were measured rather than argued (`tests/diag_range_probe.py`).*
+
+**The eps-loss range test is scale-confounded.** Feeding a real image as `[0,1]` and as `[-1,1]` and
+taking whichever denoises better answers **`[0,1]` at every noise level from 0.02 to 0.70** — for a
+backbone `train_ddpm` provably trains on `to_model(X01)`. A `[0,1]` image has half the amplitude, so
+`x_t` sits closer to pure noise and predicting ε from it is trivially easier. A magnitude-fair
+relative x₀-reconstruction error does not rescue it, because the ε-loss gap is itself 1.5× and
+survives the normalisation.
+
+**And the sampler-output range check is circular**: `clip` is applied at every reverse step, so it
+*forces* the range it would then be measured in. The same checkpoint reports mean −0.017 under
+`clip=(-1,1)` and +0.469 under `(-0.2,1.2)`.
+
+Both now report instead of judging. The authoritative range fact is a **code** fact, which is why
+`data_space` is now declared per field class and the clip derived from it rather than defaulted —
+`BaseScoreField`'s historical `(-0.2, 1.2)` was correct for exactly one of four families and
+inherited by the two it was most wrong for.
+
 ## 7ff. Composing in a LANGUAGE space does not beat typing the sentence (N76)
 
 The pivot to pretrained backbones points at a language-conditioned diffusion policy, and the claim

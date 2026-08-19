@@ -187,6 +187,13 @@ CLAIMS = [
 ]
 
 
+# Experiments whose aggregate entry MUST carry an instrument report. Starts empty and grows as
+# experiments are migrated onto `lifelong_ood.instrument`, so CI enforces the gate going forward
+# without failing the 73 claims that predate it. An entry here means: this experiment's numbers were
+# produced by a run that proved its own measuring device first.
+GATED = set()
+
+
 def main():
     if not os.path.exists(AGG):
         print(f"[claims] no aggregate at {AGG} — run `bash reproduce.sh figures` first")
@@ -200,6 +207,10 @@ def main():
             bad.append(f"  MISSING  {label:40s} ({exp} / {arm} / {key})")
         elif abs(got - want) > tol:
             bad.append(f"  MISMATCH {label:40s} docs say {want:.3f}, aggregate has {got:.3f}")
+    for exp in sorted(GATED):
+        if not A.get(exp, {}).get("table", {}).get("_instrument"):
+            bad.append(f"  UNGATED  {exp:40s} (listed in GATED but its aggregate carries no "
+                       f"instrument report)")
     for line in bad:
         print(line)
     print(f"[claims] {len(CLAIMS) - len(bad)}/{len(CLAIMS)} documented numbers match the aggregate")

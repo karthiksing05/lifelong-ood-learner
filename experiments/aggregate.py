@@ -619,6 +619,14 @@ def agg_n75(runs):
                       "real_spread": stat([r["real_spread"] for r in run["rows"]])}
     out["coverage"] = {"n_readable": dict(mean=float(run["n_readable"]), se=0.0, n=1),
                        "n_total": dict(mean=float(run["n_total"]), se=0.0, n=1)}
+    # THE GATE TRAVELS WITH THE NUMBERS. A reserved `_instrument` arm records whether the run that
+    # produced this table passed its own instrument check, so `test_claims.GATED` can require it of
+    # named experiments -- starting empty and growing as experiments are migrated, which is how CI
+    # enforces the gate going forward without failing 73 existing claims on day one.
+    inst = [r.get("instrument", {}) for _, r in runs if isinstance(r, dict)]
+    ok = [float(bool(i.get("ok"))) for i in inst if i]
+    if ok:
+        out["_instrument"] = {"ok": stat(ok)}
     print(f"    readable {run['n_readable']} of {run['n_total']} measurements")
     for a in ("address", "nearest-class", "unconditional"):
         print(f"    {a:16s}{fmt(out[a]['joint']):>14s}")
