@@ -129,6 +129,30 @@ def pipeline_figures():
         return set(re.findall(r'["\']([A-Za-z0-9_]+\.png)["\']', fh.read()))
 
 
+def check_citations():
+    """Print and count figure paths cited by a document that do not exist.  -> int.
+
+    A MOVE IS A RENAME, and `restructure_figures.py` already records the rule this module was
+    missing: applied in the file AND in every citation, or not applied at all.  Curating
+    f_lr_ladder.png into extra/ on 2026-08-19 dangled three links in three documents and nothing
+    said so -- `referenced()`'s regex tolerates the extra/ segment, so the figure still counted as
+    cited while its links pointed at nothing.
+    """
+    dangling = []
+    for f in [os.path.join(HERE, "README.md")] + sorted(glob.glob(os.path.join(HERE, "docs/*.md"))):
+        with open(f, encoding="utf-8") as fh:
+            for m in re.findall(r"(figures/[A-Za-z0-9_/]+\.png)", fh.read()):
+                if not os.path.exists(os.path.join(HERE, m)):
+                    dangling.append((os.path.relpath(f, HERE), m))
+    if dangling:
+        print(f"\n[curate] {len(dangling)} DANGLING CITATIONS -- repoint these before committing:")
+        for f, m in dangling:
+            print(f"    {f}: {m}")
+    else:
+        print("[curate] every figure cited by a document exists at the path it is cited from")
+    return len(dangling)
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--apply", action="store_true", help="actually move files (default: dry run)")
@@ -170,6 +194,10 @@ def main():
     for f in dead:
         print(f"    {f:44s} {os.path.getsize(os.path.join(FIG, f)) / 1e6:6.2f} MB")
 
+    # The citation check runs on the DRY RUN too.  It reports on the tree as it stands, so gating it
+    # behind --apply would mean the one mode you run to ask "is anything wrong" cannot answer.
+    if check_citations():
+        return 1
     if not args.apply:
         print("\n[curate] dry run: pass --apply to move")
         return 0
@@ -180,23 +208,7 @@ def main():
     print(f"\n[curate] moved {len(extra)} to additional/, {len(dead)} to archive/; "
           f"{len(core)} core remain")
 
-    # A MOVE IS A RENAME, and `restructure_figures.py` already records the rule this module was
-    # missing: applied in the file AND in every citation, or not applied at all.  Curating
-    # f_lr_ladder.png into extra/ on 2026-08-19 dangled three links in three documents, and nothing
-    # said so -- `referenced()`'s regex tolerates the extra/ segment, so the figure still counted as
-    # cited while its links pointed at nothing.
-    dangling = []
-    for f in [os.path.join(HERE, "README.md")] + sorted(glob.glob(os.path.join(HERE, "docs/*.md"))):
-        with open(f, encoding="utf-8") as fh:
-            for m in re.findall(r"(figures/[A-Za-z0-9_/]+\.png)", fh.read()):
-                if not os.path.exists(os.path.join(HERE, m)):
-                    dangling.append((os.path.relpath(f, HERE), m))
-    if dangling:
-        print(f"\n[curate] {len(dangling)} DANGLING CITATIONS -- repoint these before committing:")
-        for f, m in dangling:
-            print(f"    {f}: {m}")
-        return 1
-    print("[curate] every figure cited by a document exists at the path it is cited from")
+
 
     return 0
 
