@@ -112,6 +112,12 @@ def main():
     p.add_argument("--n-samples", type=int, default=16)
     p.add_argument("--steps", type=int, default=50)
     p.add_argument("--seed", type=int, default=0)
+    p.add_argument("--case", action="store_true",
+                   help="also render the case-study figure.  OFF by default since 2026-08-20: this "
+                        "backbone's case study is superseded by figures/initial/case_flagship_s3d.png "
+                        "(7jj, the same claim on a 400-class table at ADDRESS 0.983 rather than "
+                        "0.583), and a second Shapes3D case study in the core set is redundant.  The "
+                        "MEASUREMENTS above are unaffected and still run -- 7nn.")
     p.add_argument("--tag", default="",
                    help="suffix for the JSON and the case-study figure.  Both output paths are "
                         "otherwise FIXED, so evaluating a sweep of checkpoints through this script "
@@ -232,6 +238,10 @@ def main():
               os.path.join(RESULTS, f"n58_shapes3d{args.tag}.json"), seed=args.seed)
 
     # ── 3. the case study ───────────────────────────────────────────────────
+    if not args.case:
+        print("[n58] case study not rendered (--case is off); see figures/initial/"
+              "case_flagship_s3d.png", flush=True)
+        return 0
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt

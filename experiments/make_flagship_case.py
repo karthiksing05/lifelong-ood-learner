@@ -61,7 +61,12 @@ SHAPE = ["cube", "cylinder", "sphere", "capsule"]
 def main():
     p = argparse.ArgumentParser()
     p.add_argument("--ckpt", default=os.path.join(CACHE, "ddpm_s3d_full.pt"))
-    p.add_argument("--n-show", type=int, default=6)
+    p.add_argument("--n-show", type=int, default=6, help="panels DISPLAYED per row")
+    p.add_argument("--n-eval", type=int, default=24,
+                   help="samples MEASURED per arm.  The panel count is a layout choice; the sample "
+                        "count is the resolution of every number printed on the figure. At 6 the "
+                        "smallest resolvable margin is 0.374, so two-decimal joints were being "
+                        "printed from a measurement that could not support one. 24 matches n73/n78.")
     p.add_argument("--n-cells", type=int, default=6,
                    help="held-out combinations to show.  Chosen by `spread_targets`, so raising "
                         "this buys DIFFERENT factor values rather than more of the same corner.")
@@ -97,7 +102,7 @@ def main():
     held = [h for h in held if (slot == h).sum() >= 8]
     gate = check_instrument(tag="fig", real=d, probes=probes,
                             targets={int(h): tuple(int(v) for v in F[slot == h][0]) for h in held},
-                            n_arm=args.n_show, table=C, labels=lab, seed=args.seed)
+                            n_arm=args.n_eval, table=C, labels=lab, seed=args.seed)
     # SPREAD, not the first N in slot order -- which is how all four cells came out floor=red in
     # every version of this figure before 2026-08-19.  A figure whose point is that composition
     # spans a design must not show one corner of it.
@@ -130,20 +135,20 @@ def main():
         # the ones where modes provably improve the eps error over their own starting point.  `xq` is
         # required by the signature but unused at init="random"; the ascent never sees a held-out
         # image.
-        _, proto = field.mode_ascent(X[idx[0]], 0.30, n_starts=args.n_show, iters=120, lr=0.05,
+        _, proto = field.mode_ascent(X[idx[0]], 0.30, n_starts=args.n_eval, iters=120, lr=0.05,
                                      seed=args.seed, init="random", emb=c_new)
         proto = np.asarray(to_data_space(field, proto), np.float32)
         gamut.append(float(np.mean((proto < 0.0) | (proto > 1.0))))
         got = {
-            "real": X[idx[:args.n_show]],
+            "real": X[idx[:args.n_eval]],
             "prototype of p(x|c_new)": proto,
             "ours (ADDRESS)": to_data_space(field, field.sample(
-                n=args.n_show, steps=args.steps, seed=args.seed, emb_override=c_new)),
+                n=args.n_eval, steps=args.steps, seed=args.seed, emb_override=c_new)),
             "nearest-class": to_data_space(field, field.sample(
-                n=args.n_show, steps=args.steps, seed=args.seed,
+                n=args.n_eval, steps=args.steps, seed=args.seed,
                 branch=remap[int(seen_slots[j_near])])),
             "unconditional": to_data_space(field, field.sample(
-                n=args.n_show, steps=args.steps, seed=args.seed + 91, branch=ck["null_id"])),
+                n=args.n_eval, steps=args.steps, seed=args.seed + 91, branch=ck["null_id"])),
         }
         combo = (f"floor={HUE[tgt[0]]}, object={HUE[tgt[1]]}, {SHAPE[tgt[2]]}")
         for nm in order:
@@ -187,7 +192,8 @@ def main():
         f"MODE of the address {_m('prototype of p(x|c_new)', 'joint'):.2f} vs SAMPLING it "
         f"{_m('ours (ADDRESS)', 'joint'):.2f}, and no less diverse "
         f"(vendi {_m('prototype of p(x|c_new)', 'vendi'):.2f} vs "
-        f"{_m('ours (ADDRESS)', 'vendi'):.2f}):\nmode-seeking is the WORSE reader here",
+        f"{_m('ours (ADDRESS)', 'vendi'):.2f}):\nmode-seeking is the WORSE reader here"
+        f"   [{args.n_eval} samples measured per arm, {args.n_show} shown]",
         fontsize=9)
     fig.tight_layout(rect=[0, 0, 1, 0.93])
     os.makedirs(FIG, exist_ok=True)

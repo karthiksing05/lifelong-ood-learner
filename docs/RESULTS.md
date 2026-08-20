@@ -3028,6 +3028,68 @@ squarely at it. Distance to the query is what catches it.
 ADDRESS's 0.516 (§N70), so the margin over "already had it" is much narrower there and this
 four-condition result is demonstrated on ColorMNIST only.*
 
+## 7nn. One case study per dataset, built to one standard — and two instrument faults found building them
+
+Three changes, and the last one is the result.
+
+**One Shapes3D case study, not two.** `case_shapes3d.png` is retired in favour of
+`case_flagship_s3d.png`: the same claim on a 400-class table at ADDRESS **0.983** rather than 0.583,
+with the same rows. n58 keeps every measurement and renders its figure only under `--case`, so
+curation is not left fighting the build loop. `make_shapes3d_case.py` — a *third* Shapes3D
+case-study generator, writing a file that existed in zero copies, cited by no document and absent
+from `reproduce.sh` — is deleted.
+
+**`case_celeba.png` was never a CelebA case study.** It was `f26_paper_composition.png`, the N48
+paper-protocol comparison, renamed by the 2026-08-13 restructure while its generator kept writing the
+old name — which is exactly what `tests/test_figures_fresh.py` had been reporting for a week as *no
+generator matched*. It is back under its own name in `extra/`, and `case_celeba.png` now holds the
+CelebA case study, rebuilt in the flagship's shape: same rows, the instrument gate, `spread_targets`,
+and a prototype row conditioned on the composed address.
+
+It diverges from the flagship in one deliberate way. The flagship drops unreadable cells because it
+has 40 to draw from; CelebA has three, **one** of which its probes can read. Dropping the other two
+would hide §7ee's entire finding, so all three are drawn and the unreadable ones are marked as such
+in red. The unreadable blocks are the result.
+
+### Fault 1 — every case-study figure was quoting numbers below its own resolution
+
+Both figures sampled `n_show` per arm and printed two-decimal joint accuracies from it. At
+`n_show = 6` the smallest resolvable margin is **0.374** (§7gg's `2·√(p(1−p)/n)`), so `joint 0.00`
+was noise wearing two decimal places. The CelebA build exposed it by printing `ADDRESS 0.000`, which
+reads as a damning negative and was nothing of the kind.
+
+Measurement is now decoupled from display: **24 measured per arm, 6 shown**, matching n73/n78. The
+check the gate has applied to experiments since §7gg had never been applied to the figures, and the
+flagship's own per-block annotations were among the numbers below resolution.
+
+The payoff is a consistency check the figure could not previously provide: at n=24 the flagship
+figure independently reproduces its experiment — ADDRESS **0.993** against n78's 0.983,
+`nearest-class` **0.007** against 0.010.
+
+### Fault 2 — an off-manifold arm can BEAT the probe ceiling, and did
+
+The first CelebA render's prototype row was not faces. It was abstract colour washes, the documented
+signature of unconstrained Adam ascent — a normalised step moves a pixel up to 9.0 in a space where
+clean images live in [−1, 1], and `mode_ascent`'s docstring already called the result "saturated
+posterized nonsense once clipped for display".
+
+**The probes scored those washes at 0.375 — 91 % of ceiling — above every arm made of real faces.**
+That is the finding, and it generalises past this figure: `SoftmaxProbe` on raw pixels reads colour
+statistics, so **any** arm that leaves the data manifold can score arbitrarily well on a factor it
+does not depict. A joint accuracy is evidence only for samples that are on the manifold, and no arm
+in this repository currently asserts that it is.
+
+Projecting the ascent onto the support (`clamp="x0"`, the projection already implemented for exactly
+this) puts the row back in gamut — 0.0 % of pixels outside [0, 1] — and the score falls from 0.375 to
+**0.000** at vendi **1.12**. So the entire apparent result was the artifact. What is left is a clean
+negative that agrees with §7ll on a second dataset and a second backbone family: the conditional mode
+collapses to a near-mean image, and **mode-seeking is the worse reader of a composed address**
+— 0.285 against 0.993 on Shapes3D, 0.000 against 0.167 here.
+
+*The margins on the one readable CelebA cell are ADDRESS 0.167, `nearest-class` 0.125,
+unconditional 0.083 — the right order, every gap below the 0.152 this instrument can resolve, which
+is §7ee's conclusion reached again from a single figure.*
+
 ## 7mm. Picking targets by slot order pins the first factor — the same bug, in a second place
 
 Asked for held-out combinations other than the red-floor ones, the answer was not to pick different
@@ -3072,7 +3134,7 @@ Asked to showcase prototypes in the case studies, the first thing to check was w
 ones showed. **Both `mode_ascent` implementations — `BaseScoreField`'s and `ve_bridge._Field`'s —
 called the network with no conditioning embedding**, so they climbed the null-branch density.
 `n58_shapes3d_results.py` had a third, local copy with the same gap. On an unconditional figure that
-is correct. On `case_shapes3d.png`, where the row sat between a block captioned *real — HELD OUT,
+is correct. On `case_shapes3d.png` — since retired in favour of the flagship (§7nn) — where the row sat between a block captioned *real — HELD OUT,
 floor_hue=1, object_hue=1, shape=3* and the ADDRESS samples for that combination, it was not: the
 panels showed generic modes of p(x), the same green and blue capsules in every block regardless of
 the target, and **no scalar in the figure would ever have said so** — the row was deliberately left
@@ -3091,16 +3153,18 @@ properties on a toy field whose modes are known in closed form.
 The row was added to the flagship (§7jj) to make THEORY §4 visible in one picture: the prototype as
 IDENTITY, the samples as COVERAGE. **It does not show that, and the numbers are the reason.**
 
-| arm, on six held-out cells spanning the design | joint | vendi |
+| arm, six held-out cells spanning the design, n=24 per arm | joint | vendi |
 |---|---|---|
-| **mode** of p(x \| c_new) — conditional ascent | **0.33** | 1.22 |
-| **samples** from p(x \| c_new) — ADDRESS | **1.00** | 1.09 |
+| **mode** of p(x \| c_new) — conditional ascent | **0.285** | 1.28 |
+| **samples** from p(x \| c_new) — ADDRESS | **0.993** | 1.14 |
 
-*The first version of this table read 0.62, and that number was measured on four cells that all had
-`floor_hue=0` — the figure took the first N readable cells in slot order, and slot order pins the
-first factor (§7mm). Spreading the cells across the design nearly doubles the gap. The finding held
-either way; its size did not, and a selection artifact that flatters the thing you are arguing
-against is still a selection artifact.*
+*This table has been measured three times and moved twice, both times because the measurement was
+wrong rather than the finding. It first read **0.62**, on four cells that all had `floor_hue=0` —
+slot order pins the first factor (§7mm). Spreading the cells gave **0.33**. Both of those were
+computed from **six** samples per arm, where the smallest resolvable margin is 0.374 — two decimal
+places printed from a measurement that could not support one (§7nn). At n=24 it is **0.285**, and
+the same figure now reproduces §7jj's headline to within sampling noise: ADDRESS **0.993** against
+the experiment's 0.983, `nearest-class` **0.007** against 0.010.*
 
 **Mode-seeking is the worse reader of the address, and it is not even less diverse.** Both halves
 contradict what the row was built to show. The diversity half fails because the composed conditional
@@ -3199,8 +3263,8 @@ what a margin of +0.972 looks like when it is not a number.
 
 The `prototype of p(x|c_new)` row is the mode of the *same* address rather than a draw from it. It
 was added to make THEORY §4 visible — identity without coverage — and **it does not show that**:
-the mode reads the combination at 0.33 where sampling the address reads it at 1.00, and it is no
-less diverse (vendi 1.22 against 1.09). Mode-seeking is the worse reader here, which is a finding
+the mode reads the combination at 0.285 where sampling the address reads it at 0.993, and it is no
+less diverse (vendi 1.28 against 1.14). Mode-seeking is the worse reader here, which is a finding
 rather than a defect in the row, and §7ll gives it in full along with the conditioning bug it came
 out of — until 2026-08-19 every `mode_ascent` in this repository climbed the NULL-embedding density,
 so every prototype panel showed the mode of p(x) rather than of p(x | c).

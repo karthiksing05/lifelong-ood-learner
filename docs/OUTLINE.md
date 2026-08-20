@@ -166,7 +166,7 @@ the evidence for the negative. They are outside the core set but they are not or
 **Representation** — `09_representation`
 **Case studies** — `case_flagship_s3d` (the headline: ADDRESS 0.983 against retrieval 0.010 on a
 PRETRAINED backbone, with the prototype of the composed address beside the draws from it),
-`case_colormnist`, `case_celeba`, `case_shapes3d`, `case_prototype_distance`
+`case_colormnist`, `case_celeba` (the density holdout, in the same shape), `case_prototype_distance`
 **The scoped negative** — `f_celeba_grid_margin` (§7ee: a readable band narrower than the margin
 it would have to resolve). A figure set that shows only what worked is not a figure set.
 **Preservation / parity** — `10_preservation`, `11_native_parity`

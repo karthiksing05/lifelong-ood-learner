@@ -67,8 +67,7 @@ CORE = {
     # backbone) and was in neither this list nor OUTLINE's; `case_shapes3d` was in OUTLINE's and not
     # this one.  Two lists that are documented as mirrors had drifted in both directions, which is
     # the argument for checking them against each other rather than by eye -- see `mirrored()`.
-    "case_colormnist.png", "case_prototype_distance.png", "case_shapes3d.png",
-    "case_flagship_s3d.png",
+    "case_colormnist.png", "case_prototype_distance.png", "case_flagship_s3d.png",
     # the scoped negative: CelebA's readable band is narrower than the margin it would have to
     # resolve (7ee).  A repository that reports only what worked is not reporting a measurement.
     "f_celeba_grid_margin.png",
