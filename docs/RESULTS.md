@@ -3188,6 +3188,16 @@ claims quietly drift.
 true-factor composition scores 0.375 on the same cell, which read as a weak composer and was a *bad
 read*. With an oracle arm the two are never confounded again.
 
+**And which concepts get absorbed is now chosen, not inherited from slot order.** Taking the first
+*N* held-out slots gave five Shapes3D targets that all shared `floor_hue = 0`, so a read that failed
+on that factor 5 times out of 5 could not be distinguished from a *value* being unreadable.
+Spreading on the first factor alone then gave five ColorMNIST targets that all shared `fg = 0,
+bg = 3` — one confound traded for another, on the factor §5h documents as the weakest, which moved
+the reported joint from 0.483 to 0.125 for reasons having nothing to do with storage. Selection is
+now greedy max-coverage over *every* factor, so five concepts span as much of the design as five
+can. **Any number in this section that changed when that landed changed because the earlier sample
+was biased, not because storage changed.**
+
 **This is the first experiment in `test_claims.GATED`**: its numbers may not be quoted unless the run
 that produced them carries an instrument report. The gate on this run reports what a *good* instrument
 looks like, and it is worth contrasting with the CelebA grid's line in §7gg: 120 classes over 16 free

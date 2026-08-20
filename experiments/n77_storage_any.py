@@ -187,20 +187,28 @@ def main():
 
     held = [s for s in sorted(set(slot.tolist())) if s not in set(seen_slots.tolist())]
     held = [h for h in held if (slot == h).sum() >= 8]
-    # SPREAD THE CONCEPTS ACROSS THE FIRST FACTOR'S VALUES rather than taking the first N by slot id.
-    # Taking the first N gave five targets that ALL had floor_hue=0 -- so when the read failed on
-    # floor_hue 5 times out of 5, the design could not distinguish "this factor is unreadable" from
-    # "the value 0 is unreadable" from "the read always answers something else". A confounded
-    # holdout cannot support either conclusion.
-    by_first = {}
-    for h in held:
-        by_first.setdefault(int(F[slot == h][0][0]), []).append(h)
-    spread, pool = [], sorted(by_first)
-    while len(spread) < args.n_concepts and any(by_first.values()):
-        for v in pool:
-            if by_first[v] and len(spread) < args.n_concepts:
-                spread.append(by_first[v].pop(0))
-    held = spread or held[:args.n_concepts]
+    # SPREAD ACROSS EVERY FACTOR, not just the first, and not by slot order.
+    #
+    # Slot order gave five Shapes3D targets that ALL had floor_hue=0, so "the read fails on
+    # floor_hue 5/5" could not be distinguished from "the value 0 is unreadable". Spreading on the
+    # FIRST factor alone then gave five ColorMNIST targets that all had fg=0 and bg=3 -- one
+    # confound traded for another, and on the factor 5h documents as the weakest, which dropped the
+    # reported joint from 0.483 to 0.125 for reasons that had nothing to do with storage.
+    #
+    # Greedy max-coverage: repeatedly take the candidate whose factor values are least represented
+    # among those already chosen, so a set of five spans as much of the design as five can.
+    chosen, pool = [], list(held)
+    counts = [{} for _ in sizes]
+    while pool and len(chosen) < args.n_concepts:
+        def cost(h):
+            row = F[slot == h][0]
+            return sum(counts[f].get(int(v), 0) for f, v in enumerate(row))
+        h = min(pool, key=cost)
+        pool.remove(h)
+        chosen.append(h)
+        for f, v in enumerate(F[slot == h][0]):
+            counts[f][int(v)] = counts[f].get(int(v), 0) + 1
+    held = chosen or held[:args.n_concepts]
     if not held:
         print("[n77] no held-out class with enough images")
         return 0
