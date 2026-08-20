@@ -138,19 +138,47 @@ def main():
     dev = "cuda" if torch.cuda.is_available() else "cpu"
     ckpt = args.ckpt or os.path.join(CACHE, f"ddpm_{args.dataset}.pt")
 
-    # ── data, through the generic contract ──────────────────────────────────
-    kw = dict(n_per_slot=args.n_per_slot, seed=args.seed)
+    # ── data, through the generic contract, ON THE CHECKPOINT'S OWN SPLIT ───
+    # The split is READ FROM THE CHECKPOINT, never defaulted. This line defaulted and it produced a
+    # false negative that survived into RESULTS 7kk: the Shapes3D backbone is trained with
+    # `wall_hue` PINNED, and loading without that gives a reference set carrying ten times the
+    # wall-hue variation the model was ever shown. Recall is measured against images the model
+    # cannot produce, so it collapsed to 0.110 while the identical samples score 0.958 in n78 --
+    # vendi and precision matched to three decimals between the two runs, which is what proved the
+    # samples were the same and the REFERENCE was the difference.
+    #
+    # It is the same fault class as 7ee's global ceiling: a denominator that does not match the
+    # thing being measured.
+    ck_split = {}
+    if args.ckpt and os.path.exists(args.ckpt):
+        try:
+            ck_split = torch.load(args.ckpt, map_location="cpu",
+                                  weights_only=False).get("split", {}) or {}
+        except Exception:                                             # noqa: BLE001
+            ck_split = {}
+    kw = dict(n_per_slot=int(ck_split.get("n_per_slot") or args.n_per_slot), seed=args.seed)
+    for k in ("value_stride", "fix_nuisance", "max_rows", "n_holdout"):
+        if ck_split.get(k) is not None and args.dataset in ("shapes3d",):
+            kw[k] = ck_split[k]
+    if kw.get("n_holdout") is not None:
+        kw["n_holdout"] = 0            # the holdout comes from `remap`, not from the loader
+    print(f"[n77] split from checkpoint: {kw}", flush=True)
     d = load_factored(args.dataset, **kw)
     sizes = [int(s) for s in d["sizes"]]
-    if "seen" not in d or bool(np.all(np.asarray(d["seen"]))):
-        seen, _ = holdout_mask(np.asarray(d["factors"]), sizes, args.n_holdout, seed=args.seed)
-        d["seen"] = np.asarray(seen, bool)
     X, F, slot = (np.asarray(d["X"], np.float32), np.asarray(d["factors"], int),
                   np.asarray(d["slot"], int))
+
+    # THE BACKBONE FIRST, so `seen` comes from its own `remap` rather than from a holdout invented
+    # here. Inventing one is how an experiment ends up scoring a checkpoint against a different
+    # split than it was trained on -- n73 needed exactly this fix after a hardcoded n_holdout.
+    field, C, seen_slots, ck = load_backbone(args.dataset, ckpt, dev)
+    if len(seen_slots):
+        d["seen"] = np.isin(slot, seen_slots)
+    elif "seen" not in d or bool(np.all(np.asarray(d["seen"]))):
+        seen, _ = holdout_mask(np.asarray(d["factors"]), sizes, args.n_holdout, seed=args.seed)
+        d["seen"] = np.asarray(seen, bool)
     seen_mask = np.asarray(d["seen"], bool)
     probes = fit_factor_probes(d, seed=args.seed)
-
-    field, C, seen_slots, ck = load_backbone(args.dataset, ckpt, dev)
     lab = np.asarray(decode_slot(seen_slots, sizes), int)
     fac = factorize(C, lab)
     r2cv, n_cv = cv_r2(C, lab)
@@ -158,7 +186,21 @@ def main():
           f"basis R2 {fac['r2']:.3f} in-sample, {r2cv:.3f} leave-one-out", flush=True)
 
     held = [s for s in sorted(set(slot.tolist())) if s not in set(seen_slots.tolist())]
-    held = [h for h in held if (slot == h).sum() >= 8][:args.n_concepts]
+    held = [h for h in held if (slot == h).sum() >= 8]
+    # SPREAD THE CONCEPTS ACROSS THE FIRST FACTOR'S VALUES rather than taking the first N by slot id.
+    # Taking the first N gave five targets that ALL had floor_hue=0 -- so when the read failed on
+    # floor_hue 5 times out of 5, the design could not distinguish "this factor is unreadable" from
+    # "the value 0 is unreadable" from "the read always answers something else". A confounded
+    # holdout cannot support either conclusion.
+    by_first = {}
+    for h in held:
+        by_first.setdefault(int(F[slot == h][0][0]), []).append(h)
+    spread, pool = [], sorted(by_first)
+    while len(spread) < args.n_concepts and any(by_first.values()):
+        for v in pool:
+            if by_first[v] and len(spread) < args.n_concepts:
+                spread.append(by_first[v].pop(0))
+    held = spread or held[:args.n_concepts]
     if not held:
         print("[n77] no held-out class with enough images")
         return 0
@@ -166,7 +208,7 @@ def main():
     # ── the gate, before anything is sampled ────────────────────────────────
     gate = check_instrument(tag="n77", real=d, probes=probes, field=field,
                             targets={int(h): tuple(int(v) for v in F[slot == h][0]) for h in held},
-                            n_arm=args.n_samples, table=C, labels=lab, seed=args.seed)
+                            n_arm=args.n_samples, table=C, labels=lab, seed=args.seed, ck=ck)
     print(gate.summary("n77"), flush=True)
     gate.require("n77")
     held = [h for h in held if gate.readable(int(h))]

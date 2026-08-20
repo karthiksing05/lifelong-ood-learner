@@ -8470,7 +8470,8 @@
   "n73_celeba_grid_compose_h4": "n73_celeba_grid_compose_h4",
   "n75_grid_pooled": "n75_grid_pooled",
   "n77_storage_any": "n77_storage_any",
-  "n78_shapes3d_flagship": "n78_shapes3d_flagship"
+  "n78_shapes3d_flagship": "n78_shapes3d_flagship",
+  "n77_storage_any_s3d": "n77_storage_any_s3d"
  },
  "n62_router_calibrate": {
   "table": {
@@ -9631,6 +9632,125 @@
     },
     "resolution": {
      "mean": 0.0004082480863455365,
+     "se": 0.0,
+     "n": 1
+    }
+   },
+   "_instrument": {
+    "ok": {
+     "mean": 1.0,
+     "se": 0.0,
+     "n": 1
+    }
+   }
+  },
+  "n_seeds": 1
+ },
+ "n77_storage_any_s3d": {
+  "table": {
+   "oracle": {
+    "joint": {
+     "mean": 0.975,
+     "se": 0.010206207261596566,
+     "n": 5
+    },
+    "recall": {
+     "mean": 0.9076923076923077,
+     "se": 0.039390491014710795,
+     "n": 5
+    },
+    "precision": {
+     "mean": 0.9833333333333334,
+     "se": 0.010206207261596566,
+     "n": 5
+    },
+    "vendi": {
+     "mean": 1.142466785202637,
+     "se": 0.0197255243709586,
+     "n": 5
+    }
+   },
+   "address": {
+    "joint": {
+     "mean": 0.975,
+     "se": 0.010206207261596566,
+     "n": 5
+    },
+    "recall": {
+     "mean": 0.9076923076923077,
+     "se": 0.039390491014710795,
+     "n": 5
+    },
+    "precision": {
+     "mean": 0.9833333333333334,
+     "se": 0.010206207261596566,
+     "n": 5
+    },
+    "vendi": {
+     "mean": 1.142466785202637,
+     "se": 0.0197255243709586,
+     "n": 5
+    }
+   },
+   "stored": {
+    "joint": {
+     "mean": 0.975,
+     "se": 0.010206207261596566,
+     "n": 5
+    },
+    "recall": {
+     "mean": 0.9076923076923077,
+     "se": 0.039390491014710795,
+     "n": 5
+    },
+    "precision": {
+     "mean": 0.9833333333333334,
+     "se": 0.010206207261596566,
+     "n": 5
+    },
+    "vendi": {
+     "mean": 1.142466785202637,
+     "se": 0.0197255243709586,
+     "n": 5
+    }
+   },
+   "stream": {
+    "forgetting": {
+     "mean": 0.0,
+     "se": 0.0,
+     "n": 1
+    },
+    "frozen": {
+     "mean": 1.0,
+     "se": 0.0,
+     "n": 1
+    },
+    "read_ok": {
+     "mean": 1.0,
+     "se": 0.0,
+     "n": 5
+    }
+   },
+   "cost": {
+    "read": {
+     "mean": 0.0,
+     "se": 0.0,
+     "n": 1
+    },
+    "storage": {
+     "mean": 0.0,
+     "se": 0.0,
+     "n": 1
+    }
+   },
+   "basis": {
+    "r2": {
+     "mean": 0.5163488952178238,
+     "se": 0.0,
+     "n": 1
+    },
+    "r2_cv": {
+     "mean": 0.4543465451254065,
      "se": 0.0,
      "n": 1
     }

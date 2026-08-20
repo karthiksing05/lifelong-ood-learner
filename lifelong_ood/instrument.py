@@ -366,9 +366,40 @@ def table_report(C, labels, ridge=1e-3, min_ratio=MIN_RATIO, n_perm=200, seed=0)
 
 
 # ── the entry point ─────────────────────────────────────────────────────────
+def check_split(real, ck, dataset=None):
+    """Does the loaded data match the split the CHECKPOINT was trained on?  -> Check.
+
+    The fourth denominator fault (RESULTS 7kk). `n77` loaded Shapes3D with loader DEFAULTS while its
+    backbone was trained with `wall_hue` pinned, so the reference set carried ten times the nuisance
+    variation the model had ever seen. Recall collapsed to 0.110 against the same samples scoring
+    0.908, the read went 0/5, and all of it was written up as three separate findings.
+
+    Two things are compared, both cheap: the recorded `split` keys against what the data actually
+    has, and -- decisively -- the SEEN CLASS SET against the checkpoint's own `remap`. The second
+    catches any split mismatch that changes which combinations exist, whatever produced it.
+    """
+    detail = {}
+    ok = True
+    sp = (ck or {}).get("split", {}) or {}
+    if sp:
+        detail["checkpoint_split"] = {k: v for k, v in sp.items() if k != "loader"}
+    remap = (ck or {}).get("remap")
+    if remap is not None and "slot" in real and "seen" in real:
+        want = sorted(int(k) for k in remap)
+        got = sorted(set(np.asarray(real["slot"])[np.asarray(real["seen"], bool)].tolist()))
+        detail["n_seen_checkpoint"] = len(want)
+        detail["n_seen_data"] = len(got)
+        ok = got == want
+        if not ok:
+            detail["note"] = ("the data's SEEN classes do not match the checkpoint's `remap`; the "
+                              "experiment is scoring this backbone against a different split than "
+                              "it was trained on")
+    return Check("convention:split", bool(ok), 1.0 if ok else 0.0, 1.0, detail)
+
+
 def check_instrument(*, tag, real, probes, targets=None, field=None, n_arm=24, n_gate=N_GATE,
                      exclude=None, table=None, labels=None, expect_layout=None, expect_range=None,
-                     space="pixel", seen_mask=None, seed=0):
+                     space="pixel", seen_mask=None, seed=0, ck=None):
     """Prove the instrument before measuring with it.  -> Report.
 
     `real` is the `data/factored.py` contract dict (X, factors, names, sizes, seen, slot, img), so
@@ -380,6 +411,12 @@ def check_instrument(*, tag, real, probes, targets=None, field=None, n_arm=24, n
     n_cls = int(len(np.unique(np.asarray(real["slot"])[seen]))) if "slot" in real else 0
     chance = 1.0 / max(n_cls, 1)
     checks = []
+
+    # (0) the split, whenever a checkpoint is supplied -- a fatal `convention:` check, because
+    # scoring a backbone against a different split than it was trained on invalidates everything
+    # downstream exactly as a wrong layout does.
+    if ck is not None:
+        checks.append(check_split(real, ck))
 
     # (i) conventions -- only when a field is supplied
     if field is not None:

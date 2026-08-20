@@ -205,6 +205,20 @@ CLAIMS = [
     # precondition for ADDRESS -- 5t-ter found the same on a learning-rate ladder.
     (0.516, .01, "n78_shapes3d_flagship", "basis", "r2", "7jj basis R2 in-sample"),
     (0.454, .01, "n78_shapes3d_flagship", "basis", "r2_cv", "7jj basis R2 leave-one-out"),
+    # ── the loop CLOSES on a pretrained backbone (RESULTS 7kk) ────────────────
+    # The first version of 7kk reported read 0/5, recall 0.110 and "coverage does not transfer".
+    # All three were one bug: the experiment loaded loader DEFAULTS instead of the split recorded
+    # in the checkpoint, so both the reference set and the query images carried nuisance variation
+    # the backbone had never seen. Pinned here so the corrected numbers cannot quietly regress.
+    (0.975, .01, "n77_storage_any_s3d", "oracle", "joint", "7kk oracle on Shapes3D"),
+    (0.975, .01, "n77_storage_any_s3d", "address", "joint", "7kk address (read from ONE example)"),
+    (0.975, .01, "n77_storage_any_s3d", "stored", "joint", "7kk stored, sampled BY NAME"),
+    (0.908, .02, "n77_storage_any_s3d", "stored", "recall", "7kk coverage DOES transfer"),
+    (0.000, .01, "n77_storage_any_s3d", "cost", "read", "7kk read cost"),
+    (0.000, .01, "n77_storage_any_s3d", "cost", "storage", "7kk storage cost"),
+    (1.000, .001, "n77_storage_any_s3d", "stream", "read_ok", "7kk read accuracy 5/5"),
+    (0.000, .001, "n77_storage_any_s3d", "stream", "forgetting", "7kk forgetting"),
+    (1.000, .001, "n77_storage_any_s3d", "stream", "frozen", "7kk base bit-identical"),
     # ── the storage loop, backbone-agnostic and GATED (RESULTS 7hh) ───────────
     # n71 pins the same loop on ColorMNIST with the old dataset-specific plumbing; these pin the
     # generic path, so the two must agree or one of them is wrong. The two COSTS are the point:
@@ -232,7 +246,7 @@ CLAIMS = [
 # experiments are migrated onto `lifelong_ood.instrument`, so CI enforces the gate going forward
 # without failing the 73 claims that predate it. An entry here means: this experiment's numbers were
 # produced by a run that proved its own measuring device first.
-GATED = {"n77_storage_any", "n78_shapes3d_flagship"}
+GATED = {"n77_storage_any", "n77_storage_any_s3d", "n78_shapes3d_flagship"}
 
 
 def main():

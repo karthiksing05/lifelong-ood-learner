@@ -3028,56 +3028,54 @@ squarely at it. Distance to the query is what catches it.
 ADDRESS's 0.516 (§N70), so the margin over "already had it" is much narrower there and this
 four-condition result is demonstrated on ColorMNIST only.*
 
-## 7kk. Storage on the pretrained backbone: accuracy and preservation hold, COVERAGE does not (N77)
+## 7kk. The loop closes on a PRETRAINED backbone — and the first version of this section was wrong (N77)
 
-The storage loop run on the §7jj backbone — five held-out concepts, gate passed, each read from ONE
-example, composed, written in, and sampled back by name.
+The storage loop on the §7jj backbone: five held-out concepts, each read from ONE example, composed,
+written into the model, and sampled back **by name**.
 
 | arm | joint | recall | vendi |
 |---|---|---|---|
-| `oracle` — composed from TRUE factors | 0.958 | 0.110 | 1.14 |
-| `address` — composed from READ factors | 0.967 | 0.227 | 1.17 |
-| `stored` — the consolidated concept, by name | **0.967** | 0.227 | 1.17 |
+| `oracle` — composed from TRUE factors | 0.975 | 0.908 | 1.14 |
+| `address` — composed from factors READ off one example | 0.975 | 0.908 | 1.14 |
+| `stored` — the consolidated concept, sampled by name | **0.975** | **0.908** | 1.14 |
 
-* **forgetting +0.000**, base **bit-identical** after absorbing five concepts (+2556 new tensors).
-* **storage cost +0.000** — writing the concept in costs nothing at all on this backbone.
-* **but coverage fails**: recall 0.227 and **vendi 1.17 against the unconditional arm's 2.08**
-  (§7jj). The concept is stored, is re-invocable by name, and reads correctly — and its samples do
-  not cover the class.
+* **read 5 of 5 exact.** * **read cost +0.000, storage cost +0.000.**
+* **forgetting +0.000**, base **bit-identical** after five absorptions (+2556 new tensors).
 
-**That is the §7dd failure mode, on our own arm.** §7dd's standing warning is `query-copy`: joint
-1.000 at recall 0.000, perfect accuracy by copying. Nothing is copied here (§7jj memorises 0.00), but
-the *shape* is the same — the composed conditional on this backbone is sharply peaked, and accuracy
-alone cannot distinguish a concept that is stored from a concept that is stored *and useful*. **The
-storage claim on Shapes3D is therefore accuracy-and-preservation only; the coverage half does not
-transfer from ColorMNIST, where the same arms give recall 0.887.**
+**This is the first time the loop closes outside ColorMNIST**, and it closes on a *pretrained*
+backbone — the regime a policy is in.
 
-### The read fails on exactly one factor, and the design confounds it
+### The first version of this section reported the opposite, and one bug produced all of it
 
-| concept | true | read |
-|---|---|---|
-| c5 | (0, 1, 1) | (**8**, 1, 1) |
-| c18 | (0, 4, 2) | (**5**, 4, 2) |
-| c19 | (0, 4, 3) | (**5**, 4, 3) |
-| c36 | (0, 9, 0) | (**3**, 9, 0) |
-| c38 | (0, 9, 2) | (**3**, 9, 2) |
+It reported read 0/5, recall 0.110, and "coverage does not transfer". Three findings, written up
+separately, **all from a single cause**: this experiment loaded its data with loader *defaults*
+instead of the split recorded in the checkpoint. The backbone is trained with `wall_hue` **pinned**;
+loading without that gives images carrying ten times the wall-hue variation the model was ever shown.
 
-`object_hue` and `shape` are read correctly **5 of 5**; `floor_hue` fails **5 of 5**. Both readers
-fail it — gradient inversion reads 0/5 and enumeration reads 0/5 — so it is not a reader defect.
+| symptom as first written | actual cause |
+|---|---|
+| "recall 0.110 vs §7jj's 0.958 — irreconcilable" | the *reference set* was off-distribution; recall was measured against images the model cannot produce |
+| "coverage does not transfer to Shapes3D" | same reference-set fault; recall is **0.908** |
+| "`floor_hue` fails 5/5 under both readers" | the *query images* were off-distribution too — `read_by_enumeration` scores candidates against the query. Reads are now **5/5 exact** |
 
-**And the address still scores 0.967 while carrying the wrong `floor_hue`**, which means the composed
-`floor_hue` component is not controlling the rendered floor. *This is not yet explained, and the
-holdout confounds it: every one of the five targets has `floor_hue = 0`.* Breaking that confound with
-a holdout spanning several floor hues is the next measurement, not a conclusion to assert now.
+**What caught it was a control, not a hunch.** Vendi and precision agreed to three decimals between
+the two experiments (1.10/1.10, 1.20/1.20, 1.19/1.19 …) while recall differed 7-fold. Identical
+samples with a differing metric can only be the *reference*, and that pointed straight at the loader.
 
-### An unreconciled discrepancy, recorded rather than smoothed
+*It is the same fault class as §7ee's global ceiling and §7gg's four faults: **a denominator that
+does not match the thing being measured.** The instrument gate checks the readout and the table; it
+does not yet check that an experiment loaded the split its checkpoint was trained on. `n77` now reads
+`split` from the checkpoint and derives `seen` from `remap` — the discipline §7ee already forced on
+`n73` — and that check belongs in the gate.*
 
-**The same arm reports recall 0.958 in §7jj and 0.110 here.** Both compose from true factors on the
-same checkpoint, both draw 24 samples, both score against ~60 real images of the held-out cell. The
-constructions differ only in that N77 excludes the query image from the reference. That cannot
-plausibly account for 0.958 against 0.110, so one of the two numbers is wrong and **neither recall
-should be quoted until it is resolved.** The joint accuracies agree across the two experiments
-(0.983 and 0.958–0.967), so the discrepancy is confined to the coverage metric.
+### The low diversity is the backbone's, not the composer's
+
+`vendi 1.14` looks alarming against the unconditional arm's 2.08, and the first version of this
+section called it a coverage failure. The control settles it: **`nearest-class` — a genuine TRAINED
+class sampled by its own branch — reads vendi 1.19**, indistinguishable from the composed address's
+1.14. Conditioning on this backbone is sharply peaked whatever the conditioning vector is, and
+ADDRESS matches a trained class on diversity as well as on accuracy. Recall 0.908 confirms the
+samples cover the class regardless.
 
 ## 7jj. THE FLAGSHIP: composition on a pretrained backbone, ADDRESS 0.983 against retrieval 0.010 (N78)
 

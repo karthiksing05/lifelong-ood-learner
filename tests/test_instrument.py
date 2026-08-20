@@ -145,6 +145,18 @@ def main():
     except SystemExit as e:
         ok(int(getattr(e, "code", 1)) == 2, "require() exits 2 and prints the numbers")
 
+    print("\n[instrument] a split that does not match the checkpoint is refused")
+    from lifelong_ood.instrument import check_split
+    ck_good = {"remap": {int(v): i for i, v in enumerate(sorted(set(d["slot"][d["seen"]].tolist())))},
+               "split": {"n_per_slot": 60}}
+    ok(check_split(d, ck_good).ok, "matching seen sets pass")
+    ck_bad = {"remap": {0: 0, 1: 1}, "split": {"n_per_slot": 60}}
+    c = check_split(d, ck_bad)
+    ok(not c.ok,
+       f"a checkpoint trained on {c.detail['n_seen_checkpoint']} classes against data with "
+       f"{c.detail['n_seen_data']} is refused -- the RESULTS 7kk fault, which read as three "
+       f"separate findings")
+
     print("\n[instrument] the n73 fault, caught from arrays alone")
     data_rows = d["X"][:32]
     model_rows = data_rows * 2.0 - 1.0                     # what the sampler actually returns

@@ -82,7 +82,7 @@ def main():
     held = [h for h in held if (slot == h).sum() >= 8][:args.n_concepts]
     gate = check_instrument(tag="n78", real=d, probes=probes, field=field,
                             targets={int(h): tuple(int(v) for v in F[slot == h][0]) for h in held},
-                            n_arm=args.n_samples, table=C, labels=lab, seed=args.seed)
+                            n_arm=args.n_samples, table=C, labels=lab, seed=args.seed, ck=ck)
     print(gate.summary("n78"), flush=True)
     gate.require("n78")
     held = [h for h in held if gate.readable(int(h))]
