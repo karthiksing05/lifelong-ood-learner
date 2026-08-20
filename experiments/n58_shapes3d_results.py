@@ -43,13 +43,21 @@ from lifelong_ood.score import cosine_abar                             # noqa: E
 FIG = os.path.join(HERE, "figures", "initial")
 
 
-def mode_ascent(field, x_img, u, n_starts=4, iters=120, lr=0.05, seed=0, init="hybrid"):
+def mode_ascent(field, x_img, u, n_starts=4, iters=120, lr=0.05, seed=0, init="hybrid", emb=None):
     """Adam ascent on log p_t against the bridged field -> (x0-space modes, provenance).
 
     The same Stage-1 discovery the ColorMNIST and CelebA case studies show in their `prototypes` row,
     so the three figures can be read side by side.  Hybrid initialisation: half the chains from the
     noised query, half from pure noise -- a pool grown only from the query explores one basin, and
     composition needs experts that disagree with it.
+
+    `emb` decides WHICH density is climbed, and the two answers are different pictures:
+
+      emb=None   the paper's Stage 1 -- the UNCONDITIONAL model.  With the query-seeded chains
+                 discarded (as this figure does) these are generic modes of p(x): they are not
+                 prototypes OF the held-out combination and must not be labelled as though they are.
+      emb=c_new  the mode of p(x | c_new) -- what the composed ADDRESS says the combination is,
+                 canonically.  This is the identity half of THEORY 4 with the coverage half removed.
     """
     dev = field.device
     a = float(cosine_abar(np.array([u]))[0])
@@ -73,14 +81,17 @@ def mode_ascent(field, x_img, u, n_starts=4, iters=120, lr=0.05, seed=0, init="h
         src += ["random"] * (n_starts - half)
     xt = torch.cat(parts).clone().requires_grad_(True)
     opt = torch.optim.Adam([xt], lr=lr)
+    e_cond = (None if emb is None else
+              torch.as_tensor(np.asarray(emb, np.float32), device=dev).reshape(1, -1)
+                   .expand(len(xt), -1))
     for _ in range(iters):
-        eps = field.model(xt, torch.full((len(xt),), float(u), device=dev))
+        eps = field.model(xt, torch.full((len(xt),), float(u), device=dev), emb_override=e_cond)
         loss = (eps.detach() * xt).sum() / max((1 - a) ** 0.5, 1e-6)
         opt.zero_grad(set_to_none=True)
         loss.backward()
         opt.step()
     with torch.no_grad():
-        eps = field.model(xt, torch.full((len(xt),), float(u), device=dev))
+        eps = field.model(xt, torch.full((len(xt),), float(u), device=dev), emb_override=e_cond)
         x0 = (xt - ((1 - a) ** 0.5) * eps) / (a ** 0.5)
     return x0.detach().permute(0, 2, 3, 1).reshape(len(x0), -1).cpu().numpy(), src
 
@@ -223,7 +234,8 @@ def main():
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
-    order = ["real", "prototypes", "ours (ADDRESS)", "nearest-class", "unconditional"]
+    order = ["real", "discovery pool (their Stage 1)", "prototype of p(x|c_new)",
+             "ours (ADDRESS)", "nearest-class", "unconditional"]
     show = cases[:4]
     fig, axes = plt.subplots(len(show) * len(order), args.n_show,
                              figsize=(1.5 * args.n_show + 4.4, 1.5 * len(show) * len(order)))
@@ -265,8 +277,15 @@ def main():
             if keep:
                 m, sr = np.asarray(m)[keep], [sr[i] for i in keep]
             P.append(m); psrc += [f"{q}-init u={uu:g}" for q in sr]
+        # The SAME ascent, at the same settings, conditioned on the composed address instead of on
+        # nothing.  Random starts only: a prototype seeded from the held-out image would invite
+        # exactly the reading this row exists to refute.
+        proto_c, _ = mode_ascent(field, X[idx[0]].reshape(64, 64, 3).transpose(2, 0, 1), 0.30,
+                                 n_starts=args.n_show, init="random",
+                                 seed=args.seed + 9973 * int(s), emb=c_addr)
         got = {"real": X[idx[:args.n_show]],
-               "prototypes": np.concatenate(P)[:args.n_show],
+               "discovery pool (their Stage 1)": np.concatenate(P)[:args.n_show],
+               "prototype of p(x|c_new)": np.asarray(proto_c, np.float32),
                "ours (ADDRESS)": field.sample(n=args.n_show, steps=args.steps, seed=args.seed,
                                               emb_override=c_addr),
                "nearest-class": field.sample(n=args.n_show, steps=args.steps, seed=args.seed,
@@ -277,20 +296,26 @@ def main():
         combo = ", ".join(f"{n}={int(v)}" for n, v in zip(names, tgt))
         for nm in order:
             S = np.asarray(got[nm], np.float32)
-            a = (factor_accuracy(probes, S, tgt) if nm != "prototypes"
-                 else {"joint": float("nan")})
+            # The discovery pool is query-AGNOSTIC and unconditional, so a joint accuracy against
+            # THIS target would be scoring it on a question it was never asked.  The conditional
+            # prototype IS asked that question, so it is scored.
+            a = (factor_accuracy(probes, S, tgt)
+                 if nm != "discovery pool (their Stage 1)" else {"joint": float("nan")})
             for k in range(args.n_show):
                 axes[r][k].axis("off")
                 if k < len(S):
                     axes[r][k].imshow(np.clip(S[k].reshape(64, 64, 3), 0, 1))
             lab = (f"real - HELD OUT\n{combo}\nslot {int(s)} - {n_tr} training images"
                    if nm == "real" else
-                   "prototypes\n(mode ascent)" if nm == "prototypes" else nm)
+                   "discovery pool\n(their Stage 1,\nUNCONDITIONAL)"
+                   if nm == "discovery pool (their Stage 1)" else
+                   "prototype of\np(x|c_new)\n(conditional ascent)"
+                   if nm == "prototype of p(x|c_new)" else nm)
             axes[r][0].set_ylabel(lab, rotation=0, ha="right", va="center", fontsize=6.5)
             axes[r][0].axis("on"); axes[r][0].set_xticks([]); axes[r][0].set_yticks([])
             for sp_ in axes[r][0].spines.values():
                 sp_.set_visible(False)
-            if nm == "prototypes":
+            if nm == "discovery pool (their Stage 1)":
                 for k in range(min(args.n_show, len(psrc))):
                     axes[r][k].set_title(psrc[k], fontsize=5.5)
             else:

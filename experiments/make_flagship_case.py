@@ -8,9 +8,22 @@ and only the case-study image showed that half the pixels were being clipped awa
 Rows, and what each is for:
 
     real            actual images of the held-out combination -- the target, never shown to the model
-    ours (ADDRESS)  compose(fac, factors) and sample the model's own conditional
+    prototype       the MODE of p(x | c_new) -- Adam ascent on log p_t conditioned on the composed
+                    address, from random starts.  Built to show the IDENTITY half of THEORY 4 on its
+                    own, and it DOES NOT: measured, mode ascent is a WORSE reader of the address than
+                    simply sampling it, and it is not even less diverse.  The row is kept because
+                    that IS the finding -- on a conditional this sharply peaked there is no
+                    identity/coverage gap left to show, and the mode-seeking half of the companion
+                    paper's pipeline buys nothing here.  The caption carries both numbers.
+    ours (ADDRESS)  compose(fac, factors) and sample the model's own conditional -- the COVERAGE half
     nearest-class   the closest SEEN class embedding: the control for "the model already had it"
     unconditional   the floor
+
+The prototype row is the reason `mode_ascent` grew `emb=`.  Until 2026-08-19 both implementations
+ascended the NULL-embedding density, so a "prototype" panel on a conditional model showed the mode of
+p(x) -- a plausible-looking room that has nothing to do with the concept, and no scalar in the figure
+would have said so.  Random starts, not query starts: a prototype seeded from the held-out image
+invites exactly the reading the row exists to refute.
 
 The caption carries the numbers a reader needs to judge the pictures rather than admire them,
 INCLUDING the one that does not flatter us: the composed conditional is accurate and sharply peaked
@@ -33,7 +46,8 @@ from common import CACHE                                              # noqa: E4
 
 from lifelong_ood.data.factored import decode_slot                    # noqa: E402
 from lifelong_ood.data.shapes3d import load_shapes3d                  # noqa: E402
-from lifelong_ood.evals import factor_accuracy, fit_factor_probes     # noqa: E402
+from lifelong_ood.evals import (factor_accuracy, fit_factor_probes,   # noqa: E402
+                                save_json, vendi_score)
 from lifelong_ood.instrument import check_instrument, to_data_space   # noqa: E402
 from lifelong_ood.neural.idealwords import compose, cv_r2, factorize  # noqa: E402
 from lifelong_ood.neural.ve_bridge import load_ve_field               # noqa: E402
@@ -85,18 +99,29 @@ def main():
     cells = [h for h in held if gate.readable(int(h))][:args.n_cells]
     print(f"[fig] {len(cells)} readable held-out cells: {cells}", flush=True)
 
-    order = ["real", "ours (ADDRESS)", "nearest-class", "unconditional"]
+    order = ["real", "prototype of p(x|c_new)", "ours (ADDRESS)", "nearest-class",
+             "unconditional"]
     fig, axes = plt.subplots(len(cells) * len(order), args.n_show,
                              figsize=(1.5 * args.n_show + 3.6, 1.5 * len(cells) * len(order)))
     axes = np.atleast_2d(axes)
     r = 0
+    gamut, measured = [], []
     for h in cells:
         idx = np.where(slot == int(h))[0]
         tgt = tuple(int(v) for v in F[idx[0]])
         c_new = compose(fac, tgt)
         j_near = int(np.argmin(((C - c_new[None]) ** 2).sum(1)))
+        # u=0.30 / iters=120 / lr=0.05 are diag_ve_discovery's checked settings for THIS field --
+        # the ones where modes provably improve the eps error over their own starting point.  `xq` is
+        # required by the signature but unused at init="random"; the ascent never sees a held-out
+        # image.
+        _, proto = field.mode_ascent(X[idx[0]], 0.30, n_starts=args.n_show, iters=120, lr=0.05,
+                                     seed=args.seed, init="random", emb=c_new)
+        proto = np.asarray(to_data_space(field, proto), np.float32)
+        gamut.append(float(np.mean((proto < 0.0) | (proto > 1.0))))
         got = {
             "real": X[idx[:args.n_show]],
+            "prototype of p(x|c_new)": proto,
             "ours (ADDRESS)": to_data_space(field, field.sample(
                 n=args.n_show, steps=args.steps, seed=args.seed, emb_override=c_new)),
             "nearest-class": to_data_space(field, field.sample(
@@ -121,24 +146,44 @@ def main():
                 sp_.set_visible(False)
             if nm != "real":
                 j = float(factor_accuracy(probes, S, tgt)["joint"])
-                axes[r][args.n_show - 1].set_title(f"joint {j:.2f}", fontsize=7, loc="right")
+                measured.append(dict(slot=int(h), arm=nm, joint=j,
+                                     vendi=float(vendi_score(S))))
+                # Vendi on the two conditional arms only, because the contrast between them IS the
+                # claim: same address, one mode against a distribution.
+                v = (f" | vendi {float(vendi_score(S)):.2f}"
+                     if nm in ("prototype of p(x|c_new)", "ours (ADDRESS)") else "")
+                axes[r][args.n_show - 1].set_title(f"joint {j:.2f}{v}", fontsize=7, loc="right")
             r += 1
 
     # Short lines, because a caption clipped at both margins carries nothing. The detail lives in
     # RESULTS 7jj; this says only what a reader needs to judge the pictures.
+    def _m(arm, key):
+        v = [d[key] for d in measured if d["arm"] == arm]
+        return float(np.mean(v)) if v else float("nan")
+
+    # SHORT lines.  The docstring above says a caption clipped at both margins carries nothing, and
+    # the first version of this one was clipped at both margins.
     fig.suptitle(
         "SHAPES3D, PRETRAINED backbone: every combination shown has ZERO training images\n"
-        "ADDRESS 0.983  |  nearest-class 0.010  |  unconditional 0.003  |  real-image ceiling 1.000\n"
+        "ADDRESS 0.983 | nearest-class 0.010 | unconditional 0.003 | real-image ceiling 1.000\n"
         f"400 classes / 25 free vectors (ratio 18.2); basis R2 {fac['r2']:.2f} in-sample, "
         f"{r2cv:.2f} leave-one-out\n"
-        "`nearest-class` is the closest SEEN class: note it is wrong by exactly ONE factor in every "
-        "row",
+        "`nearest-class` is the closest SEEN class: wrong by exactly ONE factor in every row\n"
+        f"MODE of the address {_m('prototype of p(x|c_new)', 'joint'):.2f} vs SAMPLING it "
+        f"{_m('ours (ADDRESS)', 'joint'):.2f}, and no less diverse "
+        f"(vendi {_m('prototype of p(x|c_new)', 'vendi'):.2f} vs "
+        f"{_m('ours (ADDRESS)', 'vendi'):.2f}):\nmode-seeking is the WORSE reader here",
         fontsize=9)
     fig.tight_layout(rect=[0, 0, 1, 0.93])
     os.makedirs(FIG, exist_ok=True)
     o = os.path.join(FIG, args.out)
     fig.savefig(o, dpi=130)
     print(f"[fig] wrote {o}")
+    for arm in order[1:]:
+        print(f"[fig]   {arm:26s} joint {_m(arm, 'joint'):.3f}  vendi {_m(arm, 'vendi'):.3f}")
+    save_json(dict(cells=[int(c) for c in cells], rows=measured,
+                   gamut_outside_01=float(np.mean(gamut))),
+              os.path.join(HERE, "results", "n78_flagship_case.json"), seed=args.seed)
     return 0
 
 

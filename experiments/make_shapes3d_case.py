@@ -32,7 +32,7 @@ sys.path.insert(0, os.path.join(HERE, "experiments"))
 from lifelong_ood.evals import (factor_accuracy, fit_factor_probes,   # noqa: E402
                                 probe_readable)
 from lifelong_ood.data.factored import decode_slot, load_factored          # noqa: E402
-from lifelong_ood.neural.ddpm import load_field, to_data, to_model    # noqa: E402
+from lifelong_ood.neural.ddpm import load_field, to_data              # noqa: E402
 from lifelong_ood.neural.idealwords import (compose, factorize,       # noqa: E402
                                             sample_factored_pool)
 
@@ -90,7 +90,12 @@ def main():
         tgt = decode_slot(np.array([int(slot)]), sizes)[0]
         idx = np.where(data["slot"] == int(slot))[0]
         n_train = int(np.sum((data["slot"] == int(slot)) & data["seen"]))
-        real = np.stack([to_model(data["X"][i]).ravel() for i in idx[:args.n_show]])
+        # DATA space, like every other arm here: `data["X"]` is already [0,1].  This was
+        # `to_model(...)`, which put the real row in [-1,1] -- so half its pixels were clipped
+        # to black by the display and its accuracy was scored by data-space probes.  Same
+        # fault as the n73 range fault, in the one row of the figure nobody re-checked.
+        real = np.stack([np.asarray(data["X"][i], np.float64).ravel()
+                         for i in idx[:args.n_show]])
         c_addr = compose(fac, tuple(int(v) for v in tgt))
         d2 = ((C - c_addr[None]) ** 2).sum(1)
         got = {
