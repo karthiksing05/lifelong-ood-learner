@@ -206,9 +206,13 @@ CLAIMS = [
     # concept into the model costs almost nothing.
     (0.483, .02, "n77_storage_any", "oracle", "joint", "7hh oracle (true factors)"),
     (0.483, .02, "n77_storage_any", "address", "joint", "7hh address (factors READ from one example)"),
-    (0.475, .02, "n77_storage_any", "stored", "joint", "7hh stored (sampled by name)"),
+    (0.492, .02, "n77_storage_any", "stored", "joint", "7hh stored (sampled by name)"),
     (0.000, .01, "n77_storage_any", "cost", "read", "7hh read cost (oracle - address)"),
-    (0.008, .02, "n77_storage_any", "cost", "storage", "7hh storage cost (address - stored)"),
+    # NEGATIVE: the stored concept scores slightly ABOVE the address it was distilled from.
+    # Consolidation fits an adapter to a POOL drawn from that address, so it is averaging away
+    # sampler noise rather than adding information -- storage is not merely cheap here, it is
+    # very slightly cleaning. Re-pinned exactly after the reader default became enumeration.
+    (-0.008, .01, "n77_storage_any", "cost", "storage", "7hh storage cost (address - stored)"),
     (1.000, .001, "n77_storage_any", "stream", "read_ok", "7hh read accuracy"),
     (0.000, .001, "n77_storage_any", "stream", "forgetting", "7hh forgetting over the stream"),
     (1.000, .001, "n77_storage_any", "stream", "frozen", "7hh base bit-identical"),

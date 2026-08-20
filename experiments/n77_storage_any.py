@@ -45,7 +45,8 @@ from lifelong_ood.evals import (factor_accuracy, fit_factor_probes,   # noqa: E4
 from lifelong_ood.instrument import (check_instrument, sample_conditioned,  # noqa: E402
                                      to_data_space)
 from lifelong_ood.neural import NeuralLifelongLearner, to_model    # noqa: E402
-from lifelong_ood.neural.idealwords import compose, cv_r2, factorize  # noqa: E402
+from lifelong_ood.neural.idealwords import (compose, cv_r2, factorize,  # noqa: E402
+                                            read_by_enumeration)
 
 
 def _raw_sample(field, n, steps, seed, emb):
@@ -114,12 +115,26 @@ def main():
     p.add_argument("--n-pool", type=int, default=48)
     p.add_argument("--n-holdout", type=int, default=12)
     p.add_argument("--seed", type=int, default=0)
+    p.add_argument("--reader", choices=("enumerate", "invert"), default="enumerate",
+                   help="how the factors are READ off the one example. `enumerate` scores every "
+                        "combination on common random draws -- exact where the vocabulary fits in "
+                        "memory. `invert` is the gradient path `learn_factored` uses; it reads 0/5 "
+                        "on the pretrained Shapes3D table (oracle 0.958 -> address 0.017), which "
+                        "the oracle arm is what revealed.")
+    p.add_argument("--n-draws", type=int, default=64)
     p.add_argument("--tag", default="")
     p.add_argument("--quick", action="store_true")
     args = p.parse_args()
     if args.quick:
         (args.n_concepts, args.n_samples, args.steps, args.n_per_slot,
          args.epochs, args.n_pool) = 2, 8, 40, 40, 4, 8
+        # A SMOKE RUN MUST NOT BE ABLE TO OVERWRITE A CANONICAL RESULT. It just did: a --quick
+        # regression check replaced the 5-concept ColorMNIST numbers and test_claims went 92/92 ->
+        # 88/92 with a storage cost of -0.312 where the real run gives +0.008. The repository has an
+        # earlier incident of exactly this shape (a 7 KB smoke run silently replacing a 3-seed
+        # canonical table), which is why `aggregate.py` tracks provenance -- but provenance cannot
+        # help when both runs write the same key. Forcing the tag is what makes it impossible.
+        args.tag = args.tag or "_quick"
     dev = "cuda" if torch.cuda.is_available() else "cpu"
     ckpt = args.ckpt or os.path.join(CACHE, f"ddpm_{args.dataset}.pt")
 
@@ -172,8 +187,15 @@ def main():
         R = X[[j for j in idx if j != qi][:60]]
         xq = to_model(X[qi]).ravel()
 
-        _, _, read = L.compose_factored(xq, seed=args.seed, hard=True)
-        read_t = tuple(int(v) for v in read)
+        if args.reader == "enumerate":
+            read_t, _ = read_by_enumeration(field, to_model(X[qi]) if
+                                            getattr(field, "data_space", "model") == "model"
+                                            else X[qi],
+                                            fac, n_draws=args.n_draws, seed=args.seed,
+                                            max_candidates=4096)
+        else:
+            _, _, read = L.compose_factored(xq, seed=args.seed, hard=True)
+            read_t = tuple(int(v) for v in read)
         c_read = compose(fac, read_t)
 
         S = {}
