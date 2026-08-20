@@ -49,7 +49,7 @@ disturbing anything already learned."*
 
 All three items on the "chase next" list were **one bug**: `n77` loaded its data with loader
 defaults instead of the split recorded in its checkpoint (`wall_hue` pinned). Corrected, the loop
-**closes on Shapes3D** — read 5/5, joint 0.975, recall 0.908, read and storage cost +0.000,
+**closes on Shapes3D** — read 5/5, joint 0.983, recall 0.995, read and storage cost +0.000,
 forgetting +0.000, base bit-identical. The "coverage does not transfer" negative and the
 "`floor_hue` fails under both readers" finding are both withdrawn; `instrument.check_split` now
 makes the fault fatal at the gate. And the low diversity (vendi 1.14) is the backbone's, not the

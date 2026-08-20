@@ -210,10 +210,10 @@ CLAIMS = [
     # All three were one bug: the experiment loaded loader DEFAULTS instead of the split recorded
     # in the checkpoint, so both the reference set and the query images carried nuisance variation
     # the backbone had never seen. Pinned here so the corrected numbers cannot quietly regress.
-    (0.975, .01, "n77_storage_any_s3d", "oracle", "joint", "7kk oracle on Shapes3D"),
-    (0.975, .01, "n77_storage_any_s3d", "address", "joint", "7kk address (read from ONE example)"),
-    (0.975, .01, "n77_storage_any_s3d", "stored", "joint", "7kk stored, sampled BY NAME"),
-    (0.908, .02, "n77_storage_any_s3d", "stored", "recall", "7kk coverage DOES transfer"),
+    (0.983, .01, "n77_storage_any_s3d", "oracle", "joint", "7kk oracle on Shapes3D"),
+    (0.983, .01, "n77_storage_any_s3d", "address", "joint", "7kk address (read from ONE example)"),
+    (0.983, .01, "n77_storage_any_s3d", "stored", "joint", "7kk stored, sampled BY NAME"),
+    (0.995, .01, "n77_storage_any_s3d", "stored", "recall", "7kk coverage DOES transfer"),
     (0.000, .01, "n77_storage_any_s3d", "cost", "read", "7kk read cost"),
     (0.000, .01, "n77_storage_any_s3d", "cost", "storage", "7kk storage cost"),
     (1.000, .001, "n77_storage_any_s3d", "stream", "read_ok", "7kk read accuracy 5/5"),
@@ -224,15 +224,14 @@ CLAIMS = [
     # generic path, so the two must agree or one of them is wrong. The two COSTS are the point:
     # reading the factors off one example is free where the instrument is good, and writing the
     # concept into the model costs almost nothing.
-    (0.483, .02, "n77_storage_any", "oracle", "joint", "7hh oracle (true factors)"),
-    (0.483, .02, "n77_storage_any", "address", "joint", "7hh address (factors READ from one example)"),
-    (0.492, .02, "n77_storage_any", "stored", "joint", "7hh stored (sampled by name)"),
+    (0.408, .02, "n77_storage_any", "oracle", "joint", "7hh oracle (true factors)"),
+    (0.408, .02, "n77_storage_any", "address", "joint", "7hh address (factors READ from one example)"),
+    (0.375, .02, "n77_storage_any", "stored", "joint", "7hh stored (sampled by name)"),
     (0.000, .01, "n77_storage_any", "cost", "read", "7hh read cost (oracle - address)"),
-    # NEGATIVE: the stored concept scores slightly ABOVE the address it was distilled from.
-    # Consolidation fits an adapter to a POOL drawn from that address, so it is averaging away
-    # sampler noise rather than adding information -- storage is not merely cheap here, it is
-    # very slightly cleaning. Re-pinned exactly after the reader default became enumeration.
-    (-0.008, .01, "n77_storage_any", "cost", "storage", "7hh storage cost (address - stored)"),
+    # Re-pinned after concept selection became greedy max-coverage over every factor: the earlier
+    # numbers came from five targets that varied one factor while pinning the rest, which is a
+    # biased SAMPLE, not a different storage behaviour. Writing a concept in costs +0.033 joint.
+    (0.033, .02, "n77_storage_any", "cost", "storage", "7hh storage cost (address - stored)"),
     (1.000, .001, "n77_storage_any", "stream", "read_ok", "7hh read accuracy"),
     (0.000, .001, "n77_storage_any", "stream", "forgetting", "7hh forgetting over the stream"),
     (1.000, .001, "n77_storage_any", "stream", "frozen", "7hh base bit-identical"),

@@ -3035,12 +3035,14 @@ written into the model, and sampled back **by name**.
 
 | arm | joint | recall | vendi |
 |---|---|---|---|
-| `oracle` — composed from TRUE factors | 0.975 | 0.908 | 1.14 |
-| `address` — composed from factors READ off one example | 0.975 | 0.908 | 1.14 |
-| `stored` — the consolidated concept, sampled by name | **0.975** | **0.908** | 1.14 |
+| `oracle` — composed from TRUE factors | 0.983 | 0.995 | 1.15 |
+| `address` — composed from factors READ off one example | 0.983 | 0.995 | 1.15 |
+| `stored` — the consolidated concept, sampled by name | **0.983** | **0.995** | 1.15 |
 
 * **read 5 of 5 exact.** * **read cost +0.000, storage cost +0.000.**
 * **forgetting +0.000**, base **bit-identical** after five absorptions (+2556 new tensors).
+* the five concepts span the design — `(0,1,1) (1,3,3) (2,2,0) (5,0,2) (3,4,0)`, five different
+  floor hues — so this is not five samples of one corner (§7hh on selection).
 
 **This is the first time the loop closes outside ColorMNIST**, and it closes on a *pretrained*
 backbone — the regime a policy is in.
@@ -3055,7 +3057,7 @@ loading without that gives images carrying ten times the wall-hue variation the 
 | symptom as first written | actual cause |
 |---|---|
 | "recall 0.110 vs §7jj's 0.958 — irreconcilable" | the *reference set* was off-distribution; recall was measured against images the model cannot produce |
-| "coverage does not transfer to Shapes3D" | same reference-set fault; recall is **0.908** |
+| "coverage does not transfer to Shapes3D" | same reference-set fault; recall is **0.995** |
 | "`floor_hue` fails 5/5 under both readers" | the *query images* were off-distribution too — `read_by_enumeration` scores candidates against the query. Reads are now **5/5 exact** |
 
 **What caught it was a control, not a hunch.** Vendi and precision agreed to three decimals between
@@ -3074,7 +3076,7 @@ does not yet check that an experiment loaded the split its checkpoint was traine
 section called it a coverage failure. The control settles it: **`nearest-class` — a genuine TRAINED
 class sampled by its own branch — reads vendi 1.19**, indistinguishable from the composed address's
 1.14. Conditioning on this backbone is sharply peaked whatever the conditioning vector is, and
-ADDRESS matches a trained class on diversity as well as on accuracy. Recall 0.908 confirms the
+ADDRESS matches a trained class on diversity as well as on accuracy. Recall 0.995 confirms the
 samples cover the class regardless.
 
 ## 7jj. THE FLAGSHIP: composition on a pretrained backbone, ADDRESS 0.983 against retrieval 0.010 (N78)
