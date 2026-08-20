@@ -143,3 +143,39 @@ def load_factored(name, **kw):
         from .shapes3d import load_shapes3d
         return load_shapes3d(**kw)
     raise ValueError(f"unknown dataset {name!r}; register a loader in factored.load_factored")
+
+
+def spread_targets(candidates, factors_of, n):
+    """Pick `n` of `candidates` spanning as many factor VALUES as n can.  -> list.
+
+    Greedy max-coverage: repeatedly take the candidate whose factor values are least represented
+    among those already chosen. Ties break toward the earlier candidate, so the result is a
+    deterministic function of `candidates`' order.
+
+    THIS EXISTS BECAUSE PICKING BY SLOT ORDER PINS THE FIRST FACTOR, and the failure is silent both
+    ways round:
+
+      * n77 took the first five held-out Shapes3D slots and got five with `floor_hue=0`, so "the
+        read fails on floor_hue 5/5" could not be told apart from "the value 0 is unreadable";
+      * the flagship case study took the first four readable cells and got four with `floor=red`,
+        so a figure whose whole point is that composition spans a design showed one row of it;
+      * and spreading on the FIRST factor alone -- the obvious fix -- gave five ColorMNIST targets
+        that all shared `fg=0, bg=3`, trading one confound for another on the factor 5h documents
+        as the weakest, which moved a reported joint from 0.483 to 0.125 for reasons that had
+        nothing to do with what was being measured.
+
+    `factors_of` maps a candidate to its factor-value tuple (a dict or a callable). Nothing here
+    knows what the factors MEAN, so it works for any dataset satisfying this module's contract.
+    """
+    get = factors_of.__getitem__ if hasattr(factors_of, "__getitem__") else factors_of
+    pool, chosen = list(candidates), []
+    counts = {}
+    while pool and len(chosen) < n:
+        def cost(h):
+            return sum(counts.get((f, int(v)), 0) for f, v in enumerate(get(h)))
+        h = min(pool, key=cost)
+        pool.remove(h)
+        chosen.append(h)
+        for f, v in enumerate(get(h)):
+            counts[(f, int(v))] = counts.get((f, int(v)), 0) + 1
+    return chosen

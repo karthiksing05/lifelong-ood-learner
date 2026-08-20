@@ -3028,6 +3028,44 @@ squarely at it. Distance to the query is what catches it.
 ADDRESS's 0.516 (§N70), so the margin over "already had it" is much narrower there and this
 four-condition result is demonstrated on ColorMNIST only.*
 
+## 7mm. Picking targets by slot order pins the first factor — the same bug, in a second place
+
+Asked for held-out combinations other than the red-floor ones, the answer was not to pick different
+cells by hand. **The flagship case study showed four cells because it took the first four in slot
+order, and `slot = floor_hue × 40 + object_hue × 4 + shape`** — so the lowest slot numbers are
+exactly the `floor_hue=0` ones. Every version of that figure showed one corner of the design and
+nothing said so; its own log line printed the *truncated* list, so `4 readable held-out cells` read
+as *only four are readable* when the real number was **40**.
+
+This is §7kk's selection bug a second time. There it produced five Shapes3D targets that all had
+`floor_hue=0`, which made "the read fails on floor_hue 5/5" indistinguishable from "the value 0 is
+unreadable". The fix there — greedy max-coverage over *every* factor — was written inline, and an
+inline fix in one experiment does not protect the next one.
+
+So it is now `lifelong_ood.data.factored.spread_targets`, used by n77, the flagship figure, and
+n58's displayed blocks. **The lift had to be selection-*identical*, not merely equivalent**: n77's
+`joint 0.983` and `recall 0.995` are pinned, and a lift that quietly reorders the greedy tie-break
+would move them with no other visible sign. `tests/test_spread_targets.py` reproduces the old inline
+loop and compares the two over 400 randomised designs, then checks the spread itself against the two
+real failures:
+
+```
+n77's five concepts    slot order covers [1, 2, 4] values; spread covers [5, 5, 4]
+the flagship's cells   slot order covers [1, 2, 4] values; spread covers [6, 6, 4]
+```
+
+**What it changed.** The flagship now shows six cells spanning six floor hues, six object hues and
+all four shapes; `ADDRESS` reads **1.000** and `nearest-class` **0.000** on every one of them, so
+the headline survives the wider sample intact. What did not survive is §7ll's *size*: the conditional
+prototype's joint falls from **0.62 to 0.33** once the cells span the design, because the earlier
+number was itself measured on the four red-floor cells. A selection artifact that flatters the
+position you are arguing *against* is still a selection artifact.
+
+*Note what `spread_targets` cannot fix. `wall_hue` is a PINNED nuisance factor in this split
+(`fix_nuisance=['wall_hue']`, §7ii) — it repaints half the image and its variance swamps the label —
+so the wall is the same colour in every block by design, and only a differently-trained backbone
+would change that. The floor, object and shape are the composition factors, and those now vary.*
+
 ## 7ll. Every prototype panel in this repository showed the mode of p(x), not p(x | c) — and fixing it produced a negative
 
 Asked to showcase prototypes in the case studies, the first thing to check was what the existing
@@ -3053,10 +3091,16 @@ properties on a toy field whose modes are known in closed form.
 The row was added to the flagship (§7jj) to make THEORY §4 visible in one picture: the prototype as
 IDENTITY, the samples as COVERAGE. **It does not show that, and the numbers are the reason.**
 
-| arm, on the flagship's four readable held-out cells | joint | vendi |
+| arm, on six held-out cells spanning the design | joint | vendi |
 |---|---|---|
-| **mode** of p(x \| c_new) — conditional ascent | **0.62** | 1.16 |
-| **samples** from p(x \| c_new) — ADDRESS | **1.00** | 1.11 |
+| **mode** of p(x \| c_new) — conditional ascent | **0.33** | 1.22 |
+| **samples** from p(x \| c_new) — ADDRESS | **1.00** | 1.09 |
+
+*The first version of this table read 0.62, and that number was measured on four cells that all had
+`floor_hue=0` — the figure took the first N readable cells in slot order, and slot order pins the
+first factor (§7mm). Spreading the cells across the design nearly doubles the gap. The finding held
+either way; its size did not, and a selection artifact that flatters the thing you are arguing
+against is still a selection artifact.*
 
 **Mode-seeking is the worse reader of the address, and it is not even less diverse.** Both halves
 contradict what the row was built to show. The diversity half fails because the composed conditional
@@ -3155,8 +3199,8 @@ what a margin of +0.972 looks like when it is not a number.
 
 The `prototype of p(x|c_new)` row is the mode of the *same* address rather than a draw from it. It
 was added to make THEORY §4 visible — identity without coverage — and **it does not show that**:
-the mode reads the combination at 0.62 where sampling the address reads it at 1.00, and it is no
-less diverse (vendi 1.16 against 1.11). Mode-seeking is the worse reader here, which is a finding
+the mode reads the combination at 0.33 where sampling the address reads it at 1.00, and it is no
+less diverse (vendi 1.22 against 1.09). Mode-seeking is the worse reader here, which is a finding
 rather than a defect in the row, and §7ll gives it in full along with the conditioning bug it came
 out of — until 2026-08-19 every `mode_ascent` in this repository climbed the NULL-embedding density,
 so every prototype panel showed the mode of p(x) rather than of p(x | c).

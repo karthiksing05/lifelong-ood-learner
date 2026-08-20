@@ -118,8 +118,8 @@ complementary ones, and a per-dimension product (Eq. 7/10) aggregates them into 
 
 The identity half works: **`μ_T` probe-reads the correct composition** (§5e-quater) — but only as
 the *aggregate*. Raw mode ascent on the composed conditional does not: on the pretrained Shapes3D
-backbone the **mode** of `p(x | c_new)` reads the combination at **0.62** where **sampling** the same
-address reads it at **1.00**, and it is no less diverse either (vendi 1.16 against 1.11, §7ll). So
+backbone the **mode** of `p(x | c_new)` reads the combination at **0.33** where **sampling** the same
+address reads it at **1.00**, and it is no less diverse either (vendi 1.22 against 1.09, §7ll). So
 the seam below takes identity from their *selection and product*, not from ascent alone, and on a
 sharply peaked conditional there is no identity/coverage gap left for a mode to exploit. The coverage
 half cannot, and the reason is structural rather than a tuning failure — **a product of Gaussians is

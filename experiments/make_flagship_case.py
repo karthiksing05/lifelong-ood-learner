@@ -44,7 +44,7 @@ sys.path.insert(0, HERE)
 sys.path.insert(0, os.path.join(HERE, "experiments"))
 from common import CACHE                                              # noqa: E402
 
-from lifelong_ood.data.factored import decode_slot                    # noqa: E402
+from lifelong_ood.data.factored import decode_slot, spread_targets    # noqa: E402
 from lifelong_ood.data.shapes3d import load_shapes3d                  # noqa: E402
 from lifelong_ood.evals import (factor_accuracy, fit_factor_probes,   # noqa: E402
                                 save_json, vendi_score)
@@ -62,7 +62,9 @@ def main():
     p = argparse.ArgumentParser()
     p.add_argument("--ckpt", default=os.path.join(CACHE, "ddpm_s3d_full.pt"))
     p.add_argument("--n-show", type=int, default=6)
-    p.add_argument("--n-cells", type=int, default=4)
+    p.add_argument("--n-cells", type=int, default=6,
+                   help="held-out combinations to show.  Chosen by `spread_targets`, so raising "
+                        "this buys DIFFERENT factor values rather than more of the same corner.")
     p.add_argument("--steps", type=int, default=200)
     p.add_argument("--seed", type=int, default=0)
     p.add_argument("--out", default="case_flagship_s3d.png")
@@ -96,8 +98,21 @@ def main():
     gate = check_instrument(tag="fig", real=d, probes=probes,
                             targets={int(h): tuple(int(v) for v in F[slot == h][0]) for h in held},
                             n_arm=args.n_show, table=C, labels=lab, seed=args.seed)
-    cells = [h for h in held if gate.readable(int(h))][:args.n_cells]
-    print(f"[fig] {len(cells)} readable held-out cells: {cells}", flush=True)
+    # SPREAD, not the first N in slot order -- which is how all four cells came out floor=red in
+    # every version of this figure before 2026-08-19.  A figure whose point is that composition
+    # spans a design must not show one corner of it.
+    readable = [h for h in held if gate.readable(int(h))]
+    cells = spread_targets(readable,
+                           {int(h): tuple(int(v) for v in F[slot == h][0]) for h in readable},
+                           args.n_cells)
+    # Say what was chosen FROM, not just what was chosen: the old line printed the truncated list,
+    # so "4 readable held-out cells" read as "only 4 are readable" when the real number was far
+    # larger and the other three factors were simply never reached.
+    spread = [sorted({int(F[slot == h][0][f]) for h in cells}) for f in range(len(sizes))]
+    print(f"[fig] {len(readable)} readable held-out cells; showing {len(cells)} "
+          f"spread over {[len(v) for v in spread]} distinct values of "
+          f"{[str(x) for x in d['names']]}: {cells}",
+          flush=True)
 
     order = ["real", "prototype of p(x|c_new)", "ours (ADDRESS)", "nearest-class",
              "unconditional"]

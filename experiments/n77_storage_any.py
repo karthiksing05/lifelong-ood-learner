@@ -39,7 +39,8 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from common import CACHE, RESULTS                                     # noqa: E402
 
-from lifelong_ood.data.factored import decode_slot, holdout_mask, load_factored  # noqa: E402
+from lifelong_ood.data.factored import (decode_slot, holdout_mask,   # noqa: E402
+                                        load_factored, spread_targets)
 from lifelong_ood.evals import (factor_accuracy, fit_factor_probes,   # noqa: E402
                                 precision_recall, save_json, vendi_score)
 from lifelong_ood.instrument import (check_instrument, sample_conditioned,  # noqa: E402
@@ -187,27 +188,13 @@ def main():
 
     held = [s for s in sorted(set(slot.tolist())) if s not in set(seen_slots.tolist())]
     held = [h for h in held if (slot == h).sum() >= 8]
-    # SPREAD ACROSS EVERY FACTOR, not just the first, and not by slot order.
-    #
-    # Slot order gave five Shapes3D targets that ALL had floor_hue=0, so "the read fails on
-    # floor_hue 5/5" could not be distinguished from "the value 0 is unreadable". Spreading on the
-    # FIRST factor alone then gave five ColorMNIST targets that all had fg=0 and bg=3 -- one
-    # confound traded for another, and on the factor 5h documents as the weakest, which dropped the
-    # reported joint from 0.483 to 0.125 for reasons that had nothing to do with storage.
-    #
-    # Greedy max-coverage: repeatedly take the candidate whose factor values are least represented
-    # among those already chosen, so a set of five spans as much of the design as five can.
-    chosen, pool = [], list(held)
-    counts = [{} for _ in sizes]
-    while pool and len(chosen) < args.n_concepts:
-        def cost(h):
-            row = F[slot == h][0]
-            return sum(counts[f].get(int(v), 0) for f, v in enumerate(row))
-        h = min(pool, key=cost)
-        pool.remove(h)
-        chosen.append(h)
-        for f, v in enumerate(F[slot == h][0]):
-            counts[f][int(v)] = counts[f].get(int(v), 0) + 1
+    # SPREAD ACROSS EVERY FACTOR, not just the first, and not by slot order.  The reasons and the
+    # two ways this went wrong are in `spread_targets`; it was inline here until the flagship case
+    # study needed the same thing and showed four red floors, at which point a second copy would
+    # have been a second place for it to drift.  `tests/test_spread_targets.py` pins the lift as
+    # selection-identical, which is what protects this experiment's numbers.
+    chosen = spread_targets(held, {h: tuple(int(v) for v in F[slot == h][0]) for h in held},
+                            args.n_concepts)
     held = chosen or held[:args.n_concepts]
     if not held:
         print("[n77] no held-out class with enough images")
