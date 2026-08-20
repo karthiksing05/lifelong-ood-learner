@@ -34,7 +34,8 @@ from common import CACHE, RESULTS                                      # noqa: E
 
 from lifelong_ood.evals import (factor_accuracy, fit_factor_probes,   # noqa: E402
                                 precision_recall, probe_readable, save_json)
-from lifelong_ood.data.factored import decode_slot, load_factored          # noqa: E402
+from lifelong_ood.data.factored import (decode_slot, load_factored,        # noqa: E402
+                                        spread_targets)
 from lifelong_ood.neural.idealwords import compose, factorize          # noqa: E402
 from lifelong_ood.neural.router import auroc, conditional_losses       # noqa: E402
 from lifelong_ood.neural.ve_bridge import load_ve_field                # noqa: E402
@@ -236,7 +237,12 @@ def main():
     import matplotlib.pyplot as plt
     order = ["real", "discovery pool (their Stage 1)", "prototype of p(x|c_new)",
              "ours (ADDRESS)", "nearest-class", "unconditional"]
-    show = cases[:4]
+    # The four blocks SHOWN are spread across factor values; the twelve MEASURED above are
+    # untouched, so no reported number moves -- only which four the reader is shown.  `cases[:4]`
+    # gave two floor hues between four blocks.
+    show = spread_targets([int(c) for c in cases],
+                          {int(c): tuple(int(v) for v in decode_slot(np.array([int(c)]), sizes)[0])
+                           for c in cases}, 4)
     fig, axes = plt.subplots(len(show) * len(order), args.n_show,
                              figsize=(1.5 * args.n_show + 4.4, 1.5 * len(show) * len(order)))
     axes = np.atleast_2d(axes)
@@ -326,7 +332,10 @@ def main():
         f"Shapes3D on a PRETRAINED unconditional backbone ({ck['model']}), conditioning fine-tuned "
         f"in.\nFour from-scratch attempts left the label decorative; this one has conditioning gap "
         f"{gap:+.5f} and null gap {ngap:+.5f}. Basis R^2 {fac['r2']:.3f}.\nComposition factors are "
-        f"{names}; wall hue is PINNED and scale/orientation vary within every block.", fontsize=8)
+        # `names` is a numpy array of str, whose repr is `[np.str_('floor_hue'), ...]` -- readable
+        # in a log line, noise in a published figure's title.
+        f"{', '.join(str(x) for x in names)}; wall hue is PINNED and scale/orientation vary "
+        f"within every block.", fontsize=8)
     fig.tight_layout(rect=[0, 0, 1, 0.95])
     o = os.path.join(FIG, f"case_shapes3d{args.tag}.png")
     fig.savefig(o, dpi=130, bbox_inches="tight")
