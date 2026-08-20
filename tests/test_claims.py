@@ -194,6 +194,12 @@ CLAIMS = [
     (0.972, .01, "n78_shapes3d_flagship", "margin", "vs_retrieval", "7jj margin over retrieval"),
     (0.979, .01, "n78_shapes3d_flagship", "margin", "vs_floor", "7jj margin over the floor"),
     (0.000, .01, "n78_shapes3d_flagship", "address", "memorized", "7jj nothing copied"),
+    # DIVERSITY IS LOW AND THAT IS PART OF THE CLAIM, NOT AN OMISSION. vendi 1.14 against the
+    # unconditional arm's 2.08: the composed conditional on this backbone is accurate and sharply
+    # peaked. 7dd's standing warning is that accuracy alone cannot distinguish composing from
+    # copying, so the number that would flatter us is pinned next to the one that does not.
+    (1.14, .05, "n78_shapes3d_flagship", "address", "vendi", "7jj ADDRESS diversity (LOW)"),
+    (2.08, .10, "n78_shapes3d_flagship", "unconditional", "vendi", "7jj unconditional diversity"),
     # The basis is only HALF additive and composition still reaches 98% of the ceiling. Pinned
     # because it cuts against the natural reading of THEORY section 1: a high basis R^2 is not a
     # precondition for ADDRESS -- 5t-ter found the same on a learning-rate ladder.

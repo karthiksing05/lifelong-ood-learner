@@ -3028,6 +3028,57 @@ squarely at it. Distance to the query is what catches it.
 ADDRESS's 0.516 (§N70), so the margin over "already had it" is much narrower there and this
 four-condition result is demonstrated on ColorMNIST only.*
 
+## 7kk. Storage on the pretrained backbone: accuracy and preservation hold, COVERAGE does not (N77)
+
+The storage loop run on the §7jj backbone — five held-out concepts, gate passed, each read from ONE
+example, composed, written in, and sampled back by name.
+
+| arm | joint | recall | vendi |
+|---|---|---|---|
+| `oracle` — composed from TRUE factors | 0.958 | 0.110 | 1.14 |
+| `address` — composed from READ factors | 0.967 | 0.227 | 1.17 |
+| `stored` — the consolidated concept, by name | **0.967** | 0.227 | 1.17 |
+
+* **forgetting +0.000**, base **bit-identical** after absorbing five concepts (+2556 new tensors).
+* **storage cost +0.000** — writing the concept in costs nothing at all on this backbone.
+* **but coverage fails**: recall 0.227 and **vendi 1.17 against the unconditional arm's 2.08**
+  (§7jj). The concept is stored, is re-invocable by name, and reads correctly — and its samples do
+  not cover the class.
+
+**That is the §7dd failure mode, on our own arm.** §7dd's standing warning is `query-copy`: joint
+1.000 at recall 0.000, perfect accuracy by copying. Nothing is copied here (§7jj memorises 0.00), but
+the *shape* is the same — the composed conditional on this backbone is sharply peaked, and accuracy
+alone cannot distinguish a concept that is stored from a concept that is stored *and useful*. **The
+storage claim on Shapes3D is therefore accuracy-and-preservation only; the coverage half does not
+transfer from ColorMNIST, where the same arms give recall 0.887.**
+
+### The read fails on exactly one factor, and the design confounds it
+
+| concept | true | read |
+|---|---|---|
+| c5 | (0, 1, 1) | (**8**, 1, 1) |
+| c18 | (0, 4, 2) | (**5**, 4, 2) |
+| c19 | (0, 4, 3) | (**5**, 4, 3) |
+| c36 | (0, 9, 0) | (**3**, 9, 0) |
+| c38 | (0, 9, 2) | (**3**, 9, 2) |
+
+`object_hue` and `shape` are read correctly **5 of 5**; `floor_hue` fails **5 of 5**. Both readers
+fail it — gradient inversion reads 0/5 and enumeration reads 0/5 — so it is not a reader defect.
+
+**And the address still scores 0.967 while carrying the wrong `floor_hue`**, which means the composed
+`floor_hue` component is not controlling the rendered floor. *This is not yet explained, and the
+holdout confounds it: every one of the five targets has `floor_hue = 0`.* Breaking that confound with
+a holdout spanning several floor hues is the next measurement, not a conclusion to assert now.
+
+### An unreconciled discrepancy, recorded rather than smoothed
+
+**The same arm reports recall 0.958 in §7jj and 0.110 here.** Both compose from true factors on the
+same checkpoint, both draw 24 samples, both score against ~60 real images of the held-out cell. The
+constructions differ only in that N77 excludes the query image from the reference. That cannot
+plausibly account for 0.958 against 0.110, so one of the two numbers is wrong and **neither recall
+should be quoted until it is resolved.** The joint accuracies agree across the two experiments
+(0.983 and 0.958–0.967), so the discrepancy is confined to the coverage metric.
+
 ## 7jj. THE FLAGSHIP: composition on a pretrained backbone, ADDRESS 0.983 against retrieval 0.010 (N78)
 
 The measurement the pivot to pretrained backbones was for, and the one §7ee could not make. A

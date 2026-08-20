@@ -281,8 +281,22 @@ def main():
         print(f"[n77]   THE LOOP CLOSES ON {args.dataset.upper()}. One example is read, composed,")
         print("[n77]   WRITTEN, and sampled back by name -- stream intact, base bit-identical.")
     else:
-        print(f"[n77]   Does not close: stored {m('stored'):.3f} against an oracle of "
-              f"{m('oracle'):.3f}, forgetting {fgt:+.3f}.")
+        # NAME THE CONDITION THAT FAILED. The first version printed "does not close: stored 0.967
+        # against an oracle of 0.958", which reads as an accuracy failure when accuracy passed
+        # comfortably and COVERAGE is what fell short. A verdict that does not say which of its
+        # clauses fired is the same defect this repository spent a day removing from its metrics.
+        why = []
+        if m("stored") < 0.5 * m("oracle"):
+            why.append(f"accuracy: stored {m('stored'):.3f} < half the oracle's {m('oracle'):.3f}")
+        if not m("stored", "recall") > 0.3:
+            why.append(f"COVERAGE: stored recall {m('stored', 'recall'):.3f} <= 0.30 at vendi "
+                       f"{m('stored', 'vendi'):.2f} -- the concept is stored and reads correctly, "
+                       f"but its samples do not cover the class")
+        if not abs(fgt) < 0.1:
+            why.append(f"forgetting {fgt:+.3f}")
+        print(f"[n77]   Does not close on {len(why)} of 3 conditions:")
+        for w in why:
+            print(f"[n77]     - {w}")
     save_json(dict(rows=rows, after=after, forgetting=fgt, frozen=bool(frozen),
                    n_new_tensors=int(n_new), instrument=gate.as_dict(), dataset=args.dataset,
                    basis_r2=float(fac["r2"]), basis_r2_cv=float(r2cv), read_ok=int(n_read),
