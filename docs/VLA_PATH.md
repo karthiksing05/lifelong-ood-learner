@@ -10,6 +10,7 @@ this is the forward plan.
 
 | claim | evidence | confidence |
 |---|---|---|
+| **The whole loop closes on a PRETRAINED backbone**: read from ONE example, composed, WRITTEN in, sampled back BY NAME | read 5/5 exact, joint **0.975**, recall **0.908**, read cost **+0.000**, storage cost **+0.000**, forgetting **+0.000**, base **bit-identical** (§7kk) | **high** — the first time outside ColorMNIST, and in the regime a policy is in |
 | **ADDRESS composes held-out combinations on a PRETRAINED backbone, and beats retrieval outright** | joint **0.983** against a real-image ceiling of 1.000, `nearest-class` **0.010**, floor 0.003; margins +0.972 / +0.979 against a resolution of 0.000; 12 of 12 held-out combinations, 0.00 memorised (§7jj) | **high** — this is the regime a policy is in, and it is the measurement CelebA could not make |
 | A conditional diffusion model's class table organises **compositionally** without being told the factors | basis R² 0.870 ColorMNIST · 0.538 Shapes3D · 0.832 **DiT**, and **cross-validated** 0.772 on ColorMNIST's 120-row table | **high on large tables, void on small ones** — the claim needs classes ≫ free vectors. The CelebA grid at 9 classes / 8 vectors reads 0.875 in-sample and **0.207** leave-one-out (§7ee), so it is excluded from this row |
 | **ADDRESS** composes held-out combinations at ~0 parameters | ColorMNIST joint 0.556 · Shapes3D **16× floor** · DiT 0.661 full-loop · CelebA density-holdout **+0.242 over the floor** (§7ee) | **high vs the unconditional floor** |
@@ -127,6 +128,16 @@ This is lesson 2 again, third occurrence. Nothing in the table looked wrong: a m
 the corrected 0.018 read identically as numbers. **The case-study figure was the only artifact that
 could reveal it**, because half the pixels were being clipped away and faces visibly fell apart. For
 a policy the analogue is rendered rollouts, not a success-rate column — budget for looking at them.
+
+**Load the split the checkpoint was trained on, and CHECK it.** The fourth denominator fault
+(§7kk): an experiment loaded its data with loader defaults while the backbone was trained with a
+nuisance factor pinned, so both the reference set and the query images carried variation the model
+had never seen. That single bug produced three separate written-up findings — an irreconcilable
+recall discrepancy, a "coverage does not transfer" negative, and a factor that "failed under both
+readers". `instrument.check_split` now compares the data's seen-class set against the checkpoint's
+own `remap` as a fatal check. For a policy the analogue is larger and worse: observation
+preprocessing, action normalisation, camera set and control frequency are all "the split", and any
+of them silently defaulted makes every rollout number a measurement of the mismatch.
 
 **Every metric needs a REAL-DATA arm, per unit of evaluation.** Not a global ceiling: real data of
 *the specific held-out combination*, scored by *that run's* probes. A global probe ceiling read

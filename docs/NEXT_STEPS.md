@@ -45,9 +45,19 @@ disturbing anything already learned."*
 * **`n77_storage_any.py`** — the N71 loop against the generic contract, so it runs on any factored
   backbone. N71 is untouched because its numbers are pinned.
 
+### Resolved after the summary, and it changed three conclusions
+
+All three items on the "chase next" list were **one bug**: `n77` loaded its data with loader
+defaults instead of the split recorded in its checkpoint (`wall_hue` pinned). Corrected, the loop
+**closes on Shapes3D** — read 5/5, joint 0.975, recall 0.908, read and storage cost +0.000,
+forgetting +0.000, base bit-identical. The "coverage does not transfer" negative and the
+"`floor_hue` fails under both readers" finding are both withdrawn; `instrument.check_split` now
+makes the fault fatal at the gate. And the low diversity (vendi 1.14) is the backbone's, not the
+composer's — a genuine trained class reads 1.19.
+
 ### Open
 
-1. **The Shapes3D flagship run itself.** The class table is training at the full readable design via
+1. ~~**The Shapes3D flagship run itself.**~~ **DONE** — §7jj (composition) and §7kk (storage). The class table is training at the full readable design via
    the N57 pattern (frozen backbone, `cemb` in its own optimiser group at 50× LR). Then: basis →
    ADDRESS vs nearest-class vs unconditional → routing → N77 storage.
 2. **`router.calibrate_u_novel` is still called by no experiment**, and the inherited `U_NOVEL = 0.10`
