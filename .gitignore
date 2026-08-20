@@ -32,8 +32,15 @@ figures/*_smoke.png
 figures/*cscale*.png
 figures/*pairscale*.png
 figures/archive
+figures/initial/archive
 
 # Superseded figures. Kept in the tree because each cost GPU time and one that turns out to be
 # wanted is then a `git mv` away -- but out of git, because they are dead weight in a clone and a
 # reader opening figures/ should see the argument, not its history.
 figures/archive/
+# ...and the path they ACTUALLY live at.  Every figure moved under `figures/initial/` when
+# `figures/vla/` was created, and this rule -- anchored, so `figures/archive/` matches nothing --
+# quietly stopped applying.  56 MB across 34 superseded figures stayed tracked for weeks against
+# the intent stated directly above it.  A gitignore rule that silently matches nothing is the same
+# failure mode as a test that silently asserts nothing.
+figures/initial/archive/

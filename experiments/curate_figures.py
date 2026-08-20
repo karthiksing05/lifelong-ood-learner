@@ -62,11 +62,38 @@ CORE = {
     "08_coverage_vs_copying.png", "case_celeba.png",
     # representation
     "09_representation.png",
-    # case studies -- instances at various distances from prototypes
-    "case_colormnist.png", "case_prototype_distance.png",
+    # case studies -- instances at various distances from prototypes.  `case_flagship_s3d` is the
+    # strongest result in the repository (ADDRESS 0.983 against retrieval 0.010 on a PRETRAINED
+    # backbone) and was in neither this list nor OUTLINE's; `case_shapes3d` was in OUTLINE's and not
+    # this one.  Two lists that are documented as mirrors had drifted in both directions, which is
+    # the argument for checking them against each other rather than by eye -- see `mirrored()`.
+    "case_colormnist.png", "case_prototype_distance.png", "case_shapes3d.png",
+    "case_flagship_s3d.png",
+    # the scoped negative: CelebA's readable band is narrower than the margin it would have to
+    # resolve (7ee).  A repository that reports only what worked is not reporting a measurement.
+    "f_celeba_grid_margin.png",
     # preservation and parity
     "10_preservation.png", "11_native_parity.png",
 }
+
+
+def mirrored():
+    """-> (in CORE but not in OUTLINE, in OUTLINE but not in CORE).
+
+    `docs/OUTLINE.md` calls its list "the core figure set" and this module calls CORE the same
+    thing, and on 2026-08-19 they disagreed in BOTH directions at once. A comment saying two lists
+    are mirrors does not keep them mirrored; reading one out of the other does.
+    """
+    p = os.path.join(HERE, "docs", "OUTLINE.md")
+    if not os.path.exists(p):
+        return set(), set()
+    with open(p, encoding="utf-8") as fh:
+        txt = fh.read()
+    body = txt.split("## The core figure set", 1)[-1].split("\n**The DiT track**", 1)[0]
+    named = {f"{m}.png" for m in re.findall(r"`([A-Za-z0-9_]+)`", body)}
+    named = {n for n in named if n.replace(".png", "") not in ("figures/initial/dit/",)}
+    return CORE - named, {n for n in named if n not in CORE and os.path.exists(
+        os.path.join(FIG, n))}
 
 
 def referenced():
@@ -118,6 +145,14 @@ def main():
         return sum(os.path.getsize(os.path.join(base, n)) for n in names) / 1e6
 
     print(f"[curate] {len(have)} figures in figures/, {mb(have):.1f} MB\n")
+    only_core, only_outline = mirrored()
+    if only_core or only_outline:
+        print("  MIRROR DRIFT against docs/OUTLINE.md's core figure set:")
+        for f in sorted(only_core):
+            print(f"    in CORE, not in OUTLINE:  {f}")
+        for f in sorted(only_outline):
+            print(f"    in OUTLINE, not in CORE:  {f}")
+        print()
     print(f"  CORE {len(core)} ({mb(core):.1f} MB)  -- stay in figures/")
     for f in core:
         print(f"    {f}")
@@ -144,6 +179,25 @@ def main():
             shutil.move(os.path.join(FIG, f), os.path.join(sub, f))
     print(f"\n[curate] moved {len(extra)} to additional/, {len(dead)} to archive/; "
           f"{len(core)} core remain")
+
+    # A MOVE IS A RENAME, and `restructure_figures.py` already records the rule this module was
+    # missing: applied in the file AND in every citation, or not applied at all.  Curating
+    # f_lr_ladder.png into extra/ on 2026-08-19 dangled three links in three documents, and nothing
+    # said so -- `referenced()`'s regex tolerates the extra/ segment, so the figure still counted as
+    # cited while its links pointed at nothing.
+    dangling = []
+    for f in [os.path.join(HERE, "README.md")] + sorted(glob.glob(os.path.join(HERE, "docs/*.md"))):
+        with open(f, encoding="utf-8") as fh:
+            for m in re.findall(r"(figures/[A-Za-z0-9_/]+\.png)", fh.read()):
+                if not os.path.exists(os.path.join(HERE, m)):
+                    dangling.append((os.path.relpath(f, HERE), m))
+    if dangling:
+        print(f"\n[curate] {len(dangling)} DANGLING CITATIONS -- repoint these before committing:")
+        for f, m in dangling:
+            print(f"    {f}: {m}")
+        return 1
+    print("[curate] every figure cited by a document exists at the path it is cited from")
+
     return 0
 
 
