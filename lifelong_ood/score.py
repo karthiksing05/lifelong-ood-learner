@@ -185,8 +185,27 @@ class BaseScoreField:
         return np.clip(x, clip[0], clip[1])
 
     # ── mode ascent on p_t (the paper's Eq. 4) ──────────────────────────────
+    def _ascent_score(self, X, u, branch=None, emb=None):
+        """The score `mode_ascent` climbs, conditioned when asked.  -> [n, D].
+
+        `score`/`eps` are left untouched deliberately: the analytic `ScoreField` overrides `score`
+        and has no conditioning table at all, so routing an embedding through the shared method
+        would put a keyword on a field that cannot honour it.  This dispatches instead, and says so
+        when it cannot -- the sampler-signature divergences of 2026-08-19 cost six runs precisely
+        because an unsupported keyword was silently ignored rather than refused.
+        """
+        if emb is None:
+            return self.score(X, u, branch)
+        try:
+            e = self.eps(X, u, branch, emb=emb)
+        except TypeError as exc:
+            raise TypeError(
+                f"{type(self).__name__}.eps does not accept `emb`, so mode_ascent cannot be "
+                f"conditioned on a composed embedding for this field family") from exc
+        return -e / np.sqrt(1.0 - float(cosine_abar(u)))
+
     def mode_ascent(self, xq, u, n_starts=16, iters=100, lr=0.05, seed=0, init="query",
-                    clamp=False, k_sigma=3.0, tweedie=False, adam=True):
+                    clamp=False, k_sigma=3.0, tweedie=False, adam=True, branch=None, emb=None):
         """Adam ascent on log p_t from noised copies of the query -> (modes in x_t space, x0-space).
 
         `adam=True`, `clamp=False`, `tweedie=False` -- the paper's Table 6 setting, and the SAME on
@@ -234,7 +253,7 @@ class BaseScoreField:
         b1, b2, eps = 0.9, 0.999, 1e-8
         bound = np.sqrt(a) + k_sigma * np.sqrt(max(1.0 - a, 0.0))
         for i in range(1, iters + 1):
-            g = self.score(x, u)
+            g = self._ascent_score(x, u, branch, emb)
             if adam:
                 m = b1 * m + (1 - b1) * g
                 v = b2 * v + (1 - b2) * g * g

@@ -251,8 +251,14 @@ def load_ve_field(path, device="cuda"):
             return np.clip((st - (1.0 - a)) / a, var_floor, var_cap)
 
         def mode_ascent(self, xq, u, n_starts=16, iters=100, lr=0.05, seed=0, init="query",
-                        clamp=False, k_sigma=3.0, tweedie=False, adam=True):
-            """Adam ascent on log p_t.  -> (x_t rows, x_0 rows), both flat in this field's layout."""
+                        clamp=False, k_sigma=3.0, tweedie=False, adam=True, branch=None, emb=None):
+            """Adam ascent on log p_t.  -> (x_t rows, x_0 rows), both flat in this field's layout.
+
+            `branch`/`emb` make the ascent CONDITIONAL.  Without them this climbs the null-embedding
+            density -- which is the right prototype for an unconditional figure and the wrong one for
+            a composed concept, since the mode of p(x) is not the mode of p(x | c_new).  Both default
+            to None, and that path calls the UNet exactly as before.
+            """
             a = float(cosine_abar(np.array([float(u)]))[0])
             g = torch.Generator(device=self.device).manual_seed(int(seed))
             xq_t = self._as_chw(xq)[:1]
@@ -264,13 +270,19 @@ def load_ve_field(path, device="cuda"):
             if n_starts - half:
                 parts.append(torch.randn((n_starts - half, *xq_t.shape[1:]), generator=g,
                                          device=self.device))
+            e_cond = None
+            if emb is not None:
+                e_cond = torch.as_tensor(np.asarray(emb, np.float32),
+                                         device=self.device).reshape(1, -1).expand(n_starts, -1)
+            elif branch is not None:
+                e_cond = self.model.cemb.weight[int(branch)].reshape(1, -1).expand(n_starts, -1)
             xt = torch.cat(parts).clone().requires_grad_(True)
             opt = (torch.optim.Adam([xt], lr=lr) if adam
                    else torch.optim.SGD([xt], lr=lr))
             uu = torch.full((len(xt),), float(u), device=self.device)
             for _ in range(iters):
                 with torch.enable_grad():
-                    ep = self.model(xt, uu)
+                    ep = self.model(xt, uu, emb_override=e_cond)
                     loss = (ep.detach() * xt).sum() / max((1 - a) ** 0.5, 1e-6)
                 opt.zero_grad(set_to_none=True)
                 loss.backward()
@@ -279,7 +291,7 @@ def load_ve_field(path, device="cuda"):
                     with torch.no_grad():
                         xt.clamp_(-k_sigma, 1.0 + k_sigma)
             with torch.no_grad():
-                ep = self.model(xt, uu)
+                ep = self.model(xt, uu, emb_override=e_cond)
                 x0 = (xt - ((1 - a) ** 0.5) * ep) / (a ** 0.5)
             flat = lambda z: z.detach().permute(0, 2, 3, 1).reshape(len(z), -1).cpu().numpy()
             return flat(xt), flat(x0)
