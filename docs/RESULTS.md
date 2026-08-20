@@ -3028,6 +3028,54 @@ squarely at it. Distance to the query is what catches it.
 ADDRESS's 0.516 (§N70), so the margin over "already had it" is much narrower there and this
 four-condition result is demonstrated on ColorMNIST only.*
 
+## 7ll. Every prototype panel in this repository showed the mode of p(x), not p(x | c) — and fixing it produced a negative
+
+Asked to showcase prototypes in the case studies, the first thing to check was what the existing
+ones showed. **Both `mode_ascent` implementations — `BaseScoreField`'s and `ve_bridge._Field`'s —
+called the network with no conditioning embedding**, so they climbed the null-branch density.
+`n58_shapes3d_results.py` had a third, local copy with the same gap. On an unconditional figure that
+is correct. On `case_shapes3d.png`, where the row sat between a block captioned *real — HELD OUT,
+floor_hue=1, object_hue=1, shape=3* and the ADDRESS samples for that combination, it was not: the
+panels showed generic modes of p(x), the same green and blue capsules in every block regardless of
+the target, and **no scalar in the figure would ever have said so** — the row was deliberately left
+unscored, so the one number that would have exposed it was the one not computed.
+
+The fix is `emb=` / `branch=` on both implementations, and it is written so the *old* behaviour is
+the untouched path: with neither argument the ascent calls `score(x, u, None)` exactly as before, so
+every existing prototype number (§20, N42, the DiT panel) is bit-identical. A field family whose
+`eps` cannot take an embedding — the analytic `ScoreField`, which has no conditioning table at all —
+**refuses** rather than ignoring the keyword, because silent-ignore is precisely how the
+sampler-signature divergences cost six runs. `tests/test_mode_ascent_cond.py` pins all three
+properties on a toy field whose modes are known in closed form.
+
+### What conditioning bought, and what it cost the story
+
+The row was added to the flagship (§7jj) to make THEORY §4 visible in one picture: the prototype as
+IDENTITY, the samples as COVERAGE. **It does not show that, and the numbers are the reason.**
+
+| arm, on the flagship's four readable held-out cells | joint | vendi |
+|---|---|---|
+| **mode** of p(x \| c_new) — conditional ascent | **0.62** | 1.16 |
+| **samples** from p(x \| c_new) — ADDRESS | **1.00** | 1.11 |
+
+**Mode-seeking is the worse reader of the address, and it is not even less diverse.** Both halves
+contradict what the row was built to show. The diversity half fails because the composed conditional
+on this backbone is already sharply peaked (vendi 1.14, §7jj) — there is no identity/coverage gap
+left to open. The accuracy half is the more interesting one: Adam ascent on log p_t finds points of
+high density that are *not* the class the address names, which is the same lesson §3 of `THEORY.md`
+records for composed directions, arriving now for composed points.
+
+**The consequence for the companion paper's pipeline is direct.** Its Stage 1 is mode ascent, and
+§4's seam already assigned it identity while taking coverage from our conditional. On this backbone
+mode ascent supplies *neither* better than sampling the address does. The prototype row is kept in
+both case studies — relabelled `discovery pool (their Stage 1, UNCONDITIONAL)` where it is theirs,
+and `prototype of p(x|c_new)` where it is ours — because a row that refutes the caption it was given
+is worth more than one that decorates it.
+
+*Scope: four readable cells on one pretrained Shapes3D backbone, one seed. This does not retract
+§5e-quater, where `μ_T` — the PoE aggregate, not a raw ascent mode — probe-reads the correct
+composition on ColorMNIST. It says that raw conditional mode ascent is not a shortcut to it.*
+
 ## 7kk. The loop closes on a PRETRAINED backbone — and the first version of this section was wrong (N77)
 
 The storage loop on the §7jj backbone: five held-out concepts, each read from ONE example, composed,
@@ -3098,6 +3146,20 @@ readable, gate passed before anything was sampled.
   magnitude. This is the check §7gg introduced and §7ee failed.
 * **12 of 12 held-out combinations**, no cell dropped, against the CelebA grid's 16 of 36.
 * nothing copied: `address` memorises **0.00** of the training set.
+
+![the flagship, with the prototype of the composed address](../figures/initial/case_flagship_s3d.png)
+
+Read the figure by its third row: `nearest-class` is wrong by exactly **one factor** in every block
+— orange capsule against a cylinder, blue sphere against green, yellow cube against purple. That is
+what a margin of +0.972 looks like when it is not a number.
+
+The `prototype of p(x|c_new)` row is the mode of the *same* address rather than a draw from it. It
+was added to make THEORY §4 visible — identity without coverage — and **it does not show that**:
+the mode reads the combination at 0.62 where sampling the address reads it at 1.00, and it is no
+less diverse (vendi 1.16 against 1.11). Mode-seeking is the worse reader here, which is a finding
+rather than a defect in the row, and §7ll gives it in full along with the conditioning bug it came
+out of — until 2026-08-19 every `mode_ascent` in this repository climbed the NULL-embedding density,
+so every prototype panel showed the mode of p(x) rather than of p(x | c).
 
 Per-cell, the result is not an average hiding a spread — ten of twelve read 0.958 or 1.000 and the
 other two are identical in kind:
@@ -3332,6 +3394,8 @@ trained **from scratch** on the seen cells of a `hair(3) × Male(2) × Smiling(2
 held-out cells' images removed from training entirely. Three backbones — 9, 8 and 7 seen cells,
 different training seeds — × three sampling seeds.
 
+![the band CelebA cannot resolve](../figures/initial/f_celeba_grid_margin.png)
+
 **The holdout is real, and confirmed mechanically.** Even query-seeded mode ascent ends far from the
 query where real images of the same class sit closer — the opposite of the pretrained backbones,
 where a query-seeded chain returned the query pixel-for-pixel. Nothing is copied: **0.000
@@ -3377,7 +3441,12 @@ property of the fitted probe, not of a value that could be excluded once.
 | `nearest-class` — the backbone's own closest existing class | **0.279** |
 | `unconditional` | **0.117** |
 
-* **ADDRESS − unconditional = +0.180 ± 0.058, won 12/16.** Conditioning on a composed point works.
+* **ADDRESS − unconditional = +0.180 ± 0.058, won 12/16.** Conditioning on a composed point does
+  something — but state it at its real strength, which this section did not until 2026-08-19:
+  12 of 16 is a **sign test at p = 0.077**, and +0.180 is *below* the **0.187** margin a
+  24-sample arm can resolve at this accuracy (§7gg). Suggestive, not significant, and the
+  per-cell margin is under the instrument's own resolution. `n75` now prints both numbers next
+  to the verdict so the qualification cannot be dropped again by quoting the mean alone.
 * **ADDRESS − nearest-class = +0.018 ± 0.011, won 6/16.** Below half. **It does not beat
   retrieval.**
 
@@ -3479,7 +3548,7 @@ lesson again, and only a known-good reference caught it.
 5t-bis found that a strong pretrained backbone starves the conditioning pathway, and fixed it by
 giving the class table its own learning rate at **50x**.  That was a first guess that worked, which is
 not the same as a rule.  The ladder, one training run per rung at a fixed 36-minute budget
-(`figures/initial/f_lr_ladder.png`):
+(`figures/initial/extra/f_lr_ladder.png`):
 
 | class-table LR | ADDRESS (held-out joint) | uncond floor | ratio | basis R² | eps-loss gap |
 |---|---|---|---|---|---|

@@ -164,7 +164,11 @@ the evidence for the negative. They are outside the core set but they are not or
 **Curves** — `06_learning_curves`, `07_router_exchange_rate`
 **Composition / OOD** — `08_coverage_vs_copying`, `case_celeba`
 **Representation** — `09_representation`
-**Case studies** — `case_colormnist`, `case_celeba`, `case_shapes3d`, `case_prototype_distance`
+**Case studies** — `case_flagship_s3d` (the headline: ADDRESS 0.983 against retrieval 0.010 on a
+PRETRAINED backbone, with the prototype of the composed address beside the draws from it),
+`case_colormnist`, `case_celeba`, `case_shapes3d`, `case_prototype_distance`
+**The scoped negative** — `f_celeba_grid_margin` (§7ee: a readable band narrower than the margin
+it would have to resolve). A figure set that shows only what worked is not a figure set.
 **Preservation / parity** — `10_preservation`, `11_native_parity`
 **The DiT track** — `figures/initial/dit/` — d1 AE reconstruction, d2 training + ADDRESS, d3 DiT case study,
 d4 UNet vs DiT, d5 prototypes

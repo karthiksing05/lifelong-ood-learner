@@ -32,6 +32,16 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from common import RESULTS                                            # noqa: E402
 
 from lifelong_ood.evals import save_json                              # noqa: E402
+from lifelong_ood.instrument import min_detectable                   # noqa: E402
+
+N_ARM = 24          # `--n-samples` in n73: the per-arm sample count these margins are computed from
+
+
+def sign_test(k, n):
+    """Two-sided exact binomial p for k wins of n against a fair coin.  -> float."""
+    from math import comb
+    pk = [comb(n, i) / 2 ** n for i in range(n + 1)]
+    return float(sum(x for x in pk if x <= pk[k] + 1e-12))
 
 GATE_MARGIN = 0.02
 
@@ -108,20 +118,42 @@ def main():
     r2cv, _ = stat([r["basis_r2_cv"] for r in rows])
     print(f"[n75] basis R^2 {r2:.3f} in-sample, {r2cv:.3f} leave-one-cell-out")
 
+    # WHAT THIS MEASUREMENT CAN RESOLVE AT ALL, and how likely the win counts are by chance.  Both
+    # margins below were quoted for weeks without either number beside them, and the omission
+    # flatters the POSITIVE half of the verdict: +0.180 over the floor is a smaller per-cell margin
+    # than the 24-sample arms can resolve (7gg), so the evidence for it is the 12/16 win count --
+    # which is itself only p=0.077.  A verdict that names its own resolution cannot be read as
+    # stronger than it is.
+    addr = stat([r['address'] for r in R])[0]
+    res = min_detectable(addr, N_ARM)
+    p_floor, p_ret = sign_test(sum(1 for x in mu if x > 0), len(mu)), \
+        sign_test(sum(1 for x in mr if x > 0), len(mr))
+    print(f"[n75] resolution: a {N_ARM}-sample arm at p={addr:.2f} resolves margins down to "
+          f"{res:.3f}")
+    print(f"[n75]   vs floor     {b:+.3f} ({'ABOVE' if b > res else 'BELOW'} resolution), "
+          f"sign test p={p_floor:.3f}")
+    print(f"[n75]   vs retrieval {a:+.3f} ({'ABOVE' if a > res else 'BELOW'} resolution), "
+          f"sign test p={p_ret:.3f}")
+
     print(f"\n[n75] {'=' * 72}")
     print("[n75] VERDICT")
     if b > 0.10 and a > 0.10:
         print("[n75]   COMPOSITION BEATS BOTH THE FLOOR AND RETRIEVAL on a density holdout.")
     elif b > 0.10:
         print(f"[n75]   CONDITIONING ON A COMPOSED POINT WORKS ({b:+.3f} over the unconditional")
-        print(f"[n75]   floor, won {sum(1 for x in mu if x > 0)}/{len(mu)}) BUT DOES NOT BEAT")
+        print(f"[n75]   floor, won {sum(1 for x in mu if x > 0)}/{len(mu)} at sign-test p={p_floor:.3f}"
+              f" -- SUGGESTIVE, not significant,")
+        print(f"[n75]   and the per-cell margin is below this instrument's {res:.3f} resolution)")
+        print("[n75]   BUT DOES NOT BEAT")
         print(f"[n75]   RETRIEVAL ({a:+.3f}, won {sum(1 for x in mr if x > 0)}/{len(mr)} -- a coin")
         print("[n75]   flip). On ColorMNIST `nearest-class` scores 0.000 against ADDRESS's 0.599")
         print("[n75]   (7dd); here it scores close to ADDRESS, which means a sample conditioned on")
         print("[n75]   the NEIGHBOURING cell often reads as the held-out one. That is loose")
         print("[n75]   conditioning in the backbone, not a defect in the composer -- and it caps")
-        print("[n75]   what this dataset can discriminate. The CelebA grid supports the")
-        print("[n75]   DENSITY-holdout claim and NOT the donation-over-retrieval claim.")
+        print("[n75]   what this dataset can discriminate. The CelebA grid is CONSISTENT WITH the")
+        print("[n75]   density-holdout claim -- consistent, not evidence for: at p=0.077 with a")
+        print("[n75]   per-cell margin below resolution, it would not survive a reviewer -- and it")
+        print("[n75]   is evidence AGAINST nothing except its own ability to discriminate.")
     else:
         print(f"[n75]   Does not clear the unconditional floor ({b:+.3f}). Nothing here supports")
         print("[n75]   a composition claim on this dataset.")
@@ -135,7 +167,9 @@ def main():
                    nearest=stat([r["nearest"] for r in R])[0],
                    uncond=stat([r["uncond"] for r in R])[0],
                    memorized=mem, d_query=dq, real_spread=sp,
-                   basis_r2=r2, basis_r2_cv=r2cv),
+                   basis_r2=r2, basis_r2_cv=r2cv,
+                   min_detectable=float(res), n_arm=int(N_ARM),
+                   sign_p_vs_uncond=float(p_floor), sign_p_vs_retrieval=float(p_ret)),
               os.path.join(RESULTS, "n75_grid_pooled.json"))
     return 0
 

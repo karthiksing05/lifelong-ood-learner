@@ -106,7 +106,7 @@ the analogue is worse — average action MSE will be dominated by the easy major
 3. **EXTEND BASIS on Shapes3D.** §6e-bis predicts the tier that adds a *direction* is where
    representational gain must come from; Shapes3D has clean held-out factor *values* to test it on.
 4. ~~**Sweep the class-table learning rate.**~~ **DONE — and it is now a rule** (§5t-ter,
-   `figures/initial/f_lr_ladder.png`). 1× reaches only **1.8×** the unconditional floor — it does not compose —
+   `figures/initial/extra/f_lr_ladder.png`). 1× reaches only **1.8×** the unconditional floor — it does not compose —
    while every rung from 5× up reaches 10–14×. 50× is the **plateau**, not a tuned peak (50× and 100×
    are identical at 0.542), so the setting was robust rather than lucky. Two things worth carrying to a
    policy: the ε-loss gap is ~0.0001 at *every* rung including the failing one, and **basis R² does not
