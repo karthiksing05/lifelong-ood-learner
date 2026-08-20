@@ -626,7 +626,13 @@ def agg_n75(runs):
     inst = [r.get("instrument", {}) for _, r in runs if isinstance(r, dict)]
     ok = [float(bool(i.get("ok"))) for i in inst if i]
     if ok:
-        out["_instrument"] = {"ok": stat(ok)}
+        # `split_checked` is recorded separately from `ok`, because a run can pass every check it
+        # RAN while never having run the one that matters most. RESULTS 7kk is exactly that case:
+        # the gate passed, and the experiment was still scoring the backbone against a split it was
+        # never trained on. An absent check is not a passing check.
+        sp = [float(any(c.get("name") == "convention:split" and c.get("ok")
+                        for c in i.get("checks", []))) for i in inst if i]
+        out["_instrument"] = {"ok": stat(ok), "split_checked": stat(sp)}
     print(f"    readable {run['n_readable']} of {run['n_total']} measurements")
     for a in ("address", "nearest-class", "unconditional"):
         print(f"    {a:16s}{fmt(out[a]['joint']):>14s}")
@@ -663,7 +669,13 @@ def agg_n77(runs):
     inst = [r.get("instrument", {}) for _, r in runs if isinstance(r, dict)]
     ok = [float(bool(i.get("ok"))) for i in inst if i]
     if ok:
-        out["_instrument"] = {"ok": stat(ok)}
+        # `split_checked` is recorded separately from `ok`, because a run can pass every check it
+        # RAN while never having run the one that matters most. RESULTS 7kk is exactly that case:
+        # the gate passed, and the experiment was still scoring the backbone against a split it was
+        # never trained on. An absent check is not a passing check.
+        sp = [float(any(c.get("name") == "convention:split" and c.get("ok")
+                        for c in i.get("checks", []))) for i in inst if i]
+        out["_instrument"] = {"ok": stat(ok), "split_checked": stat(sp)}
     print(f"    {'arm':10s}{'joint':>14s}{'recall':>14s}{'vendi':>14s}")
     for a in arms:
         print(f"    {a:10s}{fmt(out[a]['joint']):>14s}{fmt(out[a]['recall']):>14s}"
@@ -692,7 +704,13 @@ def agg_n78(runs):
     inst = [r.get("instrument", {}) for _, r in runs if isinstance(r, dict)]
     ok = [float(bool(i.get("ok"))) for i in inst if i]
     if ok:
-        out["_instrument"] = {"ok": stat(ok)}
+        # `split_checked` is recorded separately from `ok`, because a run can pass every check it
+        # RAN while never having run the one that matters most. RESULTS 7kk is exactly that case:
+        # the gate passed, and the experiment was still scoring the backbone against a split it was
+        # never trained on. An absent check is not a passing check.
+        sp = [float(any(c.get("name") == "convention:split" and c.get("ok")
+                        for c in i.get("checks", []))) for i in inst if i]
+        out["_instrument"] = {"ok": stat(ok), "split_checked": stat(sp)}
     print(f"    {'arm':16s}{'joint':>14s}{'recall':>14s}{'memorized':>12s}")
     for a in arms:
         print(f"    {a:16s}{fmt(out[a]['joint']):>14s}{fmt(out[a]['recall']):>14s}"

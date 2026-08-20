@@ -263,9 +263,16 @@ def main():
         elif abs(got - want) > tol:
             bad.append(f"  MISMATCH {label:40s} docs say {want:.3f}, aggregate has {got:.3f}")
     for exp in sorted(GATED):
-        if not A.get(exp, {}).get("table", {}).get("_instrument"):
+        inst = A.get(exp, {}).get("table", {}).get("_instrument")
+        if not inst:
             bad.append(f"  UNGATED  {exp:40s} (listed in GATED but its aggregate carries no "
                        f"instrument report)")
+        elif (inst.get("split_checked") or {}).get("mean", 0.0) < 1.0:
+            # An ABSENT check is not a passing check. RESULTS 7kk passed its gate while scoring a
+            # backbone against a split it was never trained on, because the split check did not
+            # exist yet -- so `ok` alone is not enough to certify a GATED experiment.
+            bad.append(f"  UNSPLIT  {exp:40s} (gate passed, but convention:split never ran -- an "
+                       f"absent check is not a passing check)")
     for line in bad:
         print(line)
     print(f"[claims] {len(CLAIMS) - len(bad)}/{len(CLAIMS)} documented numbers match the aggregate")
