@@ -3028,6 +3028,86 @@ squarely at it. Distance to the query is what catches it.
 ADDRESS's 0.516 (§N70), so the margin over "already had it" is much narrower there and this
 four-condition result is demonstrated on ColorMNIST only.*
 
+## 7oo. CelebA cannot have both halves at once: the table/conditioning trade, measured (N79-N82)
+
+7ee retired the CelebA grid and blamed its table: 12 cells over 5 free vectors, basis ratio 1.8, so
+an in-sample R2 of 0.872 collapsing to 0.207 out of sample was "mostly arithmetic".  This is the
+attempt to fix exactly that and run 7jj's pipeline on the result.  **The table was fixable. Fixing it
+broke the other half, and the two requirements are in direct conflict on this dataset.**
+
+### The design, chosen before any GPU time
+
+Three diagnostics, in the order they constrain each other:
+
+* `diag_celeba_design.py` -- the arithmetic. CelebA *can* reach 153 classes over 11 free vectors
+  (ratio 13.9), but greedy ratio-maximisation gets there through `Attractive`, `Pointy_Nose` and
+  `Oval_Face`.
+* `diag_celeba_attr_readability.py` -- the readability, **and a correction to its own first answer**.
+  The `+0.10 over base rate` bar that `probe_readable` applies library-wide admits 7 of 40 attributes
+  and is ARITHMETICALLY IMPOSSIBLE for the 16 whose base rate exceeds 0.90: `Eyeglasses` reads 0.975
+  against a base of 0.944 and scores "unreadable". By AUROC it is 36 of 40. The tell was that pixel
+  and Inception space returned the IDENTICAL seven -- two spaces that far apart cannot agree exactly
+  unless the criterion is measuring itself.
+* `diag_celeba_table_design.py` -- both at once, on `E[joint]` = product of per-factor balanced
+  accuracies. Chosen: **hair(4) x Male x Smiling x Bangs x Wearing_Lipstick**, 45 cells, 39 seen over
+  8 free vectors, **ratio 4.9**, E[joint] 0.299. `hair` is CATEGORICAL, which is the move that buys
+  CelebA Shapes3D's *shape*: same free-vector cost as three binaries, one accuracy in the joint
+  instead of three, and no incoherent blond-AND-black cells.
+
+### The result
+
+| | factors | classes | basis ratio | `nearest-class` / ceiling |
+|---|---|---|---|---|
+| 7ee's retired grid | 3 | 9 | 1.8 | **0.51** |
+| N81, this design | 5 | 39 | **4.9** | **0.08** |
+
+**Raising the basis ratio 2.7x cost 6.4x of conditioning strength.** `nearest-class` is the control
+that asks whether a TRAINED class can reproduce its own combination; on the grid it reads 0.279
+against a ~0.55 ceiling, here 0.017 against 0.225. Below that level nothing about composition is
+measurable, and N82 says so rather than reporting the margins it computed (`address` 0.042,
+`nearest-class` 0.017, floor 0.000, resolution 0.036 pooled over 5 cells).
+
+**Why the two fight.** CelebA's factors are binary, so classes only come from more factors, and with
+a fixed corpus every added factor does three things at once: it raises the ratio, it multiplies
+`E[joint]` down, and it quarters the images per class. Shapes3D escapes all three -- 3 factors with
+10, 10 and 4 VALUES give ratio 14.4 while multiplying only three probabilities, each ~0.95, and each
+of its 400 classes still carries a visually dominant signature (a floor hue fills half the image).
+**A dataset needs factors that are simultaneously many-valued, visually dominant and independent;
+CelebA's attributes are binary, subtle and correlated.**
+
+### What was ruled out on the way, and it is most of the work
+
+The pretrained route (N79/N80) failed for a different reason and never reached this trade:
+`google/ddpm-celebahq-256`, frozen or adapting, with or without classifier-free guidance at w up to
+7, never produced class-discriminative conditioning -- `nearest-class` 0.000-0.031 against a 0.240
+ceiling, and two TRAINED classes rendered pixel-identical. An additive class embedding into the time
+embedding of a 256px face model does not become discriminative at this budget. That is a fact about
+the transfer, not about CelebA.
+
+Three faults were found and fixed inside those runs, and the third is the one worth keeping:
+
+1. the basis ratio was computed over ALL cells while the basis is fit on SEEN classes only, so every
+   design number was flattered (7jj's own "ratio 18.2" is 14.4 on the same corrected footing);
+2. the backbone trained while the docstring said "frozen", degrading a strong pretrained model on a
+   distribution it was not trained for;
+3. **the class table's common mode is a GAUGE FREEDOM.** Adding the same vector to every class shifts
+   the time embedding uniformly and carries no class information, but nothing penalises it, so at
+   50x LR it grew until the class-specific part was 2% of the norm and every class sampled
+   identically. Weight decay is the wrong tool -- AdamW's decoupled decay shrinks by `lr*wd` = 5e-6
+   per step, measured too small to matter. Projecting the mean out each step fixes it exactly and
+   costs nothing, since `factorize` subtracts that same mean before fitting.
+
+**And the reason it survived three runs is a measurement lesson.** The raw pairwise cosine read 0.80
+and looked like collapse; the centred cosine read 0.185 and looked healthy. Both were computed and
+neither was the answer -- centring normalises away exactly the magnitude that was vanishing.
+*Direction without magnitude is nothing.* The quantity that mattered, `||mean|| / mean||row||`, was
+printed in every log and read past twice. `n81` now flags it above 0.90 rather than leaving it to be
+interpreted correctly.
+
+*Scope: four training runs -- pretrained frozen, pretrained adapting, both with and without the
+common-mode fix, and from-scratch 64px -- one seed each. The from-scratch grid's conditioning
+(0.51 of ceiling) is the positive control that makes the trade a trade rather than a null result.*
+
 ## 7nn. One case study per dataset, built to one standard — and two instrument faults found building them
 
 Three changes, and the last one is the result.

@@ -487,3 +487,108 @@ def load_celeba_grid(img=64, seed=0, root=None, n_per_cell=400, n_holdout=3, min
     return dict(X=X, factors=F[pick], slot=cell[pick], attrs=A[pick],
                 seen=~_np.isin(cell[pick], held), held=held, live=live, counts=counts,
                 names=list(GRID_ATTRS), sizes=sizes, img=img)
+
+
+# ── the FACTORED CelebA design (2026-08-20) ─────────────────────────────────
+# `load_celeba_grid` builds hair x Male x Smiling = 12 cells, ratio 1.8, which 7ee retired: an
+# additive basis with nearly as many free vectors as classes fits anything.  This is the design
+# chosen by `tests/diag_celeba_table_design.py` under BOTH constraints that matter:
+#
+#   ratio      30 classes / 7 free vectors = 4.3, above the ~4 where in-sample and cross-validated
+#              R^2 begin to agree (THEORY 1).  The retired grid is 2.7 on the same measure.
+#   E[joint]   0.341, the product of the per-factor balanced accuracies.  Adding factors raises the
+#              ratio and multiplies this down: 8 binaries reach ratio 8.3 at E[joint] 0.166, which
+#              is a bigger table nobody can read.
+#
+# `hair` is CATEGORICAL rather than three binaries.  Same free-vector cost, but it multiplies ONE
+# accuracy into the joint instead of three, and it cannot produce the incoherent cells (blond AND
+# black) that otherwise eat the class budget.
+FACTORED_HAIR = ["Black_Hair", "Blond_Hair", "Brown_Hair"]
+FACTORED_BIN = ["Male", "Smiling", "Bangs"]
+
+
+def load_celeba_factored(img=64, seed=0, min_count=200, n_holdout=6, max_rows=None,
+                         n_per_class=None, as_uint8=False, binaries=None):
+    """CelebA as a FACTORED dataset satisfying `factored.py`'s contract.
+
+    Factors: hair (black/blond/brown/other) x Male x Smiling x Bangs -> sizes [4, 2, 2, 2].
+    -> dict(X, factors, slot, sizes, names, seen, held, live, img) like `load_shapes3d`.
+
+    The holdout is over COMBINATIONS and is a CONDITIONING holdout, not a density one: every image
+    stays in training, and what a held-out class lacks is a row in the class table.  That is 7jj's
+    framing and the only honest one on a pretrained backbone, whose density saw everything.
+    """
+    import io as _io
+
+    import pyarrow.parquet as pq
+    from PIL import Image
+    # THE RATIO THAT MATTERS IS SEEN CLASSES / FREE VECTORS, and the holdout comes out of the same
+    # budget: hair x Male x Smiling x Bangs is 30 cells over 7 free vectors, but 6 held out leaves
+    # 24 seen and a basis ratio of 3.4 -- below the bar 7ee blamed for the grid.  A fourth binary
+    # buys 44 cells over 8, i.e. 38 seen and 4.75, at a cost of E[joint] 0.341 -> 0.299.
+    bins = list(FACTORED_BIN if binaries is None else binaries)
+    cols = FACTORED_HAIR + bins
+    shards = _parquet_shards(find_celeba())
+    if not shards:
+        raise FileNotFoundError(f"no parquet shards in {find_celeba()}")
+    Xs, Vs, n = [], [], 0
+    for sp in shards:
+        f = pq.ParquetFile(sp)
+        for batch in f.iter_batches(batch_size=512, columns=["image"] + cols):
+            d = batch.to_pydict()
+            for k in range(len(d["image"])):
+                M = [1 if d[a][k] else 0 for a in FACTORED_HAIR]
+                hair = int(np.argmax(M)) if sum(M) == 1 else len(FACTORED_HAIR)
+                row = [hair] + [1 if d[a][k] else 0 for a in bins]
+                im = Image.open(_io.BytesIO(d["image"][k]["bytes"])).convert("RGB")
+                w, h = im.size
+                top = max(0, (h - w) // 2)
+                im = im.crop((0, top, w, top + w)).resize((img, img), Image.BILINEAR)
+                # uint8 is not a micro-optimisation at 256px: the pretrained CelebA-HQ backbone
+                # needs 256x256x3 rows, and 30k of those in float32 is 23.6 GB against 5.9 GB here.
+                # The training loop divides by 255 per batch instead.
+                Xs.append(np.asarray(im, np.uint8).ravel() if as_uint8
+                          else (np.asarray(im, np.float32) / 255.0).ravel())
+                Vs.append(row)
+                n += 1
+                # A SILENT SLOW STAGE IS INDISTINGUISHABLE FROM A HANG.  n80 sat for two hours
+                # with no output at all and the only way to tell decoding-slowly from wedged was
+                # to kill it.  One line every 10k images costs nothing and answers that.
+                if n % 10000 == 0:
+                    print(f"[celeba] decoded {n} images at {img}px", flush=True)
+                if max_rows and n >= max_rows:
+                    break
+            if max_rows and n >= max_rows:
+                break
+        if max_rows and n >= max_rows:
+            break
+    X, V = np.stack(Xs), np.asarray(Vs, int)
+    sizes = [len(FACTORED_HAIR) + 1] + [2] * len(bins)
+    from .factored import encode_slot
+    slot = encode_slot(V, sizes)
+
+    cnt = np.bincount(slot, minlength=int(np.prod(sizes)))
+    live = np.where(cnt >= min_count)[0]
+    keep = np.isin(slot, live)
+    X, V, slot = X[keep], V[keep], slot[keep]
+
+    # cap per class so a common combination cannot dominate the table's gradient
+    if n_per_class:
+        rng0 = np.random.default_rng(seed)
+        sel = np.concatenate([rng0.permutation(np.where(slot == s)[0])[:n_per_class]
+                              for s in live])
+        sel.sort()
+        X, V, slot = X[sel], V[sel], slot[sel]
+
+    # HELD OUT = combinations one factor-flip from a kept one, so the test is compositional rather
+    # than a novel-value test.  `spread_targets` picks them across the design instead of by index.
+    from .factored import decode_slot, spread_targets
+    rng = np.random.default_rng(seed)
+    cand = [int(s) for s in live]
+    fac_of = {int(s): tuple(int(v) for v in decode_slot(np.array([int(s)]), sizes)[0])
+              for s in cand}
+    held = set(spread_targets(list(rng.permutation(cand)), fac_of, int(n_holdout)))
+    seen = ~np.isin(slot, list(held))
+    return dict(X=X, factors=V, slot=slot, sizes=sizes,
+                names=["hair"] + bins, seen=seen,
+                held=np.array(sorted(held)), live=live, counts=cnt[live], img=img)
