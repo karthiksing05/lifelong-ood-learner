@@ -265,7 +265,7 @@ def teacher_init_alpha(field, teacher, xq, ids=None, temperature=0.001, reps=2, 
 
 @torch.no_grad()
 def sample_embedding(field, c_new, n=32, steps=50, seed=0, guidance=1.0, eta=0.0, clip=(-1, 1),
-                     interval=None):
+                     interval=None, u_start=1.0, x_init=None):
     """Sample the MODEL conditioned on `c_new` -- the manifold generating, not a Gaussian.
 
     `guidance=1.0` means plain conditional sampling, which is exactly how the base model reaches
@@ -296,8 +296,13 @@ def sample_embedding(field, c_new, n=32, steps=50, seed=0, guidance=1.0, eta=0.0
     else:
         lo, hi = float(interval[0]), float(interval[1])
         w = (lambda u: guidance if lo <= float(u) <= hi else 1.0)
+    # `u_start`/`x_init` are THE DIAL (20): start the reverse process from a partially noised
+    # prototype instead of from pure noise, and integrate from u = u_start.  At u_start = 1.0 with
+    # x_init None -- the defaults, so every existing call is bit-identical -- this is an
+    # unconstrained draw from the concept's conditional.  Below 1.0 the prototype survives in
+    # proportion, trading coverage for accuracy along a measured curve rather than a claim.
     return field.sample(n=n, steps=steps, seed=seed, clip=clip, eta=eta,
-                        guide_eps=cond, guide_w=w)
+                        guide_eps=cond, guide_w=w, u_start=u_start, x_init=x_init)
 
 
 # ── composing the MODEL's conditionals, one per factor ───────────────────────

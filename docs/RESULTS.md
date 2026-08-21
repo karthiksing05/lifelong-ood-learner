@@ -3028,6 +3028,65 @@ squarely at it. Distance to the query is what catches it.
 ADDRESS's 0.516 (§N70), so the margin over "already had it" is much narrower there and this
 four-condition result is demonstrated on ColorMNIST only.*
 
+## 7pp. Matched accuracy, 107x the coverage: guidance on the composed address (N82-N85)
+
+7oo ended with CelebA's conditioning too weak through the class-embedding path to test composition.
+That reading was incomplete, and the control that corrected it is the companion paper's OWN method:
+if `poe-guided` can render a held-out cell on this backbone, the cell is reachable and the gap is in
+our composition path rather than in the backbone, the probes or the table.  It can.
+
+**The confirmed comparison**, 5 held-out cells x 48 samples per arm (n = 240 pooled, resolution
+0.037), on the N81 from-scratch 64px backbone:
+
+| arm | joint | of ceiling | recall | vendi |
+|---|---|---|---|---|
+| `poe-guided` (their Eq. 14) | 0.079 | 37 % | **0.007** | 1.29 |
+| **`address` w = 1.5 (ours)** | **0.079** | **37 %** | **0.750** | **2.93** |
+| `address` w = 2.5 | 0.092 | 42 % | 0.767 | 2.99 |
+| `unconditional` | 0.008 | 4 % | 0.443 | 2.49 |
+| *REAL images* | *0.217* | *100 %* | | *3.24* |
+
+**At matched accuracy -- 0.079 against 0.079 -- ours covers the class 107x better**, and reaches
+90 % of real data's own diversity (2.93 against 3.24) where theirs reaches 40 %.  This is THEORY 4's
+claim demonstrated against the paper's method on its own terms rather than argued.
+
+*An earlier pass at n = 96 read 0.115 against 0.062 and appeared to beat them on accuracy too. The
+margin was +0.053 against a resolution of 0.065, it was reported as not-yet-resolvable, and at
+n = 240 it fell to +0.013 against 0.037. **Guidance MATCHES their accuracy; it does not beat it.***
+
+### The two ideas that did not work, and why they were worth running
+
+**The dial is a cliff, not a frontier (N83).** Starting the reverse process from a partially noised
+`mu_T` (20) trades accuracy for coverage on ColorMNIST along a real curve -- 20b measures F1 0.410 /
+0.669 / 0.599 at s = 0.80 / 0.90 / 1.00.  Here recall is 0.013-0.017 at EVERY s up to 0.85 and 0.637
+only at s = 1: no intermediate operating point exists, because the PoE basin survives 85 % noise.
+
+**Many anchors instead of one raise VENDI and not RECALL (N84).** Their Eq. 8-9 already selects K
+*complementary* prototypes before Eq. 7 multiplies them away, so anchoring each sample to a
+different one is their own machinery minus the product.  Vendi rose 1.25 -> 1.66; **recall stayed at
+zero**.  The prototypes are distinct from each other and collectively OFF the real distribution --
+7ll's finding a third time: mode ascent locates density, not the class.  *Diversity among samples is
+not coverage of the class, and this is the cleanest separation of the two in the repository.*
+
+Together those close the prototype side: **no anchoring recovers coverage, at any strength or any
+number of anchors.** Coverage exists only in the model's own conditional, which is why the fix had
+to come from sharpening that conditional rather than constraining it.
+
+### Why guidance does not cost diversity here
+
+Recall RISES with the guidance weight (0.740 -> 0.750 -> 0.753 -> 0.767 -> 0.773 across w = 1 to 3),
+which inverts the usual trade.  The weight is applied **only in the u in [0.3, 1.0] band**: 5l-bis
+and Kynkaanniemi et al. (arXiv:2404.07724) both find guidance at LOW noise amplifies high-frequency
+error, and that is the regime where it costs diversity and adds speckle.  Confined to high noise it
+steers *which composition* is being drawn while leaving fine detail to the unguided conditional.
+**No metric in this suite can see speckle** -- a speckled face is the right face to a probe and to
+recall -- so this had to be handled by construction rather than caught by a number.
+
+*Scope: one backbone, one seed, 5 held-out cells. Absolute accuracy is 37 % of the real-image ceiling
+for BOTH methods, so this is a matched comparison and not a claim that either is good in absolute
+terms on this benchmark. The 7oo trade (a table big enough for the basis costs conditioning strength)
+is unaffected -- it is why the ceiling is 0.217 rather than the grid's ~0.55.*
+
 ## 7oo. CelebA cannot have both halves at once: the table/conditioning trade, measured (N79-N82)
 
 7ee retired the CelebA grid and blamed its table: 12 cells over 5 free vectors, basis ratio 1.8, so

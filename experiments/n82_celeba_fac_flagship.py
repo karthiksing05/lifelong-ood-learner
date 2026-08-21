@@ -40,8 +40,11 @@ from lifelong_ood.evals import (factor_accuracy, fit_factor_probes,   # noqa: E4
                                 save_json, vendi_score)
 from lifelong_ood.instrument import check_instrument, min_detectable  # noqa: E402
 from lifelong_ood.neural.idealwords import compose, cv_r2, factorize  # noqa: E402
-from lifelong_ood.neural import (NeuralScoreField, UNet,              # noqa: E402
-                                 sample_embedding, to_data)
+from lifelong_ood.compose import (CELEBA_DISCOVERY,                   # noqa: E402
+                                  PAPER_POE_CELEBA, candidates_ascent, poe_teacher)
+from lifelong_ood.evals import precision_recall                       # noqa: E402
+from lifelong_ood.neural import (NeuralLifelongLearner,               # noqa: E402
+                                 NeuralScoreField, UNet, sample_embedding, to_data, to_model)
 
 RESULTS = os.path.join(HERE, "results")
 
@@ -109,6 +112,7 @@ def main():
                              layout=ck.get("layout"))
     field.model.load_state_dict(ck["ema"])      # STRICT: a silent partial load is how N80 sampled
     field.model.eval()                          # from an untrained conditioning path
+    L = NeuralLifelongLearner(field, steps=args.steps, seed=args.seed, device=dev)
 
     rows = []
     for h in cells:
@@ -118,7 +122,25 @@ def main():
         j_near = int(np.argmin(((C - c_new[None]) ** 2).sum(1)))
         # `to_data` on every generated row and `clip=(-1,1)` on `field.sample`: this field is
         # MODEL space and its base-class clip default is a DATA-range clamp (7ee's range fault).
+        # THE COMPANION PAPER'S OWN METHOD, as the ACCURACY control.  `nearest-class` only asks
+        # whether a trained class works; `poe-guided` asks whether the backbone can be made to
+        # generate this held-out combination AT ALL, by a method already known to score 0.958 joint
+        # on ColorMNIST (at recall 0.000 -- it re-emits one query, THEORY 4).  If it lands high here
+        # and ADDRESS does not, the fault is in our composition path, not the backbone, the probes
+        # or the table.  If it lands at the floor too, the backbone cannot render the combination
+        # and no composer could.
+        #
+        # w0 = 0.5, the paper's Table 8 CelebA value: guiding CelebA at ColorMNIST's 1.2 is 2.4x the
+        # published strength and is recorded as a large part of why this arm looked broken here.
+        xq = to_model(X[idx[0]]).ravel()
+        M, Vc, _meta = candidates_ascent(field, xq, seed=args.seed, **CELEBA_DISCOVERY)
+        t_poe = poe_teacher(xq, M, Vc, K=L.cfg["K"], tau=L.cfg["tau"])
         got = {
+            "poe-guided (their Eq.14)": to_data(L.sample_teacher(
+                t_poe, n=args.n_samples, seed=args.seed, **PAPER_POE_CELEBA)),
+            "query-only": to_data(L.sample_teacher(
+                L.baseline_teacher(xq, "query_only"), n=args.n_samples, seed=args.seed,
+                **PAPER_POE_CELEBA)),
             "address": to_data(sample_embedding(field, c_new, n=args.n_samples,
                                                 steps=args.steps, seed=args.seed)),
             "nearest-class": to_data(field.sample(n=args.n_samples, steps=args.steps,
@@ -132,9 +154,11 @@ def main():
         for nm, S in got.items():
             S = np.asarray(S, np.float32)
             a = factor_accuracy(probes, S, tgt)
+            pr = precision_recall(S, X[idx[:60]])
             rows.append(dict(cell=h, arm=nm, joint=float(a["joint"]),
-                             vendi=float(vendi_score(S))))
-            print(f"[n82]   cell {h:>3} {nm:14s} joint {a['joint']:.3f}", flush=True)
+                             recall=float(pr["recall"]), vendi=float(vendi_score(S))))
+            print(f"[n82]   cell {h:>3} {nm:26s} joint {a['joint']:.3f} "
+                  f"recall {pr['recall']:.3f} vendi {float(vendi_score(S)):.2f}", flush=True)
         R = X[idx[:args.n_samples]]
         rows.append(dict(cell=h, arm="ceiling", joint=float(factor_accuracy(probes, R, tgt)["joint"]),
                          vendi=float(vendi_score(R))))
@@ -146,9 +170,22 @@ def main():
     n_pool = args.n_samples * len(cells)
     res = min_detectable(max(m("address"), 1e-6), n_pool)
     mr, mf = m("address") - m("nearest-class"), m("address") - m("unconditional")
-    print(f"\n[n82] {'arm':16s}{'joint':>8}")
-    for arm in ("address", "nearest-class", "unconditional", "ceiling"):
-        print(f"[n82] {arm:16s}{m(arm):>8.3f}")
+    def mm(arm, key):
+        v = [r[key] for r in rows if r["arm"] == arm and key in r]
+        return float(np.mean(v)) if v else float("nan")
+
+    print(f"\n[n82] {'arm':28s}{'joint':>8}{'recall':>8}{'vendi':>8}")
+    for arm in ("poe-guided (their Eq.14)", "query-only", "address", "nearest-class",
+                "unconditional", "ceiling"):
+        print(f"[n82] {arm:28s}{m(arm):>8.3f}{mm(arm, 'recall'):>8.3f}{mm(arm, 'vendi'):>8.2f}")
+    # THE DIAGNOSTIC THIS RUN EXISTS FOR.
+    poe = m("poe-guided (their Eq.14)")
+    print(f"[n82] poe-guided reaches {poe:.3f} = {poe / max(m('ceiling'), 1e-9):.0%} of ceiling; "
+          f"ADDRESS {m('address') / max(m('ceiling'), 1e-9):.0%}")
+    print("[n82]   " + ("their method CAN render these cells -- the gap is OUR composition path"
+                        if poe > m("unconditional") + res else
+                        "their method cannot either -- the BACKBONE cannot render the combination, "
+                        "and no composer could"))
     cond = m("nearest-class") - m("unconditional")
     print(f"[n82] CONDITIONING CHECK: nearest-class {m('nearest-class'):.3f} vs ceiling "
           f"{m('ceiling'):.3f} ({m('nearest-class') / max(m('ceiling'), 1e-9):.0%} of it), "
