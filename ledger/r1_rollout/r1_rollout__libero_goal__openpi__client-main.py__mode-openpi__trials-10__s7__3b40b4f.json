@@ -1,0 +1,118 @@
+{
+ "artifacts": [
+  "slurm/3954145.out",
+  "results/robot/client_3954145.log"
+ ],
+ "backbone": null,
+ "backfilled": true,
+ "bench": "libero_goal",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "sbatch experiments/r1_rollout_pi05.sbatch SUITE=libero_goal TRIALS=10 MODE=openpi (job 3954145)",
+ "config": {
+  "checkpoint": "pi05_libero_pytorch",
+  "client": "examples/libero/main.py",
+  "job": 3954145,
+  "mode": "openpi"
+ },
+ "env": {
+  "device": "cpu",
+  "host": "sky2.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r1_rollout",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "bb9f1f63e1ac1c0dba8553b56abd117a46b1b60d",
+  "short": "bb9f1f63"
+ },
+ "keys": {
+  "client": "main.py",
+  "mode": "openpi",
+  "trials": 10
+ },
+ "metrics": {
+  "complete": true,
+  "n_episodes": 100,
+  "note": "openpi examples/libero/main.py client (first 10 init states per task, seed 7) against openpi's Policy on the converted PyTorch checkpoint, eager (compile off); an OpenGL teardown error after the final log line is harmless",
+  "published": 0.98,
+  "published_n": 500,
+  "success_rate": 0.95,
+  "tasks": {
+   "0": {
+    "language": "open the middle drawer of the cabinet",
+    "n": 10,
+    "success_rate": 0.9
+   },
+   "1": {
+    "language": "put the bowl on the stove",
+    "n": 10,
+    "success_rate": 1.0
+   },
+   "2": {
+    "language": "put the wine bottle on top of the cabinet",
+    "n": 10,
+    "success_rate": 1.0
+   },
+   "3": {
+    "language": "open the top drawer and put the bowl inside",
+    "n": 10,
+    "success_rate": 0.9
+   },
+   "4": {
+    "language": "put the bowl on top of the cabinet",
+    "n": 10,
+    "success_rate": 1.0
+   },
+   "5": {
+    "language": "push the plate to the front of the stove",
+    "n": 10,
+    "success_rate": 0.9
+   },
+   "6": {
+    "language": "put the cream cheese in the bowl",
+    "n": 10,
+    "success_rate": 1.0
+   },
+   "7": {
+    "language": "turn on the stove",
+    "n": 10,
+    "success_rate": 1.0
+   },
+   "8": {
+    "language": "put the bowl on the plate",
+    "n": 10,
+    "success_rate": 1.0
+   },
+   "9": {
+    "language": "put the wine bottle on the rack",
+    "n": 10,
+    "success_rate": 0.8
+   }
+  },
+  "wilson95": [
+   0.887,
+   0.978
+  ]
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r1_rollout__libero_goal__openpi__client-main.py__mode-openpi__trials-10__s7__3b40b4f",
+ "schema": 1,
+ "script": "experiments/r1_rollout_pi05.sh",
+ "seconds": null,
+ "seed": 7,
+ "source_commit": "3b40b4f",
+ "started": "2026-09-25T20:50:20+00:00",
+ "stream": null,
+ "tag": "openpi"
+}
