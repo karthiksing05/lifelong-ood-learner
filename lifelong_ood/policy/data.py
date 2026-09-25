@@ -236,3 +236,24 @@ class Demos90(Demos):
 
     def episodes_of_text(self, text):
         return [e["episode_index"] for e in self.eps if e["tasks"][0] == text]
+
+    def frames(self, episode_index):
+        """Decode both camera streams of an episode (AV1 via PyAV's libdav1d).  -> (image [T,256,256,3], wrist [T,...]).
+        Same orientation as pi05_libero's training frames (checked against LIBERO-10 KITCHEN_SCENE3, 2026-09-25)."""
+        import av
+        from huggingface_hub import hf_hub_download
+        out = []
+        for key in ("observation.images.image", "observation.images.wrist_image"):
+            rel = self.info["video_path"].format(episode_chunk=episode_index // self.chunks_size, video_key=key, episode_index=episode_index)
+            p = os.path.join(self.root, rel)
+            if not os.path.exists(p):
+                hf_hub_download(L90_REPO, rel, repo_type="dataset", local_dir=self.root)
+            with av.open(p) as c:
+                out.append(np.stack([f.to_ndarray(format="rgb24") for f in c.decode(video=0)]))
+        return out[0], out[1]
+
+    def observation(self, ep, i):
+        if "image" not in ep:
+            ep["image"], ep["wrist_image"] = self.frames(ep["episode_index"])
+        return {"observation/image": ep["image"][i], "observation/wrist_image": ep["wrist_image"][i],
+                "observation/state": ep["state"][i], "prompt": ep["task"]}

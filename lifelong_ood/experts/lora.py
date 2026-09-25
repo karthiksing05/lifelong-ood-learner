@@ -110,7 +110,11 @@ class KeyedLoRA(nn.Module):
         for k, w in items:
             if k not in self.A:
                 continue
-            d = self.B[k](self.A[k](x))
+            Ak = self.A[k]
+            if x.dtype == Ak.weight.dtype:
+                d = self.B[k](Ak(x))
+            else:                                       # a bf16 base (pi0.5's expert): fp32 adapter, delta cast back
+                d = self.B[k](Ak(x.to(Ak.weight.dtype))).to(out.dtype)
             if torch.is_tensor(w):                      # a per-row responsibility, [B]
                 w = w.to(d.dtype).reshape(-1, *([1] * (d.dim() - 1)))
                 out = out + w * d

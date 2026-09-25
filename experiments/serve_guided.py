@@ -61,6 +61,12 @@ def main():
         prog = DemoProgram.load(prog_path)
         hooks = ComposeHooks(prog, w0=float(rest[0]) if rest else 1.2, window=int(rest[1]) if len(rest) > 1 else 20)
         logging.info(f"program {prog_path}: variant {prog.variant}, {len(prog.mu)} frames, {prog.bytes()} B")
+    elif a.mode.startswith("lora:"):
+        # lora:<expert.pt> -- the few-shot baseline: a flat adapter on the action expert, always on
+        from lifelong_ood.policy import adapt
+        state, key, banks = adapt.load(bk, a.mode.split(":", 1)[1])
+        state["on"] = frozenset({key})
+        logging.info(f"expert {key} loaded into {len(banks)} banks and switched on")
     elif a.mode != "ours":
         raise SystemExit(f"unknown mode {a.mode}")
     policy = GuidedPolicy(bk, hooks=hooks, num_steps=a.num_steps, seed=a.seed)

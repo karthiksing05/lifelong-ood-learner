@@ -21,4 +21,7 @@ PYTHONPATH=${PYTHONPATH:-}:$ROBOT/third_party/libero examples/libero/.venv/bin/p
 rc=$?
 kill $SRV 2>/dev/null
 echo "[roll] client exit=$rc -> $OUT"
+if [ -f "$OUT" ]; then
+  .venv/bin/python $REPO/experiments/roll_record.py --json $OUT --experiment ${EXPERIMENT:-rollout} --mode "$MODE" --tag "${TAG:-}" --job ${SLURM_JOB_ID:-x} --program-bytes ${PROGRAM_BYTES:-0}
+fi
 exit $rc
