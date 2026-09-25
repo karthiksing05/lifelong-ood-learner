@@ -1,0 +1,92 @@
+"""M3 / M4 report: success per LIBERO-90 task and arm (Wilson 95%), with the bytes each arm stores.
+
+    python experiments/m34_report.py            # markdown table to stdout
+    python experiments/m34_report.py --json results/robot/m34_report.json
+
+Arms come from the rollout rows (m3_compose: zeroshot, raw_replay, code_replay, lora; m4_fold: hybrid, expert_on).
+Bytes: program arms carry their program's bytes in the rollout row; lora = the r3_fewshot adapter; hybrid = the
+r4_fold row's total (expert + new nodes + program codes); expert_on = the r4_fold expert alone.
+"""
+import argparse
+import json
+import os
+import sys
+from collections import defaultdict
+
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, ROOT)
+from lifelong_ood import ledger                                        # noqa: E402
+
+ARMS = ["zeroshot", "raw_replay", "code_replay", "lora", "hybrid_lib40", "expert_on_lib40"]
+NAMES = {"zeroshot": "zero-shot", "raw_replay": "demo replay", "code_replay": "library codes", "lora": "few-shot LoRA",
+         "hybrid_lib40": "compose + fold", "expert_on_lib40": "fold expert, always on"}
+
+
+def wilson(k, n, z=1.96):
+    if n == 0:
+        return float("nan"), float("nan")
+    p = k / n
+    d = 1 + z * z / n
+    c = (p + z * z / (2 * n)) / d
+    h = z * ((p * (1 - p) / n + z * z / (4 * n * n)) ** 0.5) / d
+    return c - h, c + h
+
+
+def collect():
+    cells = defaultdict(lambda: [0, 0, 0])            # (task, arm) -> k, n, bytes
+    lang = {}
+    for exp in ("m3_compose", "m4_fold"):
+        for r in ledger.load(exp):
+            arm = r["tag"]
+            for tid, t in r["metrics"]["tasks"].items():
+                k = round(t["success_rate"] * t["n"])
+                c = cells[(tid, arm)]
+                c[0] += k; c[1] += t["n"]; c[2] = max(c[2], int(r["bytes"]["total"]))
+                lang[tid] = t["language"]
+    for r in ledger.load("r3_fewshot"):
+        tid = str(r["metrics"]["task"])
+        if (tid, "lora") in cells:
+            cells[(tid, "lora")][2] = int(r["bytes"]["experts"])
+    for r in ledger.load("r4_fold"):
+        tid = str(r["metrics"]["task"])
+        tag = r["tag"] or ""
+        if (tid, "hybrid" + tag) in cells:
+            cells[(tid, "hybrid" + tag)][2] = int(r["bytes"]["total"])
+        if (tid, "expert_on" + tag) in cells:
+            cells[(tid, "expert_on" + tag)][2] = int(r["bytes"]["experts"])
+    return cells, lang
+
+
+def fmt_bytes(b):
+    if b <= 0:
+        return "0"
+    return f"{b / 1e6:.1f} MB" if b >= 1e6 else f"{b / 1e3:.0f} KB"
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--json", default="")
+    a = ap.parse_args()
+    cells, lang = collect()
+    tasks = sorted(lang, key=int)
+    arms = [x for x in ARMS if any((t, x) in cells for t in tasks)]
+    print("| task | " + " | ".join(NAMES.get(x, x) for x in arms) + " |")
+    print("|---|" + "---|" * len(arms))
+    out = {}
+    for t in tasks:
+        row = []
+        for x in arms:
+            if (t, x) not in cells:
+                row.append("-")
+                continue
+            k, n, b = cells[(t, x)]
+            lo, hi = wilson(k, n)
+            row.append(f"{k}/{n} ({fmt_bytes(b)})")
+            out[f"{t}/{x}"] = dict(k=k, n=n, bytes=b, wilson=[lo, hi])
+        print(f"| {t} {lang[t][:42]} | " + " | ".join(row) + " |")
+    if a.json:
+        json.dump(out, open(a.json, "w"), indent=1)
+
+
+if __name__ == "__main__":
+    main()
