@@ -40,7 +40,8 @@ def _ddim_core(model, n, steps, seed, E, cls, layout, img, device, batch, gate, 
     linspace(1, 0, steps + 1), and x0 is clipped to `clip` at every step.  Each step is ONE forward
     pass (two with a guide) and the conditioning is explicit.  `guide=(eps_fn, w_fn)` replaces the
     conditional branch by an analytic teacher: eps = e0 + w(u) (eps_fn(x_t rows, u) - e0), with e0 the
-    null-token prediction -- Zekun's Eq. 15 with the PoE score as the conditional.
+    null-token prediction -- Zekun's Eq. 15 with the PoE score as the conditional.  `w_fn(x_rows, u)`
+    returns a float (a guidance schedule) or a per-row tensor (a node's responsibility).
     """
     D = 3 * img * img
     noise = np.random.default_rng(seed).standard_normal((n, D)).astype(np.float32)
@@ -63,9 +64,14 @@ def _ddim_core(model, n, steps, seed, E, cls, layout, img, device, batch, gate, 
                     eps_fn, w_fn = guide
                     e0 = model(x, ut, c=torch.full((m,), model.null_id, device=device, dtype=torch.long),
                                emb_override=None)
-                    et = eps_fn(to_flat(x, layout), u)
-                    et = to_img(torch.as_tensor(et, dtype=torch.float32, device=device), img, layout)
-                    e = e0 + float(w_fn(u)) * (et - e0)
+                    xr = to_flat(x, layout)
+                    et = to_img(torch.as_tensor(eps_fn(xr, u), dtype=torch.float32, device=device), img, layout)
+                    w = w_fn(xr, u)                     # a float, or a per-row responsibility [m]
+                    if torch.is_tensor(w):
+                        w = w.to(e0.dtype).reshape(-1, 1, 1, 1)
+                    else:
+                        w = float(w)
+                    e = e0 + w * (et - e0)
                 x0 = ((x - (1.0 - a) ** 0.5 * e) / a ** 0.5).clamp(*clip)
                 x = an ** 0.5 * x0 + (1.0 - an) ** 0.5 * e
             out[i0:i0 + m] = to_flat(x.clamp(*clip), layout).cpu().numpy()

@@ -105,15 +105,30 @@ class KeyedLoRA(nn.Module):
 
     def forward(self, x):
         out = self.base(x)
-        for k in self.state["on"]:
-            if k in self.A:
-                out = out + self.B[k](self.A[k](x))
+        on = self.state["on"]
+        items = on.items() if isinstance(on, dict) else ((k, 1.0) for k in on)
+        for k, w in items:
+            if k not in self.A:
+                continue
+            d = self.B[k](self.A[k](x))
+            if torch.is_tensor(w):                      # a per-row responsibility, [B]
+                w = w.to(d.dtype).reshape(-1, *([1] * (d.dim() - 1)))
+                out = out + w * d
+            elif float(w) != 1.0:
+                out = out + float(w) * d
+            else:                                       # w == 1: bit-identical to the unweighted gate
+                out = out + d
         return out
 
 
 def inject_keyed_lora(model, state, exclude=()):
     """Wrap every nn.Linear / nn.Conv2d of `model` (bar `exclude`) in an empty KeyedLoRA bank.
-    -> the list of banks; `add_node` / `drop_node` then grow and shrink every bank together."""
+    -> the list of banks; `add_node` / `drop_node` then grow and shrink every bank together.
+    Idempotent: a model already wrapped returns its existing banks (`model._keyed_banks`)."""
+    if getattr(model, "_keyed_banks", None) is not None:
+        if model._keyed_state is not state:
+            raise RuntimeError("inject_keyed_lora: the model is already wrapped with a different gate state")
+        return model._keyed_banks
     banks = []
     for mname, mod in list(model.named_modules()):
         if isinstance(mod, (GatedLoRA, KeyedLoRA)):
@@ -124,8 +139,10 @@ def inject_keyed_lora(model, state, exclude=()):
                 continue
             if isinstance(child, (nn.Linear, nn.Conv2d)):
                 w = KeyedLoRA(child, state)
+                w.name = full
                 setattr(mod, cname, w)
                 banks.append(w)
+    model._keyed_banks, model._keyed_state = banks, state
     return banks
 
 
@@ -140,8 +157,9 @@ def drop_node(banks, key):
 
 
 def keys_on(state, keys):
-    """-> a zero-argument callable returning a context manager that switches exactly `keys` on."""
-    keys = frozenset(keys)
+    """-> a zero-argument callable returning a context manager that switches exactly `keys` on.
+    `keys` is a set (weight 1 each) or a dict key -> weight (a float or a per-row tensor)."""
+    keys = dict(keys) if isinstance(keys, dict) else frozenset(keys)
 
     @contextlib.contextmanager
     def _on():
