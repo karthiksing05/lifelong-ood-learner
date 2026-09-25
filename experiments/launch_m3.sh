@@ -11,7 +11,7 @@
 set -euo pipefail
 cd /coc/flash10/ksingara3/lifelong-ood-learner
 TASKS=${TASKS:?}; TRIALS=${TRIALS:-10}; ARMS=${ARMS:-"zeroshot raw_replay code_replay"}; PROGTAG=${PROGTAG:-_lib40}; TAGX=${TAGX:-}
-NICE=${NICE:-0}; COMMON=${COMMON:-"key=pose&stall=3"}
+NICE=${NICE:-0}; COMMON=${COMMON:-"key=pose&stall=3"}; FIRST=${FIRST:-0}; EXP=${EXP:-m3_compose}
 R=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot
 PY=~/flash/miniconda3/envs/chunks/bin/python
 for tid in ${TASKS//+/ }; do
@@ -29,7 +29,7 @@ for tid in ${TASKS//+/ }; do
     esac
     case $arm in raw_*|code_*|prompt) PB=$($PY -c "import sys; sys.path.insert(0,'.'); from lifelong_ood.policy.compose import DemoProgram; print(DemoProgram.load('$P').bytes())") ;; esac
     OUT=$R/m3_${tid}_${arm}${TAGX}.json
-    j=$(sbatch --parsable --nice=$NICE --export=ALL,MODE="$MODE",SUITE=libero_90,TASKS=$tid,TRIALS=$TRIALS,EXPERIMENT=m3_compose,TAG=${arm}${TAGX},PROGRAM_BYTES=$PB,OUT=$OUT experiments/roll.sbatch)
+    j=$(sbatch --parsable --nice=$NICE --export=ALL,MODE="$MODE",SUITE=libero_90,TASKS=$tid,TRIALS=$TRIALS,FIRST=$FIRST,EXPERIMENT=$EXP,TAG=${arm}${TAGX},PROGRAM_BYTES=$PB,OUT=$OUT experiments/roll.sbatch)
     echo "task $tid arm $arm -> job $j"
   done
 done
