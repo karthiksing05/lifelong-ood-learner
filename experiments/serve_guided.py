@@ -53,7 +53,14 @@ def main():
         n = tree.nodes[int(node_id)]
         g = make_guide(n.mode, n.var, w0=w0, path=tree.path)
         logging.info(f"forcing node {node_id} (level {n.level}, u={n.u}) with w0={w0}")
-        hooks = lambda obs, pre: (g, None)          # noqa: E731
+        hooks = lambda obs, pre, meta=None: (g, None)          # noqa: E731
+    elif a.mode.startswith("program:"):
+        # program:<program.npz>[:w0[:window]] -- COMPOSE: follow one demo's prototype program (or its raw chunks)
+        _, prog_path, *rest = a.mode.split(":")
+        from lifelong_ood.policy.compose import ComposeHooks, DemoProgram
+        prog = DemoProgram.load(prog_path)
+        hooks = ComposeHooks(prog, w0=float(rest[0]) if rest else 1.2, window=int(rest[1]) if len(rest) > 1 else 20)
+        logging.info(f"program {prog_path}: variant {prog.variant}, {len(prog.mu)} frames, {prog.bytes()} B")
     elif a.mode != "ours":
         raise SystemExit(f"unknown mode {a.mode}")
     policy = GuidedPolicy(bk, hooks=hooks, num_steps=a.num_steps, seed=a.seed)

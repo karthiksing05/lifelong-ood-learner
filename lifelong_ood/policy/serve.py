@@ -32,7 +32,7 @@ class GuidedPolicy:
             self.hooks.reset(meta)
         observation = self.bk.observation(obs)
         pre = self.bk.prefix(observation)
-        guide, gate = (None, None) if self.hooks is None else self.hooks(obs, pre)
+        guide, gate = (None, None) if self.hooks is None else self.hooks(obs, pre, meta)
         rows = self.bk.sample(1, pre, seed=self.seed + self.calls, num_steps=self.num_steps, guide=guide, step_gate=gate,
                               noise=None if noise is None else np.asarray(noise).reshape(1, -1))
         actions = self.bk.unnormalize(rows)[0]

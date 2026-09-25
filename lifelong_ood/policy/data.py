@@ -195,3 +195,44 @@ def chunkset(demos, episodes, H=10, norm=None, stride=1, drop_padded=False):
         pad.append(npad)
     cat = lambda xs, dt=None: np.concatenate(xs).astype(dt) if dt else np.concatenate(xs)   # noqa: E731
     return ChunkSet(cat(rows, np.float32), cat(raw, np.float32), cat(task, int), cat(epi, int), cat(frame, int), cat(pad, int), H)
+
+
+# ── LIBERO-90 (held out from pi05_libero's fine-tune): IPEC-COMMUNITY/libero_90_no_noops_lerobot ─────────────
+L90_REPO = "IPEC-COMMUNITY/libero_90_no_noops_lerobot"
+L90_ROOT = "/coc/flash10/ksingara3/robot/data/hf/IPEC-COMMUNITY__libero_90_no_noops_lerobot"
+
+
+class Demos90(Demos):
+    """LIBERO-90 demos in the IPEC LeRobot v2.1 port, mapped to pi05_libero's conventions.
+
+    Differences from physical-intelligence/libero, all verified on 2026-09-25: columns `action` /
+    `observation.state` (same 8-D state: eef pos, axis-angle, finger qpos), images as mp4 videos, tasks MERGED by
+    language across scenes (73 texts for 90 benchmark tasks: use tasks whose text is unique), and the gripper
+    action is 1 = open / 0 = close where pi0.5's data uses -1 = open / +1 = close: g_pi = 1 - 2 g_ipec.
+    Parquet files are fetched on demand (hf_hub_download, one file per episode)."""
+
+    def __init__(self, root=L90_ROOT):
+        super().__init__(root)
+
+    def fetch(self, episode_index):
+        p = self.path(episode_index)
+        if not os.path.exists(p):
+            from huggingface_hub import hf_hub_download
+            rel = os.path.relpath(p, self.root)
+            hf_hub_download(L90_REPO, rel, repo_type="dataset", local_dir=self.root)
+        return p
+
+    def load(self, episode_index, images=False):
+        import pyarrow.parquet as pq
+        if images:
+            raise NotImplementedError("LIBERO-90 frames are mp4 videos; decode them separately")
+        t = pq.read_table(self.fetch(episode_index), columns=["observation.state", "action", "frame_index", "task_index"]).to_pydict()
+        act = np.asarray(t["action"], np.float32)
+        act[:, GRIPPER] = 1.0 - 2.0 * act[:, GRIPPER]
+        out = dict(state=np.asarray(t["observation.state"], np.float32), actions=act, frame_index=np.asarray(t["frame_index"]),
+                   task_index=int(t["task_index"][0]), episode_index=int(episode_index))
+        out["task"] = self.tasks[out["task_index"]]
+        return out
+
+    def episodes_of_text(self, text):
+        return [e["episode_index"] for e in self.eps if e["tasks"][0] == text]
