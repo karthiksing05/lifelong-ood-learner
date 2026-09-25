@@ -193,6 +193,50 @@ makes the update's size track how novel the concept still is.
 
 ---
 
+## 6b. Which factor is new: one concept cannot say
+
+A router that meets a genuinely new value must decide which factor it belongs to before any later
+concept can reuse it. With the additive conditioning the repository uses, one concept does not
+contain that information.
+
+Write a concept's ideal conditioning as `c_x = μ + Σ_{h≠f*} V_h[x_h] + u*`, where the value on factor
+`f*` is new: `u*` is none of the known `V_{f*}[j]`. Hypothesis `H_f` says the new value is on factor
+`f`: one vector `u_f` on `f`, known values `w_h` on every other factor.
+
+**Proposition 7.**
+
+(a) *One concept.* For every factor `f` and every choice of known values `w`, the vector
+`u_f = c_x − μ − Σ_{h≠f} V_h[w_h]` makes `H_f` fit `x` exactly. Every hypothesis explains the concept
+that created it, so the attribution is not identifiable from that concept.
+
+(b) *Concepts that share the new value.* Suppose the factor subspaces are in general position: no
+difference of two values of one factor equals a difference of two values of another. Then `H_{f*}` fits
+any set of concepts that share `u*`. For `f ≠ f*`, `H_f` fits the set only if every concept in it has
+the same value on `f`. So the attribution is identified once, for every factor `f ≠ f*`, two of the
+concepts differ on `f`.
+
+*Proof.* (a) is immediate. For (b), take two concepts. Under `H_f` with `f ≠ f*`, the best other
+values cancel every factor outside `{f, f*}`, leaving
+
+    u_f = V_f[x¹_f] + u* − V_{f*}[w¹_{f*}] = V_f[x²_f] + u* − V_{f*}[w²_{f*}].
+
+That requires `V_f[x¹_f] − V_f[x²_f] = V_{f*}[w¹_{f*}] − V_{f*}[w²_{f*}]`. If the concepts agree on `f`,
+`w¹ = w²` satisfies it. If they differ on `f`, the equation equates a difference of `f`-values with a
+difference of `f*`-values, which general position excludes. `H_{f*}` holds with `u_{f*} = u*` and
+`w = x`. ∎
+
+This is why the router's LEAF keeps its factor open. It trains one hypothesis per factor on the first
+concept, since (a) says each one fits it. It offers each hypothesis to later concepts on its own
+factor. It merges on the hypothesis that explains a second concept, which (b) says is the right one
+whenever the two concepts differ on every other factor. When they agree on some factor, that factor's
+hypothesis explains the second concept as well, so the merge is ambiguous, and C5 records it.
+Cobweb's `create` and `merge` operators handle the same ambiguity the same way: a new instance becomes
+its own leaf until a later instance shows what the two share.
+
+`tests/test_cobweb_correspondence.py` (`attribution_identifiability`) checks (a) and (b) numerically: the right factor's residual is ≤ 1e-30 and every wrong factor's is ≥ 12 over 20 random draws.
+
+---
+
 ## 7. What this does not cover
 
 1. **The ideal denoiser memorizes.** Propositions 1–4 are exact for `p_n`, whose optimal sampler

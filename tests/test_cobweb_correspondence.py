@@ -83,10 +83,64 @@ def main():
         top = np.argsort(-(g ** 2 / F))[:k]
         assert np.isclose(gain[list(best)].sum(), gain[top].sum()), (best, top)
 
+    ident = attribution_identifiability(rng)
+
     print(f"PASS  Cobweb correspondence: mean {worst['mean']:.1e}, cov {worst['cov']:.1e}, "
           f"eps {worst['eps']:.1e}; Welford exact; r limits 1/(n+1) and 1/0; locality bound holds; "
-          f"g^2/F support optimal on 200 brute-force cases")
+          f"g^2/F support optimal on 200 brute-force cases; attribution: {ident}")
     return 0
+
+
+def attribution_identifiability(rng, trials=20):
+    """Proposition 7.  With c = mu + sum_f V_f[v_f] and a NEW value u* on factor f*:
+      (a) every hypothesis H_f ('the new value is on f') fits ONE concept exactly;
+      (b) for two concepts sharing u*, H_f (f != f*) fits both only if they agree on f.
+    The H_f residual of a concept pair is min over known other values (w1, w2) of the squared
+    distance between the two implied new vectors (the shared u_f is their mean)."""
+    D, sizes, fstar = 24, (6, 5, 4), 2
+    nF = len(sizes)
+    worst_right, best_wrong = 0.0, np.inf
+    for _ in range(trials):
+        V = [rng.normal(size=(n, D)) for n in sizes]
+        mu, ustar = rng.normal(size=D), rng.normal(size=D)
+
+        def concept(x):
+            return mu + sum(V[h][x[h]] for h in range(nF) if h != fstar) + ustar
+
+        def implied(c, f, w):
+            return c - mu - sum(V[h][w[h]] for h in range(nF) if h != f)
+
+        def resid(cs, f):
+            others = [h for h in range(nF) if h != f]
+            best = np.inf
+            for w1 in itertools.product(*[range(sizes[h]) for h in others]):
+                for w2 in itertools.product(*[range(sizes[h]) for h in others]):
+                    d = (implied(cs[0], f, dict(zip(others, w1)))
+                         - implied(cs[1], f, dict(zip(others, w2))))
+                    best = min(best, 0.5 * float(d @ d))
+            return best
+
+        x1 = {0: int(rng.integers(6)), 1: int(rng.integers(5))}
+        # (a) one concept: the free vector on ANY factor reproduces it
+        for f in range(nF):
+            others = [h for h in range(nF) if h != f]
+            w = {h: int(rng.integers(sizes[h])) for h in others}
+            u = implied(concept(x1), f, w)
+            rec = mu + sum(V[h][w[h]] for h in others) + u
+            assert np.allclose(rec, concept(x1)), f
+        # (b) differ on every other factor: only H_{f*} fits
+        x2 = {0: (x1[0] + 1 + int(rng.integers(5))) % 6, 1: (x1[1] + 1 + int(rng.integers(4))) % 5}
+        r = [resid([concept(x1), concept(x2)], f) for f in range(nF)]
+        assert r[fstar] < 1e-18, r
+        assert min(r[f] for f in range(nF) if f != fstar) > 1e-6, r
+        worst_right = max(worst_right, r[fstar])
+        best_wrong = min(best_wrong, min(r[f] for f in range(nF) if f != fstar))
+        # agree on factor 0: H_0 fits too (ambiguous); H_1 still does not
+        x3 = {0: x1[0], 1: (x1[1] + 1) % 5}
+        r = [resid([concept(x1), concept(x3)], f) for f in range(nF)]
+        assert r[fstar] < 1e-18 and r[0] < 1e-18 and r[1] > 1e-6, r
+    return (f"H_f* residual <= {worst_right:.0e}, wrong factors >= {best_wrong:.1f} "
+            f"over {trials} draws; agreeing on a factor makes it ambiguous")
 
 
 if __name__ == "__main__":

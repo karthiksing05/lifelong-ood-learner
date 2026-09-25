@@ -22,7 +22,10 @@ held-out cells' images, so this is a test of ADDRESSING a combination the genera
 not of generating one it never saw.
 
     python experiments/c3_flagship.py --seeds 3
+    python experiments/c3_flagship.py --cells 0:10 --tag _part0      # one slice per job (~7 min a cell)
+    python experiments/c3_flagship.py --merge results/c3_flagship_part*__seed0.json --tag _ALL
 """
+import json
 import argparse
 import itertools
 import os
@@ -52,6 +55,31 @@ def wilson(k, n, z=1.96):
     return float(c - h), float(c + h)
 
 
+def summarise(rows, cells, n_read):
+    """Pooled over cells and seeds: joint with a Wilson 95% interval, coverage, vendi, memorised."""
+    print("\n[c3] ===== pooled over cells and seeds (joint: Wilson 95%)")
+    summary = {}
+    for arm in dict.fromkeys(r["arm"] for r in rows):
+        rs = [r for r in rows if r["arm"] == arm]
+        k, n = sum(r["k"] for r in rs), sum(r["n"] for r in rs)
+        per_cell = [np.mean([r["joint"] for r in rs if r["cell"] == c]) for c in cells]
+        summary[arm] = dict(joint=k / n, ci=wilson(k, n), cells_ge_half=float(np.mean(
+            np.asarray(per_cell) >= 0.5)), coverage=float(np.mean([r["coverage"] for r in rs])),
+            vendi=float(np.mean([r["vendi"] for r in rs])),
+            memorized=float(np.mean([r["memorized"] for r in rs])))
+        s = summary[arm]
+        print(f"  {arm:30s} joint {s['joint']:.3f} [{s['ci'][0]:.3f}, {s['ci'][1]:.3f}]  "
+              f"cells>=0.5 {s['cells_ge_half']:.2f}  coverage {s['coverage']:.3f}  vendi "
+              f"{s['vendi']:.2f}  memorised {s['memorized']:.3f}")
+    reads = [(tuple(r["read1"]) == tuple(r["cell"]), tuple(r["read16"]) == tuple(r["cell"]))
+             for r in rows if r["seed"] == 0 and r["arm"] == "unconditional"]
+    summary["read_acc_1"] = float(np.mean([a for a, _ in reads]))
+    summary[f"read_acc_{n_read}"] = float(np.mean([b for _, b in reads]))
+    print(f"  read accuracy: 1 image {summary['read_acc_1']:.3f}, {n_read} images "
+          f"{summary[f'read_acc_{n_read}']:.3f} (over {len(reads)} cells)")
+    return summary
+
+
 def main():
     p = argparse.ArgumentParser()
     p.add_argument("--seeds", type=int, default=3)
@@ -62,8 +90,20 @@ def main():
     p.add_argument("--inv-steps", type=int, default=300)
     p.add_argument("--n-mem", type=int, default=4000, help="memorisation reference, all classes")
     p.add_argument("--max-cells", type=int, default=None)
+    p.add_argument("--cells", default=None, help="a slice 'a:b' of the held-out cells, for one job")
+    p.add_argument("--merge", nargs="+", default=None, help="slice result files to pool")
     p.add_argument("--tag", default="")
     args = p.parse_args()
+    if args.merge:
+        parts = [json.load(open(f)) for f in args.merge]
+        rows = [r for q in parts for r in q["rows"]]
+        cells = [c for q in parts for c in q["cells"]]
+        cfg = dict(parts[0]["config"], merged=args.merge)
+        summary = summarise(rows, cells, cfg["n_read"])
+        save_json(dict(rows=rows, summary=summary, config=cfg, cells=cells,
+                       basis_r2=parts[0]["basis_r2"]),
+                  os.path.join(RESULTS, f"c3_flagship{args.tag}.json"), seed=0)
+        return 0
     if not torch.cuda.is_available():
         raise SystemExit("[c3] refusing to run on CPU")
     dev = "cuda"
@@ -83,6 +123,9 @@ def main():
     seen_t = [t for _, t in B.seen]
     C_seen = B.model.cemb.weight.detach().cpu().numpy()[seen_c]
     cells = B.held_comb if args.max_cells is None else B.held_comb[:args.max_cells]
+    if args.cells:
+        a, b = (int(x) for x in args.cells.split(":"))
+        cells = cells[a:b]
     rng = np.random.default_rng(0)
     # memorisation reference spanning EVERY trained class (the audit: n78 used 15 of 360)
     pool = np.concatenate([B.images(t) for t in seen_t])
@@ -139,26 +182,7 @@ def main():
               + " ".join(f"{a_.split(' (')[0][:9]}={np.mean([r['joint'] for r in rows if r['arm'] == a_ and r['cell'] == list(cell)]):.2f}"
                          for a_ in arms) + f" ({time.time() - t0:.0f}s)", flush=True)
 
-    print("\n[c3] ===== pooled over cells and seeds (joint: Wilson 95%)")
-    summary = {}
-    for arm in dict.fromkeys(r["arm"] for r in rows):
-        rs = [r for r in rows if r["arm"] == arm]
-        k, n = sum(r["k"] for r in rs), sum(r["n"] for r in rs)
-        per_cell = [np.mean([r["joint"] for r in rs if r["cell"] == c]) for c in map(list, cells)]
-        summary[arm] = dict(joint=k / n, ci=wilson(k, n), cells_ge_half=float(np.mean(
-            np.asarray(per_cell) >= 0.5)), coverage=float(np.mean([r["coverage"] for r in rs])),
-            vendi=float(np.mean([r["vendi"] for r in rs])),
-            memorized=float(np.mean([r["memorized"] for r in rs])))
-        s = summary[arm]
-        print(f"  {arm:30s} joint {s['joint']:.3f} [{s['ci'][0]:.3f}, {s['ci'][1]:.3f}]  "
-              f"cells>=0.5 {s['cells_ge_half']:.2f}  coverage {s['coverage']:.3f}  vendi "
-              f"{s['vendi']:.2f}  memorised {s['memorized']:.3f}")
-    reads = [(tuple(r["read1"]) == tuple(r["cell"]), tuple(r["read16"]) == tuple(r["cell"]))
-             for r in rows if r["seed"] == 0 and r["arm"] == "unconditional"]
-    summary["read_acc_1"] = float(np.mean([a for a, _ in reads]))
-    summary[f"read_acc_{args.n_read}"] = float(np.mean([b for _, b in reads]))
-    print(f"  read accuracy: 1 image {summary['read_acc_1']:.3f}, {args.n_read} images "
-          f"{summary[f'read_acc_{args.n_read}']:.3f} (over {len(reads)} cells)")
+    summary = summarise(rows, [list(c) for c in cells], args.n_read)
     save_json(dict(rows=rows, summary=summary, config=vars(args), cells=[list(c) for c in cells],
                    basis_r2=float(fac["r2"])),
               os.path.join(RESULTS, f"c3_flagship{args.tag}.json"), seed=0)

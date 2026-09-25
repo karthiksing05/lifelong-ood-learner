@@ -14,6 +14,13 @@ each decision on every concept of each population, with no state carried between
                             read puts it on is the attribution; a new combination or a trained class
                             that reads it at all is a false merge
 
+Two leaf forms (`--leaf-mode`):
+  free  one leaf: the source's full read plus a free 1 KB delta, and one adapter.  If the novel value
+        confounds the source's read of its OTHER factors, the delta absorbs those errors too.
+  hyp   one leaf PER FACTOR HYPOTHESIS f: the source's other factors read with f LEFT OUT (so a novel
+        value on f cannot bias them), a new value vector on f (norm of that factor's values), and its
+        own adapter.  The second concept is offered each hypothesis on its own factor.
+
 Why (b).  With an additive conditioning c = mu + sum_f V_f[v_f], a new direction on ANY factor fits
 the concept that created it equally well: one concept cannot say which of its factors is new.  A
 second concept that shares the new value can.  Offered on the right factor, the leaf leaves the second
@@ -81,6 +88,7 @@ def main():
     p.add_argument("--n-cal-sharp", type=int, default=24)
     p.add_argument("--lora-exclude", default=None)
     p.add_argument("--fast", action="store_true")
+    p.add_argument("--leaf-mode", choices=("free", "hyp"), default="free")
     p.add_argument("--tag", default="")
     args = p.parse_args()
     sh = args.bench == "shapes3d"
@@ -143,8 +151,8 @@ def main():
     t_row = np.quantile(P_row, 0.9, axis=0)
     t_addr = np.quantile(np.stack(P_loo), 0.9, axis=0)
 
-    def informativeness(Xv):
-        g_out = []
+    def informativeness(Xv, with_reads=False):
+        g_out, reads = [], []
         for f in range(nF):
             others = [h for h in range(nF) if h != f]
             cl = list(itertools.product(*[range(len(V[h])) for h in others]))
@@ -154,7 +162,8 @@ def main():
             Ef = [mu + V[f][j] + sum(V[h][best[h]] for h in others) for j in range(len(V[f]))]
             lf = losses(base, Xv, Ef)[:, crit].mean(1)
             g_out.append(float((lo.min() - lf.min()) / lo.min()))
-        return np.asarray(g_out)
+            reads.append(best)
+        return (np.asarray(g_out), reads) if with_reads else np.asarray(g_out)
 
     inf_cal = np.stack([informativeness(xv) for _, _, xv in
                         [cal[i] for i in rng.permutation(len(cal))[:args.n_cal_sharp]]])
@@ -184,8 +193,10 @@ def main():
         Lr = candidate_losses(base, Xv, U_GRID, cls=rr, seed=CRN, per_u=True, batch=cl_batch,
                               n_noise=n_noise, **kw)
         kr = int(np.argmin(Lr.mean(1)))
-        gains = informativeness(Xv) / med_gain
+        gains, loo = informativeness(Xv, with_reads=True)
+        gains = gains / med_gain
         rec = dict(k=k, pop=pop, true=list(tup), read=list(combos[ka]),
+                   loo_reads=[{int(h): int(j) for h, j in r.items()} for r in loo],
                    read_ok=bool(tuple(combos[ka]) == tuple(tup)),
                    row_ratio=float((Lr[kr] / t_row)[crit].max()),
                    addr_ratio=float((La[ka] / t_addr)[crit].max()),
@@ -201,90 +212,134 @@ def main():
 
     # ── D3b: Cobweb leaves ──────────────────────────────────────────────────
     excl = tuple(x for x in args.lora_exclude.split(":") if x)
-    src_ix = [r["k"] for r in recs if r["pop"] == "new-value"][:args.n_sources]
-    leaves, pairs = [], []
-    for s in src_ix:
-        Xtr, Xv, _ = data[s]
-        read1 = tuple(recs[s]["read"])
+    base_norm = [float(np.linalg.norm(v, axis=1).mean()) for v in V]
+
+    def train_leaf(Xtr, Xv, e_base, f_norm=None, v_init=None, seed_=0):
+        """A fresh gated adapter plus one trainable vector added to `e_base`: a free delta (init 0)
+        when `f_norm` is None, else a value vector on factor `f_norm` (init `v_init`) held at that
+        factor's value norm, as C2 holds every new value."""
         leaf = copy.deepcopy(base).eval()
         st = {"on": False}
         lp = inject_gated_lora(leaf, args.rank, st, exclude=excl)
         for q in lp:
             q.requires_grad_(True)
         gate = gate_on(st)
-        e0 = torch.as_tensor(emb_np(read1), device=dev)
-        d = torch.zeros_like(e0, requires_grad=True)
-        opt = torch.optim.Adam([{"params": [d], "lr": args.lr_v_w}, {"params": lp, "lr": args.lr}])
+        eb = torch.as_tensor(np.asarray(e_base, np.float32), device=dev)
+        v0 = np.zeros_like(e_base) if v_init is None else v_init
+        v = torch.as_tensor(np.asarray(v0, np.float32), device=dev).clone().requires_grad_(True)
+        opt = torch.optim.Adam([{"params": [v], "lr": args.lr_v_w}, {"params": lp, "lr": args.lr}])
         Xtr_t = to_img(torch.as_tensor(B.to_m(Xtr), dtype=torch.float32, device=dev), B.img,
                        B.layout)
-        g = torch.Generator(device="cpu").manual_seed(args.seed + 5 + s)
+        g = torch.Generator(device="cpu").manual_seed(seed_)
         used, ok = 0, False
         for step in range(args.leaf_steps):
             j = torch.randint(0, len(Xtr_t), (args.batch,), generator=g).to(dev)
             with gate():
-                loss = eps_loss(leaf, Xtr_t[j], emb=(e0 + d)[None].expand(args.batch, -1), gen=g)
+                loss = eps_loss(leaf, Xtr_t[j], emb=(eb + v)[None].expand(args.batch, -1), gen=g)
             opt.zero_grad(set_to_none=True)
             loss.backward()
             opt.step()
+            if f_norm is not None:
+                with torch.no_grad():
+                    v.mul_(base_norm[f_norm] / max(float(v.norm()), 1e-8))
             used = step + 1
             if used % args.check_every == 0:
-                pr = losses(leaf, Xv, (e0 + d).detach().cpu().numpy()[None], gate=gate)[0]
+                pr = losses(leaf, Xv, (eb + v).detach().cpu().numpy()[None], gate=gate)[0]
                 if within(pr, t_addr):
                     ok = True
                     break
         for q in lp:
             q.requires_grad_(False)
-        dL = d.detach().cpu().numpy()
-        S = B.to_d(ddim_sample(leaf, args.n_samples, steps=args.steps, seed=11,
-                               emb=(emb_np(read1) + dL).astype(np.float32), gate=gate,
-                               clip=B.clip, **kw))
-        own = B.acc(S, tuple(recs[s]["true"]))["joint"]
-        # the leaf offered on every factor: its value there is (source's value on f) + dL
-        cands = []
-        for f in range(nF):
-            others = [h for h in range(nF) if h != f]
-            for vals in itertools.product(*[range(len(V[h])) for h in others]):
-                c = [None] * nF
-                c[f] = "L"
-                for h, jv in zip(others, vals):
-                    c[h] = jv
-                e = mu + V[f][read1[f]] + dL + sum(V[h][jv] for h, jv in zip(others, vals))
-                cands.append((f, c, e))
-        E_leaf = np.stack([c[2] for c in cands])
-        leaves.append(dict(src=s, true=recs[s]["true"], read=list(read1), steps=used, absorbed=ok,
-                           own_joint=own, dnorm=float(np.linalg.norm(dL))))
-        print(f"[c4] LEAF from {s} {tuple(recs[s]['true'])} read {read1}: {used} steps absorbed {ok} "
-              f"own joint {own:.3f} |d| {np.linalg.norm(dL):.2f} ({time.time() - t0:.0f}s)",
-              flush=True)
+        return leaf, gate, v.detach().cpu().numpy(), used, ok
+
+    def cands_on(f, e_f):
+        """The leaf offered on factor f, whose value there is `e_f`; every other factor from the
+        known basis.  -> [(f, coords, emb)]"""
+        out = []
+        others = [h for h in range(nF) if h != f]
+        for vals in itertools.product(*[range(len(V[h])) for h in others]):
+            c = [None] * nF
+            c[f] = "L"
+            for h, jv in zip(others, vals):
+                c[h] = jv
+            out.append((f, c, mu + e_f + sum(V[h][jv] for h, jv in zip(others, vals))))
+        return out
+
+    src_ix = [r["k"] for r in recs if r["pop"] == "new-value"][:args.n_sources]
+    leaves, pairs = [], []
+    for s in src_ix:
+        Xtr, Xv, _ = data[s]
+        true_s = tuple(recs[s]["true"])
+        # entries: (model, gate, candidates); one for 'free', one per factor for 'hyp'
+        entries, info = [], []
+        if args.leaf_mode == "free":
+            read1 = tuple(recs[s]["read"])
+            leaf, gate, dL, used, ok = train_leaf(Xtr, Xv, emb_np(read1), seed_=args.seed + 5 + s)
+            S = B.to_d(ddim_sample(leaf, args.n_samples, steps=args.steps, seed=11,
+                                   emb=(emb_np(read1) + dL).astype(np.float32), gate=gate,
+                                   clip=B.clip, **kw))
+            own = B.acc(S, true_s)["joint"]
+            cc = [c for f in range(nF) for c in cands_on(f, V[f][read1[f]] + dL)]
+            entries.append((leaf, gate, cc))
+            info.append(dict(f=None, read=list(read1), steps=used, absorbed=ok, own_joint=own,
+                             vnorm=float(np.linalg.norm(dL))))
+        else:
+            for f in range(nF):
+                loo = {int(h): int(jv) for h, jv in recs[s]["loo_reads"][f].items()}
+                e_oth = mu + sum(V[h][loo[h]] for h in loo)
+                leaf, gate, vf, used, ok = train_leaf(Xtr, Xv, e_oth, f_norm=f,
+                                                      v_init=V[f].mean(0),
+                                                      seed_=args.seed + 5 + s + 101 * f)
+                S = B.to_d(ddim_sample(leaf, args.n_samples, steps=args.steps, seed=11,
+                                       emb=(e_oth + vf).astype(np.float32), gate=gate,
+                                       clip=B.clip, **kw))
+                own = B.acc(S, true_s)["joint"]
+                entries.append((leaf, gate, cands_on(f, vf)))
+                info.append(dict(f=B.names[f], loo_read=loo, steps=used, absorbed=ok,
+                                 own_joint=own))
+        leaves.append(dict(src=s, true=list(true_s), mode=args.leaf_mode, parts=info))
+        print(f"[c4] LEAF ({args.leaf_mode}) from {s} {true_s}: " + "; ".join(
+            f"{p_['f'] or 'all'}: {p_['steps']} steps absorbed {p_['absorbed']} own joint "
+            f"{p_['own_joint']:.3f}" for p_ in info) + f" ({time.time() - t0:.0f}s)", flush=True)
         for r, (Xtr_k, Xv_k, La_k) in zip(recs, data):
             if r["k"] == s:
                 continue
-            Lg = losses(leaf, Xv_k, E_leaf, gate=gate).mean(1)
-            best_f = [float(Lg[[i for i, c in enumerate(cands) if c[0] == f]].min()) for f in range(nF)]
-            ig = int(np.argmin(Lg))
-            fstar = cands[ig][0]
+            allc = []                                  # (f, coords, emb, loss, entry)
+            for ei, (lm, gt, cc) in enumerate(entries):
+                Lg = losses(lm, Xv_k, np.stack([c[2] for c in cc]), gate=gt).mean(1)
+                allc += [(c[0], c[1], c[2], float(lv), ei) for c, lv in zip(cc, Lg)]
+            best_f = [min(a[3] for a in allc if a[0] == f) for f in range(nF)]
+            bi = min(range(len(allc)), key=lambda i: allc[i][3])
+            fstar = allc[bi][0]
             s_un = float(La_k.mean(1).min())
             pr = dict(src=s, k=r["k"], pop=r["pop"], true=r["true"], best_ungated=s_un,
-                      best_gated=best_f, fstar=B.names[fstar], merge=bool(Lg[ig] < s_un),
-                      ratio=float(Lg[ig] / s_un),
-                      coords=[c if c != "L" else "L" for c in cands[ig][1]])
+                      best_gated=best_f, fstar=B.names[fstar], merge=bool(allc[bi][3] < s_un),
+                      ratio=float(allc[bi][3] / s_un), coords=allc[bi][1])
             if r["pop"] == "new-value":
                 nf = B.new_f
-                it = min((i for i, c in enumerate(cands) if c[0] == nf), key=lambda i: Lg[i])
-                pr["coords_true_f"] = cands[it][1]
-                for tagk, ii in (("best", ig), ("true_f", it)):
-                    if tagk == "true_f" and ii == ig:
+                ti = min((i for i, a in enumerate(allc) if a[0] == nf), key=lambda i: allc[i][3])
+                pr["coords_true_f"] = allc[ti][1]
+                for tagk, ii in (("best", bi), ("true_f", ti)):
+                    if tagk == "true_f" and ii == bi:
                         pr["joint_true_f"] = pr["joint_best"]
                         continue
-                    S = B.to_d(ddim_sample(leaf, args.n_samples, steps=args.steps, seed=13,
-                                           emb=E_leaf[ii].astype(np.float32), gate=gate,
+                    lm, gt, _ = entries[allc[ii][4]]
+                    S = B.to_d(ddim_sample(lm, args.n_samples, steps=args.steps, seed=13,
+                                           emb=allc[ii][2].astype(np.float32), gate=gt,
                                            clip=B.clip, **kw))
                     pr[f"joint_{tagk}"] = B.acc(S, tuple(r["true"]))["joint"]
                 # the right other values, too: is the leaf's error the factor or the read?
-                ok_other = all(cands[it][1][h] == r["true"][h] for h in range(nF) if h != nf)
-                pr["true_f_other_read_ok"] = bool(ok_other)
+                pr["true_f_other_read_ok"] = bool(all(allc[ti][1][h] == r["true"][h]
+                                                      for h in range(nF) if h != nf))
             pairs.append(pr)
-        del leaf
+        print(f"[c4]   leaf {s}: new-value targets read it on the true factor "
+              f"{np.mean([q['fstar'] == B.names[B.new_f] for q in pairs if q['src'] == s and q['pop'] == 'new-value']):.2f}"
+              f", merge {np.mean([q['merge'] for q in pairs if q['src'] == s and q['pop'] == 'new-value']):.2f}"
+              f"; false merge new-comb "
+              f"{np.mean([q['merge'] for q in pairs if q['src'] == s and q['pop'] == 'new-comb']):.2f}"
+              f" in-dist {np.mean([q['merge'] for q in pairs if q['src'] == s and q['pop'] == 'in-dist']):.2f}"
+              f" ({time.time() - t0:.0f}s)", flush=True)
+        del entries
         torch.cuda.empty_cache()
 
     # ── summary ─────────────────────────────────────────────────────────────
@@ -320,7 +375,7 @@ def main():
     print("[c4] SUMMARY", {k: v for k, v in summ.items() if k != "leaves"}, flush=True)
     save_json(dict(records=recs, pairs=pairs, summary=summ, config=vars(args),
                    t_row=t_row.tolist(), t_addr=t_addr.tolist(), u_grid=U_GRID.tolist()),
-              os.path.join(RESULTS, f"c4_router_diag_{args.bench}{args.tag}.json"), seed=args.seed)
+              os.path.join(RESULTS, f"c4_router_diag_{args.bench}_{args.leaf_mode}{args.tag}.json"), seed=args.seed)
     print(f"[c4] done in {(time.time() - t0) / 60:.1f} min", flush=True)
     return 0
 

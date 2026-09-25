@@ -91,6 +91,70 @@ def c2(files):
         print(f"  #{k + 1}: {c}")
 
 
+def c4(files):
+    """Each router decision alone: D1 novel?, D2 address or node?, D3 which factor."""
+    for f in files:
+        r = json.load(open(f))
+        s, cfg = r["summary"], r["config"]
+        print(f"C4 {cfg['bench']} (leaf mode {cfg.get('leaf_mode', 'free')}) -- {f}")
+        print(f"  D1 in-dist vs novel, row-ratio AUROC {s['D1_auroc_row']:.3f}; IN-DIST rate "
+              + " ".join(f"{k} {v:.2f}" for k, v in s["D1_indist_rate"].items()))
+        print(f"  D2 new-comb vs new-value AUROC: best-address ratio {s['D2_auroc_addr']:.3f}, "
+              f"informativeness {s['D2_auroc_inform']:.3f}")
+        print(f"     ADDRESS rate, gamma rule ({s['gamma']:.3f}): "
+              + " ".join(f"{k} {v:.2f}" for k, v in s["D2_gamma_rule"].items()))
+        for kap, d in s["D2_kappa_rule"].items():
+            print(f"     ADDRESS rate, ratio <= {kap}: " + " ".join(f"{k} {v:.2f}" for k, v in d.items()))
+        print("     basis read exactly right: " + " ".join(f"{k} {v:.2f}" for k, v in s["D2_read_ok"].items()))
+        recs = r["records"]
+        for pop in ("in-dist", "new-comb", "new-value"):
+            ar = np.array([x["addr_ratio"] for x in recs if x["pop"] == pop])
+            im = np.array([x["inf_min"] for x in recs if x["pop"] == pop])
+            if len(ar):
+                print(f"     {pop:9s} n={len(ar):2d} best-address ratio median {np.median(ar):6.2f} "
+                      f"[{ar.min():.2f}, {ar.max():.2f}]  inform min median {np.median(im):.2f}")
+        nv = [x for x in recs if x["pop"] == "new-value"]
+        nfac = len(nv[0]["true"]) if nv else 0
+        if nv:
+            new_f = next(k for k in range(nfac) if len({x["true"][k] for x in nv}) == 1)
+            oth = np.mean([all(x["read"][h] == x["true"][h] for h in range(nfac) if h != new_f)
+                           for x in nv])
+            print(f"  D3a informativeness names the new factor: {s['D3a_inform_acc']:.2f}; the basis "
+                  f"read gets the OTHER factors of a new-value concept right: {oth:.2f}")
+            if "loo_reads" in nv[0]:
+                # JSON keys are strings: loo_reads[f] maps each OTHER factor to its read value
+                loo = np.mean([all(int(x["loo_reads"][new_f][str(h)]) == x["true"][h]
+                                   for h in range(nfac) if h != new_f) for x in nv])
+                print(f"      ... and with the new factor LEFT OUT of the read: {loo:.2f}")
+        if "D3b" in s:
+            d = s["D3b"]
+            print(f"  D3b leaf offered on every factor ({len(s['leaves'])} leaves): new-value targets "
+                  f"merge {d['merge_rate']:.2f}; merged on the right factor {d['factor_acc_given_merge']:.2f}"
+                  f" (best factor right, merge or not: {d['factor_acc_any']:.2f})")
+            print(f"      joint of the merged composition {d['joint_best']:.3f}; on the right factor "
+                  f"{d['joint_true_f']:.3f}; other factors read right there {d['other_read_ok']:.2f}")
+            print("      false merges: " + " ".join(f"{k} {v:.2f}" for k, v in d["false_merge"].items()))
+            for lf in s["leaves"]:
+                parts = lf.get("parts") or [lf]
+                print(f"      leaf from {tuple(lf['true'])}: " + "; ".join(
+                    f"{p_.get('f') or 'all'} {p_['steps']} steps absorbed {p_['absorbed']} own joint "
+                    f"{p_['own_joint']:.2f}" for p_ in parts))
+        print()
+
+
+def c5(files):
+    """C2's table for the Cobweb loop, plus what the leaves did."""
+    c2(files)
+    runs = [json.load(open(f)) for f in files]
+    print("\nleaves and merges:")
+    for r in runs:
+        s = r["summary"]
+        print(f"  seed {r['config']['seed']}: {s['n_leaves']} leaves, {s['n_merged']} merged, "
+              f"{s['n_blocks']} left as blocks; bytes {s['bytes_total']}; merges " + "; ".join(
+                  f"{m['src_pop']}#{m['src']} + {m['by_pop']}#{m['by']} on {m['factor']}"
+                  f"{' (right)' if m['right_factor'] else ''}" for m in s["merges"]))
+
+
 if __name__ == "__main__":
     kind, files = sys.argv[1], sys.argv[2:]
-    {"c1": c1, "c2": c2}[kind](files)
+    {"c1": c1, "c2": c2, "c4": c4, "c5": c5}[kind](files)
