@@ -40,6 +40,7 @@ class DemoProgram:
     key: np.ndarray                # [T, len(ALIGN_DIMS)] normalised alignment states
     codes: list                    # per frame: list of (node id, weight) (empty for "raw")
     variant: str
+    fold: np.ndarray = None        # [T] bool: frames the library does NOT explain (the fold expert's frames)
 
     @classmethod
     def from_demo(cls, tree, rows, states, K=3, levels=None, variant="code", raw_var=1e-2):
@@ -61,12 +62,14 @@ class DemoProgram:
 
     def save(self, path):
         np.savez_compressed(path, mu=self.mu, var=self.var, key=self.key, variant=self.variant,
+                            fold=np.zeros(len(self.mu), bool) if self.fold is None else self.fold,
                             codes=np.array([np.asarray(c, np.float32) for c in self.codes], dtype=object), allow_pickle=True)
 
     @classmethod
     def load(cls, path):
         z = np.load(path, allow_pickle=True)
-        return cls(mu=z["mu"], var=z["var"], key=z["key"], codes=[list(map(tuple, c)) for c in z["codes"]], variant=str(z["variant"]))
+        return cls(mu=z["mu"], var=z["var"], key=z["key"], codes=[list(map(tuple, c)) for c in z["codes"]], variant=str(z["variant"]),
+                   fold=z["fold"] if "fold" in z else None)
 
 
 class ComposeHooks:
@@ -93,9 +96,32 @@ class ComposeHooks:
         self.p = lo + int(d.argmin())
         return min(self.p + self.lookahead, len(self.prog.key) - 1)
 
+    def guide_at(self, j):
+        if self.schedule == "const":
+            return guide(self.prog.mu[j], self.prog.var[j], wmax=self.w0, schedule="const", path="flow")
+        return guide(self.prog.mu[j], self.prog.var[j], w0=self.w0, wmax=self.wmax, path="flow")
+
     def __call__(self, obs, pre, meta=None):
         j = self.align(obs["observation/state"])
         self.trace.append(j)
-        if self.schedule == "const":
-            return guide(self.prog.mu[j], self.prog.var[j], wmax=self.w0, schedule="const", path="flow"), None
-        return guide(self.prog.mu[j], self.prog.var[j], w0=self.w0, wmax=self.wmax, path="flow"), None
+        return self.guide_at(j), None
+
+
+class HybridHooks(ComposeHooks):
+    """COMPOSE where the library explains the demo, FOLD where it does not: at an aligned frame flagged in
+    `program.fold` the gated expert `key` is switched on and no guide is used; elsewhere the prototype code guides
+    the frozen policy with the expert off (so everything the library explains runs on the untouched prior)."""
+
+    def __init__(self, program, state, key, **kw):
+        super().__init__(program, **kw)
+        from ..experts.lora import keys_on
+        self.on = keys_on(state, {key})
+
+    def __call__(self, obs, pre, meta=None):
+        j = self.align(obs["observation/state"])
+        self.trace.append(j)
+        if self.prog.fold is not None and bool(self.prog.fold[j]):
+            return None, (lambda x, t: self.on)
+        return super().guide_at(j), None
+
+    # the plain ComposeHooks call, factored so the hybrid can reuse it
