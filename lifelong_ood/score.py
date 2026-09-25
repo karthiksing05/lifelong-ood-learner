@@ -29,34 +29,9 @@ import numpy as np
 from .tree import frontier_mask, frontier_weights
 
 
-def cosine_abar(u, s=0.008):
-    """Continuous cosine schedule: u in [0, 1] -> abar in (0, 1], abar(0) = 1."""
-    u = np.asarray(u, np.float64)
-    f = np.cos((u + s) / (1 + s) * np.pi / 2) ** 2
-    f0 = np.cos(s / (1 + s) * np.pi / 2) ** 2
-    return np.clip(f / f0, 1e-5, 1.0)
-
-
-# Which numeric range a field's x-rows live in.  Declared per class rather than inferred, because
-# inferring it is what failed: `BaseScoreField.sample`'s default clip of (-0.2, 1.2) is a DATA-range
-# clamp, it is correct for exactly one field in this repository, and it is inherited by the ones it
-# is most wrong for.  Applied to a MODEL-space trajectory it clamps away the negative half at every
-# reverse step -- RESULTS 7ee and VLA_PATH lesson 2-bis, twice, at a cost of a 109-minute retrain
-# and a day of CelebA numbers.
-CLIP_BY_SPACE = {"model": (-1.0, 1.0), "data": (-0.2, 1.2)}
-
-
-def default_clip(field):
-    """The clip a field should use when the caller does not say.  -> (lo, hi).
-
-    A field may override with `clip_default` when its own convention is neither of the two generic
-    ones -- the VE bridge clamps to (0.0, 1.0), and mapping it to the generic data range would have
-    changed every Shapes3D number silently.
-    """
-    explicit = getattr(field, "clip_default", None)
-    if explicit is not None:
-        return tuple(explicit)
-    return CLIP_BY_SPACE[getattr(field, "data_space", "model")]
+# The schedule and the clip conventions live in backbones.schedule; re-exported here because the
+# analytic field and its tests still import them from this module.
+from .backbones.schedule import CLIP_BY_SPACE, cosine_abar, default_clip  # noqa: E402,F401
 
 
 class BaseScoreField:

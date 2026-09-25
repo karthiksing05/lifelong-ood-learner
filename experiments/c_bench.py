@@ -46,7 +46,7 @@ class ColorMNISTBench:
                  ckpt=os.path.join(CACHE, "ddpm_colormnist_nobg3.pt"), probe_epochs=30):
         from lifelong_ood.data.datasets import load_colormnist, slot_id
         from lifelong_ood.evals import composition_accuracy, fit_probes
-        from lifelong_ood.neural import load_field, to_data, to_model
+        from lifelong_ood.neural.ddpm import load_field, to_data, to_model
         from lifelong_ood.neural.idealwords import factorize, slot_factors
         self._slot_id, self._acc = slot_id, composition_accuracy
         self.to_m = lambda X: to_model(X).astype(np.float32)

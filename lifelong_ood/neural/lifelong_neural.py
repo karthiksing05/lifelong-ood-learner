@@ -17,7 +17,7 @@ import torch
 
 from ..compose import (candidates_ascent, candidates_ascent_batch, cfg_weight, poe_teacher,
                        query_only_teacher, stacked_cfg_weight, stacked_teacher_eps, teacher_eps)
-from ..score import cosine_abar
+from ..backbones.schedule import cosine_abar
 from .adapters import HierarchicalAdapterBank
 from .ddpm import CH, IMG
 

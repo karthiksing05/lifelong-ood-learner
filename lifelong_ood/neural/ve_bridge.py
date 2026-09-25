@@ -29,7 +29,7 @@ import numpy as np
 import torch
 import torch.nn as nn
 
-from ..score import cosine_abar
+from ..backbones.schedule import cosine_abar
 
 SIGMA_MAX = 90.0          # the checkpoint's ScoreSdeVeScheduler sigma_max
 SIGMA_MIN = 0.01

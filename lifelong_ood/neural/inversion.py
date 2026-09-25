@@ -31,7 +31,7 @@ learned -- but it is not what gets sampled.
 import numpy as np
 import torch
 
-from ..score import cosine_abar
+from ..backbones.schedule import cosine_abar
 from .ddpm import CH, IMG
 
 

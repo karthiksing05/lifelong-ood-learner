@@ -46,7 +46,7 @@ Two honest notes about the port:
 import numpy as np
 import torch
 
-from ..score import cosine_abar
+from ..backbones.schedule import cosine_abar
 from .ddpm import _as_flat, _as_img
 
 

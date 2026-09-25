@@ -21,7 +21,8 @@ import numpy as np
 import torch
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from lifelong_ood.neural import NeuralLifelongLearner, UNet     # noqa: E402
+from lifelong_ood.neural.lifelong_neural import NeuralLifelongLearner  # noqa: E402
+from lifelong_ood.neural.unet import UNet                               # noqa: E402
 
 
 class _StubVE:

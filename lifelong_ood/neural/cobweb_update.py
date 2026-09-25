@@ -39,28 +39,8 @@ import numpy as np
 import torch
 import torch.nn as nn
 
-from ..score import cosine_abar
-
-
-# ── layout: MUST match ddpm._as_img / ddpm._as_flat ──────────────────────────
-def to_img(T, img, layout):
-    """Flat rows (HWC convention) -> the (N, 3, H, W) tensor the checkpoint was trained on."""
-    if layout == "hwc":
-        return T.reshape(-1, img, img, 3).permute(0, 3, 1, 2).contiguous()
-    return T.reshape(-1, 3, img, img)
-
-
-def to_flat(T, layout):
-    """Inverse of `to_img`."""
-    if layout == "hwc":
-        return T.permute(0, 2, 3, 1).reshape(len(T), -1)
-    return T.reshape(len(T), -1)
-
-
-def abar_of(u):
-    """torch u -> torch abar on the same device, through the repository's cosine schedule."""
-    a = cosine_abar(u.detach().cpu().numpy().astype(np.float64))
-    return torch.as_tensor(a, dtype=torch.float32, device=u.device)
+from ..backbones.layout import to_flat, to_img  # noqa: F401  (re-exported: c1/c5 import them here)
+from ..backbones.schedule import abar_of, cosine_abar  # noqa: F401
 
 
 def _gate(gate):

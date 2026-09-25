@@ -26,7 +26,8 @@ import contextlib
 import numpy as np
 import torch
 
-from ..score import BaseScoreField, cosine_abar
+from ..backbones.schedule import cosine_abar
+from ..score import BaseScoreField
 
 
 @contextlib.contextmanager

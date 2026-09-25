@@ -47,7 +47,7 @@ n18 reports the sensitivity sweep alongside the calibrated operating point.
 import numpy as np
 import torch
 
-from ..score import cosine_abar
+from ..backbones.schedule import cosine_abar
 from .ddpm import CH, _as_img
 
 

@@ -253,7 +253,7 @@ def convention_probe(field, X01, img=None, u=0.3, n=4, seed=0):
     """
     import torch
 
-    from .score import cosine_abar
+    from .backbones.schedule import cosine_abar
 
     img = int(img or getattr(field, "img", 64))
     X = np.asarray(X01, np.float32)[:8]

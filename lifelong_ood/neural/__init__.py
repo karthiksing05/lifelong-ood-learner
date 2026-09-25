@@ -1,16 +1,5 @@
-"""Neural backbone: a trained DDPM standing in for the Cobweb tree, behind the same interface.
+"""Neural backbones and adapters.  Import submodules directly; nothing is re-exported here.
 
-Import lazily -- torch is an optional dependency of this repository, and the analytic track never
-needs it.
+The old root re-exported UNet, NeuralScoreField, the adapter bank, inversion and NeuralLifelongLearner,
+which made `import lifelong_ood.neural.cobweb_update` execute the whole retired stack.
 """
-from .unet import UNet
-from .ddpm import NeuralScoreField, train_ddpm, load_field, to_model, to_data, DIM
-from .adapters import (HierarchicalAdapterBank, ConceptTree, activation_subspace,
-                       fingerprint, project_out)
-from .inversion import learn_embedding, sample_embedding, teacher_init_alpha
-from .lifelong_neural import NeuralLifelongLearner
-
-__all__ = ["UNet", "NeuralScoreField", "train_ddpm", "load_field", "to_model", "to_data", "DIM",
-           "HierarchicalAdapterBank", "ConceptTree", "fingerprint", "NeuralLifelongLearner",
-           "activation_subspace", "project_out",
-           "learn_embedding", "sample_embedding", "teacher_init_alpha"]

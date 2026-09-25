@@ -26,7 +26,7 @@ the optimizer entirely.  That is the axis the comparison is really about.
 import numpy as np
 import torch
 
-from ..score import cosine_abar
+from ..backbones.schedule import cosine_abar
 
 
 def _batch_loss(model, bank, name, X, idx, dev, img):

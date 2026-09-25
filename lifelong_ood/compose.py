@@ -19,7 +19,7 @@ consumed by ScoreField.sample(guide_eps=..., guide_w=...).
 """
 import numpy as np
 
-from .score import cosine_abar
+from .backbones.schedule import cosine_abar
 
 
 # ── step 1: discovery ─────────────────────────────────────────────────────────

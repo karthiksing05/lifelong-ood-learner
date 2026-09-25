@@ -24,56 +24,10 @@ import os
 import numpy as np
 import torch
 
-from ..score import BaseScoreField, cosine_abar
-
-IMG, CH = 32, 3
-DIM = CH * IMG * IMG
-
-
-def to_model(x01):
-    """[0,1] pixels, flat or image-shaped -> [-1,1] flat.  Resolution-agnostic."""
-    x = np.asarray(x01, np.float64)
-    return 2.0 * x.reshape(len(x) if x.ndim > 1 else 1, -1) - 1.0
-
-
-def to_data(xm):
-    """[-1,1] flat -> [0,1] flat, clipped.  Resolution-agnostic."""
-    x = np.asarray(xm, np.float64)
-    return np.clip((x.reshape(len(x) if x.ndim > 1 else 1, -1) + 1.0) / 2.0, 0.0, 1.0)
-
-
-# ── flat row <-> image tensor ────────────────────────────────────────────────
-# Flat rows in this repository are HWC (both `rgb_img` and `celeba.rgb` display them as
-# `.reshape(img, img, 3)`).  There are two ways to hand one to a UNet:
-#
-#   "permuted"  a plain `.reshape(-1, 3, H, W)`.  This is NOT an image.  For 64x64x3 it makes the
-#               UNet's three "channels" out of image ROWS 0-21 / 21-42 / 42-63, its width axis out
-#               of the COLOUR axis, and its vertical axis a ~22-pixel jump ACROSS the image, so one
-#               3x3 convolution reads real columns 3, 24 and 45 at once.  Training and sampling
-#               share the permutation, so images still DISPLAY correctly -- which is why this
-#               survived -- but a CNN's entire inductive bias is locality, and there is none left
-#               at any scale.  See tests/diag_layout.py and figures/f20_layout.png.
-#   "hwc"       a real transpose.  The UNet sees an actual image.
-#
-# Every backbone trained before 2026-08-11 used "permuted", so that stays the default and each
-# checkpoint records which it used; a checkpoint must be sampled in the layout it was trained in.
-LAYOUT_DEFAULT = os.environ.get("LIFELONG_LAYOUT", "permuted")
-
-
-def _as_img(X, device, img=IMG, layout=None):
-    X = np.atleast_2d(np.asarray(X, np.float32))
-    T = torch.from_numpy(X).to(device)
-    if (layout or LAYOUT_DEFAULT) == "hwc":
-        return T.reshape(-1, img, img, CH).permute(0, 3, 1, 2).contiguous()
-    return T.reshape(-1, CH, img, img)
-
-
-def _as_flat(T, layout=None):
-    """(N, C, H, W) -> flat rows in the repository's HWC convention.  Inverse of `_as_img`."""
-    if (layout or LAYOUT_DEFAULT) == "hwc":
-        return T.permute(0, 2, 3, 1).reshape(len(T), -1)
-    return T.reshape(len(T), -1)
-
+from ..backbones.layout import (CH, DIM, IMG, LAYOUT_DEFAULT, as_flat as _as_flat,  # noqa: F401
+                                as_img as _as_img, to_data, to_model)
+from ..backbones.schedule import cosine_abar
+from ..score import BaseScoreField
 
 # ── training ─────────────────────────────────────────────────────────────────
 def train_ddpm(model, X01, labels, epochs=60, batch=128, lr=2e-4, wd=1e-6, p_drop=0.1,

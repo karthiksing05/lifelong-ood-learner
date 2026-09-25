@@ -502,7 +502,7 @@ def per_slot_metrics(field, X, slots, slot_ids, u_recon=0.05, max_per_slot=40):
 
 
 def field_abar(u):
-    from .score import cosine_abar
+    from .backbones.schedule import cosine_abar
     return float(cosine_abar(u))
 
 

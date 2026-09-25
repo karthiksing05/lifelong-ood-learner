@@ -33,7 +33,7 @@ compositional is measured rather than assumed.  Two things follow:
 import numpy as np
 import torch
 
-from ..score import cosine_abar
+from ..backbones.schedule import cosine_abar
 from .ddpm import CH, IMG
 from .ddpm import _as_img as _layout_img  # layout-aware flat -> tensor
 

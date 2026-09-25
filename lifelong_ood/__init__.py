@@ -1,11 +1,8 @@
-"""lifelong-ood-learner: lifelong learning as repeated composition of hierarchical prototypes
-on an analytic diffusion manifold.  See README.md for the idea and experiments/ for the evidence."""
-from .tree import GaussianCobweb
-from .backend import make_tree, CobwebPrivateTree, merge_snapshots
-from .score import ScoreField, cosine_abar
-from .compose import poe_teacher, candidates_tree, candidates_ascent, teacher_eps, cfg_weight
-from .lifelong import LifelongLearner
+"""lifelong-ood-learner: lifelong, out-of-distribution learning as the composition of seen prototypes and
+the folding of genuinely new ones into a diffusion model's own manifold.
 
-__all__ = ["GaussianCobweb", "make_tree", "CobwebPrivateTree", "merge_snapshots", "ScoreField",
-           "cosine_abar", "poe_teacher", "candidates_tree", "candidates_ascent", "teacher_eps",
-           "cfg_weight", "LifelongLearner"]
+Nothing is imported here on purpose.  This root used to import the analytic Cobweb track (tree, backend,
+score, compose, lifelong) eagerly, so every script paid for six modules it never used and nothing could
+be archived.  Import the module you need: `lifelong_ood.backbones`, `lifelong_ood.neural.cobweb_update`,
+`lifelong_ood.evals`, `lifelong_ood.ledger`.
+"""
