@@ -55,11 +55,13 @@ def main():
         logging.info(f"forcing node {node_id} (level {n.level}, u={n.u}) with w0={w0}")
         hooks = lambda obs, pre, meta=None: (g, None)          # noqa: E731
     elif a.mode.startswith("program:"):
-        # program:<program.npz>[:w0[:window]] -- COMPOSE: follow one demo's prototype program (or its raw chunks)
+        # program:<program.npz>[:w0[:window[:schedule]]] -- COMPOSE: follow one demo's prototype program (or its raw
+        # chunks); schedule "variance" (Eq. 16) or "const"
         _, prog_path, *rest = a.mode.split(":")
         from lifelong_ood.policy.compose import ComposeHooks, DemoProgram
         prog = DemoProgram.load(prog_path)
-        hooks = ComposeHooks(prog, w0=float(rest[0]) if rest else 1.2, window=int(rest[1]) if len(rest) > 1 else 20)
+        hooks = ComposeHooks(prog, w0=float(rest[0]) if rest else 1.2, window=int(rest[1]) if len(rest) > 1 else 20,
+                             schedule=rest[2] if len(rest) > 2 else "variance")
         logging.info(f"program {prog_path}: variant {prog.variant}, {len(prog.mu)} frames, {prog.bytes()} B")
     elif a.mode.startswith("lora:"):
         # lora:<expert.pt> -- the few-shot baseline: a flat adapter on the action expert, always on

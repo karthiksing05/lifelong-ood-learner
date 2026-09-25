@@ -72,8 +72,12 @@ class DemoProgram:
 class ComposeHooks:
     """Per-episode state: a pointer into the program, advanced by nearest-state alignment in a forward window."""
 
-    def __init__(self, program, w0=1.2, wmax=2.0, window=20, lookahead=0):
+    def __init__(self, program, w0=1.2, wmax=2.0, window=20, lookahead=0, schedule="variance"):
+        """schedule: "variance" (Zekun's Eq. 16: strong at high noise, fading as the policy takes over) or
+        "const" (w = w0 at every step: w0 = 1 samples the teacher alone, i.e. executes the program open-loop in
+        chunk space; pi0.5's conditional is nearly deterministic, so a fading guide may be overwritten late)."""
         self.prog, self.w0, self.wmax, self.window, self.lookahead = program, float(w0), float(wmax), int(window), int(lookahead)
+        self.schedule = schedule
         self.norm = state_norm()
         self.p = 0
         self.trace = []
@@ -92,4 +96,6 @@ class ComposeHooks:
     def __call__(self, obs, pre, meta=None):
         j = self.align(obs["observation/state"])
         self.trace.append(j)
+        if self.schedule == "const":
+            return guide(self.prog.mu[j], self.prog.var[j], wmax=self.w0, schedule="const", path="flow"), None
         return guide(self.prog.mu[j], self.prog.var[j], w0=self.w0, wmax=self.wmax, path="flow"), None
