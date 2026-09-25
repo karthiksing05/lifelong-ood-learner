@@ -1,0 +1,109 @@
+{
+ "artifacts": [
+  "results/robot/r3_prog_36_code_goallib.npz",
+  "results/robot/r3_prog_36_raw_goallib.npz"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 4796,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 4796,
+  "tree": 0
+ },
+ "command": "experiments/r3_prepare.py --tree results/robot/r2b_libero_goal_tree.npz --library-npz results/robot/r2b_libero_goal.npz --tasks 19,33,24,67,35,39,17,42,65,36 --levels 2,3,4 --tag _goallib",
+ "config": {
+  "K": 3,
+  "held": 5,
+  "levels": "2,3,4",
+  "library_npz": "results/robot/r2b_libero_goal.npz",
+  "tag": "_goallib",
+  "tasks": "19,33,24,67,35,39,17,42,65,36",
+  "tree": "results/robot/r2b_libero_goal_tree.npz"
+ },
+ "env": {
+  "device": "cpu",
+  "host": "sky2.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r3_prepare",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "7a4dadab20c41c30a782ead24e8630c1ef5fba72",
+  "short": "7a4dadab"
+ },
+ "keys": {
+  "task": 36
+ },
+ "metrics": {
+  "bddl": "KITCHEN_SCENE7_put_the_white_bowl_on_the_plate",
+  "code": {
+   "bytes": 4796,
+   "mean_rms_to_demo": 0.06695772707462311,
+   "nll_per_dim": -1.1331969499588013,
+   "path": "results/robot/r3_prog_36_code_goallib.npz"
+  },
+  "demo_episode": 455,
+  "depth_hist": {
+   "0.05": 0,
+   "0.1": 0,
+   "0.2": 0,
+   "0.3": 0,
+   "0.4": 0,
+   "0.55": 1,
+   "0.7": 10,
+   "explained": 207
+  },
+  "gripper_events": [
+   87,
+   203
+  ],
+  "n_frames": 218,
+  "n_ipec_episodes": 42,
+  "nll_median": {
+   "0.05": -0.4006984646218677,
+   "0.1": -1.1520651447998707,
+   "0.2": -0.9487570109202412,
+   "0.3": -0.6375921106713287,
+   "0.4": -0.3832480656099547,
+   "0.55": -0.060331181093901246,
+   "0.7": 0.15103171197406307
+  },
+  "out_of_range_frac": 0.07601572739187418,
+  "raw": {
+   "bytes": 32700,
+   "mean_rms_to_demo": 0.0,
+   "nll_per_dim": -1.3836462497711182,
+   "path": "results/robot/r3_prog_36_raw_goallib.npz"
+  },
+  "task_id": 36,
+  "text": "put the white bowl on the plate",
+  "unexplained_by_level": {
+   "0.05": 0.0045871559633027525,
+   "0.1": 0.0,
+   "0.2": 0.0045871559633027525,
+   "0.3": 0.0045871559633027525,
+   "0.4": 0.0045871559633027525,
+   "0.55": 0.013761467889908258,
+   "0.7": 0.045871559633027525
+  },
+  "unexplained_frac": 0.05045871559633028
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r3_prepare__libero_90___goallib__task-36__s0__7a4dadab",
+ "schema": 1,
+ "script": "experiments/r3_prepare.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-25T20:47:07+00:00",
+ "stream": null,
+ "tag": "_goallib"
+}

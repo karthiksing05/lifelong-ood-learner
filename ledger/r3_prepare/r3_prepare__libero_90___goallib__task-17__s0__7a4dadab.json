@@ -1,0 +1,111 @@
+{
+ "artifacts": [
+  "results/robot/r3_prog_17_code_goallib.npz",
+  "results/robot/r3_prog_17_raw_goallib.npz"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 3014,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 3014,
+  "tree": 0
+ },
+ "command": "experiments/r3_prepare.py --tree results/robot/r2b_libero_goal_tree.npz --library-npz results/robot/r2b_libero_goal.npz --tasks 19,33,24,67,35,39,17,42,65,36 --levels 2,3,4 --tag _goallib",
+ "config": {
+  "K": 3,
+  "held": 5,
+  "levels": "2,3,4",
+  "library_npz": "results/robot/r2b_libero_goal.npz",
+  "tag": "_goallib",
+  "tasks": "19,33,24,67,35,39,17,42,65,36",
+  "tree": "results/robot/r2b_libero_goal_tree.npz"
+ },
+ "env": {
+  "device": "cpu",
+  "host": "sky2.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r3_prepare",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "7a4dadab20c41c30a782ead24e8630c1ef5fba72",
+  "short": "7a4dadab"
+ },
+ "keys": {
+  "task": 17
+ },
+ "metrics": {
+  "bddl": "KITCHEN_SCENE2_stack_the_middle_black_bowl_on_the_back_black_bowl",
+  "code": {
+   "bytes": 3014,
+   "mean_rms_to_demo": 0.10511458665132523,
+   "nll_per_dim": -0.94748455286026,
+   "path": "results/robot/r3_prog_17_code_goallib.npz"
+  },
+  "demo_episode": 1903,
+  "depth_hist": {
+   "0.05": 1,
+   "0.1": 1,
+   "0.2": 1,
+   "0.3": 4,
+   "0.4": 5,
+   "0.55": 0,
+   "0.7": 5,
+   "explained": 120
+  },
+  "gripper_events": [
+   36,
+   55,
+   72,
+   123
+  ],
+  "n_frames": 137,
+  "n_ipec_episodes": 39,
+  "nll_median": {
+   "0.05": 0.8354819443964339,
+   "0.1": -0.8064717906294842,
+   "0.2": -0.8834020806607819,
+   "0.3": -0.6169405829391725,
+   "0.4": -0.3683137000352628,
+   "0.55": -0.048332900069341315,
+   "0.7": 0.1501489853246254
+  },
+  "out_of_range_frac": 0.072992700729927,
+  "raw": {
+   "bytes": 20550,
+   "mean_rms_to_demo": 0.0,
+   "nll_per_dim": -1.3836463689804077,
+   "path": "results/robot/r3_prog_17_raw_goallib.npz"
+  },
+  "task_id": 17,
+  "text": "stack the middle black bowl on the back black bowl",
+  "unexplained_by_level": {
+   "0.05": 0.051094890510948905,
+   "0.1": 0.051094890510948905,
+   "0.2": 0.051094890510948905,
+   "0.3": 0.06569343065693431,
+   "0.4": 0.051094890510948905,
+   "0.55": 0.029197080291970802,
+   "0.7": 0.0364963503649635
+  },
+  "unexplained_frac": 0.12408759124087591
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r3_prepare__libero_90___goallib__task-17__s0__7a4dadab",
+ "schema": 1,
+ "script": "experiments/r3_prepare.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-25T20:47:00+00:00",
+ "stream": null,
+ "tag": "_goallib"
+}

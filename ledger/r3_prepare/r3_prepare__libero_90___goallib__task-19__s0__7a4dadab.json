@@ -1,0 +1,109 @@
+{
+ "artifacts": [
+  "results/robot/r3_prog_19_code_goallib.npz",
+  "results/robot/r3_prog_19_raw_goallib.npz"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 2970,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 2970,
+  "tree": 0
+ },
+ "command": "experiments/r3_prepare.py --tree results/robot/r2b_libero_goal_tree.npz --library-npz results/robot/r2b_libero_goal.npz --tasks 19,33,24,67,35,39,17,42,65,36 --levels 2,3,4 --tag _goallib",
+ "config": {
+  "K": 3,
+  "held": 5,
+  "levels": "2,3,4",
+  "library_npz": "results/robot/r2b_libero_goal.npz",
+  "tag": "_goallib",
+  "tasks": "19,33,24,67,35,39,17,42,65,36",
+  "tree": "results/robot/r2b_libero_goal_tree.npz"
+ },
+ "env": {
+  "device": "cpu",
+  "host": "sky2.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r3_prepare",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "7a4dadab20c41c30a782ead24e8630c1ef5fba72",
+  "short": "7a4dadab"
+ },
+ "keys": {
+  "task": 19
+ },
+ "metrics": {
+  "bddl": "KITCHEN_SCENE3_put_the_moka_pot_on_the_stove",
+  "code": {
+   "bytes": 2970,
+   "mean_rms_to_demo": 0.15624356269836426,
+   "nll_per_dim": -0.8487568497657776,
+   "path": "results/robot/r3_prog_19_code_goallib.npz"
+  },
+  "demo_episode": 3646,
+  "depth_hist": {
+   "0.05": 5,
+   "0.1": 2,
+   "0.2": 0,
+   "0.3": 1,
+   "0.4": 29,
+   "0.55": 12,
+   "0.7": 7,
+   "explained": 79
+  },
+  "gripper_events": [
+   77,
+   127
+  ],
+  "n_frames": 135,
+  "n_ipec_episodes": 45,
+  "nll_median": {
+   "0.05": 1.1882826263367845,
+   "0.1": -0.6605880452226245,
+   "0.2": -0.8270280336321654,
+   "0.3": -0.5804182131083963,
+   "0.4": -0.33581106630264407,
+   "0.55": -0.029314023625629484,
+   "0.7": 0.15882255891144909
+  },
+  "out_of_range_frac": 0.10211640211640212,
+  "raw": {
+   "bytes": 20250,
+   "mean_rms_to_demo": 0.0,
+   "nll_per_dim": -1.3836464881896973,
+   "path": "results/robot/r3_prog_19_raw_goallib.npz"
+  },
+  "task_id": 19,
+  "text": "put the moka pot on the stove",
+  "unexplained_by_level": {
+   "0.05": 0.3333333333333333,
+   "0.1": 0.2814814814814815,
+   "0.2": 0.23703703703703705,
+   "0.3": 0.2222222222222222,
+   "0.4": 0.28888888888888886,
+   "0.55": 0.13333333333333333,
+   "0.7": 0.05185185185185185
+  },
+  "unexplained_frac": 0.4148148148148148
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r3_prepare__libero_90___goallib__task-19__s0__7a4dadab",
+ "schema": 1,
+ "script": "experiments/r3_prepare.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-25T20:46:48+00:00",
+ "stream": null,
+ "tag": "_goallib"
+}

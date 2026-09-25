@@ -1,0 +1,442 @@
+{
+ "artifacts": [
+  "results/robot/r2b_libero_goal_tree.npz",
+  "results/robot/r2b_libero_goal.npz"
+ ],
+ "backbone": {
+  "H": 10,
+  "config": "pi05_libero",
+  "dim": 70
+ },
+ "backfilled": false,
+ "bench": "libero_goal",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 2364600,
+  "tree": 2364600
+ },
+ "command": "experiments/r2b_marginal.py --suite libero_goal",
+ "config": {
+  "K": 8,
+  "batch_obs": 32,
+  "eps_per_task": 3,
+  "floor": 0.001,
+  "levels": "0.05,0.1,0.2,0.3,0.4,0.55,0.7",
+  "merge_tol": 0.05,
+  "seed": 0,
+  "suite": "libero_goal",
+  "tag": ""
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "shakey.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3954194",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r2b_marginal",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "7a4dadab20c41c30a782ead24e8630c1ef5fba72",
+  "short": "7a4dadab"
+ },
+ "keys": {},
+ "metrics": {
+  "K": 8,
+  "demo": {
+   "0.05": {
+    "incidence": {
+     "density": 0.1,
+     "n_prototypes": 3532,
+     "prototypes_per_task": 353.2,
+     "shared_fraction": 0.0,
+     "shared_frames": 0.0,
+     "tasks_per_prototype": 1.0,
+     "top_share": 0.007142857142857143
+    },
+    "merge_tol": 0.0026315789473684214,
+    "secs": 1.9138274192810059,
+    "semantics": {
+     "boundaries_per_episode": 91.56666666666666,
+     "events": 47,
+     "hit_rate": 1.0,
+     "random_hit_rate": 0.9997916666666667
+    }
+   },
+   "0.1": {
+    "incidence": {
+     "density": 0.10003159557661927,
+     "n_prototypes": 3165,
+     "prototypes_per_task": 316.6,
+     "shared_fraction": 0.000315955766192733,
+     "shared_frames": 0.004761904761904762,
+     "tasks_per_prototype": 1.0003159557661927,
+     "top_share": 0.012433862433862434
+    },
+    "merge_tol": 0.005555555555555557,
+    "secs": 2.125775098800659,
+    "semantics": {
+     "boundaries_per_episode": 85.3,
+     "events": 47,
+     "hit_rate": 1.0,
+     "random_hit_rate": 1.0
+    }
+   },
+   "0.2": {
+    "incidence": {
+     "density": 0.10080930703085483,
+     "n_prototypes": 1977,
+     "prototypes_per_task": 199.3,
+     "shared_fraction": 0.00556398583712696,
+     "shared_frames": 0.05423280423280423,
+     "tasks_per_prototype": 1.0080930703085482,
+     "top_share": 0.02513227513227513
+    },
+    "merge_tol": 0.0125,
+    "secs": 3.0675554275512695,
+    "semantics": {
+     "boundaries_per_episode": 56.9,
+     "events": 47,
+     "hit_rate": 1.0,
+     "random_hit_rate": 0.9943750000000001
+    }
+   },
+   "0.3": {
+    "incidence": {
+     "density": 0.10735873850197108,
+     "n_prototypes": 761,
+     "prototypes_per_task": 81.7,
+     "shared_fraction": 0.03416557161629435,
+     "shared_frames": 0.4399470899470899,
+     "tasks_per_prototype": 1.0735873850197108,
+     "top_share": 0.10291005291005291
+    },
+    "merge_tol": 0.021428571428571432,
+    "secs": 3.1504287719726562,
+    "semantics": {
+     "boundaries_per_episode": 26.1,
+     "events": 47,
+     "hit_rate": 1.0,
+     "random_hit_rate": 0.8844270833333333
+    }
+   },
+   "0.4": {
+    "incidence": {
+     "density": 0.18776595744680852,
+     "n_prototypes": 188,
+     "prototypes_per_task": 35.3,
+     "shared_fraction": 0.26595744680851063,
+     "shared_frames": 0.8044973544973545,
+     "tasks_per_prototype": 1.877659574468085,
+     "top_share": 0.11164021164021164
+    },
+    "merge_tol": 0.03333333333333334,
+    "secs": 2.166628837585449,
+    "semantics": {
+     "boundaries_per_episode": 20.866666666666667,
+     "events": 47,
+     "hit_rate": 1.0,
+     "random_hit_rate": 0.8165625
+    }
+   },
+   "0.55": {
+    "incidence": {
+     "density": 0.52,
+     "n_prototypes": 5,
+     "prototypes_per_task": 2.6,
+     "shared_fraction": 0.8,
+     "shared_frames": 0.9748677248677249,
+     "tasks_per_prototype": 5.2,
+     "top_share": 0.45211640211640214
+    },
+    "merge_tol": 0.06111111111111113,
+    "secs": 3.030238389968872,
+    "semantics": {
+     "boundaries_per_episode": 2.3,
+     "events": 47,
+     "hit_rate": 0.010416666666666666,
+     "random_hit_rate": 0.15729166666666666
+    }
+   },
+   "0.7": {
+    "incidence": {
+     "density": 0.9,
+     "n_prototypes": 2,
+     "prototypes_per_task": 1.8,
+     "shared_fraction": 1.0,
+     "shared_frames": 1.0,
+     "tasks_per_prototype": 9.0,
+     "top_share": 0.6833333333333333
+    },
+    "merge_tol": 0.11666666666666665,
+    "secs": 1.0117204189300537,
+    "semantics": {
+     "boundaries_per_episode": 1.7666666666666666,
+     "events": 47,
+     "hit_rate": 0.5625,
+     "random_hit_rate": 0.13276041666666666
+    }
+   }
+  },
+  "hierarchy_demo": {
+   "0.05": {
+    "n": 3532,
+    "n_parents": 3165,
+    "norm_disp": 0.07658832814097909,
+    "sym_kl": 18.205057586348325
+   },
+   "0.1": {
+    "n": 3165,
+    "n_parents": 1977,
+    "norm_disp": 0.36153095634730875,
+    "sym_kl": 339.18205382977163
+   },
+   "0.2": {
+    "n": 1977,
+    "n_parents": 760,
+    "norm_disp": 0.6941048461493454,
+    "sym_kl": 1964.604341193839
+   },
+   "0.3": {
+    "n": 761,
+    "n_parents": 188,
+    "norm_disp": 0.8372332059512706,
+    "sym_kl": 2383.2687349329444
+   },
+   "0.4": {
+    "n": 188,
+    "n_parents": 5,
+    "norm_disp": 1.2544120647647279,
+    "sym_kl": 11768.937505126
+   },
+   "0.55": {
+    "n": 5,
+    "n_parents": 2,
+    "norm_disp": 0.8748076111078262,
+    "sym_kl": 1075.4313171386718
+   }
+  },
+  "hierarchy_policy": {
+   "0.05": {
+    "n": 3159,
+    "n_parents": 2620,
+    "norm_disp": 0.11027615750754438,
+    "sym_kl": 11.532051256439441
+   },
+   "0.1": {
+    "n": 2620,
+    "n_parents": 1386,
+    "norm_disp": 0.3964847459920953,
+    "sym_kl": 133.52041910270412
+   },
+   "0.2": {
+    "n": 1387,
+    "n_parents": 579,
+    "norm_disp": 0.6106213067773906,
+    "sym_kl": 624.0826238351344
+   },
+   "0.3": {
+    "n": 579,
+    "n_parents": 128,
+    "norm_disp": 0.8521779887442555,
+    "sym_kl": 1374.5755004602033
+   },
+   "0.4": {
+    "n": 130,
+    "n_parents": 5,
+    "norm_disp": 1.1622195361898495,
+    "sym_kl": 5033.8979987914745
+   },
+   "0.55": {
+    "n": 5,
+    "n_parents": 2,
+    "norm_disp": 0.8655200242996216,
+    "sym_kl": 1030.4575798034668
+   }
+  },
+  "n_episodes": 30,
+  "n_frames": 3780,
+  "policy": {
+   "0.05": {
+    "incidence": {
+     "density": 0.1,
+     "n_prototypes": 3159,
+     "prototypes_per_task": 315.9,
+     "shared_fraction": 0.0,
+     "shared_frames": 0.0,
+     "tasks_per_prototype": 1.0,
+     "top_share": 0.007142857142857143
+    },
+    "merge_tol": 0.0026315789473684214,
+    "secs": 1.7859151363372803,
+    "semantics": {
+     "boundaries_per_episode": 84.5,
+     "events": 47,
+     "hit_rate": 1.0,
+     "random_hit_rate": 1.0
+    }
+   },
+   "0.1": {
+    "incidence": {
+     "density": 0.1,
+     "n_prototypes": 2620,
+     "prototypes_per_task": 262.0,
+     "shared_fraction": 0.0,
+     "shared_frames": 0.0,
+     "tasks_per_prototype": 1.0,
+     "top_share": 0.014285714285714285
+    },
+    "merge_tol": 0.005555555555555557,
+    "secs": 1.7526731491088867,
+    "semantics": {
+     "boundaries_per_episode": 71.73333333333333,
+     "events": 47,
+     "hit_rate": 1.0,
+     "random_hit_rate": 0.9996875
+    }
+   },
+   "0.2": {
+    "incidence": {
+     "density": 0.10122566690699351,
+     "n_prototypes": 1387,
+     "prototypes_per_task": 140.4,
+     "shared_fraction": 0.008651766402307137,
+     "shared_frames": 0.049206349206349205,
+     "tasks_per_prototype": 1.012256669069935,
+     "top_share": 0.024603174603174603
+    },
+    "merge_tol": 0.0125,
+    "secs": 2.027515411376953,
+    "semantics": {
+     "boundaries_per_episode": 40.3,
+     "events": 47,
+     "hit_rate": 1.0,
+     "random_hit_rate": 0.9626041666666666
+    }
+   },
+   "0.3": {
+    "incidence": {
+     "density": 0.11208981001727115,
+     "n_prototypes": 579,
+     "prototypes_per_task": 64.9,
+     "shared_fraction": 0.06563039723661486,
+     "shared_frames": 0.3798941798941799,
+     "tasks_per_prototype": 1.1208981001727116,
+     "top_share": 0.08597883597883597
+    },
+    "merge_tol": 0.021428571428571432,
+    "secs": 1.981454849243164,
+    "semantics": {
+     "boundaries_per_episode": 20.966666666666665,
+     "events": 47,
+     "hit_rate": 1.0,
+     "random_hit_rate": 0.8192708333333334
+    }
+   },
+   "0.4": {
+    "incidence": {
+     "density": 0.19692307692307692,
+     "n_prototypes": 130,
+     "prototypes_per_task": 25.6,
+     "shared_fraction": 0.2923076923076923,
+     "shared_frames": 0.7783068783068783,
+     "tasks_per_prototype": 1.9692307692307693,
+     "top_share": 0.11084656084656085
+    },
+    "merge_tol": 0.03333333333333334,
+    "secs": 2.0258328914642334,
+    "semantics": {
+     "boundaries_per_episode": 14.8,
+     "events": 47,
+     "hit_rate": 0.84375,
+     "random_hit_rate": 0.69109375
+    }
+   },
+   "0.55": {
+    "incidence": {
+     "density": 0.52,
+     "n_prototypes": 5,
+     "prototypes_per_task": 2.6,
+     "shared_fraction": 0.8,
+     "shared_frames": 0.9756613756613757,
+     "tasks_per_prototype": 5.2,
+     "top_share": 0.4552910052910053
+    },
+    "merge_tol": 0.06111111111111113,
+    "secs": 2.7699074745178223,
+    "semantics": {
+     "boundaries_per_episode": 2.3,
+     "events": 47,
+     "hit_rate": 0.010416666666666666,
+     "random_hit_rate": 0.16364583333333332
+    }
+   },
+   "0.7": {
+    "incidence": {
+     "density": 0.9,
+     "n_prototypes": 2,
+     "prototypes_per_task": 1.8,
+     "shared_fraction": 1.0,
+     "shared_frames": 1.0,
+     "tasks_per_prototype": 9.0,
+     "top_share": 0.676984126984127
+    },
+    "merge_tol": 0.11666666666666665,
+    "secs": 0.95839524269104,
+    "semantics": {
+     "boundaries_per_episode": 1.5666666666666667,
+     "events": 47,
+     "hit_rate": 0.5625,
+     "random_hit_rate": 0.1190625
+    }
+   }
+  },
+  "secs_conditionals": 667.6632912158966,
+  "tree": {
+   "bytes": 2364600,
+   "dim": 70,
+   "img": 0,
+   "n_nodes": 7882,
+   "path": "flow",
+   "per_level": [
+    3159,
+    2620,
+    1387,
+    579,
+    130,
+    5,
+    2
+   ],
+   "u_grid": [
+    0.05,
+    0.1,
+    0.2,
+    0.3,
+    0.4,
+    0.55,
+    0.7
+   ]
+  },
+  "unimodality": {
+   "between_frame_rms": 0.7409311532974243,
+   "policy_mean_to_demo_rms": 0.058072153478860855,
+   "tweedie_t1_vs_sample_mean_rms": 0.025066716596484184,
+   "within_obs_std": 0.023979462683200836
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r2b_marginal__libero_goal__base__s0__7a4dadab",
+ "schema": 1,
+ "script": "experiments/r2b_marginal.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-25T20:45:07+00:00",
+ "stream": null,
+ "tag": ""
+}

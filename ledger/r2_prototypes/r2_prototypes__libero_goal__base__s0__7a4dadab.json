@@ -1,0 +1,214 @@
+{
+ "artifacts": [
+  "results/robot/r2_libero_goal_tree.npz",
+  "results/robot/r2_libero_goal.npz"
+ ],
+ "backbone": {
+  "H": 10,
+  "config": "pi05_libero",
+  "dim": 70
+ },
+ "backfilled": false,
+ "bench": "libero_goal",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 1697400,
+  "tree": 1697400
+ },
+ "command": "experiments/r2_prototypes.py --suite libero_goal",
+ "config": {
+  "batch": 32,
+  "eps_per_task": 4,
+  "frames_per_ep": 24,
+  "iters": 80,
+  "levels": "0.1,0.2,0.3,0.4,0.55,0.7",
+  "lr": 0.02,
+  "probes": 4,
+  "seed": 0,
+  "sem_eps_per_task": 2,
+  "sem_level": 0.3,
+  "suite": "libero_goal",
+  "tag": "",
+  "tol": 0.05
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "samantha.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3954140",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r2_prototypes",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "7a4dadab20c41c30a782ead24e8630c1ef5fba72",
+  "short": "7a4dadab"
+ },
+ "keys": {},
+ "metrics": {
+  "between_chunk_rms": 0.7876527905464172,
+  "hierarchy": {
+   "0.1": {
+    "n_children": 942,
+    "norm_disp": 0.5283992289073148,
+    "sym_kl": 229.780495072626
+   },
+   "0.2": {
+    "n_children": 942,
+    "norm_disp": 0.32159856112076723,
+    "sym_kl": 741.696805958029
+   },
+   "0.3": {
+    "n_children": 944,
+    "norm_disp": 0.4986543433219826,
+    "sym_kl": 2046.6910120753919
+   },
+   "0.4": {
+    "n_children": 943,
+    "norm_disp": 0.8104363737562681,
+    "sym_kl": 5262.408036410998
+   },
+   "0.55": {
+    "n_children": 943,
+    "norm_disp": 2.7664688890394955,
+    "sym_kl": 14985.77964276246
+   }
+  },
+  "levels": {
+   "0.1": {
+    "forwards": 85440,
+    "incidence": {
+     "density": 0.1,
+     "n_prototypes": 942,
+     "prototypes_per_task": 94.2,
+     "shared_fraction": 0.0,
+     "tasks_per_prototype": 1.0,
+     "top_share": 0.004166666666666667
+    },
+    "mode_rms_to_own_chunk": 0.04263647645711899,
+    "n_distinct": 942,
+    "null_density": 0.1
+   },
+   "0.2": {
+    "forwards": 85440,
+    "incidence": {
+     "density": 0.1,
+     "n_prototypes": 942,
+     "prototypes_per_task": 94.2,
+     "shared_fraction": 0.0,
+     "tasks_per_prototype": 1.0,
+     "top_share": 0.004166666666666667
+    },
+    "mode_rms_to_own_chunk": 0.03860887885093689,
+    "n_distinct": 942,
+    "null_density": 0.1
+   },
+   "0.3": {
+    "forwards": 85440,
+    "incidence": {
+     "density": 0.1,
+     "n_prototypes": 944,
+     "prototypes_per_task": 94.4,
+     "shared_fraction": 0.0,
+     "tasks_per_prototype": 1.0,
+     "top_share": 0.003125
+    },
+    "mode_rms_to_own_chunk": 0.03662984445691109,
+    "n_distinct": 944,
+    "null_density": 0.1
+   },
+   "0.4": {
+    "forwards": 85440,
+    "incidence": {
+     "density": 0.1,
+     "n_prototypes": 943,
+     "prototypes_per_task": 94.3,
+     "shared_fraction": 0.0,
+     "tasks_per_prototype": 1.0,
+     "top_share": 0.003125
+    },
+    "mode_rms_to_own_chunk": 0.04811790585517883,
+    "n_distinct": 943,
+    "null_density": 0.1
+   },
+   "0.55": {
+    "forwards": 85440,
+    "incidence": {
+     "density": 0.1,
+     "n_prototypes": 943,
+     "prototypes_per_task": 94.3,
+     "shared_fraction": 0.0,
+     "tasks_per_prototype": 1.0,
+     "top_share": 0.003125
+    },
+    "mode_rms_to_own_chunk": 0.05768998712301254,
+    "n_distinct": 943,
+    "null_density": 0.1
+   },
+   "0.7": {
+    "forwards": 85440,
+    "incidence": {
+     "density": 0.1,
+     "n_prototypes": 944,
+     "prototypes_per_task": 94.4,
+     "shared_fraction": 0.0,
+     "tasks_per_prototype": 1.0,
+     "top_share": 0.003125
+    },
+    "mode_rms_to_own_chunk": 0.057046908885240555,
+    "n_distinct": 944,
+    "null_density": 0.1
+   }
+  },
+  "n_chunks": 960,
+  "raw_distinct": 949,
+  "secs_discover": 775.0926737785339,
+  "semantics": {
+   "hit_rate": 1.0,
+   "level": 0.3,
+   "n_boundaries": 939,
+   "n_episodes": 16,
+   "n_gripper_events": 33,
+   "random_hit_rate": 0.97328125,
+   "secs": 467.766428232193
+  },
+  "tree": {
+   "bytes": 1697400,
+   "dim": 70,
+   "img": 0,
+   "n_nodes": 5658,
+   "path": "flow",
+   "per_level": [
+    942,
+    942,
+    944,
+    943,
+    943,
+    944
+   ],
+   "u_grid": [
+    0.1,
+    0.2,
+    0.3,
+    0.4,
+    0.55,
+    0.7
+   ]
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r2_prototypes__libero_goal__base__s0__7a4dadab",
+ "schema": 1,
+ "script": "experiments/r2_prototypes.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-25T20:46:01+00:00",
+ "stream": null,
+ "tag": ""
+}

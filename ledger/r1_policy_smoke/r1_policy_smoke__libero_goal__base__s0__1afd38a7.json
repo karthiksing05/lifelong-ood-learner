@@ -1,0 +1,83 @@
+{
+ "artifacts": {},
+ "backbone": {
+  "A": 32,
+  "H": 10,
+  "config": "pi05_libero",
+  "dim": 70,
+  "n_params": 3616757520
+ },
+ "backfilled": false,
+ "bench": "libero_goal",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "experiments/r1_policy_smoke.py",
+ "config": {
+  "config": "pi05_libero",
+  "episode": 379,
+  "task": "put the bowl on the plate"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "kitt.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3954255",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r1_policy_smoke",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "1afd38a722c22794c46f5f829cf7b0364b6ece09",
+  "short": "1afd38a7"
+ },
+ "keys": {},
+ "metrics": {
+  "ascent": {
+   "0.1": {
+    "mode_rms_to_start": 0.45440927147865295,
+    "n_distinct": 11,
+    "score_norm_end": 2.1658031940460205,
+    "secs": 8.33558464050293
+   },
+   "0.3": {
+    "mode_rms_to_start": 0.6258215308189392,
+    "n_distinct": 1,
+    "score_norm_end": 0.8439487218856812,
+    "secs": 8.339688777923584
+   },
+   "0.55": {
+    "mode_rms_to_start": 0.627519965171814,
+    "n_distinct": 1,
+    "score_norm_end": 1.0291811227798462,
+    "secs": 8.37262225151062
+   }
+  },
+  "eps_norm_after_step": 9.605984687805176,
+  "eps_norm_before": 9.697179794311523,
+  "identity_err": 1.1920928955078125e-07,
+  "norm_max_abs_err": 1.810897586329574e-07,
+  "ok": true,
+  "parity_max_abs_diff": 0.0,
+  "secs_per_step_b64": 0.09538745880126953,
+  "tweedie_rms_to_demo": 0.596316933631897,
+  "tweedie_rms_to_noisy": 0.5672341585159302
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r1_policy_smoke__libero_goal__base__s0__1afd38a7",
+ "schema": 1,
+ "script": "experiments/r1_policy_smoke.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-25T20:34:33+00:00",
+ "stream": null,
+ "tag": ""
+}

@@ -1,0 +1,108 @@
+{
+ "artifacts": [
+  "results/robot/r3_prog_39_code_goallib.npz",
+  "results/robot/r3_prog_39_raw_goallib.npz"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 2552,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 2552,
+  "tree": 0
+ },
+ "command": "experiments/r3_prepare.py --tree results/robot/r2b_libero_goal_tree.npz --library-npz results/robot/r2b_libero_goal.npz --tasks 19,33,24,67,35,39,17,42,65,36 --levels 2,3,4 --tag _goallib",
+ "config": {
+  "K": 3,
+  "held": 5,
+  "levels": "2,3,4",
+  "library_npz": "results/robot/r2b_libero_goal.npz",
+  "tag": "_goallib",
+  "tasks": "19,33,24,67,35,39,17,42,65,36",
+  "tree": "results/robot/r2b_libero_goal_tree.npz"
+ },
+ "env": {
+  "device": "cpu",
+  "host": "sky2.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r3_prepare",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "7a4dadab20c41c30a782ead24e8630c1ef5fba72",
+  "short": "7a4dadab"
+ },
+ "keys": {
+  "task": 39
+ },
+ "metrics": {
+  "bddl": "KITCHEN_SCENE8_turn_off_the_stove",
+  "code": {
+   "bytes": 2552,
+   "mean_rms_to_demo": 0.19424380362033844,
+   "nll_per_dim": -0.6563570499420166,
+   "path": "results/robot/r3_prog_39_code_goallib.npz"
+  },
+  "demo_episode": 3741,
+  "depth_hist": {
+   "0.05": 0,
+   "0.1": 0,
+   "0.2": 0,
+   "0.3": 4,
+   "0.4": 17,
+   "0.55": 12,
+   "0.7": 11,
+   "explained": 72
+  },
+  "gripper_events": [
+   70
+  ],
+  "n_frames": 116,
+  "n_ipec_episodes": 42,
+  "nll_median": {
+   "0.05": 1.6038670891663083,
+   "0.1": -0.5173661788176427,
+   "0.2": -0.8119262936144704,
+   "0.3": -0.5788877195770661,
+   "0.4": -0.337949161390778,
+   "0.55": -0.03209515927793109,
+   "0.7": 0.16672824540629363
+  },
+  "out_of_range_frac": 0.10344827586206896,
+  "raw": {
+   "bytes": 17400,
+   "mean_rms_to_demo": 0.0,
+   "nll_per_dim": -1.3836462497711182,
+   "path": "results/robot/r3_prog_39_raw_goallib.npz"
+  },
+  "task_id": 39,
+  "text": "turn off the stove",
+  "unexplained_by_level": {
+   "0.05": 0.3017241379310345,
+   "0.1": 0.3103448275862069,
+   "0.2": 0.3103448275862069,
+   "0.3": 0.3103448275862069,
+   "0.4": 0.31896551724137934,
+   "0.55": 0.1724137931034483,
+   "0.7": 0.09482758620689655
+  },
+  "unexplained_frac": 0.3793103448275862
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r3_prepare__libero_90___goallib__task-39__s0__7a4dadab",
+ "schema": 1,
+ "script": "experiments/r3_prepare.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-25T20:46:58+00:00",
+ "stream": null,
+ "tag": "_goallib"
+}

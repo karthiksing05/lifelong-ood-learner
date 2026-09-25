@@ -17,7 +17,7 @@ import numpy as np
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT)
 from lifelong_ood import ledger                                        # noqa: E402
-from lifelong_ood.operators.address import best_nll                    # noqa: E402
+from lifelong_ood.policy import novelty                              # noqa: E402
 from lifelong_ood.policy import data as D                              # noqa: E402
 from lifelong_ood.policy.compose import DemoProgram                    # noqa: E402
 from lifelong_ood.tree.nodes import Tree                               # noqa: E402
@@ -55,13 +55,13 @@ def main():
     texts, names = libero90_texts()
     d90 = D.Demos90()
     norm = D.Norm.load()
-    cal = None
+    all_levels = list(range(len(tree.u_grid)))
+    thr = None
     if a.library_npz:
-        z = np.load(a.library_npz)
-        lib = z["mu"] if "mu" in z else z["rows"]
-        sub = np.random.default_rng(0).choice(len(lib), size=min(len(lib), 1000), replace=False)
-        cal = {l: np.quantile(best_nll(tree, lib[sub], l, seed=1)[0], [0.5, 0.95]).tolist() for l in range(len(tree.u_grid))}
-        print(f"[r3p] library NLL quantiles (median, q95) per level: {cal}", flush=True)
+        lib = np.load(a.library_npz)
+        cal_rows = novelty.heldout_rows(D.Demos(), lib)
+        thr = novelty.calibrate(tree, cal_rows, all_levels)
+        print(f"[r3p] q95 NLL of {len(cal_rows)} held-out library frames per level: {[round(v, 2) for v in thr.values()]}", flush=True)
     os.makedirs("results/robot", exist_ok=True)
     for tid in [int(x) for x in a.tasks.split(",")]:
         text = texts[tid]
@@ -83,15 +83,16 @@ def main():
             resid = float(np.sqrt(((prog.mu - rows) ** 2).mean()))
             nll = float((0.5 * ((rows - prog.mu) ** 2 / prog.var + np.log(2 * np.pi * prog.var))).mean())
             m[variant] = dict(bytes=prog.bytes(), mean_rms_to_demo=resid, nll_per_dim=nll, path=path)
-        # novelty read: best-node NLL of the demo's chunks and of held-out demos per level
-        held = [d90.load(e) for e in eps[1:1 + a.held]]
-        hrows = np.concatenate([D.to_rows(h["actions"][D.chunk_indices(len(h["actions"]), 10)[0]], norm) for h in held]) if held else rows
-        m["nll_by_level"] = {str(tree.u_grid[l]): dict(demo=float(np.median(best_nll(tree, rows, l, seed=2)[0])),
-                                                        held=float(np.median(best_nll(tree, hrows, l, seed=3)[0])),
-                                                        library=None if cal is None else cal[l]) for l in range(len(tree.u_grid))}
-        print(f"[r3p] task {tid} '{text}' ({T} frames, {len(m['gripper_events'])} gripper events, {m['out_of_range_frac']:.2f} of dims outside the prior's q01-q99): "
-              f"code {m['code']['bytes']} B rms {m['code']['mean_rms_to_demo']:.3f} nll {m['code']['nll_per_dim']:.2f} | "
-              f"raw {m['raw']['bytes']} B | median best-node NLL by level {[round(v['demo'], 2) for v in m['nll_by_level'].values()]}", flush=True)
+        # novelty read (ADDRESS): the demo's chunks vs held-out library frames, per level
+        if thr is not None:
+            nll, unexp, depth = novelty.read(tree, rows, all_levels, thr)
+            m["unexplained_frac"] = float(unexp.mean())
+            m["unexplained_by_level"] = {str(tree.u_grid[l]): float((nll[l] > thr[l]).mean()) for l in all_levels}
+            m["depth_hist"] = {str(tree.u_grid[l]) if l >= 0 else "explained": int((depth == l).sum()) for l in [-1] + all_levels}
+            m["nll_median"] = {str(tree.u_grid[l]): float(np.median(nll[l])) for l in all_levels}
+        print(f"[r3p] task {tid} '{text}' ({T} frames, {len(m['gripper_events'])} gripper events, {m['out_of_range_frac']:.2f} of dims outside q01-q99): "
+              f"code {m['code']['bytes']} B rms {m['code']['mean_rms_to_demo']:.3f} | raw {m['raw']['bytes']} B"
+              + ("" if thr is None else f" | unexplained {m['unexplained_frac']:.2f}; by level {[round(v, 2) for v in m['unexplained_by_level'].values()]}"), flush=True)
         ledger.record("r3_prepare", bench="libero_90", tag=a.tag, seed=0, keys=dict(task=tid), metrics=m,
                       bytes=dict(experts=0, tree=0, codes=m["code"]["bytes"], samples=0, teacher_copies=0, total=m["code"]["bytes"]),
                       config=vars(a), script="experiments/r3_prepare.py", command=" ".join(sys.argv),

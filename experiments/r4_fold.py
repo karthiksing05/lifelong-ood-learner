@@ -26,7 +26,7 @@ sys.path.insert(0, ROOT)
 sys.path.insert(0, "/coc/flash10/ksingara3/robot/openpi/src")
 from lifelong_ood import ledger                                        # noqa: E402
 from lifelong_ood.experts.lora import add_node                         # noqa: E402
-from lifelong_ood.operators.address import best_nll                    # noqa: E402
+from lifelong_ood.policy import novelty                              # noqa: E402
 from lifelong_ood.policy import adapt                                  # noqa: E402
 from lifelong_ood.policy import data as D                              # noqa: E402
 from lifelong_ood.policy.compose import DemoProgram                    # noqa: E402
@@ -75,17 +75,8 @@ def main():
     demos, d90, norm = D.Demos(), D.Demos90(), D.Norm.load()
 
     # 1. calibration on held-out library frames (episodes of the trained tasks that did not build the tree)
-    used = set(lib["episode"].tolist())
-    tasks40 = sorted(set(lib["task"].tolist()))
-    cal_rows = []
-    for tid in tasks40:
-        eps = [e for e in demos.episodes(int(tid)) if e not in used][:2]
-        for e in eps:
-            ep = demos.load(e)
-            cal_rows.append(D.to_rows(ep["actions"][D.chunk_indices(len(ep["actions"]), 10)[0]], norm))
-    cal_rows = np.concatenate(cal_rows)
-    cal_rows = cal_rows[rng.choice(len(cal_rows), size=min(a.n_cal, len(cal_rows)), replace=False)]
-    thr = {l: float(np.quantile(best_nll(tree, cal_rows, l, seed=11)[0], a.q)) for l in band}
+    cal_rows = novelty.heldout_rows(demos, lib, n=a.n_cal, seed=a.seed)
+    thr = novelty.calibrate(tree, cal_rows, band, q=a.q)
     log(f"[r4] calibration on {len(cal_rows)} held-out library frames: q{a.q} per band level {thr}")
 
     # the demo and its novelty
@@ -93,10 +84,7 @@ def main():
     ep = d90.load(ep_idx)
     T = len(ep["actions"])
     rows = D.to_rows(ep["actions"][D.chunk_indices(T, 10)[0]], norm)
-    nll = {l: best_nll(tree, rows, l, seed=12)[0] for l in band}
-    unexplained = np.zeros(T, bool)
-    for l in band:
-        unexplained |= nll[l] > thr[l]
+    nll, unexplained, depth = novelty.read(tree, rows, band, thr)
     log(f"[r4] task {a.task} '{text}': {T} frames, {int(unexplained.sum())} unexplained ({unexplained.mean():.2f}); "
         f"median NLL per band level {[round(float(np.median(nll[l])), 2) for l in band]} vs thresholds {[round(thr[l], 2) for l in band]}")
 
