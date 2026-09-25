@@ -84,9 +84,18 @@ def _slug(s):
 def run_id(experiment, bench, tag, seed, git_short, keys=None):
     parts = [_slug(experiment), _slug(bench), _slug(tag or "base")]
     if keys:
-        parts += [_slug(f"{k}={v}") for k, v in sorted(keys.items())]
+        for k, v in sorted(keys.items()):
+            sl = _slug(f"{k}={v}")
+            if len(sl) > 60:                    # long values (a serving mode with paths) -> a short stable digest
+                import hashlib
+                sl = _slug(f"{k}=") + hashlib.sha1(str(v).encode()).hexdigest()[:12]
+            parts.append(sl)
     parts += [f"s{int(seed)}", _slug(git_short)]
-    return "__".join(parts)
+    rid = "__".join(parts)
+    if len(rid) > 200:                          # file names cap at 255 bytes
+        import hashlib
+        rid = rid[:160] + "__" + hashlib.sha1(rid.encode()).hexdigest()[:12]
+    return rid
 
 
 # ── writing ───────────────────────────────────────────────────────────────────
