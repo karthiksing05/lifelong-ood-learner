@@ -105,7 +105,7 @@ class ComposeHooks:
     """Per-episode state: a pointer into the program, advanced by nearest-state alignment in a forward window."""
 
     def __init__(self, program, w0=1.2, wmax=2.0, window=20, lookahead=0, schedule="variance", var=None, use_guide=True,
-                 use_prompt=False):
+                 use_prompt=False, stall=0, release=2):
         """schedule: "variance" (Zekun's Eq. 16: strong at high noise, fading as the policy takes over) or
         "const" (w = w0 at every step: w0 = 1 samples the teacher alone, i.e. executes the program open-loop in
         chunk space; pi0.5's conditional is nearly deterministic, so a fading guide may be overwritten late)."""
@@ -116,6 +116,11 @@ class ComposeHooks:
         # sample unless w ~ 1.  `var` overrides the teacher's variance to set its precision explicitly.
         self.var = None if var is None else float(var)
         self.use_guide, self.use_prompt = bool(use_guide), bool(use_prompt)
+        # STALL fallback (0 = off): after `stall` calls whose aligned frame does not advance, release the guide for
+        # `release` calls so the prior acts alone (it re-grounds on the scene), then follow the program again.
+        # Seen in the pilot: replay stuck at one demo frame for 65 calls, re-issuing the same chunk.
+        self.stall, self.release = int(stall), int(release)
+        self._still, self._released = 0, 0
         self._j = None
         self.norm = state_norm()
         self.p = 0
@@ -130,6 +135,23 @@ class ComposeHooks:
         self.p = 0
         self.trace = []
         self._j = None
+        self._still, self._released = 0, 0
+
+    def _released_now(self):
+        """Advance the stall counters for the frame just aligned; True while the guide is released."""
+        if not self.stall:
+            return False
+        if self._released > 0:
+            self._released -= 1
+            return True
+        if len(self.trace) >= 2 and self.trace[-1] <= self.trace[-2]:
+            self._still += 1
+        else:
+            self._still = 0
+        if self._still >= self.stall:
+            self._still, self._released = 0, self.release - 1
+            return True
+        return False
 
     def rewrite(self, obs, meta=None):
         """Called by GuidedPolicy BEFORE the prefix: align to the demo once per call and, with a prompt program,
@@ -163,6 +185,8 @@ class ComposeHooks:
 
     def __call__(self, obs, pre, meta=None):
         j = self._frame(obs)
+        if self._released_now():
+            return None, None
         return (self.guide_at(j) if self.use_guide else None), None
 
 
@@ -180,5 +204,7 @@ class HybridHooks(ComposeHooks):
         j = self._frame(obs)
         if self.prog.fold is not None and bool(self.prog.fold[j]):
             return None, (lambda x, t: self.on)
+        if self._released_now():
+            return None, None
         return (self.guide_at(j) if self.use_guide else None), None
 

@@ -57,7 +57,8 @@ def main():
     elif a.mode.startswith("program:"):
         # program:<program.npz>[:w0[:window[:schedule[:var[:how]]]]] -- COMPOSE: follow one demo's prototype program (or
         # its raw chunks); schedule "variance" (Eq. 16) or "const"; var overrides the teacher's variance (its precision);
-        # how = "guide" (default) | "prompt" (swap the instruction only) | "prompt+guide"
+        # how = "guide" (default) | "prompt" (swap the instruction only) | "prompt+guide"; stall = release the guide after
+        # that many calls without progress (0 = off)
         _, prog_path, *rest = a.mode.split(":")
         from lifelong_ood.policy.compose import ComposeHooks, DemoProgram
         prog = DemoProgram.load(prog_path)
@@ -65,7 +66,8 @@ def main():
                              schedule=rest[2] if len(rest) > 2 else "variance",
                              var=float(rest[3]) if len(rest) > 3 and rest[3] else None,
                              use_guide=not (len(rest) > 4 and rest[4] == "prompt"),
-                             use_prompt=len(rest) > 4 and rest[4] in ("prompt", "prompt+guide"))
+                             use_prompt=len(rest) > 4 and rest[4] in ("prompt", "prompt+guide"),
+                             stall=int(rest[5]) if len(rest) > 5 and rest[5] else 0)
         logging.info(f"program {prog_path}: variant {prog.variant}, {len(prog.mu)} frames, {prog.bytes()} B")
     elif a.mode.startswith("hybrid:"):
         # hybrid:<program.npz>:<expert.pt>[:w0[:schedule[:var]]] -- compose where explained, the folded expert where not
@@ -75,7 +77,8 @@ def main():
         state, key, banks = adapt.load(bk, expert_path)
         prog = DemoProgram.load(prog_path)
         hooks = HybridHooks(prog, state, key, w0=float(rest[0]) if rest else 1.2, schedule=rest[1] if len(rest) > 1 else "variance",
-                            var=float(rest[2]) if len(rest) > 2 and rest[2] else None)
+                            var=float(rest[2]) if len(rest) > 2 and rest[2] else None,
+                            stall=int(rest[3]) if len(rest) > 3 and rest[3] else 0)
         logging.info(f"hybrid: program {prog_path} ({int(prog.fold.sum()) if prog.fold is not None else 0} fold frames of {len(prog.mu)}), expert {key}")
     elif a.mode.startswith("lora:"):
         # lora:<expert.pt> -- the few-shot baseline: a flat adapter on the action expert, always on
