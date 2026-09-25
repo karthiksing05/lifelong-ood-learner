@@ -31,11 +31,8 @@ import sys
 import numpy as np
 import torch
 
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from lifelong_ood.evals import SoftmaxProbe                            # noqa: E402
-
-HERE = os.path.dirname(os.path.abspath(__file__))
-CACHE = os.path.join(os.path.dirname(HERE), "results", "cache")
+from ..evals import SoftmaxProbe
+from ..ledger import CACHE
 
 
 class ColorMNISTBench:

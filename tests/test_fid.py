@@ -23,7 +23,7 @@ import sys
 import numpy as np
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from lifelong_ood.fid import fid, inception_features, kid                     # noqa: E402
+from lifelong_ood.evals.fid import fid, inception_features, kid                     # noqa: E402
 
 IMG = 32
 ok = True

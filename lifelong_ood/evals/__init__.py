@@ -16,7 +16,7 @@ import os
 
 import numpy as np
 
-from .data.datasets import IMG, rgb_img
+from ..data.datasets import IMG, rgb_img
 
 
 # ── numpy softmax probe ───────────────────────────────────────────────────────
@@ -405,7 +405,7 @@ def paper_metrics(samples, reference, img=None, k=3, device=None, space="incepti
         np.atleast_2d(np.asarray(reference, np.float64))
     used = space
     if space == "inception":
-        from lifelong_ood import inception
+        from . import inception
         if inception.available():
             FS, FR = (inception.features(S, img=img, device=device),
                       inception.features(R, img=img, device=device))

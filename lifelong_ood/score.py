@@ -26,7 +26,7 @@ their Eq. 14, with the analytic PoE teacher (see compose.py) as the conditional 
 """
 import numpy as np
 
-from .tree import frontier_mask, frontier_weights
+from .legacy.analytic_tree import frontier_mask, frontier_weights
 
 
 # The schedule and the clip conventions live in backbones.schedule; re-exported here because the

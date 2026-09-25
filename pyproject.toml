@@ -9,5 +9,9 @@ description = "Lifelong OOD learning as composing seen prototypes and folding ne
 requires-python = ">=3.10"
 dependencies = ["numpy>=1.24", "matplotlib>=3.7"]
 
-[tool.setuptools]
-packages = ["lifelong_ood"]
+[tool.setuptools.packages.find]
+include = ["lifelong_ood*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-p no:cacheprovider"

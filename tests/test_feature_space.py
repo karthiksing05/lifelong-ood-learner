@@ -126,7 +126,7 @@ def verdict(res):
 
 
 def main():
-    from lifelong_ood import inception
+    from lifelong_ood.evals import inception
     have_incep = inception.available()
     spaces = ["pixel"] + (["inception"] if have_incep else [])
     datasets = real_datasets()
