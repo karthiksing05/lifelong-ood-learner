@@ -11,7 +11,7 @@ for tid in ${TASKS//,/ }; do
     case $arm in
       zeroshot) MODE=ours; PB=0 ;;
       code|raw) MODE="program:$R/r3_prog_${tid}_${arm}${PROGTAG:-}.npz:$W0:20:$SCHED:$TVAR"
-                PB=$(~/flash/miniconda3/envs/chunks/bin/python -c "import sys; sys.path.insert(0,'.'); from lifelong_ood.policy.compose import DemoProgram; print(DemoProgram.load('$R/r3_prog_${tid}_${arm}.npz').bytes())") ;;
+                PB=$(~/flash/miniconda3/envs/chunks/bin/python -c "import sys; sys.path.insert(0,'.'); from lifelong_ood.policy.compose import DemoProgram; print(DemoProgram.load('$R/r3_prog_${tid}_${arm}${PROGTAG:-}.npz').bytes())") ;;
       lora) MODE="lora:$R/r3_lora_${tid}.pt"; PB=0 ;;
       *) echo "unknown arm $arm"; exit 1 ;;
     esac

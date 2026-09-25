@@ -1,10 +1,12 @@
 #!/bin/bash
 # One node: a policy server (openpi env) + our LIBERO client (libero env).  Env vars:
 #   MODE    openpi (openpi's Policy.infer, eager, warmed) | ours | proto:<tree>:<node>[:w0] | compose:<spec>
-#   SUITE   libero_goal | libero_90 | ...     TASKS  all | 0,1,5      TRIALS  n      FIRST  first init-state index
+#   SUITE   libero_goal | libero_90 | ...     TASKS  all | 0+1+5 (not commas: sbatch --export splits on them)
+#   TRIALS  n      FIRST  first init-state index
 #   OUT     results/robot/<name>.json
 set -uo pipefail
 MODE=${MODE:-openpi}; SUITE=${SUITE:-libero_goal}; TASKS=${TASKS:-all}; TRIALS=${TRIALS:-10}; FIRST=${FIRST:-0}
+TASKS=${TASKS//+/,}      # sbatch --export splits on commas: pass task lists as 0+1+2
 REPO=/coc/flash10/ksingara3/lifelong-ood-learner
 OUT=${OUT:-$REPO/results/robot/roll_${SUITE}_${SLURM_JOB_ID:-x}.json}
 ROBOT=/coc/flash10/ksingara3/robot/openpi
