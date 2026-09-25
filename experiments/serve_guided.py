@@ -54,6 +54,30 @@ def main():
         g = make_guide(n.mode, n.var, w0=w0, path=tree.path)
         logging.info(f"forcing node {node_id} (level {n.level}, u={n.u}) with w0={w0}")
         hooks = lambda obs, pre, meta=None: (g, None)          # noqa: E731
+    elif a.mode.startswith("program:") and "?" in a.mode:
+        # program:<program.npz>?w0=1&sched=const&var=0.001&how=guide&stall=3&key=pose&window=20  (named parameters)
+        path, q = a.mode[len("program:"):].split("?", 1)
+        kv = dict(x.split("=", 1) for x in q.split("&") if x)
+        from lifelong_ood.policy.compose import ComposeHooks, DemoProgram
+        prog = DemoProgram.load(path)
+        how = kv.get("how", "guide")
+        hooks = ComposeHooks(prog, w0=float(kv.get("w0", 1.2)), window=int(kv.get("window", 20)), schedule=kv.get("sched", "variance"),
+                             var=float(kv["var"]) if kv.get("var") else None, use_guide=how != "prompt",
+                             use_prompt=how in ("prompt", "prompt+guide"), stall=int(kv.get("stall", 0)),
+                             key_mode=kv.get("key", "pos"))
+        logging.info(f"program {path}: variant {prog.variant}, {len(prog.mu)} frames, {prog.bytes()} B, params {kv}")
+    elif a.mode.startswith("hybrid:") and "?" in a.mode:
+        # hybrid:<program.npz>&expert=<expert.pt>?w0=1&sched=const&var=0.001&stall=3&key=pose
+        body, q = a.mode[len("hybrid:"):].split("?", 1)
+        kv = dict(x.split("=", 1) for x in q.split("&") if x)
+        from lifelong_ood.policy import adapt
+        from lifelong_ood.policy.compose import DemoProgram, HybridHooks
+        state, key, banks = adapt.load(bk, kv["expert"])
+        prog = DemoProgram.load(body)
+        hooks = HybridHooks(prog, state, key, w0=float(kv.get("w0", 1.2)), schedule=kv.get("sched", "variance"),
+                            var=float(kv["var"]) if kv.get("var") else None, stall=int(kv.get("stall", 0)),
+                            key_mode=kv.get("key", "pos"), window=int(kv.get("window", 20)))
+        logging.info(f"hybrid: program {body} ({int(prog.fold.sum()) if prog.fold is not None else 0} fold frames of {len(prog.mu)}), expert {key}, params {kv}")
     elif a.mode.startswith("program:"):
         # program:<program.npz>[:w0[:window[:schedule[:var[:how]]]]] -- COMPOSE: follow one demo's prototype program (or
         # its raw chunks); schedule "variance" (Eq. 16) or "const"; var overrides the teacher's variance (its precision);
