@@ -1,105 +1,72 @@
-# What the task actually is
+# What the task is
 
-Written 2026-08-14. Read this before any results document. Every experiment here scores the same
-task, and mistaking it for one of two nearby tasks makes half the design choices look arbitrary.
-
----
+Revised 2026-09-25 for the rework (`docs/PLAN_2026-09.md`). Read this before any result.
 
 ## The task, in one line
 
-**Given ONE example of a combination the model has never seen, produce NEW instances of that
-combination, store it for good, and damage nothing already learned.**
+**Given a stream of instances, decompose each into the prototypes that explain it; store a code when
+they do; fold a new prototype into the model's own manifold only where they do not; charge every byte;
+damage nothing already learned.**
 
 | | |
 |---|---|
-| **Input** | one real image of a held-out composition — 0 training rows and no class-embedding row for it, asserted against the checkpoint by `diag_holdout_leak` |
-| **Output** | **new samples** of that composition |
-| **Technique** | read the composition into the model's conditioning space → store it at the cheapest tier that can hold it → generate from the model's **own conditional** |
+| **Input** | a stream of arrivals; each is ONE real image (the stream spec says which population it belongs to, the method is never told) |
+| **Representation** | a pretrained diffusion model (the inherited prior) plus a PROTOTYPE TREE built from the model's own samples: nodes are modes of the noisy marginals, one level per noise level (`lifelong_ood/tree`) |
+| **Operators** | DECOMPOSE / ADDRESS (a code over tree nodes, no weights) -- FOLD (new nodes at the levels where the arrival is unexplained, realised by a responsibility-gated minimal expert trained with anchoring on the model's own samples of the sibling nodes) -- CONSOLIDATE (distil an accrued node into the base weights, delete the expert) |
+| **Output** | NEW samples of what arrived: of the composition an address names, or of the prototype a fold created, in contexts the fold never saw |
 
-The query identifies *which* composition is wanted. It is not a target to be reproduced.
+The arrival identifies *what* was seen. It is never a target to reproduce: a method that re-emits the
+query is perfectly accurate and covers nothing, so coverage is a headline number, never a diagnostic.
 
----
+## What it is not
 
-## What it is NOT
+*Not reconstruction.* Samples are scored against real held-out members of the arrival's class, with
+the arrival itself excluded, in Inception space; pixel-space recall rewards diversity and is never
+quoted (docs/REVIEW_2026-09.md, audit fault 7).
 
-### It is not reconstruction
+*Not test-time composition.* Zekun Wang et al.'s method discovers and composes prototypes for one query
+and keeps nothing (its stated limitation is "detecting, consolidating and reusing genuinely new
+primitives"). Here what is learned is KEPT, at a measured cost, and reused by later arrivals.
 
-The output is not meant to resemble the query. It is meant to cover the *class* the query is an
-instance of. This is not a stylistic preference — it is the axis the method is defined on, and the
-baselines fail exactly here:
-
-| arm | joint accuracy | recall |
-|---|---|---|
-| `poe-guided` (Wang et al.) | 0.958 | **0.000** |
-| `query-only` | 0.958 | **0.000** |
-| **ours** | lower | **0.73 – 0.99** |
-
-`poe-guided` and `query-only` are *more accurate than us* and cover **nothing**: they re-emit the
-query. A method that scored 1.000 on accuracy by returning the input would be worthless for the goal,
-which is why **recall is a headline number and not a diagnostic**. RESULTS §5e-quater works through
-why their teacher does this: the PoE teacher is a product of Gaussians, hence itself a single
-Gaussian, and under a deterministic DDIM (η=0) sampler one query determines one image — measured at
-**vendi 1.06 over 24 draws**. Their §4.2 gets diversity from running 100 different queries.
-
-Ours reads μ_T only to identify which factor values the composition needs, writes them as
-`c_new = μ + Σ_f g_f(w_f·V_f)`, and samples `p_θ(x | c_new)` — the model's own conditional, which is
-multimodal where the teacher is one Gaussian. That single difference is why one query suffices:
-Generalization recall **0.648 at one query** against PoE's **0.073**.
-
-### It is not representation learning
-
-N50 asked whether an absorbed concept yields *better internal representations*. Its headline is
-**withdrawn** (the LoRA adapters were inert during the readout — RESULTS §6e) and N53 is the corrected
-experiment. It is a probe on the side, not the task. §6e-bis explains why the two are related but
-distinct: ADDRESS adds a **point** in the existing span (affine residual 0.0000 against a trained
-embedding's 0.7359), so it can place a concept correctly while adding no new axis for a readout to
-exploit. Composition-strong and representation-flat are one fact, not a tension.
-
----
+*Not addressing what the backbone already renders.* The C3 flagship showed 72 bytes of coordinates
+reach combinations a backbone pretrained on those images can already draw. A fold is only claimed on
+a value no training row contains (a withheld background, a white background outside the palette's
+hull, a red foreground, an outline stroke), certified by `tests/test_stream_no_leakage.py`.
 
 ## The four axes, all load-bearing
 
-1. **Can you produce the held-out combination?** — joint accuracy, probe-read per factor
-2. **Do you cover its distribution rather than copy the one example?** — recall / precision
-3. **Did absorbing it damage anything?** — bit-identical preservation, FGT 0.000
-4. **What did it cost?** — ADDRESS 72 B · EXTEND BASIS 1 KB · BLOCK 69 K
+1. **Identity**: does a sample show the arrival's composition (probe accuracy with certified ceilings)?
+2. **Coverage**: does the set of samples cover the class (Inception-space coverage, KID, diversity)?
+3. **Preservation**: per-old-class accuracy and coverage drift, eps-drift per noise band; a gate's
+   false-positive rate on old images. Bit-identity is a construction property of a gated expert and
+   is printed as such, never as a result.
+4. **Cost**: every byte the method keeps, measured by `lifelong_ood.accounting.charge` (experts,
+   nodes, codes, stored samples, teacher copies), plus the new quantity **depth of novelty**: the
+   number of noise levels at which no node claims the arrival, which the fold's cost should track.
 
-Axis 4 is the thesis. Axes 1–3 are what stop it being trivially satisfiable: storing nothing costs
-nothing, and copying the query is perfectly accurate.
-
----
+Axis 4 is the thesis. Axes 1-3 stop it from being trivially satisfiable: storing nothing is free and
+copying the query is exact.
 
 ## Where it has been shown
 
-| dataset / backbone | composition | note |
-|---|---|---|
-| ColorMNIST (UNet, from scratch) | joint 0.556, F1 0.630 | the calm explanation |
-| CelebA (the companion paper's own 128 px backbone) | **2.7× / 2.3×** the unconditional floor, every class | overlapping factors |
-| Shapes3D (**pretrained** unconditional backbone, VE→VP bridged) | **16×** the floor, floor_hue 0.953 | the setting closest to VLA |
-| ColorMNIST (**latent DiT**) | full loop 0.661 from one query, basis R² 0.832 | not tied to the UNet |
+Nothing yet under the rework. Every number enters this repository through `ledger/` and
+`experiments/audit_numbers.py`; the README's ladder lists the rungs as their rows land. The
+pre-rework numbers that survive the review (the label-gated per-value adapter, the C5 router, the
+remeasured flagship) are backfilled rows and are quoted only as the reference the new mechanism must
+reproduce.
 
-The mechanism is the same in all four: the class-embedding table organises compositionally without
-ever being told the factors (`factorize` recovers R² 0.538–0.870 afterwards), and ADDRESS composes a
-held-out point in that recovered basis.
-
----
-
-## The VLA translation
-
-The mapping is one-to-one, which is the reason to care about the framing at all:
+## The translation to a diffusion policy
 
 | here | in a diffusion policy |
 |---|---|
-| one image of an unseen (digit, fg, bg) | one demonstration of an unseen (object, container, verb) |
-| **new samples** of that composition | **new trajectories** for that task — not replaying the demo |
-| joint accuracy | rollout success |
-| recall | generalisation *within* the task — new positions, new starts |
-| bit-identical preservation | previously learned tasks still succeed |
-| 72 bytes | what the new skill cost to keep |
+| one image of an unseen combination | one demonstration of an unseen (object, container, verb) |
+| new samples of that composition | new trajectories for that task, not the demo replayed |
+| a prototype = a mode of the noisy image marginal at one noise level | a prototype = a mode of the noisy action-chunk marginal at one noise level (a motion scale) |
+| a fold = a gated expert on the denoiser at the unexplained levels | the same, on the action denoiser |
+| identity / coverage / preservation | rollout success / generalisation within the task / old tasks still succeed |
+| bytes charged | what the new skill cost to keep |
 
-**The claim being defended, in the form it must take for policies:** experiences accumulate as
-*addresses in a compositional space*, so cost tracks the **vocabulary of the world** rather than the
-**length of the stream**, and nothing already learned is overwritten.
-
-`docs/VLA_PATH.md` carries the staged plan and — importantly — which parts of this have transferred
-and which have not.
+The claim in the form it must take for policies: experiences accumulate as codes over prototypes and
+as folded prototypes, so cost tracks the vocabulary of the world rather than the length of the
+stream, and nothing already learned is overwritten. `docs/PLAN_2026-09.md` Section 7 states the
+prerequisites and the benchmarks (LIBERO, THE COLOSSEUM).

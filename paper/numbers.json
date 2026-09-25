@@ -1,0 +1,121 @@
+{
+ "C1 ColorMNIST label-gated rank-1 LoRA: bytes": {
+  "formatted": "275,576",
+  "n": 3,
+  "quoted": "275,576",
+  "se": 0.0,
+  "value": 275576.0
+ },
+ "C1 ColorMNIST label-gated rank-1 LoRA: never-taught joint": {
+  "formatted": "0.715",
+  "n": 3,
+  "quoted": "0.715",
+  "se": 0.027285127856773807,
+  "value": 0.7152777777777777
+ },
+ "C1 ColorMNIST label-gated rank-1 LoRA: old-class drop": {
+  "formatted": "0.000",
+  "n": 3,
+  "quoted": "0.000",
+  "se": 0.0,
+  "value": 0.0
+ },
+ "C1 ColorMNIST label-gated rank-1 LoRA: taught joint": {
+  "formatted": "0.716",
+  "n": 3,
+  "quoted": "0.716",
+  "se": 0.011040962979362775,
+  "value": 0.7164351851851852
+ },
+ "C1 Shapes3D label-gated rank-1 LoRA: never-taught joint": {
+  "formatted": "0.972",
+  "n": 3,
+  "quoted": "0.972",
+  "se": 0.007567532888091439,
+  "value": 0.9722222222222223
+ },
+ "C1 Shapes3D label-gated rank-1 LoRA: taught joint": {
+  "formatted": "0.972",
+  "n": 3,
+  "quoted": "0.972",
+  "se": 0.003472222222222284,
+  "value": 0.9722222222222223
+ },
+ "C3 flagship: 1 KB inversion": {
+  "formatted": "0.913",
+  "n": 1,
+  "quoted": "0.913",
+  "se": 0.0,
+  "value": 0.9131944444444444
+ },
+ "C3 flagship: address read from one image": {
+  "formatted": "0.980",
+  "n": 1,
+  "quoted": "0.980",
+  "se": 0.0,
+  "value": 0.9798611111111111
+ },
+ "C3 flagship: nearest trained class": {
+  "formatted": "0.001",
+  "n": 1,
+  "quoted": "0.001",
+  "se": 0.0,
+  "value": 0.001388888888888889
+ },
+ "C5 flat store: bytes": {
+  "formatted": "1,844,635",
+  "n": 3,
+  "quoted": "1,844,635",
+  "se": 92177.33333333333,
+  "value": 1844634.6666666667
+ },
+ "C5 flat store: never-taught joint": {
+  "formatted": "0.550",
+  "n": 3,
+  "quoted": "0.550",
+  "se": 0.051764067763456864,
+  "value": 0.5503472222222222
+ },
+ "C5 flat store: new-value joint": {
+  "formatted": "0.646",
+  "n": 3,
+  "quoted": "0.646",
+  "se": 0.012028130608117225,
+  "value": 0.6458333333333334
+ },
+ "C5 tree router: bytes": {
+  "formatted": "277,601",
+  "n": 3,
+  "quoted": "277,601",
+  "se": 2.6666666666666665,
+  "value": 277601.3333333333
+ },
+ "C5 tree router: never-taught joint": {
+  "formatted": "0.795",
+  "n": 3,
+  "quoted": "0.795",
+  "se": 0.059104321286629194,
+  "value": 0.7951388888888888
+ },
+ "C5 tree router: new-value joint": {
+  "formatted": "0.771",
+  "n": 3,
+  "quoted": "0.771",
+  "se": 0.05268746842185249,
+  "value": 0.7708333333333334
+ },
+ "p0 sampler parity: ColorMNIST max abs diff": {
+  "formatted": "0.0",
+  "n": 2,
+  "quoted": "0.0",
+  "se": 0.0,
+  "value": 0.0
+ },
+ "p0 sampler parity: Shapes3D max abs diff": {
+  "formatted": "0.0",
+  "n": 2,
+  "quoted": "0.0",
+  "se": 0.0,
+  "value": 0.0
+ }
+}

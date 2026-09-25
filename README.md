@@ -23,15 +23,17 @@ claim to the review's verdict.
 
 ## The ladder of results
 
-Every number quoted anywhere in this repository comes from a row in `ledger/` (see
-`lifelong_ood/ledger.py`). Rungs are added as their rows land; none is claimed before.
+Every number quoted anywhere in this repository comes from a row in `ledger/` and is re-derived by
+`experiments/audit_numbers.py` (`tests/test_audit.py` fails otherwise). Rungs are added as their rows land.
 
 | rung | status |
 |---|---|
 | propositions 1-7 (numerical checks) | `tests/test_cobweb_correspondence.py` |
-| the C1 / C5 reference numbers (backfilled at af8f07a) | `ledger/c1_cobweb_update`, `ledger/c5_router_cobweb`, `ledger/c3_flagship` |
-| sampler parity after the restructure | PASS: `sample(backbone)` equals the fixtures' `ddim_sample` bit for bit on the ColorMNIST UNet and the Shapes3D VE bridge, null and class-conditional (`ledger/p0_sampler_parity`, max abs diff 0.0) |
-| prototype tree, decompose, gate, fold frontier, compose-after-fold, consolidate | pending |
+| the reference the fold must reproduce: C1's label-gated rank-1 LoRA on ColorMNIST (backfilled at af8f07a) | taught joint 0.716, never-taught joint 0.715, old-class drop 0.000, at 275,576 bytes; on Shapes3D 0.972 / 0.972 |
+| the reference for storage: C5's router (backfilled) | tree store new-value joint 0.771, never-taught 0.795 at 277,601 bytes; flat store 0.646, 0.550 at 1,844,635 bytes |
+| the reference for addressing: C3's flagship (backfilled; addressing what the backbone already renders) | 0.980 from one image at 72 bytes, 0.913 for a 1 KB inversion, 0.001 nearest trained class |
+| sampler parity after the restructure | PASS: `sample(backbone)` equals the fixtures' `ddim_sample` bit for bit on the ColorMNIST UNet and the Shapes3D VE bridge, max abs diff 0.0 (`ledger/p0_sampler_parity`) |
+| prototype tree (phase 0), decompose (1), gate (2), fold frontier (3), compose-after-fold (4), consolidate (5) | pending |
 
 ## Reproduce
 
@@ -42,16 +44,23 @@ Every number quoted anywhere in this repository comes from a row in `ledger/` (s
     sbatch --wait --export=ALL,SCRIPT="-m pytest tests -q" slurm/jobs/cpu.sbatch  # off the login node
     sbatch --export=ALL,SCRIPT="experiments/legacy/c1_cobweb_update.py --bench colormnist --seed 0" slurm/jobs/c_gpu.sbatch
     $PY experiments/ledger_backfill.py --dry-run
+    $PY experiments/audit_numbers.py && $PY experiments/audit_coverage.py && $PY experiments/make_numbers.py
 
 ## Layout
 
-    lifelong_ood/backbones/   schedule, layout (one flat<->image pair), loaders and THE sampler (in progress)
+    lifelong_ood/backbones/   schedule, layout (one flat<->image pair), the Backbone handle, THE sampler, score ops
     lifelong_ood/neural/      UNet, DDPM training, VE bridge, pretrained shims, KeyedLoRA + anchoring (cobweb_update.py)
     lifelong_ood/data/        ColorMNIST, Shapes3D (rows="correct"), CelebA, the novel-value edits, multi-object scenes
     lifelong_ood/evals.py     probes, coverage, KID, vendi, memorisation;  instrument.py: ceilings and Wilson resolution
     lifelong_ood/ledger.py    the tracked results ledger
+    lifelong_ood/tree/        the prototype tree: nodes at noise levels, build, responsibility, update
+    lifelong_ood/experts/     the expert interface and the minimal experts (LoRA, band LoRA, FiLM, token, nonparametric)
+    lifelong_ood/operators/   decompose / address, fold (gate, gated losses, stop rule), anchor; consolidate (pending)
+    lifelong_ood/streams/     the benches and the arrival streams with the new primitives
+    lifelong_ood/accounting.py  charge(): every byte a method keeps
     experiments/legacy/       c1 (fold reference arms), c5 (the label-gated router), c_report, diag_read_by_u
-    experiments/c_bench.py    the ColorMNIST nobg3 and Shapes3D grey-wall benches (moving to streams/bench.py)
-    tests/                    ten kept tests; everything else is in the archive
+    experiments/p*.py         the probes: p0 sampler parity, p1 tree build, p3 fold frontier
+    experiments/audit_*.py    the number audit and its coverage; make_numbers.py regenerates paper/numbers.json
+    tests/                    the kept tests plus one per new module; everything else is in the archive
     ledger/                   one small JSON per run, tracked
     archive/2026-09-pre-rework/   the previous repository, with its claim map

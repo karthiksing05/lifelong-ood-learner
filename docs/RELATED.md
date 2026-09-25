@@ -1,5 +1,11 @@
 # Related work, and where this sits
 
+> **2026-09-25.** The sections below the rule were written for the retired address / extend-basis
+> architecture. Their statements about OTHER papers stand; every number quoted for "ours" in them
+> predates the rework and is superseded by `ledger/` (see docs/REVIEW_2026-09.md for the verdicts).
+> The literature sweep for the rework is appended at the end; `docs/PLAN_2026-09.md` Section 3 is
+> its source.
+
 Compiled from a systematic sweep (arXiv API + abs-page verification) rather than recall. Every entry
 below was checked against its abstract page. The point of this file is to say **which methods are
 fair baselines for our setting and which are not**, because most of the neighbouring literature
@@ -271,3 +277,37 @@ its concepts are word embeddings in a pretrained text-to-image model, and the pa
 semantic density of that space is what makes discovery tractable. Our from-scratch class-embedding
 table is the regime they designed around. Reporting our win over the failed port would be a
 fabricated comparison, so it is recorded as a gap in baseline coverage instead.
+
+---
+
+---
+
+## Literature review and positioning (rework, 2026-09-25) (web sweep 2026-09-25, ~200 fetches, arXiv IDs verified)
+
+### Closest prior work, and the differentiator each forces
+
+| work | what it already does | what we must do differently |
+|---|---|---|
+| Own group: Wang, Gupta, Zhu, MacLellan 2026 (2605.07078) and the ICLR 2027 resubmission (prototype discovery + PoE); Wang, Singaravadivelan, MacLellan ACS 2026 (2609.13047, Cobweb-diffusion correspondence, basic level) | static correspondence; test-time discovery and composition; keeps nothing | the missing operators: incremental create/merge of prototypes INTO the weights, bounded bytes, measured forgetting, label-free |
+| Tseng et al., Hierarchically Branched Diffusion (2212.10777) | branch points where noisy classes become indistinguishable; high-noise layers shared; a new class = a new terminal branch trained only for t <= t_b; 2|C|-1 duplicated heads | this is the nearest thing to "fold only at the levels where the primitive is distinct"; ours must be label-free, a minimal expert (not a duplicated head), composable with old prototypes, and compared at equal bytes |
+| FLLP, Kaushik et al., AAAI 2026 (2601.01892) | hyperbolic concept tree; each new concept guided by a chain of parent concepts; stores LoRA + 2-3 tokens + attention summaries per concept; CIFC/CelebA/ImageNet/CustomConcept101 | their tree only regularises; no restructuring, no composition; compare at equal bytes |
+| CNS (ICCV 2025, 2510.02296), Cones (ICML 2023, 2303.05125), Sparse Memory Finetuning (2510.15103) | update only concept neurons / activated slots; 11% forgetting vs 89% full FT vs 71% LoRA | flat sparsity; ours is tree-structured: siblings share, a child stores its residual; and ours is gated in function space (C1: parameter sparsity alone drifts) |
+| Share (2602.06043), LoraHub (2307.13269), MoRAM (ICML 2026, 2506.21035: content-activated rank-1 atoms) | shared/flat bases, zero or tiny new params per task | a MoRAM atom IS a content-keyed rank-1 expert; ours keys on a discovered prototype at a noise level and the basis is hierarchical; run "hierarchical prototype basis vs flat shared basis at equal bytes" |
+| CURL (1910.14481), CN-DPM (2001.00689) | novelty adds a mixture component | flat mixtures, nothing composed |
+| Perfusion (2305.01644) | ~100 KB per concept; key locked to the superordinate category (a parent prior) | the prototype-token expert inherits this idea with the parent taken from the tree |
+| Compositional FSCIL (2405.17022), EASE (2403.12030) | new class = composition of visual primitives; adapters per task with prototype rebuilding | discriminative, no generative manifold, no hierarchy |
+| Sparse Diffusion Policy (CoRL 2024, 2407.01531), Factorized Diffusion Policy (RA-L 2026, 2512.21898), IsCiL (2410.22658), TAIL (2310.05905), LOTUS (2311.02058) | experts per task/sub-mode in diffusion policies; LoRA ~1% per task; skill libraries | the embodied phase: experts per hierarchical prototype, not per task |
+| GPPDM (2312.06710) | class-prototype conditional diffusion for replay | flat prototypes, only condition a classifier's replay |
+
+### Theory to lean on
+
+- Necessity of compositional/orthogonal structure: Uselis, Dittadi & Oh, ICML 2026 (2602.24264) "compositional generalization requires linear, orthogonal representations"; Lippl & Stachenfeld ICLR 2025 kernel theory (2405.16391); Xu et al. NeurIPS 2022 (2210.00482) discrete codes generalise compositionally better than disentangled VAEs (the symbol-like claim); Schug et al. ICLR 2024 (2312.15001); Elmoznino et al. (2410.14817); Fodor & Pylyshyn 1988; Lake & Baroni 2018/2023.
+- Noise axis is a hierarchy: Favero, Sclocchi, Cagnetta, Frossard, Wyart ICML 2025 (2502.12089): diffusion learns a PCFG's rules level by level with polynomial sample complexity, coherence length grows with data; Sclocchi et al. PNAS 2025 (2402.16991) phase transition; Biroli et al. 2024 (2402.18491); Raya & Ambrogioni (2305.19693); Shah, Chen & Klivans (2307.01178) DDPM provably learns Gaussian mixtures.
+- What score composition can and cannot do: Bradley & Nakkiran et al. ICML 2025 projective composition (2502.04549) and Bradley 2025 local mechanisms (2509.16447); Du et al. 2023 sampler correction (2302.11552); Kamb & Ganguli ICML 2025 (2412.20292) patch-mosaic creativity (the rival explanation for composition, to be addressed: it explains recombination of parts, not the acquisition of a new part).
+- Risks: Aparicio Rodriguez et al. 2026 (2605.30642) diffusion memorises prototypical samples (a memorisation control on absorbed instances is mandatory); Okawa et al. NeurIPS 2023 (2310.09336) multiplicative emergence (hold marginal frequencies fixed when constructing streams).
+- Cobweb lineage (own group): Fisher 1987; Gennari, Langley & Fisher 1989 (CLASSIT, Gaussian attributes); Cobweb/4V (2402.16933); Barari, Kim & MacLellan ACS 2025 CobwebNN (2510.23756: restructuring helps plasticity, sparse updates reduce interference); Deep Taxonomic Networks NeurIPS 2025 (2509.23602); Lian et al. 2024 (2403.03835); Cobweb4L (2409.12440).
+- Compositional lifelong learning template: Mendez & Eaton ICLR 2021 (2007.07732: first compose existing components, then adapt) and TMLR 2023 survey (2207.07730); Ostapenko et al. NeurIPS 2021 local module composition (2111.07736); Shan, Minni & Duncker NeurIPS 2025 (2510.20709) incremental vocabulary of low-rank parts.
+
+### Baselines a reviewer will demand (per-concept memory)
+
+Textual Inversion (~3 KB token), Perfusion (~100 KB), SVDiff (~1.7 MB), Custom Diffusion (5-75 MB), C-LoRA (TMLR 2024, in `neural/baselines.py`), STAMINA (folded masks, 0 at inference), CIDM, FunLoRA (rank-1 generative CL, 2510.02631), FLLP (LoRA + tokens), Tseng branched heads; replay: DDGR, Generative Distillation (2311.14028), GUIDE, DiffClass, SDDGR, GPPDM; weight-structure: PackNet, Piggyback/SupSup (1 bit/param/task), WSN, HAT, hypernetworks (one task embedding), GPM/Adam-NSCL, InfLoRA/O-LoRA/SD-LoRA, task arithmetic/TIES/MagMax/OPCM (constant memory), Share, LoraHub, MoRAM; the Staniszewski et al. ablation set (2410.04891: naive / merge / orthogonal-init merge / selective update). Fair and runnable on our class-conditional 32-64 px DDPMs: the test-time trio (Zekun PoE, composable, SDEdit), textual inversion, C-LoRA, flat LoRA-per-concept, FunLoRA-style rank-1, PackNet/Piggyback masks, EWC, generative distillation, a Tseng-style branch at equal bytes, an FLLP-style parent-guided LoRA at equal bytes.
