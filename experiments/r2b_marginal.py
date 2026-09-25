@@ -60,8 +60,9 @@ def frames_of(demos, suite, eps_per_task, seed):
     return out
 
 
-def conditionals(bk, demos, episodes, K, batch_obs, seed):
-    """-> dict(mu, var, tw (Tweedie mean at t=1), demo rows, task, episode, frame, gripper events per episode)."""
+def conditionals(bk, demos, episodes, K, batch_obs, seed, stride=1):
+    """-> dict(mu, var, tw (Tweedie mean at t=1), demo rows, task, episode, frame, gripper events per episode).
+    `stride` keeps every stride-th frame (consecutive chunks share 9 of 10 actions)."""
     norm = D.Norm.load()
     mu, var, tw, demo, task, epi, frame = [], [], [], [], [], [], []
     events = {}
@@ -72,8 +73,9 @@ def conditionals(bk, demos, episodes, K, batch_obs, seed):
         idx, _ = D.chunk_indices(T, bk.H)
         rows = D.to_rows(ep["actions"][idx], norm)
         events[e] = D.gripper_events(ep["actions"]).tolist()
-        for b0 in range(0, T, batch_obs):
-            sl = range(b0, min(T, b0 + batch_obs))
+        keep = list(range(0, T, stride))
+        for b0 in range(0, len(keep), batch_obs):
+            sl = keep[b0:b0 + batch_obs]
             pre = bk.prefix(bk.observations([demos.observation(ep, i) for i in sl]))
             preK = bk.repeat(pre, K)
             n = len(sl) * K
@@ -121,6 +123,19 @@ def gmm_modes(C, S, X0=None, iters=400, tol=1e-6, device="cuda", chunk=2048):
     return X.float().cpu().numpy()
 
 
+@torch.no_grad()
+def nearest(A, B, device="cuda", chunk=2048):
+    """Index of the nearest row of B for every row of A (squared distance), in chunks on the device."""
+    Bt = torch.as_tensor(np.asarray(B, np.float32), device=device)
+    b2 = (Bt * Bt).sum(1)
+    out = []
+    for i in range(0, len(A), chunk):
+        a = torch.as_tensor(np.asarray(A[i:i + chunk], np.float32), device=device)
+        d = (a * a).sum(1, keepdim=True) - 2.0 * a @ Bt.T + b2[None]
+        out.append(d.argmin(1).cpu().numpy())
+    return np.concatenate(out) if out else np.zeros(0, int)
+
+
 def basins(modes, tol):
     """Merge converged modes closer than `tol` (per-dim rms).  -> (kept mode indices, owner per start)."""
     return dedup(modes, tol=tol)
@@ -155,8 +170,8 @@ def semantics(owner, episode, frame, events, rng, window=3, draws=200):
             continue
         order = np.argsort(frame[m])
         seq = owner[m][order]
-        T = len(seq)
-        b = np.where(np.diff(seq) != 0)[0] + 1
+        fr = frame[m][order]                           # frame numbers (a stride may skip frames)
+        b = fr[np.where(np.diff(seq) != 0)[0] + 1]     # boundaries in frame units, like the gripper events
         nb += len(b); ne += len(ev)
         if len(b) == 0:
             hits.append(0.0); rhits.append(0.0)
@@ -165,7 +180,7 @@ def semantics(owner, episode, frame, events, rng, window=3, draws=200):
         hits.append(float(np.mean([np.abs(b - g).min() <= window for g in ev])))
         rr = []
         for _ in range(draws):
-            rb = np.sort(rng.choice(np.arange(1, T), size=min(len(b), T - 1), replace=False))
+            rb = np.sort(rng.choice(fr[1:], size=min(len(b), len(fr) - 1), replace=False))
             rr.append(float(np.mean([np.abs(rb - g).min() <= window for g in ev])))
         rhits.append(float(np.mean(rr)))
     return dict(hit_rate=float(np.mean(hits)) if hits else None, random_hit_rate=float(np.mean(rhits)) if rhits else None,
@@ -207,8 +222,7 @@ def analyse(name, mu, var, task, episode, frame, events, u_grid, floor, merge_to
         m2 = gmm_modes(a2 * mu, a2 * a2 * V + s2 * s2, X0=start, device=device) / a2
         pk = list(level_modes[up].keys())
         P = np.stack([level_modes[up][k] for k in pk])
-        d = ((m2[:, None, :] - P[None]) ** 2).mean(-1)
-        par = [pk[j] for j in d.argmin(1)]
+        par = [pk[j] for j in nearest(m2, P, device)]
         kl = [sym_kl(level_modes[u][c], level_var[u][c], level_modes[up][p], level_var[up][p]) for c, p in zip(kids, par)]
         disp = [float(np.sqrt(((level_modes[u][c] - level_modes[up][p]) ** 2 / level_var[up][p]).mean())) for c, p in zip(kids, par)]
         hier[str(u)] = dict(sym_kl=float(np.mean(kl)), norm_disp=float(np.mean(disp)), n=len(kids), n_parents=len(set(par)))
@@ -225,6 +239,7 @@ def main():
     ap.add_argument("--floor", type=float, default=1e-3)
     ap.add_argument("--merge-tol", type=float, default=0.05, help="merge converged modes within this fraction of the level's x0 blur t/(1-t)")
     ap.add_argument("--seed", type=int, default=0)
+    ap.add_argument("--stride", type=int, default=1)
     ap.add_argument("--tag", default="")
     a = ap.parse_args()
     u_grid = [float(x) for x in a.levels.split(",")]
@@ -233,7 +248,19 @@ def main():
     log(f"[r2b] {bk.describe()}")
     demos = D.Demos()
     episodes = frames_of(demos, a.suite, a.eps_per_task, a.seed)
-    cond = conditionals(bk, demos, episodes, a.K, a.batch_obs, a.seed)
+    cpath = f"results/robot/r2b_{a.suite}{a.tag}_conditionals.npz"
+    if os.path.exists(cpath):
+        z = np.load(cpath, allow_pickle=True)
+        cond = {k: z[k] for k in ("mu", "var", "tw", "demo", "task", "episode", "frame")}
+        cond["events"] = z["events"].item()
+        cond["secs"] = float(z["secs"])
+        log(f"[r2b] conditionals loaded from {cpath} ({len(cond['mu'])} frames)")
+    else:
+        cond = conditionals(bk, demos, episodes, a.K, a.batch_obs, a.seed, stride=a.stride)
+        os.makedirs("results/robot", exist_ok=True)
+        np.savez_compressed(cpath, **{k: cond[k] for k in ("mu", "var", "tw", "demo", "task", "episode", "frame")},
+                            events=np.array(cond["events"], dtype=object), secs=cond["secs"], allow_pickle=True)
+        log(f"[r2b] conditionals saved to {cpath}")
     N = len(cond["mu"])
     within = float(np.sqrt(cond["var"]).mean())
     sub = np.random.default_rng(a.seed).choice(N, size=min(N, 1500), replace=False)
@@ -283,8 +310,9 @@ def main():
         for r, tid in enumerate(D.SUITES[a.suite]):
             e = [x for x in episodes if demos.load(x)["task_index"] == tid][0]
             mm = cond["episode"] == e
-            seq = owner_p[um][mm][np.argsort(cond["frame"][mm])]
-            ax.scatter(np.arange(len(seq)), np.full(len(seq), r), c=seq % 20, cmap="tab20", s=6, marker="s")
+            o = np.argsort(cond["frame"][mm])
+            seq, fr = owner_p[um][mm][o], cond["frame"][mm][o]
+            ax.scatter(fr, np.full(len(seq), r), c=seq % 20, cmap="tab20", s=6, marker="s")
             for g in cond["events"][e]:
                 ax.plot([g, g], [r - 0.4, r + 0.4], "k-", lw=1)
         ax.set_yticks(range(len(D.SUITES[a.suite]))); ax.set_yticklabels([demos.tasks[t][:40] for t in D.SUITES[a.suite]], fontsize=7)
