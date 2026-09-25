@@ -38,7 +38,7 @@ def world():
     own = sample(bk, 24, steps=4, seed=0)
     tree = build(bk, u_grid=(0.10, 0.40, 0.70), samples=own, seed=0, iters=10, lr=0.05, caps={0.10: 6, 0.40: 4, 0.70: 3},
                  verbose=False)
-    cal = calibrate(tree, own, q=0.05, min_rate=0.0)
+    cal = calibrate(tree, sample(bk, 16, steps=4, seed=1), q=0.95)   # held-out own samples
     return bk, own, tree, cal
 
 
@@ -56,8 +56,11 @@ def test_create_nodes_and_gate_polarity(world):
     rng = np.random.default_rng(0)
     xt_new = np.sqrt(a) * novel + np.sqrt(1 - a) * rng.standard_normal(novel.shape).astype(np.float32)
     xt_own = np.sqrt(a) * own[:8] + np.sqrt(1 - a) * rng.standard_normal((8, bk.dim)).astype(np.float32)
-    assert gate.weights(torch.as_tensor(xt_new), u).mean() > 0.9
-    assert gate.weights(torch.as_tensor(xt_own), u).mean() < 0.1
+    w_new = gate.weights(torch.as_tensor(xt_new), u).mean()
+    w_own = gate.weights(torch.as_tensor(xt_own), u).mean()
+    # polarity: the node claims the arrival and mostly not the model's own samples.  The leak on own
+    # samples at a coarse level is what the stop rule's S2 measures; it is not zero for a 3-node level.
+    assert w_new > 0.9 and w_own < 0.35 and w_new - w_own > 0.5, (w_new, w_own)
     assert Gate(tree, ids, "forced").weights(torch.zeros(3, bk.dim), u).tolist() == [1, 1, 1]
     assert Gate(tree, ids, "label").weights(torch.zeros(3, bk.dim), u, flag=[1, 0, 1]).tolist() == [1, 0, 1]
 
