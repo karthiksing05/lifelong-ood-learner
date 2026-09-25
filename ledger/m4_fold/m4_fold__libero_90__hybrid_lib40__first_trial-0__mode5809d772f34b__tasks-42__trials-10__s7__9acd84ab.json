@@ -1,0 +1,83 @@
+{
+ "artifacts": [
+  "results/robot/m4_42_hybrid_lib40.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "roll.sh MODE=hybrid:results/robot/r4_42_lib40_program.npz?expert=results/robot/r4_42_lib40_expert.pt&w0=1.0&sched=const&var=0.001&key=pose&stall=3 SUITE=libero_90 TASKS=42 TRIALS=10 (job backfill from results/robot/m4_42_hybrid_lib40.json)",
+ "config": {
+  "client": {
+   "first_trial": 0,
+   "host": "127.0.0.1",
+   "max_steps": 0,
+   "no_meta": false,
+   "out": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/m4_42_hybrid_lib40.json",
+   "port": 9860,
+   "replan": 5,
+   "resize": 224,
+   "seed": 7,
+   "suite": "libero_90",
+   "tasks": "42",
+   "trials": 10,
+   "videos": 2,
+   "wait": 10
+  },
+  "job": "backfill from results/robot/m4_42_hybrid_lib40.json",
+  "mode": "hybrid:results/robot/r4_42_lib40_program.npz?expert=results/robot/r4_42_lib40_expert.pt&w0=1.0&sched=const&var=0.001&key=pose&stall=3"
+ },
+ "env": {
+  "device": "cpu",
+  "host": "sky2.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m4_fold",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "9acd84ab1e02636ce5ba3736f469ed15ee11ad73",
+  "short": "9acd84ab"
+ },
+ "keys": {
+  "first_trial": 0,
+  "mode": "hybrid:results/robot/r4_42_lib40_program.npz?expert=results/robot/r4_42_lib40_expert.pt&w0=1.0&sched=const&var=0.001&key=pose&stall=3",
+  "tasks": "42",
+  "trials": 10
+ },
+ "metrics": {
+  "complete": true,
+  "n_episodes": 10,
+  "secs": 352.7266297340393,
+  "success_rate": 0.1,
+  "tasks": {
+   "42": {
+    "errors": 0,
+    "language": "put the frying pan under the cabinet shelf",
+    "mean_steps": 376.4,
+    "n": 10,
+    "success_rate": 0.1
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m4_fold__libero_90__hybrid_lib40__first_trial-0__mode5809d772f34b__tasks-42__trials-10__s7__9acd84ab",
+ "schema": 1,
+ "script": "experiments/libero_client.py",
+ "seconds": null,
+ "seed": 7,
+ "source_commit": null,
+ "started": "2026-09-25T22:43:35+00:00",
+ "stream": null,
+ "tag": "hybrid_lib40"
+}

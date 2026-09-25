@@ -1,0 +1,83 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/m4_39_expert_on_lib40.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "roll.sh MODE=lora:/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r4_39_lib40_expert.pt SUITE=libero_90 TASKS=39 TRIALS=10 (job 3954934)",
+ "config": {
+  "client": {
+   "first_trial": 0,
+   "host": "127.0.0.1",
+   "max_steps": 0,
+   "no_meta": false,
+   "out": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/m4_39_expert_on_lib40.json",
+   "port": 9162,
+   "replan": 5,
+   "resize": 224,
+   "seed": 7,
+   "suite": "libero_90",
+   "tasks": "39",
+   "trials": 10,
+   "videos": 2,
+   "wait": 10
+  },
+  "job": "3954934",
+  "mode": "lora:/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r4_39_lib40_expert.pt"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "megabot.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3954934",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m4_fold",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "59ad0fe911a18ae05d5b54bf1927bce85f6e1b9f",
+  "short": "59ad0fe9"
+ },
+ "keys": {
+  "first_trial": 0,
+  "mode": "lora:/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r4_39_lib40_expert.pt",
+  "tasks": "39",
+  "trials": 10
+ },
+ "metrics": {
+  "complete": true,
+  "n_episodes": 10,
+  "secs": 549.2926595211029,
+  "success_rate": 0.0,
+  "tasks": {
+   "39": {
+    "errors": 0,
+    "language": "turn off the stove",
+    "mean_steps": 400.0,
+    "n": 10,
+    "success_rate": 0.0
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m4_fold__libero_90__expert_on_lib40__first_trial-0__mode-lora-coc-flash10-ksingara3-lifelong-ood-learner-results-robot-r4_39_lib40_expert.pt__tasks-39__trials-10__s7__59ad0fe9",
+ "schema": 1,
+ "script": "experiments/libero_client.py",
+ "seconds": null,
+ "seed": 7,
+ "source_commit": null,
+ "started": "2026-09-25T22:31:18+00:00",
+ "stream": null,
+ "tag": "expert_on_lib40"
+}

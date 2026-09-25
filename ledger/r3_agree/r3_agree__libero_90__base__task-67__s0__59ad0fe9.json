@@ -1,0 +1,83 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 11,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 11,
+  "tree": 0
+ },
+ "command": "experiments/r3_agree.py --tasks 67",
+ "config": {
+  "K": 4,
+  "batch": 32,
+  "dilate": 5,
+  "library": "results/robot/r2b_libero_40.npz",
+  "q": 0.95,
+  "seed": 0,
+  "sources": "_lib40,_demo",
+  "tasks": "67"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "consu.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3955074",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r3_agree",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "59ad0fe911a18ae05d5b54bf1927bce85f6e1b9f",
+  "short": "59ad0fe9"
+ },
+ "keys": {
+  "task": 67
+ },
+ "metrics": {
+  "disagree_frac": 0.38636363636363635,
+  "gap_median": 0.12654170393943787,
+  "gap_profile": [
+   0.239,
+   0.205,
+   0.168,
+   0.129,
+   0.113,
+   0.422,
+   0.078,
+   0.1,
+   0.108,
+   0.147,
+   0.145,
+   0.096,
+   0.076,
+   0.085,
+   0.132,
+   0.471,
+   0.228,
+   0.107
+  ],
+  "gap_q90": 0.29178569912910446,
+  "n_frames": 88,
+  "steer_frac": 0.7613636363636364,
+  "task": 67,
+  "text": "put the white mug on the left plate",
+  "threshold": 0.14842697978019717
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r3_agree__libero_90__base__task-67__s0__59ad0fe9",
+ "schema": 1,
+ "script": "experiments/r3_agree.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-25T22:35:52+00:00",
+ "stream": null,
+ "tag": ""
+}

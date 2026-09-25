@@ -1,0 +1,83 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/m3cal_67.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "roll.sh MODE=program:/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r3_prog_67_code_lib40.npz?w0=1.0&sched=const&var=0.001&key=pose&stall=3&agree=1e9 SUITE=libero_90 TASKS=67 TRIALS=5 (job 3955080)",
+ "config": {
+  "client": {
+   "first_trial": 0,
+   "host": "127.0.0.1",
+   "max_steps": 0,
+   "no_meta": false,
+   "out": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/m3cal_67.json",
+   "port": 9143,
+   "replan": 5,
+   "resize": 224,
+   "seed": 7,
+   "suite": "libero_90",
+   "tasks": "67",
+   "trials": 5,
+   "videos": 2,
+   "wait": 10
+  },
+  "job": "3955080",
+  "mode": "program:/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r3_prog_67_code_lib40.npz?w0=1.0&sched=const&var=0.001&key=pose&stall=3&agree=1e9"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "spd-13.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3955080",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_agree_cal",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "59ad0fe911a18ae05d5b54bf1927bce85f6e1b9f",
+  "short": "59ad0fe9"
+ },
+ "keys": {
+  "first_trial": 0,
+  "mode": "program:/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r3_prog_67_code_lib40.npz?w0=1.0&sched=const&var=0.001&key=pose&stall=3&agree=1e9",
+  "tasks": "67",
+  "trials": 5
+ },
+ "metrics": {
+  "complete": true,
+  "n_episodes": 5,
+  "secs": 60.785690784454346,
+  "success_rate": 1.0,
+  "tasks": {
+   "67": {
+    "errors": 0,
+    "language": "put the white mug on the left plate",
+    "mean_steps": 94.4,
+    "n": 5,
+    "success_rate": 1.0
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_agree_cal__libero_90__agree_log__first_trial-0__mode-program-coc-flash10-ksingara3-lifelong-ood-learner-results-robot-r3_prog_67_code_lib40.npz-w0-1.0-sched-const-var-0.001-key-pose-stall-3-agree-1e9__tasks-67__trials-5__s7__59ad0fe9",
+ "schema": 1,
+ "script": "experiments/libero_client.py",
+ "seconds": null,
+ "seed": 7,
+ "source_commit": null,
+ "started": "2026-09-25T22:40:47+00:00",
+ "stream": null,
+ "tag": "agree_log"
+}
