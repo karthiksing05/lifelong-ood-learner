@@ -48,8 +48,9 @@ def test_decompose_explains_a_mode_with_itself_and_a_midpoint_with_two():
 
 def test_membership_calibration_and_depth_of_novelty():
     means, X, k, bk, t = _tree()
-    cal = calibrate(t, X, q=0.05, min_rate=0.9)
-    assert cal.levels and all(0 < cal.thresholds[l] <= 1 for l in cal.levels)
+    Xh, _ = _samples(means, n=60, seed=5)                     # held-out draws of the same mixture
+    cal = calibrate(t, Xh, q=0.95)
+    assert cal.levels and all(np.isfinite(cal.thresholds[l]) for l in cal.levels)
     ok, depth, coarsest, _ = explained(t, cal, X[:20])
     assert ok.mean() >= 0.85, ok.mean()
     novel = np.clip(means[0] * -1.0, -1, 1)            # the antipode: a colour no node has

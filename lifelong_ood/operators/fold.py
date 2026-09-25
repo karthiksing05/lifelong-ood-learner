@@ -93,7 +93,8 @@ def arrival_loss(model, expert, gate, x0, layout, emb=None, gen=None, flag=None,
     for uu in torch.unique(torch.round(u * 20) / 20):          # group rows by noise bin for the gate
         m = torch.abs(torch.round(u * 20) / 20 - uu) < 1e-6
         rows = to_flat(xt[m], layout)
-        ctx, emb_g, w = gate.context(expert, rows, float(uu), None if flag is None else flag[m])
+        fm = None if flag is None else (flag[m.cpu().numpy()] if not torch.is_tensor(flag) else flag[m])
+        ctx, emb_g, w = gate.context(expert, rows, float(uu), fm)
         eo = emb_g if emb is None else (emb[m] if emb.dim() == 2 else emb) + (0 if emb_g is None else emb_g)
         c, eo2 = _cond(model, int(m.sum()), dev, emb=eo, cls=None)
         with ctx():
@@ -133,12 +134,12 @@ def create_nodes(tree, cal, X_rows, levels=None, key=None, count=None):
     level's sibling median.  -> node ids (finest first)."""
     X = np.atleast_2d(np.asarray(X_rows, np.float32))
     if levels is None:
-        ok, depth, coarsest, maxr = explained(tree, cal, X)
+        ok, depth, coarsest, nll = explained(tree, cal, X)
         thr = np.asarray([cal.thresholds[l] for l in cal.levels])
-        fail = (maxr.mean(0) < thr)
+        fail = (nll.mean(0) > thr)                       # the arrival is unexplained where its best node's NLL is high
         levels = [cal.levels[j] for j in np.where(fail)[0]]
         if not levels:
-            levels = [cal.levels[int(np.argmin(maxr.mean(0) - thr))]]
+            levels = [cal.levels[int(np.argmax(nll.mean(0) - thr))]]
     mean = X.mean(0)
     ids = []
     for l in sorted(levels):

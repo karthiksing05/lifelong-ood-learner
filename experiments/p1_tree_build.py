@@ -21,6 +21,7 @@ from lifelong_ood import ledger                                        # noqa: E
 from lifelong_ood.accounting import charge                             # noqa: E402
 from lifelong_ood.backbones.loader import load_backbone                # noqa: E402
 from lifelong_ood.tree.build import DEFAULT_GRID, build                # noqa: E402
+from lifelong_ood.operators.address import best_nll                   # noqa: E402
 from lifelong_ood.tree.responsibility import basin                     # noqa: E402
 
 CKPT = {"colormnist": "results/cache/ddpm_colormnist_nobg3.pt", "shapes3d": "results/cache/ddpm_s3d_full.pt"}
@@ -116,15 +117,20 @@ def main():
             for f in ("digit", "fg", "bg"):
                 p, s = purity(assign, lab_in[f])
                 row[f"purity_{f}"], row[f"nmi_{f}"] = p, s
+            nin, _ = best_nll(tree, Xin, l, seed=args.seed)
+            row["nll_in"] = float(nin.mean())
             if len(Xout):
                 a2, r2 = basin(tree, Xout, l, seed=args.seed)
                 row["withheld_bg_max_r"] = float(r2.max(1).mean())
                 row["withheld_bg_purity_digit"] = purity(a2, lab_out["digit"])[0]
+                nout, _ = best_nll(tree, Xout, l, seed=args.seed)
+                row["nll_withheld"] = float(nout.mean())
+                row["nll_auroc"] = float((nout[:, None] > nin[None, :]).mean() + 0.5 * (nout[:, None] == nin[None, :]).mean())
             metrics["levels"][str(l)] = row
             print(f"[p1] level {l} u={u:.2f} nodes {row['n_nodes']:3d}: purity digit {row['purity_digit']:.2f} "
                   f"fg {row['purity_fg']:.2f} bg {row['purity_bg']:.2f} | nmi {row['nmi_digit']:.2f}/{row['nmi_fg']:.2f}/"
                   f"{row['nmi_bg']:.2f} | mean max r {row['max_r']:.2f}"
-                  + (f" | withheld-bg max r {row['withheld_bg_max_r']:.2f}" if len(Xout) else ""), flush=True)
+                  + (f" | NLL in {row['nll_in']:.3f} withheld {row['nll_withheld']:.3f} AUROC {row['nll_auroc']:.2f}" if len(Xout) else ""), flush=True)
             ok = row["purity_bg"] >= 0.9 and row["purity_digit"] >= 0.7 and len(tree.nodes) <= 300
             if ok and best is None:
                 best = l

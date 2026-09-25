@@ -45,6 +45,7 @@ from lifelong_ood.tree.nodes import Tree                               # noqa: E
 CRN_SEED = 4242
 ARMS = {
     "lora-all": dict(expert="lora", rank=1, band=None),
+    "lora-all-c1": dict(expert="lora", rank=1, band=None, exclude=()),     # wraps the time embedding too: C1's 68,894 params
     "lora-b32": dict(expert="lora", rank=1, band=32),
     "lora-b16": dict(expert="lora", rank=1, band=16),
     "lora-b8": dict(expert="lora", rank=1, band=8),
@@ -110,7 +111,8 @@ def make_expert(cfg, bk, key, Xtr_t, emb_rows, gate_label, gen):
     """Build the arm's expert; FiLM top-k picks channels by the arrival's gradient energy."""
     kind = cfg["expert"]
     if kind == "lora":
-        return LoRAExpert.create(bk, key, rank=cfg["rank"], band=cfg["band"])
+        kw = {} if "exclude" not in cfg else {"exclude": tuple(cfg["exclude"])}
+        return LoRAExpert.create(bk, key, rank=cfg["rank"], band=cfg["band"], **kw)
     if kind == "token":
         return TokenExpert.create(bk, key, rank=cfg["rank"])
     if kind == "film":
@@ -216,10 +218,11 @@ def main():
         os.makedirs(os.path.dirname(tpath), exist_ok=True)
         tree.save(tpath)
     tree_bytes0 = tree.bytes()
-    cal = calibrate(tree, own, q=0.05, min_rate=0.9, seed=args.seed)
+    own_cal = sample(bk, 256, steps=args.steps, seed=args.seed + 1)      # HELD-OUT own samples: never the build set
+    cal = calibrate(tree, own_cal, q=0.95, seed=args.seed)
     print(f"[p3] calibration {cal.to_dict()}", flush=True)
     u_band = [0.3, 0.5, 0.7, 0.8, 0.9, 0.95]
-    ref_profile = base_profile(bk, own[:128], u_band, seed=CRN_SEED)
+    ref_profile = base_profile(bk, own_cal[:128], u_band, seed=CRN_SEED)
 
     # ── the stream, as C1 ───────────────────────────────────────────────────
     rng = np.random.default_rng(args.seed)
@@ -277,7 +280,7 @@ def main():
                                 tasks=tasks, untaught=untaught, split=split, row=row, v_norm=v_norm, t_u=t_u,
                                 crit=crit, u_grid=u_grid, is_in=is_in, sample_old=sample_old, old_acc0=old_acc0,
                                 old=old, old_X=old_X, old_cls=old_cls, P_old0=P_old0, A_x0=A_x0, A_cls=A_cls,
-                                own=own, tree_bytes0=tree_bytes0, kw=kw, dev=dev, nf=nf))
+                                own=own_cal, tree_bytes0=tree_bytes0, kw=kw, dev=dev, nf=nf))
     print(f"[p3] done in {(time.time() - t_start) / 60:.1f} min", flush=True)
     return 0
 
