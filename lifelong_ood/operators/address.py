@@ -15,7 +15,7 @@ import dataclasses
 
 import numpy as np
 
-from ..backbones.schedule import cosine_abar
+from ..backbones.schedule import path_coeffs
 from ..tree.nodes import level_gaussian
 from ..tree.responsibility import _loglik
 
@@ -39,11 +39,11 @@ def best_nll(tree, X0, level, seed=0, n_noise=4):
     n, D = X0.shape
     if len(ids) == 0:
         return np.full(n, np.inf), np.full(n, -1)
-    a = float(cosine_abar(tree.u_grid[level]))
+    alpha, sigma, _, _ = path_coeffs(tree.u_grid[level], tree.path)
     rng = np.random.default_rng(seed)
     acc = np.zeros((n, len(ids)))
     for _ in range(n_noise):
-        xt = np.sqrt(a) * X0 + np.sqrt(1.0 - a) * rng.standard_normal(X0.shape).astype(np.float32)
+        xt = alpha * X0 + sigma * rng.standard_normal(X0.shape).astype(np.float32)
         acc += _loglik(xt, C, S, np.zeros(len(ids)))
     L = acc / n_noise
     j = L.argmax(1)

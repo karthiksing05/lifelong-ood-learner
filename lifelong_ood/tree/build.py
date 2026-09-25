@@ -14,7 +14,7 @@ import time
 import numpy as np
 
 from ..backbones.sampler import sample
-from ..backbones.schedule import cosine_abar
+from ..backbones.schedule import path_coeffs, path_of
 from ..backbones.score_ops import laplace_diag, mode_ascent
 from .nodes import Tree, level_gaussian
 from .responsibility import _loglik
@@ -35,7 +35,7 @@ def build(backbone, u_grid=DEFAULT_GRID, n_samples=512, seed=0, iters=150, lr=0.
     if samples is None:
         samples = sample(backbone, n_samples, steps=steps, seed=seed, cls=cls, batch=batch)
     X = np.asarray(samples, np.float32)
-    tree = Tree(u_grid, backbone.img, lo, hi)
+    tree = Tree(u_grid, backbone.img, lo, hi, dim=backbone.dim, path=path_of(backbone))
     caps = dict(DEFAULT_CAPS if caps is None else caps)
     per_level = []
     for level, u in enumerate(tree.u_grid):
@@ -87,8 +87,8 @@ def link_parents(tree):
         ids_p, C, S, logpi = level_gaussian(tree, level + 1)
         if not ids_c or not ids_p:
             continue
-        a = float(cosine_abar(tree.u_grid[level + 1]))
-        L = _loglik(np.sqrt(a) * M_c, C, S, np.zeros(len(ids_p)))
+        alpha, _, _, _ = path_coeffs(tree.u_grid[level + 1], tree.path)
+        L = _loglik(alpha * M_c, C, S, np.zeros(len(ids_p)))
         for row, cid in enumerate(ids_c):
             tree.nodes[cid].parent = int(ids_p[int(L[row].argmax())])
     for nid in tree.levels[-1]:

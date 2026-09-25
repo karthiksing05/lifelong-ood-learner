@@ -10,8 +10,11 @@ module rests on (docs/PLAN_2026-09.md Section 3):
 
 So every operator that only needs eps / score / a sampler (tree.build, score_ops.mode_ascent,
 laplace_diag, operators.decompose's guide, operators.fold's gate) runs on a policy through this handle.
-Rows are FLATTENED NORMALISED action chunks [H * A] (H = action_horizon, A = action_dim, 32 padded);
-the policy's own Normalize / Unnormalize transforms map to and from the dataset's 7-D actions.
+Rows are FLATTENED NORMALISED action chunks over the REAL action dims, [H * 7] (H = action_horizon); the
+model's 32-D padded dims (trained on zeros, so the expert predicts v = eps there and Tweedie = 0) are filled
+with N(0, t^2) noise on the way in -- the exact marginal of x_t in those dims, independent of the real ones,
+so the real components of the score are unaffected -- and dropped on the way out.  The policy's own
+Normalize / Unnormalize transforms map to and from the dataset's 7-D actions.
 
 Conditioning is a PREFIX: images + language (+ state) embedded once into the VLM's KV cache
 (`prefix()`); every call at (x_t, t) then costs one action-expert forward.  A null prefix (for the
@@ -52,6 +55,7 @@ class Prefix:
 class PolicyBackbone:
     kind = "pi0"
     space = "action"
+    path = "flow"                # x_t = (1 - t) a + t eps: backbones.schedule.path_coeffs
 
     def __init__(self, config_name="pi05_libero", checkpoint_dir=None, device="cuda", num_steps=10):
         _config, _policy_config, _model = _import_openpi()
@@ -65,8 +69,11 @@ class PolicyBackbone:
             q.requires_grad_(False)
         self.device = device
         self.H = int(self.train_config.model.action_horizon)
-        self.A = int(self.train_config.model.action_dim)
-        self.dim = self.H * self.A
+        self.A = int(self.train_config.model.action_dim)          # 32, padded
+        self.a = 7                                                # real action dims (LIBERO)
+        self.dim = self.H * self.a                                # the row space: 70 for H = 10
+        self.dim_full = self.H * self.A
+        self.real = np.concatenate([np.arange(self.a) + h * self.A for h in range(self.H)])
         self.num_steps = int(num_steps)
         self.clip = (-1e9, 1e9)                  # chunks are unbounded (normalised); no clamp
         self.layout = "chunk"
@@ -118,24 +125,50 @@ class PolicyBackbone:
             kv2 = tuple((k.expand(n, *k.shape[1:]), v.expand(n, *v.shape[1:])) for k, v in kv)
         return Prefix(state=rep(prefix.state), pad_masks=rep(prefix.pad_masks), kv=kv2, n=n)
 
-    def v(self, x_rows, t, prefix, gate=None):
-        """The velocity field on flat rows at time t (float or [n]).  -> torch [n, dim]."""
-        X = torch.as_tensor(x_rows, dtype=torch.float32, device=self.device)
+    def pad(self, X, t, seed=0):
+        """[n, dim] real rows -> [n, H, A] model input, padded dims ~ N(0, t^2) (their exact marginal)."""
         n = len(X)
+        g = torch.Generator(device="cpu").manual_seed(int(seed))
+        full = torch.randn((n, self.dim_full), generator=g).to(self.device)
+        tt = torch.as_tensor(np.asarray(t, np.float32), device=self.device).reshape(-1, 1)
+        full = full * tt
+        full[:, self.real] = X
+        return full.reshape(n, self.H, self.A)
+
+    def v_full(self, x_full, t, prefix, gate=None):
+        """The velocity field on FULL [n, H, A] (or [n, H * A]) inputs.  -> torch [n, H * A]."""
+        x = torch.as_tensor(x_full, dtype=torch.float32, device=self.device).reshape(-1, self.H, self.A)
+        n = len(x)
         pre = self._expand(prefix, n)
         tt = torch.as_tensor(np.asarray(t, np.float32), device=self.device).reshape(-1)
         tt = tt.expand(n) if tt.numel() == 1 else tt
-        x = X.reshape(n, self.H, self.A)
         import contextlib
         with (gate() if gate is not None else contextlib.nullcontext()):
             vt = self.model.denoise_step(pre.state, pre.pad_masks, pre.kv, x, tt)
-        return vt.reshape(n, self.dim).float()
+        return vt.reshape(n, self.dim_full).float()
 
-    def eps(self, X, t, prefix=None, gate=None, **_):
-        """E[eps | x_t] = x_t + (1 - t) v.  Same name as the image Backbone so score_ops works unchanged."""
+    def v(self, x_rows, t, prefix=None, gate=None):
+        """The velocity field on real rows [n, dim] at time t (float or [n]).  -> torch [n, dim]."""
+        X = torch.as_tensor(x_rows, dtype=torch.float32, device=self.device)
+        return self.v_full(self.pad(X, t), t, self._pre(prefix), gate)[:, self.real]
+
+    def bind(self, prefix):
+        """Set the conditioning used when a caller (score_ops, tree.build) passes no prefix."""
+        self._bound = prefix
+        return self
+
+    def _pre(self, prefix):
+        pre = prefix if prefix is not None else getattr(self, "_bound", None)
+        if pre is None:
+            raise ValueError("PolicyBackbone: pass a prefix or bind() one first")
+        return pre
+
+    def eps(self, X, t, prefix=None, gate=None, cls=None, emb=None, batch=None, **_):
+        """E[eps | x_t] = x_t + (1 - t) v on real rows.  Same signature as the image Backbone (cls / emb
+        ignored) so score_ops runs unchanged with a bound prefix."""
         X = torch.as_tensor(X, dtype=torch.float32, device=self.device)
         tt = torch.as_tensor(np.asarray(t, np.float32), device=self.device).reshape(-1, 1)
-        return X + (1.0 - tt) * self.v(X, t, prefix, gate)
+        return X + (1.0 - tt) * self.v(X, t, self._pre(prefix), gate)
 
     def score(self, X, t, prefix=None, gate=None):
         tt = torch.as_tensor(np.asarray(t, np.float32), device=self.device).reshape(-1, 1)
@@ -144,46 +177,55 @@ class PolicyBackbone:
     def tweedie(self, X, t, prefix=None, gate=None):
         X = torch.as_tensor(X, dtype=torch.float32, device=self.device)
         tt = torch.as_tensor(np.asarray(t, np.float32), device=self.device).reshape(-1, 1)
-        return X - tt * self.v(X, t, prefix, gate)
+        return X - tt * self.v(X, t, self._pre(prefix), gate)
 
     # ── sampling (Euler on the flow, with the guide / gate hooks of backbones.sampler) ───
     @torch.no_grad()
-    def sample(self, n, prefix, seed=0, num_steps=None, guide=None, step_gate=None, noise=None):
-        """-> flat normalised chunks [n, dim].  `guide=(eps_fn, w_fn)` mixes an analytic eps into the
-        prediction (v = (eps_hat - x_t) / (1 - t) inverts the identity); `step_gate(x_rows, t)` sets an
-        expert's weight per step."""
+    def sample(self, n, prefix, seed=0, num_steps=None, guide=None, step_gate=None, noise=None, full=False):
+        """Euler on the flow over the FULL padded chunk, exactly openpi's sample_actions when no guide / gate
+        is given (the same noise gives the same actions).  -> real rows [n, dim] (or [n, H * A] with `full`).
+        `guide=(eps_fn, w_fn)` mixes an analytic eps (on real rows) into the prediction, v = (eps_hat - x_t) /
+        (1 - t) inverting the identity; `step_gate(x_rows, t)` sets an expert's weight per step."""
         K = int(num_steps or self.num_steps)
         g = torch.Generator(device="cpu").manual_seed(int(seed))
-        x = torch.randn((n, self.dim), generator=g).to(self.device) if noise is None else torch.as_tensor(noise, device=self.device).reshape(n, self.dim).float()
-        dt = -1.0 / K
-        t = 1.0
-        for _ in range(K):
+        x = (torch.randn((n, self.dim_full), generator=g).to(self.device) if noise is None
+             else torch.as_tensor(noise, device=self.device).reshape(n, self.dim_full).float())
+        dt = torch.tensor(-1.0 / K, dtype=torch.float32, device=self.device)
+        t = torch.tensor(1.0, dtype=torch.float32, device=self.device)
+        while t >= -dt / 2:
+            tf = float(t)
             gate = None
             if step_gate is not None:
-                sg = step_gate(x, t)
+                sg = step_gate(x[:, self.real], tf)
                 gate = sg[0] if isinstance(sg, tuple) else sg
-            vt = self.v(x, t, prefix, gate)
-            if guide is not None and t < 1.0 - 1e-6:
+            vt = self.v_full(x, t.expand(n), prefix, gate)
+            if guide is not None and tf < 1.0 - 1e-6:
                 eps_fn, w_fn = guide
+                xr = x[:, self.real]
                 e0 = x + (1.0 - t) * vt
-                et = torch.as_tensor(eps_fn(x, t), dtype=torch.float32, device=self.device)
-                w = w_fn(x, t)
+                et = torch.as_tensor(eps_fn(xr, tf), dtype=torch.float32, device=self.device)
+                w = w_fn(xr, tf)
                 w = w.to(e0.dtype).reshape(-1, 1) if torch.is_tensor(w) else float(w)
-                e = e0 + w * (et - e0)
+                e = e0.clone()
+                e[:, self.real] = e0[:, self.real] + w * (et - e0[:, self.real])
                 vt = (e - x) / (1.0 - t)
             x = x + dt * vt
             t = t + dt
-        return x.float().cpu().numpy()
+        out = x if full else x[:, self.real]
+        return out.float().cpu().numpy()
 
     # ── normalisation to / from the dataset's action units ──────────────────
     def unnormalize(self, rows):
-        """flat normalised chunks -> dataset actions [n, H, 7] through the policy's output transform."""
+        """real rows [n, dim] -> dataset actions [n, H, 7] through the policy's own output transform."""
+        R = np.asarray(rows, np.float32).reshape(-1, self.dim)
         out = []
-        for r in np.asarray(rows, np.float32).reshape(-1, self.H, self.A):
-            out.append(self.policy._output_transform({"actions": r})["actions"])
+        for r in R:
+            full = np.zeros((self.H, self.A), np.float32)
+            full.reshape(-1)[self.real] = r
+            out.append(self.policy._output_transform({"actions": full})["actions"])
         return np.stack(out)
 
     def describe(self):
-        return (f"PolicyBackbone({self.train_config.name}: H={self.H}, A={self.A}, dim={self.dim}, "
+        return (f"PolicyBackbone({self.train_config.name}: H={self.H}, A={self.A}, real={self.a}, dim={self.dim}, "
                 f"n_params={self.n_params:,}, expert={sum(p.numel() for p in self.expert.parameters()):,}, "
                 f"device={self.device}, load {self.load_secs:.0f}s)")

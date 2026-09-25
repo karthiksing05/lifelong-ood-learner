@@ -71,13 +71,13 @@ def categorize(tree, Xt_by_level, scope="siblings"):
 
 def basin(tree, X0, level, seed=0, n_noise=4):
     """Hard assignment of CLEAN rows to a level's nodes, averaging responsibilities over noise draws."""
-    from ..backbones.schedule import cosine_abar
-    a = float(cosine_abar(tree.u_grid[level]))
+    from ..backbones.schedule import path_coeffs
+    alpha, sigma, _, _ = path_coeffs(tree.u_grid[level], tree.path)
     rng = np.random.default_rng(seed)
     X0 = np.atleast_2d(np.asarray(X0, np.float32))
     acc = None
     for _ in range(n_noise):
-        xt = np.sqrt(a) * X0 + np.sqrt(1.0 - a) * rng.standard_normal(X0.shape).astype(np.float32)
+        xt = alpha * X0 + sigma * rng.standard_normal(X0.shape).astype(np.float32)
         ids, r = responsibility(tree, xt, tree.u_grid[level])
         acc = r if acc is None else acc + r
     if acc is None or acc.shape[1] == 0:

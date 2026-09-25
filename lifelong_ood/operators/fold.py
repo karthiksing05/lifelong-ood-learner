@@ -30,7 +30,7 @@ import torch
 from ..backbones.layout import to_flat, to_img
 from ..backbones.reads import eps_profile
 from ..backbones.sampler import _cond, sample
-from ..backbones.schedule import abar_of, cosine_abar
+from ..backbones.schedule import abar_of, cosine_abar, path_coeffs
 from ..tree.responsibility import responsibility
 from ..tree.update import incorporate as _incorporate
 from .address import explained
@@ -191,11 +191,11 @@ def membership_of_generated(tree, node_ids, S_rows, seed=0, n_noise=4):
     vals = []
     for nid in node_ids:
         l = tree.nodes[nid].level
-        a = float(cosine_abar(tree.u_grid[l]))
+        alpha, sigma, _, _ = path_coeffs(tree.u_grid[l], tree.path)
         rng = np.random.default_rng(seed)
         acc = np.zeros(len(S_rows))
         for _ in range(n_noise):
-            xt = np.sqrt(a) * S_rows + np.sqrt(1 - a) * rng.standard_normal(S_rows.shape).astype(np.float32)
+            xt = alpha * S_rows + sigma * rng.standard_normal(S_rows.shape).astype(np.float32)
             ids, rr = responsibility(tree, xt, tree.u_grid[l])
             acc += rr[:, ids.index(nid)]
         vals.append(float((acc / n_noise).mean()))

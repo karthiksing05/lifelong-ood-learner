@@ -9,13 +9,14 @@ device; inputs and outputs are flat rows in the backbone's row space.
 import numpy as np
 import torch
 
-from .schedule import cosine_abar
+from .schedule import path_coeffs, path_of
 
 
 def score(backbone, X, u, cls=None, emb=None, gate=None, batch=256):
-    """grad_x log p_u(x) = -eps / sqrt(1 - abar) for flat rows X.  -> torch [n, dim]."""
-    a = float(cosine_abar(float(u)))
-    return -backbone.eps(X, u, cls=cls, emb=emb, gate=gate, batch=batch) / float(np.sqrt(1.0 - a))
+    """grad_x log p_u(x) = -eps / sigma_u for flat rows X (sigma = sqrt(1 - abar) on the cosine path, t on
+    the flow path).  -> torch [n, dim]."""
+    _, sigma, _, _ = path_coeffs(u, path_of(backbone))
+    return -backbone.eps(X, u, cls=cls, emb=emb, gate=gate, batch=batch) / sigma
 
 
 @torch.no_grad()
@@ -26,13 +27,13 @@ def mode_ascent(backbone, X, u, iters=150, lr=0.1, seed=0, init="query", adam=Tr
     -> (x_t modes [n, dim], x0 modes [n, dim]) as float32 numpy, n = len(X) or n_starts.
     """
     g = torch.Generator(device="cpu").manual_seed(int(seed))
-    a = float(cosine_abar(float(u)))
+    alpha, sigma, alpha2, sigma2 = path_coeffs(u, path_of(backbone))
     dev = backbone.device
     if init == "query" and X is not None:
         Q = torch.as_tensor(np.asarray(X, np.float32), device=dev)
         if n_starts is not None:
             Q = Q[torch.arange(int(n_starts)) % len(Q)]
-        x = a ** 0.5 * Q + (1.0 - a) ** 0.5 * torch.randn(Q.shape, generator=g).to(dev)
+        x = alpha * Q + sigma * torch.randn(Q.shape, generator=g).to(dev)
     else:
         n = int(n_starts or len(X))
         x = torch.randn((n, backbone.dim), generator=g).to(dev)
@@ -46,11 +47,11 @@ def mode_ascent(backbone, X, u, iters=150, lr=0.1, seed=0, init="query", adam=Tr
             v = b2 * v + (1 - b2) * gsc * gsc
             x = x + lr * (m / (1 - b1 ** i)) / (torch.sqrt(v / (1 - b2 ** i)) + eps)
         else:
-            x = x + lr * (1.0 - a) * gsc
+            x = x + lr * sigma2 * gsc
     if tweedie:
-        x0 = (x + (1.0 - a) * score(backbone, x, u, cls=cls, emb=emb, gate=gate, batch=batch)) / a ** 0.5
+        x0 = (x + sigma2 * score(backbone, x, u, cls=cls, emb=emb, gate=gate, batch=batch)) / alpha
     else:
-        x0 = x / a ** 0.5
+        x0 = x / alpha
     return x.float().cpu().numpy(), x0.float().cpu().numpy()
 
 
@@ -59,10 +60,10 @@ def laplace_diag(backbone, Xt, u, probes=4, delta=5e-3, seed=0, var_floor=1e-4, 
                  cls=None, emb=None, gate=None, batch=256):
     """Diagonal Laplace extent of p_u at x_t, pulled back to x0 space:
     Sigma_t = -1/diag(H) where H is the score's Jacobian (Hutchinson finite differences);
-    Sigma_0 = (Sigma_t - (1 - abar)) / abar, clipped to [var_floor, var_cap].  -> float32 numpy [n, dim]."""
+    Sigma_0 = (Sigma_t - sigma^2) / alpha^2, clipped to [var_floor, var_cap].  -> float32 numpy [n, dim]."""
     g = torch.Generator(device="cpu").manual_seed(int(seed))
     xt = torch.as_tensor(np.asarray(Xt, np.float32), device=backbone.device)
-    a = float(cosine_abar(float(u)))
+    _, _, alpha2, sigma2 = path_coeffs(u, path_of(backbone))
     h = torch.zeros_like(xt)
     for _ in range(int(probes)):
         vsg = (torch.randint(0, 2, xt.shape, generator=g).float() * 2 - 1).to(xt.device)
@@ -73,4 +74,4 @@ def laplace_diag(backbone, Xt, u, probes=4, delta=5e-3, seed=0, var_floor=1e-4, 
     st = torch.full_like(h, float(var_cap))
     neg = h < -1e-9
     st[neg] = -1.0 / h[neg]
-    return torch.clamp((st - (1.0 - a)) / a, var_floor, var_cap).float().cpu().numpy()
+    return torch.clamp((st - sigma2) / alpha2, var_floor, var_cap).float().cpu().numpy()

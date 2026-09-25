@@ -13,7 +13,7 @@ import dataclasses
 
 import numpy as np
 
-from ..backbones.schedule import cosine_abar
+from ..backbones.schedule import path_coeffs
 
 
 def mode_res(u, img):
@@ -76,18 +76,28 @@ class Node:
         Per-dim extents are what make a node a detector of WHERE it is distinct (a background node is
         tight on the background and loose on the digit); the channel scalars alone made every node a
         blurry attractor (gate leak 0.36-0.97 on old images, 2026-09-25)."""
-        return 16 + int(self.q.size) + 4 * int(self.extent.size) + (2 * int(self.extent_dim.size) if self.extent_dim is not None else 0)
+        return 16 + int(self.q.nbytes) + 4 * int(self.extent.size) + (2 * int(self.extent_dim.size) if self.extent_dim is not None else 0)
 
 
 class Tree:
     """Nodes at a grid of noise levels.  `levels[l]` lists node ids at level l (l = 0 is the finest)."""
 
-    def __init__(self, u_grid, img, lo, hi):
+    def __init__(self, u_grid, img, lo, hi, dim=None, path="cosine"):
+        """`img` > 0: image rows (uint8 modes at the level's resolution, channel extents).  `img` None / 0 with
+        `dim`: GENERIC rows of `dim` floats (action chunks): the mode is stored fp16 [dim], the extent per dim
+        fp16, no quantisation.  `path` is the noising path the levels' Gaussians are diffused along."""
         self.u_grid = [float(u) for u in u_grid]
-        self.img, self.lo, self.hi = int(img), float(lo), float(hi)
+        self.img = int(img) if img else 0
+        self.lo, self.hi = float(lo), float(hi)
+        self.dim = int(dim) if dim else 3 * self.img * self.img
+        self.path = path
         self.nodes: dict[int, Node] = {}
         self.levels: list[list[int]] = [[] for _ in self.u_grid]
         self._next = 0
+
+    @property
+    def generic(self):
+        return self.img == 0
 
     # ── construction ────────────────────────────────────────────────────────
     def add(self, level, mode_rows, extent_perdim=None, count=1.0, parent=-1, extent_channels=None, per_dim=False,
@@ -95,15 +105,21 @@ class Tree:
         """A node from a working mode (flat rows) and a per-dim variance (or per-channel [3]).
         With `per_dim` the per-dim variance is KEPT (fp16), not collapsed to channels."""
         u = self.u_grid[level]
-        res = mode_res(u, self.img)
-        q = quantize_mode(mode_rows, self.img, res, self.lo, self.hi)
-        ed = None
-        if extent_perdim is not None:
-            v = np.asarray(extent_perdim, np.float32).reshape(self.img, self.img, 3)
-            if extent_channels is None:
-                extent_channels = v.mean(axis=(0, 1))
-            if per_dim:
-                ed = np.clip(v.reshape(-1), var_floor, var_cap).astype(np.float16)
+        if self.generic:
+            q = np.asarray(mode_rows, np.float32).reshape(-1).astype(np.float16)
+            v = np.full(self.dim, float(var_cap), np.float32) if extent_perdim is None else np.asarray(extent_perdim, np.float32).reshape(-1)
+            ed = np.clip(v, var_floor, var_cap).astype(np.float16)
+            extent_channels = np.asarray([float(ed.astype(np.float32).mean())], np.float32)
+        else:
+            res = mode_res(u, self.img)
+            q = quantize_mode(mode_rows, self.img, res, self.lo, self.hi)
+            ed = None
+            if extent_perdim is not None:
+                v = np.asarray(extent_perdim, np.float32).reshape(self.img, self.img, 3)
+                if extent_channels is None:
+                    extent_channels = v.mean(axis=(0, 1))
+                if per_dim:
+                    ed = np.clip(v.reshape(-1), var_floor, var_cap).astype(np.float16)
         n = Node(id=self._next, level=int(level), u=u, q=q, extent=np.asarray(extent_channels, np.float32),
                  count=float(count), parent=int(parent), extent_dim=ed)
         self._next += 1
@@ -113,7 +129,7 @@ class Tree:
         return n.id
 
     def _materialise(self, n):
-        n.mode = dequantize_mode(n.q, self.img, self.lo, self.hi)
+        n.mode = n.q.astype(np.float32) if self.generic else dequantize_mode(n.q, self.img, self.lo, self.hi)
         if n.extent_dim is not None:
             n.var = n.extent_dim.astype(np.float32)
         else:
@@ -137,7 +153,7 @@ class Tree:
         """-> (ids, modes [K, D], vars [K, D], counts [K]) for a level."""
         ids = list(self.levels[level])
         if not ids:
-            return ids, np.zeros((0, 3 * self.img * self.img), np.float32), np.zeros((0, 3 * self.img * self.img), np.float32), np.zeros(0)
+            return ids, np.zeros((0, self.dim), np.float32), np.zeros((0, self.dim), np.float32), np.zeros(0)
         M = np.stack([self.nodes[i].mode for i in ids]).astype(np.float32)
         V = np.stack([self.nodes[i].var for i in ids]).astype(np.float32)
         c = np.asarray([self.nodes[i].count for i in ids], np.float64)
@@ -148,20 +164,21 @@ class Tree:
 
     def summary(self):
         return {"n_nodes": len(self.nodes), "per_level": [len(l) for l in self.levels], "bytes": self.bytes(),
-                "u_grid": list(self.u_grid), "img": self.img}
+                "u_grid": list(self.u_grid), "img": self.img, "dim": self.dim, "path": self.path}
 
     # ── (de)serialisation: exactly the stored fields ─────────────────────────
     def to_dict(self):
-        return dict(u_grid=self.u_grid, img=self.img, lo=self.lo, hi=self.hi, next=self._next,
+        return dict(u_grid=self.u_grid, img=self.img, lo=self.lo, hi=self.hi, next=self._next, dim=self.dim, path=self.path,
                     nodes=[dict(id=n.id, level=n.level, q=n.q, extent=n.extent, count=n.count, parent=n.parent,
                                 expert=n.expert, gain=n.gain_accrued, extent_dim=n.extent_dim) for n in self.nodes.values()])
 
     @classmethod
     def from_dict(cls, d):
-        t = cls(d["u_grid"], d["img"], d["lo"], d["hi"])
+        t = cls(d["u_grid"], d["img"], d["lo"], d["hi"], dim=d.get("dim"), path=d.get("path", "cosine"))
         t._next = int(d["next"])
         for r in d["nodes"]:
-            n = Node(id=int(r["id"]), level=int(r["level"]), u=t.u_grid[int(r["level"])], q=np.asarray(r["q"], np.uint8),
+            n = Node(id=int(r["id"]), level=int(r["level"]), u=t.u_grid[int(r["level"])],
+                     q=np.asarray(r["q"], np.float16 if t.generic else np.uint8),
                      extent=np.asarray(r["extent"], np.float32), count=float(r["count"]), parent=int(r["parent"]),
                      expert=r.get("expert"), gain_accrued=float(r.get("gain", 0.0)),
                      extent_dim=None if r.get("extent_dim") is None else np.asarray(r["extent_dim"], np.float16))
@@ -172,22 +189,26 @@ class Tree:
 
     def save(self, path):
         d = self.to_dict()
-        np.savez_compressed(path, meta=np.array([d["u_grid"], d["img"], d["lo"], d["hi"], d["next"]], dtype=object),
+        np.savez_compressed(path, meta=np.array([d["u_grid"], d["img"], d["lo"], d["hi"], d["next"], d["dim"], d["path"]], dtype=object),
                             nodes=np.array(d["nodes"], dtype=object), allow_pickle=True)
 
     @classmethod
     def load(cls, path):
         z = np.load(path, allow_pickle=True)
-        u_grid, img, lo, hi, nxt = z["meta"]
+        meta = list(z["meta"])
+        u_grid, img, lo, hi, nxt = meta[:5]
+        dim = int(meta[5]) if len(meta) > 5 else None
+        path = str(meta[6]) if len(meta) > 6 else "cosine"
         return cls.from_dict(dict(u_grid=list(u_grid), img=int(img), lo=float(lo), hi=float(hi), next=int(nxt),
-                                  nodes=list(z["nodes"])))
+                                  dim=dim, path=path, nodes=list(z["nodes"])))
 
 
 def level_gaussian(tree, level):
-    """The noisy-marginal parameters of a level's nodes: (ids, centres sqrt(a) m, variances a V + (1-a), log pi)."""
+    """The noisy-marginal parameters of a level's nodes along the tree's path:
+    (ids, centres alpha m, variances alpha^2 V + sigma^2, log pi)."""
     ids, M, V, c = tree.stats(level)
-    a = float(cosine_abar(tree.u_grid[level]))
+    alpha, _, alpha2, sigma2 = path_coeffs(tree.u_grid[level], tree.path)
     if len(ids) == 0:
         return ids, M, V, np.zeros(0)
     pi = c / max(c.sum(), 1e-12)
-    return ids, np.sqrt(a) * M, a * V + (1.0 - a), np.log(np.clip(pi, 1e-12, None))
+    return ids, alpha * M, alpha2 * V + sigma2, np.log(np.clip(pi, 1e-12, None))

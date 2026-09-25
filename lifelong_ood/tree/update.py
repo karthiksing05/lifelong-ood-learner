@@ -27,12 +27,23 @@ def incorporate(tree, nid, x_rows, r=1.0):
     mean2, var2, c2 = welford_soft(n.mode.astype(np.float64), n.var.astype(np.float64), n.count,
                                    np.asarray(x_rows, np.float64).reshape(-1), r)
     n.count = c2
-    n.q = quantize_mode(mean2.astype(np.float32), tree.img, n.q.shape[0], tree.lo, tree.hi)
-    n.extent = var2.reshape(tree.img, tree.img, 3).mean(axis=(0, 1)).astype(np.float32)
-    if n.extent_dim is not None:
-        n.extent_dim = np.clip(var2, 1e-3, 1.0).astype(np.float16)
+    _store(tree, n, mean2, var2)
     tree._materialise(n)
     return nid
+
+
+def _store(tree, n, mean, var):
+    """Write (mean, var) into the node's STORED form (fp16 rows on a generic tree; uint8 + channel extents on an
+    image tree)."""
+    if tree.generic:
+        n.q = mean.astype(np.float32).astype(np.float16)
+        n.extent_dim = np.clip(var, 1e-4, 1.0).astype(np.float16)
+        n.extent = np.asarray([float(n.extent_dim.astype(np.float32).mean())], np.float32)
+        return
+    n.q = quantize_mode(mean.astype(np.float32), tree.img, n.q.shape[0], tree.lo, tree.hi)
+    n.extent = var.reshape(tree.img, tree.img, 3).mean(axis=(0, 1)).astype(np.float32)
+    if n.extent_dim is not None:
+        n.extent_dim = np.clip(var, 1e-3, 1.0).astype(np.float16)
 
 
 def create(tree, level, mode_rows, extent_perdim=None, extent_channels=None, count=1.0, parent=-1):
@@ -55,10 +66,7 @@ def merge(tree, i, j):
     Sa, Sb = na * a.var.astype(np.float64), nb * b.var.astype(np.float64)
     S = Sa + Sb + (mb - ma) ** 2 * na * nb / n
     a.count = n
-    a.q = quantize_mode(mu.astype(np.float32), tree.img, a.q.shape[0], tree.lo, tree.hi)
-    a.extent = (S / n).reshape(tree.img, tree.img, 3).mean(axis=(0, 1)).astype(np.float32)
-    if a.extent_dim is not None:
-        a.extent_dim = np.clip(S / n, 1e-3, 1.0).astype(np.float16)
+    _store(tree, a, mu, S / n)
     tree._materialise(a)
     for m in tree.nodes.values():
         if m.parent == j:

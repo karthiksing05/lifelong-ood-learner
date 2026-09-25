@@ -17,7 +17,7 @@ import dataclasses
 import numpy as np
 import torch
 
-from ..backbones.schedule import cosine_abar
+from ..backbones.schedule import path_coeffs
 
 
 def loglik_perdim(xq, M, V):
@@ -113,16 +113,16 @@ def teacher_from_code(tree, code, tau=0.05, adaptive_tau=True, extent="mixture")
     return mu.astype(np.float32), var.astype(np.float32)
 
 
-def guide(mu, var, w0=1.2, wmax=2.0, wmin=0.0, schedule="variance"):
-    """-> (eps_fn, w_fn) for the sampler: Zekun's Eq. 14 (analytic eps of the diffused Gaussian) and
-    Eq. 16 (variance-aware guidance weight)."""
+def guide(mu, var, w0=1.2, wmax=2.0, wmin=0.0, schedule="variance", path="cosine"):
+    """-> (eps_fn, w_fn) for the sampler: Zekun's Eq. 14 (analytic eps of the diffused Gaussian
+    N(alpha m, alpha^2 V + sigma^2) along `path`) and Eq. 16 (variance-aware guidance weight)."""
     mu_t = torch.as_tensor(np.asarray(mu, np.float32))
     var_t = torch.as_tensor(np.asarray(var, np.float32))
 
     def eps_fn(x_rows, u):
-        a = float(cosine_abar(float(u)))
+        alpha, sigma, alpha2, sigma2 = path_coeffs(float(u), path)
         m, v = mu_t.to(x_rows.device), var_t.to(x_rows.device)
-        return (1.0 - a) ** 0.5 * (x_rows - a ** 0.5 * m) / (a * v + (1.0 - a))
+        return sigma * (x_rows - alpha * m) / (alpha2 * v + sigma2)
 
     def w_fn(x_rows, u):
         u = float(np.clip(u, 0.0, 1.0))
@@ -130,6 +130,6 @@ def guide(mu, var, w0=1.2, wmax=2.0, wmin=0.0, schedule="variance"):
             return float(wmax)
         if schedule == "anneal":
             return float(wmin + (wmax - wmin) * (1.0 - u))
-        a = float(cosine_abar(u))
-        return float(np.clip(w0 * float((a * np.asarray(var) + (1.0 - a)).mean()), wmin, wmax))
+        _, _, alpha2, sigma2 = path_coeffs(u, path)
+        return float(np.clip(w0 * float((alpha2 * np.asarray(var) + sigma2).mean()), wmin, wmax))
     return eps_fn, w_fn

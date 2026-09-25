@@ -14,6 +14,23 @@ def cosine_abar(u, s=0.008):
     return np.clip(f / f0, 1e-5, 1.0)
 
 
+def path_coeffs(u, path="cosine"):
+    """The noising path x_u = alpha x0 + sigma eps at level u.  -> (alpha, sigma, alpha^2, sigma^2) as floats.
+
+    "cosine": the image backbones' DDPM (alpha = sqrt(abar), sigma = sqrt(1 - abar); alpha^2 is abar itself
+    so the image numbers stay bit-identical).  "flow": openpi's flow matching x_t = (1 - t) a + t eps."""
+    if path == "flow":
+        t = float(u)
+        return 1.0 - t, t, (1.0 - t) ** 2, t ** 2
+    a = float(cosine_abar(float(u)))
+    return a ** 0.5, (1.0 - a) ** 0.5, a, 1.0 - a
+
+
+def path_of(obj):
+    """The noising path an object declares ("cosine" unless it says otherwise)."""
+    return getattr(obj, "path", None) or "cosine"
+
+
 def abar_of(u):
     """torch u -> torch abar on the same device, through the repository's cosine schedule."""
     import torch
