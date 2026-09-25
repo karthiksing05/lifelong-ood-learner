@@ -1,0 +1,124 @@
+{
+ "artifacts": [
+  "results/robot/r4_35_lib40_expert.pt",
+  "results/robot/r4_35_lib40_program.npz",
+  "results/robot/r4_35_lib40_tree.npz"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 3668,
+  "experts": 4677632,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 4699000,
+  "tree": 17700
+ },
+ "command": "experiments/r4_fold.py --task 35 --tree results/robot/r2b_libero_40_tree.npz --library results/robot/r2b_libero_40.npz --rank 4 --steps 1000 --tag _lib40",
+ "config": {
+  "K": 3,
+  "anchor_weight": 1.0,
+  "band": "0,1,2",
+  "library": "results/robot/r2b_libero_40.npz",
+  "lr": 0.0001,
+  "n_anchor": 384,
+  "n_cal": 1500,
+  "q": 0.95,
+  "rank": 4,
+  "seed": 0,
+  "steps": 1000,
+  "tag": "_lib40",
+  "task": 35,
+  "tree": "results/robot/r2b_libero_40_tree.npz"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "heistotron.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3954935",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r4_fold",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "56160bb58e8ff6028817f8d96c07b017d0d3b1e5",
+  "short": "56160bb5"
+ },
+ "keys": {
+  "task": 35
+ },
+ "metrics": {
+  "anchor_weight": 1.0,
+  "curve": {
+   "anchor": [
+    0.0,
+    0.00031667278381064534,
+    0.00027775316266343,
+    0.00030792999314144254,
+    0.00018435006495565176,
+    0.0002810647420119494,
+    0.00019268989854026586,
+    0.00010234564979327843,
+    6.476915586972609e-05,
+    7.35869471100159e-05,
+    0.00010346198541810736
+   ],
+   "loss": [
+    0.12360025197267532,
+    0.029728740453720093,
+    0.006483169738203287,
+    0.010882999747991562,
+    0.0014699904713779688,
+    0.0018691762816160917,
+    0.0019940577913075686,
+    0.0028671680483967066,
+    0.0013688906328752637,
+    0.0005947368335910141,
+    0.002103425096720457
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "demo_episode": 957,
+  "expert_params": 2338816,
+  "n_frames": 131,
+  "n_new_nodes": 59,
+  "n_unexplained": 20,
+  "nll_median": {
+   "0": -0.6796699254738235,
+   "1": -1.279516302157024,
+   "2": -0.9702053903259881
+  },
+  "task": 35,
+  "text": "open the microwave",
+  "thresholds": {
+   "0": 3.148381656392142,
+   "1": -0.09127364671692659,
+   "2": -0.720244935179938
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r4_fold__libero_90___lib40__task-35__s0__56160bb5",
+ "schema": 1,
+ "script": "experiments/r4_fold.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-25T22:09:15+00:00",
+ "stream": null,
+ "tag": "_lib40"
+}

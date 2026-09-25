@@ -1,0 +1,83 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/m3abl_39_abl_pos_stall3.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "roll.sh MODE=program:/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r3_prog_39_raw_demo.npz?w0=1.0&sched=const&var=0.001&key=pos&stall=3 SUITE=libero_90 TASKS=39 TRIALS=10 (job 3954942)",
+ "config": {
+  "client": {
+   "first_trial": 0,
+   "host": "127.0.0.1",
+   "max_steps": 0,
+   "no_meta": false,
+   "out": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/m3abl_39_abl_pos_stall3.json",
+   "port": 9353,
+   "replan": 5,
+   "resize": 224,
+   "seed": 7,
+   "suite": "libero_90",
+   "tasks": "39",
+   "trials": 10,
+   "videos": 2,
+   "wait": 10
+  },
+  "job": "3954942",
+  "mode": "program:/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r3_prog_39_raw_demo.npz?w0=1.0&sched=const&var=0.001&key=pos&stall=3"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "voltron.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3954942",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_ablation",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "56160bb58e8ff6028817f8d96c07b017d0d3b1e5",
+  "short": "56160bb5"
+ },
+ "keys": {
+  "first_trial": 0,
+  "mode": "program:/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r3_prog_39_raw_demo.npz?w0=1.0&sched=const&var=0.001&key=pos&stall=3",
+  "tasks": "39",
+  "trials": 10
+ },
+ "metrics": {
+  "complete": true,
+  "n_episodes": 10,
+  "secs": 177.32222175598145,
+  "success_rate": 0.8,
+  "tasks": {
+   "39": {
+    "errors": 0,
+    "language": "turn off the stove",
+    "mean_steps": 237.5,
+    "n": 10,
+    "success_rate": 0.8
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_ablation__libero_90__raw_replay_abl_pos_stall3__first_trial-0__mode-program-coc-flash10-ksingara3-lifelong-ood-learner-results-robot-r3_prog_39_raw_demo.npz-w0-1.0-sched-const-var-0.001-key-pos-stall-3__tasks-39__trials-10__s7__56160bb5",
+ "schema": 1,
+ "script": "experiments/libero_client.py",
+ "seconds": null,
+ "seed": 7,
+ "source_commit": null,
+ "started": "2026-09-25T22:10:57+00:00",
+ "stream": null,
+ "tag": "raw_replay_abl_pos_stall3"
+}

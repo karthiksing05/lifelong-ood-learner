@@ -1,0 +1,107 @@
+{
+ "artifacts": [
+  "results/robot/r3_lora_36.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 18710528,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 18710528,
+  "tree": 0
+ },
+ "command": "experiments/r3_fewshot.py --task 36",
+ "config": {
+  "batch": 32,
+  "demo": 0,
+  "lr": 0.0001,
+  "rank": 16,
+  "seed": 0,
+  "steps": 1000,
+  "tag": "",
+  "task": 36
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "chappie.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3954911",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r3_fewshot",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "483e2d69307d40d6f063cbf85bef860178b482bd",
+  "short": "483e2d69"
+ },
+ "keys": {
+  "task": 36
+ },
+ "metrics": {
+  "curve": {
+   "anchor": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "loss": [
+    0.060845326632261276,
+    0.010390372946858406,
+    0.005306676030158997,
+    0.002977983094751835,
+    0.005952724255621433,
+    0.001823857775889337,
+    0.0009189897100441158,
+    0.0010693734511733055,
+    0.0016482986975461245,
+    0.0063523161225020885,
+    0.0033386480063199997
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "demo_episode": 455,
+  "final_loss": 0.0033386480063199997,
+  "first_loss": 0.060845326632261276,
+  "n_banks": 163,
+  "n_frames": 218,
+  "n_params": 9355264,
+  "task": 36,
+  "text": "put the white bowl on the plate",
+  "train_secs": 136.17145347595215
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r3_fewshot__libero_90__base__task-36__s0__483e2d69",
+ "schema": 1,
+ "script": "experiments/r3_fewshot.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-25T21:45:14+00:00",
+ "stream": null,
+ "tag": ""
+}

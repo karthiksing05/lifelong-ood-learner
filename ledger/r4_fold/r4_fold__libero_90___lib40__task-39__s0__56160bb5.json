@@ -1,0 +1,124 @@
+{
+ "artifacts": [
+  "results/robot/r4_39_lib40_expert.pt",
+  "results/robot/r4_39_lib40_program.npz",
+  "results/robot/r4_39_lib40_tree.npz"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 3248,
+  "experts": 4677632,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 4703380,
+  "tree": 22500
+ },
+ "command": "experiments/r4_fold.py --task 39 --tree results/robot/r2b_libero_40_tree.npz --library results/robot/r2b_libero_40.npz --rank 4 --steps 1000 --tag _lib40",
+ "config": {
+  "K": 3,
+  "anchor_weight": 1.0,
+  "band": "0,1,2",
+  "library": "results/robot/r2b_libero_40.npz",
+  "lr": 0.0001,
+  "n_anchor": 384,
+  "n_cal": 1500,
+  "q": 0.95,
+  "rank": 4,
+  "seed": 0,
+  "steps": 1000,
+  "tag": "_lib40",
+  "task": 39,
+  "tree": "results/robot/r2b_libero_40_tree.npz"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "perseverance.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3954932",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r4_fold",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "56160bb58e8ff6028817f8d96c07b017d0d3b1e5",
+  "short": "56160bb5"
+ },
+ "keys": {
+  "task": 39
+ },
+ "metrics": {
+  "anchor_weight": 1.0,
+  "curve": {
+   "anchor": [
+    0.0,
+    0.0011589113855734468,
+    0.0015634313458576798,
+    0.0016138491919264197,
+    0.00057286920491606,
+    0.0004070340655744076,
+    0.000453837972600013,
+    0.0002962377911899239,
+    0.0001555401540827006,
+    0.0001723257446428761,
+    0.00030179962050169706
+   ],
+   "loss": [
+    0.3080858886241913,
+    0.04278726130723953,
+    0.013063738122582436,
+    0.006898760795593262,
+    0.00272782682441175,
+    0.0032221779692918062,
+    0.00486417394131422,
+    0.0011739999754354358,
+    0.0017332163406535983,
+    0.0011841937666758895,
+    0.001188682857900858
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "demo_episode": 3741,
+  "expert_params": 2338816,
+  "n_frames": 116,
+  "n_new_nodes": 75,
+  "n_unexplained": 52,
+  "nll_median": {
+   "0": 2.1192191133177185,
+   "1": -0.4323250846509652,
+   "2": -0.8185951974265819
+  },
+  "task": 39,
+  "text": "turn off the stove",
+  "thresholds": {
+   "0": 3.148381656392142,
+   "1": -0.09127364671692659,
+   "2": -0.720244935179938
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r4_fold__libero_90___lib40__task-39__s0__56160bb5",
+ "schema": 1,
+ "script": "experiments/r4_fold.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-25T22:07:42+00:00",
+ "stream": null,
+ "tag": "_lib40"
+}
