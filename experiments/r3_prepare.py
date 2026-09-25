@@ -59,6 +59,7 @@ def main():
     thr = None
     if a.library_npz:
         lib = np.load(a.library_npz)
+        lib_text = D.Demos().tasks
         cal_rows = novelty.heldout_rows(D.Demos(), lib)
         thr = novelty.calibrate(tree, cal_rows, all_levels)
         print(f"[r3p] q95 NLL of {len(cal_rows)} held-out library frames per level: {[round(v, 2) for v in thr.values()]}", flush=True)
@@ -78,11 +79,16 @@ def main():
                  out_of_range_frac=float((np.abs(rows) > 1.0).mean()))
         for variant in ("code", "raw"):
             prog = DemoProgram.from_demo(tree, rows, demo["state"], K=a.K, levels=levels, variant=variant)
+            if a.library_npz:
+                prog.with_prompts(rows, lib["demo"], lib["task"], lib_text, k=5)
             path = f"results/robot/r3_prog_{tid}_{variant}{a.tag}.npz"
             prog.save(path)
             resid = float(np.sqrt(((prog.mu - rows) ** 2).mean()))
             nll = float((0.5 * ((rows - prog.mu) ** 2 / prog.var + np.log(2 * np.pi * prog.var))).mean())
             m[variant] = dict(bytes=prog.bytes(), mean_rms_to_demo=resid, nll_per_dim=nll, path=path)
+            if prog.prompt_id is not None and variant == "code":
+                ids, cnt = np.unique(prog.prompt_id, return_counts=True)
+                m["prompt_program"] = {prog.prompt_table[int(i)]: int(c) for i, c in zip(ids, cnt)}
         # novelty read (ADDRESS): the demo's chunks vs held-out library frames, per level
         if thr is not None:
             nll, unexp, depth = novelty.read(tree, rows, all_levels, thr)

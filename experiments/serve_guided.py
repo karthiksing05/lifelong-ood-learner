@@ -55,14 +55,17 @@ def main():
         logging.info(f"forcing node {node_id} (level {n.level}, u={n.u}) with w0={w0}")
         hooks = lambda obs, pre, meta=None: (g, None)          # noqa: E731
     elif a.mode.startswith("program:"):
-        # program:<program.npz>[:w0[:window[:schedule[:var]]]] -- COMPOSE: follow one demo's prototype program (or its
-        # raw chunks); schedule "variance" (Eq. 16) or "const"; var overrides the teacher's variance (its precision)
+        # program:<program.npz>[:w0[:window[:schedule[:var[:how]]]]] -- COMPOSE: follow one demo's prototype program (or
+        # its raw chunks); schedule "variance" (Eq. 16) or "const"; var overrides the teacher's variance (its precision);
+        # how = "guide" (default) | "prompt" (swap the instruction only) | "prompt+guide"
         _, prog_path, *rest = a.mode.split(":")
         from lifelong_ood.policy.compose import ComposeHooks, DemoProgram
         prog = DemoProgram.load(prog_path)
         hooks = ComposeHooks(prog, w0=float(rest[0]) if rest else 1.2, window=int(rest[1]) if len(rest) > 1 else 20,
                              schedule=rest[2] if len(rest) > 2 else "variance",
-                             var=float(rest[3]) if len(rest) > 3 and rest[3] else None)
+                             var=float(rest[3]) if len(rest) > 3 and rest[3] else None,
+                             use_guide=not (len(rest) > 4 and rest[4] == "prompt"),
+                             use_prompt=len(rest) > 4 and rest[4] in ("prompt", "prompt+guide"))
         logging.info(f"program {prog_path}: variant {prog.variant}, {len(prog.mu)} frames, {prog.bytes()} B")
     elif a.mode.startswith("hybrid:"):
         # hybrid:<program.npz>:<expert.pt>[:w0[:schedule]] -- compose where explained, the folded expert where not

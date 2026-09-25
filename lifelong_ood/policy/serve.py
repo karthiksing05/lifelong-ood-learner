@@ -30,6 +30,8 @@ class GuidedPolicy:
         obs = {k: v for k, v in obs.items() if not k.startswith("meta/")}
         if meta.get("episode_start") and hasattr(self.hooks, "reset"):
             self.hooks.reset(meta)
+        if hasattr(self.hooks, "rewrite"):
+            obs = self.hooks.rewrite(obs, meta)
         observation = self.bk.observation(obs)
         pre = self.bk.prefix(observation)
         guide, gate = (None, None) if self.hooks is None else self.hooks(obs, pre, meta)

@@ -41,6 +41,8 @@ class DemoProgram:
     codes: list                    # per frame: list of (node id, weight) (empty for "raw")
     variant: str
     fold: np.ndarray = None        # [T] bool: frames the library does NOT explain (the fold expert's frames)
+    prompt_id: np.ndarray = None   # [T] int: index into prompt_table of the library task that explains the frame
+    prompt_table: list = None      # the library tasks' instructions (strings)
 
     @classmethod
     def from_demo(cls, tree, rows, states, K=3, levels=None, variant="code", raw_var=1e-2):
@@ -55,27 +57,55 @@ class DemoProgram:
             mus.append(c.mu); vars_.append(c.var); codes.append(c.entries())
         return cls(mu=np.stack(mus), var=np.stack(vars_), key=key, codes=codes, variant=variant)
 
+    def with_prompts(self, rows, library_rows, library_task, task_text, k=5, smooth=10):
+        """PROMPT PROGRAM: per frame, the library task whose chunks explain this frame's chunk best (majority over the
+        k nearest library chunks, rms in the normalised chunk space).  The policy is then conditioned on that task's
+        instruction at the aligned frame: composition through pi0.5's own language conditioning."""
+        L = np.asarray(library_rows, np.float32)
+        tasks = np.asarray(library_task)
+        table = sorted(set(tasks.tolist()))
+        pid = np.zeros(len(rows), int)
+        for f, r in enumerate(np.asarray(rows, np.float32)):
+            d = ((L - r[None]) ** 2).mean(1)
+            nn = tasks[np.argsort(d)[:k]]
+            vals, cnt = np.unique(nn, return_counts=True)
+            pid[f] = table.index(int(vals[cnt.argmax()]))
+        if smooth:                                    # majority over a +-smooth window: switch only at sustained changes
+            sm = pid.copy()
+            for f in range(len(pid)):
+                w = pid[max(0, f - smooth): f + smooth + 1]
+                sm[f] = np.bincount(w).argmax()
+            pid = sm
+        self.prompt_id = pid
+        self.prompt_table = [task_text[int(t)] for t in table]
+        return self
+
     def bytes(self):
-        """What the program stores: codes (uint16 id + fp16 weight each) or the raw chunks (fp16), + the keys."""
+        """What the program stores: codes (uint16 id + fp16 weight each) or the raw chunks (fp16), + the keys, + one
+        uint8 prompt index per frame when a prompt program is attached (the instructions are the library's)."""
         store = sum(4 * len(c) for c in self.codes) if self.variant == "code" else 2 * int(self.mu.size)
-        return int(store + 2 * self.key.size)
+        return int(store + 2 * self.key.size + (0 if self.prompt_id is None else len(self.prompt_id)))
 
     def save(self, path):
+        extra = {} if self.prompt_id is None else dict(prompt_id=self.prompt_id, prompt_table=np.array(self.prompt_table, dtype=object))
         np.savez_compressed(path, mu=self.mu, var=self.var, key=self.key, variant=self.variant,
                             fold=np.zeros(len(self.mu), bool) if self.fold is None else self.fold,
-                            codes=np.array([np.asarray(c, np.float32) for c in self.codes], dtype=object), allow_pickle=True)
+                            codes=np.array([np.asarray(c, np.float32) for c in self.codes], dtype=object), allow_pickle=True, **extra)
 
     @classmethod
     def load(cls, path):
         z = np.load(path, allow_pickle=True)
         return cls(mu=z["mu"], var=z["var"], key=z["key"], codes=[list(map(tuple, c)) for c in z["codes"]], variant=str(z["variant"]),
-                   fold=z["fold"] if "fold" in z else None)
+                   fold=z["fold"] if "fold" in z else None,
+                   prompt_id=z["prompt_id"] if "prompt_id" in z else None,
+                   prompt_table=list(z["prompt_table"]) if "prompt_table" in z else None)
 
 
 class ComposeHooks:
     """Per-episode state: a pointer into the program, advanced by nearest-state alignment in a forward window."""
 
-    def __init__(self, program, w0=1.2, wmax=2.0, window=20, lookahead=0, schedule="variance", var=None):
+    def __init__(self, program, w0=1.2, wmax=2.0, window=20, lookahead=0, schedule="variance", var=None, use_guide=True,
+                 use_prompt=False):
         """schedule: "variance" (Zekun's Eq. 16: strong at high noise, fading as the policy takes over) or
         "const" (w = w0 at every step: w0 = 1 samples the teacher alone, i.e. executes the program open-loop in
         chunk space; pi0.5's conditional is nearly deterministic, so a fading guide may be overwritten late)."""
@@ -85,6 +115,8 @@ class ComposeHooks:
         # precision-weighted: pi0.5's conditional std is ~0.024 (r2b), so a teacher looser than that barely moves the
         # sample unless w ~ 1.  `var` overrides the teacher's variance to set its precision explicitly.
         self.var = None if var is None else float(var)
+        self.use_guide, self.use_prompt = bool(use_guide), bool(use_prompt)
+        self._j = None
         self.norm = state_norm()
         self.p = 0
         self.trace = []
@@ -92,6 +124,17 @@ class ComposeHooks:
     def reset(self, meta=None):
         self.p = 0
         self.trace = []
+        self._j = None
+
+    def rewrite(self, obs, meta=None):
+        """Called by GuidedPolicy BEFORE the prefix: align to the demo once per call and, with a prompt program,
+        swap the instruction for the library task that explains the aligned frame."""
+        self._j = self.align(obs["observation/state"])
+        self.trace.append(self._j)
+        if self.use_prompt and self.prog.prompt_id is not None:
+            obs = dict(obs)
+            obs["prompt"] = str(self.prog.prompt_table[int(self.prog.prompt_id[self._j])])
+        return obs
 
     def align(self, state):
         s = self.norm(state)[list(ALIGN_DIMS)]
@@ -106,10 +149,16 @@ class ComposeHooks:
             return guide(self.prog.mu[j], v, wmax=self.w0, schedule="const", path="flow")
         return guide(self.prog.mu[j], v, w0=self.w0, wmax=self.wmax, path="flow")
 
+    def _frame(self, obs):
+        if self._j is None:                          # called without rewrite(): align here
+            self._j = self.align(obs["observation/state"])
+            self.trace.append(self._j)
+        j, self._j = self._j, None
+        return j
+
     def __call__(self, obs, pre, meta=None):
-        j = self.align(obs["observation/state"])
-        self.trace.append(j)
-        return self.guide_at(j), None
+        j = self._frame(obs)
+        return (self.guide_at(j) if self.use_guide else None), None
 
 
 class HybridHooks(ComposeHooks):
@@ -123,10 +172,8 @@ class HybridHooks(ComposeHooks):
         self.on = keys_on(state, {key})
 
     def __call__(self, obs, pre, meta=None):
-        j = self.align(obs["observation/state"])
-        self.trace.append(j)
+        j = self._frame(obs)
         if self.prog.fold is not None and bool(self.prog.fold[j]):
             return None, (lambda x, t: self.on)
-        return super().guide_at(j), None
+        return (self.guide_at(j) if self.use_guide else None), None
 
-    # the plain ComposeHooks call, factored so the hybrid can reuse it
