@@ -1,16 +1,18 @@
 # lifelong-ood-learner
 
-Lifelong, out-of-distribution learning as **composing seen prototypes**, and **folding genuinely new
-ones into the manifold** of a diffusion model, with the tree of prototypes as the index of what is
-known and the noise level as its depth.
+**Continual learning for diffusion policies by composing and folding agent prototypes** (the line since
+2026-09-25, late: [docs/PLAN_2026-09.md](docs/PLAN_2026-09.md)). A trained diffusion policy holds a
+hierarchy of *agent prototypes*, the modes of its noisy action-chunk marginals with the noise level as
+depth (Zekun Wang et al.'s prototype discovery, applied to the action denoiser). A new task is first
+COMPOSED from those prototypes; only a motion no prototype explains is FOLDED into the policy by a
+responsibility-gated minimal expert; the library grows the way Cobweb's tree grows. Benchmark: LIBERO,
+lifelong protocol. The image-based phases that built the machinery are paused; their plan is
+[docs/PLAN_2026-09_images.md](docs/PLAN_2026-09_images.md) and their state is in the ladder below.
 
-Rework in progress (started 2026-09-25). The plan, the audit of the previous architecture and the
-literature positioning are in [docs/PLAN_2026-09.md](docs/PLAN_2026-09.md); the review that retired the
-previous headline claims is [docs/REVIEW_2026-09.md](docs/REVIEW_2026-09.md); the theory the rework
-rests on (the ideal denoiser's one-instance update IS Cobweb's incremental update, noise level = tree
-depth) is [docs/COBWEB_UPDATE.md](docs/COBWEB_UPDATE.md). The previous repository is preserved under
-[archive/2026-09-pre-rework/](archive/2026-09-pre-rework/README.md) with a map from each retired
-claim to the review's verdict.
+The review that retired the previous architecture is [docs/REVIEW_2026-09.md](docs/REVIEW_2026-09.md);
+the theory the mechanism rests on (the ideal denoiser's one-instance update IS Cobweb's incremental
+update, noise level = tree depth) is [docs/COBWEB_UPDATE.md](docs/COBWEB_UPDATE.md); the previous
+repository is preserved under [archive/2026-09-pre-rework/](archive/2026-09-pre-rework/README.md).
 
 ## The three operators
 
