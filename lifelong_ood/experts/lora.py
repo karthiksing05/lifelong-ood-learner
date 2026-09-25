@@ -11,7 +11,28 @@ import torch
 import torch.nn as nn
 
 
-class GatedLoRA(nn.Module):
+class _BasePassthrough:
+    """Code that inspects a wrapped layer (transformers' Gemma reads q_proj.weight.dtype, openpi reads
+    o_proj.weight.dtype) sees the frozen base layer's attributes.  Properties, so nothing is registered twice."""
+
+    @property
+    def weight(self):
+        return self.base.weight
+
+    @property
+    def bias(self):
+        return self.base.bias
+
+    @property
+    def in_features(self):
+        return self.base.in_features
+
+    @property
+    def out_features(self):
+        return self.base.out_features
+
+
+class GatedLoRA(_BasePassthrough, nn.Module):
     """A low-rank delta on a frozen layer, applied only while `state["on"]` is True.
 
     A is Kaiming, B is zero, so a fresh delta is an EXACT no-op -- the same initialisation the
@@ -69,7 +90,7 @@ def gate_on(state):
     return _on
 
 
-class KeyedLoRA(nn.Module):
+class KeyedLoRA(_BasePassthrough, nn.Module):
     """A BANK of low-rank deltas on one frozen layer, one per node key; the deltas whose keys are in
     `state["on"]` (a set) are added, and with the set empty the layer is the frozen one exactly.
 
