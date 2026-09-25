@@ -35,8 +35,14 @@ class GuidedPolicy:
         observation = self.bk.observation(obs)
         pre = self.bk.prefix(observation)
         guide, gate = (None, None) if self.hooks is None else self.hooks(obs, pre, meta)
-        rows = self.bk.sample(1, pre, seed=self.seed + self.calls, num_steps=self.num_steps, guide=guide, step_gate=gate,
-                              noise=None if noise is None else np.asarray(noise).reshape(1, -1))
+        nz = None if noise is None else np.asarray(noise).reshape(1, -1)
+        rows = None
+        if guide is not None and getattr(self.hooks, "agree", None) is not None:
+            own = self.bk.sample(1, pre, seed=self.seed + self.calls, num_steps=self.num_steps, step_gate=gate, noise=nz)
+            if self.hooks.agrees(own[0]):
+                rows = own                                   # the prior already does what the program asks
+        if rows is None:
+            rows = self.bk.sample(1, pre, seed=self.seed + self.calls, num_steps=self.num_steps, guide=guide, step_gate=gate, noise=nz)
         actions = self.bk.unnormalize(rows)[0]
         self.calls += 1
         self.secs += time.monotonic() - t0

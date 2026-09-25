@@ -139,7 +139,7 @@ class ComposeHooks:
     """Per-episode state: a pointer into the program, advanced by nearest-state alignment in a forward window."""
 
     def __init__(self, program, w0=1.2, wmax=2.0, window=20, lookahead=0, schedule="variance", var=None, use_guide=True,
-                 use_prompt=False, stall=0, release=2, key_mode="pos"):
+                 use_prompt=False, stall=0, release=2, key_mode="pos", agree=None):
         """schedule: "variance" (Zekun's Eq. 16: strong at high noise, fading as the policy takes over) or
         "const" (w = w0 at every step: w0 = 1 samples the teacher alone, i.e. executes the program open-loop in
         chunk space; pi0.5's conditional is nearly deterministic, so a fading guide may be overwritten late)."""
@@ -154,6 +154,13 @@ class ComposeHooks:
         # `release` calls so the prior acts alone (it re-grounds on the scene), then follow the program again.
         # Seen in the pilot: replay stuck at one demo frame for 65 calls, re-issuing the same chunk.
         self.stall, self.release = int(stall), int(release)
+        # AGREEMENT gate (None = off): the server first samples the prior's own chunk; if its mean squared distance to
+        # the aligned frame's teacher, in units of the program's variance, is below `agree`, the prior's chunk is
+        # executed and the program stays silent.  Composition only where the prior is off the demo (a capable prior
+        # on a known task was degraded by forcing the program: white mug, zero-shot 9/10 vs codes 3/10).
+        self.agree = None if agree is None else float(agree)
+        self.z2 = []
+        self._jg = None
         self._still, self._released = 0, 0
         self._j = None
         self.norm = state_norm()
@@ -167,8 +174,14 @@ class ComposeHooks:
         if self.trace:
             import logging
             tr = np.asarray(self.trace)
+            extra = ""
+            if self.z2:
+                z = np.asarray(self.z2)
+                extra = (f", agreement z2 median {np.median(z):.2f} (q10 {np.quantile(z, 0.1):.2f}, q90 {np.quantile(z, 0.9):.2f}), "
+                         f"guided {float((z >= self.agree).mean()):.2f} of calls")
             logging.info(f"[compose] episode done: {len(tr)} calls, reached demo frame {int(tr.max())}/{len(self.prog.mu) - 1}, "
-                         f"stalls {int((np.diff(tr) == 0).sum())}, trace {tr[:: max(1, len(tr) // 12)].tolist()}")
+                         f"stalls {int((np.diff(tr) == 0).sum())}, trace {tr[:: max(1, len(tr) // 12)].tolist()}{extra}")
+        self.z2 = []
         self.p = 0
         self.trace = []
         self._j = None
@@ -207,7 +220,17 @@ class ComposeHooks:
         self.p = lo + int(d.argmin())
         return min(self.p + self.lookahead, len(self.keys) - 1)
 
+    def agrees(self, own_row):
+        """The prior's own chunk vs the teacher of the frame last guided: True if within `agree` (program variance units)."""
+        if self.agree is None or self._jg is None:
+            return False
+        j = self._jg
+        z2 = float(np.mean((np.asarray(own_row, np.float32) - self.prog.mu[j]) ** 2 / np.maximum(self.prog.var[j], 1e-4)))
+        self.z2.append(z2)
+        return z2 < self.agree
+
     def guide_at(self, j):
+        self._jg = j
         v = self.prog.var[j] if self.var is None else np.full_like(self.prog.var[j], self.var)
         if self.schedule == "const":
             return guide(self.prog.mu[j], v, wmax=self.w0, schedule="const", path="flow")
