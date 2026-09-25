@@ -563,10 +563,16 @@ class NeuralLifelongLearner:
         # free guidance between the concept's path and the frozen base, and it is the right thing on
         # every field that supports guidance callbacks. The VE bridge supports none of them -- it has
         # no `guide_eps`, `u_start` or `x_init` -- so on that backbone the concept is sampled by
-        # handing its embedding straight to the conditional instead. That is the same distribution at
-        # `guidance=1.0` (the measured default: joint 0.38 at w=1.0, 0.12 at 1.5, 0.00 at >=2.0), so
-        # nothing is lost where guidance is not being used; a caller asking for w != 1 on a backbone
-        # that cannot honour it gets an error rather than a silently different number.
+        # handing its embedding straight to the conditional instead, INSIDE `bank.activate(name)`.
+        # That is the same distribution as the guidance route at `guidance=1.0` ONLY because the
+        # path is active: the guidance route gets its adapter from `field.eps(x, u, name)`, which
+        # activates the path itself, and the VE sampler never calls `eps`.  The first version of
+        # this branch omitted the `activate`, so every stored concept on the VE bridge was sampled
+        # from its embedding alone -- `stored` came back identical to `address` to 16 digits on all
+        # five Shapes3D concepts and RESULTS 7kk reported that as "storage cost +0.000".
+        # `tests/test_sample_concept_path.py` now fails if the adapter is ever left out again. A
+        # caller asking for w != 1 on a backbone that cannot honour it gets an error rather than a
+        # silently different number.
         import inspect
 
         sig = inspect.signature(self.field.sample).parameters
@@ -584,7 +590,9 @@ class NeuralLifelongLearner:
         emb = emb.detach().cpu().numpy() if hasattr(emb, "detach") else np.asarray(emb)
         for kw in ("emb_override", "emb"):
             if kw in sig:
-                return self.field.sample(n=n, steps=steps or c["steps"], seed=seed_, **{kw: emb})
+                with self.bank.activate(name):
+                    return self.field.sample(n=n, steps=steps or c["steps"], seed=seed_,
+                                             **{kw: emb})
         raise NotImplementedError(
             f"{type(self.field).__name__}.sample offers neither a guidance callback nor a "
             f"conditioning-vector argument; a stored concept cannot be sampled from it.")
