@@ -23,10 +23,22 @@ repository is preserved under [archive/2026-09-pre-rework/](archive/2026-09-pre-
 | create | FOLD a genuinely new prototype: new nodes at the levels where the query is unexplained, realised by a responsibility-gated minimal expert trained with anchoring on the model's own samples of the sibling nodes | the expert (the frontier experiment decides its size) |
 | merge / promote | CONSOLIDATE: distil an accrued node into the base weights under the same gate, delete the expert | net zero or negative memory |
 
-## The ladder of results
+## The embodied ladder (pi0.5 on LIBERO; the primary line)
 
 Every number quoted anywhere in this repository comes from a row in `ledger/` and is re-derived by
 `experiments/audit_numbers.py` (`tests/test_audit.py` fails otherwise). Rungs are added as their rows land.
+
+| rung | status |
+|---|---|
+| M0: LIBERO headless on the cluster (`ledger/r0_env_smoke`) | PASS: the ten LIBERO-Goal tasks render under EGL on an A40, 16.9 ms per simulation step |
+| M1: pi0.5 (pi05_libero, openpi's PyTorch port) through `lifelong_ood/policy` (`ledger/r1_policy_smoke`, `ledger/r1_rollout`) | PASS: our sampler equals openpi's on the same noise (max abs diff 0.0); LIBERO-Goal success 0.95 with openpi's own policy and 0.98 with our sampler, ten episodes per task |
+| M2: prototypes of the conditional p(a given o) (`ledger/r2_prototypes`) | KILL: the conditional is nearly deterministic. Ascending from each demo chunk under its own observation lands 0.043 from that chunk while chunks sit 0.788 apart; 942 of 960 chunks keep a mode of their own and no prototype spans two tasks |
+| M2: prototypes of the action marginal over the demo observations (`ledger/r2b_marginal`) | a hierarchy with cross-task sharing: at t = 0.4, 130 prototypes used by 1.97 tasks each on average, 0.78 of frames in shared prototypes; at t = 0.7, two prototypes that split by gripper state. The policy's conditional is narrow (std 0.024 against 0.741 between frames), and the raw demonstrations give the same structure: the policy reproduces the data's hierarchy |
+| ADDRESS on held-out LIBERO-90 tasks against the Goal library (`ledger/r3_prepare`) | fraction of demo frames the library does not explain: turn off the stove 0.38, open the microwave 0.28, put the white mug on the left plate 0.06 |
+| library growth without rollouts (`ledger/r5_growth`) | after one frying-pan task is folded in, another frying-pan task drops from 0.31 to 0.07 unexplained, while open the microwave stays at 0.17 |
+| M3 compose, M4 fold, M5 stream, M6 consolidate | running |
+
+## The image track (paused)
 
 | rung | status |
 |---|---|

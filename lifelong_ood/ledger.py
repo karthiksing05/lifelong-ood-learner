@@ -158,11 +158,22 @@ def retire(path, reason):
 
 # ── reading ───────────────────────────────────────────────────────────────────
 def get(row, key, default=None):
-    """Dotted-path lookup: get(row, "metrics.new-value.joint")."""
-    cur = row
-    for part in str(key).split("."):
-        if isinstance(cur, dict) and part in cur:
-            cur = cur[part]
+    """Dotted-path lookup: get(row, "metrics.new-value.joint").  Keys that themselves contain dots (noise levels such
+    as "0.1") match longest-first, and integer parts index lists: get(row, "metrics.levels.0.1.n") and
+    get(row, "metrics.steps.1.unexplained_base") both work."""
+    parts = str(key).split(".")
+    cur, i = row, 0
+    while i < len(parts):
+        if isinstance(cur, dict):
+            for j in range(len(parts), i, -1):
+                k = ".".join(parts[i:j])
+                if k in cur:
+                    cur, i = cur[k], j
+                    break
+            else:
+                return default
+        elif isinstance(cur, list) and parts[i].lstrip("-").isdigit() and -len(cur) <= int(parts[i]) < len(cur):
+            cur, i = cur[int(parts[i])], i + 1
         else:
             return default
     return cur

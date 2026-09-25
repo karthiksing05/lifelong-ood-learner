@@ -23,6 +23,8 @@ IGNORE = {
     "512", "150", "0.1", "50", "1e-5", "800", "0.8", "0.95",
     # the phase-0 criterion and its per-factor retry (settings), the tree's node count (a build setting)
     "104", "0.7", "0.2", "0.5",
+    # embodied: noise levels named as settings
+    "0.4",
 }
 NUM = re.compile(r"(?<![A-Za-z0-9_./#-])(\d[\d,]*(?:\.\d+)?)(?![A-Za-z0-9_./-])")
 

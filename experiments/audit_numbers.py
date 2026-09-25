@@ -51,7 +51,35 @@ def p3s(metric, arm, task):
     return lambda: L.mean("p3_fold_frontier", metric, bench="colormnist", tag="_smoke", keys__arm=arm, keys__task=task)
 
 
-CHECKS = [
+def emb(experiment, metric, **f):
+    return lambda: L.mean(experiment, metric, **f)
+
+
+EMBODIED = [
+    ("M0: LIBERO-Goal ms per simulation step", emb("r0_env_smoke", "metrics.ms_per_step_median", bench="libero_goal"), "16.9"),
+    ("M1: parity with openpi's sampler", emb("r1_policy_smoke", "metrics.parity_max_abs_diff", bench="libero_goal"), "0.0"),
+    ("M1: LIBERO-Goal success, openpi's policy", emb("r1_rollout", "metrics.success_rate", bench="libero_goal", tag="openpi"), "0.95"),
+    ("M1: LIBERO-Goal success, our sampler", emb("r1_rollout", "metrics.success_rate", bench="libero_goal", tag="ours"), "0.98"),
+    ("M2 conditional: mode distance to its own chunk, t=0.1", emb("r2_prototypes", "metrics.levels.0.1.mode_rms_to_own_chunk", bench="libero_goal"), "0.043"),
+    ("M2 conditional: distance between chunks", emb("r2_prototypes", "metrics.between_chunk_rms", bench="libero_goal"), "0.788"),
+    ("M2 conditional: distinct modes at t=0.1", emb("r2_prototypes", "metrics.levels.0.1.n_distinct", bench="libero_goal"), "942"),
+    ("M2 conditional: chunks", emb("r2_prototypes", "metrics.n_chunks", bench="libero_goal"), "960"),
+    ("M2 marginal: prototypes at t=0.4", emb("r2b_marginal", "metrics.policy.0.4.incidence.n_prototypes", bench="libero_goal"), "130"),
+    ("M2 marginal: tasks per prototype at t=0.4", emb("r2b_marginal", "metrics.policy.0.4.incidence.tasks_per_prototype", bench="libero_goal"), "1.97"),
+    ("M2 marginal: frames in shared prototypes at t=0.4", emb("r2b_marginal", "metrics.policy.0.4.incidence.shared_frames", bench="libero_goal"), "0.78"),
+    ("M2 marginal: prototypes at t=0.7", emb("r2b_marginal", "metrics.policy.0.7.incidence.n_prototypes", bench="libero_goal"), "2"),
+    ("M2 marginal: within-observation std", emb("r2b_marginal", "metrics.unimodality.within_obs_std", bench="libero_goal"), "0.024"),
+    ("M2 marginal: between-frame rms", emb("r2b_marginal", "metrics.unimodality.between_frame_rms", bench="libero_goal"), "0.741"),
+    ("ADDRESS vs Goal library: turn off the stove", emb("r3_prepare", "metrics.unexplained_frac", bench="libero_90", tag="_goallib", keys__task=39), "0.38"),
+    ("ADDRESS vs Goal library: open the microwave", emb("r3_prepare", "metrics.unexplained_frac", bench="libero_90", tag="_goallib", keys__task=35), "0.28"),
+    ("ADDRESS vs Goal library: white mug on the left plate", emb("r3_prepare", "metrics.unexplained_frac", bench="libero_90", tag="_goallib", keys__task=67), "0.06"),
+    ("growth: frying pan on the shelf, base", emb("r5_growth", "metrics.steps.1.unexplained_base", bench="libero_90", tag="_goallib_probe"), "0.31"),
+    ("growth: frying pan on the shelf, after the first fold", emb("r5_growth", "metrics.steps.1.unexplained_stream", bench="libero_90", tag="_goallib_probe"), "0.07"),
+    ("growth: open the microwave, base", emb("r5_growth", "metrics.steps.4.unexplained_base", bench="libero_90", tag="_goallib_probe"), "0.17"),
+    ("growth: open the microwave, after earlier folds", emb("r5_growth", "metrics.steps.4.unexplained_stream", bench="libero_90", tag="_goallib_probe"), "0.17"),
+]
+
+CHECKS = EMBODIED + [
     ("p1 tree (phase 0): best background purity, level 1", p1("metrics.levels.1.purity_bg"), "0.84"),
     ("p1 tree (phase 0): best digit purity, level 0", p1("metrics.levels.0.purity_digit"), "0.25"),
     ("p3 smoke: label-gated reference taught joint, task 0", p3s("metrics.taught_joint", "lora-all-c1@gate=label", 0), "0.778"),
