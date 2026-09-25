@@ -297,8 +297,9 @@ def run_arm(cfg, args, X_):
     key = f"fold:{name}"
     expert, node_ids, gate = None, [], None
     taught, anchors_new = [], []          # anchors_new: (x0 rows, targets) of absorbed concepts, charged
-    base_sd = {k: t.detach().clone() for k, t in base.state_dict().items()
-               if not any(s in k for s in (".A.", ".B.", "dgamma", "dbeta"))}
+    # the base's own parameters, by OBJECT: wrapping a layer renames its state-dict keys but keeps the tensors
+    base_params = [(n, q, q.detach().clone()) for n, q in base.named_parameters()
+                   if not any(s in n for s in (".A.", ".B.", "dgamma", "dbeta")) and "#" not in n]
     t_u = X_["t_u"]
 
     def norm_match():
@@ -463,7 +464,7 @@ def run_arm(cfg, args, X_):
                 rr = np.random.default_rng(1)
                 xt = np.sqrt(a) * X_["old_X"][:128] + np.sqrt(1 - a) * rr.standard_normal((min(128, len(X_["old_X"])), bk.dim)).astype(np.float32)
                 fp[str(l)] = float(gate.weights(torch.as_tensor(xt), tree.u_grid[l]).mean())
-        base_exact = all(torch.equal(base.state_dict()[k], t0) for k, t0 in base_sd.items())
+        base_exact = all(torch.equal(q, q0) for _, q, q0 in base_params)
 
         def mean(kind, k2):
             vals = [r[k2] for r in per if r["kind"] == kind and r.get(k2) == r.get(k2)]
