@@ -1,0 +1,107 @@
+{
+ "artifacts": [
+  "results/robot/r3_lora_42.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 18710528,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 18710528,
+  "tree": 0
+ },
+ "command": "experiments/r3_fewshot.py --task 42",
+ "config": {
+  "batch": 32,
+  "demo": 0,
+  "lr": 0.0001,
+  "rank": 16,
+  "seed": 0,
+  "steps": 1000,
+  "tag": "",
+  "task": 42
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "megabot.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3954909",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r3_fewshot",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "0f8a3a870082ccc43067b975d0f20e63ddd03a8a",
+  "short": "0f8a3a87"
+ },
+ "keys": {
+  "task": 42
+ },
+ "metrics": {
+  "curve": {
+   "anchor": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "loss": [
+    0.08591713011264801,
+    0.01146840862929821,
+    0.010197708383202553,
+    0.0031312608625739813,
+    0.005777555517852306,
+    0.003639059141278267,
+    0.001613571192137897,
+    0.0020917938090860844,
+    0.001295868307352066,
+    0.006697174161672592,
+    0.0037977893371134996
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "demo_episode": 730,
+  "final_loss": 0.0037977893371134996,
+  "first_loss": 0.08591713011264801,
+  "n_banks": 163,
+  "n_frames": 172,
+  "n_params": 9355264,
+  "task": 42,
+  "text": "put the frying pan under the cabinet shelf",
+  "train_secs": 131.42679357528687
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r3_fewshot__libero_90__base__task-42__s0__0f8a3a87",
+ "schema": 1,
+ "script": "experiments/r3_fewshot.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-25T21:43:23+00:00",
+ "stream": null,
+ "tag": ""
+}

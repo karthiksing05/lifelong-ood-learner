@@ -1,0 +1,116 @@
+{
+ "artifacts": [
+  "results/robot/r3_prog_42_code_lib40.npz",
+  "results/robot/r3_prog_42_raw_lib40.npz"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 4988,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 4988,
+  "tree": 0
+ },
+ "command": "experiments/r3_prepare.py --tree results/robot/r2b_libero_40_tree.npz --library-npz results/robot/r2b_libero_40.npz --tasks 36,67,19,39,35,42 --levels 2,3,4 --tag _lib40",
+ "config": {
+  "K": 3,
+  "held": 5,
+  "levels": "2,3,4",
+  "library_npz": "results/robot/r2b_libero_40.npz",
+  "tag": "_lib40",
+  "tasks": "36,67,19,39,35,42",
+  "tree": "results/robot/r2b_libero_40_tree.npz"
+ },
+ "env": {
+  "device": "cpu",
+  "host": "sky2.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r3_prepare",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "0f8a3a870082ccc43067b975d0f20e63ddd03a8a",
+  "short": "0f8a3a87"
+ },
+ "keys": {
+  "task": 42
+ },
+ "metrics": {
+  "bddl": "KITCHEN_SCENE9_put_the_frying_pan_under_the_cabinet_shelf",
+  "code": {
+   "bytes": 4988,
+   "mean_rms_to_demo": 0.05933588370680809,
+   "nll_per_dim": -1.1190080642700195,
+   "path": "results/robot/r3_prog_42_code_lib40.npz"
+  },
+  "demo_episode": 730,
+  "depth_hist": {
+   "0.05": 0,
+   "0.1": 2,
+   "0.2": 6,
+   "0.3": 4,
+   "0.4": 0,
+   "0.55": 0,
+   "0.7": 7,
+   "explained": 153
+  },
+  "gripper_events": [
+   121
+  ],
+  "n_frames": 172,
+  "n_ipec_episodes": 45,
+  "nll_median": {
+   "0.05": -0.44181933332053985,
+   "0.1": -1.2017889817554985,
+   "0.2": -0.9774242216189025,
+   "0.3": -0.6410837563016495,
+   "0.4": -0.3508519131902076,
+   "0.55": -0.05874329017161538,
+   "0.7": 0.1521641941748348
+  },
+  "out_of_range_frac": 0.04609634551495016,
+  "prompt_program": {
+   "open the top drawer and put the bowl inside": 8,
+   "pick up the black bowl from table center and place it on the plate": 2,
+   "put both moka pots on the stove": 75,
+   "put both the alphabet soup and the cream cheese box in the basket": 24,
+   "put the black bowl in the bottom drawer of the cabinet and close it": 28,
+   "put the yellow and white mug in the microwave and close it": 35
+  },
+  "raw": {
+   "bytes": 27004,
+   "mean_rms_to_demo": 0.0,
+   "nll_per_dim": -1.3836462497711182,
+   "path": "results/robot/r3_prog_42_raw_lib40.npz"
+  },
+  "task_id": 42,
+  "text": "put the frying pan under the cabinet shelf",
+  "unexplained_by_level": {
+   "0.05": 0.06395348837209303,
+   "0.1": 0.0755813953488372,
+   "0.2": 0.0755813953488372,
+   "0.3": 0.040697674418604654,
+   "0.4": 0.01744186046511628,
+   "0.55": 0.005813953488372093,
+   "0.7": 0.040697674418604654
+  },
+  "unexplained_frac": 0.11046511627906977
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r3_prepare__libero_90___lib40__task-42__s0__0f8a3a87",
+ "schema": 1,
+ "script": "experiments/r3_prepare.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-25T21:40:49+00:00",
+ "stream": null,
+ "tag": "_lib40"
+}

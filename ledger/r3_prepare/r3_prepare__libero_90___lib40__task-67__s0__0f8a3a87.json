@@ -1,0 +1,114 @@
+{
+ "artifacts": [
+  "results/robot/r3_prog_67_code_lib40.npz",
+  "results/robot/r3_prog_67_raw_lib40.npz"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 2552,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 2552,
+  "tree": 0
+ },
+ "command": "experiments/r3_prepare.py --tree results/robot/r2b_libero_40_tree.npz --library-npz results/robot/r2b_libero_40.npz --tasks 36,67,19,39,35,42 --levels 2,3,4 --tag _lib40",
+ "config": {
+  "K": 3,
+  "held": 5,
+  "levels": "2,3,4",
+  "library_npz": "results/robot/r2b_libero_40.npz",
+  "tag": "_lib40",
+  "tasks": "36,67,19,39,35,42",
+  "tree": "results/robot/r2b_libero_40_tree.npz"
+ },
+ "env": {
+  "device": "cpu",
+  "host": "sky2.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r3_prepare",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "0f8a3a870082ccc43067b975d0f20e63ddd03a8a",
+  "short": "0f8a3a87"
+ },
+ "keys": {
+  "task": 67
+ },
+ "metrics": {
+  "bddl": "LIVING_ROOM_SCENE5_put_the_white_mug_on_the_left_plate",
+  "code": {
+   "bytes": 2552,
+   "mean_rms_to_demo": 0.04334576800465584,
+   "nll_per_dim": -1.4911085367202759,
+   "path": "results/robot/r3_prog_67_code_lib40.npz"
+  },
+  "demo_episode": 2656,
+  "depth_hist": {
+   "0.05": 0,
+   "0.1": 0,
+   "0.2": 0,
+   "0.3": 0,
+   "0.4": 1,
+   "0.55": 0,
+   "0.7": 4,
+   "explained": 83
+  },
+  "gripper_events": [
+   28,
+   83
+  ],
+  "n_frames": 88,
+  "n_ipec_episodes": 45,
+  "nll_median": {
+   "0.05": -1.566064074903598,
+   "0.1": -1.4935424847072793,
+   "0.2": -1.0234130587030879,
+   "0.3": -0.6576994871777182,
+   "0.4": -0.36765436585637656,
+   "0.55": -0.06544474914148363,
+   "0.7": 0.14461666741818913
+  },
+  "out_of_range_frac": 0.08928571428571429,
+  "prompt_program": {
+   "put both the alphabet soup and the tomato sauce in the basket": 14,
+   "put the white mug on the left plate and put the yellow and white mug on the right plate": 59,
+   "put the white mug on the plate and put the chocolate pudding to the right of the plate": 15
+  },
+  "raw": {
+   "bytes": 13816,
+   "mean_rms_to_demo": 0.0,
+   "nll_per_dim": -1.3836463689804077,
+   "path": "results/robot/r3_prog_67_raw_lib40.npz"
+  },
+  "task_id": 67,
+  "text": "put the white mug on the left plate",
+  "unexplained_by_level": {
+   "0.05": 0.0,
+   "0.1": 0.0,
+   "0.2": 0.0,
+   "0.3": 0.022727272727272728,
+   "0.4": 0.022727272727272728,
+   "0.55": 0.022727272727272728,
+   "0.7": 0.045454545454545456
+  },
+  "unexplained_frac": 0.056818181818181816
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r3_prepare__libero_90___lib40__task-67__s0__0f8a3a87",
+ "schema": 1,
+ "script": "experiments/r3_prepare.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-25T21:40:25+00:00",
+ "stream": null,
+ "tag": "_lib40"
+}

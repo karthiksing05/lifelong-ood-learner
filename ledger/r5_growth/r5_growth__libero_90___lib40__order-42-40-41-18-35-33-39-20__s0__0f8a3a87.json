@@ -1,0 +1,381 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 60000,
+  "tree": 60000
+ },
+ "command": "experiments/r5_growth.py --tree results/robot/r2b_libero_40_tree.npz --library results/robot/r2b_libero_40.npz --order 42+40+41+18+35+33+39+20 --shuffles 2 --tag _lib40",
+ "config": {
+  "band": "2,3,4",
+  "library": "results/robot/r2b_libero_40.npz",
+  "order": "42+40+41+18+35+33+39+20",
+  "seed": 0,
+  "shuffles": 2,
+  "tag": "_lib40",
+  "tree": "results/robot/r2b_libero_40_tree.npz"
+ },
+ "env": {
+  "device": "cpu",
+  "host": "sky2.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r5_growth",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "0f8a3a870082ccc43067b975d0f20e63ddd03a8a",
+  "short": "0f8a3a87"
+ },
+ "keys": {
+  "order": "42+40+41+18+35+33+39+20"
+ },
+ "metrics": {
+  "band": [
+   2,
+   3,
+   4
+  ],
+  "heldout": {
+   "18": {
+    "base": 0.06321839080459771,
+    "final": 0.011494252873563218
+   },
+   "20": {
+    "base": 0.47560975609756095,
+    "final": 0.45121951219512196
+   },
+   "33": {
+    "base": 0.07017543859649122,
+    "final": 0.05847953216374269
+   },
+   "35": {
+    "base": 0.07333333333333333,
+    "final": 0.06
+   },
+   "39": {
+    "base": 0.26732673267326734,
+    "final": 0.09900990099009901
+   },
+   "40": {
+    "base": 0.10555555555555556,
+    "final": 0.027777777777777776
+   },
+   "41": {
+    "base": 0.3387096774193548,
+    "final": 0.1774193548387097
+   },
+   "42": {
+    "base": 0.11494252873563218,
+    "final": 0.022988505747126436
+   }
+  },
+  "order": [
+   42,
+   40,
+   41,
+   18,
+   35,
+   33,
+   39,
+   20
+  ],
+  "shuffles": [
+   {
+    "order": [
+     41,
+     35,
+     18,
+     39,
+     33,
+     42,
+     40,
+     20
+    ],
+    "steps": [
+     {
+      "bytes_added": 9900,
+      "frames": 195,
+      "nodes_added": 33,
+      "task": 41,
+      "text": "put the frying pan on top of the cabinet",
+      "tree_nodes": 27306,
+      "unexplained_base": 0.26153846153846155,
+      "unexplained_stream": 0.26153846153846155
+     },
+     {
+      "bytes_added": 11100,
+      "frames": 131,
+      "nodes_added": 37,
+      "task": 35,
+      "text": "open the microwave",
+      "tree_nodes": 27343,
+      "unexplained_base": 0.16793893129770993,
+      "unexplained_stream": 0.16793893129770993
+     },
+     {
+      "bytes_added": 8100,
+      "frames": 184,
+      "nodes_added": 27,
+      "task": 18,
+      "text": "put the frying pan on the stove",
+      "tree_nodes": 27370,
+      "unexplained_base": 0.09239130434782608,
+      "unexplained_stream": 0.07065217391304347
+     },
+     {
+      "bytes_added": 5700,
+      "frames": 116,
+      "nodes_added": 19,
+      "task": 39,
+      "text": "turn off the stove",
+      "tree_nodes": 27389,
+      "unexplained_base": 0.4482758620689655,
+      "unexplained_stream": 0.4482758620689655
+     },
+     {
+      "bytes_added": 9900,
+      "frames": 236,
+      "nodes_added": 33,
+      "task": 33,
+      "text": "close the microwave",
+      "tree_nodes": 27422,
+      "unexplained_base": 0.1059322033898305,
+      "unexplained_stream": 0.1016949152542373
+     },
+     {
+      "bytes_added": 4500,
+      "frames": 172,
+      "nodes_added": 15,
+      "task": 42,
+      "text": "put the frying pan under the cabinet shelf",
+      "tree_nodes": 27437,
+      "unexplained_base": 0.0872093023255814,
+      "unexplained_stream": 0.040697674418604654
+     },
+     {
+      "bytes_added": 9900,
+      "frames": 177,
+      "nodes_added": 33,
+      "task": 40,
+      "text": "put the frying pan on the cabinet shelf",
+      "tree_nodes": 27470,
+      "unexplained_base": 0.3785310734463277,
+      "unexplained_stream": 0.11299435028248588
+     },
+     {
+      "bytes_added": 2400,
+      "frames": 89,
+      "nodes_added": 8,
+      "task": 20,
+      "text": "turn on the stove",
+      "tree_nodes": 27478,
+      "unexplained_base": 0.033707865168539325,
+      "unexplained_stream": 0.033707865168539325
+     }
+    ]
+   },
+   {
+    "order": [
+     39,
+     41,
+     20,
+     35,
+     33,
+     40,
+     42,
+     18
+    ],
+    "steps": [
+     {
+      "bytes_added": 5700,
+      "frames": 116,
+      "nodes_added": 19,
+      "task": 39,
+      "text": "turn off the stove",
+      "tree_nodes": 27292,
+      "unexplained_base": 0.4482758620689655,
+      "unexplained_stream": 0.4482758620689655
+     },
+     {
+      "bytes_added": 9900,
+      "frames": 195,
+      "nodes_added": 33,
+      "task": 41,
+      "text": "put the frying pan on top of the cabinet",
+      "tree_nodes": 27325,
+      "unexplained_base": 0.26153846153846155,
+      "unexplained_stream": 0.26153846153846155
+     },
+     {
+      "bytes_added": 2400,
+      "frames": 89,
+      "nodes_added": 8,
+      "task": 20,
+      "text": "turn on the stove",
+      "tree_nodes": 27333,
+      "unexplained_base": 0.033707865168539325,
+      "unexplained_stream": 0.033707865168539325
+     },
+     {
+      "bytes_added": 11100,
+      "frames": 131,
+      "nodes_added": 37,
+      "task": 35,
+      "text": "open the microwave",
+      "tree_nodes": 27370,
+      "unexplained_base": 0.16793893129770993,
+      "unexplained_stream": 0.16793893129770993
+     },
+     {
+      "bytes_added": 9900,
+      "frames": 236,
+      "nodes_added": 33,
+      "task": 33,
+      "text": "close the microwave",
+      "tree_nodes": 27403,
+      "unexplained_base": 0.1059322033898305,
+      "unexplained_stream": 0.1016949152542373
+     },
+     {
+      "bytes_added": 11400,
+      "frames": 177,
+      "nodes_added": 38,
+      "task": 40,
+      "text": "put the frying pan on the cabinet shelf",
+      "tree_nodes": 27441,
+      "unexplained_base": 0.3785310734463277,
+      "unexplained_stream": 0.12994350282485875
+     },
+     {
+      "bytes_added": 3900,
+      "frames": 172,
+      "nodes_added": 13,
+      "task": 42,
+      "text": "put the frying pan under the cabinet shelf",
+      "tree_nodes": 27454,
+      "unexplained_base": 0.0872093023255814,
+      "unexplained_stream": 0.029069767441860465
+     },
+     {
+      "bytes_added": 7200,
+      "frames": 184,
+      "nodes_added": 24,
+      "task": 18,
+      "text": "put the frying pan on the stove",
+      "tree_nodes": 27478,
+      "unexplained_base": 0.09239130434782608,
+      "unexplained_stream": 0.04891304347826087
+     }
+    ]
+   }
+  ],
+  "steps": [
+   {
+    "bytes_added": 4500,
+    "frames": 172,
+    "nodes_added": 15,
+    "task": 42,
+    "text": "put the frying pan under the cabinet shelf",
+    "tree_nodes": 27288,
+    "unexplained_base": 0.0872093023255814,
+    "unexplained_stream": 0.0872093023255814
+   },
+   {
+    "bytes_added": 12300,
+    "frames": 177,
+    "nodes_added": 41,
+    "task": 40,
+    "text": "put the frying pan on the cabinet shelf",
+    "tree_nodes": 27329,
+    "unexplained_base": 0.3785310734463277,
+    "unexplained_stream": 0.3615819209039548
+   },
+   {
+    "bytes_added": 6900,
+    "frames": 195,
+    "nodes_added": 23,
+    "task": 41,
+    "text": "put the frying pan on top of the cabinet",
+    "tree_nodes": 27352,
+    "unexplained_base": 0.26153846153846155,
+    "unexplained_stream": 0.05128205128205128
+   },
+   {
+    "bytes_added": 7200,
+    "frames": 184,
+    "nodes_added": 24,
+    "task": 18,
+    "text": "put the frying pan on the stove",
+    "tree_nodes": 27376,
+    "unexplained_base": 0.09239130434782608,
+    "unexplained_stream": 0.04891304347826087
+   },
+   {
+    "bytes_added": 11100,
+    "frames": 131,
+    "nodes_added": 37,
+    "task": 35,
+    "text": "open the microwave",
+    "tree_nodes": 27413,
+    "unexplained_base": 0.16793893129770993,
+    "unexplained_stream": 0.16793893129770993
+   },
+   {
+    "bytes_added": 9900,
+    "frames": 236,
+    "nodes_added": 33,
+    "task": 33,
+    "text": "close the microwave",
+    "tree_nodes": 27446,
+    "unexplained_base": 0.1059322033898305,
+    "unexplained_stream": 0.1016949152542373
+   },
+   {
+    "bytes_added": 5700,
+    "frames": 116,
+    "nodes_added": 19,
+    "task": 39,
+    "text": "turn off the stove",
+    "tree_nodes": 27465,
+    "unexplained_base": 0.4482758620689655,
+    "unexplained_stream": 0.4482758620689655
+   },
+   {
+    "bytes_added": 2400,
+    "frames": 89,
+    "nodes_added": 8,
+    "task": 20,
+    "text": "turn on the stove",
+    "tree_nodes": 27473,
+    "unexplained_base": 0.033707865168539325,
+    "unexplained_stream": 0.033707865168539325
+   }
+  ],
+  "thresholds": {
+   "2": -0.720244935179938,
+   "3": -0.5270375686830107,
+   "4": -0.25218033486821045
+  },
+  "total_bytes_added": 60000
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r5_growth__libero_90___lib40__order-42-40-41-18-35-33-39-20__s0__0f8a3a87",
+ "schema": 1,
+ "script": "experiments/r5_growth.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-25T21:44:04+00:00",
+ "stream": null,
+ "tag": "_lib40"
+}

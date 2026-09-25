@@ -1,0 +1,117 @@
+{
+ "artifacts": [
+  "results/robot/r3_prog_19_code_lib40.npz",
+  "results/robot/r3_prog_19_raw_lib40.npz"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 3915,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 3915,
+  "tree": 0
+ },
+ "command": "experiments/r3_prepare.py --tree results/robot/r2b_libero_40_tree.npz --library-npz results/robot/r2b_libero_40.npz --tasks 36,67,19,39,35,42 --levels 2,3,4 --tag _lib40",
+ "config": {
+  "K": 3,
+  "held": 5,
+  "levels": "2,3,4",
+  "library_npz": "results/robot/r2b_libero_40.npz",
+  "tag": "_lib40",
+  "tasks": "36,67,19,39,35,42",
+  "tree": "results/robot/r2b_libero_40_tree.npz"
+ },
+ "env": {
+  "device": "cpu",
+  "host": "sky2.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r3_prepare",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "0f8a3a870082ccc43067b975d0f20e63ddd03a8a",
+  "short": "0f8a3a87"
+ },
+ "keys": {
+  "task": 19
+ },
+ "metrics": {
+  "bddl": "KITCHEN_SCENE3_put_the_moka_pot_on_the_stove",
+  "code": {
+   "bytes": 3915,
+   "mean_rms_to_demo": 0.06585876643657684,
+   "nll_per_dim": -1.1835036277770996,
+   "path": "results/robot/r3_prog_19_code_lib40.npz"
+  },
+  "demo_episode": 3646,
+  "depth_hist": {
+   "0.05": 0,
+   "0.1": 1,
+   "0.2": 1,
+   "0.3": 1,
+   "0.4": 0,
+   "0.55": 2,
+   "0.7": 9,
+   "explained": 121
+  },
+  "gripper_events": [
+   77,
+   127
+  ],
+  "n_frames": 135,
+  "n_ipec_episodes": 45,
+  "nll_median": {
+   "0.05": -0.65574863230009,
+   "0.1": -1.2630278144017342,
+   "0.2": -0.992121751806223,
+   "0.3": -0.6490730100678971,
+   "0.4": -0.36173945710160527,
+   "0.55": -0.05628780165215349,
+   "0.7": 0.15565070526533067
+  },
+  "out_of_range_frac": 0.10211640211640212,
+  "prompt_program": {
+   "pick up the bbq sauce and place it in the basket": 2,
+   "pick up the cream cheese and place it in the basket": 12,
+   "put both moka pots on the stove": 63,
+   "put the black bowl in the bottom drawer of the cabinet and close it": 11,
+   "put the yellow and white mug in the microwave and close it": 18,
+   "turn on the stove and put the moka pot on it": 29
+  },
+  "raw": {
+   "bytes": 21195,
+   "mean_rms_to_demo": 0.0,
+   "nll_per_dim": -1.3836464881896973,
+   "path": "results/robot/r3_prog_19_raw_lib40.npz"
+  },
+  "task_id": 19,
+  "text": "put the moka pot on the stove",
+  "unexplained_by_level": {
+   "0.05": 0.02962962962962963,
+   "0.1": 0.02962962962962963,
+   "0.2": 0.022222222222222223,
+   "0.3": 0.022222222222222223,
+   "0.4": 0.022222222222222223,
+   "0.55": 0.044444444444444446,
+   "0.7": 0.06666666666666667
+  },
+  "unexplained_frac": 0.1037037037037037
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r3_prepare__libero_90___lib40__task-19__s0__0f8a3a87",
+ "schema": 1,
+ "script": "experiments/r3_prepare.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-25T21:40:31+00:00",
+ "stream": null,
+ "tag": "_lib40"
+}

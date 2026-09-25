@@ -1,0 +1,114 @@
+{
+ "artifacts": [
+  "results/robot/r3_prog_35_code_lib40.npz",
+  "results/robot/r3_prog_35_raw_lib40.npz"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 3799,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 3799,
+  "tree": 0
+ },
+ "command": "experiments/r3_prepare.py --tree results/robot/r2b_libero_40_tree.npz --library-npz results/robot/r2b_libero_40.npz --tasks 36,67,19,39,35,42 --levels 2,3,4 --tag _lib40",
+ "config": {
+  "K": 3,
+  "held": 5,
+  "levels": "2,3,4",
+  "library_npz": "results/robot/r2b_libero_40.npz",
+  "tag": "_lib40",
+  "tasks": "36,67,19,39,35,42",
+  "tree": "results/robot/r2b_libero_40_tree.npz"
+ },
+ "env": {
+  "device": "cpu",
+  "host": "sky2.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r3_prepare",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "0f8a3a870082ccc43067b975d0f20e63ddd03a8a",
+  "short": "0f8a3a87"
+ },
+ "keys": {
+  "task": 35
+ },
+ "metrics": {
+  "bddl": "KITCHEN_SCENE7_open_the_microwave",
+  "code": {
+   "bytes": 3799,
+   "mean_rms_to_demo": 0.07812483608722687,
+   "nll_per_dim": -1.1055821180343628,
+   "path": "results/robot/r3_prog_35_code_lib40.npz"
+  },
+  "demo_episode": 957,
+  "depth_hist": {
+   "0.05": 0,
+   "0.1": 2,
+   "0.2": 7,
+   "0.3": 5,
+   "0.4": 3,
+   "0.55": 3,
+   "0.7": 13,
+   "explained": 98
+  },
+  "gripper_events": [],
+  "n_frames": 131,
+  "n_ipec_episodes": 46,
+  "nll_median": {
+   "0.05": -0.6796699254738235,
+   "0.1": -1.279516302157024,
+   "0.2": -0.9702053903259881,
+   "0.3": -0.6232558551094636,
+   "0.4": -0.36479828251417207,
+   "0.55": -0.06036825548916565,
+   "0.7": 0.14948849995304095
+  },
+  "out_of_range_frac": 0.013086150490730643,
+  "prompt_program": {
+   "pick up the black bowl next to the cookie box and place it on the plate": 9,
+   "put both the alphabet soup and the cream cheese box in the basket": 10,
+   "put the black bowl in the bottom drawer of the cabinet and close it": 17,
+   "put the white mug on the plate and put the chocolate pudding to the right of the plate": 17,
+   "put the yellow and white mug in the microwave and close it": 65,
+   "turn on the stove and put the moka pot on it": 13
+  },
+  "raw": {
+   "bytes": 20567,
+   "mean_rms_to_demo": 0.0,
+   "nll_per_dim": -1.3836466073989868,
+   "path": "results/robot/r3_prog_35_raw_lib40.npz"
+  },
+  "task_id": 35,
+  "text": "open the microwave",
+  "unexplained_by_level": {
+   "0.05": 0.1450381679389313,
+   "0.1": 0.1450381679389313,
+   "0.2": 0.13740458015267176,
+   "0.3": 0.11450381679389313,
+   "0.4": 0.06870229007633588,
+   "0.55": 0.06870229007633588,
+   "0.7": 0.09923664122137404
+  },
+  "unexplained_frac": 0.25190839694656486
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r3_prepare__libero_90___lib40__task-35__s0__0f8a3a87",
+ "schema": 1,
+ "script": "experiments/r3_prepare.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-25T21:40:42+00:00",
+ "stream": null,
+ "tag": "_lib40"
+}
