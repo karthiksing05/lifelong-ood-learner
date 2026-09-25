@@ -1,0 +1,125 @@
+{
+ "artifacts": [
+  "results/robot/zeroshot_libero90_1_29.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "roll.sh MODE=openpi SUITE=libero_90 TASKS=1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29 TRIALS=5 (job zeroshot_libero90_1_29)",
+ "config": {
+  "client": {
+   "first_trial": 0,
+   "host": "127.0.0.1",
+   "max_steps": 0,
+   "no_meta": false,
+   "out": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/zeroshot_libero90_1_29.json",
+   "port": 9341,
+   "replan": 5,
+   "resize": 224,
+   "seed": 7,
+   "suite": "libero_90",
+   "tasks": "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29",
+   "trials": 5,
+   "videos": 2,
+   "wait": 10
+  },
+  "job": "zeroshot_libero90_1_29",
+  "mode": "openpi"
+ },
+ "env": {
+  "device": "cpu",
+  "host": "sky2.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "zeroshot90",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "63ed15fe43d843588c0f9ca817b728b2334397f7",
+  "short": "63ed15fe"
+ },
+ "keys": {
+  "first_trial": 0,
+  "mode": "openpi",
+  "tasks": "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29",
+  "trials": 5
+ },
+ "metrics": {
+  "complete": false,
+  "n_episodes": 35,
+  "secs": null,
+  "success_rate": 0.05714285714285714,
+  "tasks": {
+   "1": {
+    "errors": 0,
+    "language": "close the top drawer of the cabinet and put the black bowl on top of it",
+    "mean_steps": 400.0,
+    "n": 5,
+    "success_rate": 0.0
+   },
+   "2": {
+    "errors": 0,
+    "language": "put the black bowl in the top drawer of the cabinet",
+    "mean_steps": 337.0,
+    "n": 5,
+    "success_rate": 0.4
+   },
+   "3": {
+    "errors": 0,
+    "language": "put the butter at the back in the top drawer of the cabinet and close it",
+    "mean_steps": 400.0,
+    "n": 5,
+    "success_rate": 0.0
+   },
+   "4": {
+    "errors": 0,
+    "language": "put the butter at the front in the top drawer of the cabinet and close it",
+    "mean_steps": 400.0,
+    "n": 5,
+    "success_rate": 0.0
+   },
+   "5": {
+    "errors": 0,
+    "language": "put the chocolate pudding in the top drawer of the cabinet and close it",
+    "mean_steps": 400.0,
+    "n": 5,
+    "success_rate": 0.0
+   },
+   "6": {
+    "errors": 0,
+    "language": "open the bottom drawer of the cabinet",
+    "mean_steps": 400.0,
+    "n": 5,
+    "success_rate": 0.0
+   },
+   "7": {
+    "errors": 0,
+    "language": "open the top drawer of the cabinet",
+    "mean_steps": 400.0,
+    "n": 5,
+    "success_rate": 0.0
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "zeroshot90__libero_90__partial__first_trial-0__mode-openpi__tasks-1-2-3-4-5-6-7-8-9-10-11-12-13-14-15-16-17-18-19-20-21-22-23-24-25-26-27-28-29__trials-5__s7__63ed15fe",
+ "schema": 1,
+ "script": "experiments/libero_client.py",
+ "seconds": null,
+ "seed": 7,
+ "source_commit": null,
+ "started": "2026-09-25T21:11:52+00:00",
+ "stream": null,
+ "tag": "partial"
+}

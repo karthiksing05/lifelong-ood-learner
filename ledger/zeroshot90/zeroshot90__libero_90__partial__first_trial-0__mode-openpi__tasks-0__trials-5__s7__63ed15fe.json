@@ -1,0 +1,83 @@
+{
+ "artifacts": [
+  "results/robot/zeroshot_libero90_0_29.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "roll.sh MODE=openpi SUITE=libero_90 TASKS=0 TRIALS=5 (job zeroshot_libero90_0_29)",
+ "config": {
+  "client": {
+   "first_trial": 0,
+   "host": "127.0.0.1",
+   "max_steps": 0,
+   "no_meta": false,
+   "out": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/zeroshot_libero90_0_29.json",
+   "port": 9556,
+   "replan": 5,
+   "resize": 224,
+   "seed": 7,
+   "suite": "libero_90",
+   "tasks": "0",
+   "trials": 5,
+   "videos": 2,
+   "wait": 10
+  },
+  "job": "zeroshot_libero90_0_29",
+  "mode": "openpi"
+ },
+ "env": {
+  "device": "cpu",
+  "host": "sky2.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "zeroshot90",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "63ed15fe43d843588c0f9ca817b728b2334397f7",
+  "short": "63ed15fe"
+ },
+ "keys": {
+  "first_trial": 0,
+  "mode": "openpi",
+  "tasks": "0",
+  "trials": 5
+ },
+ "metrics": {
+  "complete": true,
+  "n_episodes": 5,
+  "secs": 185.16710209846497,
+  "success_rate": 0.0,
+  "tasks": {
+   "0": {
+    "errors": 0,
+    "language": "close the top drawer of the cabinet",
+    "mean_steps": 400.0,
+    "n": 5,
+    "success_rate": 0.0
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "zeroshot90__libero_90__partial__first_trial-0__mode-openpi__tasks-0__trials-5__s7__63ed15fe",
+ "schema": 1,
+ "script": "experiments/libero_client.py",
+ "seconds": null,
+ "seed": 7,
+ "source_commit": null,
+ "started": "2026-09-25T21:11:56+00:00",
+ "stream": null,
+ "tag": "partial"
+}

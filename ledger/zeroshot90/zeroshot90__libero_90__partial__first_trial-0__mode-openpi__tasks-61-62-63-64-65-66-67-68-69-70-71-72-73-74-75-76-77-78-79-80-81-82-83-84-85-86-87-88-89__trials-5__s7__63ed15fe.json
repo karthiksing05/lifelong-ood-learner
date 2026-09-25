@@ -1,0 +1,104 @@
+{
+ "artifacts": [
+  "results/robot/zeroshot_libero90_61_89.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "roll.sh MODE=openpi SUITE=libero_90 TASKS=61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89 TRIALS=5 (job zeroshot_libero90_61_89)",
+ "config": {
+  "client": {
+   "first_trial": 0,
+   "host": "127.0.0.1",
+   "max_steps": 0,
+   "no_meta": false,
+   "out": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/zeroshot_libero90_61_89.json",
+   "port": 9154,
+   "replan": 5,
+   "resize": 224,
+   "seed": 7,
+   "suite": "libero_90",
+   "tasks": "61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89",
+   "trials": 5,
+   "videos": 2,
+   "wait": 10
+  },
+  "job": "zeroshot_libero90_61_89",
+  "mode": "openpi"
+ },
+ "env": {
+  "device": "cpu",
+  "host": "sky2.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "zeroshot90",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "63ed15fe43d843588c0f9ca817b728b2334397f7",
+  "short": "63ed15fe"
+ },
+ "keys": {
+  "first_trial": 0,
+  "mode": "openpi",
+  "tasks": "61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89",
+  "trials": 5
+ },
+ "metrics": {
+  "complete": false,
+  "n_episodes": 20,
+  "secs": null,
+  "success_rate": 0.4,
+  "tasks": {
+   "61": {
+    "errors": 0,
+    "language": "pick up the chocolate pudding and put it in the tray",
+    "mean_steps": 163.2,
+    "n": 5,
+    "success_rate": 1.0
+   },
+   "62": {
+    "errors": 0,
+    "language": "pick up the salad dressing and put it in the tray",
+    "mean_steps": 400.0,
+    "n": 5,
+    "success_rate": 0.0
+   },
+   "63": {
+    "errors": 0,
+    "language": "stack the left bowl on the right bowl and place them in the tray",
+    "mean_steps": 400.0,
+    "n": 5,
+    "success_rate": 0.0
+   },
+   "64": {
+    "errors": 0,
+    "language": "stack the right bowl on the left bowl and place them in the tray",
+    "mean_steps": 307.4,
+    "n": 5,
+    "success_rate": 0.6
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "zeroshot90__libero_90__partial__first_trial-0__mode-openpi__tasks-61-62-63-64-65-66-67-68-69-70-71-72-73-74-75-76-77-78-79-80-81-82-83-84-85-86-87-88-89__trials-5__s7__63ed15fe",
+ "schema": 1,
+ "script": "experiments/libero_client.py",
+ "seconds": null,
+ "seed": 7,
+ "source_commit": null,
+ "started": "2026-09-25T21:11:54+00:00",
+ "stream": null,
+ "tag": "partial"
+}
