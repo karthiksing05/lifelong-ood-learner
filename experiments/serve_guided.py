@@ -1,5 +1,6 @@
 """Serve pi05_libero through OUR sampler for openpi's LIBERO client.
 
+    python experiments/serve_guided.py --port 8123 --mode openpi          # reference: openpi's Policy.infer, eager
     python experiments/serve_guided.py --port 8123 --mode ours            # plain: our Euler sampler, no hooks
     python experiments/serve_guided.py --port 8123 --mode proto:<tree.npz>:<node_id>[:w0]   # forced prototype
 
@@ -24,8 +25,22 @@ def main():
     ap.add_argument("--seed", type=int, default=0)
     a = ap.parse_args()
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(message)s")
+    from lifelong_ood.policy.serve import GuidedPolicy, serve, warm
+    if a.mode == "openpi":
+        # the REFERENCE: openpi's own Policy (its transforms, its sample_actions) on the PyTorch checkpoint, eager
+        # (openpi's max-autotune compile blocks the server's event loop past the client's 20 s keepalive), warmed
+        # up before the server listens.
+        import dataclasses
+        from openpi.policies import policy_config as _pc
+        from openpi.training import config as _config
+        cfg = _config.get_config(a.config)
+        cfg = dataclasses.replace(cfg, model=dataclasses.replace(cfg.model, pytorch_compile_mode=None))
+        ck = "/coc/flash10/ksingara3/robot/openpi_cache/openpi-assets/checkpoints/pi05_libero_pytorch"
+        policy = _pc.create_trained_policy(cfg, ck, pytorch_device="cuda")
+        warm(policy)
+        serve(policy, a.port, metadata=policy.metadata)
+        return
     from lifelong_ood.policy.backbone import PolicyBackbone
-    from lifelong_ood.policy.serve import GuidedPolicy, serve
     bk = PolicyBackbone(a.config, device="cuda")
     logging.info(bk.describe())
     hooks = None
@@ -41,7 +56,9 @@ def main():
         hooks = lambda obs, pre: (g, None)          # noqa: E731
     elif a.mode != "ours":
         raise SystemExit(f"unknown mode {a.mode}")
-    serve(GuidedPolicy(bk, hooks=hooks, num_steps=a.num_steps, seed=a.seed), a.port)
+    policy = GuidedPolicy(bk, hooks=hooks, num_steps=a.num_steps, seed=a.seed)
+    warm(policy)
+    serve(policy, a.port)
 
 
 if __name__ == "__main__":

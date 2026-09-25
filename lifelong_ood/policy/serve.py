@@ -39,6 +39,15 @@ class GuidedPolicy:
         return {"actions": np.asarray(actions, np.float32), "state": np.asarray(obs["observation/state"], np.float32)}
 
 
+def warm(policy, n=2):
+    """Run n inferences on openpi's random LIBERO example so no first-call cost lands inside a client request."""
+    from openpi.policies import libero_policy
+    t0 = time.monotonic()
+    for _ in range(int(n)):
+        policy.infer(libero_policy.make_libero_example())
+    logging.info(f"[serve] warm-up {n} calls in {time.monotonic() - t0:.1f}s")
+
+
 def serve(policy, port, host="0.0.0.0", metadata=None):
     from openpi.serving import websocket_policy_server
     logging.info(f"Creating server (host: {host}, port: {port})")
