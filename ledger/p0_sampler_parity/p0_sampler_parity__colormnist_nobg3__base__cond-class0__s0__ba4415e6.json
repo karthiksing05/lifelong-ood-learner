@@ -1,0 +1,66 @@
+{
+ "artifacts": {},
+ "backbone": {
+  "img": 32,
+  "kind": "unet",
+  "layout": "permuted",
+  "n_params": 6827011,
+  "path": "results/cache/ddpm_colormnist_nobg3.pt",
+  "sha256": "f5df6d5c576033fefeab1bdc1f3acf540bc03431559828187cde2d1d0fc530c1"
+ },
+ "backfilled": false,
+ "bench": "colormnist_nobg3",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "experiments/p0_sampler_parity.py --hf google/ddpm-cifar10-32",
+ "config": {
+  "ckpts": "results/cache/ddpm_colormnist_nobg3.pt:results/cache/ddpm_s3d_full.pt",
+  "hf": "google/ddpm-cifar10-32",
+  "n": 64,
+  "steps": 50,
+  "tag": ""
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "clippy.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": "3952289",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "p0_sampler_parity",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "ba4415e6b0315a908db822c956c6d8aacc84ed07",
+  "short": "ba4415e6"
+ },
+ "keys": {
+  "cond": "class0"
+ },
+ "metrics": {
+  "max_abs_diff": 0.0,
+  "mean_abs_diff": 0.0,
+  "n": 64,
+  "ok": true,
+  "secs_legacy": 1.2100305557250977,
+  "secs_new": 1.2076609134674072,
+  "steps": 50
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "p0_sampler_parity__colormnist_nobg3__base__cond-class0__s0__ba4415e6",
+ "schema": 1,
+ "script": "experiments/p0_sampler_parity.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-25T17:54:49+00:00",
+ "stream": null,
+ "tag": ""
+}

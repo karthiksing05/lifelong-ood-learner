@@ -33,7 +33,7 @@ def _cond(model, m, device, emb=None, cls=None, i0=0):
 
 
 @torch.no_grad()
-def _ddim_core(model, n, steps, seed, E, cls, layout, img, device, batch, gate, clip, guide=None):
+def _ddim_core(model, n, steps, seed, E, cls, layout, img, device, batch, gate, clip, guide=None, step_gate=None):
     """DDIM (eta = 0) on the cosine schedule -> flat rows [n, 3*img*img] in the model's row space.
 
     The starting noise is `np.random.default_rng(seed)` drawn in the flat row space, the u grid is
@@ -42,6 +42,8 @@ def _ddim_core(model, n, steps, seed, E, cls, layout, img, device, batch, gate, 
     conditional branch by an analytic teacher: eps = e0 + w(u) (eps_fn(x_t rows, u) - e0), with e0 the
     null-token prediction -- Zekun's Eq. 15 with the PoE score as the conditional.  `w_fn(x_rows, u)`
     returns a float (a guidance schedule) or a per-row tensor (a node's responsibility).
+    `step_gate(x_rows, u)` returns a zero-arg context factory for THIS step (the analytic gate: an
+    expert's weight is the tree's responsibility for the current x_t), applied inside `gate`.
     """
     D = 3 * img * img
     noise = np.random.default_rng(seed).standard_normal((n, D)).astype(np.float32)
@@ -59,7 +61,13 @@ def _ddim_core(model, n, steps, seed, E, cls, layout, img, device, batch, gate, 
                 u = float(us[i])
                 ut = torch.full((m,), u, device=device)
                 if guide is None:
-                    e = model(x, ut, c=c, emb_override=eo)
+                    if step_gate is None:
+                        e = model(x, ut, c=c, emb_override=eo)
+                    else:
+                        sg = step_gate(to_flat(x, layout), u)
+                        eo_s = eo if not isinstance(sg, tuple) else sg[1]
+                        with (sg[0] if isinstance(sg, tuple) else sg)():
+                            e = model(x, ut, c=c, emb_override=eo_s)
                 else:
                     eps_fn, w_fn = guide
                     e0 = model(x, ut, c=torch.full((m,), model.null_id, device=device, dtype=torch.long),
@@ -78,13 +86,14 @@ def _ddim_core(model, n, steps, seed, E, cls, layout, img, device, batch, gate, 
     return out
 
 
-def sample(backbone, n, steps=50, seed=0, cls=None, emb=None, gate=None, batch=256, guide=None):
+def sample(backbone, n, steps=50, seed=0, cls=None, emb=None, gate=None, batch=256, guide=None, step_gate=None):
     """THE sampler.  Layout, image size, clip and device come from the Backbone handle, never from
-    the caller.  -> flat rows [n, dim] in the backbone's row space (float32)."""
+    the caller.  -> flat rows [n, dim] in the backbone's row space (float32).
+    `step_gate(x_rows, u)` -> a zero-arg context factory, or (factory, emb_override) for token experts."""
     E = None if emb is None else torch.as_tensor(np.asarray(emb, np.float32) if not torch.is_tensor(emb) else emb,
                                                  dtype=torch.float32, device=backbone.device)
     return _ddim_core(backbone.model, n, steps, seed, E, cls, backbone.layout, backbone.img, backbone.device,
-                      batch, gate, tuple(backbone.clip), guide)
+                      batch, gate, tuple(backbone.clip), guide, step_gate)
 
 
 def ddim_sample(model, n, steps=50, seed=0, emb=None, cls=None, layout="permuted", img=32,

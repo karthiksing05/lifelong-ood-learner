@@ -30,7 +30,7 @@ Every number quoted anywhere in this repository comes from a row in `ledger/` (s
 |---|---|
 | propositions 1-7 (numerical checks) | `tests/test_cobweb_correspondence.py` |
 | the C1 / C5 reference numbers (backfilled at af8f07a) | `ledger/c1_cobweb_update`, `ledger/c5_router_cobweb`, `ledger/c3_flagship` |
-| sampler parity after the restructure | pending |
+| sampler parity after the restructure | PASS: `sample(backbone)` equals the fixtures' `ddim_sample` bit for bit on the ColorMNIST UNet and the Shapes3D VE bridge, null and class-conditional (`ledger/p0_sampler_parity`, max abs diff 0.0) |
 | prototype tree, decompose, gate, fold frontier, compose-after-fold, consolidate | pending |
 
 ## Reproduce

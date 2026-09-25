@@ -1,0 +1,66 @@
+{
+ "artifacts": {},
+ "backbone": {
+  "img": 32,
+  "kind": "unet",
+  "layout": "permuted",
+  "n_params": 6827011,
+  "path": "results/cache/ddpm_colormnist_nobg3.pt",
+  "sha256": "f5df6d5c576033fefeab1bdc1f3acf540bc03431559828187cde2d1d0fc530c1"
+ },
+ "backfilled": false,
+ "bench": "colormnist_nobg3",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "experiments/p0_sampler_parity.py --hf google/ddpm-cifar10-32 --tag _overcap",
+ "config": {
+  "ckpts": "results/cache/ddpm_colormnist_nobg3.pt:results/cache/ddpm_s3d_full.pt",
+  "hf": "google/ddpm-cifar10-32",
+  "n": 64,
+  "steps": 50,
+  "tag": "_overcap"
+ },
+ "env": {
+  "device": "NVIDIA TITAN Xp",
+  "host": "hal.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": "3952326",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "p0_sampler_parity",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "305f3e7a9dd4d6e4db84910c595d494cd1ca0f08",
+  "short": "305f3e7a"
+ },
+ "keys": {
+  "cond": "class0"
+ },
+ "metrics": {
+  "max_abs_diff": 0.0,
+  "mean_abs_diff": 0.0,
+  "n": 64,
+  "ok": true,
+  "secs_legacy": 14.129933834075928,
+  "secs_new": 15.854134559631348,
+  "steps": 50
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "p0_sampler_parity__colormnist_nobg3___overcap__cond-class0__s0__305f3e7a",
+ "schema": 1,
+ "script": "experiments/p0_sampler_parity.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-25T17:52:43+00:00",
+ "stream": null,
+ "tag": "_overcap"
+}
