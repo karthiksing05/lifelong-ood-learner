@@ -18,6 +18,12 @@
 #SBATCH --qos=short
 #SBATCH --requeue
 #SBATCH --open-mode=append
+# a job admitted without its GPU (seen 2026-09-25: AllocTRES without gres) requeues itself, at most 3 times
+if ! nvidia-smi -L 2>/dev/null | grep -q "GPU "; then
+  echo "[guard] no GPU allocated on $(hostname) (restart ${SLURM_RESTART_COUNT:-0}); requeueing"
+  if [ "${SLURM_RESTART_COUNT:-0}" -lt 3 ]; then scontrol requeue $SLURM_JOB_ID; sleep 30; fi
+  exit 97
+fi
 cd /coc/flash10/ksingara3/lifelong-ood-learner
 export PYTHONIOENCODING=utf-8 PYTHONUNBUFFERED=1
 export MUJOCO_GL=${MUJOCO_GL:-egl} PYOPENGL_PLATFORM=${PYOPENGL_PLATFORM:-egl}

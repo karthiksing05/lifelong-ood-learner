@@ -13,6 +13,12 @@
 #SBATCH --open-mode=append
 cd /coc/flash10/ksingara3/lifelong-ood-learner
 mkdir -p results/robot
+# a job admitted without its GPU (seen 2026-09-25: AllocTRES without gres) requeues itself, at most 3 times
+if ! nvidia-smi -L 2>/dev/null | grep -q "GPU "; then
+  echo "[guard] no GPU allocated on $(hostname) (restart ${SLURM_RESTART_COUNT:-0}); requeueing"
+  if [ "${SLURM_RESTART_COUNT:-0}" -lt 3 ]; then scontrol requeue $SLURM_JOB_ID; sleep 30; fi
+  exit 97
+fi
 echo "[roll] $(date) on $(hostname): $(nvidia-smi --query-gpu=name --format=csv,noheader | head -1)"
 # run a private copy: bash reads scripts incrementally, so editing roll.sh under a running job corrupts it
 mkdir -p results/robot/.drivers
