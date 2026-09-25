@@ -117,5 +117,54 @@
   "quoted": "0.0",
   "se": 0.0,
   "value": 0.0
+ },
+ "p1 tree (phase 0): best background purity, level 1": {
+  "formatted": "0.84",
+  "n": 1,
+  "quoted": "0.84",
+  "se": 0.0,
+  "value": 0.8355555555555556
+ },
+ "p1 tree (phase 0): best digit purity, level 0": {
+  "formatted": "0.25",
+  "n": 1,
+  "quoted": "0.25",
+  "se": 0.0,
+  "value": 0.2525
+ },
+ "p3 smoke: analytic-gate arm taught joint, task 0": {
+  "formatted": "0.083",
+  "n": 1,
+  "quoted": "0.083",
+  "se": 0.0,
+  "value": 0.08333333333333333
+ },
+ "p3 smoke: label-gated reference never-taught joint, task 0": {
+  "formatted": "0.938",
+  "n": 1,
+  "quoted": "0.938",
+  "se": 0.0,
+  "value": 0.9375
+ },
+ "p3 smoke: label-gated reference never-taught joint, task 1": {
+  "formatted": "0.708",
+  "n": 1,
+  "quoted": "0.708",
+  "se": 0.0,
+  "value": 0.7083333333333333
+ },
+ "p3 smoke: label-gated reference taught joint, task 0": {
+  "formatted": "0.778",
+  "n": 1,
+  "quoted": "0.778",
+  "se": 0.0,
+  "value": 0.7777777777777778
+ },
+ "p3 smoke: label-gated reference taught joint, task 1": {
+  "formatted": "0.736",
+  "n": 1,
+  "quoted": "0.736",
+  "se": 0.0,
+  "value": 0.7361111111111112
  }
 }

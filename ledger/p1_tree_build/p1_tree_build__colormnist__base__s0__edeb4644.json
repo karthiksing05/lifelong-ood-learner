@@ -1,0 +1,227 @@
+{
+ "artifacts": {
+  "figure": "figures/p1/tree_colormnist_s0.png",
+  "tree": "results/trees/tree_colormnist_s0.npz"
+ },
+ "backbone": {
+  "img": 32,
+  "kind": "unet",
+  "layout": "permuted",
+  "n_params": 6827011,
+  "path": "results/cache/ddpm_colormnist_nobg3.pt",
+  "sha256": "f5df6d5c576033fefeab1bdc1f3acf540bc03431559828187cde2d1d0fc530c1"
+ },
+ "backfilled": false,
+ "bench": "colormnist",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "items": {},
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 147296,
+  "tree": 147296
+ },
+ "command": "experiments/p1_tree_build.py --bench colormnist --seed 0",
+ "config": {
+  "bench": "colormnist",
+  "build": {
+   "caps": {
+    "0.1": 32,
+    "0.2": 24,
+    "0.3": 16,
+    "0.4": 16,
+    "0.55": 8,
+    "0.7": 8
+   },
+   "iters": 150,
+   "lr": 0.1,
+   "n_samples": 512,
+   "per_level": [
+    {
+     "dedup": 511,
+     "kept": 32,
+     "modes": 512,
+     "secs": 318.9658770561218,
+     "u": 0.1
+    },
+    {
+     "dedup": 490,
+     "kept": 24,
+     "modes": 512,
+     "secs": 274.1801905632019,
+     "u": 0.2
+    },
+    {
+     "dedup": 427,
+     "kept": 16,
+     "modes": 512,
+     "secs": 293.18805599212646,
+     "u": 0.3
+    },
+    {
+     "dedup": 326,
+     "kept": 16,
+     "modes": 512,
+     "secs": 312.8976445198059,
+     "u": 0.4
+    },
+    {
+     "dedup": 255,
+     "kept": 8,
+     "modes": 512,
+     "secs": 253.24877905845642,
+     "u": 0.55
+    },
+    {
+     "dedup": 121,
+     "kept": 8,
+     "modes": 512,
+     "secs": 275.1271970272064,
+     "u": 0.7
+    }
+   ],
+   "seconds": 1827.0360260009766,
+   "seed": 0,
+   "tol": 0.05
+  },
+  "caps": "32:24:16:16:8:8",
+  "grid": "0.10:0.20:0.30:0.40:0.55:0.70",
+  "iters": 150,
+  "lr": 0.1,
+  "n_eval": 40,
+  "n_samples": 512,
+  "seed": 0,
+  "steps": 50,
+  "tag": "",
+  "tol": 0.05
+ },
+ "env": {
+  "device": "NVIDIA TITAN Xp",
+  "host": "hal.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": "3952327",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "p1_tree_build",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "edeb464489309823057dae10c6e9ea2bc6c9c4d9",
+  "short": "edeb4644"
+ },
+ "keys": {},
+ "metrics": {
+  "build_secs": 1827.051871061325,
+  "levels": {
+   "0": {
+    "max_r": 0.9577974457105712,
+    "n_nodes": 32,
+    "nmi_bg": 0.31333658044552215,
+    "nmi_digit": 0.12862770421667166,
+    "nmi_fg": 0.2135903310224522,
+    "purity_bg": 0.6672222222222223,
+    "purity_digit": 0.2525,
+    "purity_fg": 0.5258333333333334,
+    "u": 0.1,
+    "withheld_bg_max_r": 0.9486656290919295,
+    "withheld_bg_purity_digit": 0.29464285714285715
+   },
+   "1": {
+    "max_r": 0.9499423520137571,
+    "n_nodes": 24,
+    "nmi_bg": 0.45144744370136936,
+    "nmi_digit": 0.08080397044904175,
+    "nmi_fg": 0.33124965408047863,
+    "purity_bg": 0.8355555555555556,
+    "purity_digit": 0.19694444444444445,
+    "purity_fg": 0.6038888888888889,
+    "u": 0.2,
+    "withheld_bg_max_r": 0.962981783671912,
+    "withheld_bg_purity_digit": 0.15928571428571428
+   },
+   "2": {
+    "max_r": 0.9459570884065571,
+    "n_nodes": 16,
+    "nmi_bg": 0.563344259175067,
+    "nmi_digit": 0.047853195395883334,
+    "nmi_fg": 0.25322957566516074,
+    "purity_bg": 0.7522222222222222,
+    "purity_digit": 0.15416666666666667,
+    "purity_fg": 0.46805555555555556,
+    "u": 0.3,
+    "withheld_bg_max_r": 0.9709091758201505,
+    "withheld_bg_purity_digit": 0.1225
+   },
+   "3": {
+    "max_r": 0.9314920720713207,
+    "n_nodes": 16,
+    "nmi_bg": 0.5052880415101197,
+    "nmi_digit": 0.025617836078064792,
+    "nmi_fg": 0.1241989579378895,
+    "purity_bg": 0.6666666666666666,
+    "purity_digit": 0.13722222222222222,
+    "purity_fg": 0.38555555555555554,
+    "u": 0.4,
+    "withheld_bg_max_r": 0.947072365450182,
+    "withheld_bg_purity_digit": 0.12678571428571428
+   },
+   "4": {
+    "max_r": 0.9926731573258777,
+    "n_nodes": 8,
+    "nmi_bg": 0.013854409084464826,
+    "nmi_digit": 0.006334027165303664,
+    "nmi_fg": 0.010514936044466133,
+    "purity_bg": 0.3411111111111111,
+    "purity_digit": 0.10416666666666667,
+    "purity_fg": 0.3338888888888889,
+    "u": 0.55,
+    "withheld_bg_max_r": 0.9965417177843024,
+    "withheld_bg_purity_digit": 0.10285714285714286
+   },
+   "5": {
+    "max_r": 0.7760410161372758,
+    "n_nodes": 8,
+    "nmi_bg": 0.49007059471579095,
+    "nmi_digit": 0.05476477430585757,
+    "nmi_fg": 0.17405064222139371,
+    "purity_bg": 0.7025,
+    "purity_digit": 0.18194444444444444,
+    "purity_fg": 0.46,
+    "u": 0.7,
+    "withheld_bg_max_r": 0.7871605854834528,
+    "withheld_bg_purity_digit": 0.1417857142857143
+   }
+  },
+  "n_nodes": 104,
+  "per_level": [
+   32,
+   24,
+   16,
+   16,
+   8,
+   8
+  ],
+  "per_level_secs": [
+   318.9658770561218,
+   274.1801905632019,
+   293.18805599212646,
+   312.8976445198059,
+   253.24877905845642,
+   275.1271970272064
+  ],
+  "phase0_level": null,
+  "phase0_pass": false
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "p1_tree_build__colormnist__base__s0__edeb4644",
+ "schema": 1,
+ "script": "experiments/p1_tree_build.py",
+ "seconds": 1827.051871061325,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-25T19:09:26+00:00",
+ "stream": null,
+ "tag": ""
+}

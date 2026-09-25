@@ -21,6 +21,8 @@ IGNORE = {
     # sizes and settings stated as such
     "72", "1024", "6.8", "6.8M", "276", "255", "3072", "0.98", "0.05", "0.9", "0.10", "0.20", "0.30", "0.40", "0.55", "0.70",
     "512", "150", "0.1", "50", "1e-5", "800", "0.8", "0.95",
+    # the phase-0 criterion and its per-factor retry (settings), the tree's node count (a build setting)
+    "104", "0.7", "0.2", "0.5",
 }
 NUM = re.compile(r"(?<![A-Za-z0-9_./#-])(\d[\d,]*(?:\.\d+)?)(?![A-Za-z0-9_./-])")
 

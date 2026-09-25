@@ -129,9 +129,12 @@ def anchor_loss_natural(model, expert, gate, x0, layout, emb=None, cls=None, gen
 
 
 # ── node creation ────────────────────────────────────────────────────────────
-def create_nodes(tree, cal, X_rows, levels=None, key=None, count=None):
-    """New nodes at the failing band levels of X (or `levels`): mode = the mean of X, extent = the
-    level's sibling median.  -> node ids (finest first)."""
+def create_nodes(tree, cal, X_rows, levels=None, key=None, count=None, branch=True):
+    """New nodes for an unexplained arrival: mode = the mean of X at each level's resolution, extent =
+    the level's sibling median.  With `branch` (default) the nodes span every level from the coarsest
+    unexplained one down to the finest, so the gate can fire at every noise level of the new primitive
+    (a node at one level only leaves the expert off everywhere else: the first smoke run's failure).
+    -> node ids, finest first."""
     X = np.atleast_2d(np.asarray(X_rows, np.float32))
     if levels is None:
         ok, depth, coarsest, nll = explained(tree, cal, X)
@@ -140,6 +143,8 @@ def create_nodes(tree, cal, X_rows, levels=None, key=None, count=None):
         levels = [cal.levels[j] for j in np.where(fail)[0]]
         if not levels:
             levels = [cal.levels[int(np.argmax(nll.mean(0) - thr))]]
+        if branch:
+            levels = list(range(0, max(levels) + 1))
     mean = X.mean(0)
     ids = []
     for l in sorted(levels):

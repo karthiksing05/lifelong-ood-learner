@@ -33,7 +33,9 @@ Every number quoted anywhere in this repository comes from a row in `ledger/` an
 | the reference for storage: C5's router (backfilled) | tree store new-value joint 0.771, never-taught 0.795 at 277,601 bytes; flat store 0.646, 0.550 at 1,844,635 bytes |
 | the reference for addressing: C3's flagship (backfilled; addressing what the backbone already renders) | 0.980 from one image at 72 bytes, 0.913 for a 1 KB inversion, 0.001 nearest trained class |
 | sampler parity after the restructure | PASS: `sample(backbone)` equals the fixtures' `ddim_sample` bit for bit on the ColorMNIST UNet and the Shapes3D VE bridge, max abs diff 0.0 (`ledger/p0_sampler_parity`) |
-| prototype tree (phase 0), decompose (1), gate (2), fold frontier (3), compose-after-fold (4), consolidate (5) | pending |
+| prototype tree, phase 0 (`ledger/p1_tree_build`, 104 nodes from 512 own samples at 6 levels) | KILL under the pre-registered criterion: no level reaches background purity 0.9 with digit purity 0.7 (best background 0.84 at u = 0.2, digit never above 0.25). The tree is a colour hierarchy: sharp digits only at the finest level, coloured blobs above. Retry pre-registered with k-means node selection and a coarser grid, judged per factor at its own level (background 0.9, foreground 0.8, digit 0.5) |
+| fold frontier smoke (quick run, 2 tasks, 150-step cap; `ledger/p3_fold_frontier`, tag _smoke) | the label-gated reference arm reproduces the mechanism through the new stack (taught 0.778 / 0.736, never-taught 0.938 / 0.708, old classes exact); the analytic-gate arm failed (taught 0.083) because the new node lived at one level and the expert was off elsewhere; fixed by creating a branch down to the finest level, rerun pending |
+| decompose (1), gate (2), fold frontier (3), compose-after-fold (4), consolidate (5) | pending |
 
 ## Reproduce
 

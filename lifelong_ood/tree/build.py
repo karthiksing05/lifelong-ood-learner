@@ -25,8 +25,11 @@ DEFAULT_CAPS = {0.10: 32, 0.20: 24, 0.30: 16, 0.40: 16, 0.55: 8, 0.70: 8}
 
 
 def build(backbone, u_grid=DEFAULT_GRID, n_samples=512, seed=0, iters=150, lr=0.1, tol=0.05, caps=None,
-          samples=None, steps=50, probes=4, batch=256, verbose=True, cls=None):
-    """-> Tree over the backbone's row space.  `samples` (flat rows) may be supplied instead of drawn."""
+          samples=None, steps=50, probes=4, batch=256, verbose=True, cls=None, select="dedup"):
+    """-> Tree over the backbone's row space.  `samples` (flat rows) may be supplied instead of drawn.
+    select="dedup": keep distinct modes (per-dim RMSE > tol), capped by basin size;
+    select="kmeans": cluster the level's modes into `cap` centroids (the ACS paper's "group modes within
+    a variance threshold"), mode = centroid, extent from the medoid, count = cluster size."""
     t0 = time.time()
     lo, hi = backbone.clip
     if samples is None:
@@ -40,22 +43,38 @@ def build(backbone, u_grid=DEFAULT_GRID, n_samples=512, seed=0, iters=150, lr=0.
         xt, x0 = mode_ascent(backbone, X, u, iters=iters, lr=lr, seed=seed + 1000 * level, init="query",
                              adam=True, tweedie=True, cls=cls, batch=batch)
         x0 = np.clip(x0, lo, hi)
-        kept, owner = dedup(x0, tol=tol)
-        counts = np.asarray([(owner == k).sum() for k in kept], np.float64)
         cap = int(caps.get(u, caps.get(round(u, 2), 10 ** 9)))
-        order = np.argsort(-counts)[:cap]
-        kept = [kept[i] for i in order]
-        counts = counts[order]
-        ext = laplace_diag(backbone, xt[kept], u, probes=probes, seed=seed + 7 * level, cls=cls, batch=batch)
-        for k, i in enumerate(kept):
-            tree.add(level, x0[i], extent_perdim=ext[k], count=float(counts[k]))
-        per_level.append(dict(u=u, modes=int(len(x0)), dedup=int(len(set(owner))), kept=len(kept), secs=time.time() - tl))
+        if select == "kmeans":
+            from sklearn.cluster import KMeans
+            K = min(cap, len(x0))
+            km = KMeans(n_clusters=K, n_init=4, random_state=seed + level).fit(x0.astype(np.float64))
+            lab = km.labels_
+            cents = np.clip(km.cluster_centers_.astype(np.float32), lo, hi)
+            medoid = [int(np.where(lab == k)[0][np.argmin(((x0[lab == k] - cents[k]) ** 2).sum(1))]) for k in range(K)]
+            counts = np.asarray([(lab == k).sum() for k in range(K)], np.float64)
+            ext = laplace_diag(backbone, xt[medoid], u, probes=probes, seed=seed + 7 * level, cls=cls, batch=batch)
+            for k in range(K):
+                tree.add(level, cents[k], extent_perdim=ext[k], count=float(counts[k]))
+            n_distinct = len(set(dedup(x0, tol=tol)[1]))
+            kept = list(range(K))
+        else:
+            kept, owner = dedup(x0, tol=tol)
+            counts = np.asarray([(owner == k).sum() for k in kept], np.float64)
+            order = np.argsort(-counts)[:cap]
+            kept = [kept[i] for i in order]
+            counts = counts[order]
+            ext = laplace_diag(backbone, xt[kept], u, probes=probes, seed=seed + 7 * level, cls=cls, batch=batch)
+            for k, i in enumerate(kept):
+                tree.add(level, x0[i], extent_perdim=ext[k], count=float(counts[k]))
+            n_distinct = len(set(owner))
+        per_level.append(dict(u=u, modes=int(len(x0)), dedup=int(n_distinct), kept=len(kept), secs=time.time() - tl))
         if verbose:
-            print(f"[tree] level {level} u={u:.2f}: {len(x0)} chains -> {len(set(owner))} distinct -> {len(kept)} kept "
-                  f"(cap {cap}) in {time.time() - tl:.1f}s", flush=True)
+            print(f"[tree] level {level} u={u:.2f}: {len(x0)} chains -> {n_distinct} distinct -> {len(kept)} kept "
+                  f"({select}, cap {cap}) in {time.time() - tl:.1f}s", flush=True)
     link_parents(tree)
     tree.build_info = dict(seconds=time.time() - t0, per_level=per_level, n_samples=int(len(X)), seed=int(seed),
-                           iters=int(iters), lr=float(lr), tol=float(tol), caps={str(k): int(v) for k, v in caps.items()})
+                           iters=int(iters), lr=float(lr), tol=float(tol), caps={str(k): int(v) for k, v in caps.items()},
+                           select=select)
     if verbose:
         print(f"[tree] {tree.summary()} in {time.time() - t0:.1f}s", flush=True)
     return tree

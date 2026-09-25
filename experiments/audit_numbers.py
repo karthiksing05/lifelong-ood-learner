@@ -43,7 +43,22 @@ def p0(bench):
     return lambda: L.mean("p0_sampler_parity", "metrics.max_abs_diff", bench=bench, tag="")
 
 
+def p1(metric):
+    return lambda: L.mean("p1_tree_build", metric, bench="colormnist", tag="", seed=0)
+
+
+def p3s(metric, arm, task):
+    return lambda: L.mean("p3_fold_frontier", metric, bench="colormnist", tag="_smoke", keys__arm=arm, keys__task=task)
+
+
 CHECKS = [
+    ("p1 tree (phase 0): best background purity, level 1", p1("metrics.levels.1.purity_bg"), "0.84"),
+    ("p1 tree (phase 0): best digit purity, level 0", p1("metrics.levels.0.purity_digit"), "0.25"),
+    ("p3 smoke: label-gated reference taught joint, task 0", p3s("metrics.taught_joint", "lora-all-c1@gate=label", 0), "0.778"),
+    ("p3 smoke: label-gated reference taught joint, task 1", p3s("metrics.taught_joint", "lora-all-c1@gate=label", 1), "0.736"),
+    ("p3 smoke: label-gated reference never-taught joint, task 0", p3s("metrics.untaught_joint", "lora-all-c1@gate=label", 0), "0.938"),
+    ("p3 smoke: label-gated reference never-taught joint, task 1", p3s("metrics.untaught_joint", "lora-all-c1@gate=label", 1), "0.708"),
+    ("p3 smoke: analytic-gate arm taught joint, task 0", p3s("metrics.taught_joint", "lora-all", 0), "0.083"),
     ("C1 ColorMNIST label-gated rank-1 LoRA: taught joint", c1("metrics.taught_joint"), "0.716"),
     ("C1 ColorMNIST label-gated rank-1 LoRA: never-taught joint", c1("metrics.untaught_joint"), "0.715"),
     ("C1 ColorMNIST label-gated rank-1 LoRA: old-class drop", c1("metrics.old_drop"), "0.000"),
