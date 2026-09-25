@@ -24,7 +24,8 @@ DATA_ROOT = "/coc/flash10/ksingara3/robot/data/hf/physical-intelligence__libero"
 NORM_STATS = ("/coc/flash10/ksingara3/robot/openpi_cache/openpi-assets/checkpoints/pi05_libero/assets/"
               "physical-intelligence/libero/norm_stats.json")
 SUITES = {"libero_10": list(range(0, 10)), "libero_goal": list(range(10, 20)),
-          "libero_object": list(range(20, 30)), "libero_spatial": list(range(30, 40))}
+          "libero_object": list(range(20, 30)), "libero_spatial": list(range(30, 40)),
+          "libero_40": list(range(0, 40))}          # everything pi05_libero was fine-tuned on
 ACTION_DIM_REAL = 7
 ACTION_DIM = 32
 GRIPPER = 6                      # index of the gripper action (-1 open, +1 close in LIBERO)
@@ -32,6 +33,8 @@ GRIPPER = 6                      # index of the gripper action (-1 open, +1 clos
 
 def suite_of(task_index):
     for s, ids in SUITES.items():
+        if s == "libero_40":
+            continue
         if int(task_index) in ids:
             return s
     return "unknown"
