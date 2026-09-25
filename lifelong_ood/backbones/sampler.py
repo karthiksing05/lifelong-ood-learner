@@ -70,8 +70,7 @@ def _ddim_core(model, n, steps, seed, E, cls, layout, img, device, batch, gate, 
                             e = model(x, ut, c=c, emb_override=eo_s)
                 else:
                     eps_fn, w_fn = guide
-                    e0 = model(x, ut, c=torch.full((m,), model.null_id, device=device, dtype=torch.long),
-                               emb_override=None)
+                    e0 = model(x, ut, c=c, emb_override=eo)      # the current conditioning (null when unconditioned)
                     xr = to_flat(x, layout)
                     et = to_img(torch.as_tensor(eps_fn(xr, u), dtype=torch.float32, device=device), img, layout)
                     w = w_fn(xr, u)                     # a float, or a per-row responsibility [m]
