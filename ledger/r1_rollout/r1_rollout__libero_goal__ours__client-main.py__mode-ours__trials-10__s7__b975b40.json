@@ -1,0 +1,112 @@
+{
+ "artifacts": [
+  "slurm/3954257.out"
+ ],
+ "backbone": null,
+ "backfilled": true,
+ "bench": "libero_goal",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "sbatch experiments/r1_rollout_pi05.sbatch SUITE=libero_goal TRIALS=10 MODE=ours (job 3954257)",
+ "config": {
+  "client": "examples/libero/main.py",
+  "job": 3954257,
+  "mode": "ours"
+ },
+ "env": {
+  "device": "cpu",
+  "host": "sky2.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r1_rollout",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "0e1608ff1a736c2bc87d56d7878996fe141c40aa",
+  "short": "0e1608ff"
+ },
+ "keys": {
+  "client": "main.py",
+  "mode": "ours",
+  "trials": 10
+ },
+ "metrics": {
+  "complete": true,
+  "n_episodes": 100,
+  "note": "our Euler sampler (lifelong_ood.policy.backbone, GuidedPolicy without hooks) served to openpi's main.py client; first 10 init states per task, seed 7",
+  "published": 0.98,
+  "reference_openpi": 0.95,
+  "success_rate": 0.98,
+  "tasks": {
+   "0": {
+    "language": "open the middle drawer of the cabinet",
+    "n": 10,
+    "success_rate": 1.0
+   },
+   "1": {
+    "language": "put the bowl on the stove",
+    "n": 10,
+    "success_rate": 1.0
+   },
+   "2": {
+    "language": "put the wine bottle on top of the cabinet",
+    "n": 10,
+    "success_rate": 0.9
+   },
+   "3": {
+    "language": "open the top drawer and put the bowl inside",
+    "n": 10,
+    "success_rate": 1.0
+   },
+   "4": {
+    "language": "put the bowl on top of the cabinet",
+    "n": 10,
+    "success_rate": 0.9
+   },
+   "5": {
+    "language": "push the plate to the front of the stove",
+    "n": 10,
+    "success_rate": 1.0
+   },
+   "6": {
+    "language": "put the cream cheese in the bowl",
+    "n": 10,
+    "success_rate": 1.0
+   },
+   "7": {
+    "language": "turn on the stove",
+    "n": 10,
+    "success_rate": 1.0
+   },
+   "8": {
+    "language": "put the bowl on the plate",
+    "n": 10,
+    "success_rate": 1.0
+   },
+   "9": {
+    "language": "put the wine bottle on the rack",
+    "n": 10,
+    "success_rate": 1.0
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r1_rollout__libero_goal__ours__client-main.py__mode-ours__trials-10__s7__b975b40",
+ "schema": 1,
+ "script": "experiments/r1_rollout_pi05.sh",
+ "seconds": null,
+ "seed": 7,
+ "source_commit": "b975b40",
+ "started": "2026-09-25T20:57:54+00:00",
+ "stream": null,
+ "tag": "ours"
+}
