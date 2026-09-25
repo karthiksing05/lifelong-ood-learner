@@ -32,6 +32,9 @@ only in WHAT may move:
   lora-consol       the value's LoRA as a FAST store, then CONSOLIDATED into the backbone by sparse,
                     anchored distillation from the gated model itself, and zeroed -- the Cobweb
                     restructure operator; zero added parameters after every task
+  lora-consolw      ... consolidating the value's behaviour over EVERY combination that uses it
+                    (the teacher draws them from coordinates; no real images), except the untaught
+                    evaluation set, which stays held out of both the adapter and the consolidation
 
 The stop rule is the Cobweb one: train until the concept's denoising loss on its own held-back images
 is at the level a trained class reaches through the basis, at EVERY noise level (`--criterion all`;
@@ -78,6 +81,7 @@ ARMS = {
     "value-lora-r1":   dict(weights="lora", rank=1, anchor=None),
     "value-lora-r8":   dict(weights="lora", rank=8, anchor=None),
     "lora-consol":     dict(weights="lora", rank=8, anchor=None, consolidate=True),
+    "lora-consolw":    dict(weights="lora", rank=8, anchor=None, consolidate=True, consol_wide=True),
 }
 
 
@@ -153,7 +157,9 @@ def main():
     p.add_argument("--n-val", type=int, default=16)
     p.add_argument("--n-ref", type=int, default=100)
     p.add_argument("--n-samples", type=int, default=24)
-    p.add_argument("--steps", type=int, default=50, help="DDIM steps")
+    p.add_argument("--steps", type=int, default=None,
+                   help="DDIM steps; default 50 (colormnist) / 200 (shapes3d: at 50 the pretrained "
+                        "VE backbone's samples lose shape -- old classes read 0.44 on shape)")
     p.add_argument("--ext-steps", type=int, default=300, help="EXTEND (v_new only) steps per task")
     p.add_argument("--max-steps", type=int, default=800, help="weight-phase cap per task")
     p.add_argument("--check-every", type=int, default=50)
@@ -184,6 +190,15 @@ def main():
     p.add_argument("--no-count-decay", action="store_true",
                    help="disable the Cobweb 1/(1+t) decay of v_new's step as the value matures")
     p.add_argument("--criterion", choices=("all", "ratio", "mean"), default="all")
+    p.add_argument("--tol", type=float, default=0.0,
+                   help="per-level margin: absorbed iff every level <= threshold * (1 + tol). The "
+                        "threshold is a q90 over trained classes and carries its own estimation "
+                        "noise; without a margin a 1-6%% excess at u=0.1 alone forced every task "
+                        "to the step cap")
+    p.add_argument("--u-min-crit", type=float, default=0.1,
+                   help="the absorption criterion reads only levels u >= this. Low levels test pixel "
+                        "fidelity the input already carries (and, for a recoloured image, fine-scale "
+                        "statistics no real render has); the concept lives at mid and high noise")
     p.add_argument("--u-high", action="store_true",
                    help="add u = 0.95 and 0.99 to the absorption grid")
     p.add_argument("--tag", default="")
@@ -192,6 +207,8 @@ def main():
     sh = args.bench == "shapes3d"
     if args.n_anchor_per_class is None:
         args.n_anchor_per_class = 2 if sh else 4
+    if args.steps is None:
+        args.steps = 200 if sh else 50
     if args.lora_exclude is None:
         args.lora_exclude = "time_emb" if sh else ""
     if args.quick:
@@ -367,12 +384,15 @@ def run_arm(cfg, args, X_):
             if nv > 1e-8:
                 v.mul_(X_["v_norm"] / nv)
 
+    crit = u_grid >= args.u_min_crit - 1e-9
+
     def is_in(prof):
+        pr, tt = np.asarray(prof)[crit], t_u[crit]
         if args.criterion == "all":
-            return bool(np.all(prof <= t_u))
+            return bool(np.all(pr <= tt * (1.0 + args.tol)))
         if args.criterion == "ratio":
-            return bool(np.mean(prof / t_u) <= 1.0)
-        return float(prof.mean()) <= float(t_u.mean())
+            return bool(np.mean(pr / tt) <= 1.0)
+        return float(pr.mean()) <= float(tt.mean())
 
     def s_val(X_val_m, rows_np):
         emb = rows_np + v.detach().cpu().numpy()[None]
@@ -550,7 +570,11 @@ def run_arm(cfg, args, X_):
                 for m_ in model.modules():
                     if isinstance(m_, GatedLoRA):
                         m_.B.weight.zero_()
-            crow = np.stack([row(c) for c in taught]).astype(np.float32)
+            ctx = list(taught)
+            if cfg.get("consol_wide"):
+                held = set(map(tuple, untaught))
+                ctx = [tuple(c) for c in B.new_pairs if tuple(c) not in held]
+            crow = np.stack([row(c) for c in ctx]).astype(np.float32)
             cemb = np.repeat(crow + v.detach().cpu().numpy()[None], args.consol_per, 0)
             cx = ddim_sample(teacher, len(cemb), steps=args.steps, seed=1300 + 10 * t + args.seed,
                              emb=cemb, gate=tgate, clip=B.clip, **kw)
@@ -671,8 +695,9 @@ def run_arm(cfg, args, X_):
                    secs_task=time.time() - t_task, per=per)
         out.append(rec)
         of = "/".join(f"{rec['old_factors'][nm]:.2f}" for nm in B.names)
-        print(f"[c1] {name} task {t}: tier {tier} steps {steps_w} | ratio arr "
-              f"{max(rec['ratio_arrival_u']):.2f} -> fin {max(rec['ratio_final_u']):.2f} | TAUGHT "
+        rc = lambda key: max(np.asarray(rec[key])[crit])            # noqa: E731
+        print(f"[c1] {name} task {t}: tier {tier} steps {steps_w} | crit ratio arr "
+              f"{rc('ratio_arrival_u'):.2f} -> fin {rc('ratio_final_u'):.2f} | TAUGHT "
               f"joint {rec['taught_joint']:.3f} new {rec['taught_new']:.3f} cov {rec['taught_cov']:.3f}"
               f" | UNTAUGHT joint {rec['untaught_joint']:.3f} new {rec['untaught_new']:.3f} | OLD "
               f"{rec['old_joint']:.3f} (drop {rec['old_drop']:+.3f}; {of}) drift "

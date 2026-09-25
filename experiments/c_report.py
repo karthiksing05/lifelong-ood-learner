@@ -30,8 +30,9 @@ def c1(files):
             if row["arm"] not in arms:
                 arms.append(row["arm"])
     nf = runs[0].get("new_factor", "new")
-    print(f"C1 {runs[0].get('bench', '?')} -- {len(runs)} seed(s); new value on '{nf}'; "
-          f"last task unless noted\n")
+    seeds = sorted({r["config"]["seed"] for r in runs})
+    print(f"C1 {runs[0].get('bench', '?')} -- seeds {seeds} ({len(runs)} files); new value on "
+          f"'{nf}'; last task unless noted\n")
     hdr = (f"{'arm':30s} {'taught':>12s} {'t-new':>12s} {'untaught':>12s} {'u-new':>12s} "
            f"{'untaught(mean)':>14s} {'old drop':>12s} {'drift %':>10s} {'changed %':>10s} "
            f"{'added B':>9s} {'steps':>6s}")
@@ -45,7 +46,8 @@ def c1(files):
         steps = [np.mean([x["steps_weight"] for x in rs]) for rs in allt if rs]
         tn = [x.get("taught_new", x.get("taught_bg")) for x in last]
         un = [x.get("untaught_new", x.get("untaught_bg")) for x in last]
-        added = [4 * x["lora_params"] if not x.get("consolidation") else 0 for x in last]
+        # a consolidating arm folds its adapter into the backbone and zeroes it: nothing is kept
+        added = [0 if a.startswith("lora-consol") else 4 * x["lora_params"] for x in last]
         print(f"{a[:30]:30s} {mse([x['taught_joint'] for x in last]):>12s} {mse(tn):>12s} "
               f"{mse([x['untaught_joint'] for x in last]):>12s} {mse(un):>12s} {mse(um):>14s} "
               f"{mse([x['old_drop'] for x in last]):>12s} "

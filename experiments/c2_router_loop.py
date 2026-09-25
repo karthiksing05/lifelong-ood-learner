@@ -67,7 +67,10 @@ def main():
     p.add_argument("--n-val", type=int, default=16)
     p.add_argument("--n-ref", type=int, default=None, help="default 100 (colormnist) / 36")
     p.add_argument("--n-samples", type=int, default=24)
-    p.add_argument("--steps", type=int, default=50)
+    p.add_argument("--steps", type=int, default=None, help="DDIM steps; 50 colormnist / 200 shapes3d")
+    p.add_argument("--u-min-crit", type=float, default=0.3,
+                   help="every threshold test reads only levels u >= this (low levels test pixel "
+                        "fidelity the input already carries, not the concept)")
     p.add_argument("--ext-steps", type=int, default=200)
     p.add_argument("--max-steps", type=int, default=800)
     p.add_argument("--check-every", type=int, default=50)
@@ -77,7 +80,9 @@ def main():
     p.add_argument("--n-anchor-new", type=int, default=8)
     p.add_argument("--n-fisher", type=int, default=256)
     p.add_argument("--n-gnew", type=int, default=96)
-    p.add_argument("--n-cal-sharp", type=int, default=24, help="trained classes for sharpness")
+    p.add_argument("--n-cal-sharp", type=int, default=24, help="trained classes for informativeness")
+    p.add_argument("--n-cal", type=int, default=120,
+                   help="trained classes the thresholds are calibrated on (all of them if fewer)")
     p.add_argument("--weight-mode", choices=("mask", "lora", "all"), default="mask")
     p.add_argument("--rho", type=float, default=0.01)
     p.add_argument("--lam", type=float, default=10.0)
@@ -89,6 +94,26 @@ def main():
     p.add_argument("--delta-frac", type=float, default=0.01)
     p.add_argument("--lr-v", type=float, default=0.05)
     p.add_argument("--lr-v-w", type=float, default=0.005)
+    p.add_argument("--tol", type=float, default=0.0,
+                   help="per-level margin: absorbed iff every level <= threshold * (1 + tol). The "
+                        "threshold is a q90 over trained classes and carries its own estimation "
+                        "noise; without a margin a 1-6%% excess at u=0.1 alone forced every task "
+                        "to the step cap")
+    p.add_argument("--fast", action="store_true",
+                   help="for large tables: the IN-DIST check scores only trained classes among the "
+                        "top-10 basis compositions, and every scan reads only the decision levels "
+                        "(u >= --u-min-crit) with one noise draw")
+    p.add_argument("--routing", choices=("cascade", "oracle"), default="cascade",
+                   help="cascade: the label-free router decides every tier.  oracle: the tier comes "
+                        "from the concept's TRUE population (in-dist -> nothing; new-comb -> ADDRESS; "
+                        "the first new-value concept CREATES the value node and later ones UPDATE it "
+                        "-- Cobweb's host-and-update), while reads, absorption and storage stay "
+                        "label-free.  Separates what the loop achieves from how well the router routes")
+    p.add_argument("--attribution", choices=("inform", "oracle"), default="inform",
+                   help="which factor an escalated concept's new direction attaches to: label-free "
+                        "informativeness, or the TRUE novel factor (tier decisions stay label-free "
+                        "either way).  Oracle isolates the rest of the loop from attribution, which a "
+                        "new value near a known one defeats from one concept's evidence")
     p.add_argument("--tag", default="")
     p.add_argument("--quick", action="store_true")
     args = p.parse_args()
@@ -97,6 +122,12 @@ def main():
     args.n_ref = args.n_ref or (36 if sh else 100)
     if args.lora_exclude is None:
         args.lora_exclude = "time_emb" if sh else ""
+    if args.steps is None:
+        args.steps = 200 if sh else 50
+    global U_GRID
+    if args.fast:
+        U_GRID = U_GRID[U_GRID >= args.u_min_crit - 1e-9]
+    n_noise = 1 if args.fast else 2
     if args.quick:
         args.n_in, args.n_comb, args.n_new = 1, 2, 3
         args.n_samples, args.ext_steps, args.max_steps = 12, 60, 150
@@ -114,6 +145,7 @@ def main():
         q.requires_grad_(False)
     model = copy.deepcopy(base).eval()
     kw = dict(layout=B.layout, img=B.img, device=dev)
+    cl_batch = 256 if sh else 1024          # candidate batch: the 64px VE UNet runs out of memory at 1024
     fac = B.fac
     mu = np.asarray(fac["mu"], np.float32)
     V = [np.asarray(v, np.float32).copy() for v in fac["V"]]
@@ -139,19 +171,28 @@ def main():
     print(f"[c2] stream of {len(stream)}: {stream}", flush=True)
 
     # ── calibration on TRAINED classes only ─────────────────────────────────
-    cal = [(c, t, split(B.images(t))[1]) for c, t in B.seen]
-    P_row = np.stack([candidate_losses(base, xv, U_GRID, cls=[c], seed=CRN, per_u=True, **kw)[0]
+    cal_cls = [B.seen[i] for i in rng.permutation(len(B.seen))[:args.n_cal]]
+    cal = [(c, t, split(B.images(t))[1]) for c, t in cal_cls]
+    P_row = np.stack([candidate_losses(base, xv, U_GRID, cls=[c], seed=CRN, per_u=True, batch=cl_batch, n_noise=n_noise, **kw)[0]
                       for c, t, xv in cal])
-    labs = np.array([t for _, t, _ in cal])
+    # leave-one-class-out addresses: the basis refit on ALL trained classes but this one
+    tab = B.model.cemb.weight.detach().cpu().numpy()
+    all_c = np.array([c for c, _ in B.seen])
+    all_t = np.array([t for _, t in B.seen])
+    C_all = tab[all_c]
     P_loo = []
-    for i, (c, t, xv) in enumerate(cal):          # leave-one-class-out addresses
-        keep = np.arange(len(cal)) != i
-        fi = factorize(C_tab_true(B, cal)[keep], labs[keep])
+    for c, t, xv in cal:
+        keep = all_c != c
+        fi = factorize(C_all[keep], all_t[keep])
         e = np.asarray(fi["mu"]) + sum(np.asarray(fi["V"][f])[t[f]] for f in range(nF))
         P_loo.append(candidate_losses(base, xv, U_GRID, embs=e[None], seed=CRN, per_u=True,
-                                      **kw)[0])
+                                      batch=cl_batch, n_noise=n_noise, **kw)[0])
     P_loo = np.stack(P_loo)
     t_row, t_addr = np.quantile(P_row, 0.9, axis=0), np.quantile(P_loo, 0.9, axis=0)
+    crit = U_GRID >= args.u_min_crit - 1e-9
+
+    def within(pr, t):
+        return bool(np.all(np.asarray(pr)[crit] <= t[crit] * (1.0 + args.tol)))
     print(f"[c2] thresholds per u: t_row {np.round(t_row, 4).tolist()}\n"
           f"[c2]                   t_addr(LOO) {np.round(t_addr, 4).tolist()}  "
           f"({time.time() - t0:.0f}s)", flush=True)
@@ -168,19 +209,9 @@ def main():
             ix = [i for i, gt in enumerate(gates) if (gt is not None) == use_gate]
             if ix:
                 L[ix] = candidate_losses(model, Xv, U_GRID, embs=E[ix], seed=CRN, per_u=True,
-                                         gate=gate_on(lora_state) if use_gate else None, **kw)
+                                         gate=gate_on(lora_state) if use_gate else None,
+                                         batch=cl_batch, n_noise=n_noise, **kw)
         return combos, L
-
-    def sharpness(combos, L, read):
-        """Per factor: (2nd best - best) / best along that factor's slice through `read`."""
-        m = L.mean(1)
-        out = []
-        for f in range(nF):
-            sl = [m[i] for i, c in enumerate(combos)
-                  if all(c[g] == read[g] for g in range(nF) if g != f)]
-            sl = np.sort(sl)
-            out.append(float((sl[1] - sl[0]) / sl[0]) if len(sl) > 1 else float("inf"))
-        return np.asarray(out)
 
     lora_state = {"on": False}
     lora_params = []
@@ -191,13 +222,53 @@ def main():
             return gate_on(lora_state)
         return None
 
-    sharp_cal = []
-    for c, t, xv in [cal[i] for i in rng.permutation(len(cal))[:args.n_cal_sharp]]:
-        combos, L = enumerate_basis(xv, gate_for)
-        sharp_cal.append(sharpness(combos, L, combos[int(np.argmin(L.mean(1)))]))
-    med_sharp = np.median(np.stack(sharp_cal), 0)
-    print(f"[c2] typical factor sharpness on trained classes {dict(zip(B.names, np.round(med_sharp, 3)))}"
-          f" ({time.time() - t0:.0f}s)", flush=True)
+    def losses_for(coord_list, Xv):
+        """Mean eps-loss (over u >= u_min_crit) of Xv under each coordinate tuple; entries may be
+        None to leave a factor OUT of the composition.  Splits candidates by LoRA gate."""
+        E = np.stack([mu + sum(V[f][j] for f, j in enumerate(c) if j is not None)
+                      for c in coord_list]).astype(np.float32)
+        gates = [gate_for(tuple(j if j is not None else -1 for j in c)) for c in coord_list]
+        out = np.empty(len(coord_list))
+        for use_gate in (False, True):
+            ix = [i for i, gt in enumerate(gates) if (gt is not None) == use_gate]
+            if ix:
+                P = candidate_losses(model, Xv, U_GRID, embs=E[ix], seed=CRN, per_u=True,
+                                     gate=gate_on(lora_state) if use_gate else None,
+                                     batch=cl_batch, n_noise=n_noise, **kw)
+                out[ix] = P[:, crit].mean(1)
+        return out
+
+    def informativeness(Xv):
+        """Per factor: read the OTHER factors with this one left out, then the relative improvement
+        its best known value adds.  A factor whose value is new adds little, whatever the other
+        reads -- unlike slice sharpness, which a compensating misread of another factor fools."""
+        g_out = []
+        for f in range(nF):
+            others = [h for h in range(nF) if h != f]
+            cl = []
+            for vals in itertools.product(*[range(len(V[h])) for h in others]):
+                c = [None] * nF
+                for h, j in zip(others, vals):
+                    c[h] = j
+                cl.append(c)
+            lo = losses_for(cl, Xv)
+            best = cl[int(np.argmin(lo))]
+            wf = []
+            for j in range(len(V[f])):
+                c = list(best)
+                c[f] = j
+                wf.append(c)
+            lf = losses_for(wf, Xv)
+            g_out.append(float((lo.min() - lf.min()) / lo.min()))
+        return np.asarray(g_out)
+
+    inf_cal = np.stack([informativeness(xv) for _, _, xv in
+                        [cal[i] for i in rng.permutation(len(cal))[:args.n_cal_sharp]]])
+    med_gain = np.median(inf_cal, 0)
+    gamma = float(np.quantile((inf_cal / med_gain).min(1), 0.10))
+    print(f"[c2] typical factor informativeness on trained classes "
+          f"{dict(zip(B.names, np.round(med_gain, 3)))}; ADDRESS iff every factor >= {gamma:.3f} x "
+          f"typical ({time.time() - t0:.0f}s)", flush=True)
 
     # ── anchors (the model's own samples of trained classes) and F_old ──────
     a_cls = np.concatenate([np.repeat([c for c, _ in B.seen], args.n_anchor_per_class),
@@ -264,10 +335,10 @@ def main():
     def prof(Xv, coords, vdict=None):
         e = emb_t(coords, vdict).detach().cpu().numpy()[None]
         return candidate_losses(model, Xv, U_GRID, embs=e, seed=CRN, per_u=True,
-                                gate=gate_for(coords), **kw)[0]
+                                gate=gate_for(coords), n_noise=n_noise, **kw)[0]
 
     def absorbed(pr):
-        return bool(np.all(pr <= t_addr))
+        return within(pr, t_addr)
 
     def train_direction(Xtr_t, Xv, coords, key, v_init, steps, lr, weights=None):
         v = torch.as_tensor(v_init, device=dev).clone().requires_grad_(True)
@@ -332,25 +403,43 @@ def main():
         Xtr, Xv, ref = split(B.images(tup))
         Xtr_t = to_img(torch.as_tensor(B.to_m(Xtr), dtype=torch.float32, device=dev), B.img, B.layout)
         rec = dict(i=ci, true=list(tup), pop=pop)
-        rows = np.array([c for c, _ in B.seen])
-        Lr = candidate_losses(model, Xv, U_GRID, cls=rows, seed=CRN, per_u=True, **kw)
-        kr = int(np.argmin(Lr.mean(1)))
         combos, La = enumerate_basis(Xv, gate_for)
         ka = int(np.argmin(La.mean(1)))
         read = combos[ka]
+        rows = np.array([c for c, _ in B.seen])
+        if args.fast:
+            # the concept's own trained row, if it has one, sits among its best compositions
+            seen_of = {t: c for c, t in B.seen}
+            top = [combos[i] for i in np.argsort(La.mean(1))[:10]]
+            rows = np.array([seen_of[t] for t in top if t in seen_of] or [rows[0]])
+        Lr = candidate_losses(model, Xv, U_GRID, cls=rows, seed=CRN, per_u=True, batch=cl_batch,
+                              n_noise=n_noise, **kw)
+        kr = int(np.argmin(Lr.mean(1)))
         rec.update(row=int(rows[kr]), s_row=float(Lr[kr].mean()), s_addr=float(La[ka].mean()),
                    read=list(read), row_ratio=(Lr[kr] / t_row).tolist(),
                    addr_ratio=(La[ka] / t_addr).tolist())
         steps_w, cost, coords, trials = 0, 0, read, []
-        if np.all(Lr[kr] <= t_row):
+        gains = informativeness(Xv) / med_gain
+        rec["informativeness"] = gains.tolist()
+        oracle = args.routing == "oracle"
+        if (oracle and pop == "in-dist") or (not oracle and within(Lr[kr], t_row)):
             tier = "IN-DIST"
-        elif np.all(La[ka] <= t_addr):
+            if oracle:
+                rec["row"] = int({t: c for c, t in B.seen}[tuple(tup)])
+        elif (oracle and pop == "new-comb") or (not oracle and gains.min() >= gamma):
+            # every factor has a KNOWN value that explains its part of the concept: a new
+            # arrangement of known parts, whatever the absolute fit of the basis costs it
             tier, cost = "ADDRESS", 4 * sum(len(v) for v in V)
         else:
-            sc = sharpness(combos, La, read) / med_sharp
-            ff = int(np.argmin(sc))
-            rec.update(sharp=sc.tolist(), factor=B.names[ff])
+            ff = int(np.argmin(gains))
+            rec["factor_inform"] = B.names[ff]
+            if (args.attribution == "oracle" or oracle) and tup[B.new_f] == B.new_j:
+                ff = B.new_f
+            rec.update(factor=B.names[ff])
             options = [("new", None)] + [("refine", jj) for (f2, jj) in extended if f2 == ff]
+            if oracle and any(f2 == ff for (f2, _) in extended):
+                # the value node exists: host the concept in it and update it, never duplicate it
+                options = [("refine", jj) for (f2, jj) in extended if f2 == ff]
             for kind, jj in options:
                 cand = list(read)
                 if kind == "new":
@@ -494,17 +583,10 @@ def main():
                                 cost=int(sum(r["cost_bytes"] for r in rs)))
     print(f"[c2] SUMMARY {summary}", flush=True)
     save_json(dict(records=records, summary=summary, config=vars(args), stream=stream,
-                   t_row=t_row.tolist(), t_addr=t_addr.tolist(), med_sharp=med_sharp.tolist()),
+                   t_row=t_row.tolist(), t_addr=t_addr.tolist(), med_gain=med_gain.tolist(),
+                   gamma=gamma),
               os.path.join(RESULTS, f"c2_router_loop_{args.bench}{args.tag}.json"), seed=args.seed)
     return 0
-
-
-def C_tab_true(B, cal):
-    """The backbone's TRAINED class rows for the calibration classes (not their basis fit)."""
-    if not hasattr(B, "_Ctab"):
-        tab = (B.model.cemb.weight.detach().cpu().numpy())
-        B._Ctab = np.stack([tab[c] for c, _, _ in cal])
-    return B._Ctab
 
 
 if __name__ == "__main__":

@@ -83,7 +83,7 @@ class Shapes3DBench:
     names = ("wall", "object", "shape")      # 'wall' = the factor the repo labels floor_hue here
 
     def __init__(self, seed=0, device="cuda", ckpt=os.path.join(CACHE, "ddpm_s3d_full.pt"),
-                 probe_epochs=30, n_probe=20):
+                 probe_epochs=30, n_probe=40, probe_seed=0):
         from lifelong_ood.data.factored import decode_slot, load_factored
         from lifelong_ood.data.novel_value import grey_floor
         from lifelong_ood.neural.idealwords import factorize
@@ -114,15 +114,22 @@ class Shapes3DBench:
         allc = {tuple(int(x) for x in r) for r in self.F}
         self.held_comb = sorted(t for t in allc if t not in seen_t)
         self._grey, self._grey_fn = {}, grey_floor
-        # probe pool = the first n_probe rows of every cell, concept pool = the rest (disjoint)
-        order = np.argsort(self.slot, kind="stable")
-        rank = np.empty(len(order), int)
+        # probe pool = a RANDOM n_probe rows of every cell, concept pool = the rest (disjoint).
+        # Random, not the first rows: inside a cell the loader's rows are ordered by SCALE then
+        # orientation, so "the first 20" were the two smallest scales -- probes trained on them read
+        # shape at 0.65 on the other scales' REAL images (tests/diag_s3d_shape.py) and capped every
+        # Shapes3D joint at ~0.4.
+        # The probes are the INSTRUMENT, so they are the same for every experiment seed: a linear
+        # probe on pixels trained by fixed-step Adam lands where its last minibatch leaves it, and
+        # seed 1 once read validation shape at 0.769 (old classes at theta_0 0.465) where seed 0
+        # reads 0.998 (0.983).  The experiment seed moves the stream, never the ruler.
+        rng_p = np.random.default_rng(probe_seed + 1000)
+        self._probe_rows = np.zeros(len(self.slot), bool)
         for s in np.unique(self.slot):
-            w = order[self.slot[order] == s]
-            rank[w] = np.arange(len(w))
-        self._probe_rows = rank < n_probe
+            w = np.where(self.slot == s)[0]
+            self._probe_rows[rng_p.permutation(w)[:n_probe]] = True
         self.new_pairs = [(self.new_j, o, s) for o in range(self.sizes[1]) for s in range(self.sizes[2])]
-        self._fit_probes(seed, probe_epochs)
+        self._fit_probes(probe_seed, probe_epochs)
 
     def _grey_rows(self, o, s, pool):
         """Recoloured rows of every cell (k, o, s) whose wall hue k is separable (k != object, != 0)."""
@@ -134,6 +141,12 @@ class Shapes3DBench:
         return self._grey[key]
 
     def _fit_probes(self, seed, epochs):
+        """Object and shape probes on REAL images only; the wall probe (11 classes) on real + grey.
+
+        Mixing the recoloured rows into every probe -- and only 20 real rows a cell -- left the shape
+        probe at 0.93 on real images and 0.69 on generated ones, where n78's recipe (40 real rows a
+        cell, nothing recoloured) reads 1.00 / 0.98.  Only the wall probe needs to know grey.
+        """
         P = self._probe_rows
         Xp, Fp = self.X[P], self.F[P]
         G, Gy = [], []
@@ -141,17 +154,20 @@ class Shapes3DBench:
             for s in range(self.sizes[2]):
                 g = self._grey_rows(o, s, "probe")
                 G.append(g); Gy.append(np.tile([self.new_j, o, s], (len(g), 1)))
-        Xa = np.concatenate([Xp, np.concatenate(G)])
-        Fa = np.concatenate([Fp, np.concatenate(Gy)])
         rng = np.random.default_rng(seed)
-        perm = rng.permutation(len(Xa))
-        cut = int(0.9 * len(perm))
-        tr, va = perm[:cut], perm[cut:]
         self.probes = {}
         for k, (nm, C) in enumerate(zip(self.names, (self.sizes[0] + 1, self.sizes[1], self.sizes[2]))):
-            pr = SoftmaxProbe(C, seed=seed, epochs=epochs).fit(Xa[tr], Fa[tr, k])
+            if k == self.new_f:
+                Xa = np.concatenate([Xp, np.concatenate(G)])
+                ya = np.concatenate([Fp[:, k], np.concatenate(Gy)[:, k]])
+            else:
+                Xa, ya = Xp, Fp[:, k]
+            perm = rng.permutation(len(Xa))
+            cut = int(0.9 * len(perm))
+            tr, va = perm[:cut], perm[cut:]
+            pr = SoftmaxProbe(C, seed=seed, epochs=epochs).fit(Xa[tr], ya[tr])
             self.probes[nm] = pr
-            self.probes[f"{nm}_val_acc"] = pr.acc(Xa[va], Fa[va, k])
+            self.probes[f"{nm}_val_acc"] = pr.acc(Xa[va], ya[va])
 
     def images(self, tup):
         f0, o, s = tup
