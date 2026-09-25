@@ -122,6 +122,11 @@ class ComposeHooks:
         self.trace = []
 
     def reset(self, meta=None):
+        if self.trace:
+            import logging
+            tr = np.asarray(self.trace)
+            logging.info(f"[compose] episode done: {len(tr)} calls, reached demo frame {int(tr.max())}/{len(self.prog.mu) - 1}, "
+                         f"stalls {int((np.diff(tr) == 0).sum())}, trace {tr[:: max(1, len(tr) // 12)].tolist()}")
         self.p = 0
         self.trace = []
         self._j = None
