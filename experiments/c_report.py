@@ -74,7 +74,8 @@ def c2(files):
               f"stored as the right tuple {mse(ok)} | bytes/concept {np.mean(cost):.0f}")
     print()
     for key in ("old_joint_start", "old_joint_end", "changed_frac", "bytes_total"):
-        print(f"{key:18s} {mse([r['summary'][key] for r in runs])}")
+        if all(key in r["summary"] for r in runs):
+            print(f"{key:18s} {mse([r['summary'][key] for r in runs])}")
     # tier of each new-value concept by its position among new-value arrivals: does it get cheaper?
     pos = {}
     for r in runs:
@@ -106,6 +107,16 @@ def c4(files):
         for kap, d in s["D2_kappa_rule"].items():
             print(f"     ADDRESS rate, ratio <= {kap}: " + " ".join(f"{k} {v:.2f}" for k, v in d.items()))
         print("     basis read exactly right: " + " ".join(f"{k} {v:.2f}" for k, v in s["D2_read_ok"].items()))
+        # compose vs retrieve: the best address's worst level over the best trained row's
+        cr = {pop: np.array([x["addr_ratio"] / x["row_ratio"] for x in r["records"] if x["pop"] == pop])
+              for pop in ("in-dist", "new-comb", "new-value")}
+        au = float((cr["new-value"][:, None] > cr["new-comb"][None, :]).mean()
+                   + 0.5 * (cr["new-value"][:, None] == cr["new-comb"][None, :]).mean())
+        print(f"     compose-vs-retrieve (address / row): AUROC {au:.3f}; " + " ".join(
+            f"{pop} [{v.min():.2f}, {v.max():.2f}]" for pop, v in cr.items() if len(v)))
+        for rho in (0.8, 0.9, 0.95):
+            print(f"     ADDRESS rate, address <= {rho} x row: " + " ".join(
+                f"{pop} {np.mean(v <= rho):.2f}" for pop, v in cr.items() if len(v)))
         recs = r["records"]
         for pop in ("in-dist", "new-comb", "new-value"):
             ar = np.array([x["addr_ratio"] for x in recs if x["pop"] == pop])
@@ -146,6 +157,10 @@ def c5(files):
     """C2's table for the Cobweb loop, plus what the leaves did."""
     c2(files)
     runs = [json.load(open(f)) for f in files]
+    ut = [r["summary"]["untaught"] for r in runs if "untaught" in r["summary"]]
+    if ut:
+        print(f"\nnever-taught new-value combinations: addressable {mse([u['addressable'] for u in ut])}"
+              f", joint {mse([u['joint'] for u in ut])}")
     print("\nleaves and merges:")
     for r in runs:
         s = r["summary"]

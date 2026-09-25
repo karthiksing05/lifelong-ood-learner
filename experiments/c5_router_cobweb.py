@@ -80,15 +80,34 @@ def main():
     p.add_argument("--lr", type=float, default=1e-3)
     p.add_argument("--lr-v-w", type=float, default=0.005)
     p.add_argument("--tol", type=float, default=0.05)
-    p.add_argument("--address-rule", choices=("inform", "absorb"), default="inform",
+    p.add_argument("--address-rule", choices=("inform", "absorb", "retrieve"), default="inform",
                    help="inform: C2's rule (every factor's best known value adds >= gamma x its "
-                        "typical gain); absorb: the best address passes the t_addr test")
+                        "typical gain); absorb: the best address passes the t_addr test; retrieve: "
+                        "COMPOSING beats RETRIEVING -- the best address's worst decision level is "
+                        "below --rho-cr x the best trained class's.  A new arrangement of known parts "
+                        "is explained better by its parts than by any class the backbone was trained "
+                        "on; a concept with a part the basis lacks is not, since both fall back on "
+                        "the nearest known value")
+    p.add_argument("--rho-cr", type=float, default=0.9)
+    p.add_argument("--q-row", type=float, default=0.9,
+                   help="IN-DIST threshold = this quantile of trained classes' best-row loss per "
+                        "level.  0.9 (C2's) sends one trained class in ten onward by construction, "
+                        "and under the retrieve rule such a class -- composing cannot beat retrieving "
+                        "a class that exists -- became a LEAF; 1.0 = as well explained as the worst "
+                        "trained class")
+    p.add_argument("--incorporate", action="store_true",
+                   help="Cobweb's incorporate: a concept ADDRESSED through a value node that does not "
+                        "yet absorb it updates that node on its real images (0 B, anchored to the "
+                        "node's earlier members) -- every instance updates the node it joins")
     p.add_argument("--no-refine", action="store_true",
                    help="store a merged concept by ADDRESS even when the node does not absorb it")
     p.add_argument("--flat", action="store_true",
                    help="the FLAT ablation: every escalated concept gets its own concept-level "
                         "adapter (a BLOCK) and nothing ever merges -- one adapter per OOD concept, "
                         "the layout the hierarchy is meant to beat")
+    p.add_argument("--n-untaught", type=int, default=8,
+                   help="never-streamed new-value combinations addressed at the end through the "
+                        "new factor's node: what the hierarchy can render that a flat store cannot")
     p.add_argument("--fast", action="store_true")
     p.add_argument("--no-u-high", action="store_true",
                    help="drop u = 0.95 / 0.99 from every scan.  With them (C1's --u-high) the "
@@ -193,7 +212,8 @@ def main():
         e = np.asarray(fi["mu"]) + sum(np.asarray(fi["V"][f])[t[f]] for f in range(nF))
         P_loo.append(candidate_losses(base, xv, U_GRID, embs=e[None], seed=CRN, per_u=True,
                                       batch=cl_batch, n_noise=n_noise, **kw)[0])
-    t_row, t_addr = np.quantile(P_row, 0.9, axis=0), np.quantile(np.stack(P_loo), 0.9, axis=0)
+    t_row = np.quantile(P_row, args.q_row, axis=0)
+    t_addr = np.quantile(np.stack(P_loo), 0.9, axis=0)
     crit = U_GRID >= args.u_min_crit - 1e-9
 
     def within(pr, t):
@@ -408,10 +428,19 @@ def main():
                 gains, loo = informativeness(Xv)
                 gains = gains / med_gain
                 rec["informativeness"] = gains.tolist()
-                ok_addr = (gains.min() >= gamma if args.address_rule == "inform"
-                           else within(La[ka], t_addr))
+                # one normaliser for both, so the IN-DIST quantile cannot move this rule
+                cr = float((La[ka] / t_addr)[crit].max() / (Lr[kr] / t_addr)[crit].max())
+                rec["compose_vs_retrieve"] = cr
+                ok_addr = {"inform": gains.min() >= gamma, "absorb": within(La[ka], t_addr),
+                           "retrieve": cr <= args.rho_cr}[args.address_rule]
                 if ok_addr:
                     tier, cost = "ADDRESS", addr_cost()
+                    nodes = [(f, j) for f, j in enumerate(read) if status.get((f, j)) == "node"]
+                    if args.incorporate and nodes and not within(La[ka], t_addr):
+                        f, j = nodes[0]
+                        steps_w, ok = train_node(Xtr_t, Xv, tuple(read), f, j,
+                                                 node_params[node_key[(f, j)]], args.lr_v_w)
+                        tier = "ADDRESS+R" if ok else "ADDRESS+R*"
                 else:
                     # LEAF: one hypothesis per factor, each on its own adapter (flat: one BLOCK,
                     # on the factor informativeness names, that no later concept can reach)
@@ -459,7 +488,8 @@ def main():
                    vendi=float(vendi_score(S)), secs=time.time() - tc)
         records.append(rec)
         if tier != "IN-DIST":
-            store_anchor(ci, coords, snapshot() if tier in ("LEAF", "BLOCK", "REFINE", "REFINE-cap")
+            store_anchor(ci, coords, snapshot() if tier in ("LEAF", "BLOCK", "REFINE", "REFINE-cap",
+                                                            "ADDRESS+R", "ADDRESS+R*")
                          or not groups else (groups[-1]["teacher"], next(
                              m.state for m in groups[-1]["teacher"].modules()
                              if isinstance(m, KeyedLoRA))))
@@ -521,6 +551,32 @@ def main():
         return float(np.mean([B.acc(S[i * args.n_samples:(i + 1) * args.n_samples], t)["joint"]
                               for i, (_, t) in enumerate(ro)]))
 
+    # ── never-taught combinations through the new value's node ─────────────
+    # Evaluation only (labels used to pick WHICH row stands for "the new value": the row on the new
+    # factor made from the earliest new-value concept, as a node or a block).  The router's store has
+    # no other coordinate for the new value; a store without such a row cannot address these at all.
+    nf = B.new_f
+    rows_new = sorted((leaves[origin[(nf, j)]]["ci"], j) for j in range(len(V[nf]))
+                      if status.get((nf, j)) in ("node", "block") and (nf, j) in origin
+                      and leaves[origin[(nf, j)]]["pop"] == "new-value")
+    streamed = {tuple(t) for t, _ in stream}
+    pool = [t for t in B.new_pairs if tuple(t) not in streamed]
+    rng_u = np.random.default_rng(args.seed + 555)
+    untaught = [pool[i] for i in rng_u.permutation(len(pool))[:args.n_untaught]]
+    ut = []
+    for t in untaught:
+        if not rows_new:
+            ut.append(dict(true=list(t), addressable=False, joint=0.0))
+            continue
+        c = list(t)
+        c[nf] = rows_new[0][1]
+        S = B.to_d(ddim_sample(model, args.n_samples, steps=args.steps, seed=7000 + len(ut),
+                               emb=emb_np(c).astype(np.float32), gate=gate_for(c), clip=B.clip,
+                               **kw))
+        ut.append(dict(true=list(t), addressable=True, coords=c, joint=B.acc(S, tuple(t))["joint"],
+                       status=status[(nf, c[nf])]))
+    print(f"[c5] never-taught new-value combinations: {np.mean([u['addressable'] for u in ut]):.2f} "
+          f"addressable, joint {np.mean([u['joint'] for u in ut]):.3f}", flush=True)
     merges = [lf for lf in leaves if lf.get("merged")]
     summary = dict(old_joint_start=old_acc(base), old_joint_end=old_acc(model),
                    bytes_total=int(total), adapter_bytes=int(adapter_bytes[0]),
@@ -533,6 +589,8 @@ def main():
                                                   and lf["merged"]["factor"] == B.new_f))
                            for lf in merges],
                    basis_sizes=[len(live(f)) for f in range(nF)],
+                   untaught=dict(n=len(ut), addressable=float(np.mean([u["addressable"] for u in ut])),
+                                 joint=float(np.mean([u["joint"] for u in ut])), rows=ut),
                    minutes=(time.time() - t0) / 60)
     for pp in ("in-dist", "new-comb", "new-value"):
         rs = [r for r in records if r["pop"] == pp]

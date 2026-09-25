@@ -89,6 +89,13 @@ def main():
     p.add_argument("--lora-exclude", default=None)
     p.add_argument("--fast", action="store_true")
     p.add_argument("--leaf-mode", choices=("free", "hyp"), default="free")
+    p.add_argument("--min-leaf-steps", type=int, default=0,
+                   help="train every leaf at least this long before testing absorption.  Without "
+                        "the high-noise levels the test passes early: a leaf stopped at 50 steps "
+                        "rendered its own concept at joint 0.31")
+    p.add_argument("--reuse", default=None,
+                   help="a finished c4 result (same bench, seed, populations): take its per-concept "
+                        "records instead of recomputing them -- only the basis scan is redone")
     p.add_argument("--tag", default="")
     args = p.parse_args()
     sh = args.bench == "shapes3d"
@@ -181,9 +188,21 @@ def main():
             + [("new-comb", B.held_comb[i]) for i in rng.permutation(len(B.held_comb))[:args.n_comb]]
             + [("new-value", B.new_pairs[i]) for i in rng.permutation(len(B.new_pairs))[:args.n_new]])
     recs, data = [], []
+    prev = None
+    if args.reuse:
+        import json
+        prev = json.load(open(args.reuse))["records"]
+        assert [tuple(r["true"]) for r in prev] == [tuple(t) for _, t in pops], "populations differ"
+        for r in prev:
+            if "loo_reads" in r:
+                r["loo_reads"] = [{int(h): int(j) for h, j in d.items()} for d in r["loo_reads"]]
     for k, (pop, tup) in enumerate(pops):
         Xtr, Xv, _ = split(B.images(tup))
         La = losses(base, Xv, E_all)
+        if prev is not None:
+            recs.append(prev[k])
+            data.append((Xtr, Xv, La))
+            continue
         ka = int(np.argmin(La.mean(1)))
         if args.fast:
             top = [combos[i] for i in np.argsort(La.mean(1))[:10]]
@@ -209,6 +228,12 @@ def main():
         print(f"[c4] {k:3d} {pop:9s} {tuple(tup)} read {combos[ka]} | row {rec['row_ratio']:6.2f} "
               f"addr {rec['addr_ratio']:6.2f} | inform min {rec['inf_min']:.2f} on "
               f"{rec['inf_argmin']} ({time.time() - t0:.0f}s)", flush=True)
+
+    if prev is None:
+        # a checkpoint: overcap preempted a finished per-concept pass once, before the leaves
+        save_json(dict(records=recs, config=vars(args)),
+                  os.path.join(RESULTS, f"c4_router_diag_{args.bench}_phase1{args.tag}.json"),
+                  seed=args.seed)
 
     # ── D3b: Cobweb leaves ──────────────────────────────────────────────────
     excl = tuple(x for x in args.lora_exclude.split(":") if x)
@@ -243,7 +268,7 @@ def main():
                 with torch.no_grad():
                     v.mul_(base_norm[f_norm] / max(float(v.norm()), 1e-8))
             used = step + 1
-            if used % args.check_every == 0:
+            if used % args.check_every == 0 and used >= args.min_leaf_steps:
                 pr = losses(leaf, Xv, (eb + v).detach().cpu().numpy()[None], gate=gate)[0]
                 if within(pr, t_addr):
                     ok = True

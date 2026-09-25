@@ -17,6 +17,8 @@
 #SBATCH --partition=tail-lab
 #SBATCH --account=tail-lab
 #SBATCH --qos=short
+#SBATCH --requeue
+#SBATCH --open-mode=append
 cd /coc/flash10/ksingara3/lifelong-ood-learner
 export PYTHONIOENCODING=utf-8
 PY=$HOME/flash/miniconda3/envs/chunks/bin/python
