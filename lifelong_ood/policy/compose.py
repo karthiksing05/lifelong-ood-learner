@@ -33,6 +33,29 @@ def state_norm(path=D.NORM_STATS):
     return lambda s: ((np.asarray(s, np.float32) - q01) / (q99 - q01 + 1e-6) * 2.0 - 1.0)
 
 
+def rotmat(aa):
+    """Axis-angle [..., 3] -> rotation matrices [..., 9] (continuous where the axis-angle wraps near pi)."""
+    aa = np.asarray(aa, np.float64)
+    th = np.linalg.norm(aa, axis=-1, keepdims=True)
+    n = aa / np.maximum(th, 1e-9)
+    x, y, z = n[..., 0], n[..., 1], n[..., 2]
+    Kx = np.stack([np.zeros_like(x), -z, y, z, np.zeros_like(x), -x, -y, x, np.zeros_like(x)], -1).reshape(*aa.shape[:-1], 3, 3)
+    I = np.broadcast_to(np.eye(3), Kx.shape)
+    st, ct = np.sin(th)[..., None], np.cos(th)[..., None]
+    R = I + st * Kx + (1 - ct) * (Kx @ Kx)
+    return R.reshape(*aa.shape[:-1], 9).astype(np.float32)
+
+
+def align_key(states, mode="pos", rot_weight=1.0):
+    """The alignment key of raw 8-D states [eef pos, axis-angle, finger qpos].  "pos": normalised position + fingers
+    (blind to rotation-only phases such as turning a knob); "pose": + the rotation matrix, weighted."""
+    st = np.atleast_2d(np.asarray(states, np.float32))
+    k = state_norm()(st)[:, list(ALIGN_DIMS)]
+    if mode == "pose":
+        k = np.concatenate([k, rot_weight * rotmat(st[:, 3:6])], 1)
+    return k.astype(np.float32)
+
+
 @dataclasses.dataclass
 class DemoProgram:
     mu: np.ndarray                 # [T, dim] teacher means (x0 space, normalised chunk rows)
@@ -43,19 +66,21 @@ class DemoProgram:
     fold: np.ndarray = None        # [T] bool: frames the library does NOT explain (the fold expert's frames)
     prompt_id: np.ndarray = None   # [T] int: index into prompt_table of the library task that explains the frame
     prompt_table: list = None      # the library tasks' instructions (strings)
+    states: np.ndarray = None      # [T, 8] the demo's raw states (for pose keys; 16 B per frame in fp16)
 
     @classmethod
     def from_demo(cls, tree, rows, states, K=3, levels=None, variant="code", raw_var=1e-2):
         norm = state_norm()
         key = norm(states)[:, list(ALIGN_DIMS)].astype(np.float16).astype(np.float32)
+        st16 = np.asarray(states, np.float32).astype(np.float16).astype(np.float32)
         if variant == "raw":
             return cls(mu=np.asarray(rows, np.float32), var=np.full_like(np.asarray(rows, np.float32), raw_var), key=key,
-                       codes=[], variant=variant)
+                       codes=[], variant=variant, states=st16)
         mus, vars_, codes = [], [], []
         for r in np.asarray(rows, np.float32):
             c = decompose(tree, r, K=K, levels=levels)
             mus.append(c.mu); vars_.append(c.var); codes.append(c.entries())
-        return cls(mu=np.stack(mus), var=np.stack(vars_), key=key, codes=codes, variant=variant)
+        return cls(mu=np.stack(mus), var=np.stack(vars_), key=key, codes=codes, variant=variant, states=st16)
 
     def with_prompts(self, rows, library_rows, library_task, task_text, k=5, smooth=10):
         """PROMPT PROGRAM: per frame, the library task whose chunks explain this frame's chunk best (majority over the
@@ -84,10 +109,13 @@ class DemoProgram:
         """What the program stores: codes (uint16 id + fp16 weight each) or the raw chunks (fp16), + the keys, + one
         uint8 prompt index per frame when a prompt program is attached (the instructions are the library's)."""
         store = sum(4 * len(c) for c in self.codes) if self.variant == "code" else 2 * int(self.mu.size)
-        return int(store + 2 * self.key.size + (0 if self.prompt_id is None else len(self.prompt_id)))
+        keys = 2 * int(self.states.size) if self.states is not None else 2 * int(self.key.size)
+        return int(store + keys + (0 if self.prompt_id is None else len(self.prompt_id)))
 
     def save(self, path):
         extra = {} if self.prompt_id is None else dict(prompt_id=self.prompt_id, prompt_table=np.array(self.prompt_table, dtype=object))
+        if self.states is not None:
+            extra["states"] = self.states
         np.savez_compressed(path, mu=self.mu, var=self.var, key=self.key, variant=self.variant,
                             fold=np.zeros(len(self.mu), bool) if self.fold is None else self.fold,
                             codes=np.array([np.asarray(c, np.float32) for c in self.codes], dtype=object), allow_pickle=True, **extra)
@@ -98,14 +126,15 @@ class DemoProgram:
         return cls(mu=z["mu"], var=z["var"], key=z["key"], codes=[list(map(tuple, c)) for c in z["codes"]], variant=str(z["variant"]),
                    fold=z["fold"] if "fold" in z else None,
                    prompt_id=z["prompt_id"] if "prompt_id" in z else None,
-                   prompt_table=list(z["prompt_table"]) if "prompt_table" in z else None)
+                   prompt_table=list(z["prompt_table"]) if "prompt_table" in z else None,
+                   states=z["states"] if "states" in z else None)
 
 
 class ComposeHooks:
     """Per-episode state: a pointer into the program, advanced by nearest-state alignment in a forward window."""
 
     def __init__(self, program, w0=1.2, wmax=2.0, window=20, lookahead=0, schedule="variance", var=None, use_guide=True,
-                 use_prompt=False, stall=0, release=2):
+                 use_prompt=False, stall=0, release=2, key_mode="pos"):
         """schedule: "variance" (Zekun's Eq. 16: strong at high noise, fading as the policy takes over) or
         "const" (w = w0 at every step: w0 = 1 samples the teacher alone, i.e. executes the program open-loop in
         chunk space; pi0.5's conditional is nearly deterministic, so a fading guide may be overwritten late)."""
@@ -123,6 +152,9 @@ class ComposeHooks:
         self._still, self._released = 0, 0
         self._j = None
         self.norm = state_norm()
+        # alignment keys: "pose" adds the eef orientation (turning a knob barely moves the eef position)
+        self.key_mode = key_mode if (key_mode == "pos" or program.states is not None) else "pos"
+        self.keys = program.key if self.key_mode == "pos" else align_key(program.states, "pose")
         self.p = 0
         self.trace = []
 
@@ -164,11 +196,11 @@ class ComposeHooks:
         return obs
 
     def align(self, state):
-        s = self.norm(state)[list(ALIGN_DIMS)]
-        lo, hi = self.p, min(len(self.prog.key), self.p + self.window + 1)
-        d = ((self.prog.key[lo:hi] - s[None]) ** 2).sum(1)
+        s = self.norm(state)[list(ALIGN_DIMS)] if self.key_mode == "pos" else align_key(state, "pose")[0]
+        lo, hi = self.p, min(len(self.keys), self.p + self.window + 1)
+        d = ((self.keys[lo:hi] - s[None]) ** 2).sum(1)
         self.p = lo + int(d.argmin())
-        return min(self.p + self.lookahead, len(self.prog.key) - 1)
+        return min(self.p + self.lookahead, len(self.keys) - 1)
 
     def guide_at(self, j):
         v = self.prog.var[j] if self.var is None else np.full_like(self.prog.var[j], self.var)
