@@ -25,7 +25,7 @@ def main():
     ap.add_argument("--seed", type=int, default=0)
     a = ap.parse_args()
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(message)s")
-    from lifelong_ood.policy.serve import GuidedPolicy, serve, warm
+    from lifelong_ood.policy.serve import GuidedPolicy, StripMeta, serve, warm
     if a.mode == "openpi":
         # the REFERENCE: openpi's own Policy (its transforms, its sample_actions) on the PyTorch checkpoint, eager
         # (openpi's max-autotune compile blocks the server's event loop past the client's 20 s keepalive), warmed
@@ -36,7 +36,7 @@ def main():
         cfg = _config.get_config(a.config)
         cfg = dataclasses.replace(cfg, model=dataclasses.replace(cfg.model, pytorch_compile_mode=None))
         ck = "/coc/flash10/ksingara3/robot/openpi_cache/openpi-assets/checkpoints/pi05_libero_pytorch"
-        policy = _pc.create_trained_policy(cfg, ck, pytorch_device="cuda")
+        policy = StripMeta(_pc.create_trained_policy(cfg, ck, pytorch_device="cuda"))
         warm(policy)
         serve(policy, a.port, metadata=policy.metadata)
         return

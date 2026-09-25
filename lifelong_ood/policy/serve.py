@@ -26,6 +26,10 @@ class GuidedPolicy:
 
     def infer(self, obs, *, noise=None):
         t0 = time.monotonic()
+        meta = {k[5:]: v for k, v in obs.items() if k.startswith("meta/")}
+        obs = {k: v for k, v in obs.items() if not k.startswith("meta/")}
+        if meta.get("episode_start") and hasattr(self.hooks, "reset"):
+            self.hooks.reset(meta)
         observation = self.bk.observation(obs)
         pre = self.bk.prefix(observation)
         guide, gate = (None, None) if self.hooks is None else self.hooks(obs, pre)
@@ -37,6 +41,17 @@ class GuidedPolicy:
         if self.log_every and self.calls % self.log_every == 0:
             logging.info(f"[serve] {self.calls} calls, {1000 * self.secs / self.calls:.0f} ms each")
         return {"actions": np.asarray(actions, np.float32), "state": np.asarray(obs["observation/state"], np.float32)}
+
+
+class StripMeta:
+    """openpi's Policy with the client's "meta/" keys removed (the reference server)."""
+
+    def __init__(self, policy):
+        self.policy = policy
+        self.metadata = getattr(policy, "metadata", {})
+
+    def infer(self, obs, **kw):
+        return self.policy.infer({k: v for k, v in obs.items() if not k.startswith("meta/")}, **kw)
 
 
 def warm(policy, n=2):

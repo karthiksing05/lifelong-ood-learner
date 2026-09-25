@@ -71,7 +71,7 @@ def candidates(tree, levels=None):
             Ms.append(M)
             Vs.append(V)
     if not ids:
-        return [], [], np.zeros((0, 3 * tree.img * tree.img)), np.zeros((0, 3 * tree.img * tree.img))
+        return [], [], np.zeros((0, tree.dim)), np.zeros((0, tree.dim))
     return ids, lv, np.concatenate(Ms), np.concatenate(Vs)
 
 

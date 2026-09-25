@@ -252,7 +252,8 @@ class PolicyBackbone:
         for r in R:
             full = np.zeros((self.H, self.A), np.float32)
             full.reshape(-1)[self.real] = r
-            out.append(self.policy._output_transform({"actions": full})["actions"])
+            # openpi's Unnormalize walks every key of its norm stats (state and actions): give it a state
+            out.append(self.policy._output_transform({"actions": full, "state": np.zeros(self.A, np.float32)})["actions"])
         return np.stack(out)
 
     def describe(self):
