@@ -60,8 +60,26 @@ def _find(path=None):
 
 
 def load_shapes3d(n_per_slot=40, seed=0, comp_factors=DEFAULT_COMP, path=None, img=64,
-                  max_images=None, n_holdout=100, value_stride=1, fix_nuisance=None):
+                  max_images=None, n_holdout=100, value_stride=1, fix_nuisance=None,
+                  rows="legacy", labels_only=False):
     """-> dict(X, factors, names, sizes, slot, seen, img) plus `nuisance` for reference.
+
+    ROWS -- READ THIS BEFORE USING `fix_nuisance` OR `value_stride > 1`.  Both filter the label
+    table, and until 2026-09-25 the images were then read as `f["images"][keep]` with `keep`
+    indexing the FILTERED table -- i.e. from the wrong rows of the file.  `rows="legacy"` (the
+    default, so every existing checkpoint still loads the data it was trained on) reproduces that:
+
+      * stride 1 + `fix_nuisance=['wall_hue']` (the ddpm_s3d_* flagship split): a CONSISTENT
+        relabelling.  Every image has floor hue 0 (red); the factor called `floor_hue` is the image's
+        WALL hue for 100% of rows; object/scale/shape/orientation are exact.  Numbers measured on it
+        stand, but the factor is the wall, not the floor.
+      * stride 2 (pinned or not): SCRAMBLED.  The object label matches the image's object hue for
+        10-12% of rows (chance is 10%).  Results on stride-2 splits are not interpretable as
+        composition over the named factors.
+
+    `rows="correct"` reads the rows the labels describe; its cache key carries `_rcorrect`.
+    `tests/test_shapes3d_rows.py` pins both behaviours.  `labels_only=True` returns the claimed
+    labels and the h5 rows that would be read, without reading images.
 
     `X` is [N, img*img*3] float32 in [0, 1], flat rows, matching every other loader here.
     `factors` carries ONLY the composition factors, so `sizes` is what the basis is built over and
@@ -76,15 +94,18 @@ def load_shapes3d(n_per_slot=40, seed=0, comp_factors=DEFAULT_COMP, path=None, i
     p = _find(path)
     # Cache: the h5 read is ~100 s because it pulls scattered rows out of a 480k dataset, and every
     # experiment calling this would pay it again. The key covers everything that changes the result.
+    if rows not in ("legacy", "correct"):
+        raise ValueError(f"rows must be 'legacy' or 'correct', got {rows!r}")
     ck = os.path.join(os.path.dirname(p), f"cache_n{n_per_slot}_s{seed}_"
                       f"{'-'.join(comp_factors)}_{max_images}_h{n_holdout}"
-                      f"_v{value_stride}_f{fix_nuisance}.npz")
-    if os.path.exists(ck):
+                      f"_v{value_stride}_f{fix_nuisance}"
+                      f"{'_rcorrect' if rows == 'correct' else ''}.npz")
+    if os.path.exists(ck) and not labels_only:
         z = np.load(ck, allow_pickle=True)
         return dict(X=z["X"], factors=z["factors"], names=list(z["names"]),
                     sizes=[int(v) for v in z["sizes"]], slot=z["slot"], seen=z["seen"],
                     img=int(z["img"]), nuisance=z["nuisance"],
-                    nuisance_names=list(z["nuisance_names"]))
+                    nuisance_names=list(z["nuisance_names"]), rows=rows)
     ci = [FACTOR_NAMES.index(c) for c in comp_factors]
     ni = [k for k in range(len(FACTOR_NAMES)) if k not in ci]
 
@@ -95,6 +116,7 @@ def load_shapes3d(n_per_slot=40, seed=0, comp_factors=DEFAULT_COMP, path=None, i
         for k in range(L.shape[1]):
             u = np.unique(L[:, k])
             idx[:, k] = np.searchsorted(u, L[:, k])
+        orig = np.arange(len(idx))            # the h5 row each surviving label row came from
         # `fix_nuisance` pins named nuisance factors to value 0 instead of letting them vary.
         #
         # This is the fix for three failed Shapes3D runs.  A composition (floor_hue, object_hue,
@@ -109,7 +131,7 @@ def load_shapes3d(n_per_slot=40, seed=0, comp_factors=DEFAULT_COMP, path=None, i
             keep_rows = np.ones(len(idx), bool)
             for nm in ([fix_nuisance] if isinstance(fix_nuisance, str) else list(fix_nuisance)):
                 keep_rows &= idx[:, FACTOR_NAMES.index(nm)] == 0
-            idx = idx[keep_rows]
+            idx, orig = idx[keep_rows], orig[keep_rows]
         comp = idx[:, ci]
         sizes = [FACTOR_SIZES[k] for k in ci]
         # `value_stride` keeps every k-th VALUE of each composition factor.  This is how the number
@@ -132,7 +154,7 @@ def load_shapes3d(n_per_slot=40, seed=0, comp_factors=DEFAULT_COMP, path=None, i
             comp = comp[ok]
             for j, kv in enumerate(keepv):
                 comp[:, j] = np.searchsorted(kv, comp[:, j])
-            idx = idx[ok]
+            idx, orig = idx[ok], orig[ok]
             sizes = [len(kv) for kv in keepv]
         slot = np.zeros(len(comp), np.int64)
         for j, s in enumerate(sizes):
@@ -146,7 +168,10 @@ def load_shapes3d(n_per_slot=40, seed=0, comp_factors=DEFAULT_COMP, path=None, i
         keep = np.sort(np.concatenate(keep))
         if max_images is not None and len(keep) > max_images:
             keep = np.sort(rng.permutation(keep)[:max_images])
-        X = f["images"][keep]                                  # sorted -> one efficient read
+        read = orig[keep] if rows == "correct" else keep     # sorted either way
+        if labels_only:
+            return dict(claimed=idx[keep], h5_rows=read, names=FACTOR_NAMES)
+        X = f["images"][read]                                  # sorted -> one efficient read
 
     X = np.asarray(X, np.float32).reshape(len(keep), -1) / 255.0
     # `seen` marks the TRAINING split.  `holdout_mask` picks whole COMBINATIONS and guarantees that
@@ -164,7 +189,8 @@ def load_shapes3d(n_per_slot=40, seed=0, comp_factors=DEFAULT_COMP, path=None, i
                sizes=[int(s) for s in sizes], slot=slot[keep].astype(int),
                seen=np.asarray(seen_mask, bool), img=img,
                nuisance=idx[keep][:, ni].astype(int),
-               nuisance_names=[FACTOR_NAMES[k] for k in ni])
+               nuisance_names=[FACTOR_NAMES[k] for k in ni], rows=rows,
+               h5_rows=np.asarray(read, np.int64))
     try:
         np.savez_compressed(ck, **out)
     except Exception:                                          # noqa: BLE001  cache is optional
