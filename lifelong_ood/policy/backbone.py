@@ -56,10 +56,15 @@ class PolicyBackbone:
     space = "action"
     path = "flow"                # x_t = (1 - t) a + t eps: backbones.schedule.path_coeffs
 
-    def __init__(self, config_name="pi05_libero", checkpoint_dir=None, device="cuda", num_steps=10):
+    def __init__(self, config_name="pi05_libero", checkpoint_dir=None, device="cuda", num_steps=10, compile=False):
         _config, _policy_config, _model = _import_openpi()
         ck = checkpoint_dir or "/coc/flash10/ksingara3/robot/openpi_cache/openpi-assets/checkpoints/pi05_libero_pytorch"
         self.train_config = _config.get_config(config_name)
+        if getattr(self.train_config.model, "pytorch_compile_mode", None) is not None and not compile:
+            # openpi wraps sample_actions in torch.compile(mode="max-autotune"): minutes of autotuning on the
+            # first call and a recompile per new shape.  Our workload changes shapes constantly and calls
+            # denoise_step directly, so the backbone runs eager (the reference sampler too, for parity).
+            self.train_config = dataclasses.replace(self.train_config, model=dataclasses.replace(self.train_config.model, pytorch_compile_mode=None))
         t0 = time.time()
         self.policy = _policy_config.create_trained_policy(self.train_config, ck, pytorch_device=device)
         assert self.policy._is_pytorch_model, "PolicyBackbone needs openpi's PyTorch model (model.safetensors)"
