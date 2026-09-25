@@ -1,0 +1,256 @@
+{
+ "artifacts": {
+  "figure": "figures/p1/tree_colormnist_s0_perdim.png",
+  "tree": "results/trees/tree_colormnist_s0_perdim.npz"
+ },
+ "backbone": {
+  "img": 32,
+  "kind": "unet",
+  "layout": "permuted",
+  "n_params": 6827011,
+  "path": "results/cache/ddpm_colormnist_nobg3.pt",
+  "sha256": "f5df6d5c576033fefeab1bdc1f3acf540bc03431559828187cde2d1d0fc530c1"
+ },
+ "backfilled": false,
+ "bench": "colormnist",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "items": {},
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 786272,
+  "tree": 786272
+ },
+ "command": "experiments/p1_tree_build.py --bench colormnist --seed 0 --tag _perdim",
+ "config": {
+  "bench": "colormnist",
+  "build": {
+   "caps": {
+    "0.1": 32,
+    "0.2": 24,
+    "0.3": 16,
+    "0.4": 16,
+    "0.55": 8,
+    "0.7": 8
+   },
+   "iters": 150,
+   "lr": 0.1,
+   "n_samples": 512,
+   "per_dim": true,
+   "per_level": [
+    {
+     "dedup": 511,
+     "kept": 32,
+     "modes": 512,
+     "secs": 28.213097095489502,
+     "u": 0.1
+    },
+    {
+     "dedup": 490,
+     "kept": 24,
+     "modes": 512,
+     "secs": 28.08542227745056,
+     "u": 0.2
+    },
+    {
+     "dedup": 429,
+     "kept": 16,
+     "modes": 512,
+     "secs": 27.99131441116333,
+     "u": 0.3
+    },
+    {
+     "dedup": 326,
+     "kept": 16,
+     "modes": 512,
+     "secs": 27.73344898223877,
+     "u": 0.4
+    },
+    {
+     "dedup": 252,
+     "kept": 8,
+     "modes": 512,
+     "secs": 27.65833830833435,
+     "u": 0.55
+    },
+    {
+     "dedup": 122,
+     "kept": 8,
+     "modes": 512,
+     "secs": 27.441570281982422,
+     "u": 0.7
+    }
+   ],
+   "seconds": 176.51799535751343,
+   "seed": 0,
+   "select": "dedup",
+   "tol": 0.05
+  },
+  "caps": "32:24:16:16:8:8",
+  "channel_extent": false,
+  "grid": "0.10:0.20:0.30:0.40:0.55:0.70",
+  "iters": 150,
+  "lr": 0.1,
+  "n_eval": 40,
+  "n_samples": 512,
+  "seed": 0,
+  "select": "dedup",
+  "steps": 50,
+  "tag": "_perdim",
+  "tol": 0.05,
+  "tree": null
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "spd-13.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": "3953460",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "p1_tree_build",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "bc837cfcd6818bcf82abdd467d22194111d3f3f7",
+  "short": "bc837cfc"
+ },
+ "keys": {},
+ "metrics": {
+  "best_purity": {
+   "bg": 0.8416666666666667,
+   "digit": 0.245,
+   "fg": 0.6166666666666667
+  },
+  "build_secs": 176.51818895339966,
+  "levels": {
+   "0": {
+    "max_r": 0.9609184299901032,
+    "n_nodes": 32,
+    "nll_auroc": 0.5503202380952381,
+    "nll_in": 0.709859513444769,
+    "nll_withheld": 0.8347640099486408,
+    "nmi_bg": 0.3043667682910491,
+    "nmi_digit": 0.13201301366811433,
+    "nmi_fg": 0.22542078161618487,
+    "purity_bg": 0.6552777777777777,
+    "purity_digit": 0.245,
+    "purity_fg": 0.5186111111111111,
+    "u": 0.1,
+    "withheld_bg_max_r": 0.9517056469539629,
+    "withheld_bg_purity_digit": 0.2982142857142857
+   },
+   "1": {
+    "max_r": 0.9454233636687083,
+    "n_nodes": 24,
+    "nll_auroc": 0.5322368055555555,
+    "nll_in": 0.06340721219789786,
+    "nll_withheld": 0.07897450887801698,
+    "nmi_bg": 0.45621441751513736,
+    "nmi_digit": 0.07235377959911646,
+    "nmi_fg": 0.34060386630206424,
+    "purity_bg": 0.8416666666666667,
+    "purity_digit": 0.19194444444444445,
+    "purity_fg": 0.6166666666666667,
+    "u": 0.2,
+    "withheld_bg_max_r": 0.9601087183073695,
+    "withheld_bg_purity_digit": 0.16071428571428573
+   },
+   "2": {
+    "max_r": 0.9237778792778618,
+    "n_nodes": 16,
+    "nll_auroc": 0.3380733134920635,
+    "nll_in": 0.09308778393708818,
+    "nll_withheld": 0.06210675277397172,
+    "nmi_bg": 0.5279786322506801,
+    "nmi_digit": 0.0671788705008755,
+    "nmi_fg": 0.24895127152387844,
+    "purity_bg": 0.7577777777777778,
+    "purity_digit": 0.17666666666666667,
+    "purity_fg": 0.4786111111111111,
+    "u": 0.3,
+    "withheld_bg_max_r": 0.9645202910131918,
+    "withheld_bg_purity_digit": 0.12821428571428573
+   },
+   "3": {
+    "max_r": 0.8384763186261772,
+    "n_nodes": 16,
+    "nll_auroc": 0.3492058531746032,
+    "nll_in": 0.17791583040194767,
+    "nll_withheld": 0.15953534852191795,
+    "nmi_bg": 0.42001964375065864,
+    "nmi_digit": 0.056480540900025834,
+    "nmi_fg": 0.12179825273076865,
+    "purity_bg": 0.6666666666666666,
+    "purity_digit": 0.1725,
+    "purity_fg": 0.3938888888888889,
+    "u": 0.4,
+    "withheld_bg_max_r": 0.9127677420206689,
+    "withheld_bg_purity_digit": 0.13607142857142857
+   },
+   "4": {
+    "max_r": 0.99252643050804,
+    "n_nodes": 8,
+    "nll_auroc": 0.5272579365079365,
+    "nll_in": 0.30023063429773134,
+    "nll_withheld": 0.3011131272227458,
+    "nmi_bg": 0.013854409084464826,
+    "nmi_digit": 0.006334027165303664,
+    "nmi_fg": 0.010514936044466133,
+    "purity_bg": 0.3411111111111111,
+    "purity_digit": 0.10416666666666667,
+    "purity_fg": 0.3338888888888889,
+    "u": 0.55,
+    "withheld_bg_max_r": 0.9964889106782527,
+    "withheld_bg_purity_digit": 0.10285714285714286
+   },
+   "5": {
+    "max_r": 0.7747966670610051,
+    "n_nodes": 8,
+    "nll_auroc": 0.5296556547619048,
+    "nll_in": 0.39961632196899244,
+    "nll_withheld": 0.40031775501125283,
+    "nmi_bg": 0.48925307824217856,
+    "nmi_digit": 0.05284529386261033,
+    "nmi_fg": 0.17464083853188875,
+    "purity_bg": 0.7044444444444444,
+    "purity_digit": 0.18055555555555555,
+    "purity_fg": 0.4602777777777778,
+    "u": 0.7,
+    "withheld_bg_max_r": 0.7867835410171093,
+    "withheld_bg_purity_digit": 0.1407142857142857
+   }
+  },
+  "n_nodes": 104,
+  "per_level": [
+   32,
+   24,
+   16,
+   16,
+   8,
+   8
+  ],
+  "per_level_secs": [
+   28.213097095489502,
+   28.08542227745056,
+   27.99131441116333,
+   27.73344898223877,
+   27.65833830833435,
+   27.441570281982422
+  ],
+  "phase0_level": null,
+  "phase0_pass": false,
+  "phase0b_pass": false
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "p1_tree_build__colormnist___perdim__s0__bc837cfc",
+ "schema": 1,
+ "script": "experiments/p1_tree_build.py",
+ "seconds": 176.51818895339966,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-25T19:33:54+00:00",
+ "stream": null,
+ "tag": "_perdim"
+}

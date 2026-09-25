@@ -1,0 +1,402 @@
+{
+ "artifacts": {},
+ "backbone": {
+  "bench": "colormnist",
+  "layout": "permuted",
+  "n_params": 6827011
+ },
+ "backfilled": false,
+ "bench": "colormnist",
+ "bytes": {
+  "codes": 0,
+  "experts": 272426,
+  "items": {
+   "tree_shared": 147296,
+   "v_new": 1024
+  },
+  "samples": 638976,
+  "teacher_copies": 0,
+  "total": 1065650,
+  "tree": 5928
+ },
+ "command": "experiments/p3_fold_frontier.py --quick --seed 0 --arms lora-all --tree results/trees/tree_colormnist_s0_quick.npz --tag _smoke2",
+ "config": {
+  "anchor_batch": 32,
+  "arm": {
+   "band": null,
+   "expert": "lora",
+   "gate": "analytic",
+   "lam": 10.0,
+   "lr": 0.001,
+   "name": "lora-all",
+   "rank": 1
+  },
+  "arms": "lora-all",
+  "batch": 32,
+  "bench": "colormnist",
+  "check_every": 50,
+  "crn_noise": 2,
+  "ext_steps": 60,
+  "gate": "analytic",
+  "lam": 10.0,
+  "lr_expert": 0.001,
+  "lr_v": 0.05,
+  "lr_v_w": 0.005,
+  "max_steps": 150,
+  "n_anchor_per_class": 4,
+  "n_drift_classes": 30,
+  "n_old": 12,
+  "n_ref": 60,
+  "n_samples": 12,
+  "n_train": 64,
+  "n_tree_samples": 128,
+  "n_untaught": 4,
+  "n_val": 16,
+  "per_task": 3,
+  "quick": true,
+  "seed": 0,
+  "steps": 50,
+  "stop": "c1",
+  "tag": "_smoke2",
+  "tasks": 2,
+  "tol": 0.05,
+  "tree": "results/trees/tree_colormnist_s0_quick.npz",
+  "u_min_crit": 0.3
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "spd-13.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": "3953117",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "p3_fold_frontier",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "02e643b5015fe1243de874cbbca6d4def5f28dc4",
+  "short": "02e643b5"
+ },
+ "keys": {
+  "arm": "lora-all",
+  "task": 1
+ },
+ "metrics": {
+  "absorbed": false,
+  "base_exact": true,
+  "drift_hi": 0.4459591620127032,
+  "drift_mean": 0.21396406002804033,
+  "drift_u": [
+   0.028802688001248303,
+   -0.005723424026595104,
+   0.016692273280381753,
+   0.028869957545663082,
+   0.07341585857160089,
+   0.1258987298132021,
+   0.2901177018718533,
+   0.4576533892129796,
+   0.6162473981883732,
+   0.599547778676967,
+   0.1220823091727695
+  ],
+  "expert_bytes": 272426,
+  "gate_fp_old": {
+   "0": 0.9416666626930237,
+   "1": 0.550000011920929,
+   "2": 0.9881806969642639,
+   "3": 0.9864140748977661,
+   "4": 0.44300931692123413,
+   "5": 0.3191247880458832
+  },
+  "nodes": [
+   {
+    "count": 384.0,
+    "id": 104,
+    "level": 0
+   },
+   {
+    "count": 384.0,
+    "id": 105,
+    "level": 1
+   },
+   {
+    "count": 384.0,
+    "id": 106,
+    "level": 2
+   },
+   {
+    "count": 384.0,
+    "id": 107,
+    "level": 3
+   },
+   {
+    "count": 384.0,
+    "id": 108,
+    "level": 4
+   },
+   {
+    "count": 384.0,
+    "id": 109,
+    "level": 5
+   }
+  ],
+  "old_drop": 0.006944444444444531,
+  "old_factors": {
+   "bg": 0.986111111111111,
+   "digit": 0.826388888888889,
+   "fg": 1.0
+  },
+  "old_joint": 0.8125,
+  "old_joint_gate_off": 0.8194444444444445,
+  "per": [
+   {
+    "acc": {
+     "bg": 0.0,
+     "digit": 0.8333333333333334,
+     "fg": 1.0
+    },
+    "concept": [
+     2,
+     3,
+     3
+    ],
+    "coverage": 0.06666666666666667,
+    "coverage_pixel": 0.15,
+    "density": 0.2222222222222222,
+    "joint": 0.0,
+    "kind": "taught",
+    "memorized": 0.0,
+    "new": 0.0,
+    "vendi": 1.6712479345932805
+   },
+   {
+    "acc": {
+     "bg": 0.0,
+     "digit": 0.8333333333333334,
+     "fg": 1.0
+    },
+    "concept": [
+     1,
+     0,
+     3
+    ],
+    "coverage": 0.05,
+    "coverage_pixel": 0.0,
+    "density": 0.08333333333333333,
+    "joint": 0.0,
+    "kind": "taught",
+    "memorized": 0.0,
+    "new": 0.0,
+    "vendi": 1.496029416811639
+   },
+   {
+    "acc": {
+     "bg": 0.3333333333333333,
+     "digit": 0.9166666666666666,
+     "fg": 1.0
+    },
+    "concept": [
+     0,
+     2,
+     3
+    ],
+    "coverage": 0.18333333333333332,
+    "coverage_pixel": 0.13333333333333333,
+    "density": 0.3611111111111111,
+    "joint": 0.25,
+    "kind": "taught",
+    "memorized": 0.0,
+    "new": 0.3333333333333333,
+    "vendi": 2.1243376021370786
+   },
+   {
+    "acc": {
+     "bg": 0.0,
+     "digit": 0.75,
+     "fg": 0.9166666666666666
+    },
+    "concept": [
+     6,
+     3,
+     3
+    ],
+    "coverage": 0.11666666666666667,
+    "coverage_pixel": 0.1,
+    "density": 0.2222222222222222,
+    "joint": 0.0,
+    "kind": "taught",
+    "memorized": 0.0,
+    "new": 0.0,
+    "vendi": 1.5975514837139222
+   },
+   {
+    "acc": {
+     "bg": 0.8333333333333334,
+     "digit": 0.75,
+     "fg": 0.9166666666666666
+    },
+    "concept": [
+     8,
+     2,
+     3
+    ],
+    "coverage": 0.2,
+    "coverage_pixel": 0.06666666666666667,
+    "density": 0.5277777777777778,
+    "joint": 0.6666666666666666,
+    "kind": "taught",
+    "memorized": 0.0,
+    "new": 0.8333333333333334,
+    "vendi": 1.955726514259948
+   },
+   {
+    "acc": {
+     "bg": 0.08333333333333333,
+     "digit": 1.0,
+     "fg": 1.0
+    },
+    "concept": [
+     0,
+     1,
+     3
+    ],
+    "coverage": 0.1,
+    "coverage_pixel": 0.16666666666666666,
+    "density": 0.3888888888888889,
+    "joint": 0.08333333333333333,
+    "kind": "taught",
+    "memorized": 0.0,
+    "new": 0.08333333333333333,
+    "vendi": 1.596581637500261
+   },
+   {
+    "acc": {
+     "bg": 0.0,
+     "digit": 1.0,
+     "fg": 1.0
+    },
+    "concept": [
+     6,
+     0,
+     3
+    ],
+    "coverage": 0.06666666666666667,
+    "coverage_pixel": 0.08333333333333333,
+    "density": 0.1388888888888889,
+    "joint": 0.0,
+    "kind": "untaught",
+    "new": 0.0,
+    "vendi": 1.5443135705266693
+   },
+   {
+    "acc": {
+     "bg": 0.0,
+     "digit": 0.8333333333333334,
+     "fg": 1.0
+    },
+    "concept": [
+     5,
+     3,
+     3
+    ],
+    "coverage": 0.0,
+    "coverage_pixel": 0.03333333333333333,
+    "density": 0.0,
+    "joint": 0.0,
+    "kind": "untaught",
+    "new": 0.0,
+    "vendi": 1.718991311787517
+   },
+   {
+    "acc": {
+     "bg": 0.0,
+     "digit": 0.8333333333333334,
+     "fg": 0.8333333333333334
+    },
+    "concept": [
+     0,
+     3,
+     3
+    ],
+    "coverage": 0.1,
+    "coverage_pixel": 0.1,
+    "density": 0.19444444444444445,
+    "joint": 0.0,
+    "kind": "untaught",
+    "new": 0.0,
+    "vendi": 1.9628588254493247
+   },
+   {
+    "acc": {
+     "bg": 0.25,
+     "digit": 0.8333333333333334,
+     "fg": 1.0
+    },
+    "concept": [
+     4,
+     2,
+     3
+    ],
+    "coverage": 0.25,
+    "coverage_pixel": 0.06666666666666667,
+    "density": 0.5555555555555556,
+    "joint": 0.25,
+    "kind": "untaught",
+    "new": 0.25,
+    "vendi": 2.1374128894757294
+   }
+  ],
+  "ratio_final_u": [
+   2.7009134154501697,
+   2.0157922506950334,
+   1.8062765092870072,
+   1.7293816989145425,
+   1.500238732239524,
+   1.4902362435495877,
+   1.2989154338205329,
+   1.1032000000465008,
+   1.0517459308404116,
+   1.039408796232346,
+   1.1125823253738503
+  ],
+  "s_after_extend": 0.01139844603775683,
+  "s_arrival": 0.011074217269197106,
+  "s_final": 0.01828328361642145,
+  "secs_task": 387.3610849380493,
+  "steps_weight": 150,
+  "stop": {
+   "mem_ok": true,
+   "memorized": 0.0,
+   "s1": 0.6517260134787605,
+   "s1_ok": false,
+   "s2_drift": 0.004211265171292969,
+   "s2_leak": 0.6875,
+   "s2_ok": false,
+   "s3_ok": false,
+   "s3_ratio": 1.5157122923735271
+  },
+  "task": 1,
+  "taught_cov": 0.11944444444444445,
+  "taught_cov_pixel": 0.10277777777777776,
+  "taught_joint": 0.16666666666666666,
+  "taught_mem": 0.0,
+  "taught_new": 0.20833333333333334,
+  "taught_vendi": 1.7402457648360217,
+  "tier": "WEIGHT-cap",
+  "untaught_cov": 0.10416666666666667,
+  "untaught_joint": 0.0625,
+  "untaught_new": 0.0625,
+  "v_norm": 0.4708411991596222
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "p3_fold_frontier__colormnist___smoke2__arm-lora-all__task-1__s0__02e643b5",
+ "schema": 1,
+ "script": "experiments/p3_fold_frontier.py",
+ "seconds": 387.3611190319061,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-25T19:26:05+00:00",
+ "stream": null,
+ "tag": "_smoke2"
+}

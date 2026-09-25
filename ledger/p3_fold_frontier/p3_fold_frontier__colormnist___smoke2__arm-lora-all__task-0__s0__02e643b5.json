@@ -1,0 +1,342 @@
+{
+ "artifacts": {},
+ "backbone": {
+  "bench": "colormnist",
+  "layout": "permuted",
+  "n_params": 6827011
+ },
+ "backfilled": false,
+ "bench": "colormnist",
+ "bytes": {
+  "codes": 0,
+  "experts": 272426,
+  "items": {
+   "tree_shared": 147296,
+   "v_new": 1024
+  },
+  "samples": 319488,
+  "teacher_copies": 0,
+  "total": 746162,
+  "tree": 5928
+ },
+ "command": "experiments/p3_fold_frontier.py --quick --seed 0 --arms lora-all --tree results/trees/tree_colormnist_s0_quick.npz --tag _smoke2",
+ "config": {
+  "anchor_batch": 32,
+  "arm": {
+   "band": null,
+   "expert": "lora",
+   "gate": "analytic",
+   "lam": 10.0,
+   "lr": 0.001,
+   "name": "lora-all",
+   "rank": 1
+  },
+  "arms": "lora-all",
+  "batch": 32,
+  "bench": "colormnist",
+  "check_every": 50,
+  "crn_noise": 2,
+  "ext_steps": 60,
+  "gate": "analytic",
+  "lam": 10.0,
+  "lr_expert": 0.001,
+  "lr_v": 0.05,
+  "lr_v_w": 0.005,
+  "max_steps": 150,
+  "n_anchor_per_class": 4,
+  "n_drift_classes": 30,
+  "n_old": 12,
+  "n_ref": 60,
+  "n_samples": 12,
+  "n_train": 64,
+  "n_tree_samples": 128,
+  "n_untaught": 4,
+  "n_val": 16,
+  "per_task": 3,
+  "quick": true,
+  "seed": 0,
+  "steps": 50,
+  "stop": "c1",
+  "tag": "_smoke2",
+  "tasks": 2,
+  "tol": 0.05,
+  "tree": "results/trees/tree_colormnist_s0_quick.npz",
+  "u_min_crit": 0.3
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "spd-13.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": "3953117",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "p3_fold_frontier",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "02e643b5015fe1243de874cbbca6d4def5f28dc4",
+  "short": "02e643b5"
+ },
+ "keys": {
+  "arm": "lora-all",
+  "task": 0
+ },
+ "metrics": {
+  "absorbed": true,
+  "base_exact": true,
+  "drift_hi": 0.43313597199376125,
+  "drift_mean": 0.22576380310747543,
+  "drift_u": [
+   0.034529002613205226,
+   0.002853898049318243,
+   0.06937092230675437,
+   0.061917632717624,
+   0.08212385638068048,
+   0.13705648300555792,
+   0.3100329581376627,
+   0.48610916499014317,
+   0.6350623086325818,
+   0.6019085707572035,
+   0.0624370365914983
+  ],
+  "expert_bytes": 272426,
+  "gate_fp_old": {
+   "0": 0.3583333194255829,
+   "1": 0.36685287952423096,
+   "2": 0.9333329796791077,
+   "3": 0.9746769070625305,
+   "4": 0.4143385589122772,
+   "5": 0.28924453258514404
+  },
+  "nodes": [
+   {
+    "count": 192.0,
+    "id": 104,
+    "level": 0
+   },
+   {
+    "count": 192.0,
+    "id": 105,
+    "level": 1
+   },
+   {
+    "count": 192.0,
+    "id": 106,
+    "level": 2
+   },
+   {
+    "count": 192.0,
+    "id": 107,
+    "level": 3
+   },
+   {
+    "count": 192.0,
+    "id": 108,
+    "level": 4
+   },
+   {
+    "count": 192.0,
+    "id": 109,
+    "level": 5
+   }
+  ],
+  "old_drop": 0.0277777777777779,
+  "old_factors": {
+   "bg": 0.9652777777777778,
+   "digit": 0.826388888888889,
+   "fg": 0.9930555555555555
+  },
+  "old_joint": 0.7916666666666666,
+  "old_joint_gate_off": 0.8194444444444445,
+  "per": [
+   {
+    "acc": {
+     "bg": 0.75,
+     "digit": 0.9166666666666666,
+     "fg": 1.0
+    },
+    "concept": [
+     2,
+     3,
+     3
+    ],
+    "coverage": 0.16666666666666666,
+    "coverage_pixel": 0.43333333333333335,
+    "density": 0.3611111111111111,
+    "joint": 0.6666666666666666,
+    "kind": "taught",
+    "memorized": 0.0,
+    "new": 0.75,
+    "vendi": 1.856593486538638
+   },
+   {
+    "acc": {
+     "bg": 0.5833333333333334,
+     "digit": 0.9166666666666666,
+     "fg": 1.0
+    },
+    "concept": [
+     1,
+     0,
+     3
+    ],
+    "coverage": 0.16666666666666666,
+    "coverage_pixel": 0.18333333333333332,
+    "density": 0.3333333333333333,
+    "joint": 0.5833333333333334,
+    "kind": "taught",
+    "memorized": 0.0,
+    "new": 0.5833333333333334,
+    "vendi": 1.6416179025928306
+   },
+   {
+    "acc": {
+     "bg": 0.5,
+     "digit": 0.9166666666666666,
+     "fg": 1.0
+    },
+    "concept": [
+     0,
+     2,
+     3
+    ],
+    "coverage": 0.26666666666666666,
+    "coverage_pixel": 0.25,
+    "density": 0.6666666666666666,
+    "joint": 0.4166666666666667,
+    "kind": "taught",
+    "memorized": 0.0,
+    "new": 0.5,
+    "vendi": 2.196017034888876
+   },
+   {
+    "acc": {
+     "bg": 0.16666666666666666,
+     "digit": 0.75,
+     "fg": 1.0
+    },
+    "concept": [
+     6,
+     0,
+     3
+    ],
+    "coverage": 0.13333333333333333,
+    "coverage_pixel": 0.21666666666666667,
+    "density": 0.2222222222222222,
+    "joint": 0.08333333333333333,
+    "kind": "untaught",
+    "new": 0.16666666666666666,
+    "vendi": 1.7688297789678864
+   },
+   {
+    "acc": {
+     "bg": 0.0,
+     "digit": 0.9166666666666666,
+     "fg": 1.0
+    },
+    "concept": [
+     5,
+     3,
+     3
+    ],
+    "coverage": 0.1,
+    "coverage_pixel": 0.016666666666666666,
+    "density": 0.19444444444444445,
+    "joint": 0.0,
+    "kind": "untaught",
+    "new": 0.0,
+    "vendi": 1.7626404649849188
+   },
+   {
+    "acc": {
+     "bg": 0.4166666666666667,
+     "digit": 1.0,
+     "fg": 1.0
+    },
+    "concept": [
+     0,
+     3,
+     3
+    ],
+    "coverage": 0.35,
+    "coverage_pixel": 0.4166666666666667,
+    "density": 0.7777777777777778,
+    "joint": 0.4166666666666667,
+    "kind": "untaught",
+    "new": 0.4166666666666667,
+    "vendi": 1.610010399833299
+   },
+   {
+    "acc": {
+     "bg": 0.5833333333333334,
+     "digit": 1.0,
+     "fg": 1.0
+    },
+    "concept": [
+     4,
+     2,
+     3
+    ],
+    "coverage": 0.2833333333333333,
+    "coverage_pixel": 0.11666666666666667,
+    "density": 0.5555555555555556,
+    "joint": 0.5833333333333334,
+    "kind": "untaught",
+    "new": 0.5833333333333334,
+    "vendi": 2.1112943794459236
+   }
+  ],
+  "ratio_final_u": [
+   1.06786982443685,
+   1.0422688315439639,
+   1.0129105539854364,
+   1.0035405634301189,
+   0.8767720006738325,
+   0.941692227903497,
+   0.9269017997832352,
+   0.8838584279935987,
+   0.9581743034780347,
+   1.0040246440468261,
+   1.0252851618389653
+  ],
+  "s_after_extend": 0.028874150593062288,
+  "s_arrival": 0.034636126437927676,
+  "s_final": 0.009373848758431532,
+  "secs_task": 323.3504958152771,
+  "steps_weight": 150,
+  "stop": {
+   "mem_ok": true,
+   "memorized": 0.0,
+   "s1": 0.5217345479159795,
+   "s1_ok": false,
+   "s2_drift": 0.01143219274404505,
+   "s2_leak": 0.25,
+   "s2_ok": false,
+   "s3_ok": true,
+   "s3_ratio": 0.9020895845372429
+  },
+  "task": 0,
+  "taught_cov": 0.19999999999999998,
+  "taught_cov_pixel": 0.2888888888888889,
+  "taught_joint": 0.5555555555555556,
+  "taught_mem": 0.0,
+  "taught_new": 0.6111111111111112,
+  "taught_vendi": 1.898076141340115,
+  "tier": "WEIGHT",
+  "untaught_cov": 0.21666666666666665,
+  "untaught_joint": 0.27083333333333337,
+  "untaught_new": 0.2916666666666667,
+  "v_norm": 0.4708411991596222
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "p3_fold_frontier__colormnist___smoke2__arm-lora-all__task-0__s0__02e643b5",
+ "schema": 1,
+ "script": "experiments/p3_fold_frontier.py",
+ "seconds": 323.3505210876465,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-25T19:19:38+00:00",
+ "stream": null,
+ "tag": "_smoke2"
+}

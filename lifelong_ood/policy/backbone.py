@@ -24,7 +24,6 @@ saw such inputs is an empirical question M2 reports.
 from __future__ import annotations
 
 import dataclasses
-import os
 import sys
 import time
 
@@ -92,6 +91,14 @@ class PolicyBackbone:
         import jax
         inputs = jax.tree.map(lambda x: torch.from_numpy(np.array(x)).to(self.device)[None, ...], inputs)
         return self._Observation.from_dict(inputs)
+
+    @torch.no_grad()
+    def observations(self, obs_dicts):
+        """A list of raw observation dicts -> one batched Observation (for per-row conditioning)."""
+        import jax
+        ins = [self.policy._input_transform(dict(o)) for o in obs_dicts]
+        stacked = jax.tree.map(lambda *xs: torch.from_numpy(np.stack([np.array(x) for x in xs])).to(self.device), *ins)
+        return self._Observation.from_dict(stacked)
 
     @torch.no_grad()
     def prefix(self, observation):

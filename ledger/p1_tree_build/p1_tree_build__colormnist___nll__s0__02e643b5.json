@@ -1,0 +1,216 @@
+{
+ "artifacts": {
+  "figure": "figures/p1/tree_colormnist_s0_nll.png",
+  "tree": "results/trees/tree_colormnist_s0.npz"
+ },
+ "backbone": {
+  "img": 32,
+  "kind": "unet",
+  "layout": "permuted",
+  "n_params": 6827011,
+  "path": "results/cache/ddpm_colormnist_nobg3.pt",
+  "sha256": "f5df6d5c576033fefeab1bdc1f3acf540bc03431559828187cde2d1d0fc530c1"
+ },
+ "backfilled": false,
+ "bench": "colormnist",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "items": {},
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 147296,
+  "tree": 147296
+ },
+ "command": "experiments/p1_tree_build.py --bench colormnist --seed 0 --tree results/trees/tree_colormnist_s0.npz --tag _nll",
+ "config": {
+  "bench": "colormnist",
+  "build": {
+   "per_level": [
+    {
+     "secs": 0.0
+    },
+    {
+     "secs": 0.0
+    },
+    {
+     "secs": 0.0
+    },
+    {
+     "secs": 0.0
+    },
+    {
+     "secs": 0.0
+    },
+    {
+     "secs": 0.0
+    }
+   ],
+   "reused": "results/trees/tree_colormnist_s0.npz"
+  },
+  "caps": "32:24:16:16:8:8",
+  "grid": "0.10:0.20:0.30:0.40:0.55:0.70",
+  "iters": 150,
+  "lr": 0.1,
+  "n_eval": 40,
+  "n_samples": 512,
+  "seed": 0,
+  "select": "dedup",
+  "steps": 50,
+  "tag": "_nll",
+  "tol": 0.05,
+  "tree": "results/trees/tree_colormnist_s0.npz"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "chappie.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": "3953115",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "p1_tree_build",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "02e643b5015fe1243de874cbbca6d4def5f28dc4",
+  "short": "02e643b5"
+ },
+ "keys": {},
+ "metrics": {
+  "best_purity": {
+   "bg": 0.8355555555555556,
+   "digit": 0.2525,
+   "fg": 0.6038888888888889
+  },
+  "build_secs": 0.00733184814453125,
+  "levels": {
+   "0": {
+    "max_r": 0.9577974457105712,
+    "n_nodes": 32,
+    "nll_auroc": 0.5391503968253968,
+    "nll_in": 0.6871880527918575,
+    "nll_withheld": 0.7897468643384338,
+    "nmi_bg": 0.31333658044552215,
+    "nmi_digit": 0.12862770421667166,
+    "nmi_fg": 0.2135903310224522,
+    "purity_bg": 0.6672222222222223,
+    "purity_digit": 0.2525,
+    "purity_fg": 0.5258333333333334,
+    "u": 0.1,
+    "withheld_bg_max_r": 0.9486656290919295,
+    "withheld_bg_purity_digit": 0.29464285714285715
+   },
+   "1": {
+    "max_r": 0.9499423520137571,
+    "n_nodes": 24,
+    "nll_auroc": 0.5396309523809524,
+    "nll_in": 0.05936860664205939,
+    "nll_withheld": 0.0775383604700291,
+    "nmi_bg": 0.45144744370136936,
+    "nmi_digit": 0.08080397044904175,
+    "nmi_fg": 0.33124965408047863,
+    "purity_bg": 0.8355555555555556,
+    "purity_digit": 0.19694444444444445,
+    "purity_fg": 0.6038888888888889,
+    "u": 0.2,
+    "withheld_bg_max_r": 0.962981783671912,
+    "withheld_bg_purity_digit": 0.15928571428571428
+   },
+   "2": {
+    "max_r": 0.9459570884065571,
+    "n_nodes": 16,
+    "nll_auroc": 0.3375110119047619,
+    "nll_in": 0.09263970578983576,
+    "nll_withheld": 0.06141560875251627,
+    "nmi_bg": 0.563344259175067,
+    "nmi_digit": 0.047853195395883334,
+    "nmi_fg": 0.25322957566516074,
+    "purity_bg": 0.7522222222222222,
+    "purity_digit": 0.15416666666666667,
+    "purity_fg": 0.46805555555555556,
+    "u": 0.3,
+    "withheld_bg_max_r": 0.9709091758201505,
+    "withheld_bg_purity_digit": 0.1225
+   },
+   "3": {
+    "max_r": 0.9314920720713207,
+    "n_nodes": 16,
+    "nll_auroc": 0.34926011904761906,
+    "nll_in": 0.17792316836866642,
+    "nll_withheld": 0.15957562391882393,
+    "nmi_bg": 0.5052880415101197,
+    "nmi_digit": 0.025617836078064792,
+    "nmi_fg": 0.1241989579378895,
+    "purity_bg": 0.6666666666666666,
+    "purity_digit": 0.13722222222222222,
+    "purity_fg": 0.38555555555555554,
+    "u": 0.4,
+    "withheld_bg_max_r": 0.947072365450182,
+    "withheld_bg_purity_digit": 0.12678571428571428
+   },
+   "4": {
+    "max_r": 0.9926731573258777,
+    "n_nodes": 8,
+    "nll_auroc": 0.5268516865079365,
+    "nll_in": 0.3002649783832847,
+    "nll_withheld": 0.301119215503119,
+    "nmi_bg": 0.013854409084464826,
+    "nmi_digit": 0.006334027165303664,
+    "nmi_fg": 0.010514936044466133,
+    "purity_bg": 0.3411111111111111,
+    "purity_digit": 0.10416666666666667,
+    "purity_fg": 0.3338888888888889,
+    "u": 0.55,
+    "withheld_bg_max_r": 0.9965417177843024,
+    "withheld_bg_purity_digit": 0.10285714285714286
+   },
+   "5": {
+    "max_r": 0.7760410161372758,
+    "n_nodes": 8,
+    "nll_auroc": 0.5297582341269841,
+    "nll_in": 0.3995777714868177,
+    "nll_withheld": 0.40028205955944357,
+    "nmi_bg": 0.49007059471579095,
+    "nmi_digit": 0.05476477430585757,
+    "nmi_fg": 0.17405064222139371,
+    "purity_bg": 0.7025,
+    "purity_digit": 0.18194444444444444,
+    "purity_fg": 0.46,
+    "u": 0.7,
+    "withheld_bg_max_r": 0.7871605854834528,
+    "withheld_bg_purity_digit": 0.1417857142857143
+   }
+  },
+  "n_nodes": 104,
+  "per_level": [
+   32,
+   24,
+   16,
+   16,
+   8,
+   8
+  ],
+  "per_level_secs": [
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0
+  ],
+  "phase0_level": null,
+  "phase0_pass": false,
+  "phase0b_pass": false
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "p1_tree_build__colormnist___nll__s0__02e643b5",
+ "schema": 1,
+ "script": "experiments/p1_tree_build.py",
+ "seconds": 0.00733184814453125,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-25T19:24:01+00:00",
+ "stream": null,
+ "tag": "_nll"
+}

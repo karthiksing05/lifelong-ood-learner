@@ -1,0 +1,280 @@
+{
+ "artifacts": {
+  "figure": "figures/p1/tree_colormnist_s0_kmeans.png",
+  "tree": "results/trees/tree_colormnist_s0_kmeans.npz"
+ },
+ "backbone": {
+  "img": 32,
+  "kind": "unet",
+  "layout": "permuted",
+  "n_params": 6827011,
+  "path": "results/cache/ddpm_colormnist_nobg3.pt",
+  "sha256": "f5df6d5c576033fefeab1bdc1f3acf540bc03431559828187cde2d1d0fc530c1"
+ },
+ "backfilled": false,
+ "bench": "colormnist",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "items": {},
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 289104,
+  "tree": 289104
+ },
+ "command": "experiments/p1_tree_build.py --bench colormnist --seed 0 --select kmeans --n-samples 1024 --grid 0.10:0.20:0.30:0.40:0.55:0.70:0.85 --caps 64:48:32:24:16:12:8 --tag _kmeans",
+ "config": {
+  "bench": "colormnist",
+  "build": {
+   "caps": {
+    "0.1": 64,
+    "0.2": 48,
+    "0.3": 32,
+    "0.4": 24,
+    "0.55": 16,
+    "0.7": 12,
+    "0.85": 8
+   },
+   "iters": 150,
+   "lr": 0.1,
+   "n_samples": 1024,
+   "per_level": [
+    {
+     "dedup": 1020,
+     "kept": 64,
+     "modes": 1024,
+     "secs": 65.49374270439148,
+     "u": 0.1
+    },
+    {
+     "dedup": 954,
+     "kept": 48,
+     "modes": 1024,
+     "secs": 59.6479926109314,
+     "u": 0.2
+    },
+    {
+     "dedup": 800,
+     "kept": 32,
+     "modes": 1024,
+     "secs": 58.81758451461792,
+     "u": 0.3
+    },
+    {
+     "dedup": 577,
+     "kept": 24,
+     "modes": 1024,
+     "secs": 57.24611496925354,
+     "u": 0.4
+    },
+    {
+     "dedup": 415,
+     "kept": 16,
+     "modes": 1024,
+     "secs": 57.915579080581665,
+     "u": 0.55
+    },
+    {
+     "dedup": 170,
+     "kept": 12,
+     "modes": 1024,
+     "secs": 55.383336782455444,
+     "u": 0.7
+    },
+    {
+     "dedup": 2,
+     "kept": 8,
+     "modes": 1024,
+     "secs": 55.00002479553223,
+     "u": 0.85
+    }
+   ],
+   "seconds": 428.093385219574,
+   "seed": 0,
+   "select": "kmeans",
+   "tol": 0.05
+  },
+  "caps": "64:48:32:24:16:12:8",
+  "grid": "0.10:0.20:0.30:0.40:0.55:0.70:0.85",
+  "iters": 150,
+  "lr": 0.1,
+  "n_eval": 40,
+  "n_samples": 1024,
+  "seed": 0,
+  "select": "kmeans",
+  "steps": 50,
+  "tag": "_kmeans",
+  "tol": 0.05,
+  "tree": null
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "deebot.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": "3953116",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "p1_tree_build",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "02e643b5015fe1243de874cbbca6d4def5f28dc4",
+  "short": "02e643b5"
+ },
+ "keys": {},
+ "metrics": {
+  "best_purity": {
+   "bg": 0.8208333333333333,
+   "digit": 0.2761111111111111,
+   "fg": 0.5438888888888889
+  },
+  "build_secs": 428.09917664527893,
+  "levels": {
+   "0": {
+    "max_r": 0.973976424274184,
+    "n_nodes": 64,
+    "nll_auroc": 0.580822123015873,
+    "nll_in": 0.022813387865891488,
+    "nll_withheld": 0.16207878703714584,
+    "nmi_bg": 0.41410612960132676,
+    "nmi_digit": 0.163681826047948,
+    "nmi_fg": 0.25006775562617667,
+    "purity_bg": 0.8208333333333333,
+    "purity_digit": 0.2761111111111111,
+    "purity_fg": 0.5438888888888889,
+    "u": 0.1,
+    "withheld_bg_max_r": 0.9798037974814403,
+    "withheld_bg_purity_digit": 0.2307142857142857
+   },
+   "1": {
+    "max_r": 0.9754711442095633,
+    "n_nodes": 48,
+    "nll_auroc": 0.5976626984126984,
+    "nll_in": -0.17068263107089796,
+    "nll_withheld": -0.1205433877643624,
+    "nmi_bg": 0.5087331503339491,
+    "nmi_digit": 0.07201986865082868,
+    "nmi_fg": 0.2596507819764463,
+    "purity_bg": 0.7002777777777778,
+    "purity_digit": 0.1713888888888889,
+    "purity_fg": 0.5069444444444444,
+    "u": 0.2,
+    "withheld_bg_max_r": 0.9599070144135706,
+    "withheld_bg_purity_digit": 0.16857142857142857
+   },
+   "2": {
+    "max_r": 0.957241751578484,
+    "n_nodes": 32,
+    "nll_auroc": 0.5732869047619048,
+    "nll_in": -0.05655632680227269,
+    "nll_withheld": -0.038626068526905276,
+    "nmi_bg": 0.24078357197874303,
+    "nmi_digit": 0.08554039619530662,
+    "nmi_fg": 0.1825227052622174,
+    "purity_bg": 0.5530555555555555,
+    "purity_digit": 0.16944444444444445,
+    "purity_fg": 0.39444444444444443,
+    "u": 0.3,
+    "withheld_bg_max_r": 0.9324350147568177,
+    "withheld_bg_purity_digit": 0.19535714285714287
+   },
+   "3": {
+    "max_r": 0.9877753581705838,
+    "n_nodes": 24,
+    "nll_auroc": 0.5389808531746032,
+    "nll_in": 0.08318763683385344,
+    "nll_withheld": 0.08813156497009174,
+    "nmi_bg": 0.6495846813035353,
+    "nmi_digit": 0.015440448815976237,
+    "nmi_fg": 0.1971841182585233,
+    "purity_bg": 0.6744444444444444,
+    "purity_digit": 0.11583333333333333,
+    "purity_fg": 0.4083333333333333,
+    "u": 0.4,
+    "withheld_bg_max_r": 0.9751859811380637,
+    "withheld_bg_purity_digit": 0.11607142857142858
+   },
+   "4": {
+    "max_r": 0.9814690431890194,
+    "n_nodes": 16,
+    "nll_auroc": 0.5538777777777778,
+    "nll_in": 0.2633862605213525,
+    "nll_withheld": 0.265551398435654,
+    "nmi_bg": 0.6685599596206775,
+    "nmi_digit": 0.022392917120098468,
+    "nmi_fg": 0.1425267100403911,
+    "purity_bg": 0.6788888888888889,
+    "purity_digit": 0.11777777777777777,
+    "purity_fg": 0.3622222222222222,
+    "u": 0.55,
+    "withheld_bg_max_r": 0.9421806393340132,
+    "withheld_bg_purity_digit": 0.1475
+   },
+   "5": {
+    "max_r": 0.733541532008994,
+    "n_nodes": 12,
+    "nll_auroc": 0.554968253968254,
+    "nll_in": 0.39817908842151173,
+    "nll_withheld": 0.39956899995340767,
+    "nmi_bg": 0.42396574217045424,
+    "nmi_digit": 0.10250814672452128,
+    "nmi_fg": 0.2364029400964079,
+    "purity_bg": 0.7413888888888889,
+    "purity_digit": 0.2386111111111111,
+    "purity_fg": 0.5297222222222222,
+    "u": 0.7,
+    "withheld_bg_max_r": 0.7295393414092156,
+    "withheld_bg_purity_digit": 0.205
+   },
+   "6": {
+    "max_r": 0.651627830440856,
+    "n_nodes": 8,
+    "nll_auroc": 0.5041002976190476,
+    "nll_in": 0.4760513814989328,
+    "nll_withheld": 0.47609099355783785,
+    "nmi_bg": 0.6617712071953215,
+    "nmi_digit": 0.00015519491606901008,
+    "nmi_fg": 0.11490312857635691,
+    "purity_bg": 0.6663888888888889,
+    "purity_digit": 0.10361111111111111,
+    "purity_fg": 0.3497222222222222,
+    "u": 0.85,
+    "withheld_bg_max_r": 0.7327699609407963,
+    "withheld_bg_purity_digit": 0.10392857142857143
+   }
+  },
+  "n_nodes": 204,
+  "per_level": [
+   64,
+   48,
+   32,
+   24,
+   16,
+   12,
+   8
+  ],
+  "per_level_secs": [
+   65.49374270439148,
+   59.6479926109314,
+   58.81758451461792,
+   57.24611496925354,
+   57.915579080581665,
+   55.383336782455444,
+   55.00002479553223
+  ],
+  "phase0_level": null,
+  "phase0_pass": false,
+  "phase0b_pass": false
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "p1_tree_build__colormnist___kmeans__s0__02e643b5",
+ "schema": 1,
+ "script": "experiments/p1_tree_build.py",
+ "seconds": 428.09917664527893,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-25T19:24:05+00:00",
+ "stream": null,
+ "tag": "_kmeans"
+}

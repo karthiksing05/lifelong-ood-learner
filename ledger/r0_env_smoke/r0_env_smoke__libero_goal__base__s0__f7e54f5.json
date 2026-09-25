@@ -1,0 +1,121 @@
+{
+ "artifacts": [
+  "figures/robot/r0_libero_goal_task*.png",
+  "slurm/3953899.out"
+ ],
+ "backbone": null,
+ "backfilled": true,
+ "bench": "libero_goal",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "experiments/r0_env_smoke.py libero_goal (sbatch robot_gpu.sbatch ENV=libero, job 3953899)",
+ "config": {
+  "MUJOCO_GL": "egl",
+  "gpu": "a40",
+  "suite": "libero_goal",
+  "venv": "examples/libero/.venv (uv-managed python 3.8)"
+ },
+ "env": {
+  "device": "cpu",
+  "host": "sky2.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r0_env_smoke",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "f7e54f57532c401a534f434d7dc51b0e9fe273e4",
+  "short": "f7e54f57"
+ },
+ "keys": {},
+ "metrics": {
+  "ms_per_step_median": 16.9,
+  "n_init_states": [
+   50,
+   50,
+   50,
+   50,
+   50,
+   50,
+   50,
+   50,
+   50,
+   50
+  ],
+  "n_tasks": 10,
+  "node": null,
+  "passed": true,
+  "per_task": {
+   "0": {
+    "ms_per_step": 319.3,
+    "n_init_states": 50,
+    "task": "open the middle drawer of the cabinet"
+   },
+   "1": {
+    "ms_per_step": 16.8,
+    "n_init_states": 50,
+    "task": "put the bowl on the stove"
+   },
+   "2": {
+    "ms_per_step": 16.7,
+    "n_init_states": 50,
+    "task": "put the wine bottle on top of the cabinet"
+   },
+   "3": {
+    "ms_per_step": 17.0,
+    "n_init_states": 50,
+    "task": "open the top drawer and put the bowl inside"
+   },
+   "4": {
+    "ms_per_step": 17.2,
+    "n_init_states": 50,
+    "task": "put the bowl on top of the cabinet"
+   },
+   "5": {
+    "ms_per_step": 16.7,
+    "n_init_states": 50,
+    "task": "push the plate to the front of the stove"
+   },
+   "6": {
+    "ms_per_step": 17.0,
+    "n_init_states": 50,
+    "task": "put the cream cheese in the bowl"
+   },
+   "7": {
+    "ms_per_step": 16.9,
+    "n_init_states": 50,
+    "task": "turn on the stove"
+   },
+   "8": {
+    "ms_per_step": 16.7,
+    "n_init_states": 50,
+    "task": "put the bowl on the plate"
+   },
+   "9": {
+    "ms_per_step": 16.7,
+    "n_init_states": 50,
+    "task": "put the wine bottle on the rack"
+   }
+  },
+  "seconds": 31.0
+ },
+ "notes": "M0: backfilled from slurm/3953899.out; the render smoke does not write the ledger itself",
+ "retired": null,
+ "run_id": "r0_env_smoke__libero_goal__base__s0__f7e54f5",
+ "schema": 1,
+ "script": "experiments/r0_env_smoke.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": "f7e54f5",
+ "started": "2026-09-25T20:17:33+00:00",
+ "stream": null,
+ "tag": ""
+}

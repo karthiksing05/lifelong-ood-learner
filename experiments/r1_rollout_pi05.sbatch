@@ -14,7 +14,7 @@
 cd /coc/flash10/ksingara3/lifelong-ood-learner
 mkdir -p results/robot
 echo "[roll] $(date) on $(hostname): $(nvidia-smi --query-gpu=name --format=csv,noheader | head -1)"
-bash experiments/r1_rollout_pi05.sh ${SUITE:-libero_goal} ${TRIALS:-10}
+MODE=${MODE:-openpi} bash experiments/r1_rollout_pi05.sh ${SUITE:-libero_goal} ${TRIALS:-10}
 rc=$?
 echo "exit=$rc | $(date)"
 exit $rc
