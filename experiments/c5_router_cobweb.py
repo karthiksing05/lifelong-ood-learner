@@ -105,6 +105,13 @@ def main():
                    help="the FLAT ablation: every escalated concept gets its own concept-level "
                         "adapter (a BLOCK) and nothing ever merges -- one adapter per OOD concept, "
                         "the layout the hierarchy is meant to beat")
+    p.add_argument("--read-band", action="store_true",
+                   help="read (every argmin over coordinates) at the noise levels where the backbone "
+                        "reads its OWN trained classes exactly, each level divided by the trained-class "
+                        "level.  Raw losses are largest at low noise, so a pooled read was decided "
+                        "there -- where a new background's pixels swamp the conditioning: foreground "
+                        "read 0.00-0.03 at u <= 0.5 and 1.00 at u = 0.8-0.95 (tests/diag_read_by_u.py)")
+    p.add_argument("--n-band", type=int, default=40, help="trained classes that calibrate the band")
     p.add_argument("--n-untaught", type=int, default=8,
                    help="never-streamed new-value combinations addressed at the end through the "
                         "new factor's node: what the hierarchy can render that a flat store cannot")
@@ -219,6 +226,30 @@ def main():
     def within(pr, t):
         return bool(np.all(np.asarray(pr)[crit] <= t[crit] * (1.0 + args.tol)))
 
+    # ── the read band (label-free: the backbone's own trained classes) ──────
+    band = np.ones(len(U_GRID), bool)
+    band_rate = None
+    if args.read_band:
+        combos0 = list(itertools.product(*[range(len(v)) for v in V]))
+        E0 = np.stack([emb_np(c) for c in combos0]).astype(np.float32)
+        hit = np.zeros(len(U_GRID))
+        for c, t, xv in cal[:args.n_band]:
+            P = candidate_losses(base, xv, U_GRID, embs=E0, seed=CRN, per_u=True, batch=cl_batch,
+                                 n_noise=n_noise, **kw)
+            hit += np.array([combos0[k] == tuple(t) for k in P.argmin(0)], float)
+        band_rate = hit / min(args.n_band, len(cal))
+        band = band_rate >= band_rate.max() - 0.02
+        print(f"[c5] read band: trained-class exact-read rate per u "
+              f"{dict(zip(U_GRID.round(2).tolist(), band_rate.round(2).tolist()))} -> read at u "
+              f"{U_GRID[band].round(2).tolist()} ({time.time() - t0:.0f}s)", flush=True)
+
+    def score(P, which):
+        """The read's objective for each candidate row of P [C, U]."""
+        P = np.atleast_2d(P)
+        if args.read_band:
+            return (P[:, band] / t_addr[band]).mean(1)
+        return P.mean(1) if which == "all" else P[:, crit].mean(1)
+
     def informativeness(Xv):
         """C2's score over the LIVE basis, plus each factor's leave-one-out read of the others."""
         g_out, reads = [], []
@@ -230,14 +261,14 @@ def main():
                 for h, j in zip(others, vals):
                     c[h] = j
                 cl.append(c)
-            lo = scan(Xv, cl)[:, crit].mean(1)
+            lo = score(scan(Xv, cl), "crit")
             best = cl[int(np.argmin(lo))]
             wf = []
             for j in live(f):
                 c = list(best)
                 c[f] = j
                 wf.append(c)
-            lf = scan(Xv, wf)[:, crit].mean(1)
+            lf = score(scan(Xv, wf), "crit")
             g_out.append(float((lo.min() - lf.min()) / lo.min()))
             reads.append(best)
         return np.asarray(g_out), reads
@@ -348,15 +379,16 @@ def main():
         rec = dict(i=ci, true=list(tup), pop=pop)
         combos = list(itertools.product(*[live(f) for f in range(nF)]))
         La = scan(Xv, [list(c) for c in combos])
-        ka = int(np.argmin(La.mean(1)))
+        sa = score(La, "all")
+        ka = int(np.argmin(sa))
         read = combos[ka]
         rr = rows
         if args.fast:
-            top = [combos[i] for i in np.argsort(La.mean(1))[:10]]
+            top = [combos[i] for i in np.argsort(sa)[:10]]
             rr = np.array([seen_of[t] for t in top if t in seen_of] or [rows[0]])
         Lr = candidate_losses(model, Xv, U_GRID, cls=rr, seed=CRN, per_u=True, batch=cl_batch,
                               n_noise=n_noise, **kw)
-        kr = int(np.argmin(Lr.mean(1)))
+        kr = int(np.argmin(score(Lr, "all")))
         rec.update(row=int(rr[kr]), read=list(read), row_ratio=(Lr[kr] / t_row).tolist(),
                    addr_ratio=(La[ka] / t_addr).tolist())
         cost, steps_w, coords, tier = 0, 0, tuple(read), None
@@ -377,13 +409,13 @@ def main():
                         for h, jv in zip(others, vals):
                             c[h] = jv
                         cl.append(c)
-                    Ll = scan(Xv, cl).mean(1)
+                    Ll = score(scan(Xv, cl), "all")
                     k = int(np.argmin(Ll))
                     if best is None or Ll[k] < best[0]:
                         best = (float(Ll[k]), li, f, tuple(cl[k]))
             rec["leaf_best"] = None if best is None else dict(loss=best[0], leaf=best[1],
                                                                factor=B.names[best[2]])
-            if best is not None and best[0] < float(La[ka].mean()):
+            if best is not None and best[0] < float(sa[ka]):
                 # MERGE: the winning hypothesis becomes a value node; the rest are dropped
                 _, li, f, _ = best
                 lf = leaves[li]
@@ -397,7 +429,7 @@ def main():
                     for h, jv in zip(others, vals):
                         c[h] = jv
                     cl.append(c)
-                lo = scan(Xv, cl)[:, crit].mean(1)
+                lo = score(scan(Xv, cl), "crit")
                 coords = list(cl[int(np.argmin(lo))])
                 coords[f] = lf["hyps"][f]["j"]
                 coords = tuple(coords)
@@ -610,7 +642,9 @@ def main():
                                                                           absorbed=h["absorbed"])
                                                         for f, h in v.items()})
                             for k, v in lf.items() if k != "own"} for lf in leaves],
-                   t_row=t_row.tolist(), t_addr=t_addr.tolist(), gamma=gamma),
+                   t_row=t_row.tolist(), t_addr=t_addr.tolist(), gamma=gamma,
+                   u_grid=U_GRID.tolist(), read_band=U_GRID[band].tolist(),
+                   band_rate=None if band_rate is None else band_rate.tolist()),
               os.path.join(RESULTS, f"c5_router_cobweb_{args.bench}{args.tag}.json"),
               seed=args.seed)
     return 0
