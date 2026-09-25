@@ -14,7 +14,10 @@
 cd /coc/flash10/ksingara3/lifelong-ood-learner
 mkdir -p results/robot
 echo "[roll] $(date) on $(hostname): $(nvidia-smi --query-gpu=name --format=csv,noheader | head -1)"
-bash experiments/roll.sh
+# run a private copy: bash reads scripts incrementally, so editing roll.sh under a running job corrupts it
+mkdir -p results/robot/.drivers
+cp experiments/roll.sh results/robot/.drivers/roll_${SLURM_JOB_ID}.sh
+bash results/robot/.drivers/roll_${SLURM_JOB_ID}.sh
 rc=$?
 echo "exit=$rc | $(date)"
 exit $rc
