@@ -49,7 +49,14 @@ def _load(device):
     global _MODEL
     if _MODEL is None:
         from torchvision.models import inception_v3
-        m = inception_v3(weights=None, aux_logits=True, init_weights=False)
+        # transform_input=True: the IMAGENET1K_V1 weights expect (x - 0.5) / 0.5 inputs, and torchvision
+        # converts ImageNet-normalised input to that only when this flag is set -- which it sets
+        # automatically only when `weights=` is passed.  Built with weights=None, as here, it was
+        # left False until 2026-09-25, so every Inception feature was computed on inputs ~2.2x off
+        # scale.  LOL_INCEPTION_LEGACY=1 reproduces the old features for the numbers pinned on them.
+        legacy = os.environ.get("LOL_INCEPTION_LEGACY") == "1"
+        m = inception_v3(weights=None, aux_logits=True, init_weights=False,
+                         transform_input=not legacy)
         m.load_state_dict(torch.load(_WEIGHTS, map_location="cpu"))
         m.fc = torch.nn.Identity()          # pool3, 2048-d, the FID/precision-recall layer
         _MODEL = m.eval().to(device)

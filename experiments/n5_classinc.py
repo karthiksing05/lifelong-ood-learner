@@ -173,9 +173,11 @@ def main():
                     S = to_data(L.sample_concept(nm, n=args.n_samples,
                                                  seed=args.seed + 500 + si)).astype(np.float32)
                 acc_rows[nm].append(composition_accuracy(probes, S, q["d"], q["f"], q["b"])["joint"])
-            # probe accuracy is fidelity-blind -- an arm can keep the attributes legible while
-            # its images degrade -- so track generation quality on the same schedule
-            fd_rows[nm].append(frechet_distance(S, refs[nm]))
+                # probe accuracy is fidelity-blind -- an arm can keep the attributes legible while
+                # its images degrade -- so track generation quality on the same schedule.  INSIDE
+                # the per-concept loop: until 2026-09-25 this line sat one level out, so it logged
+                # only the last concept once per round and "FR +0.000" was structural, not measured
+                fd_rows[nm].append(frechet_distance(S, refs[nm]))
             params_curve.append(L.bank.n_params())
             exact = float(np.mean([float(np.array_equal(fingerprint(field, nm, seed=args.seed),
                                                         marks[nm])) for nm, _ in learned]))

@@ -331,15 +331,22 @@ def empirical_floor(probes, X, factors, target, seen_mask=None, n=N_GATE, seed=0
     return 0.0 if j != j else j
 
 
-def min_detectable(p, n):
-    """The smallest margin `n` samples can resolve at all: 2 * sqrt(p(1-p)/n).
+def min_detectable(p, n, z=2.0):
+    """The smallest margin `n` samples can resolve at all: the half-width of a z=2 WILSON interval.
 
-    At n=24 and p=0.3 this is 0.187 -- LARGER than the +0.10 thresholds n73/n75 use to declare a
+    At n=24 and p=0.3 this is 0.176 -- LARGER than the +0.10 thresholds n73/n75 use to declare a
     verdict. An experiment whose verdict bar is below this number is reporting noise, and should
     either raise n or lower the claim.
+
+    It was the Wald form 2*sqrt(p(1-p)/n) until 2026-09-25, which COLLAPSES at p in {0, 1}: the
+    flagship's gate evaluated it at a real-image ceiling of 1.000 and certified a resolution of
+    0.0004 -- "three orders of magnitude" below the margin, an artifact of the formula, not of the
+    data.  Wilson's half-width does not collapse (0.069 at p = 1, n = 24) and agrees with Wald in
+    the interior.
     """
-    p = float(min(max(p, 1e-6), 1 - 1e-6))
-    return float(2.0 * np.sqrt(p * (1 - p) / max(int(n), 1)))
+    n = max(int(n), 1)
+    p = float(min(max(p, 0.0), 1.0))
+    return float(z * np.sqrt(p * (1 - p) / n + z * z / (4 * n * n)) / (1 + z * z / n))
 
 
 # ── the table ───────────────────────────────────────────────────────────────

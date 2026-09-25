@@ -168,7 +168,7 @@ def main():
     # reader will compare to poe-guided's.
     full = f"address w={float(args.dial.split(':')[0]):g}"
     res = min_detectable(max(m(full), 1e-6), n_pool)
-    mr, mf = m(full) - m("poe-guided (s=0)"), m(full) - m("unconditional")
+    mr, mf = m(full) - m("poe-guided (their Eq.14)"), m(full) - m("unconditional")
     def mm(arm, key):
         v = [r[key] for r in rows if r["arm"] == arm and key in r]
         return float(np.mean(v)) if v else float("nan")
