@@ -1,0 +1,132 @@
+{
+ "artifacts": {
+  "results_json": "results/c5_router_cobweb_shapes3d_FINAL2__seed0.json",
+  "sha256": "764e19b65e230d74a47e8526c08f6d1d66a1f7fab1e3e2cee32b284cb14e8d6b"
+ },
+ "backbone": {
+  "bench": "shapes3d"
+ },
+ "backfilled": true,
+ "bench": "shapes3d",
+ "bytes": {
+  "codes": 2420,
+  "experts": 1203976,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 1206396,
+  "tree": 0
+ },
+ "command": "experiments/c5_router_cobweb.py --bench shapes3d --seed 0 --address-rule retrieve --q-row 1.0 --read-band --incorporate --tag _FINAL2",
+ "config": {
+  "address_rule": "retrieve",
+  "anchor_batch": 32,
+  "batch": 32,
+  "bench": "shapes3d",
+  "check_every": 50,
+  "fast": true,
+  "flat": false,
+  "incorporate": true,
+  "lam": 10.0,
+  "lora_exclude": "time_emb",
+  "lr": 0.001,
+  "lr_v_w": 0.005,
+  "max_steps": 800,
+  "n_anchor_new": 8,
+  "n_band": 40,
+  "n_cal": 60,
+  "n_cal_sharp": 12,
+  "n_comb": 8,
+  "n_in": 4,
+  "n_new": 8,
+  "n_ref": 36,
+  "n_samples": 24,
+  "n_train": 48,
+  "n_untaught": 8,
+  "n_val": 16,
+  "no_refine": false,
+  "no_u_high": false,
+  "q_row": 1.0,
+  "rank": 1,
+  "read_band": true,
+  "rho_cr": 0.9,
+  "seed": 0,
+  "steps": 200,
+  "tag": "_FINAL2",
+  "tol": 0.05,
+  "u_min_crit": 0.3
+ },
+ "env": {
+  "device": "cpu",
+  "host": "sky2.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "c5_router_cobweb",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "af8f07a5a6d5b37387a948bf98d6ddf6848aab75",
+  "short": "af8f07a5"
+ },
+ "keys": {
+  "layout": "tree"
+ },
+ "metrics": {
+  "in-dist": {
+   "bytes_per_concept": 0.0,
+   "joint": 0.9791666666666666,
+   "joint_end": 0.9791666666666666,
+   "n": 4,
+   "stored_ok": 1.0,
+   "tiers": {
+    "IN-DIST": 4
+   }
+  },
+  "merges_right_factor": 1,
+  "minutes": 276.4957860867182,
+  "n_blocks": 0,
+  "n_leaves": 1,
+  "n_merged": 1,
+  "n_merges": 1,
+  "new-comb": {
+   "bytes_per_concept": 99.5,
+   "joint": 0.984375,
+   "joint_end": 0.984375,
+   "n": 8,
+   "stored_ok": 1.0,
+   "tiers": {
+    "ADDRESS": 8
+   }
+  },
+  "new-value": {
+   "bytes_per_concept": 451950.0,
+   "joint": 0.984375,
+   "joint_end": 0.9895833333333333,
+   "n": 8,
+   "stored_ok": 1.0,
+   "tiers": {
+    "ADDRESS+R*": 6,
+    "LEAF": 1,
+    "REFINE-cap": 1
+   }
+  },
+  "old_joint_end": 0.9722222222222223,
+  "old_joint_start": 0.9722222222222223,
+  "untaught": {
+   "addressable": 1.0,
+   "joint": 0.9947916666666667
+  }
+ },
+ "notes": "legacy accounting: the c-series charged adapters and codes only; 8 self-generated samples and a deepcopy of the backbone kept per stored concept were not charged (docs/REVIEW_2026-09.md, audit 2026-09-25)",
+ "retired": null,
+ "run_id": "c5_router_cobweb__shapes3d__FINAL2__layout-tree__s0__af8f07a",
+ "schema": 1,
+ "script": "experiments/c5_router_cobweb.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": "af8f07a",
+ "started": "2026-09-25T17:09:50+00:00",
+ "stream": null,
+ "tag": "FINAL2"
+}

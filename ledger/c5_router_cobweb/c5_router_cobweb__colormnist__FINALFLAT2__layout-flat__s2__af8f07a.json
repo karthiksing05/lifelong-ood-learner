@@ -1,0 +1,131 @@
+{
+ "artifacts": {
+  "results_json": "results/c5_router_cobweb_colormnist_FINALFLAT2__seed2.json",
+  "sha256": "dddfb99762b49f37478767b2a4c5b1ee87203cf6aad328ed63d29f483529bc29"
+ },
+ "backbone": {
+  "bench": "colormnist"
+ },
+ "backfilled": true,
+ "bench": "colormnist",
+ "bytes": {
+  "codes": 6824,
+  "experts": 1653456,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 1660280,
+  "tree": 0
+ },
+ "command": "experiments/c5_router_cobweb.py --bench colormnist --seed 2 --address-rule retrieve --q-row 1.0 --read-band --flat --tag _FINALFLAT2",
+ "config": {
+  "address_rule": "retrieve",
+  "anchor_batch": 32,
+  "batch": 32,
+  "bench": "colormnist",
+  "check_every": 50,
+  "fast": false,
+  "flat": true,
+  "incorporate": false,
+  "lam": 10.0,
+  "lora_exclude": "",
+  "lr": 0.001,
+  "lr_v_w": 0.005,
+  "max_steps": 800,
+  "n_anchor_new": 8,
+  "n_band": 40,
+  "n_cal": 120,
+  "n_cal_sharp": 24,
+  "n_comb": 8,
+  "n_in": 4,
+  "n_new": 8,
+  "n_ref": 100,
+  "n_samples": 24,
+  "n_train": 64,
+  "n_untaught": 8,
+  "n_val": 16,
+  "no_refine": false,
+  "no_u_high": false,
+  "q_row": 1.0,
+  "rank": 1,
+  "read_band": true,
+  "rho_cr": 0.9,
+  "seed": 2,
+  "steps": 50,
+  "tag": "_FINALFLAT2",
+  "tol": 0.05,
+  "u_min_crit": 0.3
+ },
+ "env": {
+  "device": "cpu",
+  "host": "sky2.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "c5_router_cobweb",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "af8f07a5a6d5b37387a948bf98d6ddf6848aab75",
+  "short": "af8f07a5"
+ },
+ "keys": {
+  "layout": "flat"
+ },
+ "metrics": {
+  "in-dist": {
+   "bytes_per_concept": 0.0,
+   "joint": 0.8958333333333334,
+   "joint_end": 0.8958333333333334,
+   "n": 4,
+   "stored_ok": 1.0,
+   "tiers": {
+    "IN-DIST": 4
+   }
+  },
+  "merges_right_factor": 0,
+  "minutes": 31.86687015692393,
+  "n_blocks": 6,
+  "n_leaves": 6,
+  "n_merged": 0,
+  "n_merges": 0,
+  "new-comb": {
+   "bytes_per_concept": 68.0,
+   "joint": 0.7239583333333333,
+   "joint_end": 0.7239583333333333,
+   "n": 8,
+   "stored_ok": 1.0,
+   "tiers": {
+    "ADDRESS": 8
+   }
+  },
+  "new-value": {
+   "bytes_per_concept": 207467.0,
+   "joint": 0.625,
+   "joint_end": 0.625,
+   "n": 8,
+   "stored_ok": 0.75,
+   "tiers": {
+    "ADDRESS": 2,
+    "BLOCK": 6
+   }
+  },
+  "old_joint_end": 0.8194444444444443,
+  "old_joint_start": 0.8194444444444443,
+  "untaught": {
+   "addressable": 1.0,
+   "joint": 0.44791666666666663
+  }
+ },
+ "notes": "legacy accounting: the c-series charged adapters and codes only; 8 self-generated samples and a deepcopy of the backbone kept per stored concept were not charged (docs/REVIEW_2026-09.md, audit 2026-09-25)",
+ "retired": null,
+ "run_id": "c5_router_cobweb__colormnist__FINALFLAT2__layout-flat__s2__af8f07a",
+ "schema": 1,
+ "script": "experiments/c5_router_cobweb.py",
+ "seconds": null,
+ "seed": 2,
+ "source_commit": "af8f07a",
+ "started": "2026-09-25T17:09:50+00:00",
+ "stream": null,
+ "tag": "FINALFLAT2"
+}

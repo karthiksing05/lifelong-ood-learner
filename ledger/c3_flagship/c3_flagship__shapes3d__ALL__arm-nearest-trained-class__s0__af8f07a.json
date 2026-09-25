@@ -1,0 +1,81 @@
+{
+ "artifacts": {
+  "results_json": "results/c3_flagship_ALL__seed0.json",
+  "sha256": "44b44726c2342202ea7a0be3c79e44c6e02413ef6ccd3f7e94f3c0157fef87c9"
+ },
+ "backbone": {
+  "bench": "shapes3d",
+  "note": "eurecom pretrained UNet, legacy rows, pretraining contains the held-out cells"
+ },
+ "backfilled": true,
+ "bench": "shapes3d",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "experiments/c3_flagship.py --seeds 3 --cells a:b --tag _partK; --merge --tag _ALL",
+ "config": {
+  "cells": "0:10",
+  "inv_steps": 300,
+  "max_cells": null,
+  "merge": null,
+  "merged": [
+   "results/c3_flagship_part0__seed0.json",
+   "results/c3_flagship_part1__seed0.json",
+   "results/c3_flagship_part2__seed0.json",
+   "results/c3_flagship_part3__seed0.json"
+  ],
+  "n_mem": 4000,
+  "n_read": 16,
+  "n_ref": 60,
+  "n_samples": 24,
+  "seeds": 3,
+  "steps": 200,
+  "tag": "_part0"
+ },
+ "env": {
+  "device": "cpu",
+  "host": "sky2.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "c3_flagship",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "af8f07a5a6d5b37387a948bf98d6ddf6848aab75",
+  "short": "af8f07a5"
+ },
+ "keys": {
+  "arm": "nearest trained class"
+ },
+ "metrics": {
+  "basis_r2": 0.5163488952178238,
+  "cells_ge_half": 0.0,
+  "ci_hi": 0.0035659580110473424,
+  "ci_lo": 0.0005402314551147375,
+  "coverage": 0.0037500000000000003,
+  "joint": 0.001388888888888889,
+  "memorized": 0.09479166666666666,
+  "n_cells": 40,
+  "read_acc_1": 1.0,
+  "read_acc_16": 1.0,
+  "vendi": 1.177378445764695
+ },
+ "notes": "legacy accounting: the c-series charged adapters and codes only; 8 self-generated samples and a deepcopy of the backbone kept per stored concept were not charged (docs/REVIEW_2026-09.md, audit 2026-09-25)",
+ "retired": null,
+ "run_id": "c3_flagship__shapes3d__ALL__arm-nearest-trained-class__s0__af8f07a",
+ "schema": 1,
+ "script": "experiments/c3_flagship.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": "af8f07a",
+ "started": "2026-09-25T17:09:50+00:00",
+ "stream": null,
+ "tag": "ALL"
+}
