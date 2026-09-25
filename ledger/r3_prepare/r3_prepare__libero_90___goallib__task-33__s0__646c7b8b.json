@@ -1,0 +1,109 @@
+{
+ "artifacts": [
+  "results/robot/r3_prog_33_code_goallib.npz",
+  "results/robot/r3_prog_33_raw_goallib.npz"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 5192,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 5192,
+  "tree": 0
+ },
+ "command": "experiments/r3_prepare.py --tree results/robot/r2b_libero_goal_tree.npz --library-npz results/robot/r2b_libero_goal.npz --tasks 19,33,24,67,35,39,17,42,65,36 --levels 2,3,4 --tag _goallib",
+ "config": {
+  "K": 3,
+  "held": 5,
+  "levels": "2,3,4",
+  "library_npz": "results/robot/r2b_libero_goal.npz",
+  "tag": "_goallib",
+  "tasks": "19,33,24,67,35,39,17,42,65,36",
+  "tree": "results/robot/r2b_libero_goal_tree.npz"
+ },
+ "env": {
+  "device": "cpu",
+  "host": "sky2.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r3_prepare",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "646c7b8b40b8b7952f555cad40cafe7c22a618cc",
+  "short": "646c7b8b"
+ },
+ "keys": {
+  "task": 33
+ },
+ "metrics": {
+  "bddl": "KITCHEN_SCENE6_close_the_microwave",
+  "code": {
+   "bytes": 5192,
+   "mean_rms_to_demo": 0.11914846301078796,
+   "nll_per_dim": -0.8188993334770203,
+   "path": "results/robot/r3_prog_33_code_goallib.npz"
+  },
+  "demo_episode": 775,
+  "depth_hist": {
+   "0.05": 3,
+   "0.1": 3,
+   "0.2": 0,
+   "0.3": 10,
+   "0.4": 13,
+   "0.55": 3,
+   "0.7": 10,
+   "explained": 194
+  },
+  "gripper_events": [
+   51,
+   140
+  ],
+  "n_frames": 236,
+  "n_ipec_episodes": 49,
+  "nll_median": {
+   "0.05": 1.0116097371703163,
+   "0.1": -0.7402930253553965,
+   "0.2": -0.8687691214825362,
+   "0.3": -0.5939840544818789,
+   "0.4": -0.35921327632539357,
+   "0.55": -0.048917187399809714,
+   "0.7": 0.15261156071904164
+  },
+  "out_of_range_frac": 0.059322033898305086,
+  "raw": {
+   "bytes": 35400,
+   "mean_rms_to_demo": 0.0,
+   "nll_per_dim": -1.3836462497711182,
+   "path": "results/robot/r3_prog_33_raw_goallib.npz"
+  },
+  "task_id": 33,
+  "text": "close the microwave",
+  "unexplained_by_level": {
+   "0.05": 0.0847457627118644,
+   "0.1": 0.06779661016949153,
+   "0.2": 0.05508474576271186,
+   "0.3": 0.11440677966101695,
+   "0.4": 0.08050847457627118,
+   "0.55": 0.029661016949152543,
+   "0.7": 0.0423728813559322
+  },
+  "unexplained_frac": 0.17796610169491525
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r3_prepare__libero_90___goallib__task-33__s0__646c7b8b",
+ "schema": 1,
+ "script": "experiments/r3_prepare.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-25T20:47:55+00:00",
+ "stream": null,
+ "tag": "_goallib"
+}

@@ -1,0 +1,109 @@
+{
+ "artifacts": [
+  "results/robot/r3_prog_67_code_goallib.npz",
+  "results/robot/r3_prog_67_raw_goallib.npz"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 1936,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 1936,
+  "tree": 0
+ },
+ "command": "experiments/r3_prepare.py --tree results/robot/r2b_libero_goal_tree.npz --library-npz results/robot/r2b_libero_goal.npz --tasks 19,33,24,67,35,39,17,42,65,36 --levels 2,3,4 --tag _goallib",
+ "config": {
+  "K": 3,
+  "held": 5,
+  "levels": "2,3,4",
+  "library_npz": "results/robot/r2b_libero_goal.npz",
+  "tag": "_goallib",
+  "tasks": "19,33,24,67,35,39,17,42,65,36",
+  "tree": "results/robot/r2b_libero_goal_tree.npz"
+ },
+ "env": {
+  "device": "cpu",
+  "host": "sky2.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r3_prepare",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "646c7b8b40b8b7952f555cad40cafe7c22a618cc",
+  "short": "646c7b8b"
+ },
+ "keys": {
+  "task": 67
+ },
+ "metrics": {
+  "bddl": "LIVING_ROOM_SCENE5_put_the_white_mug_on_the_left_plate",
+  "code": {
+   "bytes": 1936,
+   "mean_rms_to_demo": 0.060112062841653824,
+   "nll_per_dim": -1.2401994466781616,
+   "path": "results/robot/r3_prog_67_code_goallib.npz"
+  },
+  "demo_episode": 2656,
+  "depth_hist": {
+   "0.05": 0,
+   "0.1": 0,
+   "0.2": 0,
+   "0.3": 0,
+   "0.4": 0,
+   "0.55": 1,
+   "0.7": 4,
+   "explained": 83
+  },
+  "gripper_events": [
+   28,
+   83
+  ],
+  "n_frames": 88,
+  "n_ipec_episodes": 45,
+  "nll_median": {
+   "0.05": -0.6932709368049353,
+   "0.1": -1.2568080535039567,
+   "0.2": -0.9742944357496542,
+   "0.3": -0.6567548700057002,
+   "0.4": -0.38612920059318656,
+   "0.55": -0.05638398265423816,
+   "0.7": 0.14515950773163036
+  },
+  "out_of_range_frac": 0.08928571428571429,
+  "raw": {
+   "bytes": 13200,
+   "mean_rms_to_demo": 0.0,
+   "nll_per_dim": -1.3836463689804077,
+   "path": "results/robot/r3_prog_67_raw_goallib.npz"
+  },
+  "task_id": 67,
+  "text": "put the white mug on the left plate",
+  "unexplained_by_level": {
+   "0.05": 0.0,
+   "0.1": 0.0,
+   "0.2": 0.0,
+   "0.3": 0.0,
+   "0.4": 0.011363636363636364,
+   "0.55": 0.045454545454545456,
+   "0.7": 0.045454545454545456
+  },
+  "unexplained_frac": 0.056818181818181816
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r3_prepare__libero_90___goallib__task-67__s0__646c7b8b",
+ "schema": 1,
+ "script": "experiments/r3_prepare.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-25T20:47:58+00:00",
+ "stream": null,
+ "tag": "_goallib"
+}
