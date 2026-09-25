@@ -33,6 +33,13 @@ import torch
 OPENPI = "/coc/flash10/ksingara3/robot/openpi"
 
 
+def _tt(t, device):
+    """A time (float, numpy or tensor, scalar or [n]) -> float32 tensor on `device`, flattened."""
+    if torch.is_tensor(t):
+        return t.to(device=device, dtype=torch.float32).reshape(-1)
+    return torch.as_tensor(np.asarray(t, np.float32), device=device).reshape(-1)
+
+
 def _import_openpi():
     if OPENPI + "/src" not in sys.path:
         sys.path.insert(0, OPENPI + "/src")
@@ -142,17 +149,28 @@ class PolicyBackbone:
         n = len(X)
         g = torch.Generator(device="cpu").manual_seed(int(seed))
         full = torch.randn((n, self.dim_full), generator=g).to(self.device)
-        tt = torch.as_tensor(np.asarray(t, np.float32), device=self.device).reshape(-1, 1)
+        tt = _tt(t, self.device).reshape(-1, 1)
         full = full * tt
         full[:, self.real] = X
         return full.reshape(n, self.H, self.A)
+
+    def repeat(self, prefix, k):
+        """Repeat every row of a batched prefix k times (row i -> rows i*k .. i*k+k-1).  The expert forward reads the
+        cache without mutating it (use_cache=False concatenates), so the copies are safe to share across steps."""
+        k = int(k)
+        rep = lambda t: t.repeat_interleave(k, dim=0)          # noqa: E731
+        kv = prefix.kv
+        kv2 = type(kv)()
+        for layer, (kk, vv) in enumerate(zip(kv.key_cache, kv.value_cache)):
+            kv2.update(rep(kk), rep(vv), layer)
+        return Prefix(state=rep(prefix.state), pad_masks=rep(prefix.pad_masks), kv=kv2, n=prefix.n * k)
 
     def v_full(self, x_full, t, prefix, gate=None):
         """The velocity field on FULL [n, H, A] (or [n, H * A]) inputs.  -> torch [n, H * A]."""
         x = torch.as_tensor(x_full, dtype=torch.float32, device=self.device).reshape(-1, self.H, self.A)
         n = len(x)
         pre = self._expand(prefix, n)
-        tt = torch.as_tensor(np.asarray(t, np.float32), device=self.device).reshape(-1)
+        tt = _tt(t, self.device).reshape(-1)
         tt = tt.expand(n) if tt.numel() == 1 else tt
         import contextlib
         with (gate() if gate is not None else contextlib.nullcontext()):
@@ -179,16 +197,16 @@ class PolicyBackbone:
         """E[eps | x_t] = x_t + (1 - t) v on real rows.  Same signature as the image Backbone (cls / emb
         ignored) so score_ops runs unchanged with a bound prefix."""
         X = torch.as_tensor(X, dtype=torch.float32, device=self.device)
-        tt = torch.as_tensor(np.asarray(t, np.float32), device=self.device).reshape(-1, 1)
+        tt = _tt(t, self.device).reshape(-1, 1)
         return X + (1.0 - tt) * self.v(X, t, self._pre(prefix), gate)
 
     def score(self, X, t, prefix=None, gate=None):
-        tt = torch.as_tensor(np.asarray(t, np.float32), device=self.device).reshape(-1, 1)
+        tt = _tt(t, self.device).reshape(-1, 1)
         return -self.eps(X, t, prefix, gate) / tt
 
     def tweedie(self, X, t, prefix=None, gate=None):
         X = torch.as_tensor(X, dtype=torch.float32, device=self.device)
-        tt = torch.as_tensor(np.asarray(t, np.float32), device=self.device).reshape(-1, 1)
+        tt = _tt(t, self.device).reshape(-1, 1)
         return X - tt * self.v(X, t, self._pre(prefix), gate)
 
     # ── sampling (Euler on the flow, with the guide / gate hooks of backbones.sampler) ───
