@@ -90,6 +90,7 @@ def main():
     ap.add_argument("--caps", default="32:24:16:16:8:8")
     ap.add_argument("--n-eval", type=int, default=40, help="real images per slot for the purity read")
     ap.add_argument("--select", default="dedup", choices=("dedup", "kmeans"))
+    ap.add_argument("--channel-extent", action="store_true", help="collapse extents to one variance per channel (the 2026-09-25 default, killed)")
     ap.add_argument("--tree", default=None, help="reuse this tree .npz instead of building")
     ap.add_argument("--tag", default="")
     args = ap.parse_args()
@@ -106,7 +107,7 @@ def main():
         grid = tuple(tree.u_grid)
     else:
         tree = build(bk, u_grid=grid, n_samples=args.n_samples, seed=args.seed, iters=args.iters, lr=args.lr,
-                     tol=args.tol, caps=caps, steps=args.steps, select=args.select)
+                     tol=args.tol, caps=caps, steps=args.steps, select=args.select, per_dim=not args.channel_extent)
     secs = time.time() - t0
     os.makedirs(os.path.join(ROOT, "results", "trees"), exist_ok=True)
     os.makedirs(os.path.join(ROOT, "figures", "p1"), exist_ok=True)

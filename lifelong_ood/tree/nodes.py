@@ -66,13 +66,17 @@ class Node:
     parent: int = -1               # -1 = the root
     expert: str | None = None
     gain_accrued: float = 0.0
+    extent_dim: np.ndarray = dataclasses.field(default=None, repr=False)   # optional per-dim variance, fp16 [D]
     mode: np.ndarray = dataclasses.field(default=None, repr=False)   # working copy, flat rows
     var: np.ndarray = dataclasses.field(default=None, repr=False)    # working per-dim variance, flat rows
 
     def bytes(self):
         """level u8 + count f32 + parent u16 + expert u16 + gain f32 = 13 B, rounded to 16, plus the
-        stored mode and the three channel variances."""
-        return 16 + int(self.q.size) + 4 * int(self.extent.size)
+        stored mode, the three channel variances and, when kept, the per-dim variance (2 B each).
+        Per-dim extents are what make a node a detector of WHERE it is distinct (a background node is
+        tight on the background and loose on the digit); the channel scalars alone made every node a
+        blurry attractor (gate leak 0.36-0.97 on old images, 2026-09-25)."""
+        return 16 + int(self.q.size) + 4 * int(self.extent.size) + (2 * int(self.extent_dim.size) if self.extent_dim is not None else 0)
 
 
 class Tree:
@@ -86,16 +90,22 @@ class Tree:
         self._next = 0
 
     # ── construction ────────────────────────────────────────────────────────
-    def add(self, level, mode_rows, extent_perdim=None, count=1.0, parent=-1, extent_channels=None):
-        """A node from a working mode (flat rows) and a per-dim variance (or per-channel [3])."""
+    def add(self, level, mode_rows, extent_perdim=None, count=1.0, parent=-1, extent_channels=None, per_dim=False,
+            var_floor=1e-3, var_cap=1.0):
+        """A node from a working mode (flat rows) and a per-dim variance (or per-channel [3]).
+        With `per_dim` the per-dim variance is KEPT (fp16), not collapsed to channels."""
         u = self.u_grid[level]
         res = mode_res(u, self.img)
         q = quantize_mode(mode_rows, self.img, res, self.lo, self.hi)
-        if extent_channels is None:
+        ed = None
+        if extent_perdim is not None:
             v = np.asarray(extent_perdim, np.float32).reshape(self.img, self.img, 3)
-            extent_channels = v.mean(axis=(0, 1))
+            if extent_channels is None:
+                extent_channels = v.mean(axis=(0, 1))
+            if per_dim:
+                ed = np.clip(v.reshape(-1), var_floor, var_cap).astype(np.float16)
         n = Node(id=self._next, level=int(level), u=u, q=q, extent=np.asarray(extent_channels, np.float32),
-                 count=float(count), parent=int(parent))
+                 count=float(count), parent=int(parent), extent_dim=ed)
         self._next += 1
         self._materialise(n)
         self.nodes[n.id] = n
@@ -104,7 +114,10 @@ class Tree:
 
     def _materialise(self, n):
         n.mode = dequantize_mode(n.q, self.img, self.lo, self.hi)
-        n.var = np.repeat(n.extent.reshape(1, 3), self.img * self.img, axis=0).reshape(-1)
+        if n.extent_dim is not None:
+            n.var = n.extent_dim.astype(np.float32)
+        else:
+            n.var = np.repeat(n.extent.reshape(1, 3), self.img * self.img, axis=0).reshape(-1)
 
     def remove(self, nid):
         n = self.nodes.pop(nid)
@@ -141,7 +154,7 @@ class Tree:
     def to_dict(self):
         return dict(u_grid=self.u_grid, img=self.img, lo=self.lo, hi=self.hi, next=self._next,
                     nodes=[dict(id=n.id, level=n.level, q=n.q, extent=n.extent, count=n.count, parent=n.parent,
-                                expert=n.expert, gain=n.gain_accrued) for n in self.nodes.values()])
+                                expert=n.expert, gain=n.gain_accrued, extent_dim=n.extent_dim) for n in self.nodes.values()])
 
     @classmethod
     def from_dict(cls, d):
@@ -150,7 +163,8 @@ class Tree:
         for r in d["nodes"]:
             n = Node(id=int(r["id"]), level=int(r["level"]), u=t.u_grid[int(r["level"])], q=np.asarray(r["q"], np.uint8),
                      extent=np.asarray(r["extent"], np.float32), count=float(r["count"]), parent=int(r["parent"]),
-                     expert=r.get("expert"), gain_accrued=float(r.get("gain", 0.0)))
+                     expert=r.get("expert"), gain_accrued=float(r.get("gain", 0.0)),
+                     extent_dim=None if r.get("extent_dim") is None else np.asarray(r["extent_dim"], np.float16))
             t._materialise(n)
             t.nodes[n.id] = n
             t.levels[n.level].append(n.id)

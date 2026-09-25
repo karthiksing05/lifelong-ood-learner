@@ -144,6 +144,11 @@ def test_stored_form_is_what_is_used():
     assert np.array_equal(tree.nodes[i].mode, dequantize_mode(tree.nodes[i].q, IMG, -1.0, 1.0))
     assert np.abs(tree.nodes[i].mode - rows).max() <= 2.0 / 255 + 1e-6
     assert tree.nodes[i].bytes() == 16 + IMG * IMG * 3 + 12 and tree.nodes[j].bytes() == 16 + 3 * mode_res(0.55, IMG) ** 2 + 12
+    k = tree.add(0, rows, extent_perdim=np.full(D, 0.02, np.float32), per_dim=True)
+    assert tree.nodes[k].bytes() == 16 + IMG * IMG * 3 + 12 + 2 * D and tree.nodes[k].var.dtype == np.float32
+    assert np.allclose(tree.nodes[k].var, 0.02, atol=1e-4)
+    t3 = Tree.from_dict(tree.to_dict())
+    assert np.array_equal(t3.nodes[k].var, tree.nodes[k].var) and t3.bytes() == tree.bytes()
     d = tree.to_dict()
     t2 = Tree.from_dict(d)
     assert t2.bytes() == tree.bytes() and np.array_equal(t2.nodes[i].mode, tree.nodes[i].mode)

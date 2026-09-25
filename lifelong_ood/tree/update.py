@@ -29,6 +29,8 @@ def incorporate(tree, nid, x_rows, r=1.0):
     n.count = c2
     n.q = quantize_mode(mean2.astype(np.float32), tree.img, n.q.shape[0], tree.lo, tree.hi)
     n.extent = var2.reshape(tree.img, tree.img, 3).mean(axis=(0, 1)).astype(np.float32)
+    if n.extent_dim is not None:
+        n.extent_dim = np.clip(var2, 1e-3, 1.0).astype(np.float16)
     tree._materialise(n)
     return nid
 
@@ -55,6 +57,8 @@ def merge(tree, i, j):
     a.count = n
     a.q = quantize_mode(mu.astype(np.float32), tree.img, a.q.shape[0], tree.lo, tree.hi)
     a.extent = (S / n).reshape(tree.img, tree.img, 3).mean(axis=(0, 1)).astype(np.float32)
+    if a.extent_dim is not None:
+        a.extent_dim = np.clip(S / n, 1e-3, 1.0).astype(np.float16)
     tree._materialise(a)
     for m in tree.nodes.values():
         if m.parent == j:

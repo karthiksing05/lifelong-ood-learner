@@ -146,11 +146,14 @@ def create_nodes(tree, cal, X_rows, levels=None, key=None, count=None, branch=Tr
         if branch:
             levels = list(range(0, max(levels) + 1))
     mean = X.mean(0)
+    # the node's extent is the arrival's OWN per-pixel variance (Cobweb's node variance): tight where the
+    # arrivals agree (a new background), loose where they differ (the digits), so the node claims images by
+    # WHERE it is distinct.  A per-channel median of the siblings made the mean image an attractor for
+    # everything at mid noise (gate leak 0.93-0.97, smoke run 2).
+    var = X.var(0) + (1e-3 if len(X) > 1 else 1e-2)
     ids = []
     for l in sorted(levels):
-        _, _, V, _ = tree.stats(l)
-        ext = np.median(V.reshape(len(V), tree.img, tree.img, 3).mean(axis=(1, 2)), axis=0) if len(V) else np.full(3, 0.01, np.float32)
-        nid = tree.add(l, mean, extent_channels=ext.astype(np.float32), count=float(count or len(X)))
+        nid = tree.add(l, mean, extent_perdim=var, count=float(count or len(X)), per_dim=True)
         tree.nodes[nid].expert = key
         ids.append(nid)
     from ..tree.build import link_parents
