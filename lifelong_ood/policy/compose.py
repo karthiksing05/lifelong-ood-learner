@@ -75,12 +75,16 @@ class DemoProgram:
 class ComposeHooks:
     """Per-episode state: a pointer into the program, advanced by nearest-state alignment in a forward window."""
 
-    def __init__(self, program, w0=1.2, wmax=2.0, window=20, lookahead=0, schedule="variance"):
+    def __init__(self, program, w0=1.2, wmax=2.0, window=20, lookahead=0, schedule="variance", var=None):
         """schedule: "variance" (Zekun's Eq. 16: strong at high noise, fading as the policy takes over) or
         "const" (w = w0 at every step: w0 = 1 samples the teacher alone, i.e. executes the program open-loop in
         chunk space; pi0.5's conditional is nearly deterministic, so a fading guide may be overwritten late)."""
         self.prog, self.w0, self.wmax, self.window, self.lookahead = program, float(w0), float(wmax), int(window), int(lookahead)
         self.schedule = schedule
+        # Mixing eps with weight w is (per noise level) a product of experts p_policy^(1-w) p_teacher^w, whose mean is
+        # precision-weighted: pi0.5's conditional std is ~0.024 (r2b), so a teacher looser than that barely moves the
+        # sample unless w ~ 1.  `var` overrides the teacher's variance to set its precision explicitly.
+        self.var = None if var is None else float(var)
         self.norm = state_norm()
         self.p = 0
         self.trace = []
@@ -97,9 +101,10 @@ class ComposeHooks:
         return min(self.p + self.lookahead, len(self.prog.key) - 1)
 
     def guide_at(self, j):
+        v = self.prog.var[j] if self.var is None else np.full_like(self.prog.var[j], self.var)
         if self.schedule == "const":
-            return guide(self.prog.mu[j], self.prog.var[j], wmax=self.w0, schedule="const", path="flow")
-        return guide(self.prog.mu[j], self.prog.var[j], w0=self.w0, wmax=self.wmax, path="flow")
+            return guide(self.prog.mu[j], v, wmax=self.w0, schedule="const", path="flow")
+        return guide(self.prog.mu[j], v, w0=self.w0, wmax=self.wmax, path="flow")
 
     def __call__(self, obs, pre, meta=None):
         j = self.align(obs["observation/state"])
