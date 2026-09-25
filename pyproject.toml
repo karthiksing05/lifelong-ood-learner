@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "lifelong-ood-learner"
 version = "0.1.0"
-description = "Lifelong learning as repeated composition of hierarchical prototypes on an analytic diffusion manifold"
+description = "Lifelong OOD learning as composing seen prototypes and folding new ones into a diffusion model's manifold"
 requires-python = ">=3.10"
 dependencies = ["numpy>=1.24", "matplotlib>=3.7"]
 

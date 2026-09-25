@@ -18,9 +18,9 @@ import sys
 import numpy as np
 import torch
 
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-                                "experiments"))
+_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))  # repo root
+sys.path.insert(0, _ROOT)
+sys.path.insert(0, os.path.join(_ROOT, "experiments"))  # c_bench lives there until streams/bench.py
 from c_bench import load_bench                                        # noqa: E402
 
 from lifelong_ood.neural.cobweb_update import candidate_losses         # noqa: E402

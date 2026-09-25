@@ -13,7 +13,6 @@ results/*.png
 results/*.json
 # ...except the pooled summary: every figure and every table is generated from it, so
 # tracking it lets a fresh clone run `bash reproduce.sh figures` without 12 GPU-hours.
-!results/aggregate.json
 results/*.npz
 slurm-*.out
 .DS_Store
@@ -44,3 +43,5 @@ figures/archive/
 # the intent stated directly above it.  A gitignore rule that silently matches nothing is the same
 # failure mode as a test that silently asserts nothing.
 figures/initial/archive/
+# ...and where that untracked pile physically landed when figures/initial moved to the archive.
+archive/2026-09-pre-rework/figures/initial/archive/

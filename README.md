@@ -1,0 +1,57 @@
+# lifelong-ood-learner
+
+Lifelong, out-of-distribution learning as **composing seen prototypes**, and **folding genuinely new
+ones into the manifold** of a diffusion model, with the tree of prototypes as the index of what is
+known and the noise level as its depth.
+
+Rework in progress (started 2026-09-25). The plan, the audit of the previous architecture and the
+literature positioning are in [docs/PLAN_2026-09.md](docs/PLAN_2026-09.md); the review that retired the
+previous headline claims is [docs/REVIEW_2026-09.md](docs/REVIEW_2026-09.md); the theory the rework
+rests on (the ideal denoiser's one-instance update IS Cobweb's incremental update, noise level = tree
+depth) is [docs/COBWEB_UPDATE.md](docs/COBWEB_UPDATE.md). The previous repository is preserved under
+[archive/2026-09-pre-rework/](archive/2026-09-pre-rework/README.md) with a map from each retired
+claim to the review's verdict.
+
+## The three operators
+
+| Cobweb | here | cost |
+|---|---|---|
+| categorise / best child | DECOMPOSE a query into the K prototypes (per noise level) that explain it | 0 weights; a code of node ids and weights |
+| incorporate | ADDRESS: if the composition explains the query in the read band, store the code, update counts | 0 weights |
+| create | FOLD a genuinely new prototype: new nodes at the levels where the query is unexplained, realised by a responsibility-gated minimal expert trained with anchoring on the model's own samples of the sibling nodes | the expert (the frontier experiment decides its size) |
+| merge / promote | CONSOLIDATE: distil an accrued node into the base weights under the same gate, delete the expert | net zero or negative memory |
+
+## The ladder of results
+
+Every number quoted anywhere in this repository comes from a row in `ledger/` (see
+`lifelong_ood/ledger.py`). Rungs are added as their rows land; none is claimed before.
+
+| rung | status |
+|---|---|
+| propositions 1-7 (numerical checks) | `tests/test_cobweb_correspondence.py` |
+| the C1 / C5 reference numbers (backfilled at af8f07a) | `ledger/c1_cobweb_update`, `ledger/c5_router_cobweb`, `ledger/c3_flagship` |
+| sampler parity after the restructure | pending |
+| prototype tree, decompose, gate, fold frontier, compose-after-fold, consolidate | pending |
+
+## Reproduce
+
+    PY=$HOME/flash/miniconda3/envs/chunks/bin/python
+    $PY -m pytest tests/test_ledger.py tests/test_cobweb_correspondence.py -q     # numpy, login node
+    for t in tests/test_keyed_lora.py tests/test_layout.py tests/test_field_contract.py \
+             tests/test_sample_concept_path.py; do $PY $t; done                    # torch, seconds
+    sbatch --wait --export=ALL,SCRIPT="-m pytest tests -q" slurm/jobs/cpu.sbatch  # off the login node
+    sbatch --export=ALL,SCRIPT="experiments/legacy/c1_cobweb_update.py --bench colormnist --seed 0" slurm/jobs/c_gpu.sbatch
+    $PY experiments/ledger_backfill.py --dry-run
+
+## Layout
+
+    lifelong_ood/backbones/   schedule, layout (one flat<->image pair), loaders and THE sampler (in progress)
+    lifelong_ood/neural/      UNet, DDPM training, VE bridge, pretrained shims, KeyedLoRA + anchoring (cobweb_update.py)
+    lifelong_ood/data/        ColorMNIST, Shapes3D (rows="correct"), CelebA, the novel-value edits, multi-object scenes
+    lifelong_ood/evals.py     probes, coverage, KID, vendi, memorisation;  instrument.py: ceilings and Wilson resolution
+    lifelong_ood/ledger.py    the tracked results ledger
+    experiments/legacy/       c1 (fold reference arms), c5 (the label-gated router), c_report, diag_read_by_u
+    experiments/c_bench.py    the ColorMNIST nobg3 and Shapes3D grey-wall benches (moving to streams/bench.py)
+    tests/                    ten kept tests; everything else is in the archive
+    ledger/                   one small JSON per run, tracked
+    archive/2026-09-pre-rework/   the previous repository, with its claim map

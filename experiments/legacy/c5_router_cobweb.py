@@ -37,10 +37,11 @@ import time
 import numpy as np
 import torch
 
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))  # repo root
+sys.path.insert(0, _ROOT)
+sys.path.insert(0, os.path.join(_ROOT, "experiments"))  # c_bench lives there until streams/bench.py
 from c_bench import load_bench                                        # noqa: E402
-from common import RESULTS                                            # noqa: E402
+from lifelong_ood.ledger import RESULTS                               # noqa: E402
 
 from lifelong_ood.evals import density_coverage, save_json, vendi_score  # noqa: E402
 from lifelong_ood.neural.cobweb_update import (KeyedLoRA, add_node, anchor_loss,  # noqa: E402
