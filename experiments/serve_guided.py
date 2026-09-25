@@ -68,13 +68,14 @@ def main():
                              use_prompt=len(rest) > 4 and rest[4] in ("prompt", "prompt+guide"))
         logging.info(f"program {prog_path}: variant {prog.variant}, {len(prog.mu)} frames, {prog.bytes()} B")
     elif a.mode.startswith("hybrid:"):
-        # hybrid:<program.npz>:<expert.pt>[:w0[:schedule]] -- compose where explained, the folded expert where not
+        # hybrid:<program.npz>:<expert.pt>[:w0[:schedule[:var]]] -- compose where explained, the folded expert where not
         _, prog_path, expert_path, *rest = a.mode.split(":")
         from lifelong_ood.policy import adapt
         from lifelong_ood.policy.compose import DemoProgram, HybridHooks
         state, key, banks = adapt.load(bk, expert_path)
         prog = DemoProgram.load(prog_path)
-        hooks = HybridHooks(prog, state, key, w0=float(rest[0]) if rest else 1.2, schedule=rest[1] if len(rest) > 1 else "variance")
+        hooks = HybridHooks(prog, state, key, w0=float(rest[0]) if rest else 1.2, schedule=rest[1] if len(rest) > 1 else "variance",
+                            var=float(rest[2]) if len(rest) > 2 and rest[2] else None)
         logging.info(f"hybrid: program {prog_path} ({int(prog.fold.sum()) if prog.fold is not None else 0} fold frames of {len(prog.mu)}), expert {key}")
     elif a.mode.startswith("lora:"):
         # lora:<expert.pt> -- the few-shot baseline: a flat adapter on the action expert, always on

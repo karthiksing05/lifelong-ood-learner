@@ -12,7 +12,7 @@ for tid in ${TASKS//+/ }; do
   f=$(sbatch --parsable --partition=tail-lab --account=tail-lab --export=ALL,ENV=openpi,SCRIPT="experiments/r4_fold.py --task $tid --tree $TREE --library $LIB --rank $RANK --steps $STEPS --tag $TAG" slurm/jobs/robot_gpu.sbatch)
   echo "task $tid fold -> job $f"
   base=$R/r4_${tid}${TAG}
-  h=$(sbatch --parsable --dependency=afterok:$f --export=ALL,MODE="hybrid:${base}_program.npz:${base}_expert.pt:$W0:$SCHED",SUITE=libero_90,TASKS=$tid,TRIALS=$TRIALS,EXPERIMENT=r4_fold_roll,TAG=hybrid${TAG},OUT=$R/r4_${tid}_hybrid${TAG}.json experiments/roll.sbatch)
+  h=$(sbatch --parsable --dependency=afterok:$f --export=ALL,MODE="hybrid:${base}_program.npz:${base}_expert.pt:$W0:$SCHED:$TVAR",SUITE=libero_90,TASKS=$tid,TRIALS=$TRIALS,EXPERIMENT=r4_fold_roll,TAG=hybrid${TAG},OUT=$R/r4_${tid}_hybrid${TAG}.json experiments/roll.sbatch)
   e=$(sbatch --parsable --dependency=afterok:$f --export=ALL,MODE="lora:${base}_expert.pt",SUITE=libero_90,TASKS=$tid,TRIALS=$TRIALS,EXPERIMENT=r4_fold_roll,TAG=expert_on${TAG},OUT=$R/r4_${tid}_expert_on${TAG}.json experiments/roll.sbatch)
   echo "task $tid hybrid -> job $h; expert always on -> job $e"
 done
