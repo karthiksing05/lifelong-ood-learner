@@ -67,6 +67,7 @@ class DemoProgram:
     prompt_id: np.ndarray = None   # [T] int: index into prompt_table of the library task that explains the frame
     prompt_table: list = None      # the library tasks' instructions (strings)
     states: np.ndarray = None      # [T, 8] the demo's raw states (for pose keys; 16 B per frame in fp16)
+    steer: np.ndarray = None       # [T] bool: frames where the prior DISAGREES with the demo (guide only there; 1 bit each)
 
     @classmethod
     def from_demo(cls, tree, rows, states, K=3, levels=None, variant="code", raw_var=1e-2):
@@ -110,12 +111,15 @@ class DemoProgram:
         uint8 prompt index per frame when a prompt program is attached (the instructions are the library's)."""
         store = sum(4 * len(c) for c in self.codes) if self.variant == "code" else 2 * int(self.mu.size)
         keys = 2 * int(self.states.size) if self.states is not None else 2 * int(self.key.size)
-        return int(store + keys + (0 if self.prompt_id is None else len(self.prompt_id)))
+        return int(store + keys + (0 if self.prompt_id is None else len(self.prompt_id))
+                   + (0 if self.steer is None else (len(self.steer) + 7) // 8))
 
     def save(self, path):
         extra = {} if self.prompt_id is None else dict(prompt_id=self.prompt_id, prompt_table=np.array(self.prompt_table, dtype=object))
         if self.states is not None:
             extra["states"] = self.states
+        if self.steer is not None:
+            extra["steer"] = self.steer
         np.savez_compressed(path, mu=self.mu, var=self.var, key=self.key, variant=self.variant,
                             fold=np.zeros(len(self.mu), bool) if self.fold is None else self.fold,
                             codes=np.array([np.asarray(c, np.float32) for c in self.codes], dtype=object), allow_pickle=True, **extra)
@@ -127,7 +131,8 @@ class DemoProgram:
                    fold=z["fold"] if "fold" in z else None,
                    prompt_id=z["prompt_id"] if "prompt_id" in z else None,
                    prompt_table=list(z["prompt_table"]) if "prompt_table" in z else None,
-                   states=z["states"] if "states" in z else None)
+                   states=z["states"] if "states" in z else None,
+                   steer=z["steer"] if "steer" in z else None)
 
 
 class ComposeHooks:
@@ -215,11 +220,15 @@ class ComposeHooks:
         j, self._j = self._j, None
         return j
 
+    def steering(self, j):
+        """Guide at frame j only where the prior disagrees with the demo (no mask: everywhere)."""
+        return self.use_guide and (self.prog.steer is None or bool(self.prog.steer[j]))
+
     def __call__(self, obs, pre, meta=None):
         j = self._frame(obs)
         if self._released_now():
             return None, None
-        return (self.guide_at(j) if self.use_guide else None), None
+        return (self.guide_at(j) if self.steering(j) else None), None
 
 
 class HybridHooks(ComposeHooks):
@@ -238,5 +247,5 @@ class HybridHooks(ComposeHooks):
             return None, (lambda x, t: self.on)
         if self._released_now():
             return None, None
-        return (self.guide_at(j) if self.use_guide else None), None
+        return (self.guide_at(j) if self.steering(j) else None), None
 
