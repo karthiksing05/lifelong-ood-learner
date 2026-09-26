@@ -28,7 +28,7 @@ for tid in ${TASKS//+/ }; do
       *) echo "unknown arm $arm"; exit 1 ;;
     esac
     case $arm in raw_*|code_*|prompt) PB=$($PY -c "import sys; sys.path.insert(0,'.'); from lifelong_ood.policy.compose import DemoProgram; print(DemoProgram.load('$P').bytes())") ;; esac
-    OUT=$R/m3_${tid}_${arm}${TAGX}.json
+    OUT=$R/${EXP}_${tid}_${arm}${TAGX}.json
     j=$(sbatch --parsable --nice=$NICE --export=ALL,MODE="$MODE",SUITE=libero_90,TASKS=$tid,TRIALS=$TRIALS,FIRST=$FIRST,EXPERIMENT=$EXP,TAG=${arm}${TAGX},PROGRAM_BYTES=$PB,OUT=$OUT experiments/roll.sbatch)
     echo "task $tid arm $arm -> job $j"
   done
