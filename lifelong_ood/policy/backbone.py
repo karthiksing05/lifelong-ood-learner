@@ -235,7 +235,12 @@ class PolicyBackbone:
                 e0 = x + (1.0 - t) * vt
                 et = torch.as_tensor(eps_fn(xr, tf), dtype=torch.float32, device=self.device)
                 w = w_fn(xr, tf)
-                w = w.to(e0.dtype).reshape(-1, 1) if torch.is_tensor(w) else float(w)
+                if isinstance(w, np.ndarray):
+                    w = torch.as_tensor(w, dtype=e0.dtype, device=e0.device)
+                if torch.is_tensor(w):                  # per row [n] or per dimension [dim]
+                    w = w.to(e0.dtype).reshape(1, -1) if w.numel() == self.dim else w.to(e0.dtype).reshape(-1, 1)
+                else:
+                    w = float(w)
                 e = e0.clone()
                 e[:, self.real] = e0[:, self.real] + w * (et - e0[:, self.real])
                 vt = (e - x) / (1.0 - t)

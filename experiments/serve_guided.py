@@ -64,7 +64,8 @@ def main():
         hooks = ComposeHooks(prog, w0=float(kv.get("w0", 1.2)), window=int(kv.get("window", 20)), schedule=kv.get("sched", "variance"),
                              var=float(kv["var"]) if kv.get("var") else None, use_guide=how != "prompt",
                              use_prompt=how in ("prompt", "prompt+guide"), stall=int(kv.get("stall", 0)),
-                             key_mode=kv.get("key", "pos"), agree=float(kv["agree"]) if kv.get("agree") else None)
+                             key_mode=kv.get("key", "pos"), agree=float(kv["agree"]) if kv.get("agree") else None,
+                             contact=int(kv.get("contact", 0)), arm_only=kv.get("arm", "0") == "1")
         logging.info(f"program {path}: variant {prog.variant}, {len(prog.mu)} frames, {prog.bytes()} B, params {kv}")
     elif a.mode.startswith("hybrid:") and "?" in a.mode:
         # hybrid:<program.npz>&expert=<expert.pt>?w0=1&sched=const&var=0.001&stall=3&key=pose

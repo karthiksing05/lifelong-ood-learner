@@ -139,7 +139,7 @@ class ComposeHooks:
     """Per-episode state: a pointer into the program, advanced by nearest-state alignment in a forward window."""
 
     def __init__(self, program, w0=1.2, wmax=2.0, window=20, lookahead=0, schedule="variance", var=None, use_guide=True,
-                 use_prompt=False, stall=0, release=2, key_mode="pos", agree=None):
+                 use_prompt=False, stall=0, release=2, key_mode="pos", agree=None, contact=0, arm_only=False):
         """schedule: "variance" (Zekun's Eq. 16: strong at high noise, fading as the policy takes over) or
         "const" (w = w0 at every step: w0 = 1 samples the teacher alone, i.e. executes the program open-loop in
         chunk space; pi0.5's conditional is nearly deterministic, so a fading guide may be overwritten late)."""
@@ -159,6 +159,19 @@ class ComposeHooks:
         # executed and the program stays silent.  Composition only where the prior is off the demo (a capable prior
         # on a known task was degraded by forcing the program: white mug, zero-shot 9/10 vs codes 3/10).
         self.agree = None if agree is None else float(agree)
+        # CONTACT release (0 = off): within +-`contact` frames of the demo's gripper events the program is silent and the
+        # prior acts -- the program carries the transport, pi0.5's visually grounded grasp and release do the contact.
+        # Gripper events come from the program's own gripper dimension (first step of each chunk, sign changes).
+        self.contact = int(contact)
+        g = np.sign(np.asarray(program.mu)[:, 6])
+        ev = np.where(np.diff(g) != 0)[0] + 1
+        self.near_contact = np.zeros(len(program.mu), bool)
+        for e in ev:
+            self.near_contact[max(0, e - self.contact): e + self.contact + 1] = self.contact > 0
+        # ARM ONLY: guide the six arm dimensions of every step; the gripper dimension stays the prior's.
+        self.arm_only = bool(arm_only)
+        self.arm_mask = np.ones(program.mu.shape[1], np.float32)
+        self.arm_mask[6::7] = 0.0
         self.z2 = []
         self._jg = None
         self._still, self._released = 0, 0
@@ -233,8 +246,14 @@ class ComposeHooks:
         self._jg = j
         v = self.prog.var[j] if self.var is None else np.full_like(self.prog.var[j], self.var)
         if self.schedule == "const":
-            return guide(self.prog.mu[j], v, wmax=self.w0, schedule="const", path="flow")
-        return guide(self.prog.mu[j], v, w0=self.w0, wmax=self.wmax, path="flow")
+            g = guide(self.prog.mu[j], v, wmax=self.w0, schedule="const", path="flow")
+        else:
+            g = guide(self.prog.mu[j], v, w0=self.w0, wmax=self.wmax, path="flow")
+        if self.arm_only:
+            eps_fn, w_fn = g
+            mask = self.arm_mask
+            g = (eps_fn, lambda x, u: np.asarray(w_fn(x, u), np.float32) * mask)
+        return g
 
     def _frame(self, obs):
         if self._j is None:                          # called without rewrite(): align here
@@ -249,7 +268,7 @@ class ComposeHooks:
 
     def __call__(self, obs, pre, meta=None):
         j = self._frame(obs)
-        if self._released_now():
+        if self._released_now() or self.near_contact[j]:
             return None, None
         return (self.guide_at(j) if self.steering(j) else None), None
 
