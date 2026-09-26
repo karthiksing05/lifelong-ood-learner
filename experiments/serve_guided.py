@@ -74,7 +74,8 @@ def main():
         from lifelong_ood.policy.composer import ComposerHooks, ComposerProgram
         from lifelong_ood.tree.nodes import Tree
         cp = ComposerProgram.load(path)
-        hooks = ComposerHooks(cp, Tree.load(cp.library), w0=float(kv.get("w0", 1.0)), window=int(kv.get("window", 4)),
+        lib = cp.library if os.path.isabs(cp.library) else os.path.join(ROOT, cp.library)   # the server runs from openpi/
+        hooks = ComposerHooks(cp, Tree.load(lib), w0=float(kv.get("w0", 1.0)), window=int(kv.get("window", 4)),
                               schedule=kv.get("sched", "const"), var=float(kv["var"]) if kv.get("var") else 1e-3,
                               stall=int(kv.get("stall", 3)), key_mode=kv.get("key", "pose"))
         logging.info(f"composer {path}: {len(cp.ids)} prototypes, {cp.bytes()} B, params {kv}")
