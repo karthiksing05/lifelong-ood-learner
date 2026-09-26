@@ -117,9 +117,12 @@ class DemoProgram:
                            states=take(self.states), steer=take(self.steer))
 
     def bytes(self):
-        """What the program stores: codes (uint16 id + fp16 weight each) or the raw chunks (fp16), + the keys, + one
-        uint8 prompt index per frame when a prompt program is attached (the instructions are the library's)."""
-        store = sum(4 * len(c) for c in self.codes) if self.variant == "code" else 2 * int(self.mu.size)
+        """What the program needs to EXECUTE what it executes.  A "code" program's teacher is the per-dimension PoE whose
+        weights were fitted to the demo chunk (decompose's per-dim softmax), so it needs those weights or its 70-dim mean
+        per frame -- as much as the raw chunk.  (Charging only the node ids + one scalar weight each, as before
+        2026-09-25 late, under-counted: ids + scalar weights rebuild a teacher 0.25-0.39 rms from the demo chunk where
+        the executed one is 0.04-0.08; RETRACTED.)  + the alignment keys, + one uint8 prompt index per frame."""
+        store = 2 * int(self.mu.size)
         keys = 2 * int(self.states.size) if self.states is not None else 2 * int(self.key.size)
         return int(store + keys + (0 if self.prompt_id is None else len(self.prompt_id))
                    + (0 if self.steer is None else (len(self.steer) + 7) // 8))

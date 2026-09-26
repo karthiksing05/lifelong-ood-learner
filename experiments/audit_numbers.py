@@ -91,8 +91,6 @@ EMBODIED = [
     ("M3 held-out: LoRA where the prior fails", emb("m3_summary", "metrics.arms.lora.prior_fails.rate", tag="heldout"), "0.40"),
     ("M3 held-out: LoRA successes", emb("m3_summary", "metrics.arms.lora.prior_fails.k", tag="heldout"), "32"),
     ("M3 held-out: LoRA size MB", emb("m3_summary", "metrics.lora_mb", tag="heldout"), "18.7"),
-    ("M3 held-out: smallest program KB", lambda: tuple([L.mean("m3_summary", "metrics.code_bytes_min", tag="heldout")[0] / 1e3] + list(L.mean("m3_summary", "metrics.code_bytes_min", tag="heldout")[1:])), "2.6"),
-    ("M3 held-out: largest program KB", lambda: tuple([L.mean("m3_summary", "metrics.code_bytes_max", tag="heldout")[0] / 1e3] + list(L.mean("m3_summary", "metrics.code_bytes_max", tag="heldout")[1:])), "6.3"),
     ("M3 held-out: turn off the stove, zero-shot", emb("m3_heldout", "metrics.success_rate", tag="zeroshot", keys__tasks="39"), "0.0"),
     ("M3 held-out: turn off the stove, library codes", emb("m3_heldout", "metrics.success_rate", tag="code_replay", keys__tasks="39"), "0.9"),
     ("M3 held-out: practice then compose, all six", emb("m3_summary", "metrics.arms.practice.all.rate", tag="heldout"), "0.625"),

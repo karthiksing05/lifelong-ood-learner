@@ -1,0 +1,83 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/m3_final_19_zeroshot.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "roll.sh MODE=ours SUITE=libero_90 TASKS=19 TRIALS=20 (job 3956141)",
+ "config": {
+  "client": {
+   "first_trial": 30,
+   "host": "127.0.0.1",
+   "max_steps": 0,
+   "no_meta": false,
+   "out": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/m3_final_19_zeroshot.json",
+   "port": 9154,
+   "replan": 5,
+   "resize": 224,
+   "seed": 7,
+   "suite": "libero_90",
+   "tasks": "19",
+   "trials": 20,
+   "videos": 2,
+   "wait": 10
+  },
+  "job": "3956141",
+  "mode": "ours"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "heistotron.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3956141",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_final",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "578589db4509d8b586e67d331531e64ec29bfac8",
+  "short": "578589db"
+ },
+ "keys": {
+  "first_trial": 30,
+  "mode": "ours",
+  "tasks": "19",
+  "trials": 20
+ },
+ "metrics": {
+  "complete": true,
+  "n_episodes": 20,
+  "secs": 487.16283106803894,
+  "success_rate": 1.0,
+  "tasks": {
+   "19": {
+    "errors": 0,
+    "language": "put the moka pot on the stove",
+    "mean_steps": 274.6,
+    "n": 20,
+    "success_rate": 1.0
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_final__libero_90__zeroshot__first_trial-30__mode-ours__tasks-19__trials-20__s7__578589db",
+ "schema": 1,
+ "script": "experiments/libero_client.py",
+ "seconds": null,
+ "seed": 7,
+ "source_commit": null,
+ "started": "2026-09-26T02:09:19+00:00",
+ "stream": null,
+ "tag": "zeroshot"
+}
