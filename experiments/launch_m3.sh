@@ -25,7 +25,7 @@ for tid in ${TASKS//+/ }; do
       code_blend)  P=$R/r3_prog_${tid}_code${PROGTAG}.npz; MODE="program:$P?w0=0.7&sched=const&var=0.001&$COMMON" ;;
       prompt)      P=$R/r3_prog_${tid}_code${PROGTAG}.npz; MODE="program:$P?how=prompt&$COMMON" ;;
       lora)        MODE="lora:$R/r3_lora_${tid}.pt" ;;
-      dimfold)     P=$R/r7_dimfold_${tid}_s5.npz; E=${EXPTAG:-_approach}; MODE="hybrid:$P?expert=$R/r4_${tid}${E}_expert.pt&w0=1.0&sched=const&var=0.001&key=pose&stall=3&window=4" ;;
+      dimfold)     S=${DSTRIDE:-5}; W=$((S == 1 ? 20 : 4)); P=$R/r7_dimfold_${tid}_s${S}.npz; E=${EXPTAG:-_approach}; MODE="hybrid:$P?expert=$R/r4_${tid}${E}_expert.pt&w0=1.0&sched=const&var=0.001&key=pose&stall=3&window=$W" ;;
       dimcode)     S=${DSTRIDE:-5}; W=$((S == 1 ? 20 : 4)); P=$R/r7_dim_${tid}_s${S}.npz; MODE="program:$P?w0=1.0&sched=const&var=0.001&key=pose&stall=3&window=$W" ;;
       composer)    P=$R/r6_comp_${tid}${CTAG:-}.npz; MODE="composer:$P?w0=1.0&sched=const&var=0.001&key=pose&stall=3&window=4" ;;
       compfold)    P=$R/r6_comp_${tid}${CTAG:-}.npz; E=${EXPTAG:-_approach}; MODE="comphybrid:$P?expert=$R/r4_${tid}${E}_expert.pt&foldprog=$R/r4_${tid}${E}_program.npz&w0=1.0&sched=const&var=0.001&key=pose&stall=3&window=4" ;;
