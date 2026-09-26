@@ -66,3 +66,15 @@ from a wrist twist and closed-gripper right-back strokes, and from back-left str
 ![white bowl](../figures/robot/borrow_36.png)
 
 ![stove off](../figures/robot/borrow_39.png)
+
+## Borrowing parts of prototypes
+
+Two ways to compose a new task from the library by borrowing parts of prototype trajectories (numbers in `ledger/`):
+
+- **Learned soft borrowing** (`lifelong_ood/policy/composer.py`): a softmax over 32 prototypes per step and dimension, from a
+  small gate on the robot state and progress plus per-prototype time and dimension profiles.  Smooth and readable (the scripts
+  above) but not precise enough for contact.
+- **Dimension-wise borrowing** (`lifelong_ood/policy/dimcode.py`): each action dimension's whole 10-step trajectory from one of
+  eight jointly chosen prototypes; the executed chunk is rebuilt exactly from the stored ids and choices, at half the demo's jerk
+  and 1-8 KB per task.  With practice and a small fold where the demo grasps, it matches a per-task LoRA at 90x less storage
+  (README, "M3 FINAL").
