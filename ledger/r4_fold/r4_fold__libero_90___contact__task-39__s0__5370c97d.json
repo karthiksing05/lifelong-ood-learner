@@ -1,0 +1,126 @@
+{
+ "artifacts": [
+  "results/robot/r4_39_contact_expert.pt",
+  "results/robot/r4_39_contact_program.npz",
+  "results/robot/r4_39_contact_tree.npz"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 3248,
+  "experts": 4677632,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 4703380,
+  "tree": 22500
+ },
+ "command": "experiments/r4_fold.py --task 39 --tree results/robot/r2b_libero_40_tree.npz --library results/robot/r2b_libero_40.npz --rank 4 --steps 1000 --tag _contact --arrival contact --contact 10",
+ "config": {
+  "K": 3,
+  "anchor_weight": 1.0,
+  "arrival": "contact",
+  "band": "0,1,2",
+  "contact": 10,
+  "library": "results/robot/r2b_libero_40.npz",
+  "lr": 0.0001,
+  "n_anchor": 384,
+  "n_cal": 1500,
+  "q": 0.95,
+  "rank": 4,
+  "seed": 0,
+  "steps": 1000,
+  "tag": "_contact",
+  "task": 39,
+  "tree": "results/robot/r2b_libero_40_tree.npz"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "spd-13.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3955704",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r4_fold",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "5370c97dbbf73d27a459a15ac968c6578ea3dd60",
+  "short": "5370c97d"
+ },
+ "keys": {
+  "task": 39
+ },
+ "metrics": {
+  "anchor_weight": 1.0,
+  "curve": {
+   "anchor": [
+    0.0,
+    0.0011194072430953383,
+    0.0006361089763231575,
+    0.00024584034690633416,
+    0.000242697075009346,
+    0.00033570631057955325,
+    0.0002911491319537163,
+    0.00036084631574340165,
+    0.00017530377954244614,
+    0.00013041570491623133,
+    0.00016203550330828875
+   ],
+   "loss": [
+    0.09075184911489487,
+    0.012741637416183949,
+    0.008893445134162903,
+    0.008401313796639442,
+    0.0033034970983862877,
+    0.0005575809627771378,
+    0.001026257872581482,
+    0.0013196836225688457,
+    0.0006821458810009062,
+    0.0020044087432324886,
+    0.00029234765679575503
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "demo_episode": 3741,
+  "expert_params": 2338816,
+  "n_frames": 116,
+  "n_new_nodes": 75,
+  "n_unexplained": 21,
+  "nll_median": {
+   "0": 2.1192191133177185,
+   "1": -0.4323250846509652,
+   "2": -0.8185951974265819
+  },
+  "task": 39,
+  "text": "turn off the stove",
+  "thresholds": {
+   "0": 3.148381656392142,
+   "1": -0.09127364671692659,
+   "2": -0.720244935179938
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r4_fold__libero_90___contact__task-39__s0__5370c97d",
+ "schema": 1,
+ "script": "experiments/r4_fold.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-26T01:24:40+00:00",
+ "stream": null,
+ "tag": "_contact"
+}

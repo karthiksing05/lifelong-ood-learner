@@ -1,0 +1,83 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/m3_42_code_replay_s5.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 1015,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 1015,
+  "tree": 0
+ },
+ "command": "roll.sh MODE=program:/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r3_prog_42_code_lib40s5.npz?w0=1.0&sched=const&var=0.001&key=pose&stall=3&window=4 SUITE=libero_90 TASKS=42 TRIALS=10 (job 3955625)",
+ "config": {
+  "client": {
+   "first_trial": 0,
+   "host": "127.0.0.1",
+   "max_steps": 0,
+   "no_meta": false,
+   "out": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/m3_42_code_replay_s5.json",
+   "port": 9098,
+   "replan": 5,
+   "resize": 224,
+   "seed": 7,
+   "suite": "libero_90",
+   "tasks": "42",
+   "trials": 10,
+   "videos": 2,
+   "wait": 10
+  },
+  "job": "3955625",
+  "mode": "program:/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r3_prog_42_code_lib40s5.npz?w0=1.0&sched=const&var=0.001&key=pose&stall=3&window=4"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "spd-13.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3955625",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_dev",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "5370c97dbbf73d27a459a15ac968c6578ea3dd60",
+  "short": "5370c97d"
+ },
+ "keys": {
+  "first_trial": 0,
+  "mode": "program:/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r3_prog_42_code_lib40s5.npz?w0=1.0&sched=const&var=0.001&key=pose&stall=3&window=4",
+  "tasks": "42",
+  "trials": 10
+ },
+ "metrics": {
+  "complete": true,
+  "n_episodes": 10,
+  "secs": 336.3477578163147,
+  "success_rate": 0.1,
+  "tasks": {
+   "42": {
+    "errors": 0,
+    "language": "put the frying pan under the cabinet shelf",
+    "mean_steps": 377.1,
+    "n": 10,
+    "success_rate": 0.1
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_dev__libero_90__code_replay_s5__first_trial-0__mode9c2a919ecc20__tasks-42__trials-10__s7__5370c97d",
+ "schema": 1,
+ "script": "experiments/libero_client.py",
+ "seconds": null,
+ "seed": 7,
+ "source_commit": null,
+ "started": "2026-09-26T01:16:56+00:00",
+ "stream": null,
+ "tag": "code_replay_s5"
+}

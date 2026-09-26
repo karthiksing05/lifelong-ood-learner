@@ -65,6 +65,8 @@ def main():
                     help="frames the expert learns and is switched on at: the library-unexplained ones, the contact windows "
                          "around the demo's gripper events (where a grasp needs closed-loop precision), or every frame")
     ap.add_argument("--contact", type=int, default=10)
+    ap.add_argument("--pre", type=int, default=None, help="contact window starts this many frames before each gripper event "
+                    "(default: --contact); a wider pre-window covers the visually guided approach")
     ap.add_argument("--tag", default="")
     a = ap.parse_args()
     rng = np.random.default_rng(a.seed)
@@ -93,9 +95,10 @@ def main():
     if a.arrival == "contact":
         ev = D.gripper_events(ep["actions"])
         unexplained = np.zeros(T, bool)
+        pre = a.contact if a.pre is None else a.pre
         for e in ev:
-            unexplained[max(0, e - a.contact): e + a.contact + 1] = True
-        log(f"[r4] contact windows +-{a.contact} around gripper events {ev.tolist()}: {int(unexplained.sum())} frames")
+            unexplained[max(0, e - pre): e + a.contact + 1] = True
+        log(f"[r4] contact windows -{pre}/+{a.contact} around gripper events {ev.tolist()}: {int(unexplained.sum())} frames")
     elif a.arrival == "all":
         unexplained = np.ones(T, bool)
     log(f"[r4] task {a.task} '{text}': {T} frames, {int(unexplained.sum())} unexplained ({unexplained.mean():.2f}); "
