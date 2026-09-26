@@ -1,0 +1,65 @@
+{
+ "artifacts": [
+  "results/robot/r7_dim_67_s5.npz"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 630,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 630,
+  "tree": 0
+ },
+ "command": "experiments/r7_dimcode.py",
+ "config": {
+  "K": 8,
+  "strides": "1,5",
+  "tasks": "39,35,36,42,67,19",
+  "tree": "results/robot/r2b_libero_40_tree.npz"
+ },
+ "env": {
+  "device": "cpu",
+  "host": "sky2.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r7_dimcode",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "74053489ac282b2d1b5bf59b9d040f96d3f89c94",
+  "short": "74053489"
+ },
+ "keys": {
+  "task": 67
+ },
+ "metrics": {
+  "K": 8,
+  "bytes": 630,
+  "frames": 88,
+  "jerk": 0.01066537480801344,
+  "jerk_demo": 0.02081022970378399,
+  "kept": 18,
+  "raw_bytes": 13728,
+  "rebuild_max_err": 0.0,
+  "rms": 0.020829668268561363,
+  "stride": 5,
+  "task": 67,
+  "text": "put the white mug on the left plate"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r7_dimcode__libero_90___s5__task-67__s0__74053489",
+ "schema": 1,
+ "script": "experiments/r7_dimcode.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-26T03:40:39+00:00",
+ "stream": null,
+ "tag": "_s5"
+}

@@ -1,0 +1,127 @@
+{
+ "artifacts": [
+  "results/robot/r4_36_approach_r1_expert.pt",
+  "results/robot/r4_36_approach_r1_program.npz",
+  "results/robot/r4_36_approach_r1_tree.npz"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 34008,
+  "experts": 1169408,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 1203416,
+  "tree": 0
+ },
+ "command": "experiments/r4_fold.py --task 36 --tree results/robot/r2b_libero_40_tree.npz --library results/robot/r2b_libero_40.npz --rank 1 --steps 1000 --tag _approach_r1 --arrival contact --contact 10 --pre 30",
+ "config": {
+  "K": 3,
+  "anchor_weight": 1.0,
+  "arrival": "contact",
+  "band": "0,1,2",
+  "contact": 10,
+  "library": "results/robot/r2b_libero_40.npz",
+  "lr": 0.0001,
+  "n_anchor": 384,
+  "n_cal": 1500,
+  "pre": 30,
+  "q": 0.95,
+  "rank": 1,
+  "seed": 0,
+  "steps": 1000,
+  "tag": "_approach_r1",
+  "task": 36,
+  "tree": "results/robot/r2b_libero_40_tree.npz"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "brainiac.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3956173",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r4_fold",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "b9689927f5cffc9874d13d5332b4942bec2fa364",
+  "short": "b9689927"
+ },
+ "keys": {
+  "task": 36
+ },
+ "metrics": {
+  "anchor_weight": 1.0,
+  "curve": {
+   "anchor": [
+    0.0,
+    0.0010210963664576411,
+    0.0012949173105880618,
+    0.0010376127902418375,
+    0.0009355043293908238,
+    0.0007346110651269555,
+    0.000601245672442019,
+    0.0005324406083673239,
+    0.000584032793994993,
+    0.00023219372087623924,
+    0.00032811128767207265
+   ],
+   "loss": [
+    0.05923419073224068,
+    0.04102994129061699,
+    0.012797159142792225,
+    0.01759970933198929,
+    0.007192613091319799,
+    0.012120752595365047,
+    0.009183011949062347,
+    0.009240713901817799,
+    0.004584893584251404,
+    0.004525067750364542,
+    0.0017034433549270034
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "demo_episode": 455,
+  "expert_params": 584704,
+  "n_frames": 218,
+  "n_new_nodes": 0,
+  "n_unexplained": 82,
+  "nll_median": {
+   "0": -1.5021191129895661,
+   "1": -1.528852593988931,
+   "2": -1.0339950709251653
+  },
+  "task": 36,
+  "text": "put the white bowl on the plate",
+  "thresholds": {
+   "0": 3.148381656392142,
+   "1": -0.09127364671692659,
+   "2": -0.720244935179938
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r4_fold__libero_90___approach_r1__task-36__s0__b9689927",
+ "schema": 1,
+ "script": "experiments/r4_fold.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-26T03:25:16+00:00",
+ "stream": null,
+ "tag": "_approach_r1"
+}

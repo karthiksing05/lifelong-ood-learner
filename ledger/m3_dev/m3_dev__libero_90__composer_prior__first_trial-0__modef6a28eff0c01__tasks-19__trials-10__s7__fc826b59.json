@@ -1,0 +1,83 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/m3_dev_19_composer_prior.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 4578,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 4578,
+  "tree": 0
+ },
+ "command": "roll.sh MODE=composer:/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r6_comp_19_prior.npz?w0=1.0&sched=const&var=0.001&key=pose&stall=3&window=4 SUITE=libero_90 TASKS=19 TRIALS=10 (job 3956567)",
+ "config": {
+  "client": {
+   "first_trial": 0,
+   "host": "127.0.0.1",
+   "max_steps": 0,
+   "no_meta": false,
+   "out": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/m3_dev_19_composer_prior.json",
+   "port": 9050,
+   "replan": 5,
+   "resize": 224,
+   "seed": 7,
+   "suite": "libero_90",
+   "tasks": "19",
+   "trials": 10,
+   "videos": 2,
+   "wait": 10
+  },
+  "job": "3956567",
+  "mode": "composer:/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r6_comp_19_prior.npz?w0=1.0&sched=const&var=0.001&key=pose&stall=3&window=4"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "voltron.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3956567",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_dev",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "fc826b59fdc1654b5a89bec53345073cc8226ddc",
+  "short": "fc826b59"
+ },
+ "keys": {
+  "first_trial": 0,
+  "mode": "composer:/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r6_comp_19_prior.npz?w0=1.0&sched=const&var=0.001&key=pose&stall=3&window=4",
+  "tasks": "19",
+  "trials": 10
+ },
+ "metrics": {
+  "complete": true,
+  "n_episodes": 10,
+  "secs": 202.14877080917358,
+  "success_rate": 1.0,
+  "tasks": {
+   "19": {
+    "errors": 0,
+    "language": "put the moka pot on the stove",
+    "mean_steps": 183.8,
+    "n": 10,
+    "success_rate": 1.0
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_dev__libero_90__composer_prior__first_trial-0__modef6a28eff0c01__tasks-19__trials-10__s7__fc826b59",
+ "schema": 1,
+ "script": "experiments/libero_client.py",
+ "seconds": null,
+ "seed": 7,
+ "source_commit": null,
+ "started": "2026-09-26T03:39:35+00:00",
+ "stream": null,
+ "tag": "composer_prior"
+}
