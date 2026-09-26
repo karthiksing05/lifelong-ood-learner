@@ -1,0 +1,53 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration of the practice-allocation rule",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky2.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "7281a01fa01dcd2abc9fa39beb6db7788de6c4ce",
+  "short": "7281a01f"
+ },
+ "keys": {},
+ "metrics": {
+  "bytes": "program bytes where the program is kept; LoRA bytes (only) where the LoRA is used; 0 where the prior is kept",
+  "evaluation": "final states 30-49 (m3_final rows of the chosen arm), paired against practice_lora (LoRA wherever the prior fails) and ours_dim1_last2 (the program wherever the prior fails)",
+  "hypotheses": {
+   "A1": "ours_alloc is non-inferior to practice_lora at -0.10 (one-sided 95% cluster bootstrap)",
+   "A2": "ours_alloc stores less than half of practice_lora's bytes"
+  },
+  "rule": "ALLOCATE BYTES BY PRACTICE: (1) keep the prior if its zero-shot practice (states 0-9, m3_compose) succeeds >= 0.5; (2) else practise the composed program -- borrowing at every frame + the 258 KB fold where the demo grasps (dimfold_s1_last2; dimcode_s1 where it does not) -- on the same states 0-9 (experiment m3_practice, tag dimbest) and keep it if it succeeds >= 0.5; (3) else train the rank-16 LoRA (18.7 MB) and use it.",
+  "tasks": "all tasks of m3_final where the prior's practice fails",
+  "written_before": "any wave A/B final row except tasks 1 and 6 (zero-shot, replay, borrowing at every 5th frame, borrowing + fold, LoRA)"
+ },
+ "notes": "conceived after the 6-task final results, registered before the wave A/B results",
+ "retired": null,
+ "run_id": "m3_prereg__libero_90__alloc__s0__7281a01f",
+ "schema": 1,
+ "script": "(inline, session 2026-09-26)",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-26T06:46:11+00:00",
+ "stream": null,
+ "tag": "alloc"
+}

@@ -1,0 +1,83 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/m3_final_6_lora.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "roll.sh MODE=lora:/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r3_lora_6.pt SUITE=libero_90 TASKS=6 TRIALS=20 (job 3960381)",
+ "config": {
+  "client": {
+   "first_trial": 30,
+   "host": "127.0.0.1",
+   "max_steps": 0,
+   "no_meta": false,
+   "out": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/m3_final_6_lora.json",
+   "port": 9763,
+   "replan": 5,
+   "resize": 224,
+   "seed": 7,
+   "suite": "libero_90",
+   "tasks": "6",
+   "trials": 20,
+   "videos": 2,
+   "wait": 10
+  },
+  "job": "3960381",
+  "mode": "lora:/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r3_lora_6.pt"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "deebot.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3960381",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_final",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "7281a01fa01dcd2abc9fa39beb6db7788de6c4ce",
+  "short": "7281a01f"
+ },
+ "keys": {
+  "first_trial": 30,
+  "mode": "lora:/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r3_lora_6.pt",
+  "tasks": "6",
+  "trials": 20
+ },
+ "metrics": {
+  "complete": true,
+  "n_episodes": 20,
+  "secs": 551.274640083313,
+  "success_rate": 0.85,
+  "tasks": {
+   "6": {
+    "errors": 0,
+    "language": "open the bottom drawer of the cabinet",
+    "mean_steps": 167.0,
+    "n": 20,
+    "success_rate": 0.85
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_final__libero_90__lora__first_trial-30__modedc8314f0f4c0__tasks-6__trials-20__s7__7281a01f",
+ "schema": 1,
+ "script": "experiments/libero_client.py",
+ "seconds": null,
+ "seed": 7,
+ "source_commit": null,
+ "started": "2026-09-26T06:46:07+00:00",
+ "stream": null,
+ "tag": "lora"
+}

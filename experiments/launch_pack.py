@@ -66,6 +66,8 @@ def arm_spec(tid, arm, fold, demo=0):
     }
     if arm == "leafbest":                                                # leaf borrowing + the fold where the demo grasps
         return table["leaffold_s1_last2"] if fold else table["leaf_s1"]
+    if arm == "dimbest":                                                 # borrowing + the fold where the demo grasps
+        return table["dimfold_s1_last2"] if fold else table["dimcode_s1"]
     return table[arm]
 
 
@@ -85,6 +87,9 @@ def main():
     ap.add_argument("--prep-job", default="", help="TASK:JOB,... preps already queued or running")
     ap.add_argument("--per", type=int, default=2, help="instances per GPU")
     ap.add_argument("--demo", type=int, default=0, help="k > 0: the arms built from IPEC episode k (tags and files _d<k>)")
+    ap.add_argument("--experiment", default="m3_final", help="m3_final (states 30-49) or m3_practice (practice states 0-9)")
+    ap.add_argument("--first", type=int, default=None)
+    ap.add_argument("--trials", type=int, default=None)
     ap.add_argument("--dry", action="store_true")
     a = ap.parse_args()
     os.chdir(ROOT)
@@ -92,6 +97,7 @@ def main():
     running = {os.path.basename(x) for x in a.running.split(",") if x}
     prep_job = dict(x.split(":") for x in a.prep_job.split(",") if x)
     n_pack = len(os.listdir(os.path.join(R, ".packs")))
+    queue = []
     for tid in [int(x) for x in a.tasks.replace("+", ",").split(",")]:
         fold = grasps(tid, a.demo)
         dsfx = f"_d{a.demo}" if a.demo else ""
@@ -108,10 +114,12 @@ def main():
             tag = ("leaffold_s1_last2" if fold else "leaf_s1") if arm == "leafbest" else arm
             tag = ("dimfold_s1_last2" if fold else "dimcode_s1") if arm == "dimbest" else tag
             tag += dsfx
-            out = os.path.join(R, f"m3_final_{tid}_{tag}.json")
+            first = a.first if a.first is not None else (30 if a.experiment == "m3_final" else 0)
+            trials = a.trials if a.trials is not None else (20 if a.experiment == "m3_final" else 10)
+            out = os.path.join(R, f"{a.experiment}_{tid}_{tag}.json")
             if os.path.exists(out) or os.path.basename(out) in running:
                 continue
-            spec = dict(MODE=s[0], SUITE="libero_90", TASKS=tid, TRIALS=20, FIRST=30, EXPERIMENT="m3_final", TAG=tag,
+            spec = dict(MODE=s[0], SUITE="libero_90", TASKS=tid, TRIALS=trials, FIRST=first, EXPERIMENT=a.experiment, TAG=tag,
                         PROGRAM_BYTES=s[1], OUT=out)
             (specs_dep if s[2] else specs_free).append(spec)
         dep = None
@@ -121,16 +129,21 @@ def main():
             else:
                 dep = sbatch([f"--export=ALL,TID={tid},FOLD={int(fold)},DEMO={a.demo}", "experiments/prep.sbatch"], a.dry)
                 print(f"task {tid} prep -> job {dep} (fold {int(fold)})")
-        for group, d in ((specs_free, None), (specs_dep, dep)):
-            for i in range(0, len(group), a.per):
-                n_pack += 1
-                path = os.path.join(R, ".packs", f"p_{n_pack:04d}.tsv")
-                with open(path, "w") as f:
-                    for sp in group[i:i + a.per]:
-                        f.write("\t".join(f"{k}={v}" for k, v in sp.items()) + "\n")
-                args = ([f"--dependency=afterok:{d}"] if d else []) + [f"--export=ALL,SPECS={path}", "experiments/roll_pack.sbatch"]
-                j = sbatch(args, a.dry)
-                print(f"task {tid} pack {os.path.basename(path)} [{', '.join(sp['TAG'] + ('/practice' if sp['EXPERIMENT'] == 'm3_compose' else '') for sp in group[i:i + a.per])}] -> job {j}")
+        queue += [(sp, None) for sp in specs_free] + [(sp, dep) for sp in specs_dep]
+    # pack across tasks: specs without a dependency first, then those with one; a pack waits on the union of its deps
+    queue.sort(key=lambda x: x[1] is not None)
+    for i in range(0, len(queue), a.per):
+        grp = queue[i:i + a.per]
+        n_pack += 1
+        path = os.path.join(R, ".packs", f"p_{n_pack:04d}.tsv")
+        with open(path, "w") as f:
+            for sp, _ in grp:
+                f.write("\t".join(f"{k}={v}" for k, v in sp.items()) + "\n")
+        deps = sorted({d for _, d in grp if d})
+        args = ([f"--dependency=afterok:{':'.join(deps)}"] if deps else []) + [f"--export=ALL,SPECS={path}", "experiments/roll_pack.sbatch"]
+        j = sbatch(args, a.dry)
+        print(f"pack {os.path.basename(path)} [{', '.join(str(sp['TASKS']) + ':' + sp['TAG'] + ('/practice' if sp['EXPERIMENT'] == 'm3_compose' else '') for sp, _ in grp)}]"
+              f"{' after ' + ','.join(deps) if deps else ''} -> job {j}")
 
 
 if __name__ == "__main__":

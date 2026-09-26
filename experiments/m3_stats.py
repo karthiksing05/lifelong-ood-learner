@@ -33,18 +33,19 @@ METHODS = {"zeroshot": None, "practice_replay": ("raw_replay", None), "practice_
            "ours_dim": ("dimcode_s5", None), "ours_dim1": ("dimcode_s1", None),
            "ours_dim1_last2": ("dimfold_s1_last2", "dimcode_s1"), "ours_codes_full": ("hybrid_approach", "code_replay"),
            "ours_leaf": ("leaf_s5", None), "ours_leaf1_last2": ("leaffold_s1_last2", "leaf_s1"), "ours_shared1": ("shared_s1", None),
-           "ours_seg": ("seg_s5", None)}
+           "ours_seg": ("seg_s5", None), "ours_alloc": "practice"}
 NAMES = {"zeroshot": "zero-shot", "practice_replay": "demo replay", "practice_lora": "few-shot LoRA (rank 16)",
          "ours_dim": "borrowing, every 5th frame", "ours_dim1": "borrowing, every frame",
          "ours_dim1_last2": "borrowing + 258 KB fold", "ours_codes_full": "PoE codes + 4.7 MB fold",
          "ours_leaf": "leaf borrowing, every 5th frame", "ours_leaf1_last2": "leaf borrowing + 258 KB fold",
-         "ours_shared1": "shared-prototype borrowing", "ours_seg": "segment borrowing"}
+         "ours_shared1": "shared-prototype borrowing", "ours_seg": "segment borrowing",
+         "ours_alloc": "practice-allocated (program, else LoRA)"}
 COMPARE = [("ours_dim1_last2", "practice_lora"), ("ours_dim1_last2", "practice_replay"), ("ours_dim1_last2", "zeroshot"),
            ("ours_dim", "practice_lora"), ("ours_dim", "practice_replay"), ("ours_dim1", "practice_replay"),
            ("practice_lora", "practice_replay"), ("ours_leaf1_last2", "practice_lora"), ("ours_leaf1_last2", "practice_replay"),
            ("ours_leaf", "ours_dim"), ("ours_leaf1_last2", "ours_dim1_last2"), ("ours_shared1", "ours_dim1"),
            ("ours_seg", "practice_replay"), ("ours_seg", "practice_lora"), ("ours_seg", "ours_dim"),
-           ("ours_dim1_last2", "ours_dim1")]
+           ("ours_dim1_last2", "ours_dim1"), ("ours_alloc", "practice_lora"), ("ours_alloc", "ours_dim1_last2")]
 
 
 def episodes(experiment):
@@ -67,6 +68,7 @@ def episodes(experiment):
 def build(practice=0.5):
     fin, lang = episodes("m3_final")
     dev, _ = episodes("m3_compose")
+    prac, _ = episodes("m3_practice")
     tasks = sorted({t for t, _ in fin}, key=int)
     table, keep, how, nbytes = {}, {}, {}, {}
     for t in tasks:
@@ -74,6 +76,8 @@ def build(practice=0.5):
         keep[t] = len(d) > 0 and sum(d.values()) / len(d) >= practice
         table[t], how[t], nbytes[t] = {}, {}, {}
         for m, arms in METHODS.items():
+            if m == "ours_alloc":
+                continue                                                  # built below from the practice runs
             if m == "zeroshot" or keep[t]:
                 src = "zeroshot"
             else:
@@ -83,6 +87,18 @@ def build(practice=0.5):
             table[t][m] = dict(fin[(t, src)])
             how[t][m] = src
             nbytes[t][m] = 0 if src == "zeroshot" else m34.arm_bytes(t, src)
+        # ALLOCATE BYTES BY PRACTICE (pre-registered, ledger m3_prereg tag alloc): the program if its practice on states
+        # 0-9 succeeds >= 0.5, else the LoRA
+        if keep[t]:
+            src = "zeroshot"
+        else:
+            prog = "dimfold_s1_last2" if (t, "dimfold_s1_last2") in prac else "dimcode_s1"
+            p = prac.get((t, prog))
+            src = None if not p else (prog if sum(p.values()) / len(p) >= practice else "lora")
+        if src and (t, src) in fin:
+            table[t]["ours_alloc"] = dict(fin[(t, src)])
+            how[t]["ours_alloc"] = src
+            nbytes[t]["ours_alloc"] = 0 if src == "zeroshot" else m34.arm_bytes(t, src)
     return table, keep, how, nbytes, lang, dev
 
 
