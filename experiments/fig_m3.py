@@ -25,7 +25,13 @@ BLUE_LIGHT = "#86b6ef"
 STYLE = {"zeroshot": (MUTED, "o", "zero-shot"), "practice_replay": (AQUA, "s", "demo replay"),
          "practice_lora": (ORANGE, "D", "few-shot LoRA (rank 16)"), "ours_dim": (BLUE, "o", "borrowing, every 5th frame"),
          "ours_dim1": (BLUE, "^", "borrowing, every frame"), "ours_dim1_last2": (BLUE, "*", "borrowing + 258 KB fold"),
-         "ours_codes_full": (BLUE_LIGHT, "P", "PoE codes + 4.7 MB fold")}
+         "ours_codes_full": (BLUE_LIGHT, "P", "PoE codes + 4.7 MB fold"),
+         "ours_seg": (BLUE, "h", "segment borrowing"), "ours_leaf": (BLUE, "v", "leaf borrowing, every 5th frame"),
+         "ours_leaf1_last2": (BLUE, "X", "leaf borrowing + 258 KB fold"), "ours_shared1": (BLUE_LIGHT, "s", "shared-prototype borrowing"),
+         "ours_alloc": (BLUE, "D", "practice-allocated (program, else LoRA)")}
+
+
+FRONTIER = ("ours_seg", "ours_dim", "ours_dim1", "practice_replay", "ours_dim1_last2", "ours_alloc", "ours_codes_full", "practice_lora")
 
 
 def style(ax):
@@ -62,7 +68,7 @@ def frontier(S, scope="prior_fails"):
         ax.text(1.15e3 if False else 0.012, z["rate"] + 0.012, f"zero-shot, 0 B stored: {z['k']}/{z['n']}", transform=ax.get_yaxis_transform(),
                 color=INK2, fontsize=7.5, va="bottom")
     pts = []
-    for m in ("ours_dim", "ours_dim1", "practice_replay", "ours_dim1_last2", "ours_codes_full", "practice_lora"):
+    for m in FRONTIER:
         r = M.get(f"{m}.{scope}")
         if not r or not r["complete"]:
             continue
@@ -81,8 +87,7 @@ def frontier(S, scope="prior_fails"):
     place = {"borrowing, every 5th frame": (-10, -30, "right"), "demo replay": (-14, 34, "right"),
              "borrowing, every frame": (14, -30, "left"), "borrowing + 258 KB fold": "bottom",
              "PoE codes + 4.7 MB fold": "top"}
-    for (x, y, lab, c), m in zip(pts, [m for m in ("ours_dim", "ours_dim1", "practice_replay", "ours_dim1_last2", "ours_codes_full",
-                                                   "practice_lora") if M.get(f"{m}.{scope}") and M[f"{m}.{scope}"]["complete"]]):
+    for (x, y, lab, c), m in zip(pts, [m for m in FRONTIER if M.get(f"{m}.{scope}") and M[f"{m}.{scope}"]["complete"]]):
         how = place.get(lab.split("\n")[0], (8, 0, "left"))
         if how in ("top", "bottom"):
             r = M[f"{m}.{scope}"]
@@ -144,9 +149,10 @@ def per_task(S, methods=("zeroshot", "practice_replay", "practice_lora", "ours_d
 
 def paired(S, scope="prior_fails"):
     C = S["compare"]
-    order = [("ours_dim1_last2", "practice_lora"), ("ours_dim", "practice_lora"), ("ours_dim1_last2", "practice_replay"),
-             ("ours_dim", "practice_replay"), ("ours_dim1", "practice_replay"), ("practice_lora", "practice_replay"),
-             ("ours_dim1_last2", "zeroshot")]
+    order = [("ours_dim1_last2", "practice_lora"), ("ours_dim1_last2", "practice_replay"), ("ours_dim1_last2", "zeroshot"),
+             ("ours_alloc", "practice_lora"), ("ours_seg", "practice_replay"), ("ours_seg", "practice_lora"),
+             ("ours_dim", "practice_lora"), ("ours_dim", "practice_replay"), ("ours_dim1_last2", "ours_dim1"),
+             ("ours_leaf", "ours_dim"), ("ours_shared1", "ours_dim1"), ("practice_lora", "practice_replay")]
     rows = [(x, y, C[f"{x}-{y}.{scope}"]) for x, y in order if f"{x}-{y}.{scope}" in C]
     fig, ax = plt.subplots(figsize=(6.4, 0.42 * len(rows) + 1.1), facecolor=SURFACE)
     style(ax)

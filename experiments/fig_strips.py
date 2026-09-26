@@ -21,7 +21,7 @@ SURFACE, INK, INK2, MUTED = "#fcfcfb", "#0b0b0b", "#52514e", "#898781"
 GOOD, CRIT = "#0ca30c", "#d03b3b"
 ARMS = [("zero-shot", "m3_final_{t}_zeroshot"), ("few-shot LoRA (18.7 MB)", "final_{t}_lora"), ("few-shot LoRA (18.7 MB)", "m3_final_{t}_lora"),
         ("demo replay", "m3_final_{t}_raw_replay"), ("borrowing, every 5th frame", "m3_final_{t}_dimcode_s5"),
-        ("borrowing + 258 KB fold", "m3_final_{t}_dimfold_s1_last2")]
+        ("borrowing + 258 KB fold", "m3_final_{t}_dimfold_s1_last2"), ("segment borrowing", "m3_final_{t}_seg_s5")]
 
 
 def frames(path):
