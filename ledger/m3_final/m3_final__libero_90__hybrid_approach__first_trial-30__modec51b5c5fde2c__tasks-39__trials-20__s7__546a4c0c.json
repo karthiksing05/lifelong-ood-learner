@@ -1,0 +1,83 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/final_39_hybrid_approach.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 4703380,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 4703380,
+  "tree": 0
+ },
+ "command": "roll.sh MODE=hybrid:/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r4_39_approach_program.npz?expert=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r4_39_approach_expert.pt&w0=1.0&sched=const&var=0.001&key=pose&stall=3 SUITE=libero_90 TASKS=39 TRIALS=20 (job 3956163)",
+ "config": {
+  "client": {
+   "first_trial": 30,
+   "host": "127.0.0.1",
+   "max_steps": 0,
+   "no_meta": false,
+   "out": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/final_39_hybrid_approach.json",
+   "port": 9300,
+   "replan": 5,
+   "resize": 224,
+   "seed": 7,
+   "suite": "libero_90",
+   "tasks": "39",
+   "trials": 20,
+   "videos": 2,
+   "wait": 10
+  },
+  "job": "3956163",
+  "mode": "hybrid:/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r4_39_approach_program.npz?expert=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r4_39_approach_expert.pt&w0=1.0&sched=const&var=0.001&key=pose&stall=3"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "major.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3956163",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_final",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "546a4c0c4fcb06d5a28fb5e193f04f94d4199753",
+  "short": "546a4c0c"
+ },
+ "keys": {
+  "first_trial": 30,
+  "mode": "hybrid:/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r4_39_approach_program.npz?expert=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r4_39_approach_expert.pt&w0=1.0&sched=const&var=0.001&key=pose&stall=3",
+  "tasks": "39",
+  "trials": 20
+ },
+ "metrics": {
+  "complete": true,
+  "n_episodes": 20,
+  "secs": 331.73156332969666,
+  "success_rate": 0.9,
+  "tasks": {
+   "39": {
+    "errors": 0,
+    "language": "turn off the stove",
+    "mean_steps": 183.05,
+    "n": 20,
+    "success_rate": 0.9
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_final__libero_90__hybrid_approach__first_trial-30__modec51b5c5fde2c__tasks-39__trials-20__s7__546a4c0c",
+ "schema": 1,
+ "script": "experiments/libero_client.py",
+ "seconds": null,
+ "seed": 7,
+ "source_commit": null,
+ "started": "2026-09-26T03:13:19+00:00",
+ "stream": null,
+ "tag": "hybrid_approach"
+}

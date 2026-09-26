@@ -1,0 +1,122 @@
+{
+ "artifacts": [
+  "results/robot/r6_comp_39_prior.npz"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 4530,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 4530,
+  "tree": 0
+ },
+ "command": "experiments/r6_composer.py --tasks 39 --prior --tag _prior",
+ "config": {
+  "M": 32,
+  "hidden": 32,
+  "lam_ent": 0.001,
+  "lam_smooth": 0.01,
+  "levels": "2,3,4",
+  "prior": true,
+  "steps": 3000,
+  "stride": 5,
+  "tag": "_prior",
+  "tasks": "39",
+  "tree": "results/robot/r2b_libero_40_tree.npz"
+ },
+ "env": {
+  "device": "cpu",
+  "host": "sky2.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r6_composer",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "6095319f8fd5c4580495ba6355d00e2e7bcbc887",
+  "short": "6095319f"
+ },
+ "keys": {
+  "task": 39
+ },
+ "metrics": {
+  "M": 32,
+  "best_single_rms": 0.2585545480251312,
+  "curve": [
+   {
+    "entropy": 3.468156337738037,
+    "rms": 0.5382016897201538,
+    "smooth": 1.228000428454834e-06,
+    "step": 1
+   },
+   {
+    "entropy": 0.6511979103088379,
+    "rms": 0.12687113881111145,
+    "smooth": 0.0045660738833248615,
+    "step": 500
+   },
+   {
+    "entropy": 0.5022923350334167,
+    "rms": 0.10353698581457138,
+    "smooth": 0.00712617440149188,
+    "step": 1000
+   },
+   {
+    "entropy": 0.4337313771247864,
+    "rms": 0.09712205827236176,
+    "smooth": 0.008283857256174088,
+    "step": 1500
+   },
+   {
+    "entropy": 0.36314699053764343,
+    "rms": 0.09080247581005096,
+    "smooth": 0.008003163151443005,
+    "step": 2000
+   },
+   {
+    "entropy": 0.3275718688964844,
+    "rms": 0.0876426249742508,
+    "smooth": 0.008383259177207947,
+    "step": 2500
+   },
+   {
+    "entropy": 0.3131607472896576,
+    "rms": 0.08504478633403778,
+    "smooth": 0.009855477139353752,
+    "step": 3000
+   }
+  ],
+  "effective_prototypes": 1.4488894939422607,
+  "jerk_composed": 0.01878747157752514,
+  "jerk_demo": 0.019285649061203003,
+  "n_frames": 116,
+  "n_params": 2041,
+  "prior_rms": 0.6660138964653015,
+  "program_bytes": 4530,
+  "prototypes_used": 11,
+  "raw_bytes": 18096,
+  "rms": 0.08498043566942215,
+  "secs": 13.440021276473999,
+  "task": 39,
+  "text": "turn off the stove",
+  "top_weight": 0.8722586035728455,
+  "vocab_cover": 0.4849137931034483,
+  "w_prior": 0.09579771757125854
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r6_composer__libero_90___prior__task-39__s0__6095319f",
+ "schema": 1,
+ "script": "experiments/r6_composer.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-26T03:18:14+00:00",
+ "stream": null,
+ "tag": "_prior"
+}
