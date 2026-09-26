@@ -61,6 +61,10 @@ def main():
     ap.add_argument("--anchor-weight", type=float, default=1.0)
     ap.add_argument("--K", type=int, default=3)
     ap.add_argument("--seed", type=int, default=0)
+    ap.add_argument("--arrival", default="novel", choices=["novel", "contact", "all"],
+                    help="frames the expert learns and is switched on at: the library-unexplained ones, the contact windows "
+                         "around the demo's gripper events (where a grasp needs closed-loop precision), or every frame")
+    ap.add_argument("--contact", type=int, default=10)
     ap.add_argument("--tag", default="")
     a = ap.parse_args()
     rng = np.random.default_rng(a.seed)
@@ -85,6 +89,15 @@ def main():
     T = len(ep["actions"])
     rows = D.to_rows(ep["actions"][D.chunk_indices(T, 10)[0]], norm)
     nll, unexplained, depth = novelty.read(tree, rows, band, thr)
+    novel_mask = unexplained.copy()
+    if a.arrival == "contact":
+        ev = D.gripper_events(ep["actions"])
+        unexplained = np.zeros(T, bool)
+        for e in ev:
+            unexplained[max(0, e - a.contact): e + a.contact + 1] = True
+        log(f"[r4] contact windows +-{a.contact} around gripper events {ev.tolist()}: {int(unexplained.sum())} frames")
+    elif a.arrival == "all":
+        unexplained = np.ones(T, bool)
     log(f"[r4] task {a.task} '{text}': {T} frames, {int(unexplained.sum())} unexplained ({unexplained.mean():.2f}); "
         f"median NLL per band level {[round(float(np.median(nll[l])), 2) for l in band]} vs thresholds {[round(thr[l], 2) for l in band]}")
 
@@ -94,8 +107,8 @@ def main():
     r2b = ilu.module_from_spec(s2); s2.loader.exec_module(r2b)
     n_before, b_before = len(tree.nodes), tree.bytes()
     new_nodes = []
-    if unexplained.any():
-        U = rows[unexplained]
+    if novel_mask.any():
+        U = rows[novel_mask]
         for l in band:
             u = tree.u_grid[l]
             al, sg = 1.0 - u, u

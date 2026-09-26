@@ -6,13 +6,13 @@
 set -euo pipefail
 cd /coc/flash10/ksingara3/lifelong-ood-learner
 TASKS=${TASKS:?}; TREE=${TREE:?}; LIB=${LIB:?}; TRIALS=${TRIALS:-20}; W0=${W0:-1.0}; SCHED=${SCHED:-const}; TVAR=${TVAR:-0.001}
-RANK=${RANK:-4}; STEPS=${STEPS:-1000}; TAG=${TAG:-}
+RANK=${RANK:-4}; STEPS=${STEPS:-1000}; TAG=${TAG:-}; FOLDARGS=${FOLDARGS:-}; EXP=${EXP:-m4_fold}; FIRST=${FIRST:-0}
 R=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot
 for tid in ${TASKS//+/ }; do
-  f=$(sbatch --parsable --partition=tail-lab --account=tail-lab --export=ALL,ENV=openpi,SCRIPT="experiments/r4_fold.py --task $tid --tree $TREE --library $LIB --rank $RANK --steps $STEPS --tag $TAG" slurm/jobs/robot_gpu.sbatch)
+  f=$(sbatch --parsable --partition=tail-lab --account=tail-lab --export=ALL,ENV=openpi,SCRIPT="experiments/r4_fold.py --task $tid --tree $TREE --library $LIB --rank $RANK --steps $STEPS --tag $TAG $FOLDARGS" slurm/jobs/robot_gpu.sbatch)
   echo "task $tid fold -> job $f"
   base=$R/r4_${tid}${TAG}
-  h=$(sbatch --parsable --dependency=afterok:$f --export=ALL,MODE="hybrid:${base}_program.npz?expert=${base}_expert.pt&w0=$W0&sched=$SCHED&var=$TVAR&key=pose&stall=3",SUITE=libero_90,TASKS=$tid,TRIALS=$TRIALS,EXPERIMENT=m4_fold,TAG=hybrid${TAG},OUT=$R/m4_${tid}_hybrid${TAG}.json experiments/roll.sbatch)
-  e=$(sbatch --parsable --dependency=afterok:$f --export=ALL,MODE="lora:${base}_expert.pt",SUITE=libero_90,TASKS=$tid,TRIALS=$TRIALS,EXPERIMENT=m4_fold,TAG=expert_on${TAG},OUT=$R/m4_${tid}_expert_on${TAG}.json experiments/roll.sbatch)
+  h=$(sbatch --parsable --dependency=afterok:$f --export=ALL,MODE="hybrid:${base}_program.npz?expert=${base}_expert.pt&w0=$W0&sched=$SCHED&var=$TVAR&key=pose&stall=3",SUITE=libero_90,TASKS=$tid,TRIALS=$TRIALS,FIRST=$FIRST,EXPERIMENT=$EXP,TAG=hybrid${TAG},OUT=$R/m4_${tid}_hybrid${TAG}.json experiments/roll.sbatch)
+  e=$(sbatch --parsable --dependency=afterok:$f --export=ALL,MODE="lora:${base}_expert.pt",SUITE=libero_90,TASKS=$tid,TRIALS=$TRIALS,FIRST=$FIRST,EXPERIMENT=$EXP,TAG=expert_on${TAG},OUT=$R/m4_${tid}_expert_on${TAG}.json experiments/roll.sbatch)
   echo "task $tid hybrid -> job $h; expert always on -> job $e"
 done
