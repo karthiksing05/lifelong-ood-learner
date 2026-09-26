@@ -1,0 +1,109 @@
+{
+ "artifacts": [
+  "results/robot/r3_lora_48_d1.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 18710528,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 18710528,
+  "tree": 0
+ },
+ "command": "experiments/r3_fewshot.py --task 48 --demo 1 --tag _d1",
+ "config": {
+  "batch": 32,
+  "demo": 1,
+  "full": false,
+  "lr": 0.0001,
+  "rank": 16,
+  "scope": "expert",
+  "seed": 0,
+  "steps": 1000,
+  "tag": "_d1",
+  "task": 48
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "brainiac.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3962866",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r3_fewshot",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "c6dbda444a6952674801224464646fd927ccb9d4",
+  "short": "c6dbda44"
+ },
+ "keys": {
+  "task": 48
+ },
+ "metrics": {
+  "curve": {
+   "anchor": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "loss": [
+    0.036686282604932785,
+    0.008368412964046001,
+    0.005125183612108231,
+    0.0030491575598716736,
+    0.0042742714285850525,
+    0.0013488262193277478,
+    0.0021760358940809965,
+    0.0010008523240685463,
+    0.0015641292557120323,
+    0.0067931609228253365,
+    0.0015206544194370508
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "demo_episode": 3093,
+  "final_loss": 0.0015206544194370508,
+  "first_loss": 0.036686282604932785,
+  "n_banks": 163,
+  "n_frames": 166,
+  "n_params": 9355264,
+  "task": 48,
+  "text": "pick up the ketchup and put it in the basket",
+  "train_secs": 130.2102026939392
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r3_fewshot__libero_90___d1__task-48__s0__c6dbda44",
+ "schema": 1,
+ "script": "experiments/r3_fewshot.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-26T14:02:53+00:00",
+ "stream": null,
+ "tag": "_d1"
+}

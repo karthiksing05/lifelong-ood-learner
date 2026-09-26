@@ -66,6 +66,7 @@ def main():
     ap.add_argument("--lora-stride", type=int, default=5)
     ap.add_argument("--n-anchor", type=int, default=384)
     ap.add_argument("--seed", type=int, default=0)
+    ap.add_argument("--name", default="r15", help="output prefix (a smoke test writes elsewhere); ledger tags gain it when not r15")
     a = ap.parse_args()
     os.chdir(ROOT)
     log = lambda s: print(s, flush=True)                                  # noqa: E731
@@ -86,7 +87,7 @@ def main():
     grasps = len(D.gripper_events(ep["actions"])) > 0
     demo_prog = DemoProgram.load(f"{R}/r7_dim_{t}_s1.npz")
     demo_prog.fold = DemoProgram.load(f"{R}/r4_{t}_approach_last2_program.npz").fold if grasps else None
-    demo_prog.save(f"{R}/r15_{t}_prog0.npz")
+    demo_prog.save(f"{R}/{a.name}_{t}_prog0.npz")
     firsts_img, firsts_wr, prog_bytes = [img0[0]], [wr0[0]], [demo_prog.bytes()]
     fold_obs, fold_rows = [], []
     lora_obs, lora_rows = [], []
@@ -102,7 +103,7 @@ def main():
         prog = DemoProgram.from_demo(None, rows, sts, variant="raw")
         w = windows(acts)
         prog.fold = w if w.any() else None
-        prog.save(f"{R}/r15_{t}_prog{k}.npz")
+        prog.save(f"{R}/{a.name}_{t}_prog{k}.npz")
         prog_bytes.append(prog.bytes())
         firsts_img.append(e["image"][0]); firsts_wr.append(e["wrist"][0])
         text = texts[t]
@@ -121,15 +122,16 @@ def main():
         key = f"lora_learn_{t}"
         params = r4.add_node(banks, key, 16)
         hist = adapt.train(bk, state, key, params, bank, D.pad_rows(np.stack(lora_rows), bk.H), steps=a.steps, lr=1e-4, seed=a.seed, log=log)
-        lb = adapt.save(banks, key, f"{R}/r15_{t}_lora.pt", meta=dict(task=t, rank=16, scope="expert", learned=True))
+        lb = adapt.save(banks, key, f"{R}/{a.name}_{t}_lora.pt", meta=dict(task=t, rank=16, scope="expert", learned=True))
         log(f"[r15] LoRA on the same data ({len(lora_obs)} frames) in {time.time() - t0:.0f}s: {lb} B")
-        ledger.record("r15_consolidate", bench="libero_90", tag="_lora", seed=a.seed, keys=dict(task=t),
+        ledger.record("r15_consolidate", bench="libero_90", tag="_lora" + ("" if a.name == "r15" else "_" + a.name), seed=a.seed, keys=dict(task=t),
                       metrics=dict(task=t, frames=len(lora_obs), successes=len(succ), curve=hist),
                       bytes=dict(experts=lb, tree=0, codes=0, samples=0, teacher_copies=0, total=lb), config=vars(a),
-                      script="experiments/r15_consolidate.py", command=" ".join(sys.argv), artifacts=[f"{R}/r15_{t}_lora.pt"])
+                      script="experiments/r15_consolidate.py", command=" ".join(sys.argv), artifacts=[f"{R}/{a.name}_{t}_lora.pt"])
         return
-    keys = recall_keys(np.stack(firsts_img), np.stack(firsts_wr)).astype(np.float16)
-    np.savez(f"{R}/r15_{t}_memory.npz", keys=keys, n=len(prog_bytes), prog_bytes=np.asarray(prog_bytes), grasps=grasps,
+    # frames of different sizes (the demo's 256 px, recorded 224 px): embed each composition's first frames on their own
+    keys = np.concatenate([recall_keys(np.asarray(i)[None], np.asarray(w)[None]) for i, w in zip(firsts_img, firsts_wr)]).astype(np.float16)
+    np.savez(f"{R}/{a.name}_{t}_memory.npz", keys=keys, n=len(prog_bytes), prog_bytes=np.asarray(prog_bytes), grasps=grasps,
              successes=np.asarray([int(e["trial"]) for e in succ]), practice=np.asarray([int(e["trial"]) for e in eps]),
              practice_success=np.asarray([bool(e["success"]) for e in eps]))
     mem_bytes = int(sum(prog_bytes) + keys.nbytes)
@@ -148,14 +150,14 @@ def main():
         params = r4.add_node(banks, key, 2)
         hist = adapt.train(bk, state, key, params, bank, D.pad_rows(np.stack(fold_rows), bk.H), steps=a.steps, lr=1e-4, seed=a.seed,
                            anchor=(anc_bank, anc_chunks), anchor_weight=1.0, log=log)
-        eb = adapt.save(banks, key, f"{R}/r15_{t}_expert.pt", meta=dict(task=t, rank=2, scope="last2", learned=True))
+        eb = adapt.save(banks, key, f"{R}/{a.name}_{t}_expert.pt", meta=dict(task=t, rank=2, scope="last2", learned=True))
         log(f"[r15] fold refit on {len(fold_obs)} frames in {time.time() - t0:.0f}s: {eb} B")
-    ledger.record("r15_consolidate", bench="libero_90", tag="", seed=a.seed, keys=dict(task=t),
+    ledger.record("r15_consolidate", bench="libero_90", tag="" if a.name == "r15" else "_" + a.name, seed=a.seed, keys=dict(task=t),
                   metrics=dict(task=t, text=texts[t], practice=len(eps), successes=len(succ), compositions=len(prog_bytes),
                                memory_bytes=mem_bytes, fold_frames=len(fold_obs), curve=hist),
                   bytes=dict(experts=eb, tree=0, codes=mem_bytes, samples=0, teacher_copies=0, total=eb + mem_bytes),
                   config=vars(a), script="experiments/r15_consolidate.py", command=" ".join(sys.argv),
-                  artifacts=[f"{R}/r15_{t}_memory.npz"] + ([f"{R}/r15_{t}_expert.pt"] if eb else []))
+                  artifacts=[f"{R}/{a.name}_{t}_memory.npz"] + ([f"{R}/{a.name}_{t}_expert.pt"] if eb else []))
 
 
 if __name__ == "__main__":

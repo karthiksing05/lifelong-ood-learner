@@ -1,0 +1,109 @@
+{
+ "artifacts": [
+  "results/robot/r3_lora_63_d1.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 18710528,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 18710528,
+  "tree": 0
+ },
+ "command": "experiments/r3_fewshot.py --task 63 --demo 1 --tag _d1",
+ "config": {
+  "batch": 32,
+  "demo": 1,
+  "full": false,
+  "lr": 0.0001,
+  "rank": 16,
+  "scope": "expert",
+  "seed": 0,
+  "steps": 1000,
+  "tag": "_d1",
+  "task": 63
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "spot.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3962868",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r3_fewshot",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "c6dbda444a6952674801224464646fd927ccb9d4",
+  "short": "c6dbda44"
+ },
+ "keys": {
+  "task": 63
+ },
+ "metrics": {
+  "curve": {
+   "anchor": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "loss": [
+    0.05823496729135513,
+    0.012556900270283222,
+    0.005382645409554243,
+    0.0045828744769096375,
+    0.008861337788403034,
+    0.0024864349979907274,
+    0.0020863828249275684,
+    0.0030393924098461866,
+    0.00314147281460464,
+    0.005341498646885157,
+    0.003836678108200431
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "demo_episode": 2518,
+  "final_loss": 0.003836678108200431,
+  "first_loss": 0.05823496729135513,
+  "n_banks": 163,
+  "n_frames": 218,
+  "n_params": 9355264,
+  "task": 63,
+  "text": "stack the left bowl on the right bowl and place them in the tray",
+  "train_secs": 123.06926465034485
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r3_fewshot__libero_90___d1__task-63__s0__c6dbda44",
+ "schema": 1,
+ "script": "experiments/r3_fewshot.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-26T14:07:32+00:00",
+ "stream": null,
+ "tag": "_d1"
+}

@@ -176,11 +176,12 @@ def main():
         kv = dict(x.split("=", 1) for x in q.split("&") if x)
         R = os.path.join(ROOT, "results", "robot")
         t = int(body)
-        mem = np.load(os.path.join(R, f"r15_{t}_memory.npz"))
+        nm = kv.get("name", "r15")
+        mem = np.load(os.path.join(R, f"{nm}_{t}_memory.npz"))
         n = int(mem["n"]) if kv.get("mem", "1") != "0" else 1
-        progs = [DemoProgram.load(os.path.join(R, f"r15_{t}_prog{k}.npz")) for k in range(n)]
+        progs = [DemoProgram.load(os.path.join(R, f"{nm}_{t}_prog{k}.npz")) for k in range(n)]
         fold_path = (os.path.join(R, f"r4_{t}_approach_last2_expert.pt") if kv.get("fold") == "orig"
-                     else os.path.join(R, f"r15_{t}_expert.pt"))
+                     else os.path.join(R, f"{nm}_{t}_expert.pt"))
         state, key = (None, None)
         if bool(mem["grasps"]) and os.path.exists(fold_path):
             state, key, _ = adapt.load(bk, fold_path)
