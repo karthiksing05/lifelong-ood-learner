@@ -1,0 +1,83 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/m3_final_1_dimfold_s1_last2.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 6920,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 6920,
+  "tree": 0
+ },
+ "command": "roll.sh MODE=hybrid:/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r7_dim_1_s1.npz?expert=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r4_1_approach_last2_expert.pt&foldprog=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r4_1_approach_last2_program.npz&w0=1.0&sched=const&var=0.001&key=pose&stall=3&window=20 SUITE=libero_90 TASKS=1 TRIALS=20 (job 3960378)",
+ "config": {
+  "client": {
+   "first_trial": 30,
+   "host": "127.0.0.1",
+   "max_steps": 0,
+   "no_meta": false,
+   "out": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/m3_final_1_dimfold_s1_last2.json",
+   "port": 9757,
+   "replan": 5,
+   "resize": 224,
+   "seed": 7,
+   "suite": "libero_90",
+   "tasks": "1",
+   "trials": 20,
+   "videos": 2,
+   "wait": 10
+  },
+  "job": "3960378",
+  "mode": "hybrid:/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r7_dim_1_s1.npz?expert=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r4_1_approach_last2_expert.pt&foldprog=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r4_1_approach_last2_program.npz&w0=1.0&sched=const&var=0.001&key=pose&stall=3&window=20"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "crushinator.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3960378",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_final",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "1163d01dcbc37e23b3dd5b417493637ed20a1c4e",
+  "short": "1163d01d"
+ },
+ "keys": {
+  "first_trial": 30,
+  "mode": "hybrid:/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r7_dim_1_s1.npz?expert=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r4_1_approach_last2_expert.pt&foldprog=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r4_1_approach_last2_program.npz&w0=1.0&sched=const&var=0.001&key=pose&stall=3&window=20",
+  "tasks": "1",
+  "trials": 20
+ },
+ "metrics": {
+  "complete": true,
+  "n_episodes": 20,
+  "secs": 709.1393089294434,
+  "success_rate": 0.4,
+  "tasks": {
+   "1": {
+    "errors": 0,
+    "language": "close the top drawer of the cabinet and put the black bowl on top of it",
+    "mean_steps": 325.75,
+    "n": 20,
+    "success_rate": 0.4
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_final__libero_90__dimfold_s1_last2__first_trial-30__modebfc5249c76e4__tasks-1__trials-20__s7__1163d01d",
+ "schema": 1,
+ "script": "experiments/libero_client.py",
+ "seconds": null,
+ "seed": 7,
+ "source_commit": null,
+ "started": "2026-09-26T06:41:17+00:00",
+ "stream": null,
+ "tag": "dimfold_s1_last2"
+}

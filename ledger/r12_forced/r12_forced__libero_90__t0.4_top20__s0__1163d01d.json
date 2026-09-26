@@ -1,0 +1,359 @@
+{
+ "artifacts": [
+  "results/robot/r12_forced.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "python experiments/r12_forced.py --level 4 --top 20 --tasks 1,19,36,53,58 --states 2 (LIBERO venv, CPU job 3960645)",
+ "config": {
+  "level": "4",
+  "states": 2,
+  "tasks": "1,19,36,53,58"
+ },
+ "env": {
+  "device": "cpu",
+  "host": "sky2.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r12_forced",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "1163d01dcbc37e23b3dd5b417493637ed20a1c4e",
+  "short": "1163d01d"
+ },
+ "keys": {},
+ "metrics": {
+  "killed": false,
+  "level": "4",
+  "moving": 16,
+  "moving_cos_median": 0.9975100858449637,
+  "moving_frac_median": 1.0545517058071456,
+  "prototypes": [
+   {
+    "commanded_cm": 0.60069099912231,
+    "cos_mean": 0.9839526270739736,
+    "finger_change_mean": 0.0010251727697528842,
+    "frac_mean": 1.0192142650746274,
+    "frac_sd": 0.07888638089868072,
+    "grip_cmd": [
+     -1.0000605980555217,
+     -0.9993205269177755
+    ],
+    "name": "hold + open",
+    "node": 27026,
+    "realised_cm": 0.6217209955261848,
+    "runs": 10
+   },
+   {
+    "commanded_cm": 1.12783742977065,
+    "cos_mean": 0.9991833296926359,
+    "finger_change_mean": -0.06905904825123794,
+    "frac_mean": 0.988892649671655,
+    "frac_sd": 0.09274327156199762,
+    "grip_cmd": [
+     0.9972413778305054,
+     0.9980674187342325
+    ],
+    "name": "hold + closed",
+    "node": 27030,
+    "realised_cm": 1.1162628190641584,
+    "runs": 10
+   },
+   {
+    "commanded_cm": 2.926643477121345,
+    "cos_mean": 0.9996317750933328,
+    "finger_change_mean": -0.017918637275358452,
+    "frac_mean": 1.1148472912462704,
+    "frac_sd": 0.035914029170167165,
+    "grip_cmd": [
+     -1.0017427206039429,
+     0.9971127510070801
+    ],
+    "name": "down-back + closing",
+    "node": 27028,
+    "realised_cm": 3.2639449230354183,
+    "runs": 10
+   },
+   {
+    "commanded_cm": 2.672898644304672,
+    "cos_mean": 0.9981481897873117,
+    "finger_change_mean": -0.045827234340192737,
+    "frac_mean": 1.0445128314101602,
+    "frac_sd": 0.04000603747360643,
+    "grip_cmd": [
+     -1.0003498991330464,
+     0.9980918963750204
+    ],
+    "name": "down-back + closing",
+    "node": 27029,
+    "realised_cm": 2.7969554361735804,
+    "runs": 10
+   },
+   {
+    "commanded_cm": 1.1440420638539985,
+    "cos_mean": 0.9959749146391388,
+    "finger_change_mean": -0.004390553680874832,
+    "frac_mean": 1.4607479394342684,
+    "frac_sd": 0.05558953330682595,
+    "grip_cmd": [
+     0.9982643524805704,
+     -0.996042529741923
+    ],
+    "name": "opening",
+    "node": 27032,
+    "realised_cm": 1.6781115737566303,
+    "runs": 10
+   },
+   {
+    "commanded_cm": 4.160085525316476,
+    "cos_mean": 0.9989195266028202,
+    "finger_change_mean": -0.009886848515888443,
+    "frac_mean": 1.009328741462869,
+    "frac_sd": 0.026623893117201192,
+    "grip_cmd": [
+     -0.9975280165672302,
+     0.997971256573995
+    ],
+    "name": "down-back + closing",
+    "node": 27039,
+    "realised_cm": 4.203380211277237,
+    "runs": 10
+   },
+   {
+    "commanded_cm": 1.6889114114076065,
+    "cos_mean": 0.9956827125284834,
+    "finger_change_mean": -0.03445743101232918,
+    "frac_mean": 1.246667320487022,
+    "frac_sd": 0.022683250956812423,
+    "grip_cmd": [
+     0.9970855315526327,
+     -1.0006969769795735
+    ],
+    "name": "opening",
+    "node": 27038,
+    "realised_cm": 2.1148237476592113,
+    "runs": 10
+   },
+   {
+    "commanded_cm": 8.890554272892292,
+    "cos_mean": 0.9991918561753345,
+    "finger_change_mean": -0.06885458387947348,
+    "frac_mean": 1.0851024462997694,
+    "frac_sd": 0.0008889375030201947,
+    "grip_cmd": [
+     1.0001554886500041,
+     0.9974561929702759
+    ],
+    "name": "left + closed",
+    "node": 27037,
+    "realised_cm": 9.654964686530795,
+    "runs": 10
+   },
+   {
+    "commanded_cm": 4.165945297941503,
+    "cos_mean": 0.9995066860563518,
+    "finger_change_mean": -0.00338062842131658,
+    "frac_mean": 1.0638462850497983,
+    "frac_sd": 0.025942720393849747,
+    "grip_cmd": [
+     -1.002002437909444,
+     0.32919426759084064
+    ],
+    "name": "down-back + closing",
+    "node": 27027,
+    "realised_cm": 4.434082071171318,
+    "runs": 10
+   },
+   {
+    "commanded_cm": 1.9929042190240918,
+    "cos_mean": 0.997905854611122,
+    "finger_change_mean": -0.050417952177187156,
+    "frac_mean": 1.078553445113749,
+    "frac_sd": 0.048885017956869004,
+    "grip_cmd": [
+     0.9974317153294882,
+     -0.9930164217948914
+    ],
+    "name": "opening",
+    "node": 27031,
+    "realised_cm": 2.1538213789336536,
+    "runs": 10
+   },
+   {
+    "commanded_cm": 1.5018191027579257,
+    "cos_mean": 0.9981049983617389,
+    "finger_change_mean": -0.05562729227542561,
+    "frac_mean": 1.2901119155178677,
+    "frac_sd": 0.06987369724843287,
+    "grip_cmd": [
+     -0.16500780979792276,
+     0.9973958730697632
+    ],
+    "name": "hold + closed",
+    "node": 27035,
+    "realised_cm": 1.9410686237353136,
+    "runs": 10
+   },
+   {
+    "commanded_cm": 10.395325181759903,
+    "cos_mean": 0.9951151549630575,
+    "finger_change_mean": -0.06903431515230439,
+    "frac_mean": 1.0607693155995952,
+    "frac_sd": 0.005050348430509657,
+    "grip_cmd": [
+     0.9980098406473795,
+     0.9979314804077148
+    ],
+    "name": "lift + closed",
+    "node": 27036,
+    "realised_cm": 11.081141109981623,
+    "runs": 10
+   },
+   {
+    "commanded_cm": 1.4871976248670677,
+    "cos_mean": 0.974148112587882,
+    "finger_change_mean": -0.0006657399535935735,
+    "frac_mean": 0.9084758221782483,
+    "frac_sd": 0.036904716493872114,
+    "grip_cmd": [
+     0.832411011060079,
+     -0.9951368967692057
+    ],
+    "name": "opening",
+    "node": 27033,
+    "realised_cm": 1.3864358296428376,
+    "runs": 10
+   },
+   {
+    "commanded_cm": 10.49125258553298,
+    "cos_mean": 0.9917306343595536,
+    "finger_change_mean": 0.001025140607185862,
+    "frac_mean": 0.9815346974673871,
+    "frac_sd": 0.007473408500293071,
+    "grip_cmd": [
+     -1.000219961007436,
+     -0.9984251260757446
+    ],
+    "name": "forward + open",
+    "node": 27051,
+    "realised_cm": 10.383330759306073,
+    "runs": 10
+   },
+   {
+    "commanded_cm": 9.487996787074849,
+    "cos_mean": 0.9905073319551458,
+    "finger_change_mean": 0.0010339801051749294,
+    "frac_mean": 0.9820902520820362,
+    "frac_sd": 0.006618596734970608,
+    "grip_cmd": [
+     -0.9964033166567484,
+     -0.9987307786941528
+    ],
+    "name": "forward-right + open",
+    "node": 27056,
+    "realised_cm": 9.40731595291939,
+    "runs": 10
+   },
+   {
+    "commanded_cm": 7.977247350074748,
+    "cos_mean": 0.9997874391634303,
+    "finger_change_mean": 0.0010789043547353063,
+    "frac_mean": 1.0911316251977943,
+    "frac_sd": 0.0030839393297984324,
+    "grip_cmd": [
+     -1.001795808474223,
+     -1.0006655653317769
+    ],
+    "name": "left + open",
+    "node": 27034,
+    "realised_cm": 8.706077184712205,
+    "runs": 10
+   },
+   {
+    "commanded_cm": 5.455025416335909,
+    "cos_mean": 0.9874841061611743,
+    "finger_change_mean": 0.0010284244870074927,
+    "frac_mean": 0.9268751609610923,
+    "frac_sd": 0.014419143896079595,
+    "grip_cmd": [
+     -0.9987847208976746,
+     -0.9968303839365641
+    ],
+    "name": "forward + open",
+    "node": 27041,
+    "realised_cm": 5.1200875194184965,
+    "runs": 10
+   },
+   {
+    "commanded_cm": 8.821142361299012,
+    "cos_mean": 0.9919421811578296,
+    "finger_change_mean": -0.06889699511843644,
+    "frac_mean": 0.9504087414939365,
+    "frac_sd": 0.00525711946314765,
+    "grip_cmd": [
+     1.0008460680643718,
+     0.9994430541992188
+    ],
+    "name": "right-forward + closed",
+    "node": 27095,
+    "realised_cm": 8.451770035135056,
+    "runs": 10
+   },
+   {
+    "commanded_cm": 11.11765782447471,
+    "cos_mean": 0.9967548512093345,
+    "finger_change_mean": -0.0689611022361777,
+    "frac_mean": 1.0483340960146958,
+    "frac_sd": 0.004277146206518251,
+    "grip_cmd": [
+     1.000784993171692,
+     0.9997058709462484
+    ],
+    "name": "lift-right + closed",
+    "node": 27106,
+    "realised_cm": 11.69294588130145,
+    "runs": 10
+   },
+   {
+    "commanded_cm": 10.331033584253763,
+    "cos_mean": 0.9971143170788054,
+    "finger_change_mean": -0.06905791353261585,
+    "frac_mean": 0.9168612540731074,
+    "frac_sd": 0.011136262360039246,
+    "grip_cmd": [
+     0.9967072804768881,
+     0.9993313550949097
+    ],
+    "name": "down-back + closed",
+    "node": 27237,
+    "realised_cm": 9.499480059910665,
+    "runs": 10
+   }
+  ],
+  "states": 2,
+  "tasks": "1,19,36,53,58"
+ },
+ "notes": "M2 validation (iv), run RETROACTIVELY on 2026-09-26 after M3 (the plan required it before M3)",
+ "retired": null,
+ "run_id": "r12_forced__libero_90__t0.4_top20__s0__1163d01d",
+ "schema": 1,
+ "script": "experiments/r12_forced.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-26T06:42:08+00:00",
+ "stream": null,
+ "tag": "t0.4_top20"
+}
