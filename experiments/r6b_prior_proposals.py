@@ -31,7 +31,7 @@ def main():
     from lifelong_ood.policy.backbone import PolicyBackbone
     bk = PolicyBackbone("pi05_libero", device="cuda")
     d90, norm = D.Demos90(), D.Norm.load()
-    for tid in [int(x) for x in a.tasks.split(",")]:
+    for tid in [int(x) for x in a.tasks.replace("+", ",").split(",")]:
         t0 = time.time()
         ep = d90.load(d90.episodes_of_text(texts[tid])[0])
         T = len(ep["actions"])
