@@ -61,7 +61,41 @@ def arm_bytes(t, arm):
                 "leaf_s1": lambda: DemoProgram.load(f"{R}/r9_leaf_{t}_s1.npz").bytes(),
                 "leaffold_s1_last2": lambda: with_fold(f"{R}/r9_leaf_{t}_s1.npz", t, "_approach_last2").bytes() + fold_bytes(t, "_approach_last2"),
                 "shared_s1": lambda: DemoProgram.load(f"{R}/r9_shared_{t}_s1.npz").bytes(),
-                "seg_s5": lambda: DemoProgram.load(f"{R}/r10_seg_{t}_s5.npz").bytes()}[arm]())
+                "seg_s5": lambda: DemoProgram.load(f"{R}/r10_seg_{t}_s5.npz").bytes(),
+                "dimshared_all": lambda: dim_program(t, 1, "_approach_last2").bytes() + shared_fold_share("shared_all"),
+                "dimshared_xfit": lambda: dim_program(t, 1, "_approach_last2").bytes()
+                + shared_fold_share("xfit_B" if int(t) in XFIT_A else "xfit_A", users=len(XFIT_A if int(t) in XFIT_A else XFIT_B)),
+                **{f"{g}_d1": (lambda g=g: demo_arm_bytes(t, g, 1)) for g in ("raw_replay", "dimcode_s1", "dimfold_s1_last2", "lora", "seg_s5")}}[arm]())
+
+
+XFIT_A = {36, 39, 42, 1, 34, 37, 40, 52, 53, 62}                        # grasping tasks of group A (their fold: xfit_B)
+XFIT_B = {3, 4, 5, 32, 41, 43, 48, 58, 63}
+
+
+def shared_fold_share(tag, users=None):
+    """A shared fold is stored once: charge each task that uses it an equal share."""
+    r = [x for x in ledger.load("r13_shared_fold") if x["tag"] == tag]
+    if not r:
+        return 0
+    return int(round(r[-1]["bytes"]["experts"] / (users or len(r[-1]["metrics"]["tasks"]))))
+
+
+def demo_arm_bytes(t, arm, k):
+    """Bytes of the arms built from demo k (tags *_d<k>)."""
+    from lifelong_ood.policy.compose import DemoProgram
+    d = f"_d{k}"
+    if arm == "raw_replay":
+        return DemoProgram.load(f"{R}/r3_prog_{t}_raw_lib40{d}.npz").bytes()
+    if arm == "dimcode_s1":
+        return DemoProgram.load(f"{R}/r7_dim_{t}_s1{d}.npz").bytes()
+    if arm == "seg_s5":
+        return DemoProgram.load(f"{R}/r10_seg_{t}_s5{d}.npz").bytes()
+    if arm == "lora":
+        r = [x for x in ledger.load("r3_fewshot") if str(x["metrics"]["task"]) == str(t) and x.get("tag") == d]
+        return int(r[-1]["bytes"]["experts"]) if r else 0
+    prog = DemoProgram.load(f"{R}/r7_dim_{t}_s1{d}.npz")
+    prog.fold = DemoProgram.load(f"{R}/r4_{t}_approach_last2{d}_program.npz").fold
+    return prog.bytes() + fold_bytes(t, f"_approach_last2{d}")
 
 
 def with_fold(path, t, tag):
@@ -72,7 +106,8 @@ def with_fold(path, t, tag):
 
 
 SIZED = ("raw_replay", "code_replay", "hybrid_approach", "dimcode_s5", "dimcode_s1", "dimfold_full", "dimfold_last2",
-         "dimfold_s1_full", "dimfold_s1_last2", "leaf_s5", "leaf_s1", "leaffold_s1_last2", "shared_s1", "seg_s5")
+         "dimfold_s1_full", "dimfold_s1_last2", "leaf_s5", "leaf_s1", "leaffold_s1_last2", "shared_s1", "seg_s5",
+         "dimshared_all", "dimshared_xfit", "raw_replay_d1", "dimcode_s1_d1", "dimfold_s1_last2_d1", "lora_d1", "seg_s5_d1")
 
 ARMS = ["zeroshot", "raw_replay", "code_replay", "lora", "hybrid_lib40", "expert_on_lib40"]
 NAMES = {"zeroshot": "zero-shot", "raw_replay": "demo replay", "code_replay": "library codes", "lora": "few-shot LoRA",

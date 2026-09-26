@@ -33,19 +33,23 @@ METHODS = {"zeroshot": None, "practice_replay": ("raw_replay", None), "practice_
            "ours_dim": ("dimcode_s5", None), "ours_dim1": ("dimcode_s1", None),
            "ours_dim1_last2": ("dimfold_s1_last2", "dimcode_s1"), "ours_codes_full": ("hybrid_approach", "code_replay"),
            "ours_leaf": ("leaf_s5", None), "ours_leaf1_last2": ("leaffold_s1_last2", "leaf_s1"), "ours_shared1": ("shared_s1", None),
-           "ours_seg": ("seg_s5", None), "ours_alloc": "practice"}
+           "ours_seg": ("seg_s5", None), "ours_alloc": "practice",
+           "ours_shared_all": ("dimshared_all", "dimcode_s1"), "ours_shared_xfit": ("dimshared_xfit", "dimcode_s1")}
 NAMES = {"zeroshot": "zero-shot", "practice_replay": "demo replay", "practice_lora": "few-shot LoRA (rank 16)",
          "ours_dim": "borrowing, every 5th frame", "ours_dim1": "borrowing, every frame",
          "ours_dim1_last2": "borrowing + 258 KB fold", "ours_codes_full": "PoE codes + 4.7 MB fold",
          "ours_leaf": "leaf borrowing, every 5th frame", "ours_leaf1_last2": "leaf borrowing + 258 KB fold",
          "ours_shared1": "shared-prototype borrowing", "ours_seg": "segment borrowing",
-         "ours_alloc": "practice-allocated (program, else LoRA)"}
+         "ours_alloc": "practice-allocated (program, else LoRA)",
+         "ours_shared_all": "borrowing + one shared fold", "ours_shared_xfit": "borrowing + the other half's fold"}
 COMPARE = [("ours_dim1_last2", "practice_lora"), ("ours_dim1_last2", "practice_replay"), ("ours_dim1_last2", "zeroshot"),
            ("ours_dim", "practice_lora"), ("ours_dim", "practice_replay"), ("ours_dim1", "practice_replay"),
            ("practice_lora", "practice_replay"), ("ours_leaf1_last2", "practice_lora"), ("ours_leaf1_last2", "practice_replay"),
            ("ours_leaf", "ours_dim"), ("ours_leaf1_last2", "ours_dim1_last2"), ("ours_shared1", "ours_dim1"),
            ("ours_seg", "practice_replay"), ("ours_seg", "practice_lora"), ("ours_seg", "ours_dim"),
-           ("ours_dim1_last2", "ours_dim1"), ("ours_alloc", "practice_lora"), ("ours_alloc", "ours_dim1_last2")]
+           ("ours_dim1_last2", "ours_dim1"), ("ours_alloc", "practice_lora"), ("ours_alloc", "ours_dim1_last2"),
+           ("ours_shared_all", "ours_dim1_last2"), ("ours_shared_xfit", "ours_dim1_last2"), ("ours_shared_all", "practice_lora"),
+           ("ours_shared_xfit", "practice_lora"), ("ours_shared_xfit", "ours_dim1")]
 
 
 def episodes(experiment):
@@ -173,6 +177,35 @@ def main():
         res["demo_robustness"] = dict(tasks=dtasks, arms=rob)
         print(f"[stats] demonstration robustness on tasks {dtasks} (states 30-49): " + "; ".join(
             f"{k} {v['demo0']['k']}/{v['demo0']['n']} (demo 0) vs {v['demo1']['k']}/{v['demo1']['n']} (demo 1)" for k, v in rob.items()))
+    # SECOND DEMONSTRATION (pre-registered, ledger m3_prereg tag demo1): D1 = borrowing + fold vs the LoRA with demo 1;
+    # D2 = both demos pooled (per task, the episodes of both demos; resample tasks, then (demo, state) pairs)
+    d1t = [t for t in fails if (t, "lora_d1") in fin_all and ((t, "dimfold_s1_last2_d1") in fin_all or (t, "dimcode_s1_d1") in fin_all)
+           and (t, "raw_replay_d1") in fin_all]
+    if len(d1t) >= 3:
+        tb = {}
+        for t in d1t:
+            o1 = fin_all[(t, "dimfold_s1_last2_d1")] if (t, "dimfold_s1_last2_d1") in fin_all else fin_all[(t, "dimcode_s1_d1")]
+            tb[t] = {"ours_d1": o1, "lora_d1": fin_all[(t, "lora_d1")], "replay_d1": fin_all[(t, "raw_replay_d1")],
+                     "ours_both": {**{(0, i): v for i, v in table[t]["ours_dim1_last2"].items()}, **{(1, i): v for i, v in o1.items()}},
+                     "lora_both": {**{(0, i): v for i, v in table[t]["practice_lora"].items()},
+                                   **{(1, i): v for i, v in fin_all[(t, "lora_d1")].items()}},
+                     "replay_both": {**{(0, i): v for i, v in table[t]["practice_replay"].items()},
+                                     **{(1, i): v for i, v in fin_all[(t, "raw_replay_d1")].items()}}}
+        dem = dict(tasks=d1t, rates={}, compare={})
+        for m in ("ours_d1", "lora_d1", "replay_d1", "ours_both", "lora_both", "replay_both"):
+            k = sum(sum(tb[t][m].values()) for t in d1t); n = sum(len(tb[t][m]) for t in d1t)
+            dem["rates"][m] = dict(k=int(k), n=int(n))
+        for x, y in (("ours_d1", "lora_d1"), ("ours_d1", "replay_d1"), ("ours_both", "lora_both"), ("ours_both", "replay_both")):
+            pr = stats.paired(tb, x, y, d1t)
+            d = stats.bootstrap_diff(pr, B=a.B)
+            bb, cc = stats.discordant(pr)
+            d.update(discordant=[bb, cc], sign_p=stats.sign_test(bb, cc), noninferior=bool(d["lo90"] > -MARGIN))
+            dem["compare"][f"{x}-{y}"] = d
+        res["second_demo"] = dem
+        print(f"[stats] SECOND DEMO over {len(d1t)} tasks: " + "; ".join(f"{m} {v['k']}/{v['n']}" for m, v in dem["rates"].items()))
+        for key, d in dem["compare"].items():
+            print(f"  {key}: {d['diff']:+.3f} [{d['lo']:+.3f}, {d['hi']:+.3f}], one-sided lower {d['lo90']:+.3f} "
+                  f"({'non-inferior' if d['noninferior'] else 'not shown'}), discordant {d['discordant']}, sign p {d['sign_p']:.3f}")
     # EXPLORATORY (not pre-registered): does the library's novelty read (the demo frames it leaves unexplained,
     # r3_prepare tag _lib40) predict where composition succeeds, or where it trails LoRA?  Spearman, permutation p.
     nov = {}

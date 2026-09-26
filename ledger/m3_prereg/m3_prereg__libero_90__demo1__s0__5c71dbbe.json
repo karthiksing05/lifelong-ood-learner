@@ -1,0 +1,51 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration of the second-demonstration replication",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky2.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "5c71dbbeb4b6d1d0cf17f24326c9b343bb746a3e",
+  "short": "5c71dbbe"
+ },
+ "keys": {},
+ "metrics": {
+  "design": "every task where the prior's practice fails (21): replay, borrowing + fold (dimcode_s1 where the demo does not grasp) and the rank-16 LoRA rebuilt from IPEC episode 1 of the task's text (tags *_d1); same init states 30-49, 20 episodes; the practice decision is the prior's and does not depend on the demo",
+  "hypotheses": {
+   "D1": "borrowing + fold non-inferior to the LoRA at -0.10 with demo 1 (one-sided 95% cluster bootstrap)",
+   "D2": "the same over both demos pooled (840 pairs; bootstrap resamples tasks, then demos and init states within them)"
+  },
+  "question": "does the pre-registered result survive resampling the ONE demonstration?",
+  "written_before": "any demo-1 final row of the 17 wave tasks (4 original tasks already had demo-1 rows)"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_90__demo1__s0__5c71dbbe",
+ "schema": 1,
+ "script": "(inline, session 2026-09-26)",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-26T13:27:02+00:00",
+ "stream": null,
+ "tag": "demo1"
+}

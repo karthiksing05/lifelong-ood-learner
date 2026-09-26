@@ -30,6 +30,9 @@ def grasps(tid, demo=0):
     return len(D.gripper_events(ep["actions"])) > 0
 
 
+GROUP_A = {35, 36, 39, 42, 1, 6, 34, 37, 40, 52, 53, 62}             # the cross-fitting split of the shared-fold test
+
+
 def arm_spec(tid, arm, fold, demo=0):
     """-> (MODE, PROGRAM_BYTES, needs_prep) or None when the arm does not apply.  demo k > 0: the programs, fold and LoRA
     built from IPEC episode k of the task's text (files with the suffix _d<k>)."""
@@ -63,6 +66,10 @@ def arm_spec(tid, arm, fold, demo=0):
                               f"prog:{P(f'r9_leaf_{tid}_s1.npz')}@{F0}", True) if fold else None,
         "shared_s1": (f"program:{P(f'r9_shared_{tid}_s1.npz')}?{C}&window=20", f"prog:{P(f'r9_shared_{tid}_s1.npz')}", False),
         "seg_s5": (f"program:{P(f'r10_seg_{tid}_s5.npz')}?{C}&window=4", f"prog:{P(f'r10_seg_{tid}_s5.npz')}", False),
+        "dimshared_all": (f"hybrid:{P(f'r7_dim_{tid}_s1.npz')}?expert={P('r13_shared_all_expert.pt')}&foldprog={F0}&{C}&window=20",
+                          f"prog:{P(f'r7_dim_{tid}_s1.npz')}@{F0}", False) if fold else None,
+        "dimshared_xfit": (f"hybrid:{P(f'r7_dim_{tid}_s1.npz')}?expert={P('r13_xfit_' + ('B' if tid in GROUP_A else 'A') + '_expert.pt')}"
+                           f"&foldprog={F0}&{C}&window=20", f"prog:{P(f'r7_dim_{tid}_s1.npz')}@{F0}", False) if fold else None,
     }
     if arm == "leafbest":                                                # leaf borrowing + the fold where the demo grasps
         return table["leaffold_s1_last2"] if fold else table["leaf_s1"]
@@ -90,6 +97,7 @@ def main():
     ap.add_argument("--experiment", default="m3_final", help="m3_final (states 30-49) or m3_practice (practice states 0-9)")
     ap.add_argument("--first", type=int, default=None)
     ap.add_argument("--trials", type=int, default=None)
+    ap.add_argument("--after", default="", help="job ids every pack of this run waits for (e.g. the shared-fold trainings)")
     ap.add_argument("--dry", action="store_true")
     a = ap.parse_args()
     os.chdir(ROOT)
@@ -139,7 +147,7 @@ def main():
         with open(path, "w") as f:
             for sp, _ in grp:
                 f.write("\t".join(f"{k}={v}" for k, v in sp.items()) + "\n")
-        deps = sorted({d for _, d in grp if d})
+        deps = sorted({d for _, d in grp if d} | {x for x in a.after.split(",") if x})
         args = ([f"--dependency=afterok:{':'.join(deps)}"] if deps else []) + [f"--export=ALL,SPECS={path}", "experiments/roll_pack.sbatch"]
         j = sbatch(args, a.dry)
         print(f"pack {os.path.basename(path)} [{', '.join(str(sp['TASKS']) + ':' + sp['TAG'] + ('/practice' if sp['EXPERIMENT'] == 'm3_compose' else '') for sp, _ in grp)}]"

@@ -1,0 +1,61 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration of the shared / cross-fitted fold test",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky2.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "5c71dbbeb4b6d1d0cf17f24326c9b343bb746a3e",
+  "short": "5c71dbbe"
+ },
+ "keys": {},
+ "metrics": {
+  "arms": {
+   "dimshared_all": "borrowing every frame + the shared_all fold in the task's own windows",
+   "dimshared_xfit": "borrowing every frame + the fold of the OTHER group"
+  },
+  "bytes": "a shared fold is charged once for the tasks that use it (amortised per task); programs per task",
+  "evaluation": "init states 30-49, 20 episodes, paired; tasks where the prior's practice fails",
+  "folds": {
+   "shared_all": "rank 2, last two layers (258 KB), trained on the contact windows of all 19 grasping held-out tasks",
+   "xfit_A": "the same, trained on group A = 36,39,42,1,34,37,40,52,53,62 and applied to group B",
+   "xfit_B": "trained on group B = 3,4,5,32,41,43,48,58,63 and applied to group A"
+  },
+  "hypotheses": {
+   "S1": "dimshared_all non-inferior to per-task folds (dimfold_s1_last2) at -0.10 over the 19 tasks",
+   "S2": "dimshared_xfit non-inferior to per-task folds at -0.10 (a new task needs no new weights)",
+   "S3": "both non-inferior to the per-task LoRA at -0.10"
+  },
+  "question": "can one fold serve many tasks (consolidation), and can a NEW task reuse a fold trained on other tasks (zero new weights)?"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_90__shared_fold__s0__5c71dbbe",
+ "schema": 1,
+ "script": "(inline, session 2026-09-26)",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-26T13:28:17+00:00",
+ "stream": null,
+ "tag": "shared_fold"
+}
