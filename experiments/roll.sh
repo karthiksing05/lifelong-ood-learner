@@ -18,7 +18,7 @@ cd $ROBOT
 free_port() { .venv/bin/python -c "import socket,sys; s=socket.socket(); s.bind(('0.0.0.0', int(sys.argv[1]))); s.close()" $1 2>/dev/null; }
 for attempt in 1 2 3 4; do
   for k in $(seq 1 50); do free_port $PORT && break; PORT=$((9000 + RANDOM % 900)); done
-  .venv/bin/python $REPO/experiments/serve_guided.py --port $PORT --mode "$MODE" > $LOG 2>&1 &
+  .venv/bin/python $REPO/experiments/serve_guided.py --port $PORT --mode "$MODE" --seed ${SERVE_SEED:-0} > $LOG 2>&1 &
   SRV=$!
   up=0
   for i in $(seq 1 240); do sleep 5; if grep -q -E "server listening" $LOG 2>/dev/null; then up=1; break; fi; if ! kill -0 $SRV 2>/dev/null; then break; fi; done

@@ -1,11 +1,12 @@
 """Learning from practice, the REDO read (pre-registered: ledger m3_prereg tag learn_from_practice).
 
 Instances = init states 0-19 of the 21 tasks the prior fails.  y0 = the first composition's practice outcome (m5_practice,
-recorded); retry = the SAME first composition run again on the same instances (m5_redo, tag dimfold_s1_last2 / dimcode_s1):
-what re-running without learning gives; learned = compose -> practise -> consolidate (m5_redo tag learned); learned_mem0
+recorded); same_noise = the SAME first composition rerun with the practice's noise seed (a replay: the simulator and sampler
+are deterministic); retry1 / retry2 = the first composition rerun with fresh noise (policy seeds 1, 2): what re-running
+without learning gives -- the fair controls; learned = compose -> practise -> consolidate (m5_redo tag learned); learned_mem0
 = the refit fold without the stored compositions; lora_learn = a LoRA on the demo + the same successes.
-  L1: on instances with y0 = 1, success of `learned` (>= 0.9 pre-registered) vs `retry`
-  L2: on instances with y0 = 0, success of `learned` vs `retry`
+  L1: on instances with y0 = 1, success of `learned` (>= 0.9 pre-registered) vs retry1 / retry2
+  L2: on instances with y0 = 0, success of `learned` vs retry1 / retry2
 Pooled over tasks, paired by instance, two-level cluster bootstrap.   python experiments/m5_learn_stats.py [--record]
 """
 import argparse
@@ -45,31 +46,39 @@ def main():
         table = {}
         for t in tasks:
             first = next((prac[(t, g)] for g in ("dimfold_s1_last2", "dimcode_s1") if (t, g) in prac), None)
-            retry = next((redo[(t, g)] for g in ("dimfold_s1_last2", "dimcode_s1") if (t, g) in redo), None)
-            if first is None or retry is None:
+            if first is None:
                 continue
             inst = [i for i, y in first.items() if y == want]
             if not inst:
                 continue
-            row = {"retry": {i: retry[i] for i in inst if i in retry}}
+            row = {}
+            # seed 0 = the practice's own noise: the simulator and the sampler are deterministic, so this REPLAYS the
+            # practice episode (a determinism check); seeds 1, 2 = fresh noise, the fair controls
+            for name, sfx in (("same_noise", ""), ("retry1", "_seed1"), ("retry2", "_seed2")):
+                r = next((redo[(t, g + sfx)] for g in ("dimfold_s1_last2", "dimcode_s1") if (t, g + sfx) in redo), None)
+                if r is not None:
+                    row[name] = {i: r[i] for i in inst if i in r}
             for arm in ("learned", "learned_mem0", "lora_learn"):
                 if (t, arm) in redo:
                     row[arm] = {i: redo[(t, arm)][i] for i in inst if i in redo[(t, arm)]}
             table[t] = row
         res["tasks"] = sorted(set(res["tasks"]) | set(table), key=int)
-        for arm in ("retry", "learned", "learned_mem0", "lora_learn"):
+        for arm in ("same_noise", "retry1", "retry2", "learned", "learned_mem0", "lora_learn"):
             ts = [t for t in table if arm in table[t] and table[t][arm]]
             k = sum(sum(table[t][arm].values()) for t in ts); n = sum(len(table[t][arm]) for t in ts)
             if n:
                 lo, hi = stats.wilson(k, n)
                 res[scope][arm] = dict(k=int(k), n=int(n), rate=k / n, wilson=[lo, hi], tasks=len(ts))
-        for x in ("learned", "learned_mem0", "lora_learn"):
-            pairs = stats.paired(table, x, "retry", list(table))
-            if pairs:
-                d = stats.bootstrap_diff(pairs, B=a.B)
-                b, c = stats.discordant(pairs)
-                d.update(discordant=[b, c], sign_p=stats.sign_test(b, c))
-                res[scope][f"{x}-retry"] = d
+        for x in ("learned", "learned_mem0", "lora_learn", "retry2"):
+            for ctrl in ("retry1", "retry2"):
+                if x == ctrl:
+                    continue
+                pairs = stats.paired(table, x, ctrl, list(table))
+                if pairs:
+                    d = stats.bootstrap_diff(pairs, B=a.B)
+                    b, c = stats.discordant(pairs)
+                    d.update(discordant=[b, c], sign_p=stats.sign_test(b, c))
+                    res[scope][f"{x}-{ctrl}"] = d
         label = "instances the first composition SOLVED" if scope == "L1" else "instances the first composition FAILED"
         print(f"[{scope}] {label}:")
         for k, v in res[scope].items():

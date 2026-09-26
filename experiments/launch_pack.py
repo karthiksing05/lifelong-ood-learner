@@ -115,6 +115,7 @@ def main():
     ap.add_argument("--experiment", default="m3_final", help="m3_final (states 30-49) or m3_practice (practice states 0-9)")
     ap.add_argument("--first", type=int, default=None)
     ap.add_argument("--trials", type=int, default=None)
+    ap.add_argument("--seed", type=int, default=0, help="the policy's noise seed (0 = every run so far); tags gain _seed<k>")
     ap.add_argument("--record", action="store_true", help="the client saves every episode (frames, states, actions, outcome)")
     ap.add_argument("--task-after", default="", help="TASK:JOB[:JOB...],... jobs a task's packs wait for (e.g. its consolidation)")
     ap.add_argument("--after", default="", help="job ids every pack of this run waits for (e.g. the shared-fold trainings)")
@@ -141,14 +142,14 @@ def main():
                 continue
             tag = ("leaffold_s1_last2" if fold else "leaf_s1") if arm == "leafbest" else arm
             tag = ("dimfold_s1_last2" if fold else "dimcode_s1") if arm == "dimbest" else tag
-            tag += dsfx
+            tag += dsfx + (f"_seed{a.seed}" if a.seed else "")
             first = a.first if a.first is not None else (30 if a.experiment == "m3_final" else 0)
             trials = a.trials if a.trials is not None else (20 if a.experiment == "m3_final" else 10)
             out = os.path.join(R, f"{a.experiment}_{tid}_{tag}.json")
             if os.path.exists(out) or os.path.basename(out) in running:
                 continue
             spec = dict(MODE=s[0], SUITE="libero_90", TASKS=tid, TRIALS=trials, FIRST=first, EXPERIMENT=a.experiment, TAG=tag,
-                        PROGRAM_BYTES=s[1], OUT=out, **({"RECORD": "1"} if a.record else {}))
+                        PROGRAM_BYTES=s[1], OUT=out, **({"RECORD": "1"} if a.record else {}), **({"SERVE_SEED": str(a.seed)} if a.seed else {}))
             (specs_dep if s[2] else specs_free).append(spec)
         dep = None
         if specs_dep and not os.path.exists(os.path.join(R, f"r3_lora_{tid}{dsfx}.pt")):
