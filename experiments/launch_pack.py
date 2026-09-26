@@ -1,0 +1,119 @@
+"""Launch rollouts two per GPU (experiments/roll_pack.sbatch), after each task's preparation (experiments/prep.sbatch).
+
+Per task: the practice (zero-shot, states 0-9, m3_compose) and the final arms (states 30-49, m3_final).  A (task, arm) is
+skipped when its result file exists or is in --running; preparation is submitted when the task's LoRA adapter is missing
+(the prep's last step), or --prep-job TASK:JOB names a prep already queued.  Arms of one task are packed in pairs so a
+pack waits on one prep.
+
+    python experiments/launch_pack.py --tasks 1,6 --arms zeroshot,raw_replay,... [--running OUT1,OUT2] [--prep-job 34:3958606] [--dry]
+"""
+import argparse
+import importlib.util
+import os
+import subprocess
+import sys
+
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, ROOT)
+R = os.path.join(ROOT, "results", "robot")
+C = "w0=1.0&sched=const&var=0.001&key=pose&stall=3"
+
+
+def grasps(tid):
+    from lifelong_ood.policy import data as D
+    spec = importlib.util.spec_from_file_location("r3p", os.path.join(ROOT, "experiments", "r3_prepare.py"))
+    m = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(m)
+    texts, _ = m.libero90_texts()
+    d = D.Demos90()
+    ep = d.load(d.episodes_of_text(texts[tid])[0])
+    return len(D.gripper_events(ep["actions"])) > 0
+
+
+def arm_spec(tid, arm, fold):
+    """-> (MODE, PROGRAM_BYTES, needs_prep) or None when the arm does not apply."""
+    P = lambda name: os.path.join(R, name)                               # noqa: E731
+    F0 = P(f"r4_{tid}_approach_last2_program.npz")
+    EX = P(f"r4_{tid}_approach_last2_expert.pt")
+    table = {
+        "zeroshot": ("ours", "0", False),
+        "raw_replay": (f"program:{P(f'r3_prog_{tid}_raw_lib40.npz')}?{C}", f"prog:{P(f'r3_prog_{tid}_raw_lib40.npz')}", True),
+        "dimcode_s5": (f"program:{P(f'r7_dim_{tid}_s5.npz')}?{C}&window=4", f"prog:{P(f'r7_dim_{tid}_s5.npz')}", True),
+        "dimcode_s1": (f"program:{P(f'r7_dim_{tid}_s1.npz')}?{C}&window=20", f"prog:{P(f'r7_dim_{tid}_s1.npz')}", True),
+        "dimfold_s1_last2": (f"hybrid:{P(f'r7_dim_{tid}_s1.npz')}?expert={EX}&foldprog={F0}&{C}&window=20",
+                             f"prog:{P(f'r7_dim_{tid}_s1.npz')}@{F0}", True) if fold else None,
+        "lora": (f"lora:{P(f'r3_lora_{tid}.pt')}", "0", True),
+        "leaf_s5": (f"program:{P(f'r9_leaf_{tid}_s5.npz')}?{C}&window=4", f"prog:{P(f'r9_leaf_{tid}_s5.npz')}", False),
+        "leaf_s1": (f"program:{P(f'r9_leaf_{tid}_s1.npz')}?{C}&window=20", f"prog:{P(f'r9_leaf_{tid}_s1.npz')}", False),
+        "leaffold_s1_last2": (f"hybrid:{P(f'r9_leaf_{tid}_s1.npz')}?expert={EX}&foldprog={F0}&{C}&window=20",
+                              f"prog:{P(f'r9_leaf_{tid}_s1.npz')}@{F0}", True) if fold else None,
+        "shared_s1": (f"program:{P(f'r9_shared_{tid}_s1.npz')}?{C}&window=20", f"prog:{P(f'r9_shared_{tid}_s1.npz')}", False),
+        "seg_s5": (f"program:{P(f'r10_seg_{tid}_s5.npz')}?{C}&window=4", f"prog:{P(f'r10_seg_{tid}_s5.npz')}", False),
+    }
+    if arm == "leafbest":                                                # leaf borrowing + the fold where the demo grasps
+        return table["leaffold_s1_last2"] if fold else table["leaf_s1"]
+    return table[arm]
+
+
+def sbatch(args, dry):
+    if dry:
+        print("  [dry] sbatch " + " ".join(args))
+        return "DRY"
+    return subprocess.run(["sbatch", "--parsable"] + args, capture_output=True, text=True, check=True).stdout.strip().split(";")[0]
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--tasks", required=True)
+    ap.add_argument("--arms", required=True)
+    ap.add_argument("--practice", action="store_true", help="also the practice run (zero-shot, states 0-9)")
+    ap.add_argument("--running", default="", help="result files being produced by running jobs (skip them)")
+    ap.add_argument("--prep-job", default="", help="TASK:JOB,... preps already queued or running")
+    ap.add_argument("--per", type=int, default=2, help="instances per GPU")
+    ap.add_argument("--dry", action="store_true")
+    a = ap.parse_args()
+    os.chdir(ROOT)
+    os.makedirs(os.path.join(R, ".packs"), exist_ok=True)
+    running = {os.path.basename(x) for x in a.running.split(",") if x}
+    prep_job = dict(x.split(":") for x in a.prep_job.split(",") if x)
+    n_pack = len(os.listdir(os.path.join(R, ".packs")))
+    for tid in [int(x) for x in a.tasks.replace("+", ",").split(",")]:
+        fold = grasps(tid)
+        specs_free, specs_dep = [], []
+        if a.practice:
+            out = os.path.join(R, f"m3_compose_{tid}_zeroshot.json")
+            if not os.path.exists(out) and os.path.basename(out) not in running:
+                specs_free.append(dict(MODE="ours", SUITE="libero_90", TASKS=tid, TRIALS=10, FIRST=0, EXPERIMENT="m3_compose",
+                                       TAG="zeroshot", PROGRAM_BYTES="0", OUT=out))
+        for arm in a.arms.split(","):
+            s = arm_spec(tid, arm, fold)
+            if s is None:
+                continue
+            tag = ("leaffold_s1_last2" if fold else "leaf_s1") if arm == "leafbest" else arm
+            out = os.path.join(R, f"m3_final_{tid}_{tag}.json")
+            if os.path.exists(out) or os.path.basename(out) in running:
+                continue
+            spec = dict(MODE=s[0], SUITE="libero_90", TASKS=tid, TRIALS=20, FIRST=30, EXPERIMENT="m3_final", TAG=tag,
+                        PROGRAM_BYTES=s[1], OUT=out)
+            (specs_dep if s[2] else specs_free).append(spec)
+        dep = None
+        if specs_dep and not os.path.exists(os.path.join(R, f"r3_lora_{tid}.pt")):
+            if str(tid) in prep_job:
+                dep = prep_job[str(tid)]
+            else:
+                dep = sbatch([f"--export=ALL,TID={tid},FOLD={int(fold)}", "experiments/prep.sbatch"], a.dry)
+                print(f"task {tid} prep -> job {dep} (fold {int(fold)})")
+        for group, d in ((specs_free, None), (specs_dep, dep)):
+            for i in range(0, len(group), a.per):
+                n_pack += 1
+                path = os.path.join(R, ".packs", f"p_{n_pack:04d}.tsv")
+                with open(path, "w") as f:
+                    for sp in group[i:i + a.per]:
+                        f.write("\t".join(f"{k}={v}" for k, v in sp.items()) + "\n")
+                args = ([f"--dependency=afterok:{d}"] if d else []) + [f"--export=ALL,SPECS={path}", "experiments/roll_pack.sbatch"]
+                j = sbatch(args, a.dry)
+                print(f"task {tid} pack {os.path.basename(path)} [{', '.join(sp['TAG'] + ('/practice' if sp['EXPERIMENT'] == 'm3_compose' else '') for sp in group[i:i + a.per])}] -> job {j}")
+
+
+if __name__ == "__main__":
+    main()

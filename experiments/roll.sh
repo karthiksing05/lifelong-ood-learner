@@ -11,8 +11,8 @@ REPO=/coc/flash10/ksingara3/lifelong-ood-learner
 OUT=${OUT:-$REPO/results/robot/roll_${SUITE}_${SLURM_JOB_ID:-x}.json}
 ROBOT=/coc/flash10/ksingara3/robot/openpi
 export OPENPI_DATA_HOME=/coc/flash10/ksingara3/robot/openpi_cache MUJOCO_GL=egl PYOPENGL_PLATFORM=egl PYTHONUNBUFFERED=1
-PORT=$((9000 + RANDOM % 900))
-LOG=$REPO/results/robot/server_${SLURM_JOB_ID:-x}.log
+PORT=${PORT:-$((9000 + RANDOM % 900))}
+LOG=${LOG:-$REPO/results/robot/server_${SLURM_JOB_ID:-x}.log}
 cd $ROBOT
 .venv/bin/python $REPO/experiments/serve_guided.py --port $PORT --mode "$MODE" > $LOG 2>&1 &
 SRV=$!

@@ -64,6 +64,9 @@ def main():
     ap.add_argument("--npz", default="results/robot/r2b_libero_40.npz")
     ap.add_argument("--perms", type=int, default=20000)
     ap.add_argument("--record", action="store_true")
+    ap.add_argument("--source", default="band", choices=["band", "leaf", "seg"],
+                    help="band = r7_dim programs (tree prototypes); leaf = r9_leaf (the policy's chunk means, one training frame each); "
+                         "seg = r10_seg (segment borrowing from the same leaves)")
     a = ap.parse_args()
     os.chdir(ROOT)
     tree, z = Tree.load(a.tree), np.load(a.npz)
@@ -73,11 +76,20 @@ def main():
     r3p = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(r3p)
     texts, _ = r3p.libero90_texts()
-    held = sorted(int(re.findall(r"r7_dim_(\d+)_s1", p)[0]) for p in glob.glob("results/robot/r7_dim_*_s1.npz"))
+    pat = {"band": ("r7_dim", "_s1"), "leaf": ("r9_leaf", "_s1"), "seg": ("r10_seg", "_s1")}[a.source]
+    held = sorted(int(re.findall(pat[0] + r"_(\d+)" + pat[1], p)[0]) for p in glob.glob(f"results/robot/{pat[0]}_*{pat[1]}.npz"))
+    frame_task = z["task"]
     from lifelong_ood.policy.compose import DemoProgram
     mass, lvl, res, lenders = {}, {}, {}, {}
     for t in held:
-        p = DemoProgram.load(f"results/robot/r7_dim_{t}_s1.npz")
+        p = DemoProgram.load(f"results/robot/{pat[0]}_{t}{pat[1]}.npz")
+        if a.source != "band":
+            # every borrowed piece is ONE library frame (a leaf): its task is exact
+            lent = (p.dim_ids[np.arange(len(p.dim_ids))[:, None], p.dim_choice] - 10 ** 7).ravel() if a.source == "leaf" else p.seg_ids.ravel()
+            m = np.bincount(frame_task[lent], minlength=40).astype(float)
+            mass[t], lvl[t] = m / m.sum(), np.zeros(len(tree.u_grid))
+            lenders[t] = dict(median_members=1.0, le3_members=1.0, single_task=1.0, ge3_tasks=0.0, distinct=int(len(set(lent.tolist()))))
+            continue
         ids, ch = p.dim_ids, p.dim_choice                     # [T, K], [T, 7]
         m, lv, members, ntask = np.zeros(40), np.zeros(len(tree.u_grid)), [], []
         for f in range(len(ids)):
@@ -120,18 +132,20 @@ def main():
     out = dict(tasks={str(t): res[t] for t in held}, lenders=agg, overlap_mean=obs, null_mean=float(null.mean()), null_std=float(null.std()),
                perm_p=pval, n_perms=a.perms, held=held, matrix=M.tolist(), overlap=ov.tolist(), base=base.tolist(),
                train_text={str(k): v for k, v in train_text.items()})
-    json.dump(out, open("results/robot/r8_provenance.json", "w"), indent=1)
-    figure(out, texts)
+    sfx = "" if a.source == "band" else f"_{a.source}"
+    out["source"] = a.source
+    json.dump(out, open(f"results/robot/r8_provenance{sfx}.json", "w"), indent=1)
+    figure(out, texts, sfx)
     if a.record:
         m = {k: v for k, v in out.items() if k not in ("matrix", "overlap", "train_text", "base")}
-        ledger.record("r8_inspect", bench="libero_90", tag=f"provenance_{len(held)}tasks", seed=0, metrics=m,
+        ledger.record("r8_inspect", bench="libero_90", tag=f"provenance{sfx}_{len(held)}tasks", seed=0, metrics=m,
                       bytes=dict(experts=0, tree=0, codes=0, samples=0, teacher_copies=0, total=0), config=vars(a),
                       script="experiments/r8_inspect.py", command="python experiments/r8_inspect.py --record",
-                      artifacts=["results/robot/r8_provenance.json", "figures/robot/r8_provenance.png"])
+                      artifacts=[f"results/robot/r8_provenance{sfx}.json", f"figures/robot/r8_provenance{sfx}.png"])
         print("[r8] ledger row written")
 
 
-def figure(out, texts):
+def figure(out, texts, sfx=""):
     """LIFT = a training task's share of the held-out task's borrowed pairs / its share of the library's frames (LIBERO-10's
     long demos own the most frames, so raw shares mostly show demo length).  Diverging blue (borrowed more than its frames)
     - gray (as expected) - red (less); ring = the largest lift; rows carry the effective number of sources."""
@@ -174,10 +188,10 @@ def figure(out, texts):
     ax.set_title(f"Where each held-out task's borrowed motions come from (ring = largest lift).  Instruction-word overlap with "
                  f"the sources {out['overlap_mean']:.3f} vs {out['null_mean']:.3f} for shuffled pairings (p = {out['perm_p']:.3f})",
                  fontsize=8.2, color=INK, loc="left", pad=8)
-    fig.savefig("figures/robot/r8_provenance.png", dpi=200, facecolor=SURFACE, bbox_inches="tight")
-    fig.savefig("figures/robot/r8_provenance.pdf", facecolor=SURFACE, bbox_inches="tight")
+    fig.savefig(f"figures/robot/r8_provenance{sfx}.png", dpi=200, facecolor=SURFACE, bbox_inches="tight")
+    fig.savefig(f"figures/robot/r8_provenance{sfx}.pdf", facecolor=SURFACE, bbox_inches="tight")
     plt.close(fig)
-    print("[r8] figures/robot/r8_provenance.png/.pdf")
+    print(f"[r8] figures/robot/r8_provenance{sfx}.png/.pdf")
 
 
 if __name__ == "__main__":

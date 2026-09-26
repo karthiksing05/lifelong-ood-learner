@@ -36,6 +36,8 @@ def main():
     ap.add_argument("--S", type=int, default=4, help="training tasks per prototype (columns)")
     ap.add_argument("--tree", default="results/robot/r2b_libero_40_tree.npz")
     ap.add_argument("--npz", default="results/robot/r2b_libero_40.npz")
+    ap.add_argument("--shared", type=float, default=0.0, help="instead of a task's lenders: the prototypes at this noise level "
+                    "(e.g. 0.4) that the most training tasks share, one row each, its member frames in different tasks")
     a = ap.parse_args()
     os.chdir(ROOT)
     import matplotlib
@@ -50,19 +52,24 @@ def main():
     texts, _ = r3p.libero90_texts()
     # node -> (level, member indices)
     members = {}
-    for l in (2, 3, 4):
+    for l in ((2, 3, 4) if not a.shared else (tree.u_grid.index(a.shared),)):
         owner = z[f"owner_policy_{tree.u_grid[l]}"]
         for k, nid in zip(sorted(set(owner.tolist())), tree.levels[l]):
             members[int(nid)] = (l, np.where(owner == k)[0])
-    prog = DemoProgram.load(f"results/robot/r7_dim_{a.task}_s1.npz")
-    ids, ch = prog.dim_ids, prog.dim_choice
-    lent = np.array([[int(ids[f, ch[f, d]]) for d in range(ch.shape[1])] for f in range(len(ids))])     # [T, 7] node per dim
-    nodes, counts = np.unique(lent, return_counts=True)
-    top = nodes[np.argsort(-counts)][:a.P]
-    share = {int(n): float(c) / lent.size for n, c in zip(nodes, counts)}
-    ep90 = d90.load(d90.episodes_of_text(texts[a.task])[0])
-    img90, _ = d90.frames(ep90["episode_index"])
-    SURFACE, INK, INK2, MUTED = "#fcfcfb", "#0b0b0b", "#52514e", "#898781"
+    if a.shared:
+        ntk = {n: len(set(z["task"][m].tolist())) for n, (_, m) in members.items()}
+        top = sorted(members, key=lambda n: (-ntk[n], -len(members[n][1])))[:a.P]
+        share, lent, img90 = {int(n): 0.0 for n in top}, None, None
+    else:
+        prog = DemoProgram.load(f"results/robot/r7_dim_{a.task}_s1.npz")
+        ids, ch = prog.dim_ids, prog.dim_choice
+        lent = np.array([[int(ids[f, ch[f, d]]) for d in range(ch.shape[1])] for f in range(len(ids))])     # [T, 7] node per dim
+        nodes, counts = np.unique(lent, return_counts=True)
+        top = nodes[np.argsort(-counts)][:a.P]
+        share = {int(n): float(c) / lent.size for n, c in zip(nodes, counts)}
+        ep90 = d90.load(d90.episodes_of_text(texts[a.task])[0])
+        img90, _ = d90.frames(ep90["episode_index"])
+    SURFACE, INK, INK2 = "#fcfcfb", "#0b0b0b", "#52514e"
     fig, axs = plt.subplots(len(top), a.S + 1, figsize=(1.55 * (a.S + 1) + 2.4, 1.72 * len(top) + 0.6), facecolor=SURFACE, squeeze=False)
     ep_cache = {}
     for r, nid in enumerate(top):
@@ -70,11 +77,23 @@ def main():
         mode = tree.nodes[int(nid)].mode
         med = mem[np.argmin(((z["mu"][mem] - mode[None]) ** 2).sum(1))]
         desc = atlas.describe(D.from_rows(z["mu"][med][None], norm, 10)[0])
-        f = int(np.argmax((lent == nid).sum(1)))                        # the held-out frame where it lends most
-        dims = [d for d in range(7) if lent[f, d] == nid]
         ax = axs[r, 0]
-        ax.imshow(img90[f][::-1, ::-1])
-        ax.set_title(f"held out, frame {f}\nlends dims {''.join('xyzabcg'[d] for d in dims)}", fontsize=6.3, color=INK2, pad=2)
+        if lent is not None:
+            f = int(np.argmax((lent == nid).sum(1)))                    # the held-out frame where it lends most
+            dims = [d for d in range(7) if lent[f, d] == nid]
+            ax.imshow(img90[f])
+            ax.set_title(f"held out, frame {f}\nlends dims {''.join('xyzabcg'[d] for d in dims)}", fontsize=6.3, color=INK2, pad=2)
+        else:
+            raw = D.from_rows(z["mu"][med][None], norm, 10)[0]            # the medoid (the member nearest the mode), as named
+            path = np.cumsum(raw[:, :3], 0) * atlas.POS * 100            # cm
+            path = np.vstack([np.zeros((1, 3)), path])
+            ax.plot(path[:, 0], path[:, 2], color="#2a78d6", linewidth=2, solid_capstyle="round")
+            ax.scatter(path[-1:, 0], path[-1:, 2], s=14, color="#2a78d6")
+            ax.set_xlim(-3.5, 3.5); ax.set_ylim(-3.5, 3.5); ax.set_aspect("equal")
+            ax.axhline(0, color="#e1e0d9", linewidth=0.6, zorder=0); ax.axvline(0, color="#e1e0d9", linewidth=0.6, zorder=0)
+            ax.plot([-3.0, -2.0], [-3.0, -3.0], color=INK2, linewidth=1.2)
+            ax.text(-2.5, -2.85, "1 cm", fontsize=5.5, color=INK2, ha="center", va="bottom")
+            ax.set_title("the medoid's hand path, side view\n(forward vs up; dot = end)", fontsize=6.3, color=INK2, pad=2)
         tasks, n = np.unique(z["task"][mem], return_counts=True)
         order = tasks[np.argsort(-n)][:a.S]
         for c, tk in enumerate(order):
@@ -86,7 +105,7 @@ def main():
             png = ep_cache[e]["image"][int(z["frame"][i])]
             im = np.asarray(Image.open(io.BytesIO(png)).convert("RGB"))
             ax = axs[r, c + 1]
-            ax.imshow(im[::-1, ::-1])
+            ax.imshow(im)
             tx = demos.tasks[int(tk)]
             ax.set_title((tx if len(tx) <= 34 else tx[:32] + "...") + f"\n{int(n[np.argsort(-n)][c])} member frames", fontsize=5.6, color=INK2, pad=2)
         for c in range(a.S + 1):
@@ -96,15 +115,17 @@ def main():
         for c in range(len(order) + 1, a.S + 1):
             axs[r, c].axis("off")
         axs[r, 0].set_ylabel(f"prototype {int(nid)}\n\"{desc['name']}\"\nt = {tree.u_grid[l]}, {len(mem)} frames, {len(tasks)} tasks\n"
-                             f"{share[int(nid)]:.0%} of the task's pairs\nmoves {desc['dist'] * 100:.1f} cm, turns {np.degrees(desc['rot']):.0f} deg",
+                             + (f"{share[int(nid)]:.0%} of the task's pairs\n" if lent is not None else "")
+                             + f"moves {desc['dist'] * 100:.1f} cm, turns {np.degrees(desc['rot']):.0f} deg",
                              fontsize=6.6, color=INK, rotation=0, ha="right", va="center", labelpad=6)
-    fig.suptitle(f"What \"{texts[a.task]}\" borrows: its {len(top)} most-lent prototypes, each seen in the training tasks that share it",
-                 fontsize=8.5, color=INK, x=0.02, ha="left")
+    title = (f"What \"{texts[a.task]}\" borrows: its {len(top)} most-lent prototypes, each seen in the training tasks that share it"
+             if lent is not None else f"The {len(top)} prototypes at t = {a.shared} that the most training tasks share, each seen in four of them")
+    fig.suptitle(title, fontsize=8.5, color=INK, x=0.02, ha="left")
     fig.subplots_adjust(wspace=0.05, hspace=0.42)
-    out = f"figures/robot/r8_gallery_{a.task}"
+    out = f"figures/robot/r8_gallery_{a.task}" if lent is not None else f"figures/robot/r8_gallery_shared_t{a.shared}"
     fig.savefig(out + ".png", dpi=170, facecolor=SURFACE, bbox_inches="tight")
     fig.savefig(out + ".pdf", facecolor=SURFACE, bbox_inches="tight")
-    print(f"[gallery] {out}.png: prototypes {[int(x) for x in top]} lend {sum(share[int(x)] for x in top):.0%} of the pairs")
+    print(f"[gallery] {out}.png: prototypes {[int(x) for x in top]}" + (f" lend {sum(share[int(x)] for x in top):.0%} of the pairs" if lent is not None else ""))
 
 
 if __name__ == "__main__":
