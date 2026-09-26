@@ -151,22 +151,45 @@ def final(a):
             cells[(t, "hybrid_approach")][2] = DemoProgram.load(hp).bytes() + (expert[-1] if expert else 0)
         if (t, "composer") in cells or any(x[1].startswith("composer") for x in cells if x[0] == t):
             pass
+    # dimension-wise borrowing arms: the program's honest bytes are in the row; a fold adds its expert and its new nodes
+    def fold_bytes(t, tag):
+        r = [x for x in ledger.load("r4_fold") if x["tag"] == tag and str(x["metrics"]["task"]) == t]
+        return (r[-1]["bytes"]["experts"] + r[-1]["bytes"]["tree"]) if r else 0
+    for t in tasks:
+        for arm, tag in (("dimfold_full", "_approach"), ("dimfold_last2", "_approach_last2"),
+                         ("dimfold_s1_full", "_approach"), ("dimfold_s1_last2", "_approach_last2")):
+            if (t, arm) in cells:
+                cells[(t, arm)][2] += fold_bytes(t, tag)
     keep = {t: (lambda k, n: n > 0 and k / n >= a.practice)(*dev.get((t, "zeroshot"), (0, 0, 0))[:2]) for t in tasks}
     def pick(t, arm):
         if keep[t]:
             return cells.get((t, "zeroshot")), "prior"
         if arm == "ours":
             return (cells.get((t, "hybrid_approach")) or cells.get((t, "code_replay"))), ("codes+fold" if (t, "hybrid_approach") in cells else "codes")
+        if arm in ("dim", "dim_last2", "dim_full", "dim1", "dim1_last2", "dim1_full"):
+            base = "dimcode_s1" if arm.startswith("dim1") else "dimcode_s5"
+            fold = {"dim": None, "dim_last2": "dimfold_last2", "dim_full": "dimfold_full",
+                    "dim1": None, "dim1_last2": "dimfold_s1_last2", "dim1_full": "dimfold_s1_full"}[arm]
+            c = cells.get((t, fold)) if fold else None
+            return (c or cells.get((t, base))), ("dim+fold" if c else "dim")
         return cells.get((t, arm)), arm
     rows = {}
     for t in tasks:
-        rows[t] = {x: cells.get((t, x)) for x in ("zeroshot", "raw_replay", "code_replay", "lora", "hybrid_approach")}
-        for name, arm in (("ours", "ours"), ("practice_lora", "lora"), ("practice_replay", "raw_replay"), ("practice_codes", "code_replay")):
+        rows[t] = {x: cells.get((t, x)) for x in ("zeroshot", "raw_replay", "code_replay", "lora", "hybrid_approach", "dimcode_s5",
+                                                 "dimfold_full", "dimfold_last2", "dimcode_s1", "dimfold_s1_full", "dimfold_s1_last2")}
+        for name, arm in (("ours", "ours"), ("practice_lora", "lora"), ("practice_replay", "raw_replay"), ("practice_codes", "code_replay"),
+                          ("ours_dim", "dim"), ("ours_dim_last2", "dim_last2"), ("ours_dim_full", "dim_full"),
+                          ("ours_dim1", "dim1"), ("ours_dim1_last2", "dim1_last2"), ("ours_dim1_full", "dim1_full")):
             c, how = pick(t, arm)
             rows[t][name] = None if c is None else [c[0], c[1], 0 if keep[t] else c[2], how]
-    cols = ["zeroshot", "raw_replay", "code_replay", "lora", "ours", "practice_lora", "practice_replay"]
+    cols = ["zeroshot", "practice_replay", "practice_codes", "practice_lora", "ours", "ours_dim", "ours_dim_last2", "ours_dim_full",
+            "ours_dim1", "ours_dim1_last2", "ours_dim1_full"]
     names = {"zeroshot": "zero-shot", "raw_replay": "demo replay", "code_replay": "library codes", "lora": "few-shot LoRA",
-             "ours": "OURS: practise, compose (+ fold)", "practice_lora": "practise, then LoRA", "practice_replay": "practise, then replay"}
+             "ours": "practise, codes + 4.7 MB fold", "practice_lora": "practise, LoRA", "practice_replay": "practise, replay",
+             "practice_codes": "practise, codes", "ours_dim": "practise, dim-borrow", "ours_dim_last2": "practise, dim-borrow + 258 KB fold",
+             "ours_dim_full": "practise, dim-borrow + 4.7 MB fold", "ours_dim1": "practise, dim-borrow (every frame)",
+             "ours_dim1_last2": "practise, dim-borrow (every frame) + 258 KB fold", "ours_dim1_full": "practise, dim-borrow (every frame) + 4.7 MB fold"}
+    cols = [c for c in cols if any(rows[t].get(c) is not None for t in tasks)]
     print("| task | " + " | ".join(names[c] for c in cols) + " |")
     print("|---|" + "---|" * len(cols))
     tot = {c: [0, 0] for c in cols}
