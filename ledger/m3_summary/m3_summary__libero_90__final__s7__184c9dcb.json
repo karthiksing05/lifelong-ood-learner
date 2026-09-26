@@ -549,7 +549,10 @@
   }
  },
  "notes": "derived from ledger/m3_final (states 30-49); practice = ledger/m3_compose zero-shot (states 0-9)",
- "retired": null,
+ "retired": {
+  "reason": "superseded 2026-09-26 by the honest-bytes row (a replayed demo is charged its T x 7 action sequence, not 70 values per frame; replay stored 20.3 KB, not 100 KB)",
+  "when": "2026-09-26T06:49:24+00:00"
+ },
  "run_id": "m3_summary__libero_90__final__s7__184c9dcb",
  "schema": 1,
  "script": "experiments/m34_report.py",

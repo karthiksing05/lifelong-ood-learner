@@ -122,7 +122,7 @@ EMBODIED = [
     ("final: LoRA successes", emb("m3_summary", "metrics.arms.practice_lora.k", tag="final"), "74"),
     ("final: LoRA MB stored", mb("metrics.stored_bytes.practice_lora"), "74.8"),
     ("final: replay successes", emb("m3_summary", "metrics.arms.practice_replay.k", tag="final"), "72"),
-    ("final: replay KB stored", kb("metrics.stored_bytes.practice_replay"), "100"),
+    ("final: replay KB stored (honest: the T x 7 action sequence)", kb("metrics.stored_bytes.practice_replay"), "20"),
     ("final: dim-borrow s5 successes", emb("m3_summary", "metrics.arms.ours_dim.k", tag="final"), "71"),
     ("final: dim-borrow s5 KB stored", kb("metrics.stored_bytes.ours_dim"), "4.5"),
     ("final: codes + fold successes", emb("m3_summary", "metrics.arms.ours.k", tag="final"), "79"),

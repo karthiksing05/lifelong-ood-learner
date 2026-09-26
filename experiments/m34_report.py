@@ -127,6 +127,7 @@ def main():
     ap.add_argument("--practice", type=float, default=0.5, help="keep the prior if its practice success >= this")
     ap.add_argument("--record", action="store_true", help="write the derived m3_summary ledger row")
     ap.add_argument("--final", action="store_true", help="the FINAL states (m3_final, 30-49): our method vs every option")
+    ap.add_argument("--tasks", default="19,35,36,39,42,67", help="--final: the tasks of the summary (default: the first six)")
     a = ap.parse_args()
     if a.final:
         return final(a)
@@ -187,6 +188,9 @@ def final(a):
     succeed >= a.practice; elsewhere follow the demo's program of LIBRARY codes, with the rank-4 fold switched on in the
     approach / contact windows when the demo grasps or releases.  Every alternative gets the same practice step."""
     cells, lang = collect(("m3_final",))
+    keep_tasks = {x for x in a.tasks.split(",") if x}
+    cells = {k: v for k, v in cells.items() if k[0] in keep_tasks}
+    lang = {k: v for k, v in lang.items() if k in keep_tasks}
     dev, _ = collect(("m3_compose",))
     for r in ledger.load("r3_fewshot"):
         t = str(r["metrics"]["task"])
