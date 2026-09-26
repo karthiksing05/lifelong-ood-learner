@@ -69,7 +69,10 @@ def main():
     ap.add_argument("--heldout", action="store_true", help="the held-out init states (m3_heldout) + the practice rule")
     ap.add_argument("--practice", type=float, default=0.5, help="keep the prior if its practice success >= this")
     ap.add_argument("--record", action="store_true", help="write the derived m3_summary ledger row")
+    ap.add_argument("--final", action="store_true", help="the FINAL states (m3_final, 30-49): our method vs every option")
     a = ap.parse_args()
+    if a.final:
+        return final(a)
     cells, lang = collect(("m3_heldout",) if a.heldout else ("m3_compose", "m4_fold"))
     if a.heldout:
         # PRACTICE-THEN-COMPOSE: the prior's success on the development init states (m3_compose zeroshot, states 0-9)
@@ -120,6 +123,64 @@ def main():
                       config=vars(a), script="experiments/m34_report.py", command="python experiments/m34_report.py --heldout --record",
                       notes="derived from ledger/m3_heldout (init states 10-29) and ledger/m3_compose zero-shot (states 0-9, the practice)")
         print("[report] m3_summary row written")
+
+
+def final(a):
+    """Our method = practise, then compose: keep the prior where its 10 practice episodes (development states 0-9)
+    succeed >= a.practice; elsewhere follow the demo's program of LIBRARY codes, with the rank-4 fold switched on in the
+    approach / contact windows when the demo grasps or releases.  Every alternative gets the same practice step."""
+    cells, lang = collect(("m3_final",))
+    dev, _ = collect(("m3_compose",))
+    for r in ledger.load("r3_fewshot"):
+        t = str(r["metrics"]["task"])
+        if (t, "lora") in cells:
+            cells[(t, "lora")][2] = int(r["bytes"]["experts"])
+    tasks = sorted(lang, key=int)
+    keep = {t: (lambda k, n: n > 0 and k / n >= a.practice)(*dev.get((t, "zeroshot"), (0, 0, 0))[:2]) for t in tasks}
+    def pick(t, arm):
+        if keep[t]:
+            return cells.get((t, "zeroshot")), "prior"
+        if arm == "ours":
+            return (cells.get((t, "hybrid_approach")) or cells.get((t, "code_replay"))), ("codes+fold" if (t, "hybrid_approach") in cells else "codes")
+        return cells.get((t, arm)), arm
+    rows = {}
+    for t in tasks:
+        rows[t] = {x: cells.get((t, x)) for x in ("zeroshot", "raw_replay", "code_replay", "lora", "hybrid_approach")}
+        for name, arm in (("ours", "ours"), ("practice_lora", "lora"), ("practice_replay", "raw_replay"), ("practice_codes", "code_replay")):
+            c, how = pick(t, arm)
+            rows[t][name] = None if c is None else [c[0], c[1], 0 if keep[t] else c[2], how]
+    cols = ["zeroshot", "raw_replay", "code_replay", "lora", "ours", "practice_lora", "practice_replay"]
+    names = {"zeroshot": "zero-shot", "raw_replay": "demo replay", "code_replay": "library codes", "lora": "few-shot LoRA",
+             "ours": "OURS: practise, compose (+ fold)", "practice_lora": "practise, then LoRA", "practice_replay": "practise, then replay"}
+    print("| task | " + " | ".join(names[c] for c in cols) + " |")
+    print("|---|" + "---|" * len(cols))
+    tot = {c: [0, 0] for c in cols}
+    fail_tot = {c: [0, 0] for c in cols}
+    fails = [t for t in tasks if not keep[t]]
+    for t in tasks:
+        out = []
+        for c in cols:
+            v = rows[t][c]
+            if v is None:
+                out.append("-"); continue
+            out.append(f"{v[0]}/{v[1]} ({fmt_bytes(v[2])})")
+            tot[c][0] += v[0]; tot[c][1] += v[1]
+            if t in fails:
+                fail_tot[c][0] += v[0]; fail_tot[c][1] += v[1]
+        print(f"| {t} {lang[t][:40]} | " + " | ".join(out) + " |")
+    print("| all | " + " | ".join(f"{k}/{n}" for k, n in (tot[c] for c in cols)) + " |")
+    print("| prior fails | " + " | ".join(f"{k}/{n}" for k, n in (fail_tot[c] for c in cols)) + " |")
+    if a.record:
+        agg = {c: dict(k=tot[c][0], n=tot[c][1], rate=tot[c][0] / max(tot[c][1], 1),
+                       fail_k=fail_tot[c][0], fail_n=fail_tot[c][1], fail_rate=fail_tot[c][0] / max(fail_tot[c][1], 1)) for c in cols}
+        store = {c: sum((rows[t][c][2] if rows[t][c] is not None else 0) for t in tasks) for c in cols}
+        m = dict(arms=agg, stored_bytes=store, kept_prior=[t for t in tasks if keep[t]], rows={t: {c: rows[t][c] for c in cols} for t in tasks},
+                 practice_threshold=a.practice)
+        ledger.record("m3_summary", bench="libero_90", tag="final", seed=7, metrics=m,
+                      bytes=dict(experts=0, tree=0, codes=int(store["ours"]), samples=0, teacher_copies=0, total=int(store["ours"])),
+                      config=vars(a), script="experiments/m34_report.py", command="python experiments/m34_report.py --final --record",
+                      notes="derived from ledger/m3_final (states 30-49); practice = ledger/m3_compose zero-shot (states 0-9)")
+        print("[report] m3_summary (final) row written")
 
 
 if __name__ == "__main__":
