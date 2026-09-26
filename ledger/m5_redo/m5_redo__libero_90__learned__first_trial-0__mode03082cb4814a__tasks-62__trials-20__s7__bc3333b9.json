@@ -1,0 +1,84 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/m5_redo_62_learned.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "roll.sh MODE=learned:62?w0=1.0&sched=const&var=0.001&key=pose&stall=3&window=20 SUITE=libero_90 TASKS=62 TRIALS=20 (job 3963051)",
+ "config": {
+  "client": {
+   "first_trial": 0,
+   "host": "127.0.0.1",
+   "max_steps": 0,
+   "no_meta": false,
+   "out": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/m5_redo_62_learned.json",
+   "port": 9603,
+   "record": false,
+   "replan": 5,
+   "resize": 224,
+   "seed": 7,
+   "suite": "libero_90",
+   "tasks": "62",
+   "trials": 20,
+   "videos": 2,
+   "wait": 10
+  },
+  "job": "3963051",
+  "mode": "learned:62?w0=1.0&sched=const&var=0.001&key=pose&stall=3&window=20"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "brainiac.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3963051",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m5_redo",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "bc3333b952ddfde3c6a7bdae93c4196d688a583c",
+  "short": "bc3333b9"
+ },
+ "keys": {
+  "first_trial": 0,
+  "mode": "learned:62?w0=1.0&sched=const&var=0.001&key=pose&stall=3&window=20",
+  "tasks": "62",
+  "trials": 20
+ },
+ "metrics": {
+  "complete": true,
+  "n_episodes": 20,
+  "secs": 593.7350587844849,
+  "success_rate": 0.6,
+  "tasks": {
+   "62": {
+    "errors": 0,
+    "language": "pick up the salad dressing and put it in the tray",
+    "mean_steps": 226.45,
+    "n": 20,
+    "success_rate": 0.6
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m5_redo__libero_90__learned__first_trial-0__mode03082cb4814a__tasks-62__trials-20__s7__bc3333b9",
+ "schema": 1,
+ "script": "experiments/libero_client.py",
+ "seconds": null,
+ "seed": 7,
+ "source_commit": null,
+ "started": "2026-09-26T19:57:11+00:00",
+ "stream": null,
+ "tag": "learned"
+}

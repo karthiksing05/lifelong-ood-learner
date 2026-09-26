@@ -1,0 +1,84 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/m3_final_34_dimshared_xfit.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 5058,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 5058,
+  "tree": 0
+ },
+ "command": "roll.sh MODE=hybrid:/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r7_dim_34_s1.npz?expert=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r13_xfit_B_expert.pt&foldprog=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r4_34_approach_last2_program.npz&w0=1.0&sched=const&var=0.001&key=pose&stall=3&window=20 SUITE=libero_90 TASKS=34 TRIALS=20 (job 3962905)",
+ "config": {
+  "client": {
+   "first_trial": 30,
+   "host": "127.0.0.1",
+   "max_steps": 0,
+   "no_meta": false,
+   "out": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/m3_final_34_dimshared_xfit.json",
+   "port": 9165,
+   "record": false,
+   "replan": 5,
+   "resize": 224,
+   "seed": 7,
+   "suite": "libero_90",
+   "tasks": "34",
+   "trials": 20,
+   "videos": 2,
+   "wait": 10
+  },
+  "job": "3962905",
+  "mode": "hybrid:/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r7_dim_34_s1.npz?expert=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r13_xfit_B_expert.pt&foldprog=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r4_34_approach_last2_program.npz&w0=1.0&sched=const&var=0.001&key=pose&stall=3&window=20"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "brainiac.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3962905",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_final",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "bc3333b952ddfde3c6a7bdae93c4196d688a583c",
+  "short": "bc3333b9"
+ },
+ "keys": {
+  "first_trial": 30,
+  "mode": "hybrid:/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r7_dim_34_s1.npz?expert=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r13_xfit_B_expert.pt&foldprog=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r4_34_approach_last2_program.npz&w0=1.0&sched=const&var=0.001&key=pose&stall=3&window=20",
+  "tasks": "34",
+  "trials": 20
+ },
+ "metrics": {
+  "complete": true,
+  "n_episodes": 20,
+  "secs": 857.9748883247375,
+  "success_rate": 0.25,
+  "tasks": {
+   "34": {
+    "errors": 0,
+    "language": "put the yellow and white mug to the front of the white mug",
+    "mean_steps": 348.05,
+    "n": 20,
+    "success_rate": 0.25
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_final__libero_90__dimshared_xfit__first_trial-30__mode2973a936fae1__tasks-34__trials-20__s7__bc3333b9",
+ "schema": 1,
+ "script": "experiments/libero_client.py",
+ "seconds": null,
+ "seed": 7,
+ "source_commit": null,
+ "started": "2026-09-26T22:56:33+00:00",
+ "stream": null,
+ "tag": "dimshared_xfit"
+}

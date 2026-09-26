@@ -1,0 +1,95 @@
+{
+ "artifacts": [
+  "results/robot/r3_full_3.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 1615523840,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 1615523840,
+  "tree": 0
+ },
+ "command": "experiments/r3_fewshot.py --task 3 --full",
+ "config": {
+  "batch": 32,
+  "demo": 0,
+  "full": true,
+  "lr": 0.0001,
+  "rank": 16,
+  "scope": "expert",
+  "seed": 0,
+  "steps": 1000,
+  "tag": "",
+  "task": 3
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "brainiac.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3963074",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r3_fewshot",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "4830a3db37c0c01622d3332642093f6e867bbb6d",
+  "short": "4830a3db"
+ },
+ "keys": {
+  "task": 3
+ },
+ "metrics": {
+  "curve": {
+   "loss": [
+    0.07546941190958023,
+    0.004415977746248245,
+    0.0018439589766785502,
+    0.0013644251739606261,
+    0.00761033222079277,
+    0.002703726990148425,
+    0.0016281303251162171,
+    0.0024550536181777716,
+    0.0025877163279801607,
+    0.006838721688836813,
+    0.003143760608509183
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "demo_episode": 824,
+  "final_loss": 0.003143760608509183,
+  "first_loss": 0.07546941190958023,
+  "full": true,
+  "n_frames": 183,
+  "task": 3,
+  "text": "put the butter at the back in the top drawer of the cabinet and close it",
+  "train_secs": 210.1973705291748
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r3_fewshot__libero_90___full__task-3__s0__4830a3db",
+ "schema": 1,
+ "script": "experiments/r3_fewshot.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-26T16:14:27+00:00",
+ "stream": null,
+ "tag": "_full"
+}

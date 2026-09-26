@@ -1,0 +1,109 @@
+{
+ "artifacts": [
+  "results/robot/r3_lora_32_r64.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 74842112,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 74842112,
+  "tree": 0
+ },
+ "command": "experiments/r3_fewshot.py --task 32 --rank 64 --tag _r64",
+ "config": {
+  "batch": 32,
+  "demo": 0,
+  "full": false,
+  "lr": 0.0001,
+  "rank": 64,
+  "scope": "expert",
+  "seed": 0,
+  "steps": 1000,
+  "tag": "_r64",
+  "task": 32
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "brainiac.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3963077",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r3_fewshot",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "4830a3db37c0c01622d3332642093f6e867bbb6d",
+  "short": "4830a3db"
+ },
+ "keys": {
+  "task": 32
+ },
+ "metrics": {
+  "curve": {
+   "anchor": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "loss": [
+    0.10371074825525284,
+    0.013050136156380177,
+    0.006346224341541529,
+    0.002854076912626624,
+    0.006544976029545069,
+    0.0026193370576947927,
+    0.0028151285368949175,
+    0.0017035844502970576,
+    0.0023353539872914553,
+    0.007829624228179455,
+    0.0033975050318986177
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "demo_episode": 1510,
+  "final_loss": 0.0033975050318986177,
+  "first_loss": 0.10371074825525284,
+  "n_banks": 163,
+  "n_frames": 200,
+  "n_params": 37421056,
+  "task": 32,
+  "text": "put the ketchup in the top drawer of the cabinet",
+  "train_secs": 138.93453860282898
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r3_fewshot__libero_90___r64__task-32__s0__4830a3db",
+ "schema": 1,
+ "script": "experiments/r3_fewshot.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-26T16:15:46+00:00",
+ "stream": null,
+ "tag": "_r64"
+}

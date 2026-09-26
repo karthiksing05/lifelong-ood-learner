@@ -1,0 +1,95 @@
+{
+ "artifacts": [
+  "results/robot/r3_full_40.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 1615523840,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 1615523840,
+  "tree": 0
+ },
+ "command": "experiments/r3_fewshot.py --task 40 --full",
+ "config": {
+  "batch": 32,
+  "demo": 0,
+  "full": true,
+  "lr": 0.0001,
+  "rank": 16,
+  "scope": "expert",
+  "seed": 0,
+  "steps": 1000,
+  "tag": "",
+  "task": 40
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "brainiac.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3963070",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r3_fewshot",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "4830a3db37c0c01622d3332642093f6e867bbb6d",
+  "short": "4830a3db"
+ },
+ "keys": {
+  "task": 40
+ },
+ "metrics": {
+  "curve": {
+   "loss": [
+    0.12296360731124878,
+    0.005856310483068228,
+    0.0025977487675845623,
+    0.0012661133660003543,
+    0.00737444031983614,
+    0.0017148286569863558,
+    0.002418168354779482,
+    0.0011972622014582157,
+    0.0016932584112510085,
+    0.007648560684174299,
+    0.002644794760271907
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "demo_episode": 1400,
+  "final_loss": 0.002644794760271907,
+  "first_loss": 0.12296360731124878,
+  "full": true,
+  "n_frames": 177,
+  "task": 40,
+  "text": "put the frying pan on the cabinet shelf",
+  "train_secs": 209.68686699867249
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r3_fewshot__libero_90___full__task-40__s0__4830a3db",
+ "schema": 1,
+ "script": "experiments/r3_fewshot.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-26T16:03:16+00:00",
+ "stream": null,
+ "tag": "_full"
+}

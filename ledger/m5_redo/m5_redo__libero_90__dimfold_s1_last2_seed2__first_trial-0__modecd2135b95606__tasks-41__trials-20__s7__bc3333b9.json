@@ -1,0 +1,84 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/m5_redo_41_dimfold_s1_last2_seed2.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 6850,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 6850,
+  "tree": 0
+ },
+ "command": "roll.sh MODE=hybrid:/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r7_dim_41_s1.npz?expert=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r4_41_approach_last2_expert.pt&foldprog=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r4_41_approach_last2_program.npz&w0=1.0&sched=const&var=0.001&key=pose&stall=3&window=20 SUITE=libero_90 TASKS=41 TRIALS=20 (job 3964057)",
+ "config": {
+  "client": {
+   "first_trial": 0,
+   "host": "127.0.0.1",
+   "max_steps": 0,
+   "no_meta": false,
+   "out": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/m5_redo_41_dimfold_s1_last2_seed2.json",
+   "port": 9142,
+   "record": false,
+   "replan": 5,
+   "resize": 224,
+   "seed": 7,
+   "suite": "libero_90",
+   "tasks": "41",
+   "trials": 20,
+   "videos": 2,
+   "wait": 10
+  },
+  "job": "3964057",
+  "mode": "hybrid:/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r7_dim_41_s1.npz?expert=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r4_41_approach_last2_expert.pt&foldprog=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r4_41_approach_last2_program.npz&w0=1.0&sched=const&var=0.001&key=pose&stall=3&window=20"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "voltron.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3964057",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m5_redo",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "bc3333b952ddfde3c6a7bdae93c4196d688a583c",
+  "short": "bc3333b9"
+ },
+ "keys": {
+  "first_trial": 0,
+  "mode": "hybrid:/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r7_dim_41_s1.npz?expert=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r4_41_approach_last2_expert.pt&foldprog=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r4_41_approach_last2_program.npz&w0=1.0&sched=const&var=0.001&key=pose&stall=3&window=20",
+  "tasks": "41",
+  "trials": 20
+ },
+ "metrics": {
+  "complete": true,
+  "n_episodes": 20,
+  "secs": 643.3818047046661,
+  "success_rate": 0.4,
+  "tasks": {
+   "41": {
+    "errors": 0,
+    "language": "put the frying pan on top of the cabinet",
+    "mean_steps": 319.0,
+    "n": 20,
+    "success_rate": 0.4
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m5_redo__libero_90__dimfold_s1_last2_seed2__first_trial-0__modecd2135b95606__tasks-41__trials-20__s7__bc3333b9",
+ "schema": 1,
+ "script": "experiments/libero_client.py",
+ "seconds": null,
+ "seed": 7,
+ "source_commit": null,
+ "started": "2026-09-26T21:53:50+00:00",
+ "stream": null,
+ "tag": "dimfold_s1_last2_seed2"
+}

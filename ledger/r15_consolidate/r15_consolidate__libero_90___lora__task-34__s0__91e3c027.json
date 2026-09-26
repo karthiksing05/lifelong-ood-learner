@@ -1,0 +1,103 @@
+{
+ "artifacts": [
+  "results/robot/r15_34_lora.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 18710528,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 18710528,
+  "tree": 0
+ },
+ "command": "experiments/r15_consolidate.py --task 34 --lora",
+ "config": {
+  "fold_stride": 2,
+  "library": "results/robot/r2b_libero_40.npz",
+  "lora": true,
+  "lora_stride": 5,
+  "n_anchor": 384,
+  "name": "r15",
+  "practice": "m5_practice",
+  "seed": 0,
+  "steps": 1000,
+  "task": 34
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "brainiac.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3962983",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r15_consolidate",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "91e3c0273c4b69dd9e1f011f8f5db93a9a0e4770",
+  "short": "91e3c027"
+ },
+ "keys": {
+  "task": 34
+ },
+ "metrics": {
+  "curve": {
+   "anchor": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "loss": [
+    0.17295120656490326,
+    0.019757432863116264,
+    0.013914451003074646,
+    0.011866072192788124,
+    0.013514411635696888,
+    0.010737613774836063,
+    0.007140259724110365,
+    0.0059027778916060925,
+    0.007693126797676086,
+    0.014309528283774853,
+    0.007465410977602005
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "frames": 614,
+  "successes": 20,
+  "task": 34
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r15_consolidate__libero_90___lora__task-34__s0__91e3c027",
+ "schema": 1,
+ "script": "experiments/r15_consolidate.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-26T17:46:20+00:00",
+ "stream": null,
+ "tag": "_lora"
+}

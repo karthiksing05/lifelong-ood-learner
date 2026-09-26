@@ -1,0 +1,95 @@
+{
+ "artifacts": [
+  "results/robot/r3_full_1.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 1615523840,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 1615523840,
+  "tree": 0
+ },
+ "command": "experiments/r3_fewshot.py --task 1 --full",
+ "config": {
+  "batch": 32,
+  "demo": 0,
+  "full": true,
+  "lr": 0.0001,
+  "rank": 16,
+  "scope": "expert",
+  "seed": 0,
+  "steps": 1000,
+  "tag": "",
+  "task": 1
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "brainiac.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3963066",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r3_fewshot",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "4830a3db37c0c01622d3332642093f6e867bbb6d",
+  "short": "4830a3db"
+ },
+ "keys": {
+  "task": 1
+ },
+ "metrics": {
+  "curve": {
+   "loss": [
+    0.06605794280767441,
+    0.004576948471367359,
+    0.002746843034401536,
+    0.0010426868684589863,
+    0.007366746664047241,
+    0.0011880609672516584,
+    0.0012143886415287852,
+    0.0009903291938826442,
+    0.002155536552891135,
+    0.006252072285860777,
+    0.0033001916017383337
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "demo_episode": 1238,
+  "final_loss": 0.0033001916017383337,
+  "first_loss": 0.06605794280767441,
+  "full": true,
+  "n_frames": 197,
+  "task": 1,
+  "text": "close the top drawer of the cabinet and put the black bowl on top of it",
+  "train_secs": 208.52724623680115
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r3_fewshot__libero_90___full__task-1__s0__4830a3db",
+ "schema": 1,
+ "script": "experiments/r3_fewshot.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-26T15:52:12+00:00",
+ "stream": null,
+ "tag": "_full"
+}

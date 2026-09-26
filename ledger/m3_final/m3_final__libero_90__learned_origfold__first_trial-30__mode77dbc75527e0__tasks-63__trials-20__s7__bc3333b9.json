@@ -1,0 +1,84 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/m3_final_63_learned_origfold.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "roll.sh MODE=learned:63?w0=1.0&sched=const&var=0.001&key=pose&stall=3&window=20&fold=orig SUITE=libero_90 TASKS=63 TRIALS=20 (job 3963039)",
+ "config": {
+  "client": {
+   "first_trial": 30,
+   "host": "127.0.0.1",
+   "max_steps": 0,
+   "no_meta": false,
+   "out": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/m3_final_63_learned_origfold.json",
+   "port": 9568,
+   "record": false,
+   "replan": 5,
+   "resize": 224,
+   "seed": 7,
+   "suite": "libero_90",
+   "tasks": "63",
+   "trials": 20,
+   "videos": 2,
+   "wait": 10
+  },
+  "job": "3963039",
+  "mode": "learned:63?w0=1.0&sched=const&var=0.001&key=pose&stall=3&window=20&fold=orig"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "brainiac.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3963039",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_final",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "bc3333b952ddfde3c6a7bdae93c4196d688a583c",
+  "short": "bc3333b9"
+ },
+ "keys": {
+  "first_trial": 30,
+  "mode": "learned:63?w0=1.0&sched=const&var=0.001&key=pose&stall=3&window=20&fold=orig",
+  "tasks": "63",
+  "trials": 20
+ },
+ "metrics": {
+  "complete": true,
+  "n_episodes": 20,
+  "secs": 847.9362504482269,
+  "success_rate": 0.35,
+  "tasks": {
+   "63": {
+    "errors": 0,
+    "language": "stack the left bowl on the right bowl and place them in the tray",
+    "mean_steps": 333.7,
+    "n": 20,
+    "success_rate": 0.35
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_final__libero_90__learned_origfold__first_trial-30__mode77dbc75527e0__tasks-63__trials-20__s7__bc3333b9",
+ "schema": 1,
+ "script": "experiments/libero_client.py",
+ "seconds": null,
+ "seed": 7,
+ "source_commit": null,
+ "started": "2026-09-26T21:03:07+00:00",
+ "stream": null,
+ "tag": "learned_origfold"
+}

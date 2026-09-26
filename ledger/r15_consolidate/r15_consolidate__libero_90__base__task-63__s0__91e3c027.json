@@ -1,0 +1,108 @@
+{
+ "artifacts": [
+  "results/robot/r15_63_memory.npz",
+  "results/robot/r15_63_expert.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 108707,
+  "experts": 258048,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 366755,
+  "tree": 0
+ },
+ "command": "experiments/r15_consolidate.py --task 63",
+ "config": {
+  "fold_stride": 2,
+  "library": "results/robot/r2b_libero_40.npz",
+  "lora": false,
+  "lora_stride": 5,
+  "n_anchor": 384,
+  "name": "r15",
+  "practice": "m5_practice",
+  "seed": 0,
+  "steps": 1000,
+  "task": 63
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "brainiac.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3963010",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r15_consolidate",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "91e3c0273c4b69dd9e1f011f8f5db93a9a0e4770",
+  "short": "91e3c027"
+ },
+ "keys": {
+  "task": 63
+ },
+ "metrics": {
+  "compositions": 13,
+  "curve": {
+   "anchor": [
+    0.0,
+    0.000682187092024833,
+    0.0021547081414610147,
+    0.0011749397963285446,
+    0.0011392772430554032,
+    0.0013055155286565423,
+    0.0007960764924064279,
+    0.0007710804347880185,
+    0.0012319155503064394,
+    0.0006558657623827457,
+    0.0006760629476048052
+   ],
+   "loss": [
+    0.0795455276966095,
+    0.08624573796987534,
+    0.044628407806158066,
+    0.04121767729520798,
+    0.03789979964494705,
+    0.040718890726566315,
+    0.04254099354147911,
+    0.027372999116778374,
+    0.01898830384016037,
+    0.033525388687849045,
+    0.02982814982533455
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "fold_frames": 824,
+  "memory_bytes": 108707,
+  "practice": 20,
+  "successes": 12,
+  "task": 63,
+  "text": "stack the left bowl on the right bowl and place them in the tray"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r15_consolidate__libero_90__base__task-63__s0__91e3c027",
+ "schema": 1,
+ "script": "experiments/r15_consolidate.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-26T18:24:07+00:00",
+ "stream": null,
+ "tag": ""
+}

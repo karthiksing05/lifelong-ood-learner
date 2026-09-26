@@ -1,0 +1,108 @@
+{
+ "artifacts": [
+  "results/robot/r15_43_memory.npz",
+  "results/robot/r15_43_expert.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 118848,
+  "experts": 258048,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 376896,
+  "tree": 0
+ },
+ "command": "experiments/r15_consolidate.py --task 43",
+ "config": {
+  "fold_stride": 2,
+  "library": "results/robot/r2b_libero_40.npz",
+  "lora": false,
+  "lora_stride": 5,
+  "n_anchor": 384,
+  "name": "r15",
+  "practice": "m5_practice",
+  "seed": 0,
+  "steps": 1000,
+  "task": 43
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "voltron.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3963004",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r15_consolidate",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "91e3c0273c4b69dd9e1f011f8f5db93a9a0e4770",
+  "short": "91e3c027"
+ },
+ "keys": {
+  "task": 43
+ },
+ "metrics": {
+  "compositions": 19,
+  "curve": {
+   "anchor": [
+    0.0,
+    0.0004945101100020111,
+    0.0016779623692855239,
+    0.0018527221400290728,
+    0.001784985768608749,
+    0.0014334245352074504,
+    0.0010162084363400936,
+    0.0009459315915592015,
+    0.001210278831422329,
+    0.0006047756760381162,
+    0.0005090932245366275
+   ],
+   "loss": [
+    0.07121983170509338,
+    0.05962506681680679,
+    0.04525561258196831,
+    0.021366523578763008,
+    0.015104322694242,
+    0.02082621306180954,
+    0.021155014634132385,
+    0.013159316964447498,
+    0.01200779713690281,
+    0.019984615966677666,
+    0.007559538818895817
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "fold_frames": 482,
+  "memory_bytes": 118848,
+  "practice": 20,
+  "successes": 18,
+  "task": 43,
+  "text": "put the white bowl on top of the cabinet"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r15_consolidate__libero_90__base__task-43__s0__91e3c027",
+ "schema": 1,
+ "script": "experiments/r15_consolidate.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-26T18:14:18+00:00",
+ "stream": null,
+ "tag": ""
+}

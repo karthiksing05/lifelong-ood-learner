@@ -1,0 +1,58 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration of iterated practice",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky2.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "bc3333b952ddfde3c6a7bdae93c4196d688a583c",
+  "short": "bc3333b9"
+ },
+ "keys": {},
+ "metrics": {
+  "hypotheses": {
+   "I1": "success on 30-49 rises with rounds: L3 > L1 (paired, sign test p < 0.05)",
+   "I2": "L3 > the one-demo LoRA (paired, sign test p < 0.05)",
+   "I3": "the 258 KB learner on the same data is non-inferior to L_k at -0.10"
+  },
+  "learners": {
+   "L1": "r15_<t>_lora.pt (round-0 data; scored: 274/420)",
+   "L2": "r16L2 (rounds 0-1)",
+   "L3": "r16L3 (rounds 0-2)",
+   "small": "r16eq<k>: rank 2 on the last two layers (258 KB, the fold's size), same data as L_k"
+  },
+  "loop": "ITERATED PRACTICE (composition as a demonstration engine): round 0 = the zero-training composition practised on instances 0-19 (m5_practice, done); learner L_k = rank-16 LoRA on the demo + every success of rounds 0..k-1 (fresh training, 1000 steps, frames capped at 1000); round k practice = L_k on instances 0-29 with policy seed k, recorded (m6_round<k>); L_k scored on the untouched init states 30-49 (m3_final tag lora_<name>)",
+  "rollouts_per_round": "30 per task",
+  "tasks": "the 21 tasks the prior fails"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_90__iterate__s0__bc3333b9",
+ "schema": 1,
+ "script": "(inline, session 2026-09-26)",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-26T23:28:50+00:00",
+ "stream": null,
+ "tag": "iterate"
+}

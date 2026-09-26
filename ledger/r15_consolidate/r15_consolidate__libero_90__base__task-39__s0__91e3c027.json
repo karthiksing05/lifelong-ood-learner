@@ -1,0 +1,108 @@
+{
+ "artifacts": [
+  "results/robot/r15_39_memory.npz",
+  "results/robot/r15_39_expert.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 130958,
+  "experts": 258048,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 389006,
+  "tree": 0
+ },
+ "command": "experiments/r15_consolidate.py --task 39",
+ "config": {
+  "fold_stride": 2,
+  "library": "results/robot/r2b_libero_40.npz",
+  "lora": false,
+  "lora_stride": 5,
+  "n_anchor": 384,
+  "name": "r15",
+  "practice": "m5_practice",
+  "seed": 0,
+  "steps": 1000,
+  "task": 39
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "brainiac.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3962974",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r15_consolidate",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "91e3c0273c4b69dd9e1f011f8f5db93a9a0e4770",
+  "short": "91e3c027"
+ },
+ "keys": {
+  "task": 39
+ },
+ "metrics": {
+  "compositions": 17,
+  "curve": {
+   "anchor": [
+    0.0,
+    0.0005013416521251202,
+    0.0011093727080151439,
+    0.0006975315627641976,
+    0.0005205145571380854,
+    0.000637945719063282,
+    0.00035393660073168576,
+    0.0006795549998059869,
+    0.0005012219189666212,
+    0.00037083920324221253,
+    0.0003096513682976365
+   ],
+   "loss": [
+    0.11401989310979843,
+    0.07028699666261673,
+    0.07074189931154251,
+    0.04267415404319763,
+    0.043165672570466995,
+    0.049497704952955246,
+    0.05504446104168892,
+    0.03759818151593208,
+    0.03038267232477665,
+    0.029742348939180374,
+    0.030529260635375977
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "fold_frames": 721,
+  "memory_bytes": 130958,
+  "practice": 20,
+  "successes": 16,
+  "task": 39,
+  "text": "turn off the stove"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r15_consolidate__libero_90__base__task-39__s0__91e3c027",
+ "schema": 1,
+ "script": "experiments/r15_consolidate.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-26T17:37:59+00:00",
+ "stream": null,
+ "tag": ""
+}

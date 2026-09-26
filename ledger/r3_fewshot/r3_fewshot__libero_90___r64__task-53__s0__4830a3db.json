@@ -1,0 +1,109 @@
+{
+ "artifacts": [
+  "results/robot/r3_lora_53_r64.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 74842112,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 74842112,
+  "tree": 0
+ },
+ "command": "experiments/r3_fewshot.py --task 53 --rank 64 --tag _r64",
+ "config": {
+  "batch": 32,
+  "demo": 0,
+  "full": false,
+  "lr": 0.0001,
+  "rank": 64,
+  "scope": "expert",
+  "seed": 0,
+  "steps": 1000,
+  "tag": "_r64",
+  "task": 53
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "brainiac.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3963072",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r3_fewshot",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "4830a3db37c0c01622d3332642093f6e867bbb6d",
+  "short": "4830a3db"
+ },
+ "keys": {
+  "task": 53
+ },
+ "metrics": {
+  "curve": {
+   "anchor": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "loss": [
+    0.025120770558714867,
+    0.0041277590207755566,
+    0.003039122326299548,
+    0.0013843541964888573,
+    0.0037921362090855837,
+    0.0005290910485200584,
+    0.0005888263112865388,
+    0.0007035854505375028,
+    0.0010470525594428182,
+    0.003775381250306964,
+    0.0016649067401885986
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "demo_episode": 1284,
+  "final_loss": 0.0016649067401885986,
+  "first_loss": 0.025120770558714867,
+  "n_banks": 163,
+  "n_frames": 148,
+  "n_params": 37421056,
+  "task": 53,
+  "text": "pick up the orange juice and put it in the basket",
+  "train_secs": 138.10185384750366
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r3_fewshot__libero_90___r64__task-53__s0__4830a3db",
+ "schema": 1,
+ "script": "experiments/r3_fewshot.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-26T16:04:42+00:00",
+ "stream": null,
+ "tag": "_r64"
+}

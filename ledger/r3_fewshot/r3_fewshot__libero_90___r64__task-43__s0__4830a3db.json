@@ -1,0 +1,109 @@
+{
+ "artifacts": [
+  "results/robot/r3_lora_43_r64.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 74842112,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 74842112,
+  "tree": 0
+ },
+ "command": "experiments/r3_fewshot.py --task 43 --rank 64 --tag _r64",
+ "config": {
+  "batch": 32,
+  "demo": 0,
+  "full": false,
+  "lr": 0.0001,
+  "rank": 64,
+  "scope": "expert",
+  "seed": 0,
+  "steps": 1000,
+  "tag": "_r64",
+  "task": 43
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "brainiac.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3963079",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r3_fewshot",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "4830a3db37c0c01622d3332642093f6e867bbb6d",
+  "short": "4830a3db"
+ },
+ "keys": {
+  "task": 43
+ },
+ "metrics": {
+  "curve": {
+   "anchor": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "loss": [
+    0.0853058472275734,
+    0.008331498131155968,
+    0.004471351392567158,
+    0.0030000668484717607,
+    0.00391677999868989,
+    0.0010760579025372863,
+    0.0033836872316896915,
+    0.001609023311175406,
+    0.001758294994942844,
+    0.006920441519469023,
+    0.0031608932185918093
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "demo_episode": 273,
+  "final_loss": 0.0031608932185918093,
+  "first_loss": 0.0853058472275734,
+  "n_banks": 163,
+  "n_frames": 144,
+  "n_params": 37421056,
+  "task": 43,
+  "text": "put the white bowl on top of the cabinet",
+  "train_secs": 137.56441402435303
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r3_fewshot__libero_90___r64__task-43__s0__4830a3db",
+ "schema": 1,
+ "script": "experiments/r3_fewshot.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-26T16:20:27+00:00",
+ "stream": null,
+ "tag": "_r64"
+}

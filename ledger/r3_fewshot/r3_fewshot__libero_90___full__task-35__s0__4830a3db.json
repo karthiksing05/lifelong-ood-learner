@@ -1,0 +1,95 @@
+{
+ "artifacts": [
+  "results/robot/r3_full_35.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 1615523840,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 1615523840,
+  "tree": 0
+ },
+ "command": "experiments/r3_fewshot.py --task 35 --full",
+ "config": {
+  "batch": 32,
+  "demo": 0,
+  "full": true,
+  "lr": 0.0001,
+  "rank": 16,
+  "scope": "expert",
+  "seed": 0,
+  "steps": 1000,
+  "tag": "",
+  "task": 35
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "brainiac.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3963062",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r3_fewshot",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "4830a3db37c0c01622d3332642093f6e867bbb6d",
+  "short": "4830a3db"
+ },
+ "keys": {
+  "task": 35
+ },
+ "metrics": {
+  "curve": {
+   "loss": [
+    0.08049634844064713,
+    0.0017660915618762374,
+    0.002112292218953371,
+    0.0010634266072884202,
+    0.005762053653597832,
+    0.001199974911287427,
+    0.0011541007552295923,
+    0.0010773057583719492,
+    0.0012081735767424107,
+    0.005979320965707302,
+    0.0038457736372947693
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "demo_episode": 957,
+  "final_loss": 0.0038457736372947693,
+  "first_loss": 0.08049634844064713,
+  "full": true,
+  "n_frames": 131,
+  "task": 35,
+  "text": "open the microwave",
+  "train_secs": 211.83759760856628
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r3_fewshot__libero_90___full__task-35__s0__4830a3db",
+ "schema": 1,
+ "script": "experiments/r3_fewshot.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-26T15:36:58+00:00",
+ "stream": null,
+ "tag": "_full"
+}

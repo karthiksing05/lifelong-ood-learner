@@ -1,0 +1,67 @@
+{
+ "artifacts": [
+  "results/robot/r15_6_memory.npz"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 115359,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 115359,
+  "tree": 0
+ },
+ "command": "experiments/r15_consolidate.py --task 6",
+ "config": {
+  "fold_stride": 2,
+  "library": "results/robot/r2b_libero_40.npz",
+  "lora": false,
+  "lora_stride": 5,
+  "n_anchor": 384,
+  "name": "r15",
+  "practice": "m5_practice",
+  "seed": 0,
+  "steps": 1000,
+  "task": 6
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "xaea-12.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3962980",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r15_consolidate",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "91e3c0273c4b69dd9e1f011f8f5db93a9a0e4770",
+  "short": "91e3c027"
+ },
+ "keys": {
+  "task": 6
+ },
+ "metrics": {
+  "compositions": 16,
+  "curve": null,
+  "fold_frames": 43,
+  "memory_bytes": 115359,
+  "practice": 20,
+  "successes": 15,
+  "task": 6,
+  "text": "open the bottom drawer of the cabinet"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r15_consolidate__libero_90__base__task-6__s0__91e3c027",
+ "schema": 1,
+ "script": "experiments/r15_consolidate.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-26T17:40:25+00:00",
+ "stream": null,
+ "tag": ""
+}

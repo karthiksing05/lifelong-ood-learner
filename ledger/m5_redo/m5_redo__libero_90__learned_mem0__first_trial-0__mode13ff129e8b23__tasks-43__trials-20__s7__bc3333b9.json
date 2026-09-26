@@ -1,0 +1,84 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/m5_redo_43_learned_mem0.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "roll.sh MODE=learned:43?w0=1.0&sched=const&var=0.001&key=pose&stall=3&window=20&mem=0 SUITE=libero_90 TASKS=43 TRIALS=20 (job 3963057)",
+ "config": {
+  "client": {
+   "first_trial": 0,
+   "host": "127.0.0.1",
+   "max_steps": 0,
+   "no_meta": false,
+   "out": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/m5_redo_43_learned_mem0.json",
+   "port": 9622,
+   "record": false,
+   "replan": 5,
+   "resize": 224,
+   "seed": 7,
+   "suite": "libero_90",
+   "tasks": "43",
+   "trials": 20,
+   "videos": 2,
+   "wait": 10
+  },
+  "job": "3963057",
+  "mode": "learned:43?w0=1.0&sched=const&var=0.001&key=pose&stall=3&window=20&mem=0"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "voltron.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3963057",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m5_redo",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "bc3333b952ddfde3c6a7bdae93c4196d688a583c",
+  "short": "bc3333b9"
+ },
+ "keys": {
+  "first_trial": 0,
+  "mode": "learned:43?w0=1.0&sched=const&var=0.001&key=pose&stall=3&window=20&mem=0",
+  "tasks": "43",
+  "trials": 20
+ },
+ "metrics": {
+  "complete": true,
+  "n_episodes": 20,
+  "secs": 365.1550121307373,
+  "success_rate": 0.9,
+  "tasks": {
+   "43": {
+    "errors": 0,
+    "language": "put the white bowl on top of the cabinet",
+    "mean_steps": 163.2,
+    "n": 20,
+    "success_rate": 0.9
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m5_redo__libero_90__learned_mem0__first_trial-0__mode13ff129e8b23__tasks-43__trials-20__s7__bc3333b9",
+ "schema": 1,
+ "script": "experiments/libero_client.py",
+ "seconds": null,
+ "seed": 7,
+ "source_commit": null,
+ "started": "2026-09-26T20:34:56+00:00",
+ "stream": null,
+ "tag": "learned_mem0"
+}

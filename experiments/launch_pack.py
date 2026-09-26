@@ -75,6 +75,8 @@ def arm_spec(tid, arm, fold, demo=0):
     if arm in ("learned", "learned_mem0", "learned_origfold"):           # compose -> practise -> consolidate (r15_consolidate.py)
         extra = {"learned": "", "learned_mem0": "&mem=0", "learned_origfold": "&fold=orig"}[arm]
         return (f"learned:{tid}?{C}&window=20{extra}", "0", False)
+    if arm.startswith("lora@"):                                          # lora@<name>: results/robot/<name>_<task>_lora.pt (rounds)
+        return (f"lora:{os.path.join(R, arm[5:] + '_' + str(tid) + '_lora.pt')}", "0", False)
     if arm == "lora_learn":                                              # LoRA on the demo + the same successful rollouts
         return (f"lora:{os.path.join(R, 'r15_' + str(tid) + '_lora.pt')}", "0", False)
     if arm in ("demodiff", "demodiff_state"):                            # DemoDiffusion (SDEdit of the demo chunk), s* = 0.2, 20 steps
@@ -140,7 +142,7 @@ def main():
             s = arm_spec(tid, arm, fold, a.demo)
             if s is None:
                 continue
-            tag = ("leaffold_s1_last2" if fold else "leaf_s1") if arm == "leafbest" else arm
+            tag = ("leaffold_s1_last2" if fold else "leaf_s1") if arm == "leafbest" else arm.replace("lora@", "lora_")
             tag = ("dimfold_s1_last2" if fold else "dimcode_s1") if arm == "dimbest" else tag
             tag += dsfx + (f"_seed{a.seed}" if a.seed else "")
             first = a.first if a.first is not None else (30 if a.experiment == "m3_final" else 0)

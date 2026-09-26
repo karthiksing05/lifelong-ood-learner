@@ -1,0 +1,109 @@
+{
+ "artifacts": [
+  "results/robot/r3_lora_35_r64.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 74842112,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 74842112,
+  "tree": 0
+ },
+ "command": "experiments/r3_fewshot.py --task 35 --rank 64 --tag _r64",
+ "config": {
+  "batch": 32,
+  "demo": 0,
+  "full": false,
+  "lr": 0.0001,
+  "rank": 64,
+  "scope": "expert",
+  "seed": 0,
+  "steps": 1000,
+  "tag": "_r64",
+  "task": 35
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "brainiac.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3963062",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r3_fewshot",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "4830a3db37c0c01622d3332642093f6e867bbb6d",
+  "short": "4830a3db"
+ },
+ "keys": {
+  "task": 35
+ },
+ "metrics": {
+  "curve": {
+   "anchor": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "loss": [
+    0.08049634844064713,
+    0.0027042089495807886,
+    0.002957067219540477,
+    0.0009025348699651659,
+    0.006031550467014313,
+    0.0013431439874693751,
+    0.0011809123679995537,
+    0.000984368147328496,
+    0.0009663414093665779,
+    0.005132665392011404,
+    0.0036887514870613813
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "demo_episode": 957,
+  "final_loss": 0.0036887514870613813,
+  "first_loss": 0.08049634844064713,
+  "n_banks": 163,
+  "n_frames": 131,
+  "n_params": 37421056,
+  "task": 35,
+  "text": "open the microwave",
+  "train_secs": 138.41994404792786
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r3_fewshot__libero_90___r64__task-35__s0__4830a3db",
+ "schema": 1,
+ "script": "experiments/r3_fewshot.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-26T15:32:05+00:00",
+ "stream": null,
+ "tag": "_r64"
+}

@@ -1,0 +1,109 @@
+{
+ "artifacts": [
+  "results/robot/r3_lora_4_r64.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 74842112,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 74842112,
+  "tree": 0
+ },
+ "command": "experiments/r3_fewshot.py --task 4 --rank 64 --tag _r64",
+ "config": {
+  "batch": 32,
+  "demo": 0,
+  "full": false,
+  "lr": 0.0001,
+  "rank": 64,
+  "scope": "expert",
+  "seed": 0,
+  "steps": 1000,
+  "tag": "_r64",
+  "task": 4
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "brainiac.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3963075",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r3_fewshot",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "4830a3db37c0c01622d3332642093f6e867bbb6d",
+  "short": "4830a3db"
+ },
+ "keys": {
+  "task": 4
+ },
+ "metrics": {
+  "curve": {
+   "anchor": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "loss": [
+    0.10005360841751099,
+    0.010148485191166401,
+    0.004055616911500692,
+    0.0024656960740685463,
+    0.0068151578307151794,
+    0.002185481833294034,
+    0.0027011956553906202,
+    0.0016366010531783104,
+    0.00314384326338768,
+    0.009107372723519802,
+    0.004099338315427303
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "demo_episode": 1551,
+  "final_loss": 0.004099338315427303,
+  "first_loss": 0.10005360841751099,
+  "n_banks": 163,
+  "n_frames": 173,
+  "n_params": 37421056,
+  "task": 4,
+  "text": "put the butter at the front in the top drawer of the cabinet and close it",
+  "train_secs": 135.46099710464478
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r3_fewshot__libero_90___r64__task-4__s0__4830a3db",
+ "schema": 1,
+ "script": "experiments/r3_fewshot.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-26T16:09:24+00:00",
+ "stream": null,
+ "tag": "_r64"
+}

@@ -64,6 +64,9 @@ def main():
     ap.add_argument("--fold-stride", type=int, default=2, help="every k-th frame of the successes' contact windows")
     ap.add_argument("--lora", action="store_true", help="train ONLY the LoRA baseline on the same data (a separate run: a fresh model)")
     ap.add_argument("--lora-stride", type=int, default=5)
+    ap.add_argument("--lora-rank", type=int, default=16)
+    ap.add_argument("--max-lora-frames", type=int, default=1000, help="uniform subsample above this (GPU memory)")
+    ap.add_argument("--lora-scope", default="expert", help="expert | last2 (rank 2 on last2 = the fold's size, 258 KB)")
     ap.add_argument("--max-fold-frames", type=int, default=700, help="uniformly subsample the fold's frames above this (GPU memory; "
                     "2026-09-26: only task 3, 19 successes with long windows, exceeded it)")
     ap.add_argument("--n-anchor", type=int, default=384)
@@ -81,7 +84,8 @@ def main():
     T0 = len(ep["actions"])
     demo_rows = D.to_rows(ep["actions"][D.chunk_indices(T0, 10)[0]], norm)
     img0, wr0 = d90.frames(ep["episode_index"])
-    recs = sorted(glob.glob(f"{R}/{a.practice}_{t}_*_rec/task{t}_trial*.npz"))
+    # --practice may list several rounds (comma-separated experiments): every recorded rollout of every round is pooled
+    recs = sorted(f for p in a.practice.replace("+", ",").split(",") for f in glob.glob(f"{R}/{p}_{t}_*_rec/task{t}_trial*.npz"))
     eps = [dict(np.load(f)) for f in recs]
     succ = [e for e in eps if bool(e["success"])]
     log(f"[r15] task {t} '{texts[t]}': {len(eps)} practice rollouts, {len(succ)} successes")
@@ -118,13 +122,17 @@ def main():
     from lifelong_ood.policy.backbone import PolicyBackbone
     bk = PolicyBackbone("pi05_libero", device="cuda")
     if a.lora:
+        if len(lora_obs) > a.max_lora_frames:
+            keep = np.linspace(0, len(lora_obs) - 1, a.max_lora_frames).round().astype(int)
+            log(f"[r15] {len(lora_obs)} LoRA frames > {a.max_lora_frames}: uniformly subsampled")
+            lora_obs, lora_rows = [lora_obs[i] for i in keep], [lora_rows[i] for i in keep]
         t0 = time.time()
         bank = adapt.PrefixBank(bk, lora_obs)
-        state, banks = adapt.inject(bk, scope="expert")
+        state, banks = adapt.inject(bk, scope=a.lora_scope)
         key = f"lora_learn_{t}"
-        params = r4.add_node(banks, key, 16)
+        params = r4.add_node(banks, key, a.lora_rank)
         hist = adapt.train(bk, state, key, params, bank, D.pad_rows(np.stack(lora_rows), bk.H), steps=a.steps, lr=1e-4, seed=a.seed, log=log)
-        lb = adapt.save(banks, key, f"{R}/{a.name}_{t}_lora.pt", meta=dict(task=t, rank=16, scope="expert", learned=True))
+        lb = adapt.save(banks, key, f"{R}/{a.name}_{t}_lora.pt", meta=dict(task=t, rank=a.lora_rank, scope=a.lora_scope, learned=True))
         log(f"[r15] LoRA on the same data ({len(lora_obs)} frames) in {time.time() - t0:.0f}s: {lb} B")
         ledger.record("r15_consolidate", bench="libero_90", tag="_lora" + ("" if a.name == "r15" else "_" + a.name), seed=a.seed, keys=dict(task=t),
                       metrics=dict(task=t, frames=len(lora_obs), successes=len(succ), curve=hist),

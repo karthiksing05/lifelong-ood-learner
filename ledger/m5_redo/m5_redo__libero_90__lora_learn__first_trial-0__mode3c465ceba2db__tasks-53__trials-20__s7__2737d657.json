@@ -1,0 +1,84 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/m5_redo_53_lora_learn.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "roll.sh MODE=lora:/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r15_53_lora.pt SUITE=libero_90 TASKS=53 TRIALS=20 (job 3963050)",
+ "config": {
+  "client": {
+   "first_trial": 0,
+   "host": "127.0.0.1",
+   "max_steps": 0,
+   "no_meta": false,
+   "out": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/m5_redo_53_lora_learn.json",
+   "port": 9602,
+   "record": false,
+   "replan": 5,
+   "resize": 224,
+   "seed": 7,
+   "suite": "libero_90",
+   "tasks": "53",
+   "trials": 20,
+   "videos": 2,
+   "wait": 10
+  },
+  "job": "3963050",
+  "mode": "lora:/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r15_53_lora.pt"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "brainiac.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3963050",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m5_redo",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "2737d65758691f0295bdb35c361e5ff37685c998",
+  "short": "2737d657"
+ },
+ "keys": {
+  "first_trial": 0,
+  "mode": "lora:/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r15_53_lora.pt",
+  "tasks": "53",
+  "trials": 20
+ },
+ "metrics": {
+  "complete": true,
+  "n_episodes": 20,
+  "secs": 436.9565861225128,
+  "success_rate": 1.0,
+  "tasks": {
+   "53": {
+    "errors": 0,
+    "language": "pick up the orange juice and put it in the basket",
+    "mean_steps": 133.45,
+    "n": 20,
+    "success_rate": 1.0
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m5_redo__libero_90__lora_learn__first_trial-0__mode3c465ceba2db__tasks-53__trials-20__s7__2737d657",
+ "schema": 1,
+ "script": "experiments/libero_client.py",
+ "seconds": null,
+ "seed": 7,
+ "source_commit": null,
+ "started": "2026-09-26T19:45:46+00:00",
+ "stream": null,
+ "tag": "lora_learn"
+}

@@ -1,0 +1,95 @@
+{
+ "artifacts": [
+  "results/robot/r3_full_32.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 1615523840,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 1615523840,
+  "tree": 0
+ },
+ "command": "experiments/r3_fewshot.py --task 32 --full",
+ "config": {
+  "batch": 32,
+  "demo": 0,
+  "full": true,
+  "lr": 0.0001,
+  "rank": 16,
+  "scope": "expert",
+  "seed": 0,
+  "steps": 1000,
+  "tag": "",
+  "task": 32
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "brainiac.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3963077",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r3_fewshot",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "4830a3db37c0c01622d3332642093f6e867bbb6d",
+  "short": "4830a3db"
+ },
+ "keys": {
+  "task": 32
+ },
+ "metrics": {
+  "curve": {
+   "loss": [
+    0.10371074825525284,
+    0.007032631430774927,
+    0.005110346246510744,
+    0.0036927207838743925,
+    0.008290119469165802,
+    0.0024294720496982336,
+    0.0034029872622340918,
+    0.0020935034845024347,
+    0.0030630098190158606,
+    0.0070466697216033936,
+    0.0031964031513780355
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "demo_episode": 1510,
+  "final_loss": 0.0031964031513780355,
+  "first_loss": 0.10371074825525284,
+  "full": true,
+  "n_frames": 200,
+  "task": 32,
+  "text": "put the ketchup in the top drawer of the cabinet",
+  "train_secs": 213.45032596588135
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r3_fewshot__libero_90___full__task-32__s0__4830a3db",
+ "schema": 1,
+ "script": "experiments/r3_fewshot.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-26T16:20:45+00:00",
+ "stream": null,
+ "tag": "_full"
+}
