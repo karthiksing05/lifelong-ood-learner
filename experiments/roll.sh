@@ -14,9 +14,19 @@ export OPENPI_DATA_HOME=/coc/flash10/ksingara3/robot/openpi_cache MUJOCO_GL=egl 
 PORT=${PORT:-$((9000 + RANDOM % 900))}
 LOG=${LOG:-$REPO/results/robot/server_${SLURM_JOB_ID:-x}.log}
 cd $ROBOT
-.venv/bin/python $REPO/experiments/serve_guided.py --port $PORT --mode "$MODE" > $LOG 2>&1 &
-SRV=$!
-for i in $(seq 1 240); do sleep 5; if grep -q -E "server listening" $LOG 2>/dev/null; then break; fi; if ! kill -0 $SRV 2>/dev/null; then echo "[roll] server died"; tail -30 $LOG; exit 3; fi; done
+# a port another process on the node holds (co-located packs, other users): pick a free one, and retry on a bind race
+free_port() { .venv/bin/python -c "import socket,sys; s=socket.socket(); s.bind(('0.0.0.0', int(sys.argv[1]))); s.close()" $1 2>/dev/null; }
+for attempt in 1 2 3 4; do
+  for k in $(seq 1 50); do free_port $PORT && break; PORT=$((9000 + RANDOM % 900)); done
+  .venv/bin/python $REPO/experiments/serve_guided.py --port $PORT --mode "$MODE" > $LOG 2>&1 &
+  SRV=$!
+  up=0
+  for i in $(seq 1 240); do sleep 5; if grep -q -E "server listening" $LOG 2>/dev/null; then up=1; break; fi; if ! kill -0 $SRV 2>/dev/null; then break; fi; done
+  [ $up = 1 ] && break
+  if grep -q "address already in use" $LOG 2>/dev/null; then echo "[roll] port $PORT taken (attempt $attempt); retrying"; PORT=$((9000 + RANDOM % 900)); continue; fi
+  echo "[roll] server died"; tail -30 $LOG; exit 3
+done
+[ $up = 1 ] || { echo "[roll] no free port after 4 attempts"; exit 3; }
 echo "[roll] server up on $PORT after $((i*5))s (mode $MODE)"
 PYTHONPATH=${PYTHONPATH:-}:$ROBOT/third_party/libero examples/libero/.venv/bin/python $REPO/experiments/libero_client.py \
     --port $PORT --suite $SUITE --tasks $TASKS --trials $TRIALS --first-trial $FIRST --out $OUT

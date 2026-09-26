@@ -78,3 +78,48 @@ Two ways to compose a new task from the library by borrowing parts of prototype 
   eight jointly chosen prototypes; the executed chunk is rebuilt exactly from the stored ids and choices, at half the demo's jerk
   and 1-8 KB per task.  With practice and a small fold where the demo grasps, it matches a per-task LoRA at 90x less storage
   (README, "M3 FINAL").
+
+## Inspection: what composition actually uses (2026-09-26)
+
+Numbers for this section are in `docs/VALIDITY.md` (generated from the ledger by `experiments/make_validity_doc.py`) and in
+`ledger/r8_inspect`, `ledger/r9_library_ablation` and `ledger/r12_forced`.
+
+- **The shared prototypes are the verbs of manipulation.**  The t = 0.4 prototypes that the most training tasks share are
+  hold-open, hold-closed, descend-and-close (the grasp) and open (the release), each used by 34-40 of the 40 tasks.  The gallery
+  shows the same phase of motion in different scenes, and forced execution in the simulator realises their commanded hand
+  motion almost exactly from any scene (`experiments/r12_forced.py`).
+
+  ![shared prototypes](../figures/robot/r8_gallery_shared_t0.4.png)
+
+- **Composition does not borrow the shared prototypes; it borrows leaves.**  Dimension-wise borrowing takes almost all of its
+  (frame, dimension) pairs from the finest level, from prototypes with one to three member frames of a single training task.  A
+  confident prior can be steered only by a tight teacher (the precision-weighted product), so what a program can use is the
+  prior's own precise motions: the policy's chunk means at the training frames, the components of its action marginal, which
+  are the zero-noise level of the hierarchy.  A library of exactly those leaves rebuilds a held-out demo more closely than the
+  tree's prototypes, and keeps their smoothness (the smoothness comes from the policy's denoising); the shared level alone is
+  too coarse.  The hierarchy above the leaves organises them, measures novelty and names motions; composition reads the leaves.
+
+  ![what a task borrows](../figures/robot/r8_gallery_39.png)
+
+- **A new task is a mosaic of the prior's motions.**  Segment borrowing (`lifelong_ood/policy/segcode.py`) writes the demo's
+  action sequence as 10-step pieces of leaves, one per action dimension: every piece of "turn off the stove" comes from some
+  training task, the pieces come from all four suites, and the rebuilt trajectory traces the demo's in every dimension.  The
+  borrowed pieces lean only slightly toward related training tasks (instruction-word overlap above a shuffled-pairing null,
+  VALIDITY.md): the reuse is of motion, not of task.
+
+  ![segments, stove](../figures/robot/segments_39.png)
+
+  ![provenance](../figures/robot/r8_provenance.png)
+
+- **The hierarchy's anatomy.**  Prototype counts fall from one per frame at t = 0.05 to two at t = 0.7, and the share of
+  frames whose prototype several tasks share rises with t; precise composition draws its lenders from the bottom.
+
+  ![anatomy](../figures/robot/hierarchy_anatomy.png)
+
+- **Rollouts from the same start.**  On "turn off the stove" the prior, given the new instruction, does the trained moka-pot
+  task instead; the composed programs turn the knob.  On "put the white bowl on the plate" replay drops the bowl beside the
+  plate and borrowing + fold stalls at the cabinet, where the LoRA and borrowing at every fifth frame succeed.
+
+  ![strip, stove](../figures/robot/strip_39_t30.png)
+
+  ![strip, white bowl](../figures/robot/strip_36_t30.png)

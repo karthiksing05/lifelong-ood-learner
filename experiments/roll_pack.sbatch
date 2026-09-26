@@ -7,8 +7,8 @@
 #SBATCH --output=/coc/flash10/ksingara3/lifelong-ood-learner/slurm/%j.out
 #SBATCH --error=/coc/flash10/ksingara3/lifelong-ood-learner/slurm/%j.out
 #SBATCH --gres=gpu:a40:1
-#SBATCH --cpus-per-task=4
-#SBATCH --mem=60G
+#SBATCH --cpus-per-task=6
+#SBATCH --mem=72G
 #SBATCH --time=04:00:00
 #SBATCH --partition=tail-lab
 #SBATCH --account=tail-lab
@@ -26,7 +26,7 @@ mkdir -p results/robot/.drivers
 DRV=results/robot/.drivers/roll_${SLURM_JOB_ID}.sh
 cp experiments/roll.sh $DRV
 export OMP_NUM_THREADS=2 MKL_NUM_THREADS=2
-base=$((9000 + (SLURM_JOB_ID % 440) * 2))
+base=$((9000 + (SLURM_JOB_ID % 290) * 3))
 i=0; pids=()
 while IFS= read -r line || [ -n "$line" ]; do
   [ -z "$line" ] && continue
