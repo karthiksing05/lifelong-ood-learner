@@ -45,7 +45,9 @@ class GuidedPolicy:
             if self.hooks.agrees(own[0]):
                 rows = own                                   # the prior already does what the program asks
         if rows is None:
-            rows = self.bk.sample(1, pre, seed=self.seed + self.calls, num_steps=self.num_steps, guide=guide, step_gate=gate, noise=nz)
+            start = self.hooks.sdedit(obs, meta) if hasattr(self.hooks, "sdedit") else None
+            rows = self.bk.sample(1, pre, seed=self.seed + self.calls, num_steps=self.num_steps, guide=guide, step_gate=gate, noise=nz,
+                                  start=start)
         actions = self.bk.unnormalize(rows)[0]
         self.calls += 1
         self.secs += time.monotonic() - t0

@@ -164,6 +164,47 @@ def main():
         state, key, banks = adapt.load(bk, a.mode.split(":", 1)[1])
         state["on"] = frozenset({key})
         logging.info(f"expert {key} loaded into {len(banks)} banks and switched on")
+    elif a.mode.startswith("learned:"):
+        # learned:<task>?w0=1.0&sched=const&var=0.001&key=pose&stall=3&window=20[&mem=0][&fold=orig]
+        # compose -> practise -> consolidate: recall a stored composition (demo or practice success) by the first frames,
+        # then compose along it with the refit fold (r15_consolidate.py).  mem=0: the demo's composition only; fold=orig:
+        # the demo's own fold instead of the refit one
+        import numpy as np
+        from lifelong_ood.policy import adapt
+        from lifelong_ood.policy.compose import DemoProgram, RecallHooks
+        body, q = a.mode[len("learned:"):].split("?", 1)
+        kv = dict(x.split("=", 1) for x in q.split("&") if x)
+        R = os.path.join(ROOT, "results", "robot")
+        t = int(body)
+        mem = np.load(os.path.join(R, f"r15_{t}_memory.npz"))
+        n = int(mem["n"]) if kv.get("mem", "1") != "0" else 1
+        progs = [DemoProgram.load(os.path.join(R, f"r15_{t}_prog{k}.npz")) for k in range(n)]
+        fold_path = (os.path.join(R, f"r4_{t}_approach_last2_expert.pt") if kv.get("fold") == "orig"
+                     else os.path.join(R, f"r15_{t}_expert.pt"))
+        state, key = (None, None)
+        if bool(mem["grasps"]) and os.path.exists(fold_path):
+            state, key, _ = adapt.load(bk, fold_path)
+        hooks = RecallHooks(progs, mem["keys"][:n], state, key, w0=float(kv.get("w0", 1.0)), schedule=kv.get("sched", "const"),
+                            var=float(kv["var"]) if kv.get("var") else None, stall=int(kv.get("stall", 0)),
+                            key_mode=kv.get("key", "pose"), window=int(kv.get("window", 20)))
+        logging.info(f"learned: task {t}, {n} stored compositions, fold {fold_path if key else None}")
+    elif a.mode.startswith("demodiff:"):
+        # demodiff:<task>?s=0.4&index=time|state -- DemoDiffusion: the demo chunk noised to flow time s, denoised by the prior
+        from lifelong_ood.policy.baselines import DemoDiffusionHooks
+        from lifelong_ood.policy.compose import DemoProgram
+        body, q = (a.mode[len("demodiff:"):].split("?", 1) + [""])[:2]
+        kv = dict(x.split("=", 1) for x in q.split("&") if x)
+        prog = DemoProgram.load(os.path.join(ROOT, "results", "robot", f"r3_prog_{int(body)}_raw_lib40.npz"))
+        hooks = DemoDiffusionHooks(prog, s_star=float(kv.get("s", 0.2)), index=kv.get("index", "time"), key_mode="pose",
+                                   window=int(kv.get("window", 20)))
+        a.num_steps = int(kv.get("steps", 20))                 # DemoDiffusion's openpi fork integrates with 20 steps
+        logging.info(f"demodiff: task {body}, s* {hooks.s}, index {hooks.index}, {a.num_steps} steps")
+    elif a.mode.startswith("fullft:"):
+        # fullft:<expert_state.pt> -- the action expert fully fine-tuned on the demo (adapt.train_full)
+        import torch
+        sd = torch.load(a.mode.split(":", 1)[1], map_location="cuda")
+        missing = bk.expert.load_state_dict(sd["expert"], strict=True)
+        logging.info(f"fully fine-tuned action expert loaded ({missing})")
     elif a.mode.startswith("prompt:"):
         # prompt:<training task index> -- the prior under a trained task's instruction (instruction retrieval)
         from lifelong_ood.policy import data as D

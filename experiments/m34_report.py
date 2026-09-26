@@ -69,11 +69,42 @@ def arm_bytes(t, arm):
                 "vinn": lambda: 2 * (len(DemoProgram.load(f"{R}/r3_prog_{t}_raw_lib40.npz").mu) + 9) * 7
                 + 2 * 1024 * len(DemoProgram.load(f"{R}/r3_prog_{t}_raw_lib40.npz").mu),
                 "promptret": lambda: 1, "loraret": lambda: 0,
+                "demodiff": lambda: 2 * (len(DemoProgram.load(f"{R}/r3_prog_{t}_raw_lib40.npz").mu) + 9) * 7,
+                "demodiff_state": lambda: DemoProgram.load(f"{R}/r3_prog_{t}_raw_lib40.npz").bytes(),
+                "lora_eq": lambda: fewshot_bytes(t, "_eq"), "lora_r64": lambda: fewshot_bytes(t, "_r64"),
+                "fullft": lambda: fewshot_bytes(t, "_full"),
+                "learned": lambda: learned_bytes(t, memory=True, fold="refit"),
+                "learned_mem0": lambda: learned_bytes(t, memory=False, fold="refit"),
+                "learned_origfold": lambda: learned_bytes(t, memory=True, fold="orig"),
+                "lora_learn": lambda: r15_row(t, "_lora")["bytes"]["experts"] if r15_row(t, "_lora") else 0,
                 **{f"{g}_d1": (lambda g=g: demo_arm_bytes(t, g, 1)) for g in ("raw_replay", "dimcode_s1", "dimfold_s1_last2", "lora", "seg_s5")}}[arm]())
 
 
 XFIT_A = {36, 39, 42, 1, 34, 37, 40, 52, 53, 62}                        # grasping tasks of group A (their fold: xfit_B)
 XFIT_B = {3, 4, 5, 32, 41, 43, 48, 58, 63}
+
+
+def fewshot_bytes(t, tag):
+    r = [x for x in ledger.load("r3_fewshot") if str(x["metrics"]["task"]) == str(t) and x.get("tag") == tag]
+    return int(r[-1]["bytes"]["experts"]) if r else 0
+
+
+def r15_row(t, tag=""):
+    r = [x for x in ledger.load("r15_consolidate") if x["tag"] == tag and str(x["metrics"]["task"]) == str(t)]
+    return r[-1] if r else None
+
+
+def learned_bytes(t, memory=True, fold="refit"):
+    """compose -> practise -> consolidate: the stored compositions (+ recall keys) and one fold."""
+    import numpy as np
+    mem = np.load(f"{R}/r15_{t}_memory.npz")
+    pb = [int(x) for x in mem["prog_bytes"]]
+    kb_ = int(mem["keys"].nbytes) // len(pb)
+    store = (sum(pb) + kb_ * len(pb)) if memory else (pb[0] + kb_)
+    if not bool(mem["grasps"]):
+        return int(store)
+    fb = (r15_row(t)["bytes"]["experts"] if r15_row(t) else 0) if fold == "refit" else fold_bytes(t, "_approach_last2")
+    return int(store + fb)
 
 
 def shared_fold_share(tag, users=None):
@@ -111,7 +142,9 @@ def with_fold(path, t, tag):
 
 SIZED = ("raw_replay", "code_replay", "hybrid_approach", "dimcode_s5", "dimcode_s1", "dimfold_full", "dimfold_last2",
          "dimfold_s1_full", "dimfold_s1_last2", "leaf_s5", "leaf_s1", "leaffold_s1_last2", "shared_s1", "seg_s5",
-         "dimshared_all", "dimshared_xfit", "playback", "vinn", "promptret", "loraret", "raw_replay_d1", "dimcode_s1_d1", "dimfold_s1_last2_d1", "lora_d1", "seg_s5_d1")
+         "dimshared_all", "dimshared_xfit", "playback", "vinn", "promptret", "loraret", "learned", "learned_mem0",
+         "learned_origfold", "lora_learn", "demodiff", "demodiff_state",
+         "lora_eq", "lora_r64", "fullft", "raw_replay_d1", "dimcode_s1_d1", "dimfold_s1_last2_d1", "lora_d1", "seg_s5_d1")
 
 ARMS = ["zeroshot", "raw_replay", "code_replay", "lora", "hybrid_lib40", "expert_on_lib40"]
 NAMES = {"zeroshot": "zero-shot", "raw_replay": "demo replay", "code_replay": "library codes", "lora": "few-shot LoRA",

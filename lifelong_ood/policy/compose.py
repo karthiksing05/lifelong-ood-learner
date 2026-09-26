@@ -362,3 +362,41 @@ class HybridHooks(ComposeHooks):
             return None, None
         return (self.guide_at(j) if self.steering(j) else None), None
 
+
+
+class RecallHooks:
+    """INSTANCE MEMORY over stored compositions (experiments/r15_consolidate.py): at the first call of an episode, recall the
+    composition whose first frames look most like the current ones (ImageNet ResNet-18 features of both cameras, cosine),
+    then compose -- and fold, with the task's expert -- along it for the rest of the episode.  On an instance solved before,
+    the recalled composition is that success itself."""
+
+    agree = None
+
+    def __init__(self, programs, keys, state=None, key=None, device="cuda", **kw):
+        from .baselines import VinnPolicy
+        self.hooks = [HybridHooks(p, state, key, **kw) if (state is not None and p.fold is not None and np.any(p.fold))
+                      else ComposeHooks(p, **kw) for p in programs]
+        self._enc = VinnPolicy(np.zeros((1, 7), np.float32), np.zeros((1, 224, 224, 3), np.uint8), np.zeros((1, 224, 224, 3), np.uint8),
+                               device=device)
+        import torch
+        self.keys = torch.as_tensor(np.asarray(keys, np.float32), device=device)
+        self.cur, self.pending, self.chosen = None, True, []
+
+    def reset(self, meta=None):
+        if self.cur is not None:
+            self.cur.reset(meta)
+        self.pending = True
+
+    def rewrite(self, obs, meta=None):
+        if self.pending or self.cur is None:
+            q = self._enc._embed(np.asarray(obs["observation/image"])[None], np.asarray(obs["observation/wrist_image"])[None])[0]
+            j = int((self.keys @ q).argmax())
+            self.cur, self.pending = self.hooks[j], False
+            self.cur.reset(meta)
+            self.chosen.append(j)
+            import logging
+            logging.info(f"[recall] episode {meta.get('episode') if meta else '?'}: composition {j} of {len(self.hooks)}")
+        return self.cur.rewrite(obs, meta)
+
+    def __call__(self, obs, pre, meta=None):
+        return self.cur(obs, pre, meta)

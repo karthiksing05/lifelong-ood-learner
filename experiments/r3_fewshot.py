@@ -31,6 +31,8 @@ def main():
     ap.add_argument("--batch", type=int, default=32)
     ap.add_argument("--demo", type=int, default=0, help="which IPEC episode of the text is THE demo")
     ap.add_argument("--seed", type=int, default=0)
+    ap.add_argument("--scope", default="expert", help="where the adapter goes (adapt.SCOPES): expert | last2 | out")
+    ap.add_argument("--full", action="store_true", help="FULL fine-tuning of the action expert instead of a LoRA (lr 2.5e-5)")
     ap.add_argument("--tag", default="")
     a = ap.parse_args()
     sys.argv_saved = list(sys.argv)
@@ -53,7 +55,22 @@ def main():
     rows = D.to_rows(ep["actions"][idx], D.Norm.load())
     full = D.pad_rows(rows, bk.H)
     print(f"[r3f] task {a.task} '{text}': demo episode {ep_idx}, {T} frames; prefixes cached in {time.time() - t0:.0f}s ({bank.bytes() / 1e9:.2f} GB)", flush=True)
-    state, banks = adapt.inject(bk)
+    if a.full:
+        import torch
+        t1 = time.time()
+        hist = adapt.train_full(bk, bank, full, steps=a.steps, lr=2.5e-5 if a.lr == 1e-4 else a.lr, batch=a.batch, seed=a.seed,
+                                log=lambda x: print(x, flush=True))
+        path = f"results/robot/r3_full_{a.task}{a.tag}.pt"
+        torch.save(dict(expert={k: v.detach().cpu() for k, v in bk.expert.state_dict().items()}, task=a.task), path)
+        nbytes = int(sum(v.numel() * v.element_size() for v in bk.expert.state_dict().values()))
+        m = dict(task=a.task, text=text, demo_episode=int(ep_idx), n_frames=int(T), final_loss=hist["loss"][-1],
+                 first_loss=hist["loss"][0], curve=hist, train_secs=time.time() - t1, full=True)
+        ledger.record("r3_fewshot", bench="libero_90", tag=a.tag or "_full", seed=a.seed, keys=dict(task=a.task), metrics=m,
+                      bytes=dict(experts=nbytes, tree=0, codes=0, samples=0, teacher_copies=0, total=nbytes),
+                      config=vars(a), script="experiments/r3_fewshot.py", command=" ".join(sys.argv_saved), artifacts=[path])
+        print(f"[r3f] saved {path} ({nbytes / 1e6:.0f} MB); flow loss {hist['loss'][0]:.4f} -> {hist['loss'][-1]:.4f}", flush=True)
+        return
+    state, banks = adapt.inject(bk, scope=a.scope)
     key = f"l90_{a.task}"
     params = add_node(banks, key, a.rank)
     npar = adapt.n_params(params)
@@ -63,7 +80,7 @@ def main():
     secs = time.time() - t1
     os.makedirs("results/robot", exist_ok=True)
     path = f"results/robot/r3_lora_{a.task}{a.tag}.pt"
-    nbytes = adapt.save(banks, key, path, meta=dict(task=a.task, text=text, demo_episode=int(ep_idx), rank=a.rank))
+    nbytes = adapt.save(banks, key, path, meta=dict(task=a.task, text=text, demo_episode=int(ep_idx), rank=a.rank, scope=a.scope))
     m = dict(task=a.task, text=text, demo_episode=int(ep_idx), n_frames=int(T), n_params=npar, n_banks=len(banks),
              final_loss=hist["loss"][-1], first_loss=hist["loss"][0], curve=hist, train_secs=secs)
     ledger.record("r3_fewshot", bench="libero_90", tag=a.tag, seed=a.seed, keys=dict(task=a.task), metrics=m,

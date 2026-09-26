@@ -147,3 +147,44 @@ def load(bk, path, state=None):
         b.A[key].weight.data.copy_(w["A"].to(b.A[key].weight.dtype))
         b.B[key].weight.data.copy_(w["B"].to(b.B[key].weight.dtype))
     return state, key, banks
+
+
+def train_full(bk, bank, chunks_full, steps=1000, lr=2.5e-5, batch=32, seed=0, log_every=100, log=print, weight_decay=1e-10):
+    """FULL fine-tuning of the action expert (every parameter) on (bank rows, chunks_full), openpi's flow loss, in mixed
+    precision: the model computes in its own dtype (bf16), AdamW updates fp32 master copies (bf16 alone drops the small
+    updates of a low learning rate).  -> loss curve."""
+    torch.manual_seed(seed)
+    gen = torch.Generator(device="cpu").manual_seed(seed)
+    rng = np.random.default_rng(seed)
+    params = [p for p in bk.expert.parameters()]
+    for p in params:
+        p.requires_grad_(True)
+    master = [p.detach().float().clone().requires_grad_(True) for p in params]
+    opt = torch.optim.AdamW(master, lr=lr, weight_decay=weight_decay)
+    A = torch.as_tensor(np.asarray(chunks_full, np.float32), device=bk.device)
+    hist = dict(step=[], loss=[])
+    t0 = time.time()
+    for s in range(1, steps + 1):
+        idx = rng.integers(0, bank.n, size=min(batch, bank.n))
+        pre = bank.take(idx)
+        a = A[idx]
+        t, eps = _flow_batch(len(idx), bk.H, bk.A, gen, bk.device)
+        xt = t[:, None, None] * eps + (1 - t[:, None, None]) * a
+        u = (eps - a).reshape(len(idx), -1)
+        for p in params:
+            p.grad = None
+        loss = ((bk.v_full(xt, t, pre) - u) ** 2).mean()
+        loss.backward()
+        for p, m in zip(params, master):
+            m.grad = None if p.grad is None else p.grad.float()
+        torch.nn.utils.clip_grad_norm_(master, 1.0)
+        opt.step()
+        with torch.no_grad():
+            for p, m in zip(params, master):
+                p.copy_(m.to(p.dtype))
+        if s % log_every == 0 or s == 1:
+            hist["step"].append(s); hist["loss"].append(float(loss))
+            log(f"[full] step {s}/{steps}: flow {float(loss):.4f} ({time.time() - t0:.0f}s)")
+    for p in params:
+        p.requires_grad_(False)
+    return hist

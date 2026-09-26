@@ -1,0 +1,129 @@
+{
+ "artifacts": [
+  "results/robot/r4_43_approach_last2_d1_expert.pt",
+  "results/robot/r4_43_approach_last2_d1_program.npz",
+  "results/robot/r4_43_approach_last2_d1_tree.npz"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 20921,
+  "experts": 258048,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 283169,
+  "tree": 4200
+ },
+ "command": "experiments/r4_fold.py --task 43 --demo 1 --tree results/robot/r2b_libero_40_tree.npz --library results/robot/r2b_libero_40.npz --rank 2 --steps 1000 --tag _approach_last2_d1 --arrival contact --contact 10 --pre 30 --scope last2",
+ "config": {
+  "K": 3,
+  "anchor_weight": 1.0,
+  "arrival": "contact",
+  "band": "0,1,2",
+  "contact": 10,
+  "demo": 1,
+  "library": "results/robot/r2b_libero_40.npz",
+  "lr": 0.0001,
+  "n_anchor": 384,
+  "n_cal": 1500,
+  "pre": 30,
+  "q": 0.95,
+  "rank": 2,
+  "scope": "last2",
+  "seed": 0,
+  "steps": 1000,
+  "tag": "_approach_last2_d1",
+  "task": 43,
+  "tree": "results/robot/r2b_libero_40_tree.npz"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "spot.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3962865",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r4_fold",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "07b347c23a6a81c73516b562e4a96450e60793b0",
+  "short": "07b347c2"
+ },
+ "keys": {
+  "task": 43
+ },
+ "metrics": {
+  "anchor_weight": 1.0,
+  "curve": {
+   "anchor": [
+    0.0,
+    0.00046590203419327736,
+    0.001564541831612587,
+    0.0015780695248395205,
+    0.001965018454939127,
+    0.0014797685435041785,
+    0.0010246371384710073,
+    0.0006394804804585874,
+    0.0011509140022099018,
+    0.0007459376356564462,
+    0.0006246929988265038
+   ],
+   "loss": [
+    0.058542151004076004,
+    0.06639771908521652,
+    0.031852684915065765,
+    0.027602285146713257,
+    0.01596861518919468,
+    0.020217914134263992,
+    0.016803696751594543,
+    0.011084022931754589,
+    0.008016671054065228,
+    0.010513444431126118,
+    0.0036646106746047735
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "demo_episode": 274,
+  "expert_params": 129024,
+  "n_frames": 134,
+  "n_new_nodes": 14,
+  "n_unexplained": 82,
+  "nll_median": {
+   "0": -0.6674736679911528,
+   "1": -1.2860893273489151,
+   "2": -1.003478485011657
+  },
+  "task": 43,
+  "text": "put the white bowl on top of the cabinet",
+  "thresholds": {
+   "0": 3.148381656392142,
+   "1": -0.09127364671692659,
+   "2": -0.720244935179938
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r4_fold__libero_90___approach_last2_d1__task-43__s0__07b347c2",
+ "schema": 1,
+ "script": "experiments/r4_fold.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-26T13:56:02+00:00",
+ "stream": null,
+ "tag": "_approach_last2_d1"
+}

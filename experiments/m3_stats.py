@@ -36,7 +36,11 @@ METHODS = {"zeroshot": None, "practice_replay": ("raw_replay", None), "practice_
            "ours_seg": ("seg_s5", None), "ours_alloc": "practice",
            "ours_shared_all": ("dimshared_all", "dimcode_s1"), "ours_shared_xfit": ("dimshared_xfit", "dimcode_s1"),
            "base_playback": ("playback", None), "base_vinn": ("vinn", None), "base_promptret": ("promptret", None),
-           "base_loraret": ("loraret", None)}
+           "base_loraret": ("loraret", None),
+           "ours_learned": ("learned", None), "ours_learned_mem0": ("learned_mem0", None),
+           "ours_learned_origfold": ("learned_origfold", None), "base_lora_learn": ("lora_learn", None),
+           "base_demodiff": ("demodiff", None), "base_demodiff_state": ("demodiff_state", None),
+           "base_lora_eq": ("lora_eq", None), "base_lora_r64": ("lora_r64", None), "base_fullft": ("fullft", None)}
 NAMES = {"zeroshot": "zero-shot", "practice_replay": "demo replay", "practice_lora": "few-shot LoRA (rank 16)",
          "ours_dim": "borrowing, every 5th frame", "ours_dim1": "borrowing, every frame",
          "ours_dim1_last2": "borrowing + 258 KB fold", "ours_codes_full": "PoE codes + 4.7 MB fold",
@@ -45,7 +49,11 @@ NAMES = {"zeroshot": "zero-shot", "practice_replay": "demo replay", "practice_lo
          "ours_alloc": "practice-allocated (program, else LoRA)",
          "ours_shared_all": "borrowing + one shared fold", "ours_shared_xfit": "borrowing + the other half's fold",
          "base_playback": "open-loop demo playback", "base_vinn": "VINN (nearest demo frame)",
-         "base_promptret": "instruction retrieval", "base_loraret": "adapter retrieval (nearest task's LoRA)"}
+         "base_promptret": "instruction retrieval", "base_loraret": "adapter retrieval (nearest task's LoRA)",
+         "ours_learned": "compose, practise, consolidate", "ours_learned_mem0": "consolidated fold, no memory",
+         "ours_learned_origfold": "memory, the demo's fold", "base_lora_learn": "LoRA on the demo + practice successes",
+         "base_demodiff": "DemoDiffusion (s* 0.2)", "base_demodiff_state": "DemoDiffusion, state-aligned",
+         "base_lora_eq": "equal-bytes adapter (258 KB, whole demo)", "base_lora_r64": "LoRA rank 64", "base_fullft": "full fine-tuning"}
 COMPARE = [("ours_dim1_last2", "practice_lora"), ("ours_dim1_last2", "practice_replay"), ("ours_dim1_last2", "zeroshot"),
            ("ours_dim", "practice_lora"), ("ours_dim", "practice_replay"), ("ours_dim1", "practice_replay"),
            ("practice_lora", "practice_replay"), ("ours_leaf1_last2", "practice_lora"), ("ours_leaf1_last2", "practice_replay"),
@@ -55,7 +63,11 @@ COMPARE = [("ours_dim1_last2", "practice_lora"), ("ours_dim1_last2", "practice_r
            ("ours_shared_all", "ours_dim1_last2"), ("ours_shared_xfit", "ours_dim1_last2"), ("ours_shared_all", "practice_lora"),
            ("ours_shared_xfit", "practice_lora"), ("ours_shared_xfit", "ours_dim1"),
            ("ours_dim1_last2", "base_playback"), ("ours_dim1_last2", "base_vinn"), ("ours_dim1_last2", "base_promptret"),
-           ("ours_dim1_last2", "base_loraret"), ("practice_replay", "base_playback")]
+           ("ours_dim1_last2", "base_loraret"), ("practice_replay", "base_playback"),
+           ("ours_learned", "ours_dim1_last2"), ("ours_learned", "base_lora_learn"), ("ours_learned", "practice_lora"),
+           ("ours_learned_mem0", "ours_dim1_last2"), ("ours_learned_origfold", "ours_dim1_last2"), ("base_lora_learn", "practice_lora"),
+           ("ours_dim1_last2", "base_demodiff"), ("ours_dim1_last2", "base_demodiff_state"), ("ours_seg", "base_demodiff"),
+           ("ours_dim1_last2", "base_lora_eq"), ("ours_dim1_last2", "base_lora_r64"), ("ours_dim1_last2", "base_fullft")]
 
 
 def episodes(experiment):

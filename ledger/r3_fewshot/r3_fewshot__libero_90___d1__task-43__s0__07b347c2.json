@@ -1,0 +1,107 @@
+{
+ "artifacts": [
+  "results/robot/r3_lora_43_d1.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 18710528,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 18710528,
+  "tree": 0
+ },
+ "command": "experiments/r3_fewshot.py --task 43 --demo 1 --tag _d1",
+ "config": {
+  "batch": 32,
+  "demo": 1,
+  "lr": 0.0001,
+  "rank": 16,
+  "seed": 0,
+  "steps": 1000,
+  "tag": "_d1",
+  "task": 43
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "spot.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3962865",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r3_fewshot",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "07b347c23a6a81c73516b562e4a96450e60793b0",
+  "short": "07b347c2"
+ },
+ "keys": {
+  "task": 43
+ },
+ "metrics": {
+  "curve": {
+   "anchor": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "loss": [
+    0.051993228495121,
+    0.012495575472712517,
+    0.004552709404379129,
+    0.003261651610955596,
+    0.004718098323792219,
+    0.001624572672881186,
+    0.0012114751152694225,
+    0.001324359909631312,
+    0.0016498923068866134,
+    0.007308885455131531,
+    0.0038112185429781675
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "demo_episode": 274,
+  "final_loss": 0.0038112185429781675,
+  "first_loss": 0.051993228495121,
+  "n_banks": 163,
+  "n_frames": 134,
+  "n_params": 9355264,
+  "task": 43,
+  "text": "put the white bowl on top of the cabinet",
+  "train_secs": 123.61604118347168
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r3_fewshot__libero_90___d1__task-43__s0__07b347c2",
+ "schema": 1,
+ "script": "experiments/r3_fewshot.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-26T13:59:18+00:00",
+ "stream": null,
+ "tag": "_d1"
+}

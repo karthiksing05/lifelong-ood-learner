@@ -79,3 +79,38 @@ class VinnPolicy:
         q = self._embed(np.asarray(obs["observation/image"])[None], np.asarray(obs["observation/wrist_image"])[None])
         f = int((self.bank @ q[0]).argmax())
         return {"actions": _chunk(self.actions, f, self.H), "state": np.asarray(obs["observation/state"], np.float32)}
+
+
+class DemoDiffusionHooks:
+    """DemoDiffusion (Park et al., arXiv 2506.20668): the demo's action chunk for this step, noised to flow time s* and
+    denoised by the frozen policy (SDEdit).  index = "time" (the chunk at the episode step) or "state" (the chunk at the demo
+    frame aligned to the robot state, as our programs align)."""
+
+    def __init__(self, program, s_star=0.4, index="time", **align_kw):
+        self.prog = program
+        self.s = float(s_star)
+        self.index = index
+        self._al = None
+        if index == "state":
+            from .compose import ComposeHooks
+            self._al = ComposeHooks(program, **align_kw)
+
+    def reset(self, meta=None):
+        if self._al is not None:
+            self._al.reset(meta)
+
+    def rewrite(self, obs, meta=None):
+        if self._al is not None:
+            self._al.rewrite(obs, meta)
+        return obs
+
+    def sdedit(self, obs, meta=None):
+        if self.index == "state":
+            f = int(self._al._j)
+        else:
+            f = int((meta or {}).get("t", 0) or 0)
+        f = min(max(f, 0), len(self.prog.mu) - 1)
+        return self.s, np.asarray(self.prog.mu[f], np.float32)[None]
+
+    def __call__(self, obs, pre, meta=None):
+        return None, None

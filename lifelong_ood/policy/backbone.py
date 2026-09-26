@@ -211,7 +211,7 @@ class PolicyBackbone:
 
     # ── sampling (Euler on the flow, with the guide / gate hooks of backbones.sampler) ───
     @torch.no_grad()
-    def sample(self, n, prefix, seed=0, num_steps=None, guide=None, step_gate=None, noise=None, full=False):
+    def sample(self, n, prefix, seed=0, num_steps=None, guide=None, step_gate=None, noise=None, full=False, start=None):
         """Euler on the flow over the FULL padded chunk, exactly openpi's sample_actions when no guide / gate
         is given (the same noise gives the same actions).  -> real rows [n, dim] (or [n, H * A] with `full`).
         `guide=(eps_fn, w_fn)` mixes an analytic eps (on real rows) into the prediction, v = (eps_hat - x_t) /
@@ -222,6 +222,14 @@ class PolicyBackbone:
              else torch.as_tensor(noise, device=self.device).reshape(n, self.dim_full).float())
         dt = torch.tensor(-1.0 / K, dtype=torch.float32, device=self.device)
         t = torch.tensor(1.0, dtype=torch.float32, device=self.device)
+        if start is not None:
+            # SDEdit (DemoDiffusion): start at flow time t0 from t0 * eps + (1 - t0) * a0, a0 = given real rows (padded dims 0,
+            # whose data value is 0), and integrate the remaining steps with the policy
+            t0, a0 = start
+            t = torch.tensor(round(float(t0) * K) / K, dtype=torch.float32, device=self.device)
+            a_full = torch.zeros((n, self.dim_full), dtype=torch.float32, device=self.device)
+            a_full[:, self.real] = torch.as_tensor(np.asarray(a0, np.float32).reshape(n, -1), device=self.device)
+            x = t * x + (1.0 - t) * a_full
         while t >= -dt / 2:
             tf = float(t)
             gate = None

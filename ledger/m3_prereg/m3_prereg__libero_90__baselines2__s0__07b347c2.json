@@ -1,0 +1,59 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration of the added baselines",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky2.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "07b347c23a6a81c73516b562e4a96450e60793b0",
+  "short": "07b347c2"
+ },
+ "keys": {},
+ "metrics": {
+  "added_after_the_survey": {
+   "demodiff": "DemoDiffusion (Park et al., arXiv 2506.20668, ICRA 2026): the demo chunk at the episode step, noised to flow time s* = 0.2 (their setting when the prior's success is zero) and denoised by the frozen pi0.5 in 20 steps (their fork); gripper included; our client's replan interval of 5",
+   "demodiff_state": "the same with the demo chunk chosen by our state alignment (pose key, window 20)",
+   "fullft": "full fine-tuning of the action expert, 1000 steps, lr 2.5e-5, fp32 master weights",
+   "lora_eq": "equal-bytes adapter: rank 2 on the last two layers of the action expert (258 KB, the fold's size), trained on every demo frame, always on (TAIL-style at our budget: does the program matter?)",
+   "lora_r64": "LoRA rank 64 on the action expert, 1000 steps (a stronger LoRA)"
+  },
+  "cited_not_rerun": [
+   "soft-prompt tuning (MAP-VLA arXiv 2511.09516, TAIL arXiv 2310.05905)",
+   "STRAP arXiv 2412.15182",
+   "one-demo RL: piRL arXiv 2510.25889, RIPT-VLA arXiv 2505.17016, DSRL arXiv 2506.15799",
+   "in-context imitation: ICRT, Instant Policy, RICL, ContextFlow",
+   "LifelongVLA arXiv 2607.14852 (JAX pi0)"
+  ],
+  "comparisons": "borrowing + 258 KB fold against each (paired, states 30-49, the 21 tasks the prior fails); segment borrowing against DemoDiffusion (both store about the demo's size)"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_90__baselines2__s0__07b347c2",
+ "schema": 1,
+ "script": "(inline, session 2026-09-26)",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-26T13:59:05+00:00",
+ "stream": null,
+ "tag": "baselines2"
+}

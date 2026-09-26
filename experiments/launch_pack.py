@@ -72,6 +72,17 @@ def arm_spec(tid, arm, fold, demo=0):
         "dimshared_xfit": (f"hybrid:{P(f'r7_dim_{tid}_s1.npz')}?expert={P('r13_xfit_' + ('B' if tid in GROUP_A else 'A') + '_expert.pt')}"
                            f"&foldprog={F0}&{C}&window=20", f"prog:{P(f'r7_dim_{tid}_s1.npz')}@{F0}", False) if fold else None,
     }
+    if arm in ("learned", "learned_mem0", "learned_origfold"):           # compose -> practise -> consolidate (r15_consolidate.py)
+        extra = {"learned": "", "learned_mem0": "&mem=0", "learned_origfold": "&fold=orig"}[arm]
+        return (f"learned:{tid}?{C}&window=20{extra}", "0", False)
+    if arm == "lora_learn":                                              # LoRA on the demo + the same successful rollouts
+        return (f"lora:{os.path.join(R, 'r15_' + str(tid) + '_lora.pt')}", "0", False)
+    if arm in ("demodiff", "demodiff_state"):                            # DemoDiffusion (SDEdit of the demo chunk), s* = 0.2, 20 steps
+        return (f"demodiff:{tid}?s=0.2&steps=20&index={'time' if arm == 'demodiff' else 'state'}&window=20", "0", False)
+    if arm in ("lora_eq", "lora_r64"):                                   # equal-bytes adapter / stronger LoRA (r3_fewshot.py)
+        return (f"lora:{os.path.join(R, 'r3_lora_' + str(tid) + ('_eq' if arm == 'lora_eq' else '_r64') + '.pt')}", "0", False)
+    if arm == "fullft":                                                  # full fine-tuning of the action expert
+        return (f"fullft:{os.path.join(R, 'r3_full_' + str(tid) + '.pt')}", "0", False)
     if arm in ("playback", "vinn"):                                      # no policy: the demo's actions (open loop / nearest frame)
         return (f"{arm}:{tid}", "0", False)
     if arm in ("promptret", "loraret"):                                  # retrieval baselines (experiments/r14_retrieval.py)
@@ -105,6 +116,7 @@ def main():
     ap.add_argument("--first", type=int, default=None)
     ap.add_argument("--trials", type=int, default=None)
     ap.add_argument("--record", action="store_true", help="the client saves every episode (frames, states, actions, outcome)")
+    ap.add_argument("--task-after", default="", help="TASK:JOB[:JOB...],... jobs a task's packs wait for (e.g. its consolidation)")
     ap.add_argument("--after", default="", help="job ids every pack of this run waits for (e.g. the shared-fold trainings)")
     ap.add_argument("--dry", action="store_true")
     a = ap.parse_args()
@@ -145,7 +157,9 @@ def main():
             else:
                 dep = sbatch([f"--export=ALL,TID={tid},FOLD={int(fold)},DEMO={a.demo}", "experiments/prep.sbatch"], a.dry)
                 print(f"task {tid} prep -> job {dep} (fold {int(fold)})")
-        queue += [(sp, None) for sp in specs_free] + [(sp, dep) for sp in specs_dep]
+        tdep = ":".join(x.split(":", 1)[1] for x in a.task_after.split(",") if x and x.split(":")[0] == str(tid)) or None
+        both = ":".join(d for d in (dep, tdep) if d) or None
+        queue += [(sp, tdep) for sp in specs_free] + [(sp, both) for sp in specs_dep]
     # pack across tasks: specs without a dependency first, then those with one; a pack waits on the union of its deps
     queue.sort(key=lambda x: x[1] is not None)
     for i in range(0, len(queue), a.per):
@@ -155,7 +169,7 @@ def main():
         with open(path, "w") as f:
             for sp, _ in grp:
                 f.write("\t".join(f"{k}={v}" for k, v in sp.items()) + "\n")
-        deps = sorted({d for _, d in grp if d} | {x for x in a.after.split(",") if x})
+        deps = sorted({x for _, d in grp if d for x in d.split(":")} | {x for x in a.after.split(",") if x})
         args = ([f"--dependency=afterok:{':'.join(deps)}"] if deps else []) + [f"--export=ALL,SPECS={path}", "experiments/roll_pack.sbatch"]
         j = sbatch(args, a.dry)
         print(f"pack {os.path.basename(path)} [{', '.join(str(sp['TASKS']) + ':' + sp['TAG'] + ('/practice' if sp['EXPERIMENT'] == 'm3_compose' else '') for sp, _ in grp)}]"
