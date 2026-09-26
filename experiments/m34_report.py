@@ -68,6 +68,7 @@ def main():
     ap.add_argument("--json", default="")
     ap.add_argument("--heldout", action="store_true", help="the held-out init states (m3_heldout) + the practice rule")
     ap.add_argument("--practice", type=float, default=0.5, help="keep the prior if its practice success >= this")
+    ap.add_argument("--record", action="store_true", help="write the derived m3_summary ledger row")
     a = ap.parse_args()
     cells, lang = collect(("m3_heldout",) if a.heldout else ("m3_compose", "m4_fold"))
     if a.heldout:
@@ -100,6 +101,25 @@ def main():
         print(f"| {t} {lang[t][:42]} | " + " | ".join(row) + " |")
     if a.json:
         json.dump(out, open(a.json, "w"), indent=1)
+    if a.record and a.heldout:
+        # a DERIVED row: aggregates of the m3_heldout rows (and the practice rule), so documents can quote them
+        fail = [t for t in tasks if (t, "zeroshot") in cells and cells[(t, "zeroshot")][0] / max(cells[(t, "zeroshot")][1], 1) < 0.5]
+        agg = {}
+        for x in arms:
+            for name, ts in (("all", tasks), ("prior_fails", fail)):
+                ks = [cells[(t, x)][0] for t in ts if (t, x) in cells]
+                ns = [cells[(t, x)][1] for t in ts if (t, x) in cells]
+                if ns:
+                    agg[f"{x}.{name}"] = dict(k=int(sum(ks)), n=int(sum(ns)), rate=float(sum(ks) / sum(ns)), tasks=len(ns))
+        prog_b = [cells[(t, "code_replay")][2] for t in tasks if (t, "code_replay") in cells]
+        lora_b = max([cells[(t, "lora")][2] for t in tasks if (t, "lora") in cells] or [0])
+        m = dict(arms=agg, cells=out, prior_fails_tasks=fail, practice_threshold=a.practice,
+                 code_bytes_min=int(min(prog_b)), code_bytes_max=int(max(prog_b)), lora_bytes=int(lora_b), lora_mb=round(lora_b / 1e6, 1))
+        ledger.record("m3_summary", bench="libero_90", tag="heldout", seed=7, metrics=m,
+                      bytes=dict(experts=0, tree=0, codes=int(sum(prog_b)), samples=0, teacher_copies=0, total=int(sum(prog_b))),
+                      config=vars(a), script="experiments/m34_report.py", command="python experiments/m34_report.py --heldout --record",
+                      notes="derived from ledger/m3_heldout (init states 10-29) and ledger/m3_compose zero-shot (states 0-9, the practice)")
+        print("[report] m3_summary row written")
 
 
 if __name__ == "__main__":
