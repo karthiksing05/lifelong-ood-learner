@@ -1,0 +1,123 @@
+{
+ "artifacts": [
+  "results/robot/r3_prog_41_code_lib40.npz",
+  "results/robot/r3_prog_41_raw_lib40.npz"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 30615,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 30615,
+  "tree": 0
+ },
+ "command": "experiments/r3_prepare.py --tree results/robot/r2b_libero_40_tree.npz --library-npz results/robot/r2b_libero_40.npz --tasks 41 --levels 2,3,4 --tag _lib40",
+ "config": {
+  "K": 3,
+  "held": 5,
+  "levels": "2,3,4",
+  "library_npz": "results/robot/r2b_libero_40.npz",
+  "tag": "_lib40",
+  "tasks": "41",
+  "tree": "results/robot/r2b_libero_40_tree.npz"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "spot.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3960431",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r3_prepare",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "e5ed1433b0fce7236cef1ec4d132ffe4cf41a19c",
+  "short": "e5ed1433"
+ },
+ "keys": {
+  "task": 41
+ },
+ "metrics": {
+  "bddl": "KITCHEN_SCENE9_put_the_frying_pan_on_top_of_the_cabinet",
+  "code": {
+   "bytes": 30615,
+   "mean_rms_to_demo": 0.08583953231573105,
+   "nll_per_dim": -0.8964105248451233,
+   "path": "results/robot/r3_prog_41_code_lib40.npz"
+  },
+  "demo_episode": 2886,
+  "depth_hist": {
+   "0.05": 1,
+   "0.1": 2,
+   "0.2": 12,
+   "0.3": 29,
+   "0.4": 4,
+   "0.55": 5,
+   "0.7": 7,
+   "explained": 135
+  },
+  "gripper_events": [
+   88,
+   109,
+   124,
+   182
+  ],
+  "n_frames": 195,
+  "n_ipec_episodes": 36,
+  "nll_median": {
+   "0.05": 0.7571195137735219,
+   "0.1": -0.8118859484531002,
+   "0.2": -0.900204860759793,
+   "0.3": -0.6199381585794703,
+   "0.4": -0.3534022176057332,
+   "0.55": -0.04716608743661605,
+   "0.7": 0.15744917024922295
+  },
+  "out_of_range_frac": 0.08131868131868132,
+  "prompt_program": {
+   "pick up the black bowl in the top drawer of the wooden cabinet and place it on the plate": 31,
+   "pick up the book and place it in the back compartment of the caddy": 26,
+   "pick up the orange juice and place it in the basket": 3,
+   "put both the alphabet soup and the cream cheese box in the basket": 7,
+   "put both the cream cheese box and the butter in the basket": 14,
+   "put the black bowl in the bottom drawer of the cabinet and close it": 14,
+   "put the cream cheese in the bowl": 30,
+   "put the white mug on the left plate and put the yellow and white mug on the right plate": 15,
+   "put the white mug on the plate and put the chocolate pudding to the right of the plate": 26,
+   "put the yellow and white mug in the microwave and close it": 29
+  },
+  "raw": {
+   "bytes": 6171,
+   "mean_rms_to_demo": 0.0,
+   "nll_per_dim": -1.3836462497711182,
+   "path": "results/robot/r3_prog_41_raw_lib40.npz"
+  },
+  "task_id": 41,
+  "text": "put the frying pan on top of the cabinet",
+  "unexplained_by_level": {
+   "0.05": 0.22564102564102564,
+   "0.1": 0.26153846153846155,
+   "0.2": 0.26153846153846155,
+   "0.3": 0.2,
+   "0.4": 0.035897435897435895,
+   "0.55": 0.046153846153846156,
+   "0.7": 0.035897435897435895
+  },
+  "unexplained_frac": 0.3076923076923077
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r3_prepare__libero_90___lib40__task-41__s0__e5ed1433",
+ "schema": 1,
+ "script": "experiments/r3_prepare.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-26T07:37:23+00:00",
+ "stream": null,
+ "tag": "_lib40"
+}

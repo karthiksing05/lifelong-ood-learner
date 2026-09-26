@@ -1,0 +1,107 @@
+{
+ "artifacts": [
+  "results/robot/r3_lora_63.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 18710528,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 18710528,
+  "tree": 0
+ },
+ "command": "experiments/r3_fewshot.py --task 63",
+ "config": {
+  "batch": 32,
+  "demo": 0,
+  "lr": 0.0001,
+  "rank": 16,
+  "seed": 0,
+  "steps": 1000,
+  "tag": "",
+  "task": 63
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "spot.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3960451",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r3_fewshot",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "e5ed1433b0fce7236cef1ec4d132ffe4cf41a19c",
+  "short": "e5ed1433"
+ },
+ "keys": {
+  "task": 63
+ },
+ "metrics": {
+  "curve": {
+   "anchor": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "loss": [
+    0.09654299914836884,
+    0.021770987659692764,
+    0.010126428678631783,
+    0.0047215926460921764,
+    0.008481091819703579,
+    0.0033732273150235415,
+    0.0032944076228886843,
+    0.0030159244779497385,
+    0.0035053498577326536,
+    0.008685198612511158,
+    0.00425092875957489
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "demo_episode": 2517,
+  "final_loss": 0.00425092875957489,
+  "first_loss": 0.09654299914836884,
+  "n_banks": 163,
+  "n_frames": 195,
+  "n_params": 9355264,
+  "task": 63,
+  "text": "stack the left bowl on the right bowl and place them in the tray",
+  "train_secs": 123.24782252311707
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r3_fewshot__libero_90__base__task-63__s0__e5ed1433",
+ "schema": 1,
+ "script": "experiments/r3_fewshot.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-26T07:54:34+00:00",
+ "stream": null,
+ "tag": ""
+}

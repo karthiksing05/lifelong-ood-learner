@@ -63,6 +63,22 @@ def mb(metric):
     return lambda: tuple([L.mean("m3_summary", metric, tag="final")[0] / 1e6] + list(L.mean("m3_summary", metric, tag="final")[1:]))
 
 
+def st(metric, scale=1.0, sign=1.0, tag="final_23tasks"):
+    """A metric of the pre-registered statistics row (experiments/m3_stats.py), optionally rescaled or negated."""
+    def f():
+        m, se, n = L.mean("m3_stats", metric, tag=tag)
+        return (sign * m / scale, se / scale, n)
+    return f
+
+
+def st_len(key, tag="final_23tasks"):
+    return lambda: (float(len(L.load("m3_stats", tag=tag)[0]["metrics"][key])), 0.0, 1)
+
+
+def st_ratio(num, den, tag="final_23tasks"):
+    return lambda: (L.mean("m3_stats", num, tag=tag)[0] / L.mean("m3_stats", den, tag=tag)[0], 0.0, 1)
+
+
 EMBODIED = [
     ("M0: LIBERO-Goal ms per simulation step", emb("r0_env_smoke", "metrics.ms_per_step_median", bench="libero_goal"), "16.9"),
     ("M1: parity with openpi's sampler", emb("r1_policy_smoke", "metrics.parity_max_abs_diff", bench="libero_goal"), "0.0"),
@@ -116,18 +132,46 @@ EMBODIED = [
     ("gate: white mug restored", emb("m3_compose", "metrics.success_rate", tag="code_agree20", keys__tasks="67"), "0.8"),
     ("gate: moka pot", emb("m3_compose", "metrics.success_rate", tag="code_agree20", keys__tasks="19"), "0.0"),
     ("gate: stove", emb("m3_compose", "metrics.success_rate", tag="code_agree20", keys__tasks="39"), "0.0"),
-    ("final: dim-borrow + 258 KB fold successes", emb("m3_summary", "metrics.arms.ours_dim1_last2.k", tag="final"), "74"),
-    ("final: episodes", emb("m3_summary", "metrics.arms.ours_dim1_last2.n", tag="final"), "120"),
-    ("final: dim-borrow + 258 KB fold KB stored", kb("metrics.stored_bytes.ours_dim1_last2"), "827"),
-    ("final: LoRA successes", emb("m3_summary", "metrics.arms.practice_lora.k", tag="final"), "74"),
-    ("final: LoRA MB stored", mb("metrics.stored_bytes.practice_lora"), "74.8"),
-    ("final: replay successes", emb("m3_summary", "metrics.arms.practice_replay.k", tag="final"), "72"),
-    ("final: replay KB stored (honest: the T x 7 action sequence)", kb("metrics.stored_bytes.practice_replay"), "20"),
-    ("final: dim-borrow s5 successes", emb("m3_summary", "metrics.arms.ours_dim.k", tag="final"), "71"),
-    ("final: dim-borrow s5 KB stored", kb("metrics.stored_bytes.ours_dim"), "4.5"),
-    ("final: codes + fold successes", emb("m3_summary", "metrics.arms.ours.k", tag="final"), "79"),
-    ("final: codes + fold MB stored", mb("metrics.stored_bytes.ours"), "14.2"),
-    ("final: zero-shot successes", emb("m3_summary", "metrics.arms.zeroshot.k", tag="final"), "42"),
+    ("pre-registered: held-out tasks", st_len("tasks"), "23"),
+    ("pre-registered: tasks where the practice fails", st_len("prior_fails"), "21"),
+    ("pre-registered: paired episodes per method", st("metrics.methods.ours_dim1_last2.prior_fails.n"), "420"),
+    ("pre-registered: borrowing + fold successes", st("metrics.methods.ours_dim1_last2.prior_fails.k"), "253"),
+    ("pre-registered: borrowing + fold MB", st("metrics.methods.ours_dim1_last2.prior_fails.bytes", 1e6), "5.3"),
+    ("pre-registered: LoRA successes", st("metrics.methods.practice_lora.prior_fails.k"), "252"),
+    ("pre-registered: LoRA MB", st("metrics.methods.practice_lora.prior_fails.bytes", 1e6), "392.9"),
+    ("pre-registered: borrowing + fold - LoRA", st("metrics.compare.ours_dim1_last2-practice_lora.prior_fails.diff"), "0.002"),
+    ("pre-registered: one-sided lower bound (negated)", st("metrics.compare.ours_dim1_last2-practice_lora.prior_fails.lo90", sign=-1.0), "0.091"),
+    ("pre-registered: LoRA bytes / borrowing + fold bytes", st_ratio("metrics.methods.practice_lora.prior_fails.bytes", "metrics.methods.ours_dim1_last2.prior_fails.bytes"), "74"),
+    ("pre-registered: replay successes", st("metrics.methods.practice_replay.prior_fails.k"), "171"),
+    ("pre-registered: replay KB", st("metrics.methods.practice_replay.prior_fails.bytes", 1e3), "106.2"),
+    ("pre-registered: borrowing + fold - replay", st("metrics.compare.ours_dim1_last2-practice_replay.prior_fails.diff"), "0.195"),
+    ("borrowing every 5th frame successes", st("metrics.methods.ours_dim.prior_fails.k"), "176"),
+    ("borrowing every 5th frame KB", st("metrics.methods.ours_dim.prior_fails.bytes", 1e3), "23.6"),
+    ("borrowing every 5th frame - replay", st("metrics.compare.ours_dim-practice_replay.prior_fails.diff"), "0.012"),
+    ("borrowing every 5th frame below the LoRA", st("metrics.compare.ours_dim-practice_lora.prior_fails.diff", sign=-1.0), "0.181"),
+    ("what the fold adds", st("metrics.compare.ours_dim1_last2-ours_dim1.prior_fails.diff"), "0.202"),
+    ("practice allocation successes", st("metrics.methods.ours_alloc.prior_fails.k"), "270"),
+    ("practice allocation MB", st("metrics.methods.ours_alloc.prior_fails.bytes", 1e6), "97.4"),
+    ("practice allocation - LoRA", st("metrics.compare.ours_alloc-practice_lora.prior_fails.diff"), "0.043"),
+    ("practice allocation vs LoRA, sign test p", st("metrics.compare.ours_alloc-practice_lora.prior_fails.sign_p"), "0.11"),
+    ("test-retest Pearson r", st("metrics.retest.pearson"), "0.958"),
+    ("test-retest cells", st("metrics.retest.cells"), "22"),
+    ("second demo: borrowing + fold, demo 0", st("metrics.demo_robustness.arms.borrowing (+ fold where it grasps).demo0.k"), "34"),
+    ("second demo: borrowing + fold, demo 1", st("metrics.demo_robustness.arms.borrowing (+ fold where it grasps).demo1.k"), "63"),
+    ("second demo: episodes", st("metrics.demo_robustness.arms.few-shot LoRA.demo1.n"), "80"),
+    ("second demo: LoRA, demo 0", st("metrics.demo_robustness.arms.few-shot LoRA.demo0.k"), "34"),
+    ("second demo: LoRA, demo 1", st("metrics.demo_robustness.arms.few-shot LoRA.demo1.k"), "53"),
+    ("forced execution: median realised fraction", emb("r12_forced", "metrics.moving_frac_median"), "1.05"),
+    ("forced execution: median cosine", emb("r12_forced", "metrics.moving_cos_median"), "0.998"),
+    ("lenders: share from the finest level", emb("r8_inspect", "metrics.lenders.level_0.2", tag="provenance_23tasks"), "0.89"),
+    ("library: leaves' distance to the demo", emb("r9_library_ablation", "metrics.summary.bank_policy_K8.rms", tag="offline_23tasks"), "0.025"),
+    ("library: tree prototypes' distance", emb("r9_library_ablation", "metrics.summary.band_K8.rms", tag="offline_23tasks"), "0.033"),
+    ("library: shared level alone", emb("r9_library_ablation", "metrics.summary.t0.4_K8.rms", tag="offline_23tasks"), "0.080"),
+    ("shared-prototype borrowing successes", st("metrics.methods.ours_shared1.prior_fails.k"), "65"),
+    ("shared-prototype borrowing episodes", st("metrics.methods.ours_shared1.prior_fails.n"), "240"),
+    ("shared-prototype borrowing below the band", st("metrics.compare.ours_shared1-ours_dim1.prior_fails.diff", sign=-1.0), "0.133"),
+    ("provenance: word overlap of the sources", emb("r8_inspect", "metrics.overlap_mean", tag="provenance_23tasks"), "0.122"),
+    ("provenance: shuffled pairings", emb("r8_inspect", "metrics.null_mean", tag="provenance_23tasks"), "0.106"),
     ("composer: stove, development", emb("m3_dev", "metrics.success_rate", tag="composer_v1", keys__tasks="39"), "0.3"),
     ("dim-borrow every frame: stove, development", emb("m3_dev", "metrics.success_rate", tag="dimcode_s1", keys__tasks="39"), "1.0"),
     ("composer: program KB", lambda: tuple([L.mean("r6_composer", "metrics.program_bytes", tag="", keys__task=39)[0] / 1e3] + list(L.mean("r6_composer", "metrics.program_bytes", tag="", keys__task=39)[1:])), "4.3"),
@@ -137,7 +181,6 @@ EMBODIED = [
     ("atlas: words at t=0.2", emb("r2c_atlas", "metrics.levels.0.2.n_words", bench="libero_40"), "111"),
     ("atlas: word purity at t=0.2", emb("r2c_atlas", "metrics.levels.0.2.word_purity", bench="libero_40"), "0.90"),
     ("fold size, last two layers, KB", lambda: tuple([L.mean("r4_fold", "bytes.experts", tag="_approach_last2")[0] / 1e3] + list(L.mean("r4_fold", "bytes.experts", tag="_approach_last2")[1:])), "258"),
-    ("fold size, whole expert, MB", lambda: tuple([L.mean("r4_fold", "bytes.experts", tag="_approach")[0] / 1e6] + list(L.mean("r4_fold", "bytes.experts", tag="_approach")[1:])), "4.7"),
 ]
 
 CHECKS = EMBODIED + [

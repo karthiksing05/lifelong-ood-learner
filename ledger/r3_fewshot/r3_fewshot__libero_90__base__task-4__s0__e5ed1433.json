@@ -1,0 +1,107 @@
+{
+ "artifacts": [
+  "results/robot/r3_lora_4.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 18710528,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 18710528,
+  "tree": 0
+ },
+ "command": "experiments/r3_fewshot.py --task 4",
+ "config": {
+  "batch": 32,
+  "demo": 0,
+  "lr": 0.0001,
+  "rank": 16,
+  "seed": 0,
+  "steps": 1000,
+  "tag": "",
+  "task": 4
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "puma.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3960416",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r3_fewshot",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "e5ed1433b0fce7236cef1ec4d132ffe4cf41a19c",
+  "short": "e5ed1433"
+ },
+ "keys": {
+  "task": 4
+ },
+ "metrics": {
+  "curve": {
+   "anchor": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "loss": [
+    0.10005360841751099,
+    0.023051997646689415,
+    0.01001846045255661,
+    0.003945079166442156,
+    0.008841861970722675,
+    0.00322427274659276,
+    0.003121833084151149,
+    0.002089381217956543,
+    0.0037415807601064444,
+    0.010142387822270393,
+    0.004991236608475447
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "demo_episode": 1551,
+  "final_loss": 0.004991236608475447,
+  "first_loss": 0.10005360841751099,
+  "n_banks": 163,
+  "n_frames": 173,
+  "n_params": 9355264,
+  "task": 4,
+  "text": "put the butter at the front in the top drawer of the cabinet and close it",
+  "train_secs": 124.59106516838074
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r3_fewshot__libero_90__base__task-4__s0__e5ed1433",
+ "schema": 1,
+ "script": "experiments/r3_fewshot.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-26T07:36:43+00:00",
+ "stream": null,
+ "tag": ""
+}

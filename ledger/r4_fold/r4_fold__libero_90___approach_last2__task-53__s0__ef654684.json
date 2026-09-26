@@ -1,0 +1,129 @@
+{
+ "artifacts": [
+  "results/robot/r4_53_approach_last2_expert.pt",
+  "results/robot/r4_53_approach_last2_program.npz",
+  "results/robot/r4_53_approach_last2_tree.npz"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 23107,
+  "experts": 258048,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 281155,
+  "tree": 0
+ },
+ "command": "experiments/r4_fold.py --task 53 --tree results/robot/r2b_libero_40_tree.npz --library results/robot/r2b_libero_40.npz --rank 2 --steps 1000 --tag _approach_last2 --arrival contact --contact 10 --pre 30 --scope last2",
+ "config": {
+  "K": 3,
+  "anchor_weight": 1.0,
+  "arrival": "contact",
+  "band": "0,1,2",
+  "contact": 10,
+  "demo": 0,
+  "library": "results/robot/r2b_libero_40.npz",
+  "lr": 0.0001,
+  "n_anchor": 384,
+  "n_cal": 1500,
+  "pre": 30,
+  "q": 0.95,
+  "rank": 2,
+  "scope": "last2",
+  "seed": 0,
+  "steps": 1000,
+  "tag": "_approach_last2",
+  "task": 53,
+  "tree": "results/robot/r2b_libero_40_tree.npz"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "megabot.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3960401",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r4_fold",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "ef6546846ec1529a526a1d2ea5e15d8848457243",
+  "short": "ef654684"
+ },
+ "keys": {
+  "task": 53
+ },
+ "metrics": {
+  "anchor_weight": 1.0,
+  "curve": {
+   "anchor": [
+    0.0,
+    0.00025728647597134113,
+    0.000950849789660424,
+    0.0013191270409151912,
+    0.0017289466923102736,
+    0.0017057250952348113,
+    0.00108136550989002,
+    0.001347977900877595,
+    0.0012687373673543334,
+    0.0007215630612336099,
+    0.0007780594751238823
+   ],
+   "loss": [
+    0.026943404227495193,
+    0.040659546852111816,
+    0.022692466154694557,
+    0.01397113036364317,
+    0.013219966553151608,
+    0.009926757775247097,
+    0.014360223896801472,
+    0.006589777301996946,
+    0.005330481566488743,
+    0.009047960862517357,
+    0.004126356448978186
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "demo_episode": 1284,
+  "expert_params": 129024,
+  "n_frames": 148,
+  "n_new_nodes": 0,
+  "n_unexplained": 78,
+  "nll_median": {
+   "0": -1.7372693290209038,
+   "1": -1.5692688304996194,
+   "2": -1.0403114259303408
+  },
+  "task": 53,
+  "text": "pick up the orange juice and put it in the basket",
+  "thresholds": {
+   "0": 3.148381656392142,
+   "1": -0.09127364671692659,
+   "2": -0.720244935179938
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r4_fold__libero_90___approach_last2__task-53__s0__ef654684",
+ "schema": 1,
+ "script": "experiments/r4_fold.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-26T07:13:37+00:00",
+ "stream": null,
+ "tag": "_approach_last2"
+}

@@ -1,0 +1,83 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/m3_final_62_dimcode_s5.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 805,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 805,
+  "tree": 0
+ },
+ "command": "roll.sh MODE=program:/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r7_dim_62_s5.npz?w0=1.0&sched=const&var=0.001&key=pose&stall=3&window=4 SUITE=libero_90 TASKS=62 TRIALS=20 (job 3961402)",
+ "config": {
+  "client": {
+   "first_trial": 30,
+   "host": "127.0.0.1",
+   "max_steps": 0,
+   "no_meta": false,
+   "out": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/m3_final_62_dimcode_s5.json",
+   "port": 9006,
+   "replan": 5,
+   "resize": 224,
+   "seed": 7,
+   "suite": "libero_90",
+   "tasks": "62",
+   "trials": 20,
+   "videos": 2,
+   "wait": 10
+  },
+  "job": "3961402",
+  "mode": "program:/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r7_dim_62_s5.npz?w0=1.0&sched=const&var=0.001&key=pose&stall=3&window=4"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "brainiac.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3961402",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_final",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "78b3ad53b90870c7a3147c1b6de296b0ecc2acdc",
+  "short": "78b3ad53"
+ },
+ "keys": {
+  "first_trial": 30,
+  "mode": "program:/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r7_dim_62_s5.npz?w0=1.0&sched=const&var=0.001&key=pose&stall=3&window=4",
+  "tasks": "62",
+  "trials": 20
+ },
+ "metrics": {
+  "complete": true,
+  "n_episodes": 20,
+  "secs": 536.1168415546417,
+  "success_rate": 0.4,
+  "tasks": {
+   "62": {
+    "errors": 0,
+    "language": "pick up the salad dressing and put it in the tray",
+    "mean_steps": 281.8,
+    "n": 20,
+    "success_rate": 0.4
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_final__libero_90__dimcode_s5__first_trial-30__mode903f1d32f55f__tasks-62__trials-20__s7__78b3ad53",
+ "schema": 1,
+ "script": "experiments/libero_client.py",
+ "seconds": null,
+ "seed": 7,
+ "source_commit": null,
+ "started": "2026-09-26T11:57:16+00:00",
+ "stream": null,
+ "tag": "dimcode_s5"
+}

@@ -1,0 +1,2765 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "python experiments/m3_stats.py --record",
+ "config": {
+  "B": 10000,
+  "json": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/m3_stats.json",
+  "practice": 0.5,
+  "record": true
+ },
+ "env": {
+  "device": "cpu",
+  "host": "sky2.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_stats",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "78b3ad53b90870c7a3147c1b6de296b0ecc2acdc",
+  "short": "78b3ad53"
+ },
+ "keys": {},
+ "metrics": {
+  "compare": {
+   "ours_alloc-ours_dim1_last2.all": {
+    "diff": 0.03695652173913044,
+    "discordant": [
+     26,
+     9
+    ],
+    "hi": 0.09130434782608696,
+    "hi90": 0.08043478260869565,
+    "lo": -0.004347826086956522,
+    "lo90": 0.0,
+    "n_pairs": 460,
+    "n_tasks": 23,
+    "noninferior": true,
+    "sign_p": 0.0059881205670535564
+   },
+   "ours_alloc-ours_dim1_last2.prior_fails": {
+    "diff": 0.04047619047619048,
+    "discordant": [
+     26,
+     9
+    ],
+    "hi": 0.1,
+    "hi90": 0.0880952380952381,
+    "lo": -0.004761904761904762,
+    "lo90": 0.0,
+    "n_pairs": 420,
+    "n_tasks": 21,
+    "noninferior": true,
+    "sign_p": 0.0059881205670535564
+   },
+   "ours_alloc-practice_lora.all": {
+    "diff": 0.0391304347826087,
+    "discordant": [
+     65,
+     47
+    ],
+    "hi": 0.1282608695652174,
+    "hi90": 0.11304347826086956,
+    "lo": -0.05,
+    "lo90": -0.03695652173913044,
+    "n_pairs": 460,
+    "n_tasks": 23,
+    "noninferior": true,
+    "sign_p": 0.10778227965475412
+   },
+   "ours_alloc-practice_lora.prior_fails": {
+    "diff": 0.04285714285714286,
+    "discordant": [
+     65,
+     47
+    ],
+    "hi": 0.1380952380952381,
+    "hi90": 0.12380952380952381,
+    "lo": -0.05476190476190476,
+    "lo90": -0.0380952380952381,
+    "n_pairs": 420,
+    "n_tasks": 21,
+    "noninferior": true,
+    "sign_p": 0.10778227965475412
+   },
+   "ours_dim-practice_lora.all": {
+    "diff": -0.16521739130434782,
+    "discordant": [
+     40,
+     116
+    ],
+    "hi": -0.058695652173913045,
+    "hi90": -0.07391304347826087,
+    "lo": -0.28043478260869564,
+    "lo90": -0.25869565217391305,
+    "n_pairs": 460,
+    "n_tasks": 23,
+    "noninferior": false,
+    "sign_p": 8.902590557663547e-10
+   },
+   "ours_dim-practice_lora.prior_fails": {
+    "diff": -0.18095238095238095,
+    "discordant": [
+     40,
+     116
+    ],
+    "hi": -0.06190476190476191,
+    "hi90": -0.08333333333333333,
+    "lo": -0.30238095238095236,
+    "lo90": -0.2833333333333333,
+    "n_pairs": 420,
+    "n_tasks": 21,
+    "noninferior": false,
+    "sign_p": 8.902590557663547e-10
+   },
+   "ours_dim-practice_replay.all": {
+    "diff": 0.010869565217391304,
+    "discordant": [
+     41,
+     36
+    ],
+    "hi": 0.07391304347826087,
+    "hi90": 0.06304347826086956,
+    "lo": -0.05652173913043478,
+    "lo90": -0.04565217391304348,
+    "n_pairs": 460,
+    "n_tasks": 23,
+    "noninferior": true,
+    "sign_p": 0.6487911623106449
+   },
+   "ours_dim-practice_replay.prior_fails": {
+    "diff": 0.011904761904761904,
+    "discordant": [
+     41,
+     36
+    ],
+    "hi": 0.08095238095238096,
+    "hi90": 0.06904761904761905,
+    "lo": -0.06190476190476191,
+    "lo90": -0.047619047619047616,
+    "n_pairs": 420,
+    "n_tasks": 21,
+    "noninferior": true,
+    "sign_p": 0.6487911623106449
+   },
+   "ours_dim1-practice_replay.all": {
+    "diff": -0.006521739130434782,
+    "discordant": [
+     25,
+     28
+    ],
+    "hi": 0.03260869565217391,
+    "hi90": 0.02608695652173913,
+    "lo": -0.04565217391304348,
+    "lo90": -0.0391304347826087,
+    "n_pairs": 460,
+    "n_tasks": 23,
+    "noninferior": true,
+    "sign_p": 0.7838463022094988
+   },
+   "ours_dim1-practice_replay.prior_fails": {
+    "diff": -0.007142857142857143,
+    "discordant": [
+     25,
+     28
+    ],
+    "hi": 0.03571428571428571,
+    "hi90": 0.02857142857142857,
+    "lo": -0.05,
+    "lo90": -0.04285714285714286,
+    "n_pairs": 420,
+    "n_tasks": 21,
+    "noninferior": true,
+    "sign_p": 0.7838463022094988
+   },
+   "ours_dim1_last2-ours_dim1.all": {
+    "diff": 0.18478260869565216,
+    "discordant": [
+     113,
+     28
+    ],
+    "hi": 0.2891304347826087,
+    "hi90": 0.2717391304347826,
+    "lo": 0.08478260869565217,
+    "lo90": 0.1,
+    "n_pairs": 460,
+    "n_tasks": 23,
+    "noninferior": true,
+    "sign_p": 2.6418869265765717e-13
+   },
+   "ours_dim1_last2-ours_dim1.prior_fails": {
+    "diff": 0.20238095238095238,
+    "discordant": [
+     113,
+     28
+    ],
+    "hi": 0.30714285714285716,
+    "hi90": 0.29285714285714287,
+    "lo": 0.09523809523809523,
+    "lo90": 0.11190476190476191,
+    "n_pairs": 420,
+    "n_tasks": 21,
+    "noninferior": true,
+    "sign_p": 2.6418869265765717e-13
+   },
+   "ours_dim1_last2-practice_lora.all": {
+    "diff": 0.002173913043478261,
+    "discordant": [
+     74,
+     73
+    ],
+    "hi": 0.10434782608695652,
+    "hi90": 0.0891304347826087,
+    "lo": -0.1,
+    "lo90": -0.08260869565217391,
+    "n_pairs": 460,
+    "n_tasks": 23,
+    "noninferior": true,
+    "sign_p": 1.0
+   },
+   "ours_dim1_last2-practice_lora.prior_fails": {
+    "diff": 0.002380952380952381,
+    "discordant": [
+     74,
+     73
+    ],
+    "hi": 0.11428571428571428,
+    "hi90": 0.09523809523809523,
+    "lo": -0.10952380952380952,
+    "lo90": -0.09059523809523798,
+    "n_pairs": 420,
+    "n_tasks": 21,
+    "noninferior": true,
+    "sign_p": 1.0
+   },
+   "ours_dim1_last2-practice_replay.all": {
+    "diff": 0.1782608695652174,
+    "discordant": [
+     122,
+     40
+    ],
+    "hi": 0.29782608695652174,
+    "hi90": 0.27608695652173915,
+    "lo": 0.06521739130434782,
+    "lo90": 0.08260869565217391,
+    "n_pairs": 460,
+    "n_tasks": 23,
+    "noninferior": true,
+    "sign_p": 7.681948612192262e-11
+   },
+   "ours_dim1_last2-practice_replay.prior_fails": {
+    "diff": 0.19523809523809524,
+    "discordant": [
+     122,
+     40
+    ],
+    "hi": 0.31666666666666665,
+    "hi90": 0.29523809523809524,
+    "lo": 0.0761904761904762,
+    "lo90": 0.09285714285714286,
+    "n_pairs": 420,
+    "n_tasks": 21,
+    "noninferior": true,
+    "sign_p": 7.681948612192262e-11
+   },
+   "ours_dim1_last2-zeroshot.all": {
+    "diff": 0.5369565217391304,
+    "discordant": [
+     249,
+     2
+    ],
+    "hi": 0.6630434782608695,
+    "hi90": 0.6456521739130435,
+    "lo": 0.40869565217391307,
+    "lo90": 0.4260869565217391,
+    "n_pairs": 460,
+    "n_tasks": 23,
+    "noninferior": true,
+    "sign_p": 1.7480710585086208e-71
+   },
+   "ours_dim1_last2-zeroshot.prior_fails": {
+    "diff": 0.5880952380952381,
+    "discordant": [
+     249,
+     2
+    ],
+    "hi": 0.7071428571428572,
+    "hi90": 0.6880952380952381,
+    "lo": 0.4642857142857143,
+    "lo90": 0.4857142857142857,
+    "n_pairs": 420,
+    "n_tasks": 21,
+    "noninferior": true,
+    "sign_p": 1.7480710585086208e-71
+   },
+   "ours_leaf-ours_dim.all": {
+    "diff": -0.010869565217391304,
+    "discordant": [
+     26,
+     31
+    ],
+    "hi": 0.034782608695652174,
+    "hi90": 0.02608695652173913,
+    "lo": -0.05652173913043478,
+    "lo90": -0.05,
+    "n_pairs": 460,
+    "n_tasks": 23,
+    "noninferior": true,
+    "sign_p": 0.5966417603730826
+   },
+   "ours_leaf-ours_dim.prior_fails": {
+    "diff": -0.011904761904761904,
+    "discordant": [
+     26,
+     31
+    ],
+    "hi": 0.0380952380952381,
+    "hi90": 0.02857142857142857,
+    "lo": -0.06190476190476191,
+    "lo90": -0.05238095238095238,
+    "n_pairs": 420,
+    "n_tasks": 21,
+    "noninferior": true,
+    "sign_p": 0.5966417603730826
+   },
+   "ours_leaf1_last2-ours_dim1_last2.all": {
+    "diff": 0.021739130434782608,
+    "discordant": [
+     51,
+     41
+    ],
+    "hi": 0.08478260869565217,
+    "hi90": 0.07391304347826087,
+    "lo": -0.0391304347826087,
+    "lo90": -0.030434782608695653,
+    "n_pairs": 460,
+    "n_tasks": 23,
+    "noninferior": true,
+    "sign_p": 0.3481412903192065
+   },
+   "ours_leaf1_last2-ours_dim1_last2.prior_fails": {
+    "diff": 0.023809523809523808,
+    "discordant": [
+     51,
+     41
+    ],
+    "hi": 0.09285714285714286,
+    "hi90": 0.08095238095238096,
+    "lo": -0.04047619047619048,
+    "lo90": -0.030952380952380953,
+    "n_pairs": 420,
+    "n_tasks": 21,
+    "noninferior": true,
+    "sign_p": 0.3481412903192065
+   },
+   "ours_leaf1_last2-practice_lora.all": {
+    "diff": 0.02391304347826087,
+    "discordant": [
+     73,
+     62
+    ],
+    "hi": 0.115271739130434,
+    "hi90": 0.1,
+    "lo": -0.06521739130434782,
+    "lo90": -0.05217391304347826,
+    "n_pairs": 460,
+    "n_tasks": 23,
+    "noninferior": true,
+    "sign_p": 0.3895026289761405
+   },
+   "ours_leaf1_last2-practice_lora.prior_fails": {
+    "diff": 0.02619047619047619,
+    "discordant": [
+     73,
+     62
+    ],
+    "hi": 0.1261904761904762,
+    "hi90": 0.11190476190476191,
+    "lo": -0.07380952380952381,
+    "lo90": -0.05714285714285714,
+    "n_pairs": 420,
+    "n_tasks": 21,
+    "noninferior": true,
+    "sign_p": 0.3895026289761405
+   },
+   "ours_leaf1_last2-practice_replay.all": {
+    "diff": 0.2,
+    "discordant": [
+     131,
+     39
+    ],
+    "hi": 0.3239130434782609,
+    "hi90": 0.30217391304347824,
+    "lo": 0.0782608695652174,
+    "lo90": 0.09782608695652174,
+    "n_pairs": 460,
+    "n_tasks": 23,
+    "noninferior": true,
+    "sign_p": 7.922247806672471e-13
+   },
+   "ours_leaf1_last2-practice_replay.prior_fails": {
+    "diff": 0.21904761904761905,
+    "discordant": [
+     131,
+     39
+    ],
+    "hi": 0.34523809523809523,
+    "hi90": 0.3261904761904762,
+    "lo": 0.08571428571428572,
+    "lo90": 0.10714285714285714,
+    "n_pairs": 420,
+    "n_tasks": 21,
+    "noninferior": true,
+    "sign_p": 7.922247806672471e-13
+   },
+   "ours_seg-ours_dim.all": {
+    "diff": -0.034782608695652174,
+    "discordant": [
+     23,
+     39
+    ],
+    "hi": 0.021739130434782608,
+    "hi90": 0.013043478260869565,
+    "lo": -0.09565217391304348,
+    "lo90": -0.08478260869565217,
+    "n_pairs": 460,
+    "n_tasks": 23,
+    "noninferior": true,
+    "sign_p": 0.05589722669971113
+   },
+   "ours_seg-ours_dim.prior_fails": {
+    "diff": -0.0380952380952381,
+    "discordant": [
+     23,
+     39
+    ],
+    "hi": 0.02619047619047619,
+    "hi90": 0.014285714285714285,
+    "lo": -0.10238095238095238,
+    "lo90": -0.09285714285714286,
+    "n_pairs": 420,
+    "n_tasks": 21,
+    "noninferior": true,
+    "sign_p": 0.05589722669971113
+   },
+   "ours_seg-practice_lora.all": {
+    "diff": -0.2,
+    "discordant": [
+     40,
+     132
+    ],
+    "hi": -0.08695652173913043,
+    "hi90": -0.10217391304347827,
+    "lo": -0.3173913043478261,
+    "lo90": -0.29782608695652174,
+    "n_pairs": 460,
+    "n_tasks": 23,
+    "noninferior": false,
+    "sign_p": 1.1114407493324018e-12
+   },
+   "ours_seg-practice_lora.prior_fails": {
+    "diff": -0.21904761904761905,
+    "discordant": [
+     40,
+     132
+    ],
+    "hi": -0.09285714285714286,
+    "hi90": -0.11428571428571428,
+    "lo": -0.34523809523809523,
+    "lo90": -0.3261904761904762,
+    "n_pairs": 420,
+    "n_tasks": 21,
+    "noninferior": false,
+    "sign_p": 1.1114407493324018e-12
+   },
+   "ours_seg-practice_replay.all": {
+    "diff": -0.02391304347826087,
+    "discordant": [
+     31,
+     42
+    ],
+    "hi": 0.030434782608695653,
+    "hi90": 0.021739130434782608,
+    "lo": -0.08260869565217391,
+    "lo90": -0.07391304347826087,
+    "n_pairs": 460,
+    "n_tasks": 23,
+    "noninferior": true,
+    "sign_p": 0.24164472314075197
+   },
+   "ours_seg-practice_replay.prior_fails": {
+    "diff": -0.02619047619047619,
+    "discordant": [
+     31,
+     42
+    ],
+    "hi": 0.03333333333333333,
+    "hi90": 0.023809523809523808,
+    "lo": -0.09047619047619047,
+    "lo90": -0.07857142857142857,
+    "n_pairs": 420,
+    "n_tasks": 21,
+    "noninferior": true,
+    "sign_p": 0.24164472314075197
+   },
+   "ours_shared1-ours_dim1.all": {
+    "diff": -0.11428571428571428,
+    "discordant": [
+     13,
+     45
+    ],
+    "hi": -0.007142857142857143,
+    "hi90": -0.017857142857142856,
+    "lo": -0.25357142857142856,
+    "lo90": -0.22857142857142856,
+    "n_pairs": 280,
+    "n_tasks": 14,
+    "noninferior": false,
+    "sign_p": 3.0115909629119253e-05
+   },
+   "ours_shared1-ours_dim1.prior_fails": {
+    "diff": -0.13333333333333333,
+    "discordant": [
+     13,
+     45
+    ],
+    "hi": -0.008333333333333333,
+    "hi90": -0.025,
+    "lo": -0.2916666666666667,
+    "lo90": -0.2625,
+    "n_pairs": 240,
+    "n_tasks": 12,
+    "noninferior": false,
+    "sign_p": 3.0115909629119253e-05
+   },
+   "practice_lora-practice_replay.all": {
+    "diff": 0.17608695652173914,
+    "discordant": [
+     121,
+     40
+    ],
+    "hi": 0.29130434782608694,
+    "hi90": 0.2717391304347826,
+    "lo": 0.06521739130434782,
+    "lo90": 0.08043478260869565,
+    "n_pairs": 460,
+    "n_tasks": 23,
+    "noninferior": true,
+    "sign_p": 1.1614084601739934e-10
+   },
+   "practice_lora-practice_replay.prior_fails": {
+    "diff": 0.19285714285714287,
+    "discordant": [
+     121,
+     40
+    ],
+    "hi": 0.31196428571428486,
+    "hi90": 0.29285714285714287,
+    "lo": 0.07142857142857142,
+    "lo90": 0.09047619047619047,
+    "n_pairs": 420,
+    "n_tasks": 21,
+    "noninferior": true,
+    "sign_p": 1.1614084601739934e-10
+   }
+  },
+  "demo_robustness": {
+   "arms": {
+    "borrowing (+ fold where it grasps)": {
+     "demo0": {
+      "k": 34,
+      "n": 80
+     },
+     "demo1": {
+      "k": 63,
+      "n": 80
+     }
+    },
+    "few-shot LoRA": {
+     "demo0": {
+      "k": 34,
+      "n": 80
+     },
+     "demo1": {
+      "k": 53,
+      "n": 80
+     }
+    },
+    "replay": {
+     "demo0": {
+      "k": 32,
+      "n": 80
+     },
+     "demo1": {
+      "k": 58,
+      "n": 80
+     }
+    },
+    "segment borrowing": {
+     "demo0": {
+      "k": 33,
+      "n": 80
+     },
+     "demo1": {
+      "k": 59,
+      "n": 80
+     }
+    }
+   },
+   "tasks": [
+    "35",
+    "36",
+    "39",
+    "42"
+   ]
+  },
+  "exploratory_novelty": {
+   "lora": {
+    "perm_p": 0.7364527094581084,
+    "rho": 0.07792207792207792
+   },
+   "ours": {
+    "perm_p": 0.9856028794241152,
+    "rho": 0.005194805194805195
+   },
+   "ours_minus_lora": {
+    "perm_p": 0.4179164167166567,
+    "rho": -0.18571428571428572
+   },
+   "tasks": [
+    "1",
+    "3",
+    "4",
+    "5",
+    "6",
+    "32",
+    "34",
+    "35",
+    "36",
+    "37",
+    "39",
+    "40",
+    "41",
+    "42",
+    "43",
+    "48",
+    "52",
+    "53",
+    "58",
+    "62",
+    "63"
+   ],
+   "unexplained": [
+    0.04060913705583756,
+    0.16393442622950818,
+    0.37572254335260113,
+    0.2261904761904762,
+    0.13709677419354838,
+    0.385,
+    0.2986111111111111,
+    0.25190839694656486,
+    0.05504587155963303,
+    0.058333333333333334,
+    0.46551724137931033,
+    0.3954802259887006,
+    0.3076923076923077,
+    0.11046511627906977,
+    0.14583333333333334,
+    0.04046242774566474,
+    0.10576923076923077,
+    0.04054054054054054,
+    0.13986013986013987,
+    0.07017543859649122,
+    0.1794871794871795
+   ]
+  },
+  "kept_prior": [
+   "19",
+   "67"
+  ],
+  "language": {
+   "1": "close the top drawer of the cabinet and put the black bowl on top of it",
+   "19": "put the moka pot on the stove",
+   "3": "put the butter at the back in the top drawer of the cabinet and close it",
+   "32": "put the ketchup in the top drawer of the cabinet",
+   "34": "put the yellow and white mug to the front of the white mug",
+   "35": "open the microwave",
+   "36": "put the white bowl on the plate",
+   "37": "put the white bowl to the right of the plate",
+   "39": "turn off the stove",
+   "4": "put the butter at the front in the top drawer of the cabinet and close it",
+   "40": "put the frying pan on the cabinet shelf",
+   "41": "put the frying pan on top of the cabinet",
+   "42": "put the frying pan under the cabinet shelf",
+   "43": "put the white bowl on top of the cabinet",
+   "48": "pick up the ketchup and put it in the basket",
+   "5": "put the chocolate pudding in the top drawer of the cabinet and close it",
+   "52": "pick up the milk and put it in the basket",
+   "53": "pick up the orange juice and put it in the basket",
+   "58": "pick up the ketchup and put it in the tray",
+   "6": "open the bottom drawer of the cabinet",
+   "62": "pick up the salad dressing and put it in the tray",
+   "63": "stack the left bowl on the right bowl and place them in the tray",
+   "67": "put the white mug on the left plate"
+  },
+  "margin": 0.1,
+  "methods": {
+   "ours_alloc.all": {
+    "bytes": 97445473,
+    "complete": true,
+    "hi": 0.782608695652174,
+    "k": 310,
+    "lo": 0.5630434782608695,
+    "n": 460,
+    "rate": 0.6739130434782609,
+    "tasks": 23,
+    "wilson": [
+     0.6297864953026541,
+     0.7151588481076826
+    ]
+   },
+   "ours_alloc.prior_fails": {
+    "bytes": 97445473,
+    "complete": true,
+    "hi": 0.7523809523809524,
+    "k": 270,
+    "lo": 0.5285714285714286,
+    "n": 420,
+    "rate": 0.6428571428571429,
+    "tasks": 21,
+    "wilson": [
+     0.5959263395769225,
+     0.6871982994391628
+    ]
+   },
+   "ours_codes_full.all": {
+    "bytes": 14163064,
+    "complete": false,
+    "hi": 0.9083333333333333,
+    "k": 79,
+    "lo": 0.4,
+    "n": 120,
+    "rate": 0.6583333333333333,
+    "tasks": 6,
+    "wilson": [
+     0.5697466444292892,
+     0.7370969364029997
+    ]
+   },
+   "ours_codes_full.prior_fails": {
+    "bytes": 14163064,
+    "complete": false,
+    "hi": 0.775,
+    "k": 39,
+    "lo": 0.2625,
+    "n": 80,
+    "rate": 0.4875,
+    "tasks": 4,
+    "wilson": [
+     0.38107693944368337,
+     0.5950685539629311
+    ]
+   },
+   "ours_dim.all": {
+    "bytes": 23625,
+    "complete": true,
+    "hi": 0.5891304347826087,
+    "k": 216,
+    "lo": 0.3565217391304348,
+    "n": 460,
+    "rate": 0.46956521739130436,
+    "tasks": 23,
+    "wilson": [
+     0.42439783270479703,
+     0.515236732198394
+    ]
+   },
+   "ours_dim.prior_fails": {
+    "bytes": 23625,
+    "complete": true,
+    "hi": 0.5261904761904762,
+    "k": 176,
+    "lo": 0.3119047619047619,
+    "n": 420,
+    "rate": 0.41904761904761906,
+    "tasks": 21,
+    "wilson": [
+     0.3728017633774894,
+     0.4667609411800623
+    ]
+   },
+   "ours_dim1.all": {
+    "bytes": 116865,
+    "complete": true,
+    "hi": 0.5717391304347826,
+    "k": 208,
+    "lo": 0.3391304347826087,
+    "n": 460,
+    "rate": 0.45217391304347826,
+    "tasks": 23,
+    "wilson": [
+     0.40727379799150776,
+     0.49786623257064966
+    ]
+   },
+   "ours_dim1.prior_fails": {
+    "bytes": 116865,
+    "complete": true,
+    "hi": 0.5047619047619047,
+    "k": 168,
+    "lo": 0.3,
+    "n": 420,
+    "rate": 0.4,
+    "tasks": 21,
+    "wilson": [
+     0.35425742410998423,
+     0.4475553285787561
+    ]
+   },
+   "ours_dim1_last2.all": {
+    "bytes": 5291969,
+    "complete": true,
+    "hi": 0.7565217391304347,
+    "k": 293,
+    "lo": 0.5152173913043478,
+    "n": 460,
+    "rate": 0.6369565217391304,
+    "tasks": 23,
+    "wilson": [
+     0.5920446976153204,
+     0.6795997603203197
+    ]
+   },
+   "ours_dim1_last2.prior_fails": {
+    "bytes": 5291969,
+    "complete": true,
+    "hi": 0.7238095238095238,
+    "k": 253,
+    "lo": 0.47619047619047616,
+    "n": 420,
+    "rate": 0.6023809523809524,
+    "tasks": 21,
+    "wilson": [
+     0.554850454187995,
+     0.648055537106866
+    ]
+   },
+   "ours_leaf.all": {
+    "bytes": 23625,
+    "complete": true,
+    "hi": 0.5782608695652174,
+    "k": 211,
+    "lo": 0.3456521739130435,
+    "n": 460,
+    "rate": 0.45869565217391306,
+    "tasks": 23,
+    "wilson": [
+     0.41368885168260966,
+     0.5043866292574354
+    ]
+   },
+   "ours_leaf.prior_fails": {
+    "bytes": 23625,
+    "complete": true,
+    "hi": 0.5142857142857142,
+    "k": 171,
+    "lo": 0.30238095238095236,
+    "n": 420,
+    "rate": 0.40714285714285714,
+    "tasks": 21,
+    "wilson": [
+     0.3612031138360207,
+     0.4547658708035239
+    ]
+   },
+   "ours_leaf1_last2.all": {
+    "bytes": 5291969,
+    "complete": true,
+    "hi": 0.7717391304347826,
+    "k": 303,
+    "lo": 0.5413043478260869,
+    "n": 460,
+    "rate": 0.658695652173913,
+    "tasks": 23,
+    "wilson": [
+     0.6142109297020802,
+     0.7005516961598518
+    ]
+   },
+   "ours_leaf1_last2.prior_fails": {
+    "bytes": 5291969,
+    "complete": true,
+    "hi": 0.7452380952380953,
+    "k": 263,
+    "lo": 0.5071428571428571,
+    "n": 420,
+    "rate": 0.6261904761904762,
+    "tasks": 21,
+    "wilson": [
+     0.578971588312534,
+     0.6711218428183413
+    ]
+   },
+   "ours_seg.all": {
+    "bytes": 16260,
+    "complete": true,
+    "hi": 0.5608695652173913,
+    "k": 200,
+    "lo": 0.3130434782608696,
+    "n": 460,
+    "rate": 0.43478260869565216,
+    "tasks": 23,
+    "wilson": [
+     0.39020512748594316,
+     0.4804403687351806
+    ]
+   },
+   "ours_seg.prior_fails": {
+    "bytes": 16260,
+    "complete": true,
+    "hi": 0.4976190476190476,
+    "k": 160,
+    "lo": 0.26904761904761904,
+    "n": 420,
+    "rate": 0.38095238095238093,
+    "tasks": 21,
+    "wilson": [
+     0.33578585525603777,
+     0.4282769455638912
+    ]
+   },
+   "ours_shared1.all": {
+    "bytes": 61775,
+    "complete": false,
+    "hi": 0.5535714285714286,
+    "k": 105,
+    "lo": 0.21785714285714286,
+    "n": 280,
+    "rate": 0.375,
+    "tasks": 14,
+    "wilson": [
+     0.3203449530288227,
+     0.4330386242903581
+    ]
+   },
+   "ours_shared1.prior_fails": {
+    "bytes": 61775,
+    "complete": false,
+    "hi": 0.3875,
+    "k": 65,
+    "lo": 0.1625,
+    "n": 240,
+    "rate": 0.2708333333333333,
+    "tasks": 12,
+    "wilson": [
+     0.21854853855710582,
+     0.3303389359345313
+    ]
+   },
+   "practice_lora.all": {
+    "bytes": 392921088,
+    "complete": true,
+    "hi": 0.75,
+    "k": 292,
+    "lo": 0.5173913043478261,
+    "n": 460,
+    "rate": 0.6347826086956522,
+    "tasks": 23,
+    "wilson": [
+     0.5898334071665288,
+     0.677499233976482
+    ]
+   },
+   "practice_lora.prior_fails": {
+    "bytes": 392921088,
+    "complete": true,
+    "hi": 0.7166666666666667,
+    "k": 252,
+    "lo": 0.48095238095238096,
+    "n": 420,
+    "rate": 0.6,
+    "tasks": 21,
+    "wilson": [
+     0.5524446714212439,
+     0.6457425758900157
+    ]
+   },
+   "practice_replay.all": {
+    "bytes": 106155,
+    "complete": true,
+    "hi": 0.5782608695652174,
+    "k": 211,
+    "lo": 0.3456521739130435,
+    "n": 460,
+    "rate": 0.45869565217391306,
+    "tasks": 23,
+    "wilson": [
+     0.41368885168260966,
+     0.5043866292574354
+    ]
+   },
+   "practice_replay.prior_fails": {
+    "bytes": 106155,
+    "complete": true,
+    "hi": 0.5119047619047619,
+    "k": 171,
+    "lo": 0.3094642857142858,
+    "n": 420,
+    "rate": 0.40714285714285714,
+    "tasks": 21,
+    "wilson": [
+     0.3612031138360207,
+     0.4547658708035239
+    ]
+   },
+   "zeroshot.all": {
+    "bytes": 0,
+    "complete": true,
+    "hi": 0.2326086956521739,
+    "k": 46,
+    "lo": 0.006521739130434782,
+    "n": 460,
+    "rate": 0.1,
+    "tasks": 23,
+    "wilson": [
+     0.07581072059105942,
+     0.13081498956516632
+    ]
+   },
+   "zeroshot.prior_fails": {
+    "bytes": 0,
+    "complete": true,
+    "hi": 0.03571428571428571,
+    "k": 6,
+    "lo": 0.0,
+    "n": 420,
+    "rate": 0.014285714285714285,
+    "tasks": 21,
+    "wilson": [
+     0.006563192739692747,
+     0.030813034605617386
+    ]
+   }
+  },
+  "per_task": {
+   "1": {
+    "ours_alloc": {
+     "arm": "dimfold_s1_last2",
+     "bytes": 265868,
+     "k": 8,
+     "n": 20
+    },
+    "ours_dim": {
+     "arm": "dimcode_s5",
+     "bytes": 1400,
+     "k": 8,
+     "n": 20
+    },
+    "ours_dim1": {
+     "arm": "dimcode_s1",
+     "bytes": 6895,
+     "k": 5,
+     "n": 20
+    },
+    "ours_dim1_last2": {
+     "arm": "dimfold_s1_last2",
+     "bytes": 265868,
+     "k": 8,
+     "n": 20
+    },
+    "ours_leaf": {
+     "arm": "leaf_s5",
+     "bytes": 1400,
+     "k": 5,
+     "n": 20
+    },
+    "ours_leaf1_last2": {
+     "arm": "leaffold_s1_last2",
+     "bytes": 265868,
+     "k": 11,
+     "n": 20
+    },
+    "ours_seg": {
+     "arm": "seg_s5",
+     "bytes": 955,
+     "k": 4,
+     "n": 20
+    },
+    "ours_shared1": {
+     "arm": "shared_s1",
+     "bytes": 6895,
+     "k": 2,
+     "n": 20
+    },
+    "practice_lora": {
+     "arm": "lora",
+     "bytes": 18710528,
+     "k": 7,
+     "n": 20
+    },
+    "practice_replay": {
+     "arm": "raw_replay",
+     "bytes": 6233,
+     "k": 5,
+     "n": 20
+    },
+    "zeroshot": {
+     "arm": "zeroshot",
+     "bytes": 0,
+     "k": 0,
+     "n": 20
+    }
+   },
+   "19": {
+    "ours_alloc": {
+     "arm": "zeroshot",
+     "bytes": 0,
+     "k": 20,
+     "n": 20
+    },
+    "ours_codes_full": {
+     "arm": "zeroshot",
+     "bytes": 0,
+     "k": 20,
+     "n": 20
+    },
+    "ours_dim": {
+     "arm": "zeroshot",
+     "bytes": 0,
+     "k": 20,
+     "n": 20
+    },
+    "ours_dim1": {
+     "arm": "zeroshot",
+     "bytes": 0,
+     "k": 20,
+     "n": 20
+    },
+    "ours_dim1_last2": {
+     "arm": "zeroshot",
+     "bytes": 0,
+     "k": 20,
+     "n": 20
+    },
+    "ours_leaf": {
+     "arm": "zeroshot",
+     "bytes": 0,
+     "k": 20,
+     "n": 20
+    },
+    "ours_leaf1_last2": {
+     "arm": "zeroshot",
+     "bytes": 0,
+     "k": 20,
+     "n": 20
+    },
+    "ours_seg": {
+     "arm": "zeroshot",
+     "bytes": 0,
+     "k": 20,
+     "n": 20
+    },
+    "ours_shared1": {
+     "arm": "zeroshot",
+     "bytes": 0,
+     "k": 20,
+     "n": 20
+    },
+    "practice_lora": {
+     "arm": "zeroshot",
+     "bytes": 0,
+     "k": 20,
+     "n": 20
+    },
+    "practice_replay": {
+     "arm": "zeroshot",
+     "bytes": 0,
+     "k": 20,
+     "n": 20
+    },
+    "zeroshot": {
+     "arm": "zeroshot",
+     "bytes": 0,
+     "k": 20,
+     "n": 20
+    }
+   },
+   "3": {
+    "ours_alloc": {
+     "arm": "dimfold_s1_last2",
+     "bytes": 270776,
+     "k": 19,
+     "n": 20
+    },
+    "ours_dim": {
+     "arm": "dimcode_s5",
+     "bytes": 1295,
+     "k": 15,
+     "n": 20
+    },
+    "ours_dim1": {
+     "arm": "dimcode_s1",
+     "bytes": 6405,
+     "k": 14,
+     "n": 20
+    },
+    "ours_dim1_last2": {
+     "arm": "dimfold_s1_last2",
+     "bytes": 270776,
+     "k": 19,
+     "n": 20
+    },
+    "ours_leaf": {
+     "arm": "leaf_s5",
+     "bytes": 1295,
+     "k": 15,
+     "n": 20
+    },
+    "ours_leaf1_last2": {
+     "arm": "leaffold_s1_last2",
+     "bytes": 270776,
+     "k": 20,
+     "n": 20
+    },
+    "ours_seg": {
+     "arm": "seg_s5",
+     "bytes": 892,
+     "k": 15,
+     "n": 20
+    },
+    "practice_lora": {
+     "arm": "lora",
+     "bytes": 18710528,
+     "k": 19,
+     "n": 20
+    },
+    "practice_replay": {
+     "arm": "raw_replay",
+     "bytes": 5799,
+     "k": 14,
+     "n": 20
+    },
+    "zeroshot": {
+     "arm": "zeroshot",
+     "bytes": 0,
+     "k": 0,
+     "n": 20
+    }
+   },
+   "32": {
+    "ours_alloc": {
+     "arm": "lora",
+     "bytes": 18710528,
+     "k": 7,
+     "n": 20
+    },
+    "ours_dim": {
+     "arm": "dimcode_s5",
+     "bytes": 1400,
+     "k": 8,
+     "n": 20
+    },
+    "ours_dim1": {
+     "arm": "dimcode_s1",
+     "bytes": 7000,
+     "k": 6,
+     "n": 20
+    },
+    "ours_dim1_last2": {
+     "arm": "dimfold_s1_last2",
+     "bytes": 299573,
+     "k": 9,
+     "n": 20
+    },
+    "ours_leaf": {
+     "arm": "leaf_s5",
+     "bytes": 1400,
+     "k": 6,
+     "n": 20
+    },
+    "ours_leaf1_last2": {
+     "arm": "leaffold_s1_last2",
+     "bytes": 299573,
+     "k": 9,
+     "n": 20
+    },
+    "ours_seg": {
+     "arm": "seg_s5",
+     "bytes": 955,
+     "k": 4,
+     "n": 20
+    },
+    "practice_lora": {
+     "arm": "lora",
+     "bytes": 18710528,
+     "k": 7,
+     "n": 20
+    },
+    "practice_replay": {
+     "arm": "raw_replay",
+     "bytes": 6326,
+     "k": 7,
+     "n": 20
+    },
+    "zeroshot": {
+     "arm": "zeroshot",
+     "bytes": 0,
+     "k": 0,
+     "n": 20
+    }
+   },
+   "34": {
+    "ours_alloc": {
+     "arm": "dimfold_s1_last2",
+     "bytes": 289506,
+     "k": 19,
+     "n": 20
+    },
+    "ours_dim": {
+     "arm": "dimcode_s5",
+     "bytes": 1015,
+     "k": 14,
+     "n": 20
+    },
+    "ours_dim1": {
+     "arm": "dimcode_s1",
+     "bytes": 5040,
+     "k": 9,
+     "n": 20
+    },
+    "ours_dim1_last2": {
+     "arm": "dimfold_s1_last2",
+     "bytes": 289506,
+     "k": 19,
+     "n": 20
+    },
+    "ours_leaf": {
+     "arm": "leaf_s5",
+     "bytes": 1015,
+     "k": 12,
+     "n": 20
+    },
+    "ours_leaf1_last2": {
+     "arm": "leaffold_s1_last2",
+     "bytes": 289506,
+     "k": 20,
+     "n": 20
+    },
+    "ours_seg": {
+     "arm": "seg_s5",
+     "bytes": 704,
+     "k": 11,
+     "n": 20
+    },
+    "ours_shared1": {
+     "arm": "shared_s1",
+     "bytes": 5040,
+     "k": 9,
+     "n": 20
+    },
+    "practice_lora": {
+     "arm": "lora",
+     "bytes": 18710528,
+     "k": 18,
+     "n": 20
+    },
+    "practice_replay": {
+     "arm": "raw_replay",
+     "bytes": 4590,
+     "k": 9,
+     "n": 20
+    },
+    "zeroshot": {
+     "arm": "zeroshot",
+     "bytes": 0,
+     "k": 0,
+     "n": 20
+    }
+   },
+   "35": {
+    "ours_alloc": {
+     "arm": "dimcode_s1",
+     "bytes": 4585,
+     "k": 9,
+     "n": 20
+    },
+    "ours_codes_full": {
+     "arm": "code_replay",
+     "bytes": 20567,
+     "k": 9,
+     "n": 20
+    },
+    "ours_dim": {
+     "arm": "dimcode_s5",
+     "bytes": 945,
+     "k": 9,
+     "n": 20
+    },
+    "ours_dim1": {
+     "arm": "dimcode_s1",
+     "bytes": 4585,
+     "k": 9,
+     "n": 20
+    },
+    "ours_dim1_last2": {
+     "arm": "dimcode_s1",
+     "bytes": 4585,
+     "k": 9,
+     "n": 20
+    },
+    "ours_leaf": {
+     "arm": "leaf_s5",
+     "bytes": 945,
+     "k": 8,
+     "n": 20
+    },
+    "ours_leaf1_last2": {
+     "arm": "leaf_s1",
+     "bytes": 4585,
+     "k": 7,
+     "n": 20
+    },
+    "ours_seg": {
+     "arm": "seg_s5",
+     "bytes": 642,
+     "k": 10,
+     "n": 20
+    },
+    "ours_shared1": {
+     "arm": "shared_s1",
+     "bytes": 4585,
+     "k": 8,
+     "n": 20
+    },
+    "practice_lora": {
+     "arm": "lora",
+     "bytes": 18710528,
+     "k": 5,
+     "n": 20
+    },
+    "practice_replay": {
+     "arm": "raw_replay",
+     "bytes": 4187,
+     "k": 8,
+     "n": 20
+    },
+    "zeroshot": {
+     "arm": "zeroshot",
+     "bytes": 0,
+     "k": 2,
+     "n": 20
+    }
+   },
+   "36": {
+    "ours_alloc": {
+     "arm": "lora",
+     "bytes": 18710528,
+     "k": 13,
+     "n": 20
+    },
+    "ours_codes_full": {
+     "arm": "hybrid_approach",
+     "bytes": 4711668,
+     "k": 6,
+     "n": 20
+    },
+    "ours_dim": {
+     "arm": "dimcode_s5",
+     "bytes": 1540,
+     "k": 7,
+     "n": 20
+    },
+    "ours_dim1": {
+     "arm": "dimcode_s1",
+     "bytes": 7630,
+     "k": 3,
+     "n": 20
+    },
+    "ours_dim1_last2": {
+     "arm": "dimfold_s1_last2",
+     "bytes": 265706,
+     "k": 6,
+     "n": 20
+    },
+    "ours_leaf": {
+     "arm": "leaf_s5",
+     "bytes": 1540,
+     "k": 5,
+     "n": 20
+    },
+    "ours_leaf1_last2": {
+     "arm": "leaffold_s1_last2",
+     "bytes": 265706,
+     "k": 9,
+     "n": 20
+    },
+    "ours_seg": {
+     "arm": "seg_s5",
+     "bytes": 1049,
+     "k": 5,
+     "n": 20
+    },
+    "ours_shared1": {
+     "arm": "shared_s1",
+     "bytes": 7630,
+     "k": 3,
+     "n": 20
+    },
+    "practice_lora": {
+     "arm": "lora",
+     "bytes": 18710528,
+     "k": 13,
+     "n": 20
+    },
+    "practice_replay": {
+     "arm": "raw_replay",
+     "bytes": 6884,
+     "k": 5,
+     "n": 20
+    },
+    "zeroshot": {
+     "arm": "zeroshot",
+     "bytes": 0,
+     "k": 0,
+     "n": 20
+    }
+   },
+   "37": {
+    "ours_alloc": {
+     "arm": "dimfold_s1_last2",
+     "bytes": 262263,
+     "k": 15,
+     "n": 20
+    },
+    "ours_dim": {
+     "arm": "dimcode_s5",
+     "bytes": 840,
+     "k": 4,
+     "n": 20
+    },
+    "ours_dim1": {
+     "arm": "dimcode_s1",
+     "bytes": 4200,
+     "k": 6,
+     "n": 20
+    },
+    "ours_dim1_last2": {
+     "arm": "dimfold_s1_last2",
+     "bytes": 262263,
+     "k": 15,
+     "n": 20
+    },
+    "ours_leaf": {
+     "arm": "leaf_s5",
+     "bytes": 840,
+     "k": 5,
+     "n": 20
+    },
+    "ours_leaf1_last2": {
+     "arm": "leaffold_s1_last2",
+     "bytes": 262263,
+     "k": 14,
+     "n": 20
+    },
+    "ours_seg": {
+     "arm": "seg_s5",
+     "bytes": 579,
+     "k": 6,
+     "n": 20
+    },
+    "ours_shared1": {
+     "arm": "shared_s1",
+     "bytes": 4200,
+     "k": 6,
+     "n": 20
+    },
+    "practice_lora": {
+     "arm": "lora",
+     "bytes": 18710528,
+     "k": 7,
+     "n": 20
+    },
+    "practice_replay": {
+     "arm": "raw_replay",
+     "bytes": 3846,
+     "k": 5,
+     "n": 20
+    },
+    "zeroshot": {
+     "arm": "zeroshot",
+     "bytes": 0,
+     "k": 0,
+     "n": 20
+    }
+   },
+   "39": {
+    "ours_alloc": {
+     "arm": "dimfold_s1_last2",
+     "bytes": 284623,
+     "k": 17,
+     "n": 20
+    },
+    "ours_codes_full": {
+     "arm": "hybrid_approach",
+     "bytes": 4718243,
+     "k": 18,
+     "n": 20
+    },
+    "ours_dim": {
+     "arm": "dimcode_s5",
+     "bytes": 840,
+     "k": 14,
+     "n": 20
+    },
+    "ours_dim1": {
+     "arm": "dimcode_s1",
+     "bytes": 4060,
+     "k": 17,
+     "n": 20
+    },
+    "ours_dim1_last2": {
+     "arm": "dimfold_s1_last2",
+     "bytes": 284623,
+     "k": 17,
+     "n": 20
+    },
+    "ours_leaf": {
+     "arm": "leaf_s5",
+     "bytes": 840,
+     "k": 15,
+     "n": 20
+    },
+    "ours_leaf1_last2": {
+     "arm": "leaffold_s1_last2",
+     "bytes": 284623,
+     "k": 14,
+     "n": 20
+    },
+    "ours_seg": {
+     "arm": "seg_s5",
+     "bytes": 579,
+     "k": 16,
+     "n": 20
+    },
+    "ours_shared1": {
+     "arm": "shared_s1",
+     "bytes": 4060,
+     "k": 10,
+     "n": 20
+    },
+    "practice_lora": {
+     "arm": "lora",
+     "bytes": 18710528,
+     "k": 13,
+     "n": 20
+    },
+    "practice_replay": {
+     "arm": "raw_replay",
+     "bytes": 3722,
+     "k": 18,
+     "n": 20
+    },
+    "zeroshot": {
+     "arm": "zeroshot",
+     "bytes": 0,
+     "k": 0,
+     "n": 20
+    }
+   },
+   "4": {
+    "ours_alloc": {
+     "arm": "dimfold_s1_last2",
+     "bytes": 305225,
+     "k": 8,
+     "n": 20
+    },
+    "ours_dim": {
+     "arm": "dimcode_s5",
+     "bytes": 1225,
+     "k": 9,
+     "n": 20
+    },
+    "ours_dim1": {
+     "arm": "dimcode_s1",
+     "bytes": 6055,
+     "k": 8,
+     "n": 20
+    },
+    "ours_dim1_last2": {
+     "arm": "dimfold_s1_last2",
+     "bytes": 305225,
+     "k": 8,
+     "n": 20
+    },
+    "ours_leaf": {
+     "arm": "leaf_s5",
+     "bytes": 1225,
+     "k": 11,
+     "n": 20
+    },
+    "ours_leaf1_last2": {
+     "arm": "leaffold_s1_last2",
+     "bytes": 305225,
+     "k": 15,
+     "n": 20
+    },
+    "ours_seg": {
+     "arm": "seg_s5",
+     "bytes": 845,
+     "k": 9,
+     "n": 20
+    },
+    "practice_lora": {
+     "arm": "lora",
+     "bytes": 18710528,
+     "k": 17,
+     "n": 20
+    },
+    "practice_replay": {
+     "arm": "raw_replay",
+     "bytes": 5489,
+     "k": 8,
+     "n": 20
+    },
+    "zeroshot": {
+     "arm": "zeroshot",
+     "bytes": 0,
+     "k": 0,
+     "n": 20
+    }
+   },
+   "40": {
+    "ours_alloc": {
+     "arm": "lora",
+     "bytes": 18710528,
+     "k": 10,
+     "n": 20
+    },
+    "ours_dim": {
+     "arm": "dimcode_s5",
+     "bytes": 1260,
+     "k": 1,
+     "n": 20
+    },
+    "ours_dim1": {
+     "arm": "dimcode_s1",
+     "bytes": 6195,
+     "k": 6,
+     "n": 20
+    },
+    "ours_dim1_last2": {
+     "arm": "dimfold_s1_last2",
+     "bytes": 299966,
+     "k": 4,
+     "n": 20
+    },
+    "ours_leaf": {
+     "arm": "leaf_s5",
+     "bytes": 1260,
+     "k": 1,
+     "n": 20
+    },
+    "ours_leaf1_last2": {
+     "arm": "leaffold_s1_last2",
+     "bytes": 299966,
+     "k": 3,
+     "n": 20
+    },
+    "ours_seg": {
+     "arm": "seg_s5",
+     "bytes": 861,
+     "k": 0,
+     "n": 20
+    },
+    "ours_shared1": {
+     "arm": "shared_s1",
+     "bytes": 6195,
+     "k": 4,
+     "n": 20
+    },
+    "practice_lora": {
+     "arm": "lora",
+     "bytes": 18710528,
+     "k": 10,
+     "n": 20
+    },
+    "practice_replay": {
+     "arm": "raw_replay",
+     "bytes": 5613,
+     "k": 7,
+     "n": 20
+    },
+    "zeroshot": {
+     "arm": "zeroshot",
+     "bytes": 0,
+     "k": 0,
+     "n": 20
+    }
+   },
+   "41": {
+    "ours_alloc": {
+     "arm": "dimfold_s1_last2",
+     "bytes": 301798,
+     "k": 13,
+     "n": 20
+    },
+    "ours_dim": {
+     "arm": "dimcode_s5",
+     "bytes": 1365,
+     "k": 11,
+     "n": 20
+    },
+    "ours_dim1": {
+     "arm": "dimcode_s1",
+     "bytes": 6825,
+     "k": 14,
+     "n": 20
+    },
+    "ours_dim1_last2": {
+     "arm": "dimfold_s1_last2",
+     "bytes": 301798,
+     "k": 13,
+     "n": 20
+    },
+    "ours_leaf": {
+     "arm": "leaf_s5",
+     "bytes": 1365,
+     "k": 12,
+     "n": 20
+    },
+    "ours_leaf1_last2": {
+     "arm": "leaffold_s1_last2",
+     "bytes": 301798,
+     "k": 10,
+     "n": 20
+    },
+    "ours_seg": {
+     "arm": "seg_s5",
+     "bytes": 939,
+     "k": 15,
+     "n": 20
+    },
+    "practice_lora": {
+     "arm": "lora",
+     "bytes": 18710528,
+     "k": 15,
+     "n": 20
+    },
+    "practice_replay": {
+     "arm": "raw_replay",
+     "bytes": 6171,
+     "k": 17,
+     "n": 20
+    },
+    "zeroshot": {
+     "arm": "zeroshot",
+     "bytes": 0,
+     "k": 0,
+     "n": 20
+    }
+   },
+   "42": {
+    "ours_alloc": {
+     "arm": "lora",
+     "bytes": 18710528,
+     "k": 3,
+     "n": 20
+    },
+    "ours_codes_full": {
+     "arm": "hybrid_approach",
+     "bytes": 4712586,
+     "k": 6,
+     "n": 20
+    },
+    "ours_dim": {
+     "arm": "dimcode_s5",
+     "bytes": 1225,
+     "k": 1,
+     "n": 20
+    },
+    "ours_dim1": {
+     "arm": "dimcode_s1",
+     "bytes": 6020,
+     "k": 0,
+     "n": 20
+    },
+    "ours_dim1_last2": {
+     "arm": "dimfold_s1_last2",
+     "bytes": 272190,
+     "k": 2,
+     "n": 20
+    },
+    "ours_leaf": {
+     "arm": "leaf_s5",
+     "bytes": 1225,
+     "k": 1,
+     "n": 20
+    },
+    "ours_leaf1_last2": {
+     "arm": "leaffold_s1_last2",
+     "bytes": 272190,
+     "k": 3,
+     "n": 20
+    },
+    "ours_seg": {
+     "arm": "seg_s5",
+     "bytes": 845,
+     "k": 2,
+     "n": 20
+    },
+    "ours_shared1": {
+     "arm": "shared_s1",
+     "bytes": 6020,
+     "k": 0,
+     "n": 20
+    },
+    "practice_lora": {
+     "arm": "lora",
+     "bytes": 18710528,
+     "k": 3,
+     "n": 20
+    },
+    "practice_replay": {
+     "arm": "raw_replay",
+     "bytes": 5458,
+     "k": 1,
+     "n": 20
+    },
+    "zeroshot": {
+     "arm": "zeroshot",
+     "bytes": 0,
+     "k": 0,
+     "n": 20
+    }
+   },
+   "43": {
+    "ours_alloc": {
+     "arm": "dimfold_s1_last2",
+     "bytes": 271206,
+     "k": 20,
+     "n": 20
+    },
+    "ours_dim": {
+     "arm": "dimcode_s5",
+     "bytes": 1015,
+     "k": 10,
+     "n": 20
+    },
+    "ours_dim1": {
+     "arm": "dimcode_s1",
+     "bytes": 5040,
+     "k": 10,
+     "n": 20
+    },
+    "ours_dim1_last2": {
+     "arm": "dimfold_s1_last2",
+     "bytes": 271206,
+     "k": 20,
+     "n": 20
+    },
+    "ours_leaf": {
+     "arm": "leaf_s5",
+     "bytes": 1015,
+     "k": 8,
+     "n": 20
+    },
+    "ours_leaf1_last2": {
+     "arm": "leaffold_s1_last2",
+     "bytes": 271206,
+     "k": 19,
+     "n": 20
+    },
+    "ours_seg": {
+     "arm": "seg_s5",
+     "bytes": 704,
+     "k": 9,
+     "n": 20
+    },
+    "practice_lora": {
+     "arm": "lora",
+     "bytes": 18710528,
+     "k": 12,
+     "n": 20
+    },
+    "practice_replay": {
+     "arm": "raw_replay",
+     "bytes": 4590,
+     "k": 9,
+     "n": 20
+    },
+    "zeroshot": {
+     "arm": "zeroshot",
+     "bytes": 0,
+     "k": 2,
+     "n": 20
+    }
+   },
+   "48": {
+    "ours_alloc": {
+     "arm": "dimfold_s1_last2",
+     "bytes": 264125,
+     "k": 18,
+     "n": 20
+    },
+    "ours_dim": {
+     "arm": "dimcode_s5",
+     "bytes": 1225,
+     "k": 6,
+     "n": 20
+    },
+    "ours_dim1": {
+     "arm": "dimcode_s1",
+     "bytes": 6055,
+     "k": 7,
+     "n": 20
+    },
+    "ours_dim1_last2": {
+     "arm": "dimfold_s1_last2",
+     "bytes": 264125,
+     "k": 18,
+     "n": 20
+    },
+    "ours_leaf": {
+     "arm": "leaf_s5",
+     "bytes": 1225,
+     "k": 7,
+     "n": 20
+    },
+    "ours_leaf1_last2": {
+     "arm": "leaffold_s1_last2",
+     "bytes": 264125,
+     "k": 20,
+     "n": 20
+    },
+    "ours_seg": {
+     "arm": "seg_s5",
+     "bytes": 845,
+     "k": 6,
+     "n": 20
+    },
+    "practice_lora": {
+     "arm": "lora",
+     "bytes": 18710528,
+     "k": 12,
+     "n": 20
+    },
+    "practice_replay": {
+     "arm": "raw_replay",
+     "bytes": 5489,
+     "k": 5,
+     "n": 20
+    },
+    "zeroshot": {
+     "arm": "zeroshot",
+     "bytes": 0,
+     "k": 0,
+     "n": 20
+    }
+   },
+   "5": {
+    "ours_alloc": {
+     "arm": "dimfold_s1_last2",
+     "bytes": 289149,
+     "k": 17,
+     "n": 20
+    },
+    "ours_dim": {
+     "arm": "dimcode_s5",
+     "bytes": 1190,
+     "k": 2,
+     "n": 20
+    },
+    "ours_dim1": {
+     "arm": "dimcode_s1",
+     "bytes": 5880,
+     "k": 3,
+     "n": 20
+    },
+    "ours_dim1_last2": {
+     "arm": "dimfold_s1_last2",
+     "bytes": 289149,
+     "k": 17,
+     "n": 20
+    },
+    "ours_leaf": {
+     "arm": "leaf_s5",
+     "bytes": 1190,
+     "k": 2,
+     "n": 20
+    },
+    "ours_leaf1_last2": {
+     "arm": "leaffold_s1_last2",
+     "bytes": 289149,
+     "k": 16,
+     "n": 20
+    },
+    "ours_seg": {
+     "arm": "seg_s5",
+     "bytes": 814,
+     "k": 2,
+     "n": 20
+    },
+    "practice_lora": {
+     "arm": "lora",
+     "bytes": 18710528,
+     "k": 19,
+     "n": 20
+    },
+    "practice_replay": {
+     "arm": "raw_replay",
+     "bytes": 5334,
+     "k": 3,
+     "n": 20
+    },
+    "zeroshot": {
+     "arm": "zeroshot",
+     "bytes": 0,
+     "k": 0,
+     "n": 20
+    }
+   },
+   "52": {
+    "ours_alloc": {
+     "arm": "lora",
+     "bytes": 18710528,
+     "k": 13,
+     "n": 20
+    },
+    "ours_dim": {
+     "arm": "dimcode_s5",
+     "bytes": 735,
+     "k": 4,
+     "n": 20
+    },
+    "ours_dim1": {
+     "arm": "dimcode_s1",
+     "bytes": 3640,
+     "k": 5,
+     "n": 20
+    },
+    "ours_dim1_last2": {
+     "arm": "dimfold_s1_last2",
+     "bytes": 261701,
+     "k": 8,
+     "n": 20
+    },
+    "ours_leaf": {
+     "arm": "leaf_s5",
+     "bytes": 735,
+     "k": 6,
+     "n": 20
+    },
+    "ours_leaf1_last2": {
+     "arm": "leaffold_s1_last2",
+     "bytes": 261701,
+     "k": 8,
+     "n": 20
+    },
+    "ours_seg": {
+     "arm": "seg_s5",
+     "bytes": 516,
+     "k": 5,
+     "n": 20
+    },
+    "ours_shared1": {
+     "arm": "shared_s1",
+     "bytes": 3640,
+     "k": 5,
+     "n": 20
+    },
+    "practice_lora": {
+     "arm": "lora",
+     "bytes": 18710528,
+     "k": 13,
+     "n": 20
+    },
+    "practice_replay": {
+     "arm": "raw_replay",
+     "bytes": 3350,
+     "k": 5,
+     "n": 20
+    },
+    "zeroshot": {
+     "arm": "zeroshot",
+     "bytes": 0,
+     "k": 0,
+     "n": 20
+    }
+   },
+   "53": {
+    "ours_alloc": {
+     "arm": "dimfold_s1_last2",
+     "bytes": 263247,
+     "k": 19,
+     "n": 20
+    },
+    "ours_dim": {
+     "arm": "dimcode_s5",
+     "bytes": 1050,
+     "k": 10,
+     "n": 20
+    },
+    "ours_dim1": {
+     "arm": "dimcode_s1",
+     "bytes": 5180,
+     "k": 12,
+     "n": 20
+    },
+    "ours_dim1_last2": {
+     "arm": "dimfold_s1_last2",
+     "bytes": 263247,
+     "k": 19,
+     "n": 20
+    },
+    "ours_leaf": {
+     "arm": "leaf_s5",
+     "bytes": 1050,
+     "k": 11,
+     "n": 20
+    },
+    "ours_leaf1_last2": {
+     "arm": "leaffold_s1_last2",
+     "bytes": 263247,
+     "k": 19,
+     "n": 20
+    },
+    "ours_seg": {
+     "arm": "seg_s5",
+     "bytes": 720,
+     "k": 11,
+     "n": 20
+    },
+    "ours_shared1": {
+     "arm": "shared_s1",
+     "bytes": 5180,
+     "k": 7,
+     "n": 20
+    },
+    "practice_lora": {
+     "arm": "lora",
+     "bytes": 18710528,
+     "k": 20,
+     "n": 20
+    },
+    "practice_replay": {
+     "arm": "raw_replay",
+     "bytes": 4714,
+     "k": 10,
+     "n": 20
+    },
+    "zeroshot": {
+     "arm": "zeroshot",
+     "bytes": 0,
+     "k": 2,
+     "n": 20
+    }
+   },
+   "58": {
+    "ours_alloc": {
+     "arm": "dimfold_s1_last2",
+     "bytes": 269671,
+     "k": 12,
+     "n": 20
+    },
+    "ours_dim": {
+     "arm": "dimcode_s5",
+     "bytes": 1015,
+     "k": 6,
+     "n": 20
+    },
+    "ours_dim1": {
+     "arm": "dimcode_s1",
+     "bytes": 5005,
+     "k": 4,
+     "n": 20
+    },
+    "ours_dim1_last2": {
+     "arm": "dimfold_s1_last2",
+     "bytes": 269671,
+     "k": 12,
+     "n": 20
+    },
+    "ours_leaf": {
+     "arm": "leaf_s5",
+     "bytes": 1015,
+     "k": 3,
+     "n": 20
+    },
+    "ours_leaf1_last2": {
+     "arm": "leaffold_s1_last2",
+     "bytes": 269671,
+     "k": 10,
+     "n": 20
+    },
+    "ours_seg": {
+     "arm": "seg_s5",
+     "bytes": 704,
+     "k": 2,
+     "n": 20
+    },
+    "practice_lora": {
+     "arm": "lora",
+     "bytes": 18710528,
+     "k": 9,
+     "n": 20
+    },
+    "practice_replay": {
+     "arm": "raw_replay",
+     "bytes": 4559,
+     "k": 5,
+     "n": 20
+    },
+    "zeroshot": {
+     "arm": "zeroshot",
+     "bytes": 0,
+     "k": 0,
+     "n": 20
+    }
+   },
+   "6": {
+    "ours_alloc": {
+     "arm": "dimcode_s1",
+     "bytes": 4340,
+     "k": 16,
+     "n": 20
+    },
+    "ours_dim": {
+     "arm": "dimcode_s5",
+     "bytes": 875,
+     "k": 19,
+     "n": 20
+    },
+    "ours_dim1": {
+     "arm": "dimcode_s1",
+     "bytes": 4340,
+     "k": 16,
+     "n": 20
+    },
+    "ours_dim1_last2": {
+     "arm": "dimcode_s1",
+     "bytes": 4340,
+     "k": 16,
+     "n": 20
+    },
+    "ours_leaf": {
+     "arm": "leaf_s5",
+     "bytes": 875,
+     "k": 17,
+     "n": 20
+    },
+    "ours_leaf1_last2": {
+     "arm": "leaf_s1",
+     "bytes": 4340,
+     "k": 16,
+     "n": 20
+    },
+    "ours_seg": {
+     "arm": "seg_s5",
+     "bytes": 610,
+     "k": 17,
+     "n": 20
+    },
+    "ours_shared1": {
+     "arm": "shared_s1",
+     "bytes": 4340,
+     "k": 0,
+     "n": 20
+    },
+    "practice_lora": {
+     "arm": "lora",
+     "bytes": 18710528,
+     "k": 17,
+     "n": 20
+    },
+    "practice_replay": {
+     "arm": "raw_replay",
+     "bytes": 3970,
+     "k": 15,
+     "n": 20
+    },
+    "zeroshot": {
+     "arm": "zeroshot",
+     "bytes": 0,
+     "k": 0,
+     "n": 20
+    }
+   },
+   "62": {
+    "ours_alloc": {
+     "arm": "dimfold_s1_last2",
+     "bytes": 262053,
+     "k": 7,
+     "n": 20
+    },
+    "ours_dim": {
+     "arm": "dimcode_s5",
+     "bytes": 805,
+     "k": 8,
+     "n": 20
+    },
+    "ours_dim1": {
+     "arm": "dimcode_s1",
+     "bytes": 3990,
+     "k": 9,
+     "n": 20
+    },
+    "ours_dim1_last2": {
+     "arm": "dimfold_s1_last2",
+     "bytes": 262053,
+     "k": 7,
+     "n": 20
+    },
+    "ours_leaf": {
+     "arm": "leaf_s5",
+     "bytes": 805,
+     "k": 10,
+     "n": 20
+    },
+    "ours_leaf1_last2": {
+     "arm": "leaffold_s1_last2",
+     "bytes": 262053,
+     "k": 8,
+     "n": 20
+    },
+    "ours_seg": {
+     "arm": "seg_s5",
+     "bytes": 563,
+     "k": 8,
+     "n": 20
+    },
+    "ours_shared1": {
+     "arm": "shared_s1",
+     "bytes": 3990,
+     "k": 11,
+     "n": 20
+    },
+    "practice_lora": {
+     "arm": "lora",
+     "bytes": 18710528,
+     "k": 3,
+     "n": 20
+    },
+    "practice_replay": {
+     "arm": "raw_replay",
+     "bytes": 3660,
+     "k": 8,
+     "n": 20
+    },
+    "zeroshot": {
+     "arm": "zeroshot",
+     "bytes": 0,
+     "k": 0,
+     "n": 20
+    }
+   },
+   "63": {
+    "ours_alloc": {
+     "arm": "dimfold_s1_last2",
+     "bytes": 284398,
+     "k": 7,
+     "n": 20
+    },
+    "ours_dim": {
+     "arm": "dimcode_s5",
+     "bytes": 1365,
+     "k": 10,
+     "n": 20
+    },
+    "ours_dim1": {
+     "arm": "dimcode_s1",
+     "bytes": 6825,
+     "k": 5,
+     "n": 20
+    },
+    "ours_dim1_last2": {
+     "arm": "dimfold_s1_last2",
+     "bytes": 284398,
+     "k": 7,
+     "n": 20
+    },
+    "ours_leaf": {
+     "arm": "leaf_s5",
+     "bytes": 1365,
+     "k": 11,
+     "n": 20
+    },
+    "ours_leaf1_last2": {
+     "arm": "leaffold_s1_last2",
+     "bytes": 284398,
+     "k": 12,
+     "n": 20
+    },
+    "ours_seg": {
+     "arm": "seg_s5",
+     "bytes": 939,
+     "k": 3,
+     "n": 20
+    },
+    "practice_lora": {
+     "arm": "lora",
+     "bytes": 18710528,
+     "k": 13,
+     "n": 20
+    },
+    "practice_replay": {
+     "arm": "raw_replay",
+     "bytes": 6171,
+     "k": 7,
+     "n": 20
+    },
+    "zeroshot": {
+     "arm": "zeroshot",
+     "bytes": 0,
+     "k": 0,
+     "n": 20
+    }
+   },
+   "67": {
+    "ours_alloc": {
+     "arm": "zeroshot",
+     "bytes": 0,
+     "k": 20,
+     "n": 20
+    },
+    "ours_codes_full": {
+     "arm": "zeroshot",
+     "bytes": 0,
+     "k": 20,
+     "n": 20
+    },
+    "ours_dim": {
+     "arm": "zeroshot",
+     "bytes": 0,
+     "k": 20,
+     "n": 20
+    },
+    "ours_dim1": {
+     "arm": "zeroshot",
+     "bytes": 0,
+     "k": 20,
+     "n": 20
+    },
+    "ours_dim1_last2": {
+     "arm": "zeroshot",
+     "bytes": 0,
+     "k": 20,
+     "n": 20
+    },
+    "ours_leaf": {
+     "arm": "zeroshot",
+     "bytes": 0,
+     "k": 20,
+     "n": 20
+    },
+    "ours_leaf1_last2": {
+     "arm": "zeroshot",
+     "bytes": 0,
+     "k": 20,
+     "n": 20
+    },
+    "ours_seg": {
+     "arm": "zeroshot",
+     "bytes": 0,
+     "k": 20,
+     "n": 20
+    },
+    "ours_shared1": {
+     "arm": "zeroshot",
+     "bytes": 0,
+     "k": 20,
+     "n": 20
+    },
+    "practice_lora": {
+     "arm": "zeroshot",
+     "bytes": 0,
+     "k": 20,
+     "n": 20
+    },
+    "practice_replay": {
+     "arm": "zeroshot",
+     "bytes": 0,
+     "k": 20,
+     "n": 20
+    },
+    "zeroshot": {
+     "arm": "zeroshot",
+     "bytes": 0,
+     "k": 20,
+     "n": 20
+    }
+   }
+  },
+  "practice": {
+   "1": {
+    "k": 0,
+    "n": 10
+   },
+   "19": {
+    "k": 19,
+    "n": 20
+   },
+   "3": {
+    "k": 0,
+    "n": 10
+   },
+   "32": {
+    "k": 0,
+    "n": 10
+   },
+   "34": {
+    "k": 0,
+    "n": 10
+   },
+   "35": {
+    "k": 1,
+    "n": 20
+   },
+   "36": {
+    "k": 0,
+    "n": 20
+   },
+   "37": {
+    "k": 0,
+    "n": 10
+   },
+   "39": {
+    "k": 0,
+    "n": 20
+   },
+   "4": {
+    "k": 0,
+    "n": 10
+   },
+   "40": {
+    "k": 0,
+    "n": 10
+   },
+   "41": {
+    "k": 0,
+    "n": 10
+   },
+   "42": {
+    "k": 0,
+    "n": 20
+   },
+   "43": {
+    "k": 0,
+    "n": 10
+   },
+   "48": {
+    "k": 0,
+    "n": 10
+   },
+   "5": {
+    "k": 0,
+    "n": 10
+   },
+   "52": {
+    "k": 0,
+    "n": 10
+   },
+   "53": {
+    "k": 0,
+    "n": 10
+   },
+   "58": {
+    "k": 0,
+    "n": 10
+   },
+   "6": {
+    "k": 0,
+    "n": 10
+   },
+   "62": {
+    "k": 0,
+    "n": 10
+   },
+   "63": {
+    "k": 0,
+    "n": 10
+   },
+   "67": {
+    "k": 20,
+    "n": 20
+   }
+  },
+  "practice_threshold": 0.5,
+  "prior_fails": [
+   "1",
+   "3",
+   "4",
+   "5",
+   "6",
+   "32",
+   "34",
+   "35",
+   "36",
+   "37",
+   "39",
+   "40",
+   "41",
+   "42",
+   "43",
+   "48",
+   "52",
+   "53",
+   "58",
+   "62",
+   "63"
+  ],
+  "retest": {
+   "cells": 22,
+   "mean_abs_diff": 0.07272727272727274,
+   "pearson": 0.9579413631940754
+  },
+  "tasks": [
+   "1",
+   "3",
+   "4",
+   "5",
+   "6",
+   "19",
+   "32",
+   "34",
+   "35",
+   "36",
+   "37",
+   "39",
+   "40",
+   "41",
+   "42",
+   "43",
+   "48",
+   "52",
+   "53",
+   "58",
+   "62",
+   "63",
+   "67"
+  ]
+ },
+ "notes": "derived from the per-episode result files of ledger/m3_final (states 30-49) and ledger/m3_compose zero-shot (states 0-9, the practice); bootstrap = tasks, then init states, paired across methods",
+ "retired": null,
+ "run_id": "m3_stats__libero_90__final_23tasks__s0__78b3ad53",
+ "schema": 1,
+ "script": "experiments/m3_stats.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-26T11:59:57+00:00",
+ "stream": null,
+ "tag": "final_23tasks"
+}

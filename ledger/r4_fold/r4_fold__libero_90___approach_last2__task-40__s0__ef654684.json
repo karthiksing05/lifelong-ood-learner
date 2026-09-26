@@ -1,0 +1,129 @@
+{
+ "artifacts": [
+  "results/robot/r4_40_approach_last2_expert.pt",
+  "results/robot/r4_40_approach_last2_program.npz",
+  "results/robot/r4_40_approach_last2_tree.npz"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 27635,
+  "experts": 258048,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 321383,
+  "tree": 35700
+ },
+ "command": "experiments/r4_fold.py --task 40 --tree results/robot/r2b_libero_40_tree.npz --library results/robot/r2b_libero_40.npz --rank 2 --steps 1000 --tag _approach_last2 --arrival contact --contact 10 --pre 30 --scope last2",
+ "config": {
+  "K": 3,
+  "anchor_weight": 1.0,
+  "arrival": "contact",
+  "band": "0,1,2",
+  "contact": 10,
+  "demo": 0,
+  "library": "results/robot/r2b_libero_40.npz",
+  "lr": 0.0001,
+  "n_anchor": 384,
+  "n_cal": 1500,
+  "pre": 30,
+  "q": 0.95,
+  "rank": 2,
+  "scope": "last2",
+  "seed": 0,
+  "steps": 1000,
+  "tag": "_approach_last2",
+  "task": 40,
+  "tree": "results/robot/r2b_libero_40_tree.npz"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "dave.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3960391",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r4_fold",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "ef6546846ec1529a526a1d2ea5e15d8848457243",
+  "short": "ef654684"
+ },
+ "keys": {
+  "task": 40
+ },
+ "metrics": {
+  "anchor_weight": 1.0,
+  "curve": {
+   "anchor": [
+    0.0,
+    0.0006055902922526002,
+    0.0015672016888856888,
+    0.0012346608564257622,
+    0.00120326888281852,
+    0.0013689649058505893,
+    0.0009382789139635861,
+    0.0008319522603414953,
+    0.0011675952700898051,
+    0.0005157396662980318,
+    0.0003891723172273487
+   ],
+   "loss": [
+    0.0751367136836052,
+    0.06638386845588684,
+    0.027736028656363487,
+    0.017450079321861267,
+    0.014977246522903442,
+    0.01174259651452303,
+    0.012852675281465054,
+    0.0076126158237457275,
+    0.004620918072760105,
+    0.007355233188718557,
+    0.004834757186472416
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "demo_episode": 1400,
+  "expert_params": 129024,
+  "n_frames": 177,
+  "n_new_nodes": 119,
+  "n_unexplained": 41,
+  "nll_median": {
+   "0": 1.210774413214207,
+   "1": -0.7076937492250945,
+   "2": -0.8533442718260636
+  },
+  "task": 40,
+  "text": "put the frying pan on the cabinet shelf",
+  "thresholds": {
+   "0": 3.148381656392142,
+   "1": -0.09127364671692659,
+   "2": -0.720244935179938
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r4_fold__libero_90___approach_last2__task-40__s0__ef654684",
+ "schema": 1,
+ "script": "experiments/r4_fold.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-26T07:01:46+00:00",
+ "stream": null,
+ "tag": "_approach_last2"
+}

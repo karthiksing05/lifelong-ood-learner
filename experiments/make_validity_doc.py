@@ -99,13 +99,13 @@ def main():
             eff = [v["effective_sources"] for v in P["tasks"].values()]
             w(f"- {name}, {len(P['held'])} programs: {min(eff):.0f}-{max(eff):.0f} effective source tasks each; word overlap of the sources "
               f"with the task's instruction {P['overlap_mean']:.3f} against {P['null_mean']:.3f} +- {P['null_std']:.3f} for shuffled pairings "
-              f"(permutation p = {P['perm_p']:.4f}).")
+              f"(permutation p {'< 0.0001' if P['perm_p'] < 0.0001 else '= ' + format(P['perm_p'], '.4f')}, {P['n_perms']:,} permutations).")
             if src == "" and "lenders" in P:
                 g = P["lenders"]
                 w(f"  Lenders: {g['level_0.2']:.2f} / {g['level_0.3']:.2f} / {g['level_0.4']:.2f} of the borrowed pairs from t = 0.2 / 0.3 / 0.4; "
                   f"{g['le3_members']:.2f} from prototypes with at most 3 member frames, {g['single_task']:.2f} from single-task prototypes, "
                   f"{g['ge3_tasks']:.2f} from prototypes that at least 3 tasks share.")
-    r9 = ledger.load("r9_library_ablation")
+    r9 = sorted(ledger.load("r9_library_ablation"), key=lambda r: len(r["metrics"]["held"]))       # the row over the most demos
     if r9:
         Sm = r9[-1]["metrics"]["summary"]
         w(f"- Library controls (`ledger/r9_library_ablation`, {len(r9[-1]['metrics']['held'])} held-out demos, K = 8): distance of the rebuilt chunks "

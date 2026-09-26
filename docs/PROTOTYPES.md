@@ -76,8 +76,8 @@ Two ways to compose a new task from the library by borrowing parts of prototype 
   above) but not precise enough for contact.
 - **Dimension-wise borrowing** (`lifelong_ood/policy/dimcode.py`): each action dimension's whole 10-step trajectory from one of
   eight jointly chosen prototypes; the executed chunk is rebuilt exactly from the stored ids and choices, at half the demo's jerk
-  and 1-8 KB per task.  With practice and a small fold where the demo grasps, it matches a per-task LoRA at 90x less storage
-  (README, "M3 FINAL").
+  and 1-8 KB per task.  With practice and a small fold where the demo grasps, it is non-inferior to a per-task LoRA at 74x less
+  storage over 21 held-out tasks (pre-registered; README, "M3 FINAL"; docs/VALIDITY.md).
 
 ## Inspection: what composition actually uses (2026-09-26)
 

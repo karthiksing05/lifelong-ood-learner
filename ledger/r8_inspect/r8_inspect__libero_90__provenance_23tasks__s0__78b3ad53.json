@@ -1,0 +1,1360 @@
+{
+ "artifacts": [
+  "results/robot/r8_provenance.json",
+  "figures/robot/r8_provenance.png"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "python experiments/r8_inspect.py --record",
+ "config": {
+  "npz": "results/robot/r2b_libero_40.npz",
+  "perms": 20000,
+  "record": true,
+  "source": "band",
+  "tree": "results/robot/r2b_libero_40_tree.npz"
+ },
+ "env": {
+  "device": "cpu",
+  "host": "sky2.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r8_inspect",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "78b3ad53b90870c7a3147c1b6de296b0ecc2acdc",
+  "short": "78b3ad53"
+ },
+ "keys": {},
+ "metrics": {
+  "held": [
+   1,
+   3,
+   4,
+   5,
+   6,
+   19,
+   32,
+   34,
+   35,
+   36,
+   37,
+   39,
+   40,
+   41,
+   42,
+   43,
+   48,
+   52,
+   53,
+   58,
+   62,
+   63,
+   67
+  ],
+  "lenders": {
+   "ge3_tasks": 0.005760623388055941,
+   "le3_members": 0.9536752934268684,
+   "level_0.2": 0.8905688556191843,
+   "level_0.3": 0.09845799483868989,
+   "level_0.4": 0.010973149542125657,
+   "median_members": 1.0,
+   "single_task": 0.9880058355010983
+  },
+  "n_perms": 20000,
+  "null_mean": 0.10604764053840929,
+  "null_std": 0.00332897768454036,
+  "overlap_mean": 0.12206358541943584,
+  "perm_p": 4.999750012499375e-05,
+  "source": "band",
+  "tasks": {
+   "1": {
+    "effective_sources": 35.04427443565904,
+    "lenders": {
+     "distinct": 867,
+     "ge3_tasks": 0.009427121102248005,
+     "le3_members": 0.9543147208121827,
+     "median_members": 1.0,
+     "single_task": 0.9869470630891951
+    },
+    "level_mix": {
+     "0.2": 0.9245830311820159,
+     "0.3": 0.06889050036258158,
+     "0.4": 0.006526468455402465
+    },
+    "overlap_base": 0.15154323999089342,
+    "overlap_score": 0.15962557601741162,
+    "text": "close the top drawer of the cabinet and put the black bowl on top of it",
+    "top": [
+     {
+      "overlap": 0.0,
+      "share": 0.05709809532494114,
+      "suite": "libero_10",
+      "task": 5,
+      "text": "put both the alphabet soup and the tomato sauce in the basket"
+     },
+     {
+      "overlap": 0.0,
+      "share": 0.054598743050519705,
+      "suite": "libero_10",
+      "task": 1,
+      "text": "put the white mug on the plate and put the chocolate pudding to the right of the plate"
+     },
+     {
+      "overlap": 0.16666666666666666,
+      "share": 0.05148658448150834,
+      "suite": "libero_10",
+      "task": 2,
+      "text": "put the yellow and white mug in the microwave and close it"
+     },
+     {
+      "overlap": 0.0,
+      "share": 0.046410442349528645,
+      "suite": "libero_10",
+      "task": 6,
+      "text": "put both moka pots on the stove"
+     },
+     {
+      "overlap": 0.0,
+      "share": 0.044356537107076634,
+      "suite": "libero_10",
+      "task": 7,
+      "text": "put both the cream cheese box and the butter in the basket"
+     }
+    ]
+   },
+   "19": {
+    "effective_sources": 32.21514276821177,
+    "lenders": {
+     "distinct": 594,
+     "ge3_tasks": 0.0031746031746031746,
+     "le3_members": 0.9354497354497354,
+     "median_members": 1.0,
+     "single_task": 0.9798941798941799
+    },
+    "level_mix": {
+     "0.2": 0.8941798941798942,
+     "0.3": 0.10264550264550265,
+     "0.4": 0.0031746031746031746
+    },
+    "overlap_base": 0.10846586658861027,
+    "overlap_score": 0.12932000783852635,
+    "text": "put the moka pot on the stove",
+    "top": [
+     {
+      "overlap": 0.0,
+      "share": 0.09414462081128748,
+      "suite": "libero_10",
+      "task": 2,
+      "text": "put the yellow and white mug in the microwave and close it"
+     },
+     {
+      "overlap": 0.6666666666666666,
+      "share": 0.07069958847736625,
+      "suite": "libero_10",
+      "task": 6,
+      "text": "put both moka pots on the stove"
+     },
+     {
+      "overlap": 1.0,
+      "share": 0.061375661375661375,
+      "suite": "libero_10",
+      "task": 3,
+      "text": "turn on the stove and put the moka pot on it"
+     },
+     {
+      "overlap": 0.0,
+      "share": 0.05526161081716637,
+      "suite": "libero_10",
+      "task": 1,
+      "text": "put the white mug on the plate and put the chocolate pudding to the right of the plate"
+     },
+     {
+      "overlap": 0.0,
+      "share": 0.04567901234567901,
+      "suite": "libero_10",
+      "task": 4,
+      "text": "put both the alphabet soup and the cream cheese box in the basket"
+     }
+    ]
+   },
+   "3": {
+    "effective_sources": 35.62745185825227,
+    "lenders": {
+     "distinct": 874,
+     "ge3_tasks": 0.00702576112412178,
+     "le3_members": 0.9445745511319282,
+     "median_members": 1.0,
+     "single_task": 0.9828259172521467
+    },
+    "level_mix": {
+     "0.2": 0.9094457455113193,
+     "0.3": 0.0858704137392662,
+     "0.4": 0.00468384074941452
+    },
+    "overlap_base": 0.07904836244186425,
+    "overlap_score": 0.10513031605456705,
+    "text": "put the butter at the back in the top drawer of the cabinet and close it",
+    "top": [
+     {
+      "overlap": 0.16666666666666666,
+      "share": 0.0716432474629196,
+      "suite": "libero_10",
+      "task": 7,
+      "text": "put both the cream cheese box and the butter in the basket"
+     },
+     {
+      "overlap": 0.3333333333333333,
+      "share": 0.0507416081186573,
+      "suite": "libero_goal",
+      "task": 12,
+      "text": "open the top drawer and put the bowl inside"
+     },
+     {
+      "overlap": 0.3333333333333333,
+      "share": 0.04954978599693127,
+      "suite": "libero_goal",
+      "task": 18,
+      "text": "put the bowl on top of the cabinet"
+     },
+     {
+      "overlap": 0.0,
+      "share": 0.04226246009532695,
+      "suite": "libero_10",
+      "task": 3,
+      "text": "turn on the stove and put the moka pot on it"
+     },
+     {
+      "overlap": 0.16666666666666666,
+      "share": 0.039032006245121,
+      "suite": "libero_10",
+      "task": 2,
+      "text": "put the yellow and white mug in the microwave and close it"
+     }
+    ]
+   },
+   "32": {
+    "effective_sources": 33.400955818338744,
+    "lenders": {
+     "distinct": 875,
+     "ge3_tasks": 0.0007142857142857143,
+     "le3_members": 0.935,
+     "median_members": 1.0,
+     "single_task": 0.9985714285714286
+    },
+    "level_mix": {
+     "0.2": 0.8864285714285715,
+     "0.3": 0.1,
+     "0.4": 0.013571428571428571
+    },
+    "overlap_base": 0.08222753439359937,
+    "overlap_score": 0.10924107142857144,
+    "text": "put the ketchup in the top drawer of the cabinet",
+    "top": [
+     {
+      "overlap": 0.0,
+      "share": 0.06357142857142857,
+      "suite": "libero_10",
+      "task": 1,
+      "text": "put the white mug on the plate and put the chocolate pudding to the right of the plate"
+     },
+     {
+      "overlap": 0.0,
+      "share": 0.06285714285714286,
+      "suite": "libero_10",
+      "task": 2,
+      "text": "put the yellow and white mug in the microwave and close it"
+     },
+     {
+      "overlap": 0.0,
+      "share": 0.06142857142857143,
+      "suite": "libero_10",
+      "task": 6,
+      "text": "put both moka pots on the stove"
+     },
+     {
+      "overlap": 0.5,
+      "share": 0.060714285714285714,
+      "suite": "libero_10",
+      "task": 8,
+      "text": "put the black bowl in the bottom drawer of the cabinet and close it"
+     },
+     {
+      "overlap": 0.0,
+      "share": 0.05244047619047618,
+      "suite": "libero_10",
+      "task": 5,
+      "text": "put both the alphabet soup and the tomato sauce in the basket"
+     }
+    ]
+   },
+   "34": {
+    "effective_sources": 33.517760398570125,
+    "lenders": {
+     "distinct": 701,
+     "ge3_tasks": 0.002976190476190476,
+     "le3_members": 0.9662698412698413,
+     "median_members": 1.0,
+     "single_task": 0.9930555555555556
+    },
+    "level_mix": {
+     "0.2": 0.875,
+     "0.3": 0.1111111111111111,
+     "0.4": 0.013888888888888888
+    },
+    "overlap_base": 0.09049663381793346,
+    "overlap_score": 0.0852073858569645,
+    "text": "put the yellow and white mug to the front of the white mug",
+    "top": [
+     {
+      "overlap": 0.0,
+      "share": 0.06944444444444445,
+      "suite": "libero_10",
+      "task": 7,
+      "text": "put both the cream cheese box and the butter in the basket"
+     },
+     {
+      "overlap": 0.0,
+      "share": 0.06299603174603174,
+      "suite": "libero_10",
+      "task": 4,
+      "text": "put both the alphabet soup and the cream cheese box in the basket"
+     },
+     {
+      "overlap": 0.0,
+      "share": 0.061507936507936505,
+      "suite": "libero_10",
+      "task": 3,
+      "text": "turn on the stove and put the moka pot on it"
+     },
+     {
+      "overlap": 0.0,
+      "share": 0.047619047619047616,
+      "suite": "libero_10",
+      "task": 6,
+      "text": "put both moka pots on the stove"
+     },
+     {
+      "overlap": 0.75,
+      "share": 0.04365079365079365,
+      "suite": "libero_10",
+      "task": 0,
+      "text": "put the white mug on the left plate and put the yellow and white mug on the right plate"
+     }
+    ]
+   },
+   "35": {
+    "effective_sources": 31.693549187222153,
+    "lenders": {
+     "distinct": 568,
+     "ge3_tasks": 0.011995637949836423,
+     "le3_members": 0.9487459105779716,
+     "median_members": 1.0,
+     "single_task": 0.9858233369683751
+    },
+    "level_mix": {
+     "0.2": 0.8854961832061069,
+     "0.3": 0.09051254089422028,
+     "0.4": 0.023991275899672846
+    },
+    "overlap_base": 0.04585813250073178,
+    "overlap_score": 0.0700821283794219,
+    "text": "open the microwave",
+    "top": [
+     {
+      "overlap": 0.0,
+      "share": 0.06761177753544166,
+      "suite": "libero_10",
+      "task": 3,
+      "text": "turn on the stove and put the moka pot on it"
+     },
+     {
+      "overlap": 0.5,
+      "share": 0.05810928661544164,
+      "suite": "libero_10",
+      "task": 2,
+      "text": "put the yellow and white mug in the microwave and close it"
+     },
+     {
+      "overlap": 0.0,
+      "share": 0.05779716466739367,
+      "suite": "libero_10",
+      "task": 6,
+      "text": "put both moka pots on the stove"
+     },
+     {
+      "overlap": 0.0,
+      "share": 0.055734489783841816,
+      "suite": "libero_10",
+      "task": 4,
+      "text": "put both the alphabet soup and the cream cheese box in the basket"
+     },
+     {
+      "overlap": 0.0,
+      "share": 0.05264893104410235,
+      "suite": "libero_10",
+      "task": 7,
+      "text": "put both the cream cheese box and the butter in the basket"
+     }
+    ]
+   },
+   "36": {
+    "effective_sources": 33.08446953577565,
+    "lenders": {
+     "distinct": 857,
+     "ge3_tasks": 0.005242463958060288,
+     "le3_members": 0.9587155963302753,
+     "median_members": 1.0,
+     "single_task": 0.9908256880733946
+    },
+    "level_mix": {
+     "0.2": 0.9154652686762779,
+     "0.3": 0.08322411533420708,
+     "0.4": 0.001310615989515072
+    },
+    "overlap_base": 0.2458125996032133,
+    "overlap_score": 0.2650259413914203,
+    "text": "put the white bowl on the plate",
+    "top": [
+     {
+      "overlap": 0.6666666666666666,
+      "share": 0.06487549148099607,
+      "suite": "libero_10",
+      "task": 0,
+      "text": "put the white mug on the left plate and put the yellow and white mug on the right plate"
+     },
+     {
+      "overlap": 0.6666666666666666,
+      "share": 0.05897771952817824,
+      "suite": "libero_10",
+      "task": 1,
+      "text": "put the white mug on the plate and put the chocolate pudding to the right of the plate"
+     },
+     {
+      "overlap": 0.0,
+      "share": 0.05897771952817824,
+      "suite": "libero_10",
+      "task": 3,
+      "text": "turn on the stove and put the moka pot on it"
+     },
+     {
+      "overlap": 0.0,
+      "share": 0.05832241153342071,
+      "suite": "libero_10",
+      "task": 5,
+      "text": "put both the alphabet soup and the tomato sauce in the basket"
+     },
+     {
+      "overlap": 0.3333333333333333,
+      "share": 0.04517561238278114,
+      "suite": "libero_10",
+      "task": 2,
+      "text": "put the yellow and white mug in the microwave and close it"
+     }
+    ]
+   },
+   "37": {
+    "effective_sources": 34.34640182648176,
+    "lenders": {
+     "distinct": 597,
+     "ge3_tasks": 0.008333333333333333,
+     "le3_members": 0.9702380952380952,
+     "median_members": 1.0,
+     "single_task": 0.9880952380952381
+    },
+    "level_mix": {
+     "0.2": 0.8797619047619047,
+     "0.3": 0.1130952380952381,
+     "0.4": 0.007142857142857143
+    },
+    "overlap_base": 0.20445897160698606,
+    "overlap_score": 0.23231017890287461,
+    "text": "put the white bowl to the right of the plate",
+    "top": [
+     {
+      "overlap": 0.0,
+      "share": 0.06974789915966387,
+      "suite": "libero_10",
+      "task": 3,
+      "text": "turn on the stove and put the moka pot on it"
+     },
+     {
+      "overlap": 0.75,
+      "share": 0.055952380952380955,
+      "suite": "libero_10",
+      "task": 1,
+      "text": "put the white mug on the plate and put the chocolate pudding to the right of the plate"
+     },
+     {
+      "overlap": 0.5,
+      "share": 0.054956912014724,
+      "suite": "libero_spatial",
+      "task": 39,
+      "text": "pick up the black bowl on the wooden cabinet and place it on the plate"
+     },
+     {
+      "overlap": 0.5,
+      "share": 0.039285714285714285,
+      "suite": "libero_spatial",
+      "task": 35,
+      "text": "pick up the black bowl on the cookie box and place it on the plate"
+     },
+     {
+      "overlap": 0.25,
+      "share": 0.03825043282953536,
+      "suite": "libero_10",
+      "task": 2,
+      "text": "put the yellow and white mug in the microwave and close it"
+     }
+    ]
+   },
+   "39": {
+    "effective_sources": 29.199485230157745,
+    "lenders": {
+     "distinct": 497,
+     "ge3_tasks": 0.0024630541871921183,
+     "le3_members": 0.9359605911330049,
+     "median_members": 1.0,
+     "single_task": 0.9975369458128078
+    },
+    "level_mix": {
+     "0.2": 0.8731527093596059,
+     "0.3": 0.11699507389162561,
+     "0.4": 0.009852216748768473
+    },
+    "overlap_base": 0.07805639574592643,
+    "overlap_score": 0.0967942285471021,
+    "text": "turn off the stove",
+    "top": [
+     {
+      "overlap": 0.6666666666666666,
+      "share": 0.08374384236453201,
+      "suite": "libero_10",
+      "task": 3,
+      "text": "turn on the stove and put the moka pot on it"
+     },
+     {
+      "overlap": 0.0,
+      "share": 0.08275862068965517,
+      "suite": "libero_10",
+      "task": 8,
+      "text": "put the black bowl in the bottom drawer of the cabinet and close it"
+     },
+     {
+      "overlap": 0.0,
+      "share": 0.08256704980842913,
+      "suite": "libero_10",
+      "task": 4,
+      "text": "put both the alphabet soup and the cream cheese box in the basket"
+     },
+     {
+      "overlap": 0.0,
+      "share": 0.06174055829228243,
+      "suite": "libero_10",
+      "task": 2,
+      "text": "put the yellow and white mug in the microwave and close it"
+     },
+     {
+      "overlap": 0.0,
+      "share": 0.05788177339901478,
+      "suite": "libero_10",
+      "task": 1,
+      "text": "put the white mug on the plate and put the chocolate pudding to the right of the plate"
+     }
+    ]
+   },
+   "4": {
+    "effective_sources": 36.73206524693113,
+    "lenders": {
+     "distinct": 892,
+     "ge3_tasks": 0.00990916597853014,
+     "le3_members": 0.9421965317919075,
+     "median_members": 1.0,
+     "single_task": 0.9777043765483072
+    },
+    "level_mix": {
+     "0.2": 0.8298926507018992,
+     "0.3": 0.152766308835673,
+     "0.4": 0.017341040462427744
+    },
+    "overlap_base": 0.0794061209223664,
+    "overlap_score": 0.09537258380852184,
+    "text": "put the butter at the front in the top drawer of the cabinet and close it",
+    "top": [
+     {
+      "overlap": 0.16666666666666666,
+      "share": 0.053674649050371594,
+      "suite": "libero_goal",
+      "task": 15,
+      "text": "push the plate to the front of the stove"
+     },
+     {
+      "overlap": 0.5,
+      "share": 0.05162587154504708,
+      "suite": "libero_10",
+      "task": 8,
+      "text": "put the black bowl in the bottom drawer of the cabinet and close it"
+     },
+     {
+      "overlap": 0.16666666666666666,
+      "share": 0.04872006606110652,
+      "suite": "libero_spatial",
+      "task": 39,
+      "text": "pick up the black bowl on the wooden cabinet and place it on the plate"
+     },
+     {
+      "overlap": 0.0,
+      "share": 0.04592991307153782,
+      "suite": "libero_10",
+      "task": 4,
+      "text": "put both the alphabet soup and the cream cheese box in the basket"
+     },
+     {
+      "overlap": 0.16666666666666666,
+      "share": 0.04428267199791386,
+      "suite": "libero_10",
+      "task": 2,
+      "text": "put the yellow and white mug in the microwave and close it"
+     }
+    ]
+   },
+   "40": {
+    "effective_sources": 34.84014427938559,
+    "lenders": {
+     "distinct": 776,
+     "ge3_tasks": 0.00645682001614205,
+     "le3_members": 0.943502824858757,
+     "median_members": 1.0,
+     "single_task": 0.9846650524616626
+    },
+    "level_mix": {
+     "0.2": 0.8393866020984665,
+     "0.3": 0.14285714285714285,
+     "0.4": 0.01775625504439064
+    },
+    "overlap_base": 0.0315884476534296,
+    "overlap_score": 0.04018826536986343,
+    "text": "put the frying pan on the cabinet shelf",
+    "top": [
+     {
+      "overlap": 0.0,
+      "share": 0.06994910384740895,
+      "suite": "libero_goal",
+      "task": 11,
+      "text": "put the wine bottle on the rack"
+     },
+     {
+      "overlap": 0.0,
+      "share": 0.06390458254865035,
+      "suite": "libero_10",
+      "task": 6,
+      "text": "put both moka pots on the stove"
+     },
+     {
+      "overlap": 0.0,
+      "share": 0.04963680387409201,
+      "suite": "libero_10",
+      "task": 3,
+      "text": "turn on the stove and put the moka pot on it"
+     },
+     {
+      "overlap": 0.0,
+      "share": 0.04245359160613398,
+      "suite": "libero_10",
+      "task": 2,
+      "text": "put the yellow and white mug in the microwave and close it"
+     },
+     {
+      "overlap": 0.0,
+      "share": 0.040624159268227066,
+      "suite": "libero_10",
+      "task": 0,
+      "text": "put the white mug on the left plate and put the yellow and white mug on the right plate"
+     }
+    ]
+   },
+   "41": {
+    "effective_sources": 34.49092172698511,
+    "lenders": {
+     "distinct": 921,
+     "ge3_tasks": 0.005860805860805861,
+     "le3_members": 0.9516483516483516,
+     "median_members": 1.0,
+     "single_task": 0.9875457875457876
+    },
+    "level_mix": {
+     "0.2": 0.8776556776556776,
+     "0.3": 0.10989010989010989,
+     "0.4": 0.012454212454212455
+    },
+    "overlap_base": 0.050980583471558205,
+    "overlap_score": 0.04600558171986743,
+    "text": "put the frying pan on top of the cabinet",
+    "top": [
+     {
+      "overlap": 0.0,
+      "share": 0.08,
+      "suite": "libero_10",
+      "task": 4,
+      "text": "put both the alphabet soup and the cream cheese box in the basket"
+     },
+     {
+      "overlap": 0.0,
+      "share": 0.06011512297226584,
+      "suite": "libero_10",
+      "task": 3,
+      "text": "turn on the stove and put the moka pot on it"
+     },
+     {
+      "overlap": 0.0,
+      "share": 0.05714285714285714,
+      "suite": "libero_10",
+      "task": 1,
+      "text": "put the white mug on the plate and put the chocolate pudding to the right of the plate"
+     },
+     {
+      "overlap": 0.0,
+      "share": 0.04652014652014652,
+      "suite": "libero_10",
+      "task": 2,
+      "text": "put the yellow and white mug in the microwave and close it"
+     },
+     {
+      "overlap": 0.0,
+      "share": 0.04410256410256411,
+      "suite": "libero_10",
+      "task": 0,
+      "text": "put the white mug on the left plate and put the yellow and white mug on the right plate"
+     }
+    ]
+   },
+   "42": {
+    "effective_sources": 31.366381956449995,
+    "lenders": {
+     "distinct": 652,
+     "ge3_tasks": 0.005813953488372093,
+     "le3_members": 0.936046511627907,
+     "median_members": 1.0,
+     "single_task": 0.9908637873754153
+    },
+    "level_mix": {
+     "0.2": 0.9011627906976745,
+     "0.3": 0.08139534883720931,
+     "0.4": 0.01744186046511628
+    },
+    "overlap_base": 0.025270758122743684,
+    "overlap_score": 0.029815193951593218,
+    "text": "put the frying pan under the cabinet shelf",
+    "top": [
+     {
+      "overlap": 0.0,
+      "share": 0.0888704318936877,
+      "suite": "libero_10",
+      "task": 3,
+      "text": "turn on the stove and put the moka pot on it"
+     },
+     {
+      "overlap": 0.0,
+      "share": 0.05751427824853485,
+      "suite": "libero_10",
+      "task": 2,
+      "text": "put the yellow and white mug in the microwave and close it"
+     },
+     {
+      "overlap": 0.0,
+      "share": 0.05406976744186046,
+      "suite": "libero_object",
+      "task": 23,
+      "text": "pick up the bbq sauce and place it in the basket"
+     },
+     {
+      "overlap": 0.0,
+      "share": 0.050664451827242524,
+      "suite": "libero_10",
+      "task": 5,
+      "text": "put both the alphabet soup and the tomato sauce in the basket"
+     },
+     {
+      "overlap": 0.2,
+      "share": 0.04902198663630594,
+      "suite": "libero_goal",
+      "task": 19,
+      "text": "open the middle drawer of the cabinet"
+     }
+    ]
+   },
+   "43": {
+    "effective_sources": 35.07973627745957,
+    "lenders": {
+     "distinct": 696,
+     "ge3_tasks": 0.006944444444444444,
+     "le3_members": 0.9543650793650794,
+     "median_members": 1.0,
+     "single_task": 0.9871031746031746
+    },
+    "level_mix": {
+     "0.2": 0.8898809523809523,
+     "0.3": 0.09523809523809523,
+     "0.4": 0.01488095238095238
+    },
+    "overlap_base": 0.15852766123524248,
+    "overlap_score": 0.20003464348702443,
+    "text": "put the white bowl on top of the cabinet",
+    "top": [
+     {
+      "overlap": 0.75,
+      "share": 0.06659947929789199,
+      "suite": "libero_goal",
+      "task": 18,
+      "text": "put the bowl on top of the cabinet"
+     },
+     {
+      "overlap": 0.0,
+      "share": 0.05155055849500294,
+      "suite": "libero_10",
+      "task": 3,
+      "text": "turn on the stove and put the moka pot on it"
+     },
+     {
+      "overlap": 0.0,
+      "share": 0.05092592592592592,
+      "suite": "libero_object",
+      "task": 27,
+      "text": "pick up the butter and place it in the basket"
+     },
+     {
+      "overlap": 0.5,
+      "share": 0.04732510288065844,
+      "suite": "libero_spatial",
+      "task": 39,
+      "text": "pick up the black bowl on the wooden cabinet and place it on the plate"
+     },
+     {
+      "overlap": 0.5,
+      "share": 0.04563492063492063,
+      "suite": "libero_10",
+      "task": 8,
+      "text": "put the black bowl in the bottom drawer of the cabinet and close it"
+     }
+    ]
+   },
+   "48": {
+    "effective_sources": 34.15618091821416,
+    "lenders": {
+     "distinct": 707,
+     "ge3_tasks": 0.005780346820809248,
+     "le3_members": 0.9512799339388934,
+     "median_members": 1.0,
+     "single_task": 0.990916597853014
+    },
+    "level_mix": {
+     "0.2": 0.93476465730801,
+     "0.3": 0.061932287365813375,
+     "0.4": 0.0033030553261767133
+    },
+    "overlap_base": 0.18148112010927897,
+    "overlap_score": 0.20028766045211543,
+    "text": "pick up the ketchup and put it in the basket",
+    "top": [
+     {
+      "overlap": 0.0,
+      "share": 0.06672171758876962,
+      "suite": "libero_10",
+      "task": 6,
+      "text": "put both moka pots on the stove"
+     },
+     {
+      "overlap": 0.5,
+      "share": 0.0662890638629465,
+      "suite": "libero_10",
+      "task": 4,
+      "text": "put both the alphabet soup and the cream cheese box in the basket"
+     },
+     {
+      "overlap": 0.0,
+      "share": 0.054500412881915775,
+      "suite": "libero_10",
+      "task": 1,
+      "text": "put the white mug on the plate and put the chocolate pudding to the right of the plate"
+     },
+     {
+      "overlap": 0.0,
+      "share": 0.05284888521882741,
+      "suite": "libero_10",
+      "task": 3,
+      "text": "turn on the stove and put the moka pot on it"
+     },
+     {
+      "overlap": 0.5,
+      "share": 0.04320024191391121,
+      "suite": "libero_10",
+      "task": 5,
+      "text": "put both the alphabet soup and the tomato sauce in the basket"
+     }
+    ]
+   },
+   "5": {
+    "effective_sources": 35.55950493580241,
+    "lenders": {
+     "distinct": 843,
+     "ge3_tasks": 0.008503401360544218,
+     "le3_members": 0.9574829931972789,
+     "median_members": 1.0,
+     "single_task": 0.9897959183673469
+    },
+    "level_mix": {
+     "0.2": 0.8528911564625851,
+     "0.3": 0.11989795918367346,
+     "0.4": 0.027210884353741496
+    },
+    "overlap_base": 0.08491885387192247,
+    "overlap_score": 0.09628917089168632,
+    "text": "put the chocolate pudding in the top drawer of the cabinet and close it",
+    "top": [
+     {
+      "overlap": 0.16666666666666666,
+      "share": 0.058673469387755105,
+      "suite": "libero_10",
+      "task": 2,
+      "text": "put the yellow and white mug in the microwave and close it"
+     },
+     {
+      "overlap": 0.0,
+      "share": 0.05782312925170068,
+      "suite": "libero_10",
+      "task": 7,
+      "text": "put both the cream cheese box and the butter in the basket"
+     },
+     {
+      "overlap": 0.0,
+      "share": 0.04308390022675737,
+      "suite": "libero_10",
+      "task": 6,
+      "text": "put both moka pots on the stove"
+     },
+     {
+      "overlap": 0.0,
+      "share": 0.04295206454674893,
+      "suite": "libero_goal",
+      "task": 15,
+      "text": "push the plate to the front of the stove"
+     },
+     {
+      "overlap": 0.16666666666666666,
+      "share": 0.04081632653061224,
+      "suite": "libero_spatial",
+      "task": 39,
+      "text": "pick up the black bowl on the wooden cabinet and place it on the plate"
+     }
+    ]
+   },
+   "52": {
+    "effective_sources": 33.364678444846724,
+    "lenders": {
+     "distinct": 516,
+     "ge3_tasks": 0.008241758241758242,
+     "le3_members": 0.9354395604395604,
+     "median_members": 1.0,
+     "single_task": 0.9821428571428571
+    },
+    "level_mix": {
+     "0.2": 0.9093406593406593,
+     "0.3": 0.08791208791208792,
+     "0.4": 0.0027472527472527475
+    },
+    "overlap_base": 0.1808956971411845,
+    "overlap_score": 0.21517437961099933,
+    "text": "pick up the milk and put it in the basket",
+    "top": [
+     {
+      "overlap": 0.5,
+      "share": 0.07294794407470465,
+      "suite": "libero_10",
+      "task": 4,
+      "text": "put both the alphabet soup and the cream cheese box in the basket"
+     },
+     {
+      "overlap": 0.5,
+      "share": 0.06062529020275499,
+      "suite": "libero_10",
+      "task": 7,
+      "text": "put both the cream cheese box and the butter in the basket"
+     },
+     {
+      "overlap": 0.0,
+      "share": 0.05778388278388279,
+      "suite": "libero_10",
+      "task": 1,
+      "text": "put the white mug on the plate and put the chocolate pudding to the right of the plate"
+     },
+     {
+      "overlap": 0.5,
+      "share": 0.055693778052932984,
+      "suite": "libero_10",
+      "task": 5,
+      "text": "put both the alphabet soup and the tomato sauce in the basket"
+     },
+     {
+      "overlap": 0.0,
+      "share": 0.04953180622194706,
+      "suite": "libero_spatial",
+      "task": 39,
+      "text": "pick up the black bowl on the wooden cabinet and place it on the plate"
+     }
+    ]
+   },
+   "53": {
+    "effective_sources": 35.24050912456668,
+    "lenders": {
+     "distinct": 656,
+     "ge3_tasks": 0.004826254826254826,
+     "le3_members": 0.971042471042471,
+     "median_members": 1.0,
+     "single_task": 0.9884169884169884
+    },
+    "level_mix": {
+     "0.2": 0.9478764478764479,
+     "0.3": 0.05115830115830116,
+     "0.4": 0.0009652509652509653
+    },
+    "overlap_base": 0.12797996552509186,
+    "overlap_score": 0.15151347009355526,
+    "text": "pick up the orange juice and put it in the basket",
+    "top": [
+     {
+      "overlap": 0.0,
+      "share": 0.05308880308880309,
+      "suite": "libero_10",
+      "task": 3,
+      "text": "turn on the stove and put the moka pot on it"
+     },
+     {
+      "overlap": 0.3333333333333333,
+      "share": 0.05128372371248231,
+      "suite": "libero_10",
+      "task": 4,
+      "text": "put both the alphabet soup and the cream cheese box in the basket"
+     },
+     {
+      "overlap": 0.0,
+      "share": 0.05126555126555127,
+      "suite": "libero_10",
+      "task": 6,
+      "text": "put both moka pots on the stove"
+     },
+     {
+      "overlap": 0.0,
+      "share": 0.04161183316112893,
+      "suite": "libero_spatial",
+      "task": 31,
+      "text": "pick up the black bowl in the top drawer of the wooden cabinet and place it on the plate"
+     },
+     {
+      "overlap": 0.0,
+      "share": 0.04154657675784437,
+      "suite": "libero_10",
+      "task": 2,
+      "text": "put the yellow and white mug in the microwave and close it"
+     }
+    ]
+   },
+   "58": {
+    "effective_sources": 34.95044636175456,
+    "lenders": {
+     "distinct": 672,
+     "ge3_tasks": 0.002997002997002997,
+     "le3_members": 0.9630369630369631,
+     "median_members": 1.0,
+     "single_task": 0.993006993006993
+    },
+    "level_mix": {
+     "0.2": 0.9100899100899101,
+     "0.3": 0.08491508491508491,
+     "0.4": 0.004995004995004995
+    },
+    "overlap_base": 0.010976680651770904,
+    "overlap_score": 0.013198538550651225,
+    "text": "pick up the ketchup and put it in the tray",
+    "top": [
+     {
+      "overlap": 0.0,
+      "share": 0.0651972644624206,
+      "suite": "libero_10",
+      "task": 5,
+      "text": "put both the alphabet soup and the tomato sauce in the basket"
+     },
+     {
+      "overlap": 0.0,
+      "share": 0.05494786903237608,
+      "suite": "libero_10",
+      "task": 0,
+      "text": "put the white mug on the left plate and put the yellow and white mug on the right plate"
+     },
+     {
+      "overlap": 0.0,
+      "share": 0.04995004995004995,
+      "suite": "libero_10",
+      "task": 1,
+      "text": "put the white mug on the plate and put the chocolate pudding to the right of the plate"
+     },
+     {
+      "overlap": 0.0,
+      "share": 0.04895104895104895,
+      "suite": "libero_10",
+      "task": 3,
+      "text": "turn on the stove and put the moka pot on it"
+     },
+     {
+      "overlap": 0.0,
+      "share": 0.04595404595404595,
+      "suite": "libero_10",
+      "task": 6,
+      "text": "put both moka pots on the stove"
+     }
+    ]
+   },
+   "6": {
+    "effective_sources": 28.389079604468783,
+    "lenders": {
+     "distinct": 545,
+     "ge3_tasks": 0.0069124423963133645,
+     "le3_members": 0.9435483870967742,
+     "median_members": 1.0,
+     "single_task": 0.978110599078341
+    },
+    "level_mix": {
+     "0.2": 0.8640552995391705,
+     "0.3": 0.11175115207373272,
+     "0.4": 0.024193548387096774
+    },
+    "overlap_base": 0.07783686213289101,
+    "overlap_score": 0.1755963930182209,
+    "text": "open the bottom drawer of the cabinet",
+    "top": [
+     {
+      "overlap": 0.75,
+      "share": 0.11695514445938897,
+      "suite": "libero_goal",
+      "task": 19,
+      "text": "open the middle drawer of the cabinet"
+     },
+     {
+      "overlap": 0.0,
+      "share": 0.09419773774612483,
+      "suite": "libero_goal",
+      "task": 11,
+      "text": "put the wine bottle on the rack"
+     },
+     {
+      "overlap": 0.0,
+      "share": 0.07846735280758965,
+      "suite": "libero_10",
+      "task": 2,
+      "text": "put the yellow and white mug in the microwave and close it"
+     },
+     {
+      "overlap": 0.75,
+      "share": 0.04531742663109387,
+      "suite": "libero_10",
+      "task": 8,
+      "text": "put the black bowl in the bottom drawer of the cabinet and close it"
+     },
+     {
+      "overlap": 0.0,
+      "share": 0.039800682582031115,
+      "suite": "libero_goal",
+      "task": 15,
+      "text": "push the plate to the front of the stove"
+     }
+    ]
+   },
+   "62": {
+    "effective_sources": 35.08248749269504,
+    "lenders": {
+     "distinct": 565,
+     "ge3_tasks": 0.0012531328320802004,
+     "le3_members": 0.9786967418546366,
+     "median_members": 1.0,
+     "single_task": 0.9924812030075187
+    },
+    "level_mix": {
+     "0.2": 0.9160401002506265,
+     "0.3": 0.07894736842105263,
+     "0.4": 0.005012531328320802
+    },
+    "overlap_base": 0.013334634273262432,
+    "overlap_score": 0.03216374269005848,
+    "text": "pick up the salad dressing and put it in the tray",
+    "top": [
+     {
+      "overlap": 0.0,
+      "share": 0.05827067669172932,
+      "suite": "libero_10",
+      "task": 5,
+      "text": "put both the alphabet soup and the tomato sauce in the basket"
+     },
+     {
+      "overlap": 0.0,
+      "share": 0.057574491785018105,
+      "suite": "libero_10",
+      "task": 0,
+      "text": "put the white mug on the left plate and put the yellow and white mug on the right plate"
+     },
+     {
+      "overlap": 0.0,
+      "share": 0.050403787245892506,
+      "suite": "libero_10",
+      "task": 1,
+      "text": "put the white mug on the plate and put the chocolate pudding to the right of the plate"
+     },
+     {
+      "overlap": 0.0,
+      "share": 0.04887218045112782,
+      "suite": "libero_10",
+      "task": 7,
+      "text": "put both the cream cheese box and the butter in the basket"
+     },
+     {
+      "overlap": 0.6666666666666666,
+      "share": 0.04824561403508772,
+      "suite": "libero_object",
+      "task": 26,
+      "text": "pick up the salad dressing and place it in the basket"
+     }
+    ]
+   },
+   "63": {
+    "effective_sources": 35.6543171294179,
+    "lenders": {
+     "distinct": 979,
+     "ge3_tasks": 0.004395604395604396,
+     "le3_members": 0.96996336996337,
+     "median_members": 1.0,
+     "single_task": 0.9875457875457876
+    },
+    "level_mix": {
+     "0.2": 0.8769230769230769,
+     "0.3": 0.10476190476190476,
+     "0.4": 0.018315018315018316
+    },
+    "overlap_base": 0.08545223924285296,
+    "overlap_score": 0.09542328042328042,
+    "text": "stack the left bowl on the right bowl and place them in the tray",
+    "top": [
+     {
+      "overlap": 0.0,
+      "share": 0.063003663003663,
+      "suite": "libero_10",
+      "task": 5,
+      "text": "put both the alphabet soup and the tomato sauce in the basket"
+     },
+     {
+      "overlap": 0.0,
+      "share": 0.04945054945054945,
+      "suite": "libero_10",
+      "task": 2,
+      "text": "put the yellow and white mug in the microwave and close it"
+     },
+     {
+      "overlap": 0.4,
+      "share": 0.04659137159137159,
+      "suite": "libero_10",
+      "task": 0,
+      "text": "put the white mug on the left plate and put the yellow and white mug on the right plate"
+     },
+     {
+      "overlap": 0.0,
+      "share": 0.04542124542124542,
+      "suite": "libero_10",
+      "task": 3,
+      "text": "turn on the stove and put the moka pot on it"
+     },
+     {
+      "overlap": 0.2,
+      "share": 0.044739519739519736,
+      "suite": "libero_10",
+      "task": 1,
+      "text": "put the white mug on the plate and put the chocolate pudding to the right of the plate"
+     }
+    ]
+   },
+   "67": {
+    "effective_sources": 33.96759502611425,
+    "lenders": {
+     "distinct": 456,
+     "ge3_tasks": 0.003246753246753247,
+     "le3_members": 0.987012987012987,
+     "median_members": 1.0,
+     "single_task": 0.9902597402597403
+    },
+    "level_mix": {
+     "0.2": 0.8896103896103896,
+     "0.3": 0.10876623376623376,
+     "0.4": 0.0016233766233766235
+    },
+    "overlap_base": 0.14942921260610792,
+    "overlap_score": 0.16366272616272615,
+    "text": "put the white mug on the left plate",
+    "top": [
+     {
+      "overlap": 0.0,
+      "share": 0.06168831168831169,
+      "suite": "libero_10",
+      "task": 7,
+      "text": "put both the cream cheese box and the butter in the basket"
+     },
+     {
+      "overlap": 0.0,
+      "share": 0.059502997002997,
+      "suite": "libero_goal",
+      "task": 12,
+      "text": "open the top drawer and put the bowl inside"
+     },
+     {
+      "overlap": 1.0,
+      "share": 0.05949605949605949,
+      "suite": "libero_10",
+      "task": 0,
+      "text": "put the white mug on the left plate and put the yellow and white mug on the right plate"
+     },
+     {
+      "overlap": 0.0,
+      "share": 0.05357142857142857,
+      "suite": "libero_10",
+      "task": 5,
+      "text": "put both the alphabet soup and the tomato sauce in the basket"
+     },
+     {
+      "overlap": 0.75,
+      "share": 0.04256854256854257,
+      "suite": "libero_10",
+      "task": 1,
+      "text": "put the white mug on the plate and put the chocolate pudding to the right of the plate"
+     }
+    ]
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r8_inspect__libero_90__provenance_23tasks__s0__78b3ad53",
+ "schema": 1,
+ "script": "experiments/r8_inspect.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-26T12:00:02+00:00",
+ "stream": null,
+ "tag": "provenance_23tasks"
+}

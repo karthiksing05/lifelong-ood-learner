@@ -1,0 +1,119 @@
+{
+ "artifacts": [
+  "results/robot/r3_prog_5_code_lib40.npz",
+  "results/robot/r3_prog_5_raw_lib40.npz"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 26376,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 26376,
+  "tree": 0
+ },
+ "command": "experiments/r3_prepare.py --tree results/robot/r2b_libero_40_tree.npz --library-npz results/robot/r2b_libero_40.npz --tasks 5 --levels 2,3,4 --tag _lib40",
+ "config": {
+  "K": 3,
+  "held": 5,
+  "levels": "2,3,4",
+  "library_npz": "results/robot/r2b_libero_40.npz",
+  "tag": "_lib40",
+  "tasks": "5",
+  "tree": "results/robot/r2b_libero_40_tree.npz"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "megabot.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3960421",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r3_prepare",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "e5ed1433b0fce7236cef1ec4d132ffe4cf41a19c",
+  "short": "e5ed1433"
+ },
+ "keys": {
+  "task": 5
+ },
+ "metrics": {
+  "bddl": "KITCHEN_SCENE10_put_the_chocolate_pudding_in_the_top_drawer_of_the_cabinet_and_close_it",
+  "code": {
+   "bytes": 26376,
+   "mean_rms_to_demo": 0.08938585966825485,
+   "nll_per_dim": -0.9788835048675537,
+   "path": "results/robot/r3_prog_5_code_lib40.npz"
+  },
+  "demo_episode": 1096,
+  "depth_hist": {
+   "0.05": 1,
+   "0.1": 4,
+   "0.2": 5,
+   "0.3": 10,
+   "0.4": 9,
+   "0.55": 0,
+   "0.7": 9,
+   "explained": 130
+  },
+  "gripper_events": [
+   44,
+   97
+  ],
+  "n_frames": 168,
+  "n_ipec_episodes": 44,
+  "nll_median": {
+   "0.05": 0.07287477623077317,
+   "0.1": -1.0584330622891613,
+   "0.2": -0.9555197482704866,
+   "0.3": -0.6190311673346898,
+   "0.4": -0.3469077077450883,
+   "0.55": -0.04009708201463193,
+   "0.7": 0.15727283952621646
+  },
+  "out_of_range_frac": 0.07738095238095238,
+  "prompt_program": {
+   "pick up the black bowl next to the ramekin and place it on the plate": 24,
+   "push the plate to the front of the stove": 25,
+   "put both the alphabet soup and the tomato sauce in the basket": 13,
+   "put the bowl on the plate": 15,
+   "put the bowl on top of the cabinet": 35,
+   "put the cream cheese in the bowl": 21,
+   "put the white mug on the left plate and put the yellow and white mug on the right plate": 13,
+   "put the white mug on the plate and put the chocolate pudding to the right of the plate": 22
+  },
+  "raw": {
+   "bytes": 5334,
+   "mean_rms_to_demo": 0.0,
+   "nll_per_dim": -1.3836462497711182,
+   "path": "results/robot/r3_prog_5_raw_lib40.npz"
+  },
+  "task_id": 5,
+  "text": "put the chocolate pudding in the top drawer of the cabinet and close it",
+  "unexplained_by_level": {
+   "0.05": 0.14285714285714285,
+   "0.1": 0.16071428571428573,
+   "0.2": 0.13095238095238096,
+   "0.3": 0.125,
+   "0.4": 0.06547619047619048,
+   "0.55": 0.03571428571428571,
+   "0.7": 0.05357142857142857
+  },
+  "unexplained_frac": 0.2261904761904762
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r3_prepare__libero_90___lib40__task-5__s0__e5ed1433",
+ "schema": 1,
+ "script": "experiments/r3_prepare.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-26T07:32:57+00:00",
+ "stream": null,
+ "tag": "_lib40"
+}

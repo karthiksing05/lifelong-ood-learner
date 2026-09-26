@@ -1,0 +1,119 @@
+{
+ "artifacts": [
+  "results/robot/r3_prog_62_code_lib40.npz",
+  "results/robot/r3_prog_62_raw_lib40.npz"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 17898,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 17898,
+  "tree": 0
+ },
+ "command": "experiments/r3_prepare.py --tree results/robot/r2b_libero_40_tree.npz --library-npz results/robot/r2b_libero_40.npz --tasks 62 --levels 2,3,4 --tag _lib40",
+ "config": {
+  "K": 3,
+  "held": 5,
+  "levels": "2,3,4",
+  "library_npz": "results/robot/r2b_libero_40.npz",
+  "tag": "_lib40",
+  "tasks": "62",
+  "tree": "results/robot/r2b_libero_40_tree.npz"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "deebot.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3960406",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r3_prepare",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "ef6546846ec1529a526a1d2ea5e15d8848457243",
+  "short": "ef654684"
+ },
+ "keys": {
+  "task": 62
+ },
+ "metrics": {
+  "bddl": "LIVING_ROOM_SCENE4_pick_up_the_salad_dressing_and_put_it_in_the_tray",
+  "code": {
+   "bytes": 17898,
+   "mean_rms_to_demo": 0.07375553250312805,
+   "nll_per_dim": -1.1602436304092407,
+   "path": "results/robot/r3_prog_62_code_lib40.npz"
+  },
+  "demo_episode": 2922,
+  "depth_hist": {
+   "0.05": 0,
+   "0.1": 0,
+   "0.2": 0,
+   "0.3": 0,
+   "0.4": 0,
+   "0.55": 1,
+   "0.7": 7,
+   "explained": 106
+  },
+  "gripper_events": [
+   39,
+   109
+  ],
+  "n_frames": 114,
+  "n_ipec_episodes": 46,
+  "nll_median": {
+   "0.05": -0.6043090054102428,
+   "0.1": -1.252090702890468,
+   "0.2": -0.9762504326990991,
+   "0.3": -0.6392965609108697,
+   "0.4": -0.350788173445382,
+   "0.55": -0.06408355645464692,
+   "0.7": 0.15695475040743712
+  },
+  "out_of_range_frac": 0.10714285714285714,
+  "prompt_program": {
+   "open the middle drawer of the cabinet": 6,
+   "open the top drawer and put the bowl inside": 20,
+   "pick up the black bowl next to the plate and place it on the plate": 9,
+   "pick up the black bowl on the stove and place it on the plate": 10,
+   "pick up the ketchup and place it in the basket": 19,
+   "put both the alphabet soup and the cream cheese box in the basket": 3,
+   "put the white mug on the left plate and put the yellow and white mug on the right plate": 35,
+   "put the white mug on the plate and put the chocolate pudding to the right of the plate": 12
+  },
+  "raw": {
+   "bytes": 3660,
+   "mean_rms_to_demo": 0.0,
+   "nll_per_dim": -1.3836463689804077,
+   "path": "results/robot/r3_prog_62_raw_lib40.npz"
+  },
+  "task_id": 62,
+  "text": "pick up the salad dressing and put it in the tray",
+  "unexplained_by_level": {
+   "0.05": 0.0,
+   "0.1": 0.0,
+   "0.2": 0.0,
+   "0.3": 0.017543859649122806,
+   "0.4": 0.008771929824561403,
+   "0.55": 0.02631578947368421,
+   "0.7": 0.06140350877192982
+  },
+  "unexplained_frac": 0.07017543859649122
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r3_prepare__libero_90___lib40__task-62__s0__ef654684",
+ "schema": 1,
+ "script": "experiments/r3_prepare.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-26T07:13:45+00:00",
+ "stream": null,
+ "tag": "_lib40"
+}

@@ -1,0 +1,65 @@
+{
+ "artifacts": [
+  "results/robot/r7_dim_32_s5.npz"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 1400,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 1400,
+  "tree": 0
+ },
+ "command": "experiments/r7_dimcode.py --tasks 32",
+ "config": {
+  "K": 8,
+  "strides": "1,5",
+  "tasks": "32",
+  "tree": "results/robot/r2b_libero_40_tree.npz"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "deebot.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3960426",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r7_dimcode",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "e5ed1433b0fce7236cef1ec4d132ffe4cf41a19c",
+  "short": "e5ed1433"
+ },
+ "keys": {
+  "task": 32
+ },
+ "metrics": {
+  "K": 8,
+  "bytes": 1400,
+  "frames": 200,
+  "jerk": 0.011405756697058678,
+  "jerk_demo": 0.0234428308904171,
+  "kept": 40,
+  "raw_bytes": 31200,
+  "rebuild_max_err": 0.0,
+  "rms": 0.03908118978142738,
+  "stride": 5,
+  "task": 32,
+  "text": "put the ketchup in the top drawer of the cabinet"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r7_dimcode__libero_90___s5__task-32__s0__e5ed1433",
+ "schema": 1,
+ "script": "experiments/r7_dimcode.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-26T07:36:25+00:00",
+ "stream": null,
+ "tag": "_s5"
+}

@@ -1,0 +1,129 @@
+{
+ "artifacts": [
+  "results/robot/r4_3_approach_last2_expert.pt",
+  "results/robot/r4_3_approach_last2_program.npz",
+  "results/robot/r4_3_approach_last2_tree.npz"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 28571,
+  "experts": 258048,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 292919,
+  "tree": 6300
+ },
+ "command": "experiments/r4_fold.py --task 3 --tree results/robot/r2b_libero_40_tree.npz --library results/robot/r2b_libero_40.npz --rank 2 --steps 1000 --tag _approach_last2 --arrival contact --contact 10 --pre 30 --scope last2",
+ "config": {
+  "K": 3,
+  "anchor_weight": 1.0,
+  "arrival": "contact",
+  "band": "0,1,2",
+  "contact": 10,
+  "demo": 0,
+  "library": "results/robot/r2b_libero_40.npz",
+  "lr": 0.0001,
+  "n_anchor": 384,
+  "n_cal": 1500,
+  "pre": 30,
+  "q": 0.95,
+  "rank": 2,
+  "scope": "last2",
+  "seed": 0,
+  "steps": 1000,
+  "tag": "_approach_last2",
+  "task": 3,
+  "tree": "results/robot/r2b_libero_40_tree.npz"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "dendrite.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3960411",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r4_fold",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "e5ed1433b0fce7236cef1ec4d132ffe4cf41a19c",
+  "short": "e5ed1433"
+ },
+ "keys": {
+  "task": 3
+ },
+ "metrics": {
+  "anchor_weight": 1.0,
+  "curve": {
+   "anchor": [
+    0.0,
+    0.0003260699159000069,
+    0.0023335746955126524,
+    0.0010792933171615005,
+    0.0015157248126342893,
+    0.0012299995869398117,
+    0.0007685436867177486,
+    0.001028229482471943,
+    0.0009427599725313485,
+    0.0007467171526513994,
+    0.0006329964380711317
+   ],
+   "loss": [
+    0.046685636043548584,
+    0.04583173617720604,
+    0.020772166550159454,
+    0.022855276241898537,
+    0.013908186927437782,
+    0.017299270257353783,
+    0.013920220546424389,
+    0.01249211747199297,
+    0.005846002604812384,
+    0.009622203186154366,
+    0.005391469690948725
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "demo_episode": 824,
+  "expert_params": 129024,
+  "n_frames": 183,
+  "n_new_nodes": 21,
+  "n_unexplained": 82,
+  "nll_median": {
+   "0": -0.3915952801906743,
+   "1": -1.15813798536965,
+   "2": -0.9633075154123022
+  },
+  "task": 3,
+  "text": "put the butter at the back in the top drawer of the cabinet and close it",
+  "thresholds": {
+   "0": 3.148381656392142,
+   "1": -0.09127364671692659,
+   "2": -0.720244935179938
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r4_fold__libero_90___approach_last2__task-3__s0__e5ed1433",
+ "schema": 1,
+ "script": "experiments/r4_fold.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-26T07:32:16+00:00",
+ "stream": null,
+ "tag": "_approach_last2"
+}

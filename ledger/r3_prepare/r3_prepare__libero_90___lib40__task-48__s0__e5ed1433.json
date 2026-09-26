@@ -1,0 +1,120 @@
+{
+ "artifacts": [
+  "results/robot/r3_prog_48_code_lib40.npz",
+  "results/robot/r3_prog_48_raw_lib40.npz"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 27161,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 27161,
+  "tree": 0
+ },
+ "command": "experiments/r3_prepare.py --tree results/robot/r2b_libero_40_tree.npz --library-npz results/robot/r2b_libero_40.npz --tasks 48 --levels 2,3,4 --tag _lib40",
+ "config": {
+  "K": 3,
+  "held": 5,
+  "levels": "2,3,4",
+  "library_npz": "results/robot/r2b_libero_40.npz",
+  "tag": "_lib40",
+  "tasks": "48",
+  "tree": "results/robot/r2b_libero_40_tree.npz"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "spd-13.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3960441",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r3_prepare",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "e5ed1433b0fce7236cef1ec4d132ffe4cf41a19c",
+  "short": "e5ed1433"
+ },
+ "keys": {
+  "task": 48
+ },
+ "metrics": {
+  "bddl": "LIVING_ROOM_SCENE1_pick_up_the_ketchup_and_put_it_in_the_basket",
+  "code": {
+   "bytes": 27161,
+   "mean_rms_to_demo": 0.048150449991226196,
+   "nll_per_dim": -1.4767534732818604,
+   "path": "results/robot/r3_prog_48_code_lib40.npz"
+  },
+  "demo_episode": 3092,
+  "depth_hist": {
+   "0.05": 0,
+   "0.1": 0,
+   "0.2": 0,
+   "0.3": 0,
+   "0.4": 1,
+   "0.55": 0,
+   "0.7": 6,
+   "explained": 166
+  },
+  "gripper_events": [
+   77,
+   164
+  ],
+  "n_frames": 173,
+  "n_ipec_episodes": 45,
+  "nll_median": {
+   "0.05": -1.5710554129312502,
+   "0.1": -1.5446760606130783,
+   "0.2": -1.0295577137335095,
+   "0.3": -0.6506293200347042,
+   "0.4": -0.3673269132773873,
+   "0.55": -0.07569611814169301,
+   "0.7": 0.14836298001603027
+  },
+  "out_of_range_frac": 0.07184145334434351,
+  "prompt_program": {
+   "pick up the black bowl on the stove and place it on the plate": 14,
+   "pick up the milk and place it in the basket": 22,
+   "put both moka pots on the stove": 26,
+   "put both the alphabet soup and the cream cheese box in the basket": 2,
+   "put both the alphabet soup and the tomato sauce in the basket": 28,
+   "put the bowl on the plate": 10,
+   "put the white mug on the left plate and put the yellow and white mug on the right plate": 36,
+   "put the white mug on the plate and put the chocolate pudding to the right of the plate": 21,
+   "turn on the stove and put the moka pot on it": 14
+  },
+  "raw": {
+   "bytes": 5489,
+   "mean_rms_to_demo": 0.0,
+   "nll_per_dim": -1.3836463689804077,
+   "path": "results/robot/r3_prog_48_raw_lib40.npz"
+  },
+  "task_id": 48,
+  "text": "pick up the ketchup and put it in the basket",
+  "unexplained_by_level": {
+   "0.05": 0.0,
+   "0.1": 0.0,
+   "0.2": 0.0,
+   "0.3": 0.005780346820809248,
+   "0.4": 0.011560693641618497,
+   "0.55": 0.0,
+   "0.7": 0.03468208092485549
+  },
+  "unexplained_frac": 0.04046242774566474
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r3_prepare__libero_90___lib40__task-48__s0__e5ed1433",
+ "schema": 1,
+ "script": "experiments/r3_prepare.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-26T07:42:45+00:00",
+ "stream": null,
+ "tag": "_lib40"
+}

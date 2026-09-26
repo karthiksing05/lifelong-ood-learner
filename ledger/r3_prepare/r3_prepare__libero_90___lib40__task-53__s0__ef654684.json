@@ -1,0 +1,120 @@
+{
+ "artifacts": [
+  "results/robot/r3_prog_53_code_lib40.npz",
+  "results/robot/r3_prog_53_raw_lib40.npz"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 23236,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 23236,
+  "tree": 0
+ },
+ "command": "experiments/r3_prepare.py --tree results/robot/r2b_libero_40_tree.npz --library-npz results/robot/r2b_libero_40.npz --tasks 53 --levels 2,3,4 --tag _lib40",
+ "config": {
+  "K": 3,
+  "held": 5,
+  "levels": "2,3,4",
+  "library_npz": "results/robot/r2b_libero_40.npz",
+  "tag": "_lib40",
+  "tasks": "53",
+  "tree": "results/robot/r2b_libero_40_tree.npz"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "megabot.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3960401",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r3_prepare",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "ef6546846ec1529a526a1d2ea5e15d8848457243",
+  "short": "ef654684"
+ },
+ "keys": {
+  "task": 53
+ },
+ "metrics": {
+  "bddl": "LIVING_ROOM_SCENE2_pick_up_the_orange_juice_and_put_it_in_the_basket",
+  "code": {
+   "bytes": 23236,
+   "mean_rms_to_demo": 0.04078662022948265,
+   "nll_per_dim": -1.4250744581222534,
+   "path": "results/robot/r3_prog_53_code_lib40.npz"
+  },
+  "demo_episode": 1284,
+  "depth_hist": {
+   "0.05": 0,
+   "0.1": 0,
+   "0.2": 0,
+   "0.3": 0,
+   "0.4": 0,
+   "0.55": 0,
+   "0.7": 6,
+   "explained": 142
+  },
+  "gripper_events": [
+   59,
+   141
+  ],
+  "n_frames": 148,
+  "n_ipec_episodes": 39,
+  "nll_median": {
+   "0.05": -1.7372693290209038,
+   "0.1": -1.5692688304996194,
+   "0.2": -1.0403114259303408,
+   "0.3": -0.6544250897573953,
+   "0.4": -0.3684972341079271,
+   "0.55": -0.06910561150546563,
+   "0.7": 0.15580942589589342
+  },
+  "out_of_range_frac": 0.08397683397683398,
+  "prompt_program": {
+   "pick up the alphabet soup and place it in the basket": 17,
+   "pick up the black bowl in the top drawer of the wooden cabinet and place it on the plate": 11,
+   "pick up the chocolate pudding and place it in the basket": 1,
+   "pick up the cream cheese and place it in the basket": 27,
+   "pick up the ketchup and place it in the basket": 22,
+   "pick up the milk and place it in the basket": 28,
+   "put both moka pots on the stove": 25,
+   "put the white mug on the left plate and put the yellow and white mug on the right plate": 3,
+   "put the white mug on the plate and put the chocolate pudding to the right of the plate": 14
+  },
+  "raw": {
+   "bytes": 4714,
+   "mean_rms_to_demo": 0.0,
+   "nll_per_dim": -1.3836463689804077,
+   "path": "results/robot/r3_prog_53_raw_lib40.npz"
+  },
+  "task_id": 53,
+  "text": "pick up the orange juice and put it in the basket",
+  "unexplained_by_level": {
+   "0.05": 0.0,
+   "0.1": 0.0,
+   "0.2": 0.0,
+   "0.3": 0.0,
+   "0.4": 0.006756756756756757,
+   "0.55": 0.0,
+   "0.7": 0.04054054054054054
+  },
+  "unexplained_frac": 0.04054054054054054
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r3_prepare__libero_90___lib40__task-53__s0__ef654684",
+ "schema": 1,
+ "script": "experiments/r3_prepare.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-26T07:08:11+00:00",
+ "stream": null,
+ "tag": "_lib40"
+}

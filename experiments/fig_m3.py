@@ -84,9 +84,9 @@ def frontier(S, scope="prior_fails"):
     ax.set_ylim(0, 1)
     # label placement per method: offsets in points (a hairline leader where the label leaves its point), or "top" =
     # centred above the method's interval
-    place = {"borrowing, every 5th frame": (-10, -30, "right"), "demo replay": (-14, 34, "right"),
-             "borrowing, every frame": (14, -30, "left"), "borrowing + 258 KB fold": "bottom",
-             "PoE codes + 4.7 MB fold": "top"}
+    place = {"segment borrowing": (-12, -34, "right"), "borrowing, every 5th frame": (-12, 40, "right"),
+             "demo replay": (16, 44, "left"), "borrowing, every frame": (16, -40, "left"),
+             "borrowing + 258 KB fold": "bottom", "practice-allocated (program, else LoRA)": "top", "PoE codes + 4.7 MB fold": "top"}
     for (x, y, lab, c), m in zip(pts, [m for m in FRONTIER if M.get(f"{m}.{scope}") and M[f"{m}.{scope}"]["complete"]]):
         how = place.get(lab.split("\n")[0], (8, 0, "left"))
         if how in ("top", "bottom"):

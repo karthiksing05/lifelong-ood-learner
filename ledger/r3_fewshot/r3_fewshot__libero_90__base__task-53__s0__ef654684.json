@@ -1,0 +1,107 @@
+{
+ "artifacts": [
+  "results/robot/r3_lora_53.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 18710528,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 18710528,
+  "tree": 0
+ },
+ "command": "experiments/r3_fewshot.py --task 53",
+ "config": {
+  "batch": 32,
+  "demo": 0,
+  "lr": 0.0001,
+  "rank": 16,
+  "seed": 0,
+  "steps": 1000,
+  "tag": "",
+  "task": 53
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "megabot.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3960401",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r3_fewshot",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "ef6546846ec1529a526a1d2ea5e15d8848457243",
+  "short": "ef654684"
+ },
+ "keys": {
+  "task": 53
+ },
+ "metrics": {
+  "curve": {
+   "anchor": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "loss": [
+    0.025120770558714867,
+    0.008013032376766205,
+    0.0035867025144398212,
+    0.001855074311606586,
+    0.004414981231093407,
+    0.0009876617696136236,
+    0.0008952853386290371,
+    0.0005125626339577138,
+    0.0015681857476010919,
+    0.0044463458471000195,
+    0.0019979444332420826
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "demo_episode": 1284,
+  "final_loss": 0.0019979444332420826,
+  "first_loss": 0.025120770558714867,
+  "n_banks": 163,
+  "n_frames": 148,
+  "n_params": 9355264,
+  "task": 53,
+  "text": "pick up the orange juice and put it in the basket",
+  "train_secs": 128.6295804977417
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r3_fewshot__libero_90__base__task-53__s0__ef654684",
+ "schema": 1,
+ "script": "experiments/r3_fewshot.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-26T07:17:15+00:00",
+ "stream": null,
+ "tag": ""
+}

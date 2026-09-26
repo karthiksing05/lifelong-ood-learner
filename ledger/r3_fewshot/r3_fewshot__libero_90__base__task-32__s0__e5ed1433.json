@@ -1,0 +1,107 @@
+{
+ "artifacts": [
+  "results/robot/r3_lora_32.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 18710528,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 18710528,
+  "tree": 0
+ },
+ "command": "experiments/r3_fewshot.py --task 32",
+ "config": {
+  "batch": 32,
+  "demo": 0,
+  "lr": 0.0001,
+  "rank": 16,
+  "seed": 0,
+  "steps": 1000,
+  "tag": "",
+  "task": 32
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "deebot.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3960426",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r3_fewshot",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "e5ed1433b0fce7236cef1ec4d132ffe4cf41a19c",
+  "short": "e5ed1433"
+ },
+ "keys": {
+  "task": 32
+ },
+ "metrics": {
+  "curve": {
+   "anchor": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "loss": [
+    0.10371074825525284,
+    0.021578967571258545,
+    0.010249543003737926,
+    0.006593096535652876,
+    0.008599081076681614,
+    0.0036525153554975986,
+    0.003911917097866535,
+    0.0024901540018618107,
+    0.0032063876278698444,
+    0.008642541244626045,
+    0.004224349744617939
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "demo_episode": 1510,
+  "final_loss": 0.004224349744617939,
+  "first_loss": 0.10371074825525284,
+  "n_banks": 163,
+  "n_frames": 200,
+  "n_params": 9355264,
+  "task": 32,
+  "text": "put the ketchup in the top drawer of the cabinet",
+  "train_secs": 136.09556078910828
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r3_fewshot__libero_90__base__task-32__s0__e5ed1433",
+ "schema": 1,
+ "script": "experiments/r3_fewshot.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-26T07:45:40+00:00",
+ "stream": null,
+ "tag": ""
+}

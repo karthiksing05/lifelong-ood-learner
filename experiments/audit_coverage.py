@@ -16,6 +16,8 @@ sys.path.insert(0, os.path.join(ROOT, "experiments"))
 import audit_numbers as A                                              # noqa: E402
 
 IGNORE = {
+    # confidence levels
+    "95",
     # years, dates, section / rung / phase numbers, small counts
     "2026", "09", "25", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "12", "24", "32", "64",
     # sizes and settings stated as such
