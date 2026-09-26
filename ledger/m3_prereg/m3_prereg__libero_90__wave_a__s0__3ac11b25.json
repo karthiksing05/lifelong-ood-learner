@@ -1,0 +1,112 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration row, written before any wave A final row except task 1 zero-shot",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky2.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "3ac11b2549c8e70d4e2bc650d37996e769bcafff",
+  "short": "3ac11b25"
+ },
+ "keys": {},
+ "metrics": {
+  "arms": [
+   "zeroshot",
+   "raw_replay",
+   "dimcode_s5",
+   "dimcode_s1",
+   "dimfold_s1_last2 (demo grasps)",
+   "lora",
+   "leaf_s5",
+   "leaf_s1 / leaffold_s1_last2",
+   "shared_s1"
+  ],
+  "bytes": "HONEST sizes recomputed from the artifacts (experiments/m34_report.arm_bytes); replayed demos charged their T x 7 action sequence",
+  "eligible": [
+   1,
+   3,
+   4,
+   5,
+   6,
+   32,
+   34,
+   37,
+   40,
+   41,
+   43,
+   48,
+   52,
+   53,
+   58,
+   62,
+   63
+  ],
+  "margin": 0.1,
+  "practice_rule": "keep the prior where its practice success >= 0.5, for every method",
+  "primary": {
+   "H1": "non-inferiority of borrowing + 258 KB fold (ours_dim1_last2) to few-shot LoRA: one-sided 95% lower bound of the pooled paired difference > -0.10 (two-level cluster bootstrap: tasks, then init states), over the tasks where the practice fails",
+   "H2": "ours_dim1_last2 above zero-shot: exact sign test on discordant pairs, p < 0.05",
+   "H3": "non-inferiority of ours_dim1_last2 to demo replay at the same margin"
+  },
+  "secondary": [
+   "leaf borrowing (policy chunk means) vs band borrowing, at stride 5 and with the fold",
+   "shared-prototype borrowing (t = 0.4 alone) vs band borrowing at stride 1"
+  ],
+  "selection": "unique-language LIBERO-90 tasks with zero-shot 0/5 in ledger/zeroshot90, not already used; random.Random(0).sample(eligible, 8)",
+  "states": {
+   "final": "30-49 (20 episodes per arm, m3_final)",
+   "practice": "0-9 (10 episodes, m3_compose zeroshot)"
+  },
+  "wave_a_tasks": [
+   1,
+   6,
+   34,
+   37,
+   40,
+   52,
+   53,
+   62
+  ],
+  "wave_b_tasks": [
+   3,
+   4,
+   5,
+   32,
+   41,
+   43,
+   48,
+   58,
+   63
+  ]
+ },
+ "notes": "analysis plan fixed before the wave A final results; experiments/m3_stats.py implements it",
+ "retired": null,
+ "run_id": "m3_prereg__libero_90__wave_a__s0__3ac11b25",
+ "schema": 1,
+ "script": "(inline, session 2026-09-26)",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-26T06:14:05+00:00",
+ "stream": null,
+ "tag": "wave_a"
+}

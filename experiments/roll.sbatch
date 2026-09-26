@@ -3,7 +3,7 @@
 #SBATCH --output=/coc/flash10/ksingara3/lifelong-ood-learner/slurm/%j.out
 #SBATCH --error=/coc/flash10/ksingara3/lifelong-ood-learner/slurm/%j.out
 #SBATCH --gres=gpu:a40:1
-#SBATCH --cpus-per-task=8
+#SBATCH --cpus-per-task=4
 #SBATCH --mem=48G
 #SBATCH --time=04:00:00
 #SBATCH --partition=tail-lab

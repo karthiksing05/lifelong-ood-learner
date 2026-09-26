@@ -17,6 +17,62 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT)
 from lifelong_ood import ledger                                        # noqa: E402
 
+
+R = os.path.join(ROOT, "results", "robot")
+
+
+def fold_bytes(t, tag):
+    """A fold's expert + its new library nodes (the r4_fold row)."""
+    r = [x for x in ledger.load("r4_fold") if x["tag"] == tag and str(x["metrics"]["task"]) == str(t)]
+    return (r[-1]["bytes"]["experts"] + r[-1]["bytes"]["tree"]) if r else 0
+
+
+def dim_program(t, s, tag=None):
+    """The dimension-wise program at stride s; with a fold tag, carrying that fold's windows."""
+    from lifelong_ood.policy.compose import DemoProgram
+    if tag is None:
+        return DemoProgram.load(f"{R}/r7_dim_{t}_s{s}.npz")
+    if s == 1:
+        prog = DemoProgram.load(f"{R}/r7_dim_{t}_s1.npz")
+        prog.fold = DemoProgram.load(f"{R}/r4_{t}{tag}_program.npz").fold
+        return prog
+    return DemoProgram.load(f"{R}/r7_dimfold_{t}_s{s}.npz")
+
+
+def arm_bytes(t, arm):
+    """HONEST bytes an arm stores for task t, recomputed from its artifacts (rows keep what the launcher computed at the
+    time: code programs were under-counted before the 2026-09-25 retraction, replayed demos over-counted before
+    2026-09-26).  zeroshot stores nothing; lora = the r3_fewshot adapter (fp16)."""
+    from lifelong_ood.policy.compose import DemoProgram
+    if arm == "zeroshot":
+        return 0
+    if arm == "lora":
+        r = [x for x in ledger.load("r3_fewshot") if str(x["metrics"]["task"]) == str(t) and not x.get("tag")]
+        return int(r[-1]["bytes"]["experts"]) if r else 0
+    return int({"raw_replay": lambda: DemoProgram.load(f"{R}/r3_prog_{t}_raw_lib40.npz").bytes(),
+                "code_replay": lambda: DemoProgram.load(f"{R}/r3_prog_{t}_code_lib40.npz").bytes(),
+                "hybrid_approach": lambda: DemoProgram.load(f"{R}/r4_{t}_approach_program.npz").bytes() + fold_bytes(t, "_approach"),
+                "dimcode_s5": lambda: dim_program(t, 5).bytes(), "dimcode_s1": lambda: dim_program(t, 1).bytes(),
+                "dimfold_full": lambda: dim_program(t, 5, "_approach").bytes() + fold_bytes(t, "_approach"),
+                "dimfold_last2": lambda: dim_program(t, 5, "_approach_last2").bytes() + fold_bytes(t, "_approach_last2"),
+                "dimfold_s1_full": lambda: dim_program(t, 1, "_approach").bytes() + fold_bytes(t, "_approach"),
+                "dimfold_s1_last2": lambda: dim_program(t, 1, "_approach_last2").bytes() + fold_bytes(t, "_approach_last2"),
+                "leaf_s5": lambda: DemoProgram.load(f"{R}/r9_leaf_{t}_s5.npz").bytes(),
+                "leaf_s1": lambda: DemoProgram.load(f"{R}/r9_leaf_{t}_s1.npz").bytes(),
+                "leaffold_s1_last2": lambda: with_fold(f"{R}/r9_leaf_{t}_s1.npz", t, "_approach_last2").bytes() + fold_bytes(t, "_approach_last2"),
+                "shared_s1": lambda: DemoProgram.load(f"{R}/r9_shared_{t}_s1.npz").bytes()}[arm]())
+
+
+def with_fold(path, t, tag):
+    from lifelong_ood.policy.compose import DemoProgram
+    prog = DemoProgram.load(path)
+    prog.fold = DemoProgram.load(f"{R}/r4_{t}{tag}_program.npz").fold
+    return prog
+
+
+SIZED = ("raw_replay", "code_replay", "hybrid_approach", "dimcode_s5", "dimcode_s1", "dimfold_full", "dimfold_last2",
+         "dimfold_s1_full", "dimfold_s1_last2", "leaf_s5", "leaf_s1", "leaffold_s1_last2", "shared_s1")
+
 ARMS = ["zeroshot", "raw_replay", "code_replay", "lora", "hybrid_lib40", "expert_on_lib40"]
 NAMES = {"zeroshot": "zero-shot", "raw_replay": "demo replay", "code_replay": "library codes", "lora": "few-shot LoRA",
          "hybrid_lib40": "compose + fold", "expert_on_lib40": "fold expert, always on"}
@@ -136,30 +192,11 @@ def final(a):
         if (t, "lora") in cells:
             cells[(t, "lora")][2] = int(r["bytes"]["experts"])
     tasks = sorted(lang, key=int)
-    # HONEST sizes, recomputed from the artifacts (rows launched before the 2026-09-25 retraction under-counted code
-    # programs: a code program's executed teacher needs its per-dimension weights, i.e. as much as the raw chunk)
-    import os
-    from lifelong_ood.policy.compose import DemoProgram
-    R = "results/robot"
+    # HONEST sizes, recomputed from the artifacts for EVERY arm (arm_bytes)
     for t in tasks:
-        cp = f"{R}/r3_prog_{t}_code_lib40.npz"
-        if (t, "code_replay") in cells and os.path.exists(cp):
-            cells[(t, "code_replay")][2] = DemoProgram.load(cp).bytes()
-        hp = f"{R}/r4_{t}_approach_program.npz"
-        if (t, "hybrid_approach") in cells and os.path.exists(hp):
-            expert = [r["bytes"]["experts"] + r["bytes"]["tree"] for r in ledger.load("r4_fold") if r["tag"] == "_approach" and str(r["metrics"]["task"]) == t]
-            cells[(t, "hybrid_approach")][2] = DemoProgram.load(hp).bytes() + (expert[-1] if expert else 0)
-        if (t, "composer") in cells or any(x[1].startswith("composer") for x in cells if x[0] == t):
-            pass
-    # dimension-wise borrowing arms: the program's honest bytes are in the row; a fold adds its expert and its new nodes
-    def fold_bytes(t, tag):
-        r = [x for x in ledger.load("r4_fold") if x["tag"] == tag and str(x["metrics"]["task"]) == t]
-        return (r[-1]["bytes"]["experts"] + r[-1]["bytes"]["tree"]) if r else 0
-    for t in tasks:
-        for arm, tag in (("dimfold_full", "_approach"), ("dimfold_last2", "_approach_last2"),
-                         ("dimfold_s1_full", "_approach"), ("dimfold_s1_last2", "_approach_last2")):
+        for arm in SIZED:
             if (t, arm) in cells:
-                cells[(t, arm)][2] += fold_bytes(t, tag)
+                cells[(t, arm)][2] = arm_bytes(t, arm)
     keep = {t: (lambda k, n: n > 0 and k / n >= a.practice)(*dev.get((t, "zeroshot"), (0, 0, 0))[:2]) for t in tasks}
     def pick(t, arm):
         if keep[t]:

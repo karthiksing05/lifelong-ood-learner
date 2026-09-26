@@ -1,0 +1,113 @@
+{
+ "artifacts": [
+  "results/robot/r3_prog_6_code_lib40.npz",
+  "results/robot/r3_prog_6_raw_lib40.npz"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 19468,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 19468,
+  "tree": 0
+ },
+ "command": "experiments/r3_prepare.py --tree results/robot/r2b_libero_40_tree.npz --library-npz results/robot/r2b_libero_40.npz --tasks 6 --levels 2,3,4 --tag _lib40",
+ "config": {
+  "K": 3,
+  "held": 5,
+  "levels": "2,3,4",
+  "library_npz": "results/robot/r2b_libero_40.npz",
+  "tag": "_lib40",
+  "tasks": "6",
+  "tree": "results/robot/r2b_libero_40_tree.npz"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "protocol.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3958599",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r3_prepare",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "3ac11b2549c8e70d4e2bc650d37996e769bcafff",
+  "short": "3ac11b25"
+ },
+ "keys": {
+  "task": 6
+ },
+ "metrics": {
+  "bddl": "KITCHEN_SCENE1_open_the_bottom_drawer_of_the_cabinet",
+  "code": {
+   "bytes": 19468,
+   "mean_rms_to_demo": 0.08065333217382431,
+   "nll_per_dim": -1.1146833896636963,
+   "path": "results/robot/r3_prog_6_code_lib40.npz"
+  },
+  "demo_episode": 3826,
+  "depth_hist": {
+   "0.05": 0,
+   "0.1": 0,
+   "0.2": 0,
+   "0.3": 2,
+   "0.4": 0,
+   "0.55": 7,
+   "0.7": 8,
+   "explained": 107
+  },
+  "gripper_events": [],
+  "n_frames": 124,
+  "n_ipec_episodes": 46,
+  "nll_median": {
+   "0.05": -0.33793581882303914,
+   "0.1": -1.1803762884765074,
+   "0.2": -0.9588106359679337,
+   "0.3": -0.6429134051618682,
+   "0.4": -0.373885712611398,
+   "0.55": -0.043928606528080935,
+   "0.7": 0.1574328174414802
+  },
+  "out_of_range_frac": 0.03110599078341014,
+  "prompt_program": {
+   "open the middle drawer of the cabinet": 72,
+   "open the top drawer and put the bowl inside": 18,
+   "push the plate to the front of the stove": 10,
+   "put both the alphabet soup and the tomato sauce in the basket": 12,
+   "put the cream cheese in the bowl": 12
+  },
+  "raw": {
+   "bytes": 3970,
+   "mean_rms_to_demo": 0.0,
+   "nll_per_dim": -1.3836462497711182,
+   "path": "results/robot/r3_prog_6_raw_lib40.npz"
+  },
+  "task_id": 6,
+  "text": "open the bottom drawer of the cabinet",
+  "unexplained_by_level": {
+   "0.05": 0.0,
+   "0.1": 0.008064516129032258,
+   "0.2": 0.008064516129032258,
+   "0.3": 0.024193548387096774,
+   "0.4": 0.0,
+   "0.55": 0.11290322580645161,
+   "0.7": 0.06451612903225806
+  },
+  "unexplained_frac": 0.13709677419354838
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r3_prepare__libero_90___lib40__task-6__s0__3ac11b25",
+ "schema": 1,
+ "script": "experiments/r3_prepare.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-26T06:06:21+00:00",
+ "stream": null,
+ "tag": "_lib40"
+}

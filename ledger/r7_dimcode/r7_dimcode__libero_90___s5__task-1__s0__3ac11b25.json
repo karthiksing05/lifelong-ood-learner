@@ -1,0 +1,65 @@
+{
+ "artifacts": [
+  "results/robot/r7_dim_1_s5.npz"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 1400,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 1400,
+  "tree": 0
+ },
+ "command": "experiments/r7_dimcode.py --tasks 1",
+ "config": {
+  "K": 8,
+  "strides": "1,5",
+  "tasks": "1",
+  "tree": "results/robot/r2b_libero_40_tree.npz"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "nestor.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3958591",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r7_dimcode",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "3ac11b2549c8e70d4e2bc650d37996e769bcafff",
+  "short": "3ac11b25"
+ },
+ "keys": {
+  "task": 1
+ },
+ "metrics": {
+  "K": 8,
+  "bytes": 1400,
+  "frames": 197,
+  "jerk": 0.008627873845398426,
+  "jerk_demo": 0.017140721902251244,
+  "kept": 40,
+  "raw_bytes": 30732,
+  "rebuild_max_err": 0.0,
+  "rms": 0.02089892141520977,
+  "stride": 5,
+  "task": 1,
+  "text": "close the top drawer of the cabinet and put the black bowl on top of it"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r7_dimcode__libero_90___s5__task-1__s0__3ac11b25",
+ "schema": 1,
+ "script": "experiments/r7_dimcode.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-26T05:49:51+00:00",
+ "stream": null,
+ "tag": "_s5"
+}

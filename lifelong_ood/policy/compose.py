@@ -133,6 +133,13 @@ class DemoProgram:
                            states=take(self.states), steer=take(self.steer), dim_ids=take(self.dim_ids),
                            dim_choice=take(self.dim_choice))
 
+    def windowed(self):
+        """True when the rows are consecutive windows of one 7-D action sequence (a demo's own chunks, stride 1)."""
+        if self.mu.ndim != 2 or self.mu.shape[1] != 70 or len(self.mu) < 2:
+            return False
+        m = np.asarray(self.mu, np.float64).reshape(len(self.mu), 10, 7)
+        return bool(np.abs(m[1:, :9] - m[:-1, 1:]).max() < 1e-6)
+
     def bytes(self):
         """What the program needs to EXECUTE what it executes.  A "code" program's teacher is the per-dimension PoE whose
         weights were fitted to the demo chunk (decompose's per-dim softmax), so it needs those weights or its 70-dim mean
@@ -142,11 +149,16 @@ class DemoProgram:
         if self.variant == "dimcode":
             from .dimcode import code_bytes
             store = len(self.mu) * code_bytes(self.dim_ids.shape[1])          # the chunk is rebuilt from ids + choices
+        elif self.windowed():
+            # a demo's chunks are overlapping windows of ONE action sequence: its T x 7 values rebuild every chunk exactly
+            # (charging 70 values per frame, as before 2026-09-26, overstated a replayed demo ~5x; CORRECTED)
+            store = 2 * (len(self.mu) + 9) * 7
         else:
             store = 2 * int(self.mu.size)
         keys = 2 * int(self.states.size) if self.states is not None else 2 * int(self.key.size)
+        fold = 0 if self.fold is None or not np.any(self.fold) else (len(self.fold) + 7) // 8   # one bit per frame
         return int(store + keys + (0 if self.prompt_id is None else len(self.prompt_id))
-                   + (0 if self.steer is None else (len(self.steer) + 7) // 8))
+                   + (0 if self.steer is None else (len(self.steer) + 7) // 8) + fold)
 
     def save(self, path):
         extra = {} if self.prompt_id is None else dict(prompt_id=self.prompt_id, prompt_table=np.array(self.prompt_table, dtype=object))

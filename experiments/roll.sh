@@ -23,6 +23,16 @@ PYTHONPATH=${PYTHONPATH:-}:$ROBOT/third_party/libero examples/libero/.venv/bin/p
 rc=$?
 kill $SRV 2>/dev/null
 echo "[roll] client exit=$rc -> $OUT"
+# PROGRAM_BYTES=prog:<program.npz>[@<fold program.npz>]: size the program in the job (it may be built by a dependency)
+case "${PROGRAM_BYTES:-0}" in
+  prog:*) SPEC=${PROGRAM_BYTES#prog:}
+          PROGRAM_BYTES=$(.venv/bin/python -c "
+import sys; sys.path.insert(0, '$REPO')
+from lifelong_ood.policy.compose import DemoProgram
+p, _, f = '$SPEC'.partition('@'); prog = DemoProgram.load(p)
+if f: prog.fold = DemoProgram.load(f).fold
+print(prog.bytes())" 2>/dev/null || echo 0) ;;
+esac
 if [ -f "$OUT" ]; then
   .venv/bin/python $REPO/experiments/roll_record.py --json $OUT --experiment ${EXPERIMENT:-rollout} --mode "$MODE" --tag "${TAG:-}" --job ${SLURM_JOB_ID:-x} --program-bytes ${PROGRAM_BYTES:-0}
 fi

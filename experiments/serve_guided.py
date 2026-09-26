@@ -103,6 +103,10 @@ def main():
         from lifelong_ood.policy.compose import DemoProgram, HybridHooks
         state, key, banks = adapt.load(bk, kv["expert"])
         prog = DemoProgram.load(body)
+        if kv.get("foldprog"):                     # the fold windows of the expert's own program (same demo, same frames)
+            fm = DemoProgram.load(kv["foldprog"]).fold
+            assert len(fm) == len(prog.mu), (len(fm), len(prog.mu))
+            prog.fold = fm
         hooks = HybridHooks(prog, state, key, w0=float(kv.get("w0", 1.2)), schedule=kv.get("sched", "variance"),
                             var=float(kv["var"]) if kv.get("var") else None, stall=int(kv.get("stall", 0)),
                             key_mode=kv.get("key", "pos"), window=int(kv.get("window", 20)))
