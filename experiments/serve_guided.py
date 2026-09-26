@@ -79,6 +79,22 @@ def main():
                               schedule=kv.get("sched", "const"), var=float(kv["var"]) if kv.get("var") else 1e-3,
                               stall=int(kv.get("stall", 3)), key_mode=kv.get("key", "pose"))
         logging.info(f"composer {path}: {len(cp.ids)} prototypes, {cp.bytes()} B, params {kv}")
+    elif a.mode.startswith("comphybrid:"):
+        # comphybrid:<r6_comp.npz>?expert=<r4 expert.pt>&foldprog=<r4 program.npz>&... -- composer + the fold expert in its windows
+        path, q = a.mode[len("comphybrid:"):].split("?", 1)
+        kv = dict(x.split("=", 1) for x in q.split("&") if x)
+        from lifelong_ood.policy import adapt
+        from lifelong_ood.policy.compose import DemoProgram
+        from lifelong_ood.policy.composer import ComposerHybridHooks, ComposerProgram
+        from lifelong_ood.tree.nodes import Tree
+        cp = ComposerProgram.load(path)
+        lib = cp.library if os.path.isabs(cp.library) else os.path.join(ROOT, cp.library)
+        state, key, banks = adapt.load(bk, kv["expert"])
+        fold_mask = DemoProgram.load(kv["foldprog"]).fold
+        hooks = ComposerHybridHooks(cp, Tree.load(lib), state, key, fold_mask, w0=float(kv.get("w0", 1.0)), window=int(kv.get("window", 4)),
+                                    schedule=kv.get("sched", "const"), var=float(kv["var"]) if kv.get("var") else 1e-3,
+                                    stall=int(kv.get("stall", 3)), key_mode=kv.get("key", "pose"))
+        logging.info(f"composer+fold {path}: {len(cp.ids)} prototypes, fold frames {int(fold_mask.sum())}/{len(fold_mask)}, expert {key}")
     elif a.mode.startswith("hybrid:") and "?" in a.mode:
         # hybrid:<program.npz>&expert=<expert.pt>?w0=1&sched=const&var=0.001&stall=3&key=pose
         body, q = a.mode[len("hybrid:"):].split("?", 1)

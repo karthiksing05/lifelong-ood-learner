@@ -165,3 +165,24 @@ class ComposerHooks(ComposeHooks):
         if self.schedule == "const":
             return guide(mu, v, wmax=self.w0, schedule="const", path="flow")
         return guide(mu, v, w0=self.w0, wmax=self.wmax, path="flow")
+
+
+class ComposerHybridHooks(ComposerHooks):
+    """COMPOSE with the learned borrowing everywhere, FOLD where the demo needs closed-loop precision: inside the fold
+    windows (approach and contact around the demo's gripper events, `fold_mask` over demo frames) the gated expert is
+    switched on and the program is silent."""
+
+    def __init__(self, prog, tree, state, key, fold_mask, **kw):
+        super().__init__(prog, tree, **kw)
+        from ..experts.lora import keys_on
+        self.on = keys_on(state, {key})
+        self.fold_mask = np.asarray(fold_mask, bool)
+
+    def __call__(self, obs, pre, meta=None):
+        j = self._frame(obs)
+        f = min(j * self.cprog.stride, len(self.fold_mask) - 1)
+        if self.fold_mask[f]:
+            return None, (lambda x, t: self.on)
+        if self._released_now():
+            return None, None
+        return self.guide_at(j), None
