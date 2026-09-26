@@ -1,0 +1,58 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration of compose -> practise -> consolidate",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky2.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "0d35d627bf8f1c0958cffa80d57e58038dbadc52",
+  "short": "0d35d627"
+ },
+ "keys": {},
+ "metrics": {
+  "algorithm": "COMPOSE -> PRACTISE -> CONSOLIDATE: (1) compose once from the demo (borrowing every frame + the 258 KB fold where the demo grasps); (2) practise on instances = init states 0-19, recording every rollout (m5_practice, tag dimbest); (3) remember every successful rollout as a program in the demo's format (state keys + action sequence) and refit the fold on the demo + the successes' contact windows (same rank, layers, steps); failed rollouts are not imitated; (4) redo: at episode start pick the stored composition (demo or success) whose initial state is nearest; on an instance solved before this is its own success",
+  "arms": {
+   "consolidated": "stored compositions + the refit fold",
+   "first": "the first composition (dimfold_s1_last2 / dimcode_s1)",
+   "lora_same_data": "rank-16 LoRA trained on the demo + the same successful rollouts (all frames), always on"
+  },
+  "bytes": "first composition + ~(2 (T+9) 7 + 16 T) bytes per stored success; the refit fold replaces the demo's fold (same size)",
+  "hypotheses": {
+   "L1": "REDO: on the practice instances the first composition solved, the consolidated agent succeeds >= 0.9 of the time",
+   "L2": "REDO: on the practice instances it failed, the consolidated agent does better than the first composition did",
+   "L3": "GENERALISE (states 30-49): consolidated > first composition (paired, sign test p < 0.05)",
+   "L4": "GENERALISE: consolidated non-inferior to the LoRA trained on the same data at -0.10"
+  },
+  "tasks": "the 21 tasks where the prior's practice fails"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_90__learn_from_practice__s0__0d35d627",
+ "schema": 1,
+ "script": "(inline, session 2026-09-26)",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-26T13:50:24+00:00",
+ "stream": null,
+ "tag": "learn_from_practice"
+}

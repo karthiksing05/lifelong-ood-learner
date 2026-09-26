@@ -1,0 +1,107 @@
+{
+ "artifacts": [
+  "results/robot/r3_lora_62_d1.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 18710528,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 18710528,
+  "tree": 0
+ },
+ "command": "experiments/r3_fewshot.py --task 62 --demo 1 --tag _d1",
+ "config": {
+  "batch": 32,
+  "demo": 1,
+  "lr": 0.0001,
+  "rank": 16,
+  "seed": 0,
+  "steps": 1000,
+  "tag": "_d1",
+  "task": 62
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "chappie.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3962859",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r3_fewshot",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "0d35d627bf8f1c0958cffa80d57e58038dbadc52",
+  "short": "0d35d627"
+ },
+ "keys": {
+  "task": 62
+ },
+ "metrics": {
+  "curve": {
+   "anchor": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "loss": [
+    0.08802596479654312,
+    0.02013160102069378,
+    0.010581010021269321,
+    0.004914574325084686,
+    0.006332098040729761,
+    0.002094314666464925,
+    0.0060721635818481445,
+    0.0020550722256302834,
+    0.0037777067627757788,
+    0.0076606557704508305,
+    0.0034420534502714872
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "demo_episode": 2923,
+  "final_loss": 0.0034420534502714872,
+  "first_loss": 0.08802596479654312,
+  "n_banks": 163,
+  "n_frames": 118,
+  "n_params": 9355264,
+  "task": 62,
+  "text": "pick up the salad dressing and put it in the tray",
+  "train_secs": 131.8100950717926
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r3_fewshot__libero_90___d1__task-62__s0__0d35d627",
+ "schema": 1,
+ "script": "experiments/r3_fewshot.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-26T13:45:02+00:00",
+ "stream": null,
+ "tag": "_d1"
+}

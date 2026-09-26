@@ -65,6 +65,10 @@ def arm_bytes(t, arm):
                 "dimshared_all": lambda: dim_program(t, 1, "_approach_last2").bytes() + shared_fold_share("shared_all"),
                 "dimshared_xfit": lambda: dim_program(t, 1, "_approach_last2").bytes()
                 + shared_fold_share("xfit_B" if int(t) in XFIT_A else "xfit_A", users=len(XFIT_A if int(t) in XFIT_A else XFIT_B)),
+                "playback": lambda: 2 * (len(DemoProgram.load(f"{R}/r3_prog_{t}_raw_lib40.npz").mu) + 9) * 7,
+                "vinn": lambda: 2 * (len(DemoProgram.load(f"{R}/r3_prog_{t}_raw_lib40.npz").mu) + 9) * 7
+                + 2 * 1024 * len(DemoProgram.load(f"{R}/r3_prog_{t}_raw_lib40.npz").mu),
+                "promptret": lambda: 1, "loraret": lambda: 0,
                 **{f"{g}_d1": (lambda g=g: demo_arm_bytes(t, g, 1)) for g in ("raw_replay", "dimcode_s1", "dimfold_s1_last2", "lora", "seg_s5")}}[arm]())
 
 
@@ -107,7 +111,7 @@ def with_fold(path, t, tag):
 
 SIZED = ("raw_replay", "code_replay", "hybrid_approach", "dimcode_s5", "dimcode_s1", "dimfold_full", "dimfold_last2",
          "dimfold_s1_full", "dimfold_s1_last2", "leaf_s5", "leaf_s1", "leaffold_s1_last2", "shared_s1", "seg_s5",
-         "dimshared_all", "dimshared_xfit", "raw_replay_d1", "dimcode_s1_d1", "dimfold_s1_last2_d1", "lora_d1", "seg_s5_d1")
+         "dimshared_all", "dimshared_xfit", "playback", "vinn", "promptret", "loraret", "raw_replay_d1", "dimcode_s1_d1", "dimfold_s1_last2_d1", "lora_d1", "seg_s5_d1")
 
 ARMS = ["zeroshot", "raw_replay", "code_replay", "lora", "hybrid_lib40", "expert_on_lib40"]
 NAMES = {"zeroshot": "zero-shot", "raw_replay": "demo replay", "code_replay": "library codes", "lora": "few-shot LoRA",

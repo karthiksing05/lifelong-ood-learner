@@ -40,6 +40,27 @@ def main():
         warm(policy)
         serve(policy, a.port, metadata=policy.metadata)
         return
+    if a.mode.startswith(("playback:", "vinn:")):
+        # playback:<task>[:demo] (the demo's actions, open loop) / vinn:<task>[:demo] (nearest demo frame, VINN) -- no policy
+        import importlib.util
+        from lifelong_ood.policy import baselines as B
+        from lifelong_ood.policy import data as D
+        kind, task, *rest = a.mode.split(":")
+        spec = importlib.util.spec_from_file_location("r3p", os.path.join(ROOT, "experiments", "r3_prepare.py"))
+        r3p = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(r3p)
+        texts, _ = r3p.libero90_texts()
+        d90 = D.Demos90()
+        ep = d90.load(d90.episodes_of_text(texts[int(task)])[int(rest[0]) if rest else 0])
+        if kind == "playback":
+            policy = B.PlaybackPolicy(ep["actions"])
+        else:
+            img, wr = d90.frames(ep["episode_index"])
+            policy = B.VinnPolicy(ep["actions"], img, wr)
+        logging.info(f"{kind}: task {task} demo episode {ep['episode_index']}, {len(ep['actions'])} frames")
+        warm(policy)
+        serve(policy, a.port)
+        return
     from lifelong_ood.policy.backbone import PolicyBackbone
     bk = PolicyBackbone(a.config, device="cuda")
     logging.info(bk.describe())
@@ -143,6 +164,13 @@ def main():
         state, key, banks = adapt.load(bk, a.mode.split(":", 1)[1])
         state["on"] = frozenset({key})
         logging.info(f"expert {key} loaded into {len(banks)} banks and switched on")
+    elif a.mode.startswith("prompt:"):
+        # prompt:<training task index> -- the prior under a trained task's instruction (instruction retrieval)
+        from lifelong_ood.policy import data as D
+        from lifelong_ood.policy.baselines import PromptHooks
+        text = D.Demos().tasks[int(a.mode.split(":", 1)[1])]
+        hooks = PromptHooks(text)
+        logging.info(f"prompt replaced by '{text}'")
     elif a.mode != "ours":
         raise SystemExit(f"unknown mode {a.mode}")
     policy = GuidedPolicy(bk, hooks=hooks, num_steps=a.num_steps, seed=a.seed)

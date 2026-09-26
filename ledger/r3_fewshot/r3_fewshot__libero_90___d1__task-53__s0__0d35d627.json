@@ -1,0 +1,107 @@
+{
+ "artifacts": [
+  "results/robot/r3_lora_53_d1.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 18710528,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 18710528,
+  "tree": 0
+ },
+ "command": "experiments/r3_fewshot.py --task 53 --demo 1 --tag _d1",
+ "config": {
+  "batch": 32,
+  "demo": 1,
+  "lr": 0.0001,
+  "rank": 16,
+  "seed": 0,
+  "steps": 1000,
+  "tag": "_d1",
+  "task": 53
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "crushinator.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3962858",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r3_fewshot",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "0d35d627bf8f1c0958cffa80d57e58038dbadc52",
+  "short": "0d35d627"
+ },
+ "keys": {
+  "task": 53
+ },
+ "metrics": {
+  "curve": {
+   "anchor": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "loss": [
+    0.02218097634613514,
+    0.007952074520289898,
+    0.0028618185315281153,
+    0.0011559226550161839,
+    0.0034275006037205458,
+    0.001009200350381434,
+    0.0006084235501475632,
+    0.0004990670131519437,
+    0.0015181078342720866,
+    0.0062621827237308025,
+    0.0016313440864905715
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "demo_episode": 1285,
+  "final_loss": 0.0016313440864905715,
+  "first_loss": 0.02218097634613514,
+  "n_banks": 163,
+  "n_frames": 149,
+  "n_params": 9355264,
+  "task": 53,
+  "text": "pick up the orange juice and put it in the basket",
+  "train_secs": 128.59740591049194
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r3_fewshot__libero_90___d1__task-53__s0__0d35d627",
+ "schema": 1,
+ "script": "experiments/r3_fewshot.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-26T13:44:44+00:00",
+ "stream": null,
+ "tag": "_d1"
+}

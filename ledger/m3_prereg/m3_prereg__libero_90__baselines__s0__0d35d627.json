@@ -1,0 +1,58 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration of the baseline suite",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky2.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "0d35d627bf8f1c0958cffa80d57e58038dbadc52",
+  "short": "0d35d627"
+ },
+ "keys": {},
+ "metrics": {
+  "baselines": {
+   "loraret": "the per-task LoRA of the nearest OTHER held-out task by demo distance, no training (adapter library + retrieval)",
+   "planned_trained": [
+    "equal-bytes adapter (rank 2 on the last two layers, 258 KB, trained on the whole demo, always on)",
+    "stronger LoRA (rank 64, 4000 steps)",
+    "full fine-tuning of the action expert",
+    "stream: sequential LoRA, sequential LoRA + replay, multitask LoRA"
+   ],
+   "playback": "open-loop demo playback, no policy",
+   "promptret": "the prior under the instruction of the training task that owns most of the demo's nearest library chunks (r14)",
+   "vinn": "VINN: nearest demo frame by ImageNet ResNet-18 features of both cameras, that frame's demo chunk"
+  },
+  "comparisons": "borrowing + 258 KB fold (the pre-registered method) against each baseline, paired on init states 30-49 of the 21 tasks the prior fails; superiority by the sign test, and the pooled difference with the two-level cluster bootstrap",
+  "note": "choices of the retrieval baselines are fixed from the demo before any rollout (ledger r14_retrieval)"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_90__baselines__s0__0d35d627",
+ "schema": 1,
+ "script": "(inline, session 2026-09-26)",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-26T13:51:40+00:00",
+ "stream": null,
+ "tag": "baselines"
+}

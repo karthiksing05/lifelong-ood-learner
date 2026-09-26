@@ -1,0 +1,107 @@
+{
+ "artifacts": [
+  "results/robot/r3_lora_3_d1.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 18710528,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 18710528,
+  "tree": 0
+ },
+ "command": "experiments/r3_fewshot.py --task 3 --demo 1 --tag _d1",
+ "config": {
+  "batch": 32,
+  "demo": 1,
+  "lr": 0.0001,
+  "rank": 16,
+  "seed": 0,
+  "steps": 1000,
+  "tag": "_d1",
+  "task": 3
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "crushinator.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3962860",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r3_fewshot",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "0d35d627bf8f1c0958cffa80d57e58038dbadc52",
+  "short": "0d35d627"
+ },
+ "keys": {
+  "task": 3
+ },
+ "metrics": {
+  "curve": {
+   "anchor": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "loss": [
+    0.06843041628599167,
+    0.014475937001407146,
+    0.005751537159085274,
+    0.0032845863606780767,
+    0.00724590802565217,
+    0.003207436529919505,
+    0.0036514282692223787,
+    0.0017017230857163668,
+    0.002944693434983492,
+    0.00737265357747674,
+    0.004470731597393751
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "demo_episode": 825,
+  "final_loss": 0.004470731597393751,
+  "first_loss": 0.06843041628599167,
+  "n_banks": 163,
+  "n_frames": 204,
+  "n_params": 9355264,
+  "task": 3,
+  "text": "put the butter at the back in the top drawer of the cabinet and close it",
+  "train_secs": 132.5406186580658
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r3_fewshot__libero_90___d1__task-3__s0__0d35d627",
+ "schema": 1,
+ "script": "experiments/r3_fewshot.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-26T13:49:09+00:00",
+ "stream": null,
+ "tag": "_d1"
+}

@@ -53,6 +53,8 @@ def main():
     ap.add_argument("--videos", type=int, default=2, help="save a video for the first N episodes of each task")
     ap.add_argument("--out", required=True)
     ap.add_argument("--no-meta", action="store_true")
+    ap.add_argument("--record", action="store_true", help="save every episode's policy-input frames, states, executed actions "
+                    "and outcome to <out without .json>_rec/task<t>_trial<k>.npz (learning from practice)")
     a = ap.parse_args()
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(message)s")
     np.random.seed(a.seed)
@@ -75,6 +77,7 @@ def main():
             obs = env.set_init_state(init_states[k % len(init_states)])
             plan = collections.deque()
             t, calls, done, frames, t0 = 0, 0, False, [], time.time()
+            rec = dict(state=[], action=[], image=[], wrist=[]) if a.record else None
             err = None
             while t < max_steps + a.wait:
                 try:
@@ -88,16 +91,21 @@ def main():
                     wimg = image_tools.convert_to_uint8(image_tools.resize_with_pad(wimg, a.resize, a.resize))
                     if len(eps) < a.videos:
                         frames.append(img)
+                    st8 = np.concatenate((obs["robot0_eef_pos"], quat2axisangle(obs["robot0_eef_quat"]), obs["robot0_gripper_qpos"]))
                     if not plan:
                         el = {"observation/image": img, "observation/wrist_image": wimg,
-                              "observation/state": np.concatenate((obs["robot0_eef_pos"], quat2axisangle(obs["robot0_eef_quat"]), obs["robot0_gripper_qpos"])),
+                              "observation/state": st8,
                               "prompt": str(task.language)}
                         if not a.no_meta:
                             el.update({"meta/episode_start": calls == 0, "meta/task_id": tid, "meta/episode": k, "meta/t": t - a.wait})
                         chunk = client.infer(el)["actions"]
                         calls += 1
                         plan.extend(chunk[: a.replan])
-                    obs, _, done, _ = env.step(plan.popleft().tolist())
+                    act = np.asarray(plan.popleft(), np.float32)
+                    if rec is not None:
+                        rec["state"].append(np.asarray(st8, np.float32)); rec["action"].append(act)
+                        rec["image"].append(img); rec["wrist"].append(wimg)
+                    obs, _, done, _ = env.step(act.tolist())
                     if done:
                         break
                     t += 1
@@ -106,6 +114,11 @@ def main():
                     logging.error(f"episode error: {ex}")
                     break
             eps.append(dict(trial=k, success=bool(done), steps=t - a.wait, calls=calls, secs=time.time() - t0, error=err))
+            if rec is not None and rec["action"]:
+                rec_dir = pathlib.Path(a.out).with_suffix("").parent / (pathlib.Path(a.out).stem + "_rec")
+                rec_dir.mkdir(parents=True, exist_ok=True)
+                np.savez_compressed(str(rec_dir / f"task{tid}_trial{k}.npz"), state=np.stack(rec["state"]), action=np.stack(rec["action"]),
+                                    image=np.stack(rec["image"]), wrist=np.stack(rec["wrist"]), success=bool(done), trial=k, task=tid)
             if frames:
                 import imageio
                 imageio.mimwrite(str(vid_dir / f"task{tid}_trial{k}_{'success' if done else 'failure'}.mp4"), frames, fps=10)

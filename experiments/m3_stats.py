@@ -34,14 +34,18 @@ METHODS = {"zeroshot": None, "practice_replay": ("raw_replay", None), "practice_
            "ours_dim1_last2": ("dimfold_s1_last2", "dimcode_s1"), "ours_codes_full": ("hybrid_approach", "code_replay"),
            "ours_leaf": ("leaf_s5", None), "ours_leaf1_last2": ("leaffold_s1_last2", "leaf_s1"), "ours_shared1": ("shared_s1", None),
            "ours_seg": ("seg_s5", None), "ours_alloc": "practice",
-           "ours_shared_all": ("dimshared_all", "dimcode_s1"), "ours_shared_xfit": ("dimshared_xfit", "dimcode_s1")}
+           "ours_shared_all": ("dimshared_all", "dimcode_s1"), "ours_shared_xfit": ("dimshared_xfit", "dimcode_s1"),
+           "base_playback": ("playback", None), "base_vinn": ("vinn", None), "base_promptret": ("promptret", None),
+           "base_loraret": ("loraret", None)}
 NAMES = {"zeroshot": "zero-shot", "practice_replay": "demo replay", "practice_lora": "few-shot LoRA (rank 16)",
          "ours_dim": "borrowing, every 5th frame", "ours_dim1": "borrowing, every frame",
          "ours_dim1_last2": "borrowing + 258 KB fold", "ours_codes_full": "PoE codes + 4.7 MB fold",
          "ours_leaf": "leaf borrowing, every 5th frame", "ours_leaf1_last2": "leaf borrowing + 258 KB fold",
          "ours_shared1": "shared-prototype borrowing", "ours_seg": "segment borrowing",
          "ours_alloc": "practice-allocated (program, else LoRA)",
-         "ours_shared_all": "borrowing + one shared fold", "ours_shared_xfit": "borrowing + the other half's fold"}
+         "ours_shared_all": "borrowing + one shared fold", "ours_shared_xfit": "borrowing + the other half's fold",
+         "base_playback": "open-loop demo playback", "base_vinn": "VINN (nearest demo frame)",
+         "base_promptret": "instruction retrieval", "base_loraret": "adapter retrieval (nearest task's LoRA)"}
 COMPARE = [("ours_dim1_last2", "practice_lora"), ("ours_dim1_last2", "practice_replay"), ("ours_dim1_last2", "zeroshot"),
            ("ours_dim", "practice_lora"), ("ours_dim", "practice_replay"), ("ours_dim1", "practice_replay"),
            ("practice_lora", "practice_replay"), ("ours_leaf1_last2", "practice_lora"), ("ours_leaf1_last2", "practice_replay"),
@@ -49,7 +53,9 @@ COMPARE = [("ours_dim1_last2", "practice_lora"), ("ours_dim1_last2", "practice_r
            ("ours_seg", "practice_replay"), ("ours_seg", "practice_lora"), ("ours_seg", "ours_dim"),
            ("ours_dim1_last2", "ours_dim1"), ("ours_alloc", "practice_lora"), ("ours_alloc", "ours_dim1_last2"),
            ("ours_shared_all", "ours_dim1_last2"), ("ours_shared_xfit", "ours_dim1_last2"), ("ours_shared_all", "practice_lora"),
-           ("ours_shared_xfit", "practice_lora"), ("ours_shared_xfit", "ours_dim1")]
+           ("ours_shared_xfit", "practice_lora"), ("ours_shared_xfit", "ours_dim1"),
+           ("ours_dim1_last2", "base_playback"), ("ours_dim1_last2", "base_vinn"), ("ours_dim1_last2", "base_promptret"),
+           ("ours_dim1_last2", "base_loraret"), ("practice_replay", "base_playback")]
 
 
 def episodes(experiment):

@@ -1,0 +1,107 @@
+{
+ "artifacts": [
+  "results/robot/r3_lora_6_d1.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 18710528,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 18710528,
+  "tree": 0
+ },
+ "command": "experiments/r3_fewshot.py --task 6 --demo 1 --tag _d1",
+ "config": {
+  "batch": 32,
+  "demo": 1,
+  "lr": 0.0001,
+  "rank": 16,
+  "seed": 0,
+  "steps": 1000,
+  "tag": "_d1",
+  "task": 6
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "qt-1.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3962853",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r3_fewshot",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "0d35d627bf8f1c0958cffa80d57e58038dbadc52",
+  "short": "0d35d627"
+ },
+ "keys": {
+  "task": 6
+ },
+ "metrics": {
+  "curve": {
+   "anchor": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "loss": [
+    0.08391248434782028,
+    0.01082791667431593,
+    0.007414072751998901,
+    0.0022941394709050655,
+    0.006757021881639957,
+    0.0028674749191850424,
+    0.001742925145663321,
+    0.0017824936658143997,
+    0.002239731838926673,
+    0.007856977172195911,
+    0.004521518014371395
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "demo_episode": 3827,
+  "final_loss": 0.004521518014371395,
+  "first_loss": 0.08391248434782028,
+  "n_banks": 163,
+  "n_frames": 156,
+  "n_params": 9355264,
+  "task": 6,
+  "text": "open the bottom drawer of the cabinet",
+  "train_secs": 128.8756833076477
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r3_fewshot__libero_90___d1__task-6__s0__0d35d627",
+ "schema": 1,
+ "script": "experiments/r3_fewshot.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-26T13:30:49+00:00",
+ "stream": null,
+ "tag": "_d1"
+}
