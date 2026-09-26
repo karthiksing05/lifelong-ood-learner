@@ -146,7 +146,7 @@ class KeyedLoRA(_BasePassthrough, nn.Module):
         return out
 
 
-def inject_keyed_lora(model, state, exclude=()):
+def inject_keyed_lora(model, state, exclude=(), include=None):
     """Wrap every nn.Linear / nn.Conv2d of `model` (bar `exclude`) in an empty KeyedLoRA bank.
     -> the list of banks; `add_node` / `drop_node` then grow and shrink every bank together.
     Idempotent: a model already wrapped returns its existing banks (`model._keyed_banks`)."""
@@ -161,6 +161,8 @@ def inject_keyed_lora(model, state, exclude=()):
         for cname, child in list(mod.named_children()):
             full = f"{mname}.{cname}" if mname else cname
             if any(e in full for e in exclude):
+                continue
+            if include is not None and not any(i in full for i in include):
                 continue
             if isinstance(child, (nn.Linear, nn.Conv2d)):
                 w = KeyedLoRA(child, state)

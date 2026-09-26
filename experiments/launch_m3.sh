@@ -26,7 +26,7 @@ for tid in ${TASKS//+/ }; do
       prompt)      P=$R/r3_prog_${tid}_code${PROGTAG}.npz; MODE="program:$P?how=prompt&$COMMON" ;;
       lora)        MODE="lora:$R/r3_lora_${tid}.pt" ;;
       composer)    P=$R/r6_comp_${tid}${CTAG:-}.npz; MODE="composer:$P?w0=1.0&sched=const&var=0.001&key=pose&stall=3&window=4" ;;
-      compfold)    P=$R/r6_comp_${tid}${CTAG:-}.npz; MODE="comphybrid:$P?expert=$R/r4_${tid}_approach_expert.pt&foldprog=$R/r4_${tid}_approach_program.npz&w0=1.0&sched=const&var=0.001&key=pose&stall=3&window=4" ;;
+      compfold)    P=$R/r6_comp_${tid}${CTAG:-}.npz; E=${EXPTAG:-_approach}; MODE="comphybrid:$P?expert=$R/r4_${tid}${E}_expert.pt&foldprog=$R/r4_${tid}${E}_program.npz&w0=1.0&sched=const&var=0.001&key=pose&stall=3&window=4" ;;
       *) echo "unknown arm $arm"; exit 1 ;;
     esac
     case $arm in raw_*|code_*|prompt) PB=$($PY -c "import sys; sys.path.insert(0,'.'); from lifelong_ood.policy.compose import DemoProgram; print(DemoProgram.load('$P').bytes())") ;; esac

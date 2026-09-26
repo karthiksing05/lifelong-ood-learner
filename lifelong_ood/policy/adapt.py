@@ -25,9 +25,21 @@ import torch
 from ..experts.lora import add_node, inject_keyed_lora, keys_on
 
 
-def inject(bk, state=None, exclude=("lm_head", "embed_tokens")):
+SCOPES = {
+    # where the expert's adapters go: the whole action expert (every Linear of the 18 layers, 163 banks), its last two
+    # layers, or ONLY the final projection from the expert's (image-conditioned) hidden state to the velocity -- the
+    # smallest adapter that can still correct actions from what the policy sees
+    "expert": ("expert", None),
+    "last2": ("expert", ("layers.16.", "layers.17.")),
+    "out": ("model", ("action_out_proj",)),
+}
+
+
+def inject(bk, state=None, exclude=("lm_head", "embed_tokens"), scope="expert"):
     state = state if state is not None else {"on": frozenset()}
-    banks = inject_keyed_lora(bk.expert, state, exclude=exclude)
+    where, include = SCOPES[scope]
+    module = bk.expert if where == "expert" else bk.model
+    banks = inject_keyed_lora(module, state, exclude=exclude, include=include)
     return state, banks
 
 
@@ -126,7 +138,7 @@ def load(bk, path, state=None):
     """Inject banks (idempotent) and load a saved expert.  -> (state, key, banks)."""
     z = torch.load(path, map_location="cpu")
     key = z["key"]
-    state, banks = inject(bk, state)
+    state, banks = inject(bk, state, scope=z.get("meta", {}).get("scope", "expert"))
     by_name = {b.name: b for b in banks}
     rank = next(iter(z["banks"].values()))["A"].shape[0]
     add_node(banks, key, rank)

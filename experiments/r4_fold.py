@@ -65,6 +65,7 @@ def main():
                     help="frames the expert learns and is switched on at: the library-unexplained ones, the contact windows "
                          "around the demo's gripper events (where a grasp needs closed-loop precision), or every frame")
     ap.add_argument("--contact", type=int, default=10)
+    ap.add_argument("--scope", default="expert", choices=["expert", "last2", "out"], help="where the fold's adapters go")
     ap.add_argument("--pre", type=int, default=None, help="contact window starts this many frames before each gripper event "
                     "(default: --contact); a wider pre-window covers the visually guided approach")
     ap.add_argument("--tag", default="")
@@ -135,14 +136,14 @@ def main():
     anc_bank = adapt.PrefixBank(bk, library_obs(demos, lib["episode"][aj], lib["frame"][aj]))
     anc_chunks = D.pad_rows(lib["demo"][aj], bk.H)
     log(f"[r4] prefixes: {arr_bank.n} arrival + {anc_bank.n} anchor observations in {time.time() - t0:.0f}s")
-    state, banks = adapt.inject(bk)
+    state, banks = adapt.inject(bk, scope=a.scope)
     key = f"fold_{a.task}"
     params = add_node(banks, key, a.rank)
     hist = adapt.train(bk, state, key, params, arr_bank, arr_chunks, steps=a.steps, lr=a.lr, seed=a.seed,
                        anchor=(anc_bank, anc_chunks), anchor_weight=a.anchor_weight, log=log)
     os.makedirs("results/robot", exist_ok=True)
     base = f"results/robot/r4_{a.task}{a.tag}"
-    eb = adapt.save(banks, key, base + "_expert.pt", meta=dict(task=a.task, text=text, rank=a.rank))
+    eb = adapt.save(banks, key, base + "_expert.pt", meta=dict(task=a.task, text=text, rank=a.rank, scope=a.scope))
 
     # 4. the program with its fold mask, and the grown library
     prog = DemoProgram.from_demo(tree, rows, ep["state"], K=a.K, levels=band, variant="code")

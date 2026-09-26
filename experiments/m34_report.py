@@ -136,6 +136,21 @@ def final(a):
         if (t, "lora") in cells:
             cells[(t, "lora")][2] = int(r["bytes"]["experts"])
     tasks = sorted(lang, key=int)
+    # HONEST sizes, recomputed from the artifacts (rows launched before the 2026-09-25 retraction under-counted code
+    # programs: a code program's executed teacher needs its per-dimension weights, i.e. as much as the raw chunk)
+    import os
+    from lifelong_ood.policy.compose import DemoProgram
+    R = "results/robot"
+    for t in tasks:
+        cp = f"{R}/r3_prog_{t}_code_lib40.npz"
+        if (t, "code_replay") in cells and os.path.exists(cp):
+            cells[(t, "code_replay")][2] = DemoProgram.load(cp).bytes()
+        hp = f"{R}/r4_{t}_approach_program.npz"
+        if (t, "hybrid_approach") in cells and os.path.exists(hp):
+            expert = [r["bytes"]["experts"] + r["bytes"]["tree"] for r in ledger.load("r4_fold") if r["tag"] == "_approach" and str(r["metrics"]["task"]) == t]
+            cells[(t, "hybrid_approach")][2] = DemoProgram.load(hp).bytes() + (expert[-1] if expert else 0)
+        if (t, "composer") in cells or any(x[1].startswith("composer") for x in cells if x[0] == t):
+            pass
     keep = {t: (lambda k, n: n > 0 and k / n >= a.practice)(*dev.get((t, "zeroshot"), (0, 0, 0))[:2]) for t in tasks}
     def pick(t, arm):
         if keep[t]:
