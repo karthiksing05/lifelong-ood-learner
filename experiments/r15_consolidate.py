@@ -64,6 +64,8 @@ def main():
     ap.add_argument("--fold-stride", type=int, default=2, help="every k-th frame of the successes' contact windows")
     ap.add_argument("--lora", action="store_true", help="train ONLY the LoRA baseline on the same data (a separate run: a fresh model)")
     ap.add_argument("--lora-stride", type=int, default=5)
+    ap.add_argument("--max-fold-frames", type=int, default=700, help="uniformly subsample the fold's frames above this (GPU memory; "
+                    "2026-09-26: only task 3, 19 successes with long windows, exceeded it)")
     ap.add_argument("--n-anchor", type=int, default=384)
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--name", default="r15", help="output prefix (a smoke test writes elsewhere); ledger tags gain it when not r15")
@@ -143,6 +145,10 @@ def main():
         aj = rng.choice(len(lib["episode"]), size=min(a.n_anchor, len(lib["episode"])), replace=False)
         anc_bank = adapt.PrefixBank(bk, r4.library_obs(demos, lib["episode"][aj], lib["frame"][aj]))
         anc_chunks = D.pad_rows(lib["demo"][aj], bk.H)
+        if len(fold_obs) > a.max_fold_frames:
+            keep = np.linspace(0, len(fold_obs) - 1, a.max_fold_frames).round().astype(int)
+            log(f"[r15] {len(fold_obs)} fold frames > {a.max_fold_frames}: uniformly subsampled")
+            fold_obs, fold_rows = [fold_obs[i] for i in keep], [fold_rows[i] for i in keep]
         t0 = time.time()
         bank = adapt.PrefixBank(bk, fold_obs)
         state, banks = adapt.inject(bk, scope="last2")
