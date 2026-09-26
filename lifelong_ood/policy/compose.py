@@ -106,6 +106,16 @@ class DemoProgram:
         self.prompt_table = [task_text[int(t)] for t in table]
         return self
 
+    def subsample(self, k):
+        """Keep every k-th frame (the policy is queried every 5 steps and neighbouring chunks share 9 of 10 actions):
+        a k-times smaller program.  The alignment window is counted in kept frames by the hooks."""
+        k = int(k)
+        sl = slice(0, None, k)
+        take = lambda a: None if a is None else np.asarray(a)[sl]          # noqa: E731
+        return DemoProgram(mu=take(self.mu), var=take(self.var), key=take(self.key), codes=list(self.codes[sl]) if self.codes else [],
+                           variant=self.variant, fold=take(self.fold), prompt_id=take(self.prompt_id), prompt_table=self.prompt_table,
+                           states=take(self.states), steer=take(self.steer))
+
     def bytes(self):
         """What the program stores: codes (uint16 id + fp16 weight each) or the raw chunks (fp16), + the keys, + one
         uint8 prompt index per frame when a prompt program is attached (the instructions are the library's)."""
