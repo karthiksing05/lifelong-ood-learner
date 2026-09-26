@@ -1,0 +1,83 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/m3_dev_39_dimfold_full.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 840,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 840,
+  "tree": 0
+ },
+ "command": "roll.sh MODE=hybrid:/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r7_dimfold_39_s5.npz?expert=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r4_39_approach_expert.pt&w0=1.0&sched=const&var=0.001&key=pose&stall=3&window=4 SUITE=libero_90 TASKS=39 TRIALS=10 (job 3956633)",
+ "config": {
+  "client": {
+   "first_trial": 0,
+   "host": "127.0.0.1",
+   "max_steps": 0,
+   "no_meta": false,
+   "out": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/m3_dev_39_dimfold_full.json",
+   "port": 9555,
+   "replan": 5,
+   "resize": 224,
+   "seed": 7,
+   "suite": "libero_90",
+   "tasks": "39",
+   "trials": 10,
+   "videos": 2,
+   "wait": 10
+  },
+  "job": "3956633",
+  "mode": "hybrid:/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r7_dimfold_39_s5.npz?expert=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r4_39_approach_expert.pt&w0=1.0&sched=const&var=0.001&key=pose&stall=3&window=4"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "brainiac.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3956633",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_dev",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "b5e61cec07804ce618a2e92f09cdfdcd15627baa",
+  "short": "b5e61cec"
+ },
+ "keys": {
+  "first_trial": 0,
+  "mode": "hybrid:/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r7_dimfold_39_s5.npz?expert=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r4_39_approach_expert.pt&w0=1.0&sched=const&var=0.001&key=pose&stall=3&window=4",
+  "tasks": "39",
+  "trials": 10
+ },
+ "metrics": {
+  "complete": true,
+  "n_episodes": 10,
+  "secs": 270.06738090515137,
+  "success_rate": 0.8,
+  "tasks": {
+   "39": {
+    "errors": 0,
+    "language": "turn off the stove",
+    "mean_steps": 246.2,
+    "n": 10,
+    "success_rate": 0.8
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_dev__libero_90__dimfold_full__first_trial-0__mode72494324410c__tasks-39__trials-10__s7__b5e61cec",
+ "schema": 1,
+ "script": "experiments/libero_client.py",
+ "seconds": null,
+ "seed": 7,
+ "source_commit": null,
+ "started": "2026-09-26T03:59:37+00:00",
+ "stream": null,
+ "tag": "dimfold_full"
+}
