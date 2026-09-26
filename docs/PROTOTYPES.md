@@ -45,3 +45,24 @@ Coarse-to-fine (the top of the tree, children by frames):
 ![vocabulary by level](../figures/robot/atlas_vocabulary.png)
 
 ![tasks by primitive](../figures/robot/atlas_incidence.png)
+
+## What a new task borrows
+
+A held-out LIBERO-90 task is composed by a learned product of experts over its vocabulary of 32 library prototypes
+(`lifelong_ood/policy/composer.py`; `experiments/r6_composer.py`, `r6_borrow_viz.py`).  Following the dominant prototype
+frame by frame turns each task's single demo into a script written in the library's words (frame of the switch in brackets):
+
+- **put the white bowl on the plate**: left-up + open [0] -> forward-right + open [7] -> down + open [43] -> down + closing [68] -> hold + closed [85] -> lift + closed [96] -> left + closed [102] -> down + closed [142] -> down + closed [172] -> back-down + opening [187] -> left-up + open [202]
+- **put the white mug on the left plate**: right + open [0] -> down-back + open [8] -> down-back + closing [21] -> lift + closed [31] -> forward-right + closed [48] -> down-back + closed [61] -> back + open [70] -> hold + open [78]
+- **turn off the stove**: forward + open [0] -> twist wrist + open [14] -> right-down + open [15] -> down-back + open [34] -> right-back + closed [69] -> hold + closed [70] -> down + open [86] -> right-back + closed [100]
+- **open the microwave**: down + open [0] -> forward + open [26] -> forward + open [39] -> back-left + opening [53] -> right + open [75] -> forward + open [95] -> forward + open [101] -> back-left + opening [112] -> forward + open [125]
+- **put the frying pan under the cabinet shelf**: forward-left + open [0] -> forward + open [7] -> forward-down + open [31] -> left-back + open [46] -> lift-back + open [83] -> down + open [88] -> hold + closed [102] -> right + closed [128] -> right + closed [169]
+- **put the moka pot on the stove**: forward + open [0] -> forward + open [37] -> down-left + open [59] -> down + open [61] -> left-down + closed [75] -> down-back + open [111] -> opening [124]
+
+The pick-and-place tasks read as reach, lower, close, lift, carry, lower, open, retreat, all borrowed from the
+40 trained tasks; the new motions (the stove knob turned the other way, the microwave door pulled open) are assembled
+from a wrist twist and closed-gripper right-back strokes, and from back-left strokes while the gripper opens.
+
+![white bowl](../figures/robot/borrow_36.png)
+
+![stove off](../figures/robot/borrow_39.png)
