@@ -34,8 +34,11 @@ class GuidedPolicy:
             obs = self.hooks.rewrite(obs, meta)
         observation = self.bk.observation(obs)
         pre = self.bk.prefix(observation)
-        guide, gate = (None, None) if self.hooks is None else self.hooks(obs, pre, meta)
         nz = None if noise is None else np.asarray(noise).reshape(1, -1)
+        if getattr(self.hooks, "needs_prior", False):
+            # the PRIOR expert: the frozen policy's own chunk on this observation, before the composed teacher is built
+            self.hooks.set_prior(self.bk.sample(1, pre, seed=self.seed + self.calls, num_steps=self.num_steps, noise=nz)[0])
+        guide, gate = (None, None) if self.hooks is None else self.hooks(obs, pre, meta)
         rows = None
         if guide is not None and getattr(self.hooks, "agree", None) is not None:
             own = self.bk.sample(1, pre, seed=self.seed + self.calls, num_steps=self.num_steps, step_gate=gate, noise=nz)

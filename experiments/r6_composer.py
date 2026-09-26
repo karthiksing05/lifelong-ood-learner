@@ -40,6 +40,7 @@ def main():
     ap.add_argument("--lam-ent", type=float, default=1e-3)
     ap.add_argument("--lam-smooth", type=float, default=1e-2)
     ap.add_argument("--stride", type=int, default=5)
+    ap.add_argument("--prior", action="store_true", help="add pi0.5's own chunk as an expert (needs results/robot/r6_prior_<task>.npz)")
     ap.add_argument("--tag", default="")
     a = ap.parse_args()
     torch.set_num_threads(4)
@@ -57,27 +58,31 @@ def main():
         ids, cover = C.vocabulary(tree, rows, levels, M=a.M)
         Mk, Vk = C.prototypes(tree, ids)
         Z = C.features(ep["state"], np.arange(T) / max(T - 1, 1))
-        comp = C.Composer(len(ids), Z.shape[1], a.hidden)
-        hist = C.fit(comp, Z, rows, Mk, Vk, steps=a.steps, lam_ent=a.lam_ent, lam_smooth=a.lam_smooth)
+        prior = np.load(f"results/robot/r6_prior_{tid}.npz")["prior"] if a.prior else None
+        comp = (C.PriorComposer if a.prior else C.Composer)(len(ids), Z.shape[1], a.hidden)
+        hist = C.fit(comp, Z, rows, Mk, Vk, steps=a.steps, lam_ent=a.lam_ent, lam_smooth=a.lam_smooth, prior=prior)
         with torch.no_grad():
-            mu, var, w = comp(torch.as_tensor(Z), Mk, Vk)
+            mu, var, w = comp(torch.as_tensor(Z), Mk, Vk) if prior is None else comp(torch.as_tensor(Z), Mk, Vk, torch.as_tensor(prior))
         mu = mu.numpy()
         wn = w.numpy()
         eff = float(np.exp(-(wn * np.log(wn + 1e-9)).sum(1)).mean())
         top1 = float(wn.max(1).mean())
         used = int((wn.max(axis=(0, 2, 3)) > 0.2).sum())
+        w_prior = float(wn[:, -1].mean()) if a.prior else None
+        prior_rms = float(np.sqrt(((prior - rows) ** 2).mean())) if a.prior else None
         best1 = float(np.sqrt(((Mk.numpy().reshape(len(ids), -1)[None] - rows[:, None]) ** 2).mean(2)).min(1).mean())
         prog = C.ComposerProgram(ids, {k: v.detach().numpy() for k, v in comp.state_dict().items()}, ep["state"][:: a.stride], T,
-                                 a.stride, Z.shape[1], a.hidden, a.tree)
+                                 a.stride, Z.shape[1], a.hidden, a.tree, kind="prior" if a.prior else "plain")
         path = f"results/robot/r6_comp_{tid}{a.tag}.npz"
         prog.save(path)
         m = dict(task=tid, text=texts[tid], n_frames=int(T), M=len(ids), vocab_cover=cover, n_params=comp.n_params(),
                  rms=float(np.sqrt(((mu - rows) ** 2).mean())), best_single_rms=best1, effective_prototypes=eff, top_weight=top1,
                  prototypes_used=used, jerk_composed=jerk(mu), jerk_demo=jerk(rows), program_bytes=prog.bytes(),
-                 raw_bytes=int(2 * rows.size + 16 * T), curve=hist, secs=time.time() - t0)
+                 raw_bytes=int(2 * rows.size + 16 * T), curve=hist, secs=time.time() - t0, w_prior=w_prior, prior_rms=prior_rms)
         print(f"[r6] task {tid} '{texts[tid][:40]}': rms {m['rms']:.3f} (best single prototype {best1:.3f}); borrows "
               f"{eff:.1f} prototypes per (step, dim), {used}/{len(ids)} used; jerk {m['jerk_composed']:.4f} vs demo {m['jerk_demo']:.4f}; "
-              f"stores {m['program_bytes']} B vs raw demo {m['raw_bytes']} B; {m['secs']:.0f}s", flush=True)
+              f"stores {m['program_bytes']} B vs raw demo {m['raw_bytes']} B"
+              + ("" if w_prior is None else f"; weight on the prior {w_prior:.2f} (prior alone {prior_rms:.3f} rms)") + f"; {m['secs']:.0f}s", flush=True)
         ledger.record("r6_composer", bench="libero_90", tag=a.tag, seed=0, keys=dict(task=tid), metrics=m,
                       bytes=dict(experts=0, tree=0, codes=m["program_bytes"], samples=0, teacher_copies=0, total=m["program_bytes"]),
                       config=vars(a), script="experiments/r6_composer.py", command=" ".join(sys.argv), artifacts=[path])

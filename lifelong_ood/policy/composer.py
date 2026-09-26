@@ -61,6 +61,25 @@ class Composer(nn.Module):
         return int(sum(p.numel() for p in self.parameters()))
 
 
+class PriorComposer(Composer):
+    """M library prototypes + ONE MORE expert: pi0.5's own chunk on the CURRENT observation (visually grounded, closed-loop).
+    The learned borrowing decides, per step and dimension, what to take from the frozen policy and what from the library;
+    the prior expert's variance is learned per (step, dimension)."""
+
+    def __init__(self, M, zdim=9, hidden=32):
+        super().__init__(M + 1, zdim, hidden)
+        self.log_vp = nn.Parameter(torch.full((H, A7), float(np.log(1e-2))))
+
+    def forward(self, z, Mk, Vk, prior):
+        w = self.weights(z)                                                   # [n, M+1, H, D]
+        n = len(z)
+        P = torch.as_tensor(prior, dtype=torch.float32).reshape(n, H, A7)
+        Vp = self.log_vp.exp()
+        num = (w[:, :-1] * Mk[None] / Vk[None]).sum(1) + w[:, -1] * P / Vp
+        prec = (w[:, :-1] / Vk[None]).sum(1) + w[:, -1] / Vp
+        return (num / prec).reshape(n, -1), (1.0 / prec).reshape(n, -1), w
+
+
 def features(states, phase):
     """z = the normalised 8-D robot state and the progress through the demo (0..1)."""
     s = state_norm()(np.atleast_2d(states)).astype(np.float32)
@@ -73,7 +92,7 @@ def prototypes(tree, ids):
     return torch.as_tensor(Mk), torch.as_tensor(np.maximum(Vk, 1e-4))
 
 
-def fit(comp, Z, A, Mk, Vk, steps=3000, lr=3e-3, lam_ent=1e-3, lam_smooth=1e-2, seed=0, log=None):
+def fit(comp, Z, A, Mk, Vk, steps=3000, lr=3e-3, lam_ent=1e-3, lam_smooth=1e-2, seed=0, log=None, prior=None):
     """Reconstruct the demo chunks A [T, 70] from z [T, 9]; entropy keeps the borrowing sparse, the smoothness term keeps
     consecutive frames' borrowing close.  -> dict of curves."""
     torch.manual_seed(seed)
@@ -81,8 +100,9 @@ def fit(comp, Z, A, Mk, Vk, steps=3000, lr=3e-3, lam_ent=1e-3, lam_smooth=1e-2, 
     A = torch.as_tensor(np.asarray(A, np.float32))
     opt = torch.optim.Adam(comp.parameters(), lr=lr)
     hist = []
+    Pr = None if prior is None else torch.as_tensor(np.asarray(prior, np.float32))
     for s in range(1, steps + 1):
-        mu, var, w = comp(Z, Mk, Vk)
+        mu, var, w = comp(Z, Mk, Vk) if Pr is None else comp(Z, Mk, Vk, Pr)
         rec = ((mu - A) ** 2).mean()
         ent = -(w * (w + 1e-9).log()).sum(1).mean()
         smooth = ((w[1:] - w[:-1]) ** 2).sum(1).mean() if len(w) > 1 else torch.zeros(())
@@ -98,12 +118,12 @@ def fit(comp, Z, A, Mk, Vk, steps=3000, lr=3e-3, lam_ent=1e-3, lam_smooth=1e-2, 
 class ComposerProgram:
     """What a task stores: vocabulary ids, the composer's parameters (fp16), the demo's states every `stride` frames."""
 
-    def __init__(self, ids, state_dict, states, T, stride=5, zdim=9, hidden=32, library=""):
+    def __init__(self, ids, state_dict, states, T, stride=5, zdim=9, hidden=32, library="", kind="plain"):
         self.ids, self.sd, self.states, self.T, self.stride = list(ids), state_dict, np.asarray(states, np.float32), int(T), int(stride)
-        self.zdim, self.hidden, self.library = zdim, hidden, library
+        self.zdim, self.hidden, self.library, self.kind = zdim, hidden, library, kind
 
     def model(self):
-        c = Composer(len(self.ids), self.zdim, self.hidden)
+        c = (PriorComposer if self.kind == "prior" else Composer)(len(self.ids), self.zdim, self.hidden)
         c.load_state_dict({k: torch.as_tensor(np.asarray(v, np.float32)) for k, v in self.sd.items()})
         return c.eval()
 
@@ -113,7 +133,7 @@ class ComposerProgram:
 
     def save(self, path):
         np.savez_compressed(path, ids=np.asarray(self.ids), states=self.states, meta=json.dumps(dict(T=self.T, stride=self.stride,
-                            zdim=self.zdim, hidden=self.hidden, library=self.library)),
+                            zdim=self.zdim, hidden=self.hidden, library=self.library, kind=self.kind)),
                             **{f"p__{k}": np.asarray(v, np.float16) for k, v in self.sd.items()})
 
     @classmethod
@@ -121,7 +141,8 @@ class ComposerProgram:
         z = np.load(path, allow_pickle=True)
         meta = json.loads(str(z["meta"]))
         sd = {k[3:]: z[k].astype(np.float32) for k in z.files if k.startswith("p__")}
-        return cls(z["ids"].tolist(), sd, z["states"], meta["T"], meta["stride"], meta["zdim"], meta["hidden"], meta["library"])
+        return cls(z["ids"].tolist(), sd, z["states"], meta["T"], meta["stride"], meta["zdim"], meta["hidden"], meta["library"],
+                   meta.get("kind", "plain"))
 
 
 class _KeyProg:
@@ -147,6 +168,19 @@ class ComposerHooks(ComposeHooks):
         self.comp = prog.model()
         self.Mk, self.Vk = prototypes(tree, prog.ids)
         self._state = None
+        self.needs_prior = prog.kind == "prior"
+        self._prior = None
+        self.w_prior = []
+
+    def set_prior(self, row):
+        self._prior = np.asarray(row, np.float32)
+
+    def reset(self, meta=None):
+        if self.w_prior:
+            import logging
+            logging.info(f"[composer] episode: mean weight on the prior expert {np.mean(self.w_prior):.2f}")
+        self.w_prior = []
+        super().reset(meta)
 
     def rewrite(self, obs, meta=None):
         self._state = np.asarray(obs["observation/state"], np.float32)
@@ -158,7 +192,11 @@ class ComposerHooks(ComposeHooks):
         phase = min(1.0, j / max(len(self.prog.key) - 1, 1))
         z = torch.as_tensor(features(self._state, [phase]))
         with torch.no_grad():
-            mu, var, _ = self.comp(z, self.Mk, self.Vk)
+            if self.needs_prior:
+                mu, var, w = self.comp(z, self.Mk, self.Vk, self._prior[None])
+                self.w_prior.append(float(w[0, -1].mean()))
+            else:
+                mu, var, _ = self.comp(z, self.Mk, self.Vk)
         mu = mu[0].numpy()
         v = np.full_like(mu, self.var if self.var is not None else 1e-3)
         self.prog.mu[j] = mu                       # for logging / agreement reads
