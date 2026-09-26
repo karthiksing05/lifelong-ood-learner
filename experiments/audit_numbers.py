@@ -55,6 +55,14 @@ def emb(experiment, metric, **f):
     return lambda: L.mean(experiment, metric, **f)
 
 
+def kb(metric):
+    return lambda: tuple([L.mean("m3_summary", metric, tag="final")[0] / 1e3] + list(L.mean("m3_summary", metric, tag="final")[1:]))
+
+
+def mb(metric):
+    return lambda: tuple([L.mean("m3_summary", metric, tag="final")[0] / 1e6] + list(L.mean("m3_summary", metric, tag="final")[1:]))
+
+
 EMBODIED = [
     ("M0: LIBERO-Goal ms per simulation step", emb("r0_env_smoke", "metrics.ms_per_step_median", bench="libero_goal"), "16.9"),
     ("M1: parity with openpi's sampler", emb("r1_policy_smoke", "metrics.parity_max_abs_diff", bench="libero_goal"), "0.0"),
@@ -108,6 +116,28 @@ EMBODIED = [
     ("gate: white mug restored", emb("m3_compose", "metrics.success_rate", tag="code_agree20", keys__tasks="67"), "0.8"),
     ("gate: moka pot", emb("m3_compose", "metrics.success_rate", tag="code_agree20", keys__tasks="19"), "0.0"),
     ("gate: stove", emb("m3_compose", "metrics.success_rate", tag="code_agree20", keys__tasks="39"), "0.0"),
+    ("final: dim-borrow + 258 KB fold successes", emb("m3_summary", "metrics.arms.ours_dim1_last2.k", tag="final"), "74"),
+    ("final: episodes", emb("m3_summary", "metrics.arms.ours_dim1_last2.n", tag="final"), "120"),
+    ("final: dim-borrow + 258 KB fold KB stored", kb("metrics.stored_bytes.ours_dim1_last2"), "827"),
+    ("final: LoRA successes", emb("m3_summary", "metrics.arms.practice_lora.k", tag="final"), "74"),
+    ("final: LoRA MB stored", mb("metrics.stored_bytes.practice_lora"), "74.8"),
+    ("final: replay successes", emb("m3_summary", "metrics.arms.practice_replay.k", tag="final"), "72"),
+    ("final: replay KB stored", kb("metrics.stored_bytes.practice_replay"), "100"),
+    ("final: dim-borrow s5 successes", emb("m3_summary", "metrics.arms.ours_dim.k", tag="final"), "71"),
+    ("final: dim-borrow s5 KB stored", kb("metrics.stored_bytes.ours_dim"), "4.5"),
+    ("final: codes + fold successes", emb("m3_summary", "metrics.arms.ours.k", tag="final"), "79"),
+    ("final: codes + fold MB stored", mb("metrics.stored_bytes.ours"), "14.2"),
+    ("final: zero-shot successes", emb("m3_summary", "metrics.arms.zeroshot.k", tag="final"), "42"),
+    ("composer: stove, development", emb("m3_dev", "metrics.success_rate", tag="composer_v1", keys__tasks="39"), "0.3"),
+    ("dim-borrow every frame: stove, development", emb("m3_dev", "metrics.success_rate", tag="dimcode_s1", keys__tasks="39"), "1.0"),
+    ("composer: program KB", lambda: tuple([L.mean("r6_composer", "metrics.program_bytes", tag="", keys__task=39)[0] / 1e3] + list(L.mean("r6_composer", "metrics.program_bytes", tag="", keys__task=39)[1:])), "4.3"),
+    ("prior composer: weight on the prior, white mug", emb("r6_composer", "metrics.w_prior", tag="_prior", keys__task=67), "0.47"),
+    ("prior composer: weight on the prior, stove", emb("r6_composer", "metrics.w_prior", tag="_prior", keys__task=39), "0.10"),
+    ("atlas: gripper purity, t=0.4", emb("r2c_atlas", "metrics.levels.0.4.gripper_purity", bench="libero_40"), "0.99"),
+    ("atlas: words at t=0.2", emb("r2c_atlas", "metrics.levels.0.2.n_words", bench="libero_40"), "111"),
+    ("atlas: word purity at t=0.2", emb("r2c_atlas", "metrics.levels.0.2.word_purity", bench="libero_40"), "0.90"),
+    ("fold size, last two layers, KB", lambda: tuple([L.mean("r4_fold", "bytes.experts", tag="_approach_last2")[0] / 1e3] + list(L.mean("r4_fold", "bytes.experts", tag="_approach_last2")[1:])), "258"),
+    ("fold size, whole expert, MB", lambda: tuple([L.mean("r4_fold", "bytes.experts", tag="_approach")[0] / 1e6] + list(L.mean("r4_fold", "bytes.experts", tag="_approach")[1:])), "4.7"),
 ]
 
 CHECKS = EMBODIED + [

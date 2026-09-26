@@ -1,0 +1,562 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 14162999,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 14162999,
+  "tree": 0
+ },
+ "command": "python experiments/m34_report.py --final --record",
+ "config": {
+  "final": true,
+  "heldout": false,
+  "json": "",
+  "practice": 0.5,
+  "record": true
+ },
+ "env": {
+  "device": "cpu",
+  "host": "sky2.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_summary",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "184c9dcb5596385c68f9e864a5de135cbc50072b",
+  "short": "184c9dcb"
+ },
+ "keys": {},
+ "metrics": {
+  "arms": {
+   "ours": {
+    "fail_k": 39,
+    "fail_n": 80,
+    "fail_rate": 0.4875,
+    "k": 79,
+    "n": 120,
+    "rate": 0.6583333333333333
+   },
+   "ours_dim": {
+    "fail_k": 31,
+    "fail_n": 80,
+    "fail_rate": 0.3875,
+    "k": 71,
+    "n": 120,
+    "rate": 0.5916666666666667
+   },
+   "ours_dim1": {
+    "fail_k": 29,
+    "fail_n": 80,
+    "fail_rate": 0.3625,
+    "k": 69,
+    "n": 120,
+    "rate": 0.575
+   },
+   "ours_dim1_full": {
+    "fail_k": 34,
+    "fail_n": 80,
+    "fail_rate": 0.425,
+    "k": 74,
+    "n": 120,
+    "rate": 0.6166666666666667
+   },
+   "ours_dim1_last2": {
+    "fail_k": 34,
+    "fail_n": 80,
+    "fail_rate": 0.425,
+    "k": 74,
+    "n": 120,
+    "rate": 0.6166666666666667
+   },
+   "ours_dim_full": {
+    "fail_k": 32,
+    "fail_n": 80,
+    "fail_rate": 0.4,
+    "k": 72,
+    "n": 120,
+    "rate": 0.6
+   },
+   "ours_dim_last2": {
+    "fail_k": 30,
+    "fail_n": 80,
+    "fail_rate": 0.375,
+    "k": 70,
+    "n": 120,
+    "rate": 0.5833333333333334
+   },
+   "practice_codes": {
+    "fail_k": 29,
+    "fail_n": 80,
+    "fail_rate": 0.3625,
+    "k": 69,
+    "n": 120,
+    "rate": 0.575
+   },
+   "practice_lora": {
+    "fail_k": 34,
+    "fail_n": 80,
+    "fail_rate": 0.425,
+    "k": 74,
+    "n": 120,
+    "rate": 0.6166666666666667
+   },
+   "practice_replay": {
+    "fail_k": 32,
+    "fail_n": 80,
+    "fail_rate": 0.4,
+    "k": 72,
+    "n": 120,
+    "rate": 0.6
+   },
+   "zeroshot": {
+    "fail_k": 2,
+    "fail_n": 80,
+    "fail_rate": 0.025,
+    "k": 42,
+    "n": 120,
+    "rate": 0.35
+   }
+  },
+  "kept_prior": [
+   "19",
+   "67"
+  ],
+  "practice_threshold": 0.5,
+  "rows": {
+   "19": {
+    "ours": [
+     20,
+     20,
+     0,
+     "prior"
+    ],
+    "ours_dim": [
+     20,
+     20,
+     0,
+     "prior"
+    ],
+    "ours_dim1": [
+     20,
+     20,
+     0,
+     "prior"
+    ],
+    "ours_dim1_full": [
+     20,
+     20,
+     0,
+     "prior"
+    ],
+    "ours_dim1_last2": [
+     20,
+     20,
+     0,
+     "prior"
+    ],
+    "ours_dim_full": [
+     20,
+     20,
+     0,
+     "prior"
+    ],
+    "ours_dim_last2": [
+     20,
+     20,
+     0,
+     "prior"
+    ],
+    "practice_codes": [
+     20,
+     20,
+     0,
+     "prior"
+    ],
+    "practice_lora": [
+     20,
+     20,
+     0,
+     "prior"
+    ],
+    "practice_replay": [
+     20,
+     20,
+     0,
+     "prior"
+    ],
+    "zeroshot": [
+     20,
+     20,
+     0
+    ]
+   },
+   "35": {
+    "ours": [
+     9,
+     20,
+     20567,
+     "codes"
+    ],
+    "ours_dim": [
+     9,
+     20,
+     945,
+     "dim"
+    ],
+    "ours_dim1": [
+     9,
+     20,
+     4585,
+     "dim"
+    ],
+    "ours_dim1_full": [
+     9,
+     20,
+     4585,
+     "dim"
+    ],
+    "ours_dim1_last2": [
+     9,
+     20,
+     4585,
+     "dim"
+    ],
+    "ours_dim_full": [
+     9,
+     20,
+     945,
+     "dim"
+    ],
+    "ours_dim_last2": [
+     9,
+     20,
+     945,
+     "dim"
+    ],
+    "practice_codes": [
+     9,
+     20,
+     20567,
+     "code_replay"
+    ],
+    "practice_lora": [
+     5,
+     20,
+     18710528,
+     "lora"
+    ],
+    "practice_replay": [
+     8,
+     20,
+     20567,
+     "raw_replay"
+    ],
+    "zeroshot": [
+     2,
+     20,
+     0
+    ]
+   },
+   "36": {
+    "ours": [
+     6,
+     20,
+     4711640,
+     "codes+fold"
+    ],
+    "ours_dim": [
+     7,
+     20,
+     1540,
+     "dim"
+    ],
+    "ours_dim1": [
+     3,
+     20,
+     7630,
+     "dim"
+    ],
+    "ours_dim1_full": [
+     6,
+     20,
+     4685262,
+     "dim+fold"
+    ],
+    "ours_dim1_last2": [
+     6,
+     20,
+     265678,
+     "dim+fold"
+    ],
+    "ours_dim_full": [
+     7,
+     20,
+     4679172,
+     "dim+fold"
+    ],
+    "ours_dim_last2": [
+     5,
+     20,
+     259588,
+     "dim+fold"
+    ],
+    "practice_codes": [
+     4,
+     20,
+     34226,
+     "code_replay"
+    ],
+    "practice_lora": [
+     13,
+     20,
+     18710528,
+     "lora"
+    ],
+    "practice_replay": [
+     5,
+     20,
+     34226,
+     "raw_replay"
+    ],
+    "zeroshot": [
+     0,
+     20,
+     0
+    ]
+   },
+   "39": {
+    "ours": [
+     18,
+     20,
+     4718228,
+     "codes+fold"
+    ],
+    "ours_dim": [
+     14,
+     20,
+     840,
+     "dim"
+    ],
+    "ours_dim1": [
+     17,
+     20,
+     4060,
+     "dim"
+    ],
+    "ours_dim1_full": [
+     18,
+     20,
+     4704192,
+     "dim+fold"
+    ],
+    "ours_dim1_last2": [
+     17,
+     20,
+     284608,
+     "dim+fold"
+    ],
+    "ours_dim_full": [
+     16,
+     20,
+     4700972,
+     "dim+fold"
+    ],
+    "ours_dim_last2": [
+     16,
+     20,
+     281388,
+     "dim+fold"
+    ],
+    "practice_codes": [
+     14,
+     20,
+     18212,
+     "code_replay"
+    ],
+    "practice_lora": [
+     13,
+     20,
+     18710528,
+     "lora"
+    ],
+    "practice_replay": [
+     18,
+     20,
+     18212,
+     "raw_replay"
+    ],
+    "zeroshot": [
+     0,
+     20,
+     0
+    ]
+   },
+   "42": {
+    "ours": [
+     6,
+     20,
+     4712564,
+     "codes+fold"
+    ],
+    "ours_dim": [
+     1,
+     20,
+     1225,
+     "dim"
+    ],
+    "ours_dim1": [
+     0,
+     20,
+     6020,
+     "dim"
+    ],
+    "ours_dim1_full": [
+     1,
+     20,
+     4691752,
+     "dim+fold"
+    ],
+    "ours_dim1_last2": [
+     2,
+     20,
+     272168,
+     "dim+fold"
+    ],
+    "ours_dim_full": [
+     0,
+     20,
+     4686957,
+     "dim+fold"
+    ],
+    "ours_dim_last2": [
+     0,
+     20,
+     267373,
+     "dim+fold"
+    ],
+    "practice_codes": [
+     2,
+     20,
+     27004,
+     "code_replay"
+    ],
+    "practice_lora": [
+     3,
+     20,
+     18710528,
+     "lora"
+    ],
+    "practice_replay": [
+     1,
+     20,
+     27004,
+     "raw_replay"
+    ],
+    "zeroshot": [
+     0,
+     20,
+     0
+    ]
+   },
+   "67": {
+    "ours": [
+     20,
+     20,
+     0,
+     "prior"
+    ],
+    "ours_dim": [
+     20,
+     20,
+     0,
+     "prior"
+    ],
+    "ours_dim1": [
+     20,
+     20,
+     0,
+     "prior"
+    ],
+    "ours_dim1_full": [
+     20,
+     20,
+     0,
+     "prior"
+    ],
+    "ours_dim1_last2": [
+     20,
+     20,
+     0,
+     "prior"
+    ],
+    "ours_dim_full": [
+     20,
+     20,
+     0,
+     "prior"
+    ],
+    "ours_dim_last2": [
+     20,
+     20,
+     0,
+     "prior"
+    ],
+    "practice_codes": [
+     20,
+     20,
+     0,
+     "prior"
+    ],
+    "practice_lora": [
+     20,
+     20,
+     0,
+     "prior"
+    ],
+    "practice_replay": [
+     20,
+     20,
+     0,
+     "prior"
+    ],
+    "zeroshot": [
+     20,
+     20,
+     0
+    ]
+   }
+  },
+  "stored_bytes": {
+   "ours": 14162999,
+   "ours_dim": 4550,
+   "ours_dim1": 22295,
+   "ours_dim1_full": 14085791,
+   "ours_dim1_last2": 827039,
+   "ours_dim_full": 14068046,
+   "ours_dim_last2": 809294,
+   "practice_codes": 100009,
+   "practice_lora": 74842112,
+   "practice_replay": 100009,
+   "zeroshot": 0
+  }
+ },
+ "notes": "derived from ledger/m3_final (states 30-49); practice = ledger/m3_compose zero-shot (states 0-9)",
+ "retired": null,
+ "run_id": "m3_summary__libero_90__final__s7__184c9dcb",
+ "schema": 1,
+ "script": "experiments/m34_report.py",
+ "seconds": null,
+ "seed": 7,
+ "source_commit": null,
+ "started": "2026-09-26T05:13:21+00:00",
+ "stream": null,
+ "tag": "final"
+}
