@@ -1,0 +1,119 @@
+{
+ "artifacts": [
+  "results/robot/r3_prog_34_code_lib40.npz",
+  "results/robot/r3_prog_34_raw_lib40.npz"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 22608,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 22608,
+  "tree": 0
+ },
+ "command": "experiments/r3_prepare.py --tree results/robot/r2b_libero_40_tree.npz --library-npz results/robot/r2b_libero_40.npz --tasks 34 --levels 2,3,4 --tag _lib40",
+ "config": {
+  "K": 3,
+  "held": 5,
+  "levels": "2,3,4",
+  "library_npz": "results/robot/r2b_libero_40.npz",
+  "tag": "_lib40",
+  "tasks": "34",
+  "tree": "results/robot/r2b_libero_40_tree.npz"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "ig-88.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3958606",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r3_prepare",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "2b52c288ba4775d60e6d27422aa578b2ffcba0f2",
+  "short": "2b52c288"
+ },
+ "keys": {
+  "task": 34
+ },
+ "metrics": {
+  "bddl": "KITCHEN_SCENE6_put_the_yellow_and_white_mug_to_the_front_of_the_white_mug",
+  "code": {
+   "bytes": 22608,
+   "mean_rms_to_demo": 0.09746532142162323,
+   "nll_per_dim": -0.9826287031173706,
+   "path": "results/robot/r3_prog_34_code_lib40.npz"
+  },
+  "demo_episode": 2074,
+  "depth_hist": {
+   "0.05": 4,
+   "0.1": 0,
+   "0.2": 8,
+   "0.3": 15,
+   "0.4": 1,
+   "0.55": 4,
+   "0.7": 11,
+   "explained": 101
+  },
+  "gripper_events": [
+   57
+  ],
+  "n_frames": 144,
+  "n_ipec_episodes": 44,
+  "nll_median": {
+   "0.05": -0.13907346913768157,
+   "0.1": -1.119015981159069,
+   "0.2": -0.9650943555327071,
+   "0.3": -0.6189160967718331,
+   "0.4": -0.3539658570225379,
+   "0.55": -0.05186368253971646,
+   "0.7": 0.16198388852071818
+  },
+  "out_of_range_frac": 0.1195436507936508,
+  "prompt_program": {
+   "pick up the black bowl on the ramekin and place it on the plate": 12,
+   "pick up the book and place it in the back compartment of the caddy": 16,
+   "pick up the orange juice and place it in the basket": 23,
+   "put both moka pots on the stove": 56,
+   "put the black bowl in the bottom drawer of the cabinet and close it": 11,
+   "put the bowl on the plate": 11,
+   "put the bowl on the stove": 4,
+   "put the white mug on the left plate and put the yellow and white mug on the right plate": 10,
+   "turn on the stove and put the moka pot on it": 1
+  },
+  "raw": {
+   "bytes": 4590,
+   "mean_rms_to_demo": 0.0,
+   "nll_per_dim": -1.3836462497711182,
+   "path": "results/robot/r3_prog_34_raw_lib40.npz"
+  },
+  "task_id": 34,
+  "text": "put the yellow and white mug to the front of the white mug",
+  "unexplained_by_level": {
+   "0.05": 0.2222222222222222,
+   "0.1": 0.19444444444444445,
+   "0.2": 0.20833333333333334,
+   "0.3": 0.16666666666666666,
+   "0.4": 0.041666666666666664,
+   "0.55": 0.08333333333333333,
+   "0.7": 0.0763888888888889
+  },
+  "unexplained_frac": 0.2986111111111111
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r3_prepare__libero_90___lib40__task-34__s0__2b52c288",
+ "schema": 1,
+ "script": "experiments/r3_prepare.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-26T06:15:17+00:00",
+ "stream": null,
+ "tag": "_lib40"
+}

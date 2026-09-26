@@ -43,7 +43,7 @@ def overlap(held, src):
 
 
 def provenance(tree, z, levels=(2, 3, 4)):
-    """node id -> (level, share of its member frames per training task [40])."""
+    """node id -> (level, share of its member frames per training task [40], number of member frames)."""
     task = z["task"]
     out = {}
     for l in levels:
@@ -54,7 +54,7 @@ def provenance(tree, z, levels=(2, 3, 4)):
         assert len(ks) == len(ids), (l, len(ks), len(ids))
         for k, nid in zip(ks, ids):
             m = task[owner == k]
-            out[int(nid)] = (l, np.bincount(m, minlength=40) / len(m))
+            out[int(nid)] = (l, np.bincount(m, minlength=40) / len(m), len(m))
     return out
 
 
@@ -75,17 +75,23 @@ def main():
     texts, _ = r3p.libero90_texts()
     held = sorted(int(re.findall(r"r7_dim_(\d+)_s1", p)[0]) for p in glob.glob("results/robot/r7_dim_*_s1.npz"))
     from lifelong_ood.policy.compose import DemoProgram
-    mass, lvl, res = {}, {}, {}
+    mass, lvl, res, lenders = {}, {}, {}, {}
     for t in held:
         p = DemoProgram.load(f"results/robot/r7_dim_{t}_s1.npz")
         ids, ch = p.dim_ids, p.dim_choice                     # [T, K], [T, 7]
-        m, lv = np.zeros(40), np.zeros(len(tree.u_grid))
+        m, lv, members, ntask = np.zeros(40), np.zeros(len(tree.u_grid)), [], []
         for f in range(len(ids)):
             for d in range(ch.shape[1]):
-                l, share = prov[int(ids[f, ch[f, d]])]
+                l, share, nm = prov[int(ids[f, ch[f, d]])]
                 m += share
                 lv[l] += 1
+                members.append(nm)
+                ntask.append(int((share > 0).sum()))
         mass[t], lvl[t] = m / m.sum(), lv / lv.sum()
+        members, ntask = np.array(members), np.array(ntask)
+        lenders[t] = dict(median_members=float(np.median(members)), le3_members=float(np.mean(members <= 3)),
+                          single_task=float(np.mean(ntask == 1)), ge3_tasks=float(np.mean(ntask >= 3)),
+                          distinct=int(len(set((int(ids[f, ch[f, d]]) for f in range(len(ids)) for d in range(ch.shape[1]))))))
     ov = np.array([[overlap(texts[t], train_text[s]) for s in range(40)] for t in held])       # [held, 40]
     M = np.stack([mass[t] for t in held])
     obs = float(np.mean((M * ov).sum(1)))
@@ -99,13 +105,19 @@ def main():
         res[t] = dict(text=texts[t], top=[dict(task=int(s), text=train_text[int(s)], suite=SUITE_OF.get(int(s), "?"), share=float(M[i][s]),
                                              overlap=float(ov[i][s])) for s in order[:5]],
                       effective_sources=float(np.exp(ent)), overlap_score=float((M[i] * ov[i]).sum()),
-                      overlap_base=float((base * ov[i]).sum()), level_mix={str(tree.u_grid[l]): float(lvl[t][l]) for l in (2, 3, 4)})
+                      overlap_base=float((base * ov[i]).sum()), level_mix={str(tree.u_grid[l]): float(lvl[t][l]) for l in (2, 3, 4)},
+                      lenders=lenders[t])
         print(f"[r8] {t:3d} '{texts[t][:44]}': {np.exp(ent):.1f} effective sources; top: "
               + "; ".join(f"{train_text[int(s)][:34]} {M[i][s]:.0%}" for s in order[:3])
               + f" | word overlap {res[t]['overlap_score']:.2f} (library base {res[t]['overlap_base']:.2f})", flush=True)
     print(f"[r8] mean word overlap of the borrowed sources {obs:.3f} vs {null.mean():.3f} +- {null.std():.3f} when programs are "
           f"paired with another held-out task's instruction (permutation p = {pval:.4f}, {a.perms} permutations)")
-    out = dict(tasks={str(t): res[t] for t in held}, overlap_mean=obs, null_mean=float(null.mean()), null_std=float(null.std()),
+    agg = {k: float(np.mean([lenders[t][k] for t in held])) for k in ("median_members", "le3_members", "single_task", "ge3_tasks")}
+    agg.update({f"level_{tree.u_grid[l]}": float(np.mean([lvl[t][l] for t in held])) for l in (2, 3, 4)})
+    print(f"[r8] lenders over the {len(held)} programs: {agg['level_0.2']:.2f} / {agg['level_0.3']:.2f} / {agg['level_0.4']:.2f} of pairs from "
+          f"t = 0.2 / 0.3 / 0.4; {agg['le3_members']:.2f} from prototypes with <= 3 member frames, {agg['single_task']:.2f} from single-task "
+          f"prototypes, {agg['ge3_tasks']:.2f} from prototypes >= 3 tasks share")
+    out = dict(tasks={str(t): res[t] for t in held}, lenders=agg, overlap_mean=obs, null_mean=float(null.mean()), null_std=float(null.std()),
                perm_p=pval, n_perms=a.perms, held=held, matrix=M.tolist(), overlap=ov.tolist(), base=base.tolist(),
                train_text={str(k): v for k, v in train_text.items()})
     json.dump(out, open("results/robot/r8_provenance.json", "w"), indent=1)

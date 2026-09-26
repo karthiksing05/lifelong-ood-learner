@@ -1,0 +1,65 @@
+{
+ "artifacts": [
+  "results/robot/r10_seg_53_s1.npz"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 2608,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 2608,
+  "tree": 0
+ },
+ "command": "experiments/r10_segcode.py --tasks 35,36,42,19,67,1,6,34,37,40,52,53,62,3,4,5,32,41,43,48,58,63",
+ "config": {
+  "L": 10,
+  "npz": "results/robot/r2b_libero_40.npz",
+  "tasks": "35,36,42,19,67,1,6,34,37,40,52,53,62,3,4,5,32,41,43,48,58,63"
+ },
+ "env": {
+  "device": "cpu",
+  "host": "sky2.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r10_segcode",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "2b52c288ba4775d60e6d27422aa578b2ffcba0f2",
+  "short": "2b52c288"
+ },
+ "keys": {
+  "task": 53
+ },
+ "metrics": {
+  "L": 10,
+  "bytes": 2608,
+  "frames": 148,
+  "jerk": 0.028723256662487984,
+  "jerk_demo": 0.03420437499880791,
+  "kept": 148,
+  "rebuild_max_err": 0.0,
+  "replay_bytes": 4566,
+  "rms": 0.013918139040470123,
+  "segments": 16,
+  "stride": 1,
+  "task": 53,
+  "text": "pick up the orange juice and put it in the basket"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r10_segcode__libero_90___s1__task-53__s0__2b52c288",
+ "schema": 1,
+ "script": "experiments/r10_segcode.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-26T06:19:49+00:00",
+ "stream": null,
+ "tag": "_s1"
+}

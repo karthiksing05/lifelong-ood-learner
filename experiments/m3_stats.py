@@ -17,6 +17,8 @@ import os
 import sys
 from collections import defaultdict
 
+import numpy as np
+
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT)
 from lifelong_ood import ledger, stats                                  # noqa: E402
@@ -30,16 +32,18 @@ MARGIN = 0.10
 METHODS = {"zeroshot": None, "practice_replay": ("raw_replay", None), "practice_lora": ("lora", None),
            "ours_dim": ("dimcode_s5", None), "ours_dim1": ("dimcode_s1", None),
            "ours_dim1_last2": ("dimfold_s1_last2", "dimcode_s1"), "ours_codes_full": ("hybrid_approach", "code_replay"),
-           "ours_leaf": ("leaf_s5", None), "ours_leaf1_last2": ("leaffold_s1_last2", "leaf_s1"), "ours_shared1": ("shared_s1", None)}
+           "ours_leaf": ("leaf_s5", None), "ours_leaf1_last2": ("leaffold_s1_last2", "leaf_s1"), "ours_shared1": ("shared_s1", None),
+           "ours_seg": ("seg_s5", None)}
 NAMES = {"zeroshot": "zero-shot", "practice_replay": "demo replay", "practice_lora": "few-shot LoRA (rank 16)",
          "ours_dim": "borrowing, every 5th frame", "ours_dim1": "borrowing, every frame",
          "ours_dim1_last2": "borrowing + 258 KB fold", "ours_codes_full": "PoE codes + 4.7 MB fold",
          "ours_leaf": "leaf borrowing, every 5th frame", "ours_leaf1_last2": "leaf borrowing + 258 KB fold",
-         "ours_shared1": "shared-prototype borrowing"}
+         "ours_shared1": "shared-prototype borrowing", "ours_seg": "segment borrowing"}
 COMPARE = [("ours_dim1_last2", "practice_lora"), ("ours_dim1_last2", "practice_replay"), ("ours_dim1_last2", "zeroshot"),
            ("ours_dim", "practice_lora"), ("ours_dim", "practice_replay"), ("ours_dim1", "practice_replay"),
            ("practice_lora", "practice_replay"), ("ours_leaf1_last2", "practice_lora"), ("ours_leaf1_last2", "practice_replay"),
-           ("ours_leaf", "ours_dim"), ("ours_leaf1_last2", "ours_dim1_last2"), ("ours_shared1", "ours_dim1")]
+           ("ours_leaf", "ours_dim"), ("ours_leaf1_last2", "ours_dim1_last2"), ("ours_shared1", "ours_dim1"),
+           ("ours_seg", "practice_replay"), ("ours_seg", "practice_lora"), ("ours_seg", "ours_dim")]
 
 
 def episodes(experiment):
@@ -116,6 +120,21 @@ def main():
             bb, cc = stats.discordant(pairs)
             d.update(discordant=[bb, cc], sign_p=stats.sign_test(bb, cc), noninferior=bool(d["lo90"] > -MARGIN))
             res["compare"][f"{x}-{y}.{scope}"] = d
+    # test-retest: the same (task, arm) on two DISJOINT init-state sets (held-out 10-29 in m3_heldout vs final 30-49)
+    def cells(exp):
+        c = {}
+        for r in ledger.load(exp):
+            for t, v in r["metrics"]["tasks"].items():
+                x = c.setdefault((t, r["tag"]), [0, 0])
+                x[0] += round(v["success_rate"] * v["n"]); x[1] += v["n"]
+        return c
+    h, f = cells("m3_heldout"), cells("m3_final")
+    common = sorted(set(h) & set(f))
+    if len(common) >= 3:
+        x = np.array([h[k][0] / h[k][1] for k in common]); y = np.array([f[k][0] / f[k][1] for k in common])
+        res["retest"] = dict(cells=len(common), pearson=float(np.corrcoef(x, y)[0, 1]), mean_abs_diff=float(np.abs(x - y).mean()))
+        print(f"[stats] test-retest over {len(common)} (task, arm) cells on disjoint init states: r = {res['retest']['pearson']:.3f}, "
+              f"mean |difference| {res['retest']['mean_abs_diff']:.3f}")
     json.dump(res, open(a.json, "w"), indent=1)
     for scope in ("all", "prior_fails"):
         print(f"\n[{scope}]  method: pooled success (Wilson 95%) [cluster bootstrap 95%], bytes stored")

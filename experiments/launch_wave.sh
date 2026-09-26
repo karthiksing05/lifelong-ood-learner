@@ -43,6 +43,7 @@ print(1 if len(D.gripper_events(ep['actions'])) else 0)" 2>/dev/null)
                         P0=$R/r9_leaf_${tid}_s1.npz; F0=$R/r4_${tid}_approach_last2_program.npz
                         MODE="hybrid:$P0?expert=$R/r4_${tid}_approach_last2_expert.pt&foldprog=$F0&$C&window=20"; PB="prog:$P0@$F0" ;;
       shared_s1)        P0=$R/r9_shared_${tid}_s1.npz; MODE="program:$P0?$C&window=20"; PB="prog:$P0" ;;
+      seg_s5)           P0=$R/r10_seg_${tid}_s5.npz; MODE="program:$P0?$C&window=4"; PB="prog:$P0" ;;
       lora)             MODE="lora:$R/r3_lora_${tid}.pt" ;;
       *) echo "unknown arm $arm"; exit 1 ;;
     esac

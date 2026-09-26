@@ -61,7 +61,7 @@ def main():
     ax.set_title("(a) prototypes per level", fontsize=8.5, color=INK, loc="left")
     ax.annotate(f"{stats['policy'][0][0]:,} of {len(task):,} frames", (us[0], stats["policy"][0][0]), xytext=(8, 2), textcoords="offset points",
                 fontsize=6.8, color=INK2)
-    leg = ax.legend(fontsize=6.8, frameon=False, loc="lower left")
+    leg = ax.legend(fontsize=6.8, frameon=False, loc="upper right")
     [t.set_color(INK) for t in leg.get_texts()]
     ax = axs[1]
     style(ax)

@@ -70,6 +70,8 @@ class DemoProgram:
     dim_ids: np.ndarray = None     # [T, K] prototype ids of a "dimcode" program (policy/dimcode.py)
     dim_choice: np.ndarray = None  # [T, 7] which of the K each action dimension borrows
     steer: np.ndarray = None       # [T] bool: frames where the prior DISAGREES with the demo (guide only there; 1 bit each)
+    seg_ids: np.ndarray = None     # [nseg, 7] leaf ids of a "segcode" program (policy/segcode.py), one per segment and dimension
+    seg_offs: np.ndarray = None    # [nseg] offset of each segment inside its leaves (non-zero only for a short tail)
 
     @classmethod
     def from_demo(cls, tree, rows, states, K=3, levels=None, variant="code", raw_var=1e-2):
@@ -84,6 +86,18 @@ class DemoProgram:
             c = decompose(tree, r, K=K, levels=levels)
             mus.append(c.mu); vars_.append(c.var); codes.append(c.entries())
         return cls(mu=np.stack(mus), var=np.stack(vars_), key=key, codes=codes, variant=variant, states=st16)
+
+    @classmethod
+    def from_segcode(cls, leaves, rows, states, L=10):
+        """The demo's action sequence as borrowed L-step segments of the leaves' trajectories, one per action dimension."""
+        from . import segcode
+        key = state_norm()(states)[:, list(ALIGN_DIMS)].astype(np.float16).astype(np.float32)
+        seq = segcode.sequence(rows)
+        ids, offs = segcode.encode(leaves, seq, L)
+        hat = segcode.decode(leaves, ids, offs, len(seq), L)
+        mu = segcode.windows(hat, len(rows)).astype(np.float32)
+        st16 = np.asarray(states, np.float32).astype(np.float16).astype(np.float32)
+        return cls(mu=mu, var=np.full_like(mu, 1e-3), key=key, codes=[], variant="segcode", states=st16, seg_ids=ids, seg_offs=offs)
 
     def with_prompts(self, rows, library_rows, library_task, task_text, k=5, smooth=10):
         """PROMPT PROGRAM: per frame, the library task whose chunks explain this frame's chunk best (majority over the
@@ -131,7 +145,7 @@ class DemoProgram:
         return DemoProgram(mu=take(self.mu), var=take(self.var), key=take(self.key), codes=list(self.codes[sl]) if self.codes else [],
                            variant=self.variant, fold=take(self.fold), prompt_id=take(self.prompt_id), prompt_table=self.prompt_table,
                            states=take(self.states), steer=take(self.steer), dim_ids=take(self.dim_ids),
-                           dim_choice=take(self.dim_choice))
+                           dim_choice=take(self.dim_choice), seg_ids=self.seg_ids, seg_offs=self.seg_offs)
 
     def windowed(self):
         """True when the rows are consecutive windows of one 7-D action sequence (a demo's own chunks, stride 1)."""
@@ -149,6 +163,9 @@ class DemoProgram:
         if self.variant == "dimcode":
             from .dimcode import code_bytes
             store = len(self.mu) * code_bytes(self.dim_ids.shape[1])          # the chunk is rebuilt from ids + choices
+        elif self.variant == "segcode":
+            from .segcode import code_bytes
+            store = code_bytes(len(self.seg_ids))                             # the whole sequence, whatever frames are kept
         elif self.windowed():
             # a demo's chunks are overlapping windows of ONE action sequence: its T x 7 values rebuild every chunk exactly
             # (charging 70 values per frame, as before 2026-09-26, overstated a replayed demo ~5x; CORRECTED)
@@ -169,6 +186,9 @@ class DemoProgram:
             extra["dim_choice"] = self.dim_choice
         if self.steer is not None:
             extra["steer"] = self.steer
+        if self.seg_ids is not None:
+            extra["seg_ids"] = self.seg_ids
+            extra["seg_offs"] = self.seg_offs
         np.savez_compressed(path, mu=self.mu, var=self.var, key=self.key, variant=self.variant,
                             fold=np.zeros(len(self.mu), bool) if self.fold is None else self.fold,
                             codes=np.array([np.asarray(c, np.float32) for c in self.codes], dtype=object), allow_pickle=True, **extra)
@@ -182,7 +202,8 @@ class DemoProgram:
                    prompt_table=list(z["prompt_table"]) if "prompt_table" in z else None,
                    states=z["states"] if "states" in z else None,
                    dim_ids=z["dim_ids"] if "dim_ids" in z else None, dim_choice=z["dim_choice"] if "dim_choice" in z else None,
-                   steer=z["steer"] if "steer" in z else None)
+                   steer=z["steer"] if "steer" in z else None,
+                   seg_ids=z["seg_ids"] if "seg_ids" in z else None, seg_offs=z["seg_offs"] if "seg_offs" in z else None)
 
 
 class ComposeHooks:
