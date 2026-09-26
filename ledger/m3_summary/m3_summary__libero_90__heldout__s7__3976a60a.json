@@ -1,0 +1,376 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 24940,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 24940,
+  "tree": 0
+ },
+ "command": "python experiments/m34_report.py --heldout --record",
+ "config": {
+  "heldout": true,
+  "json": "",
+  "practice": 0.5,
+  "record": true
+ },
+ "env": {
+  "device": "cpu",
+  "host": "sky2.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_summary",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "3976a60aab3fc40b632d29cc4da4f7cf77ae7e1f",
+  "short": "3976a60a"
+ },
+ "keys": {},
+ "metrics": {
+  "arms": {
+   "code_replay.all": {
+    "k": 49,
+    "n": 120,
+    "rate": 0.4083333333333333,
+    "tasks": 6
+   },
+   "code_replay.prior_fails": {
+    "k": 36,
+    "n": 80,
+    "rate": 0.45,
+    "tasks": 4
+   },
+   "lora.all": {
+    "k": 32,
+    "n": 80,
+    "rate": 0.4,
+    "tasks": 4
+   },
+   "lora.prior_fails": {
+    "k": 32,
+    "n": 80,
+    "rate": 0.4,
+    "tasks": 4
+   },
+   "practice.all": {
+    "k": 75,
+    "n": 120,
+    "rate": 0.625,
+    "tasks": 6
+   },
+   "practice.prior_fails": {
+    "k": 36,
+    "n": 80,
+    "rate": 0.45,
+    "tasks": 4
+   },
+   "raw_replay.all": {
+    "k": 49,
+    "n": 120,
+    "rate": 0.4083333333333333,
+    "tasks": 6
+   },
+   "raw_replay.prior_fails": {
+    "k": 34,
+    "n": 80,
+    "rate": 0.425,
+    "tasks": 4
+   },
+   "zeroshot.all": {
+    "k": 40,
+    "n": 120,
+    "rate": 0.3333333333333333,
+    "tasks": 6
+   },
+   "zeroshot.prior_fails": {
+    "k": 1,
+    "n": 80,
+    "rate": 0.0125,
+    "tasks": 4
+   }
+  },
+  "cells": {
+   "19/code_replay": {
+    "bytes": 3915,
+    "k": 4,
+    "n": 20,
+    "wilson": [
+     0.0806563532712,
+     0.41602172202575993
+    ]
+   },
+   "19/practice": {
+    "bytes": 0,
+    "k": 19,
+    "n": 20,
+    "wilson": [
+     0.7638641064874331,
+     0.9911187805671268
+    ]
+   },
+   "19/raw_replay": {
+    "bytes": 21195,
+    "k": 5,
+    "n": 20,
+    "wilson": [
+     0.11186005278940309,
+     0.4687050099580636
+    ]
+   },
+   "19/zeroshot": {
+    "bytes": 0,
+    "k": 19,
+    "n": 20,
+    "wilson": [
+     0.7638641064874331,
+     0.9911187805671268
+    ]
+   },
+   "35/code_replay": {
+    "bytes": 3799,
+    "k": 13,
+    "n": 20,
+    "wilson": [
+     0.43285051021946463,
+     0.8188104521320554
+    ]
+   },
+   "35/lora": {
+    "bytes": 18710528,
+    "k": 7,
+    "n": 20,
+    "wilson": [
+     0.18118954786794464,
+     0.5671494897805354
+    ]
+   },
+   "35/practice": {
+    "bytes": 3799,
+    "k": 13,
+    "n": 20,
+    "wilson": [
+     0.43285051021946463,
+     0.8188104521320554
+    ]
+   },
+   "35/raw_replay": {
+    "bytes": 20567,
+    "k": 10,
+    "n": 20,
+    "wilson": [
+     0.2992949144298199,
+     0.7007050855701801
+    ]
+   },
+   "35/zeroshot": {
+    "bytes": 0,
+    "k": 1,
+    "n": 20,
+    "wilson": [
+     0.008881219432873136,
+     0.23613589351256675
+    ]
+   },
+   "36/code_replay": {
+    "bytes": 6322,
+    "k": 5,
+    "n": 20,
+    "wilson": [
+     0.11186005278940309,
+     0.4687050099580636
+    ]
+   },
+   "36/lora": {
+    "bytes": 18710528,
+    "k": 12,
+    "n": 20,
+    "wilson": [
+     0.3865779423152061,
+     0.7811960325858074
+    ]
+   },
+   "36/practice": {
+    "bytes": 6322,
+    "k": 5,
+    "n": 20,
+    "wilson": [
+     0.11186005278940309,
+     0.4687050099580636
+    ]
+   },
+   "36/raw_replay": {
+    "bytes": 34226,
+    "k": 6,
+    "n": 20,
+    "wilson": [
+     0.14547527396899385,
+     0.5189767762289793
+    ]
+   },
+   "36/zeroshot": {
+    "bytes": 0,
+    "k": 0,
+    "n": 20,
+    "wilson": [
+     -1.3877787807814457e-17,
+     0.16113012549493322
+    ]
+   },
+   "39/code_replay": {
+    "bytes": 3364,
+    "k": 18,
+    "n": 20,
+    "wilson": [
+     0.6989617935882066,
+     0.9721341060158468
+    ]
+   },
+   "39/lora": {
+    "bytes": 18710528,
+    "k": 13,
+    "n": 20,
+    "wilson": [
+     0.43285051021946463,
+     0.8188104521320554
+    ]
+   },
+   "39/practice": {
+    "bytes": 3364,
+    "k": 18,
+    "n": 20,
+    "wilson": [
+     0.6989617935882066,
+     0.9721341060158468
+    ]
+   },
+   "39/raw_replay": {
+    "bytes": 18212,
+    "k": 18,
+    "n": 20,
+    "wilson": [
+     0.6989617935882066,
+     0.9721341060158468
+    ]
+   },
+   "39/zeroshot": {
+    "bytes": 0,
+    "k": 0,
+    "n": 20,
+    "wilson": [
+     -1.3877787807814457e-17,
+     0.16113012549493322
+    ]
+   },
+   "42/code_replay": {
+    "bytes": 4988,
+    "k": 0,
+    "n": 20,
+    "wilson": [
+     -1.3877787807814457e-17,
+     0.16113012549493322
+    ]
+   },
+   "42/lora": {
+    "bytes": 18710528,
+    "k": 0,
+    "n": 20,
+    "wilson": [
+     -1.3877787807814457e-17,
+     0.16113012549493322
+    ]
+   },
+   "42/practice": {
+    "bytes": 4988,
+    "k": 0,
+    "n": 20,
+    "wilson": [
+     -1.3877787807814457e-17,
+     0.16113012549493322
+    ]
+   },
+   "42/raw_replay": {
+    "bytes": 27004,
+    "k": 0,
+    "n": 20,
+    "wilson": [
+     -1.3877787807814457e-17,
+     0.16113012549493322
+    ]
+   },
+   "42/zeroshot": {
+    "bytes": 0,
+    "k": 0,
+    "n": 20,
+    "wilson": [
+     -1.3877787807814457e-17,
+     0.16113012549493322
+    ]
+   },
+   "67/code_replay": {
+    "bytes": 2552,
+    "k": 9,
+    "n": 20,
+    "wilson": [
+     0.25819502085709295,
+     0.6579179916924003
+    ]
+   },
+   "67/practice": {
+    "bytes": 0,
+    "k": 20,
+    "n": 20,
+    "wilson": [
+     0.8388698745050667,
+     1.0
+    ]
+   },
+   "67/raw_replay": {
+    "bytes": 13816,
+    "k": 10,
+    "n": 20,
+    "wilson": [
+     0.2992949144298199,
+     0.7007050855701801
+    ]
+   },
+   "67/zeroshot": {
+    "bytes": 0,
+    "k": 20,
+    "n": 20,
+    "wilson": [
+     0.8388698745050667,
+     1.0
+    ]
+   }
+  },
+  "code_bytes_max": 6322,
+  "code_bytes_min": 2552,
+  "lora_bytes": 18710528,
+  "lora_mb": 18.7,
+  "practice_threshold": 0.5,
+  "prior_fails_tasks": [
+   "35",
+   "36",
+   "39",
+   "42"
+  ]
+ },
+ "notes": "derived from ledger/m3_heldout (init states 10-29) and ledger/m3_compose zero-shot (states 0-9, the practice)",
+ "retired": null,
+ "run_id": "m3_summary__libero_90__heldout__s7__3976a60a",
+ "schema": 1,
+ "script": "experiments/m34_report.py",
+ "seconds": null,
+ "seed": 7,
+ "source_commit": null,
+ "started": "2026-09-26T00:04:12+00:00",
+ "stream": null,
+ "tag": "heldout"
+}
