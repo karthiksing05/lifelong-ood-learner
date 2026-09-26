@@ -25,9 +25,11 @@ for tid in ${TASKS//+/ }; do
       code_blend)  P=$R/r3_prog_${tid}_code${PROGTAG}.npz; MODE="program:$P?w0=0.7&sched=const&var=0.001&$COMMON" ;;
       prompt)      P=$R/r3_prog_${tid}_code${PROGTAG}.npz; MODE="program:$P?how=prompt&$COMMON" ;;
       lora)        MODE="lora:$R/r3_lora_${tid}.pt" ;;
+      composer)    P=$R/r6_comp_${tid}${CTAG:-}.npz; MODE="composer:$P?w0=1.0&sched=const&var=0.001&key=pose&stall=3&window=4" ;;
       *) echo "unknown arm $arm"; exit 1 ;;
     esac
     case $arm in raw_*|code_*|prompt) PB=$($PY -c "import sys; sys.path.insert(0,'.'); from lifelong_ood.policy.compose import DemoProgram; print(DemoProgram.load('$P').bytes())") ;; esac
+    case $arm in composer) PB=$($PY -c "import sys; sys.path.insert(0,'.'); from lifelong_ood.policy.composer import ComposerProgram; print(ComposerProgram.load('$P').bytes())") ;; esac
     OUT=$R/${EXP}_${tid}_${arm}${TAGX}.json
     j=$(sbatch --parsable --nice=$NICE --export=ALL,MODE="$MODE",SUITE=libero_90,TASKS=$tid,TRIALS=$TRIALS,FIRST=$FIRST,EXPERIMENT=$EXP,TAG=${arm}${TAGX},PROGRAM_BYTES=$PB,OUT=$OUT experiments/roll.sbatch)
     echo "task $tid arm $arm -> job $j"
