@@ -19,19 +19,33 @@ R = os.path.join(ROOT, "results", "robot")
 C = "w0=1.0&sched=const&var=0.001&key=pose&stall=3"
 
 
-def grasps(tid):
+def grasps(tid, demo=0):
     from lifelong_ood.policy import data as D
     spec = importlib.util.spec_from_file_location("r3p", os.path.join(ROOT, "experiments", "r3_prepare.py"))
     m = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(m)
     texts, _ = m.libero90_texts()
     d = D.Demos90()
-    ep = d.load(d.episodes_of_text(texts[tid])[0])
+    ep = d.load(d.episodes_of_text(texts[tid])[demo])
     return len(D.gripper_events(ep["actions"])) > 0
 
 
-def arm_spec(tid, arm, fold):
-    """-> (MODE, PROGRAM_BYTES, needs_prep) or None when the arm does not apply."""
+def arm_spec(tid, arm, fold, demo=0):
+    """-> (MODE, PROGRAM_BYTES, needs_prep) or None when the arm does not apply.  demo k > 0: the programs, fold and LoRA
+    built from IPEC episode k of the task's text (files with the suffix _d<k>)."""
+    if demo:
+        d = f"_d{demo}"
+        P = lambda name: os.path.join(R, name)                           # noqa: E731
+        F0, EX = P(f"r4_{tid}_approach_last2{d}_program.npz"), P(f"r4_{tid}_approach_last2{d}_expert.pt")
+        table = {"raw_replay": (f"program:{P(f'r3_prog_{tid}_raw_lib40{d}.npz')}?{C}", f"prog:{P(f'r3_prog_{tid}_raw_lib40{d}.npz')}", False),
+                 "dimcode_s1": (f"program:{P(f'r7_dim_{tid}_s1{d}.npz')}?{C}&window=20", f"prog:{P(f'r7_dim_{tid}_s1{d}.npz')}", False),
+                 "dimfold_s1_last2": (f"hybrid:{P(f'r7_dim_{tid}_s1{d}.npz')}?expert={EX}&foldprog={F0}&{C}&window=20",
+                                      f"prog:{P(f'r7_dim_{tid}_s1{d}.npz')}@{F0}", True) if fold else None,
+                 "lora": (f"lora:{P(f'r3_lora_{tid}{d}.pt')}", "0", True),
+                 "seg_s5": (f"program:{P(f'r10_seg_{tid}_s5{d}.npz')}?{C}&window=4", f"prog:{P(f'r10_seg_{tid}_s5{d}.npz')}", False)}
+        if arm == "dimbest":
+            return table["dimfold_s1_last2"] if fold else table["dimcode_s1"]
+        return table[arm]
     P = lambda name: os.path.join(R, name)                               # noqa: E731
     F0 = P(f"r4_{tid}_approach_last2_program.npz")
     EX = P(f"r4_{tid}_approach_last2_expert.pt")
@@ -70,6 +84,7 @@ def main():
     ap.add_argument("--running", default="", help="result files being produced by running jobs (skip them)")
     ap.add_argument("--prep-job", default="", help="TASK:JOB,... preps already queued or running")
     ap.add_argument("--per", type=int, default=2, help="instances per GPU")
+    ap.add_argument("--demo", type=int, default=0, help="k > 0: the arms built from IPEC episode k (tags and files _d<k>)")
     ap.add_argument("--dry", action="store_true")
     a = ap.parse_args()
     os.chdir(ROOT)
@@ -78,7 +93,8 @@ def main():
     prep_job = dict(x.split(":") for x in a.prep_job.split(",") if x)
     n_pack = len(os.listdir(os.path.join(R, ".packs")))
     for tid in [int(x) for x in a.tasks.replace("+", ",").split(",")]:
-        fold = grasps(tid)
+        fold = grasps(tid, a.demo)
+        dsfx = f"_d{a.demo}" if a.demo else ""
         specs_free, specs_dep = [], []
         if a.practice:
             out = os.path.join(R, f"m3_compose_{tid}_zeroshot.json")
@@ -86,10 +102,12 @@ def main():
                 specs_free.append(dict(MODE="ours", SUITE="libero_90", TASKS=tid, TRIALS=10, FIRST=0, EXPERIMENT="m3_compose",
                                        TAG="zeroshot", PROGRAM_BYTES="0", OUT=out))
         for arm in a.arms.split(","):
-            s = arm_spec(tid, arm, fold)
+            s = arm_spec(tid, arm, fold, a.demo)
             if s is None:
                 continue
             tag = ("leaffold_s1_last2" if fold else "leaf_s1") if arm == "leafbest" else arm
+            tag = ("dimfold_s1_last2" if fold else "dimcode_s1") if arm == "dimbest" else tag
+            tag += dsfx
             out = os.path.join(R, f"m3_final_{tid}_{tag}.json")
             if os.path.exists(out) or os.path.basename(out) in running:
                 continue
@@ -97,11 +115,11 @@ def main():
                         PROGRAM_BYTES=s[1], OUT=out)
             (specs_dep if s[2] else specs_free).append(spec)
         dep = None
-        if specs_dep and not os.path.exists(os.path.join(R, f"r3_lora_{tid}.pt")):
+        if specs_dep and not os.path.exists(os.path.join(R, f"r3_lora_{tid}{dsfx}.pt")):
             if str(tid) in prep_job:
                 dep = prep_job[str(tid)]
             else:
-                dep = sbatch([f"--export=ALL,TID={tid},FOLD={int(fold)}", "experiments/prep.sbatch"], a.dry)
+                dep = sbatch([f"--export=ALL,TID={tid},FOLD={int(fold)},DEMO={a.demo}", "experiments/prep.sbatch"], a.dry)
                 print(f"task {tid} prep -> job {dep} (fold {int(fold)})")
         for group, d in ((specs_free, None), (specs_dep, dep)):
             for i in range(0, len(group), a.per):

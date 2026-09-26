@@ -43,7 +43,8 @@ COMPARE = [("ours_dim1_last2", "practice_lora"), ("ours_dim1_last2", "practice_r
            ("ours_dim", "practice_lora"), ("ours_dim", "practice_replay"), ("ours_dim1", "practice_replay"),
            ("practice_lora", "practice_replay"), ("ours_leaf1_last2", "practice_lora"), ("ours_leaf1_last2", "practice_replay"),
            ("ours_leaf", "ours_dim"), ("ours_leaf1_last2", "ours_dim1_last2"), ("ours_shared1", "ours_dim1"),
-           ("ours_seg", "practice_replay"), ("ours_seg", "practice_lora"), ("ours_seg", "ours_dim")]
+           ("ours_seg", "practice_replay"), ("ours_seg", "practice_lora"), ("ours_seg", "ours_dim"),
+           ("ours_dim1_last2", "ours_dim1")]
 
 
 def episodes(experiment):
@@ -135,6 +136,54 @@ def main():
         res["retest"] = dict(cells=len(common), pearson=float(np.corrcoef(x, y)[0, 1]), mean_abs_diff=float(np.abs(x - y).mean()))
         print(f"[stats] test-retest over {len(common)} (task, arm) cells on disjoint init states: r = {res['retest']['pearson']:.3f}, "
               f"mean |difference| {res['retest']['mean_abs_diff']:.3f}")
+    # DEMONSTRATION ROBUSTNESS: the same arms built from a second demo (IPEC episode 1; tags *_d1), same init states
+    fin_all, _ = episodes("m3_final")
+    dtasks = sorted({t for (t, g) in fin_all if g.endswith("_d1")}, key=int)
+    if dtasks:
+        rob = {}
+        for name, tags in (("replay", ("raw_replay",)), ("borrowing (+ fold where it grasps)", ("dimfold_s1_last2", "dimcode_s1")),
+                           ("few-shot LoRA", ("lora",)), ("segment borrowing", ("seg_s5",))):
+            row = {}
+            for d, sfx in (("demo0", ""), ("demo1", "_d1")):
+                k = n = 0
+                for t in dtasks:
+                    for g in tags:
+                        if (t, g + "_d1") in fin_all and (t, g + sfx) in fin_all:
+                            v = fin_all[(t, g + sfx)]
+                            k += sum(v.values()); n += len(v)
+                            break
+                row[d] = dict(k=int(k), n=int(n))
+            rob[name] = row
+        res["demo_robustness"] = dict(tasks=dtasks, arms=rob)
+        print(f"[stats] demonstration robustness on tasks {dtasks} (states 30-49): " + "; ".join(
+            f"{k} {v['demo0']['k']}/{v['demo0']['n']} (demo 0) vs {v['demo1']['k']}/{v['demo1']['n']} (demo 1)" for k, v in rob.items()))
+    # EXPLORATORY (not pre-registered): does the library's novelty read (the demo frames it leaves unexplained,
+    # r3_prepare tag _lib40) predict where composition succeeds, or where it trails LoRA?  Spearman, permutation p.
+    nov = {}
+    for r in ledger.load("r3_prepare"):
+        if r.get("tag") == "_lib40":
+            nov[str(r["metrics"]["task_id"])] = float(r["metrics"]["unexplained_frac"])
+    ts = [t for t in fails if t in nov and "ours_dim1_last2" in table[t] and "practice_lora" in table[t]]
+    if len(ts) >= 6:
+        def rate(t, m):
+            v = table[t][m]
+            return sum(v.values()) / len(v)
+        def spearman(x, y):
+            rx, ry = np.argsort(np.argsort(x)), np.argsort(np.argsort(y))
+            return float(np.corrcoef(rx, ry)[0, 1])
+        rng = np.random.default_rng(0)
+        x = np.array([nov[t] for t in ts])
+        ex = {}
+        for name, y in (("ours", [rate(t, "ours_dim1_last2") for t in ts]), ("lora", [rate(t, "practice_lora") for t in ts]),
+                        ("ours_minus_lora", [rate(t, "ours_dim1_last2") - rate(t, "practice_lora") for t in ts])):
+            y = np.array(y)
+            rho = spearman(x, y)
+            null = np.array([spearman(x, rng.permutation(y)) for _ in range(5000)])
+            ex[name] = dict(rho=rho, perm_p=float((1 + (np.abs(null) >= abs(rho)).sum()) / 5001))
+        res["exploratory_novelty"] = dict(tasks=ts, unexplained=[nov[t] for t in ts], **ex)
+        print(f"[stats] EXPLORATORY: unexplained fraction vs success over {len(ts)} tasks: ours rho {ex['ours']['rho']:+.2f} "
+              f"(p {ex['ours']['perm_p']:.3f}), LoRA rho {ex['lora']['rho']:+.2f} (p {ex['lora']['perm_p']:.3f}), "
+              f"ours - LoRA rho {ex['ours_minus_lora']['rho']:+.2f} (p {ex['ours_minus_lora']['perm_p']:.3f})")
     json.dump(res, open(a.json, "w"), indent=1)
     for scope in ("all", "prior_fails"):
         print(f"\n[{scope}]  method: pooled success (Wilson 95%) [cluster bootstrap 95%], bytes stored")

@@ -68,6 +68,7 @@ def main():
     ap.add_argument("--scope", default="expert", choices=["expert", "last2", "out"], help="where the fold's adapters go")
     ap.add_argument("--pre", type=int, default=None, help="contact window starts this many frames before each gripper event "
                     "(default: --contact); a wider pre-window covers the visually guided approach")
+    ap.add_argument("--demo", type=int, default=0, help="which IPEC episode of the text is THE demo")
     ap.add_argument("--tag", default="")
     a = ap.parse_args()
     rng = np.random.default_rng(a.seed)
@@ -87,7 +88,7 @@ def main():
     log(f"[r4] calibration on {len(cal_rows)} held-out library frames: q{a.q} per band level {thr}")
 
     # the demo and its novelty
-    ep_idx = d90.episodes_of_text(text)[0]
+    ep_idx = d90.episodes_of_text(text)[a.demo]
     ep = d90.load(ep_idx)
     T = len(ep["actions"])
     rows = D.to_rows(ep["actions"][D.chunk_indices(T, 10)[0]], norm)

@@ -27,7 +27,16 @@ export OPENPI_DATA_HOME=/coc/flash10/ksingara3/robot/openpi_cache
 export HF_HOME=/coc/flash10/ksingara3/robot/data/hf/home HF_LEROBOT_HOME=/coc/flash10/ksingara3/robot/data/hf/lerobot
 PY=/coc/flash10/ksingara3/robot/openpi/.venv/bin/python
 T=results/robot/r2b_libero_40_tree.npz; L=results/robot/r2b_libero_40.npz
-echo "[prep] task $TID fold=$FOLD $(date) on $(hostname)"
+echo "[prep] task $TID fold=$FOLD demo=${DEMO:-0} $(date) on $(hostname)"
+if [ "${DEMO:-0}" != 0 ]; then
+  # another demo of the task (programs from experiments/r11_demo2.py on CPU): its fold and its LoRA only
+  if [ "${FOLD:-0}" = 1 ]; then
+    $PY experiments/r4_fold.py --task $TID --demo $DEMO --tree $T --library $L --rank 2 --steps 1000 --tag _approach_last2_d$DEMO --arrival contact --contact 10 --pre 30 --scope last2 2>&1 | grep -v Warning
+  fi
+  $PY experiments/r3_fewshot.py --task $TID --demo $DEMO --tag _d$DEMO 2>&1 | grep -v Warning
+  echo "exit=0 | $(date)"
+  exit 0
+fi
 $PY experiments/r3_prepare.py --tree $T --library-npz $L --tasks $TID --levels 2,3,4 --tag _lib40 2>&1 | grep -v Warning
 $PY experiments/r7_dimcode.py --tasks $TID 2>&1 | grep -v Warning
 if [ "${FOLD:-0}" = 1 ]; then
