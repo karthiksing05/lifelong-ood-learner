@@ -1,0 +1,122 @@
+{
+ "artifacts": [
+  "results/robot/r6_comp_19_prior.npz"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 4578,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 4578,
+  "tree": 0
+ },
+ "command": "experiments/r6_composer.py --tasks 35,36,42,67,19 --prior --tag _prior",
+ "config": {
+  "M": 32,
+  "hidden": 32,
+  "lam_ent": 0.001,
+  "lam_smooth": 0.01,
+  "levels": "2,3,4",
+  "prior": true,
+  "steps": 3000,
+  "stride": 5,
+  "tag": "_prior",
+  "tasks": "35,36,42,67,19",
+  "tree": "results/robot/r2b_libero_40_tree.npz"
+ },
+ "env": {
+  "device": "cpu",
+  "host": "sky2.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r6_composer",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "b3510f95ca12f6f81517b4b37ac6cc2f2b1f820d",
+  "short": "b3510f95"
+ },
+ "keys": {
+  "task": 19
+ },
+ "metrics": {
+  "M": 32,
+  "best_single_rms": 0.20289015769958496,
+  "curve": [
+   {
+    "entropy": 3.4774839878082275,
+    "rms": 0.5215381979942322,
+    "smooth": 1.6776587017375277e-06,
+    "step": 1
+   },
+   {
+    "entropy": 0.33029794692993164,
+    "rms": 0.162846639752388,
+    "smooth": 0.004355499055236578,
+    "step": 500
+   },
+   {
+    "entropy": 0.22554568946361542,
+    "rms": 0.14344467222690582,
+    "smooth": 0.011880714446306229,
+    "step": 1000
+   },
+   {
+    "entropy": 0.20284582674503326,
+    "rms": 0.1376020908355713,
+    "smooth": 0.019993705675005913,
+    "step": 1500
+   },
+   {
+    "entropy": 0.18007099628448486,
+    "rms": 0.13549847900867462,
+    "smooth": 0.024538367986679077,
+    "step": 2000
+   },
+   {
+    "entropy": 0.1735575944185257,
+    "rms": 0.13459105789661407,
+    "smooth": 0.02588636241853237,
+    "step": 2500
+   },
+   {
+    "entropy": 0.1765809804201126,
+    "rms": 0.13371610641479492,
+    "smooth": 0.026402052491903305,
+    "step": 3000
+   }
+  ],
+  "effective_prototypes": 1.2435065507888794,
+  "jerk_composed": 0.010919393971562386,
+  "jerk_demo": 0.021086392924189568,
+  "n_frames": 135,
+  "n_params": 2041,
+  "prior_rms": 0.32260408997535706,
+  "program_bytes": 4578,
+  "prototypes_used": 9,
+  "raw_bytes": 21060,
+  "rms": 0.1337171345949173,
+  "secs": 12.548993110656738,
+  "task": 19,
+  "text": "put the moka pot on the stove",
+  "top_weight": 0.9221242666244507,
+  "vocab_cover": 0.387037037037037,
+  "w_prior": 0.45607301592826843
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r6_composer__libero_90___prior__task-19__s0__b3510f95",
+ "schema": 1,
+ "script": "experiments/r6_composer.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-26T03:24:05+00:00",
+ "stream": null,
+ "tag": "_prior"
+}

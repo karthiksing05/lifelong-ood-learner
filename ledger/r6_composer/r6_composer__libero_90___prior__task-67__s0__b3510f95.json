@@ -1,0 +1,122 @@
+{
+ "artifacts": [
+  "results/robot/r6_comp_67_prior.npz"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 4434,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 4434,
+  "tree": 0
+ },
+ "command": "experiments/r6_composer.py --tasks 35,36,42,67,19 --prior --tag _prior",
+ "config": {
+  "M": 32,
+  "hidden": 32,
+  "lam_ent": 0.001,
+  "lam_smooth": 0.01,
+  "levels": "2,3,4",
+  "prior": true,
+  "steps": 3000,
+  "stride": 5,
+  "tag": "_prior",
+  "tasks": "35,36,42,67,19",
+  "tree": "results/robot/r2b_libero_40_tree.npz"
+ },
+ "env": {
+  "device": "cpu",
+  "host": "sky2.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r6_composer",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "b3510f95ca12f6f81517b4b37ac6cc2f2b1f820d",
+  "short": "b3510f95"
+ },
+ "keys": {
+  "task": 67
+ },
+ "metrics": {
+  "M": 32,
+  "best_single_rms": 0.15424276888370514,
+  "curve": [
+   {
+    "entropy": 3.4821574687957764,
+    "rms": 0.4680377244949341,
+    "smooth": 2.564226406320813e-06,
+    "step": 1
+   },
+   {
+    "entropy": 0.4223211109638214,
+    "rms": 0.13559406995773315,
+    "smooth": 0.002758213086053729,
+    "step": 500
+   },
+   {
+    "entropy": 0.24657757580280304,
+    "rms": 0.10492631793022156,
+    "smooth": 0.010386675596237183,
+    "step": 1000
+   },
+   {
+    "entropy": 0.1694210320711136,
+    "rms": 0.09097018837928772,
+    "smooth": 0.016137469559907913,
+    "step": 1500
+   },
+   {
+    "entropy": 0.13430869579315186,
+    "rms": 0.08351925760507584,
+    "smooth": 0.020057108253240585,
+    "step": 2000
+   },
+   {
+    "entropy": 0.10502305626869202,
+    "rms": 0.08069320023059845,
+    "smooth": 0.01996825821697712,
+    "step": 2500
+   },
+   {
+    "entropy": 0.0933423638343811,
+    "rms": 0.07932224124670029,
+    "smooth": 0.019051991403102875,
+    "step": 3000
+   }
+  ],
+  "effective_prototypes": 1.1198451519012451,
+  "jerk_composed": 0.012739458121359348,
+  "jerk_demo": 0.020894533023238182,
+  "n_frames": 88,
+  "n_params": 2041,
+  "prior_rms": 0.19623661041259766,
+  "program_bytes": 4434,
+  "prototypes_used": 6,
+  "raw_bytes": 13728,
+  "rms": 0.0793229192495346,
+  "secs": 9.978683233261108,
+  "task": 67,
+  "text": "put the white mug on the left plate",
+  "top_weight": 0.9625412821769714,
+  "vocab_cover": 0.3494318181818182,
+  "w_prior": 0.47059306502342224
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r6_composer__libero_90___prior__task-67__s0__b3510f95",
+ "schema": 1,
+ "script": "experiments/r6_composer.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-26T03:23:53+00:00",
+ "stream": null,
+ "tag": "_prior"
+}

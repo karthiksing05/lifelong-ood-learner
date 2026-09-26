@@ -1,0 +1,122 @@
+{
+ "artifacts": [
+  "results/robot/r6_comp_35_prior.npz"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 4578,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 4578,
+  "tree": 0
+ },
+ "command": "experiments/r6_composer.py --tasks 35,36,42,67,19 --prior --tag _prior",
+ "config": {
+  "M": 32,
+  "hidden": 32,
+  "lam_ent": 0.001,
+  "lam_smooth": 0.01,
+  "levels": "2,3,4",
+  "prior": true,
+  "steps": 3000,
+  "stride": 5,
+  "tag": "_prior",
+  "tasks": "35,36,42,67,19",
+  "tree": "results/robot/r2b_libero_40_tree.npz"
+ },
+ "env": {
+  "device": "cpu",
+  "host": "sky2.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r6_composer",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "b3510f95ca12f6f81517b4b37ac6cc2f2b1f820d",
+  "short": "b3510f95"
+ },
+ "keys": {
+  "task": 35
+ },
+ "metrics": {
+  "M": 32,
+  "best_single_rms": 0.1961512416601181,
+  "curve": [
+   {
+    "entropy": 3.4618308544158936,
+    "rms": 0.36287152767181396,
+    "smooth": 4.643610225230077e-07,
+    "step": 1
+   },
+   {
+    "entropy": 0.6181538105010986,
+    "rms": 0.15873564779758453,
+    "smooth": 0.0034190139267593622,
+    "step": 500
+   },
+   {
+    "entropy": 0.43691492080688477,
+    "rms": 0.1531488597393036,
+    "smooth": 0.004513027146458626,
+    "step": 1000
+   },
+   {
+    "entropy": 0.3828414976596832,
+    "rms": 0.1510319858789444,
+    "smooth": 0.005123913288116455,
+    "step": 1500
+   },
+   {
+    "entropy": 0.34873977303504944,
+    "rms": 0.14950145781040192,
+    "smooth": 0.00608603423461318,
+    "step": 2000
+   },
+   {
+    "entropy": 0.3294414281845093,
+    "rms": 0.14911462366580963,
+    "smooth": 0.006664353422820568,
+    "step": 2500
+   },
+   {
+    "entropy": 0.3095722198486328,
+    "rms": 0.14864125847816467,
+    "smooth": 0.007501783315092325,
+    "step": 3000
+   }
+  ],
+  "effective_prototypes": 1.459784984588623,
+  "jerk_composed": 0.016335193067789078,
+  "jerk_demo": 0.019661009311676025,
+  "n_frames": 131,
+  "n_params": 2041,
+  "prior_rms": 0.38644978404045105,
+  "program_bytes": 4578,
+  "prototypes_used": 11,
+  "raw_bytes": 20436,
+  "rms": 0.14864566922187805,
+  "secs": 14.819028377532959,
+  "task": 35,
+  "text": "open the microwave",
+  "top_weight": 0.8771373629570007,
+  "vocab_cover": 0.3988549618320611,
+  "w_prior": 0.20740438997745514
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r6_composer__libero_90___prior__task-35__s0__b3510f95",
+ "schema": 1,
+ "script": "experiments/r6_composer.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-26T03:23:13+00:00",
+ "stream": null,
+ "tag": "_prior"
+}

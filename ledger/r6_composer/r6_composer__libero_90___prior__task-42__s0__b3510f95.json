@@ -1,0 +1,122 @@
+{
+ "artifacts": [
+  "results/robot/r6_comp_42_prior.npz"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 4706,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 4706,
+  "tree": 0
+ },
+ "command": "experiments/r6_composer.py --tasks 35,36,42,67,19 --prior --tag _prior",
+ "config": {
+  "M": 32,
+  "hidden": 32,
+  "lam_ent": 0.001,
+  "lam_smooth": 0.01,
+  "levels": "2,3,4",
+  "prior": true,
+  "steps": 3000,
+  "stride": 5,
+  "tag": "_prior",
+  "tasks": "35,36,42,67,19",
+  "tree": "results/robot/r2b_libero_40_tree.npz"
+ },
+ "env": {
+  "device": "cpu",
+  "host": "sky2.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r6_composer",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "b3510f95ca12f6f81517b4b37ac6cc2f2b1f820d",
+  "short": "b3510f95"
+ },
+ "keys": {
+  "task": 42
+ },
+ "metrics": {
+  "M": 32,
+  "best_single_rms": 0.17934514582157135,
+  "curve": [
+   {
+    "entropy": 3.4787683486938477,
+    "rms": 0.48795777559280396,
+    "smooth": 1.3826067970512668e-06,
+    "step": 1
+   },
+   {
+    "entropy": 0.6919981837272644,
+    "rms": 0.11652634292840958,
+    "smooth": 0.002158848801627755,
+    "step": 500
+   },
+   {
+    "entropy": 0.45586705207824707,
+    "rms": 0.09139388054609299,
+    "smooth": 0.003919200040400028,
+    "step": 1000
+   },
+   {
+    "entropy": 0.3674416244029999,
+    "rms": 0.08484017848968506,
+    "smooth": 0.005107803735882044,
+    "step": 1500
+   },
+   {
+    "entropy": 0.32726362347602844,
+    "rms": 0.08135127276182175,
+    "smooth": 0.006351805757731199,
+    "step": 2000
+   },
+   {
+    "entropy": 0.30625128746032715,
+    "rms": 0.07938509434461594,
+    "smooth": 0.006906057707965374,
+    "step": 2500
+   },
+   {
+    "entropy": 0.2838200330734253,
+    "rms": 0.07779474556446075,
+    "smooth": 0.007856139913201332,
+    "step": 3000
+   }
+  ],
+  "effective_prototypes": 1.3980004787445068,
+  "jerk_composed": 0.01110872346907854,
+  "jerk_demo": 0.014897074550390244,
+  "n_frames": 172,
+  "n_params": 2041,
+  "prior_rms": 0.38422685861587524,
+  "program_bytes": 4706,
+  "prototypes_used": 12,
+  "raw_bytes": 26832,
+  "rms": 0.07777809351682663,
+  "secs": 14.01926589012146,
+  "task": 42,
+  "text": "put the frying pan under the cabinet shelf",
+  "top_weight": 0.8783912062644958,
+  "vocab_cover": 0.3953488372093023,
+  "w_prior": 0.1524592787027359
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r6_composer__libero_90___prior__task-42__s0__b3510f95",
+ "schema": 1,
+ "script": "experiments/r6_composer.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-26T03:23:43+00:00",
+ "stream": null,
+ "tag": "_prior"
+}

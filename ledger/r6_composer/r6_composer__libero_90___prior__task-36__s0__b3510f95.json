@@ -1,0 +1,122 @@
+{
+ "artifacts": [
+  "results/robot/r6_comp_36_prior.npz"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 4850,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 4850,
+  "tree": 0
+ },
+ "command": "experiments/r6_composer.py --tasks 35,36,42,67,19 --prior --tag _prior",
+ "config": {
+  "M": 32,
+  "hidden": 32,
+  "lam_ent": 0.001,
+  "lam_smooth": 0.01,
+  "levels": "2,3,4",
+  "prior": true,
+  "steps": 3000,
+  "stride": 5,
+  "tag": "_prior",
+  "tasks": "35,36,42,67,19",
+  "tree": "results/robot/r2b_libero_40_tree.npz"
+ },
+ "env": {
+  "device": "cpu",
+  "host": "sky2.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r6_composer",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "b3510f95ca12f6f81517b4b37ac6cc2f2b1f820d",
+  "short": "b3510f95"
+ },
+ "keys": {
+  "task": 36
+ },
+ "metrics": {
+  "M": 32,
+  "best_single_rms": 0.139124795794487,
+  "curve": [
+   {
+    "entropy": 3.4792160987854004,
+    "rms": 0.444609135389328,
+    "smooth": 1.3306942037161207e-06,
+    "step": 1
+   },
+   {
+    "entropy": 0.8011312484741211,
+    "rms": 0.14648886024951935,
+    "smooth": 0.002856900915503502,
+    "step": 500
+   },
+   {
+    "entropy": 0.42122140526771545,
+    "rms": 0.09383152425289154,
+    "smooth": 0.005711800884455442,
+    "step": 1000
+   },
+   {
+    "entropy": 0.3213343620300293,
+    "rms": 0.08289124816656113,
+    "smooth": 0.008248205296695232,
+    "step": 1500
+   },
+   {
+    "entropy": 0.27689284086227417,
+    "rms": 0.07879932969808578,
+    "smooth": 0.009949738159775734,
+    "step": 2000
+   },
+   {
+    "entropy": 0.2624262273311615,
+    "rms": 0.07647202908992767,
+    "smooth": 0.011076053604483604,
+    "step": 2500
+   },
+   {
+    "entropy": 0.2541544735431671,
+    "rms": 0.07483870536088943,
+    "smooth": 0.01174507662653923,
+    "step": 3000
+   }
+  ],
+  "effective_prototypes": 1.3581019639968872,
+  "jerk_composed": 0.013521488755941391,
+  "jerk_demo": 0.012726954184472561,
+  "n_frames": 218,
+  "n_params": 2041,
+  "prior_rms": 0.36368387937545776,
+  "program_bytes": 4850,
+  "prototypes_used": 12,
+  "raw_bytes": 34008,
+  "rms": 0.07482470571994781,
+  "secs": 15.51550817489624,
+  "task": 36,
+  "text": "put the white bowl on the plate",
+  "top_weight": 0.8934689164161682,
+  "vocab_cover": 0.31077981651376146,
+  "w_prior": 0.23181818425655365
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r6_composer__libero_90___prior__task-36__s0__b3510f95",
+ "schema": 1,
+ "script": "experiments/r6_composer.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-26T03:23:29+00:00",
+ "stream": null,
+ "tag": "_prior"
+}
