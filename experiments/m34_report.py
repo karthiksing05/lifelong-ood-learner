@@ -32,10 +32,10 @@ def wilson(k, n, z=1.96):
     return c - h, c + h
 
 
-def collect():
+def collect(experiments=("m3_compose", "m4_fold")):
     cells = defaultdict(lambda: [0, 0, 0])            # (task, arm) -> k, n, bytes
     lang = {}
-    for exp in ("m3_compose", "m4_fold"):
+    for exp in experiments:
         for r in ledger.load(exp):
             arm = r["tag"]
             for tid, t in r["metrics"]["tasks"].items():
@@ -66,8 +66,22 @@ def fmt_bytes(b):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--json", default="")
+    ap.add_argument("--heldout", action="store_true", help="the held-out init states (m3_heldout) + the practice rule")
+    ap.add_argument("--practice", type=float, default=0.5, help="keep the prior if its practice success >= this")
     a = ap.parse_args()
-    cells, lang = collect()
+    cells, lang = collect(("m3_heldout",) if a.heldout else ("m3_compose", "m4_fold"))
+    if a.heldout:
+        # PRACTICE-THEN-COMPOSE: the prior's success on the development init states (m3_compose zeroshot, states 0-9)
+        # decides per task; the chosen arm is scored on the held-out states (10-29).  Bytes: the program only if chosen.
+        dev, _ = collect(("m3_compose",))
+        for t in list(lang):
+            k0, n0, _ = dev.get((t, "zeroshot"), (0, 0, 0))
+            keep = n0 > 0 and k0 / n0 >= a.practice
+            src = cells.get((t, "zeroshot" if keep else "code_replay"))
+            if src:
+                cells[(t, "practice")] = [src[0], src[1], 0 if keep else src[2]]
+        ARMS.append("practice")
+        NAMES["practice"] = f"practice, then compose (prior kept if >= {a.practice:.0%} of 10)"
     tasks = sorted(lang, key=int)
     arms = [x for x in ARMS if any((t, x) in cells for t in tasks)]
     print("| task | " + " | ".join(NAMES.get(x, x) for x in arms) + " |")

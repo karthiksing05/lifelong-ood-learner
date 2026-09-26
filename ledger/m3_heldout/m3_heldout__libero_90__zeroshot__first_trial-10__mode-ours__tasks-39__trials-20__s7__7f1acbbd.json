@@ -1,0 +1,83 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/m3_39_zeroshot.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "roll.sh MODE=ours SUITE=libero_90 TASKS=39 TRIALS=20 (job 3955162)",
+ "config": {
+  "client": {
+   "first_trial": 10,
+   "host": "127.0.0.1",
+   "max_steps": 0,
+   "no_meta": false,
+   "out": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/m3_39_zeroshot.json",
+   "port": 9840,
+   "replan": 5,
+   "resize": 224,
+   "seed": 7,
+   "suite": "libero_90",
+   "tasks": "39",
+   "trials": 20,
+   "videos": 2,
+   "wait": 10
+  },
+  "job": "3955162",
+  "mode": "ours"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "megabot.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3955162",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_heldout",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "7f1acbbda14c5f80e25bc01588dd908b44815a17",
+  "short": "7f1acbbd"
+ },
+ "keys": {
+  "first_trial": 10,
+  "mode": "ours",
+  "tasks": "39",
+  "trials": 20
+ },
+ "metrics": {
+  "complete": true,
+  "n_episodes": 20,
+  "secs": 729.1902275085449,
+  "success_rate": 0.0,
+  "tasks": {
+   "39": {
+    "errors": 0,
+    "language": "turn off the stove",
+    "mean_steps": 400.0,
+    "n": 20,
+    "success_rate": 0.0
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_heldout__libero_90__zeroshot__first_trial-10__mode-ours__tasks-39__trials-20__s7__7f1acbbd",
+ "schema": 1,
+ "script": "experiments/libero_client.py",
+ "seconds": null,
+ "seed": 7,
+ "source_commit": null,
+ "started": "2026-09-25T23:19:59+00:00",
+ "stream": null,
+ "tag": "zeroshot"
+}

@@ -1,0 +1,83 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/m3_42_code_agree20.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 4988,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 4988,
+  "tree": 0
+ },
+ "command": "roll.sh MODE=program:/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r3_prog_42_code_lib40.npz?w0=1.0&sched=const&var=0.001&key=pose&stall=3&agree=20 SUITE=libero_90 TASKS=42 TRIALS=10 (job 3955131)",
+ "config": {
+  "client": {
+   "first_trial": 0,
+   "host": "127.0.0.1",
+   "max_steps": 0,
+   "no_meta": false,
+   "out": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/m3_42_code_agree20.json",
+   "port": 9166,
+   "replan": 5,
+   "resize": 224,
+   "seed": 7,
+   "suite": "libero_90",
+   "tasks": "42",
+   "trials": 10,
+   "videos": 2,
+   "wait": 10
+  },
+  "job": "3955131",
+  "mode": "program:/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r3_prog_42_code_lib40.npz?w0=1.0&sched=const&var=0.001&key=pose&stall=3&agree=20"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "voltron.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3955131",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_compose",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "7f1acbbda14c5f80e25bc01588dd908b44815a17",
+  "short": "7f1acbbd"
+ },
+ "keys": {
+  "first_trial": 0,
+  "mode": "program:/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r3_prog_42_code_lib40.npz?w0=1.0&sched=const&var=0.001&key=pose&stall=3&agree=20",
+  "tasks": "42",
+  "trials": 10
+ },
+ "metrics": {
+  "complete": true,
+  "n_episodes": 10,
+  "secs": 345.01724457740784,
+  "success_rate": 0.0,
+  "tasks": {
+   "42": {
+    "errors": 0,
+    "language": "put the frying pan under the cabinet shelf",
+    "mean_steps": 400.0,
+    "n": 10,
+    "success_rate": 0.0
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_compose__libero_90__code_agree20__first_trial-0__mode5b73c2df88bc__tasks-42__trials-10__s7__7f1acbbd",
+ "schema": 1,
+ "script": "experiments/libero_client.py",
+ "seconds": null,
+ "seed": 7,
+ "source_commit": null,
+ "started": "2026-09-25T22:59:18+00:00",
+ "stream": null,
+ "tag": "code_agree20"
+}
