@@ -1,0 +1,1898 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_40",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "experiments/r2c_atlas.py",
+ "config": {
+  "levels": "2,3,4,5,6",
+  "npz": "results/robot/r2b_libero_40.npz",
+  "tree": "results/robot/r2b_libero_40_tree.npz"
+ },
+ "env": {
+  "device": "cpu",
+  "host": "sky2.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r2c_atlas",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "3f45238e5d6d54895a4e921253f43cdf13d6baae",
+  "short": "3f45238e"
+ },
+ "keys": {},
+ "metrics": {
+  "levels": {
+   "0.2": {
+    "frac_gripper_event": 0.13053460150869137,
+    "gripper_purity": 0.9994145770319055,
+    "median_dist_cm": 6.6737353801727295,
+    "n_prototypes": 6098,
+    "n_words": 111,
+    "vocabulary": [
+     {
+      "frame_share": 0.07112889062347547,
+      "name": "left + closed",
+      "prototypes": 145,
+      "tasks": 25
+     },
+     {
+      "frame_share": 0.06839691677236803,
+      "name": "hold + open",
+      "prototypes": 74,
+      "tasks": 35
+     },
+     {
+      "frame_share": 0.06332325104888281,
+      "name": "down + open",
+      "prototypes": 430,
+      "tasks": 39
+     },
+     {
+      "frame_share": 0.052492926139135525,
+      "name": "down-back + open",
+      "prototypes": 263,
+      "tasks": 37
+     },
+     {
+      "frame_share": 0.046150843984779005,
+      "name": "lift + closed",
+      "prototypes": 368,
+      "tasks": 35
+     },
+     {
+      "frame_share": 0.040394184798516926,
+      "name": "down + closed",
+      "prototypes": 299,
+      "tasks": 35
+     },
+     {
+      "frame_share": 0.03697921748463265,
+      "name": "forward + open",
+      "prototypes": 196,
+      "tasks": 25
+     },
+     {
+      "frame_share": 0.030344423846228902,
+      "name": "left + open",
+      "prototypes": 101,
+      "tasks": 12
+     },
+     {
+      "frame_share": 0.029466289394087228,
+      "name": "down-back + closed",
+      "prototypes": 207,
+      "tasks": 34
+     },
+     {
+      "frame_share": 0.028002731973851107,
+      "name": "lift-forward + closed",
+      "prototypes": 227,
+      "tasks": 27
+     },
+     {
+      "frame_share": 0.02702702702702703,
+      "name": "hold + closed",
+      "prototypes": 124,
+      "tasks": 35
+     },
+     {
+      "frame_share": 0.02527075812274368,
+      "name": "forward-right + open",
+      "prototypes": 117,
+      "tasks": 18
+     },
+     {
+      "frame_share": 0.02097765635671773,
+      "name": "down-back + closing",
+      "prototypes": 188,
+      "tasks": 36
+     },
+     {
+      "frame_share": 0.020001951409893647,
+      "name": "right + open",
+      "prototypes": 105,
+      "tasks": 17
+     },
+     {
+      "frame_share": 0.01990438091521124,
+      "name": "twist wrist + open",
+      "prototypes": 108,
+      "tasks": 11
+     },
+     {
+      "frame_share": 0.01844082349497512,
+      "name": "opening",
+      "prototypes": 168,
+      "tasks": 34
+     },
+     {
+      "frame_share": 0.01844082349497512,
+      "name": "lift-left + closed",
+      "prototypes": 165,
+      "tasks": 29
+     },
+     {
+      "frame_share": 0.01687969558005659,
+      "name": "left-down + open",
+      "prototypes": 75,
+      "tasks": 15
+     },
+     {
+      "frame_share": 0.016782125085374182,
+      "name": "lift + open",
+      "prototypes": 112,
+      "tasks": 31
+     },
+     {
+      "frame_share": 0.016782125085374182,
+      "name": "down-left + closed",
+      "prototypes": 143,
+      "tasks": 30
+     },
+     {
+      "frame_share": 0.01492828568640843,
+      "name": "down-left + open",
+      "prototypes": 75,
+      "tasks": 16
+     },
+     {
+      "frame_share": 0.014733144697043614,
+      "name": "left-up + closed",
+      "prototypes": 111,
+      "tasks": 27
+     },
+     {
+      "frame_share": 0.014635574202361206,
+      "name": "down-forward + open",
+      "prototypes": 122,
+      "tasks": 28
+     },
+     {
+      "frame_share": 0.01444043321299639,
+      "name": "left-down + closed",
+      "prototypes": 123,
+      "tasks": 26
+     },
+     {
+      "frame_share": 0.012586593814030636,
+      "name": "down-right + open",
+      "prototypes": 97,
+      "tasks": 23
+     },
+     {
+      "frame_share": 0.010830324909747292,
+      "name": "right-forward + open",
+      "prototypes": 80,
+      "tasks": 16
+     },
+     {
+      "frame_share": 0.010830324909747292,
+      "name": "forward-down + open",
+      "prototypes": 100,
+      "tasks": 28
+     },
+     {
+      "frame_share": 0.009561908478875988,
+      "name": "forward-left + open",
+      "prototypes": 49,
+      "tasks": 12
+     },
+     {
+      "frame_share": 0.00946433798419358,
+      "name": "lift-right + closed",
+      "prototypes": 61,
+      "tasks": 12
+     },
+     {
+      "frame_share": 0.008488633037369499,
+      "name": "forward-up + closed",
+      "prototypes": 70,
+      "tasks": 15
+     },
+     {
+      "frame_share": 0.008488633037369499,
+      "name": "back-down + open",
+      "prototypes": 54,
+      "tasks": 18
+     },
+     {
+      "frame_share": 0.008488633037369499,
+      "name": "back-down + closed",
+      "prototypes": 62,
+      "tasks": 24
+     },
+     {
+      "frame_share": 0.008293492048004683,
+      "name": "lift-forward + open",
+      "prototypes": 46,
+      "tasks": 13
+     },
+     {
+      "frame_share": 0.007805639574592643,
+      "name": "right + closed",
+      "prototypes": 46,
+      "tasks": 10
+     },
+     {
+      "frame_share": 0.007708069079910235,
+      "name": "left-forward + closed",
+      "prototypes": 58,
+      "tasks": 13
+     },
+     {
+      "frame_share": 0.007708069079910235,
+      "name": "back + open",
+      "prototypes": 47,
+      "tasks": 7
+     },
+     {
+      "frame_share": 0.007610498585227827,
+      "name": "down + closing",
+      "prototypes": 64,
+      "tasks": 24
+     },
+     {
+      "frame_share": 0.007512928090545419,
+      "name": "forward-left + closed",
+      "prototypes": 45,
+      "tasks": 7
+     },
+     {
+      "frame_share": 0.0071226461118157865,
+      "name": "forward + closed",
+      "prototypes": 56,
+      "tasks": 9
+     },
+     {
+      "frame_share": 0.006244511659674114,
+      "name": "right-down + open",
+      "prototypes": 54,
+      "tasks": 19
+     },
+     {
+      "frame_share": 0.006049370670309299,
+      "name": "right-back + closed",
+      "prototypes": 20,
+      "tasks": 5
+     },
+     {
+      "frame_share": 0.005756659186262074,
+      "name": "closing",
+      "prototypes": 45,
+      "tasks": 18
+     },
+     {
+      "frame_share": 0.005659088691579666,
+      "name": "left-back + closed",
+      "prototypes": 49,
+      "tasks": 11
+     },
+     {
+      "frame_share": 0.005659088691579666,
+      "name": "left-forward + open",
+      "prototypes": 34,
+      "tasks": 5
+     },
+     {
+      "frame_share": 0.005561518196897259,
+      "name": "down + opening",
+      "prototypes": 55,
+      "tasks": 20
+     },
+     {
+      "frame_share": 0.00546394770221485,
+      "name": "back-down + closing",
+      "prototypes": 51,
+      "tasks": 19
+     },
+     {
+      "frame_share": 0.005366377207532442,
+      "name": "forward-right + closed",
+      "prototypes": 51,
+      "tasks": 9
+     },
+     {
+      "frame_share": 0.005073665723485218,
+      "name": "twist wrist + closed",
+      "prototypes": 33,
+      "tasks": 6
+     },
+     {
+      "frame_share": 0.004780954239437994,
+      "name": "right-up + closed",
+      "prototypes": 34,
+      "tasks": 7
+     },
+     {
+      "frame_share": 0.004585813250073178,
+      "name": "down-forward + closed",
+      "prototypes": 46,
+      "tasks": 16
+     },
+     {
+      "frame_share": 0.004390672260708362,
+      "name": "back + closed",
+      "prototypes": 27,
+      "tasks": 14
+     },
+     {
+      "frame_share": 0.004097960776661138,
+      "name": "lift-left + open",
+      "prototypes": 28,
+      "tasks": 10
+     },
+     {
+      "frame_share": 0.004097960776661138,
+      "name": "right-back + open",
+      "prototypes": 24,
+      "tasks": 5
+     },
+     {
+      "frame_share": 0.0037076787979315054,
+      "name": "back-right + closed",
+      "prototypes": 16,
+      "tasks": 5
+     },
+     {
+      "frame_share": 0.0037076787979315054,
+      "name": "down-back + opening",
+      "prototypes": 37,
+      "tasks": 20
+     },
+     {
+      "frame_share": 0.0037076787979315054,
+      "name": "right-up + open",
+      "prototypes": 28,
+      "tasks": 6
+     },
+     {
+      "frame_share": 0.0037076787979315054,
+      "name": "forward-up + open",
+      "prototypes": 22,
+      "tasks": 7
+     },
+     {
+      "frame_share": 0.0035125378085666893,
+      "name": "right-forward + closed",
+      "prototypes": 28,
+      "tasks": 8
+     },
+     {
+      "frame_share": 0.0033173968192018732,
+      "name": "lift-back + open",
+      "prototypes": 25,
+      "tasks": 9
+     },
+     {
+      "frame_share": 0.003122255829837057,
+      "name": "right-down + closed",
+      "prototypes": 23,
+      "tasks": 8
+     },
+     {
+      "frame_share": 0.003122255829837057,
+      "name": "down-right + closed",
+      "prototypes": 24,
+      "tasks": 12
+     },
+     {
+      "frame_share": 0.0030246853351546493,
+      "name": "back-right + open",
+      "prototypes": 24,
+      "tasks": 7
+     },
+     {
+      "frame_share": 0.002927114840472241,
+      "name": "lift-back + closed",
+      "prototypes": 26,
+      "tasks": 7
+     },
+     {
+      "frame_share": 0.002731973851107425,
+      "name": "forward-down + closed",
+      "prototypes": 26,
+      "tasks": 11
+     },
+     {
+      "frame_share": 0.002634403356425017,
+      "name": "lift + opening",
+      "prototypes": 26,
+      "tasks": 13
+     },
+     {
+      "frame_share": 0.002536832861742609,
+      "name": "left-back + open",
+      "prototypes": 16,
+      "tasks": 5
+     },
+     {
+      "frame_share": 0.002439262367060201,
+      "name": "left-up + open",
+      "prototypes": 20,
+      "tasks": 9
+     },
+     {
+      "frame_share": 0.002146550883012977,
+      "name": "lift-right + open",
+      "prototypes": 20,
+      "tasks": 5
+     },
+     {
+      "frame_share": 0.0017562689042833447,
+      "name": "down-left + opening",
+      "prototypes": 17,
+      "tasks": 10
+     },
+     {
+      "frame_share": 0.0016586984096009366,
+      "name": "down-right + closing",
+      "prototypes": 16,
+      "tasks": 10
+     },
+     {
+      "frame_share": 0.0015611279149185286,
+      "name": "down-left + closing",
+      "prototypes": 12,
+      "tasks": 5
+     },
+     {
+      "frame_share": 0.0014635574202361205,
+      "name": "back-up + open",
+      "prototypes": 14,
+      "tasks": 5
+     },
+     {
+      "frame_share": 0.0012684164308713044,
+      "name": "back-left + closed",
+      "prototypes": 10,
+      "tasks": 8
+     },
+     {
+      "frame_share": 0.0012684164308713044,
+      "name": "back-up + closed",
+      "prototypes": 9,
+      "tasks": 7
+     },
+     {
+      "frame_share": 0.0012684164308713044,
+      "name": "down-right + opening",
+      "prototypes": 11,
+      "tasks": 7
+     },
+     {
+      "frame_share": 0.0010732754415064885,
+      "name": "back-left + open",
+      "prototypes": 10,
+      "tasks": 3
+     },
+     {
+      "frame_share": 0.0009757049468240804,
+      "name": "left-down + opening",
+      "prototypes": 9,
+      "tasks": 5
+     },
+     {
+      "frame_share": 0.0009757049468240804,
+      "name": "lift-forward + opening",
+      "prototypes": 10,
+      "tasks": 6
+     },
+     {
+      "frame_share": 0.0008781344521416723,
+      "name": "back-down + opening",
+      "prototypes": 9,
+      "tasks": 7
+     },
+     {
+      "frame_share": 0.0006829934627768562,
+      "name": "back-right + opening",
+      "prototypes": 6,
+      "tasks": 3
+     },
+     {
+      "frame_share": 0.0006829934627768562,
+      "name": "left + opening",
+      "prototypes": 7,
+      "tasks": 6
+     },
+     {
+      "frame_share": 0.0005854229680944482,
+      "name": "back + opening",
+      "prototypes": 5,
+      "tasks": 5
+     },
+     {
+      "frame_share": 0.0004878524734120402,
+      "name": "forward-up + opening",
+      "prototypes": 4,
+      "tasks": 3
+     },
+     {
+      "frame_share": 0.0004878524734120402,
+      "name": "lift-left + opening",
+      "prototypes": 4,
+      "tasks": 2
+     },
+     {
+      "frame_share": 0.00039028197872963214,
+      "name": "back-up + opening",
+      "prototypes": 3,
+      "tasks": 2
+     },
+     {
+      "frame_share": 0.00039028197872963214,
+      "name": "back + closing",
+      "prototypes": 4,
+      "tasks": 3
+     },
+     {
+      "frame_share": 0.00039028197872963214,
+      "name": "back-right + closing",
+      "prototypes": 2,
+      "tasks": 1
+     },
+     {
+      "frame_share": 0.00039028197872963214,
+      "name": "forward-down + opening",
+      "prototypes": 4,
+      "tasks": 3
+     },
+     {
+      "frame_share": 0.00039028197872963214,
+      "name": "left-up + opening",
+      "prototypes": 4,
+      "tasks": 3
+     },
+     {
+      "frame_share": 0.0002927114840472241,
+      "name": "back-left + opening",
+      "prototypes": 3,
+      "tasks": 3
+     },
+     {
+      "frame_share": 0.0002927114840472241,
+      "name": "forward + opening",
+      "prototypes": 3,
+      "tasks": 2
+     },
+     {
+      "frame_share": 0.0002927114840472241,
+      "name": "left-forward + opening",
+      "prototypes": 3,
+      "tasks": 3
+     },
+     {
+      "frame_share": 0.0002927114840472241,
+      "name": "right-down + opening",
+      "prototypes": 3,
+      "tasks": 2
+     },
+     {
+      "frame_share": 0.0002927114840472241,
+      "name": "right-down + closing",
+      "prototypes": 3,
+      "tasks": 3
+     },
+     {
+      "frame_share": 0.00019514098936481607,
+      "name": "left-down + closing",
+      "prototypes": 2,
+      "tasks": 2
+     },
+     {
+      "frame_share": 0.00019514098936481607,
+      "name": "right + opening",
+      "prototypes": 2,
+      "tasks": 2
+     },
+     {
+      "frame_share": 0.00019514098936481607,
+      "name": "forward-left + opening",
+      "prototypes": 2,
+      "tasks": 2
+     },
+     {
+      "frame_share": 9.757049468240804e-05,
+      "name": "left + closing",
+      "prototypes": 1,
+      "tasks": 1
+     },
+     {
+      "frame_share": 9.757049468240804e-05,
+      "name": "left-forward + closing",
+      "prototypes": 1,
+      "tasks": 1
+     },
+     {
+      "frame_share": 9.757049468240804e-05,
+      "name": "forward-left + closing",
+      "prototypes": 1,
+      "tasks": 1
+     },
+     {
+      "frame_share": 9.757049468240804e-05,
+      "name": "twist wrist + closing",
+      "prototypes": 1,
+      "tasks": 1
+     },
+     {
+      "frame_share": 9.757049468240804e-05,
+      "name": "lift-right + opening",
+      "prototypes": 1,
+      "tasks": 1
+     },
+     {
+      "frame_share": 9.757049468240804e-05,
+      "name": "down-forward + closing",
+      "prototypes": 1,
+      "tasks": 1
+     },
+     {
+      "frame_share": 9.757049468240804e-05,
+      "name": "forward-down + closing",
+      "prototypes": 1,
+      "tasks": 1
+     },
+     {
+      "frame_share": 9.757049468240804e-05,
+      "name": "forward + closing",
+      "prototypes": 1,
+      "tasks": 1
+     },
+     {
+      "frame_share": 9.757049468240804e-05,
+      "name": "twist wrist + opening",
+      "prototypes": 1,
+      "tasks": 1
+     },
+     {
+      "frame_share": 9.757049468240804e-05,
+      "name": "down-forward + opening",
+      "prototypes": 1,
+      "tasks": 1
+     },
+     {
+      "frame_share": 9.757049468240804e-05,
+      "name": "right-back + opening",
+      "prototypes": 1,
+      "tasks": 1
+     },
+     {
+      "frame_share": 9.757049468240804e-05,
+      "name": "back-left + closing",
+      "prototypes": 1,
+      "tasks": 1
+     },
+     {
+      "frame_share": 9.757049468240804e-05,
+      "name": "right + closing",
+      "prototypes": 1,
+      "tasks": 1
+     },
+     {
+      "frame_share": 9.757049468240804e-05,
+      "name": "left-back + closing",
+      "prototypes": 1,
+      "tasks": 1
+     }
+    ],
+    "word_purity": 0.9021367938335447
+   },
+   "0.3": {
+    "frac_gripper_event": 0.22520661157024793,
+    "gripper_purity": 0.9962923212020685,
+    "median_dist_cm": 6.471177935600281,
+    "n_prototypes": 1936,
+    "n_words": 109,
+    "vocabulary": [
+     {
+      "frame_share": 0.1406966533320324,
+      "name": "hold + open",
+      "prototypes": 9,
+      "tasks": 40
+     },
+     {
+      "frame_share": 0.11347448531564056,
+      "name": "hold + closed",
+      "prototypes": 10,
+      "tasks": 37
+     },
+     {
+      "frame_share": 0.10635183920382477,
+      "name": "down-back + open",
+      "prototypes": 77,
+      "tasks": 40
+     },
+     {
+      "frame_share": 0.10537613425700068,
+      "name": "left + closed",
+      "prototypes": 15,
+      "tasks": 25
+     },
+     {
+      "frame_share": 0.03961362084105766,
+      "name": "lift + closed",
+      "prototypes": 42,
+      "tasks": 31
+     },
+     {
+      "frame_share": 0.03844277490486877,
+      "name": "forward + open",
+      "prototypes": 36,
+      "tasks": 19
+     },
+     {
+      "frame_share": 0.03600351253780857,
+      "name": "left + open",
+      "prototypes": 20,
+      "tasks": 13
+     },
+     {
+      "frame_share": 0.03375939116011318,
+      "name": "forward-right + open",
+      "prototypes": 40,
+      "tasks": 19
+     },
+     {
+      "frame_share": 0.022636354766318666,
+      "name": "down-back + closing",
+      "prototypes": 90,
+      "tasks": 38
+     },
+     {
+      "frame_share": 0.019709239925846424,
+      "name": "down + closed",
+      "prototypes": 112,
+      "tasks": 35
+     },
+     {
+      "frame_share": 0.019611669431164016,
+      "name": "opening",
+      "prototypes": 82,
+      "tasks": 34
+     },
+     {
+      "frame_share": 0.018538393989657526,
+      "name": "twist wrist + open",
+      "prototypes": 38,
+      "tasks": 11
+     },
+     {
+      "frame_share": 0.017660259537515856,
+      "name": "down-back + closed",
+      "prototypes": 89,
+      "tasks": 27
+     },
+     {
+      "frame_share": 0.015220997170455655,
+      "name": "right + open",
+      "prototypes": 21,
+      "tasks": 14
+     },
+     {
+      "frame_share": 0.014147721728949165,
+      "name": "lift-forward + closed",
+      "prototypes": 53,
+      "tasks": 22
+     },
+     {
+      "frame_share": 0.012586593814030636,
+      "name": "down + open",
+      "prototypes": 85,
+      "tasks": 26
+     },
+     {
+      "frame_share": 0.01200117084593619,
+      "name": "down + closing",
+      "prototypes": 28,
+      "tasks": 30
+     },
+     {
+      "frame_share": 0.01044004293101766,
+      "name": "left-down + open",
+      "prototypes": 18,
+      "tasks": 8
+     },
+     {
+      "frame_share": 0.009757049468240804,
+      "name": "forward-left + closed",
+      "prototypes": 11,
+      "tasks": 7
+     },
+     {
+      "frame_share": 0.009269196994828763,
+      "name": "forward-left + open",
+      "prototypes": 5,
+      "tasks": 8
+     },
+     {
+      "frame_share": 0.008781344521416724,
+      "name": "lift-right + closed",
+      "prototypes": 27,
+      "tasks": 7
+     },
+     {
+      "frame_share": 0.008586203532051908,
+      "name": "right + closed",
+      "prototypes": 23,
+      "tasks": 8
+     },
+     {
+      "frame_share": 0.007903210069275052,
+      "name": "down-left + closed",
+      "prototypes": 48,
+      "tasks": 18
+     },
+     {
+      "frame_share": 0.007317787101180603,
+      "name": "back + open",
+      "prototypes": 22,
+      "tasks": 5
+     },
+     {
+      "frame_share": 0.006732364133086155,
+      "name": "twist wrist + closed",
+      "prototypes": 18,
+      "tasks": 5
+     },
+     {
+      "frame_share": 0.0066347936384037465,
+      "name": "right-back + closed",
+      "prototypes": 7,
+      "tasks": 5
+     },
+     {
+      "frame_share": 0.0061469411649917064,
+      "name": "forward + closed",
+      "prototypes": 29,
+      "tasks": 8
+     },
+     {
+      "frame_share": 0.006049370670309299,
+      "name": "back-down + closing",
+      "prototypes": 25,
+      "tasks": 25
+     },
+     {
+      "frame_share": 0.005951800175626891,
+      "name": "forward-right + closed",
+      "prototypes": 31,
+      "tasks": 9
+     },
+     {
+      "frame_share": 0.005854229680944482,
+      "name": "down-left + open",
+      "prototypes": 33,
+      "tasks": 11
+     },
+     {
+      "frame_share": 0.005756659186262074,
+      "name": "down + opening",
+      "prototypes": 42,
+      "tasks": 20
+     },
+     {
+      "frame_share": 0.005268806712850034,
+      "name": "right-forward + open",
+      "prototypes": 25,
+      "tasks": 11
+     },
+     {
+      "frame_share": 0.004878524734120402,
+      "name": "lift-forward + open",
+      "prototypes": 14,
+      "tasks": 8
+     },
+     {
+      "frame_share": 0.004585813250073178,
+      "name": "down-left + closing",
+      "prototypes": 6,
+      "tasks": 22
+     },
+     {
+      "frame_share": 0.004585813250073178,
+      "name": "back-down + open",
+      "prototypes": 21,
+      "tasks": 8
+     },
+     {
+      "frame_share": 0.00448824275539077,
+      "name": "left-down + closed",
+      "prototypes": 23,
+      "tasks": 16
+     },
+     {
+      "frame_share": 0.00448824275539077,
+      "name": "lift-left + closed",
+      "prototypes": 27,
+      "tasks": 14
+     },
+     {
+      "frame_share": 0.004390672260708362,
+      "name": "down-right + open",
+      "prototypes": 32,
+      "tasks": 13
+     },
+     {
+      "frame_share": 0.004293101766025954,
+      "name": "left-forward + open",
+      "prototypes": 14,
+      "tasks": 4
+     },
+     {
+      "frame_share": 0.00400039028197873,
+      "name": "lift + open",
+      "prototypes": 26,
+      "tasks": 9
+     },
+     {
+      "frame_share": 0.0039028197872963215,
+      "name": "down-forward + closed",
+      "prototypes": 35,
+      "tasks": 15
+     },
+     {
+      "frame_share": 0.0038052492926139137,
+      "name": "down-forward + open",
+      "prototypes": 27,
+      "tasks": 14
+     },
+     {
+      "frame_share": 0.0037076787979315054,
+      "name": "forward-up + closed",
+      "prototypes": 21,
+      "tasks": 10
+     },
+     {
+      "frame_share": 0.0037076787979315054,
+      "name": "down-right + closed",
+      "prototypes": 19,
+      "tasks": 11
+     },
+     {
+      "frame_share": 0.0037076787979315054,
+      "name": "left-up + closed",
+      "prototypes": 18,
+      "tasks": 13
+     },
+     {
+      "frame_share": 0.0033173968192018732,
+      "name": "right-up + closed",
+      "prototypes": 17,
+      "tasks": 6
+     },
+     {
+      "frame_share": 0.0033173968192018732,
+      "name": "back-down + closed",
+      "prototypes": 21,
+      "tasks": 11
+     },
+     {
+      "frame_share": 0.003122255829837057,
+      "name": "down-back + opening",
+      "prototypes": 27,
+      "tasks": 18
+     },
+     {
+      "frame_share": 0.003122255829837057,
+      "name": "forward-down + open",
+      "prototypes": 22,
+      "tasks": 14
+     },
+     {
+      "frame_share": 0.003122255829837057,
+      "name": "right-back + open",
+      "prototypes": 13,
+      "tasks": 3
+     },
+     {
+      "frame_share": 0.0030246853351546493,
+      "name": "forward-up + open",
+      "prototypes": 5,
+      "tasks": 5
+     },
+     {
+      "frame_share": 0.002927114840472241,
+      "name": "left-back + closed",
+      "prototypes": 14,
+      "tasks": 5
+     },
+     {
+      "frame_share": 0.002829544345789833,
+      "name": "lift-back + open",
+      "prototypes": 17,
+      "tasks": 6
+     },
+     {
+      "frame_share": 0.002634403356425017,
+      "name": "right-forward + closed",
+      "prototypes": 18,
+      "tasks": 8
+     },
+     {
+      "frame_share": 0.002439262367060201,
+      "name": "back-right + closed",
+      "prototypes": 5,
+      "tasks": 4
+     },
+     {
+      "frame_share": 0.002146550883012977,
+      "name": "right-down + closed",
+      "prototypes": 16,
+      "tasks": 7
+     },
+     {
+      "frame_share": 0.002146550883012977,
+      "name": "right-down + open",
+      "prototypes": 20,
+      "tasks": 9
+     },
+     {
+      "frame_share": 0.002146550883012977,
+      "name": "lift + opening",
+      "prototypes": 12,
+      "tasks": 10
+     },
+     {
+      "frame_share": 0.002048980388330569,
+      "name": "right-up + open",
+      "prototypes": 12,
+      "tasks": 4
+     },
+     {
+      "frame_share": 0.0019514098936481608,
+      "name": "forward-down + closed",
+      "prototypes": 17,
+      "tasks": 10
+     },
+     {
+      "frame_share": 0.0019514098936481608,
+      "name": "lift-left + open",
+      "prototypes": 10,
+      "tasks": 7
+     },
+     {
+      "frame_share": 0.0016586984096009366,
+      "name": "back + closed",
+      "prototypes": 11,
+      "tasks": 5
+     },
+     {
+      "frame_share": 0.0014635574202361205,
+      "name": "back-right + open",
+      "prototypes": 10,
+      "tasks": 5
+     },
+     {
+      "frame_share": 0.0014635574202361205,
+      "name": "lift-back + closed",
+      "prototypes": 4,
+      "tasks": 3
+     },
+     {
+      "frame_share": 0.0014635574202361205,
+      "name": "left-forward + closed",
+      "prototypes": 7,
+      "tasks": 3
+     },
+     {
+      "frame_share": 0.0013659869255537125,
+      "name": "lift-right + open",
+      "prototypes": 11,
+      "tasks": 3
+     },
+     {
+      "frame_share": 0.0012684164308713044,
+      "name": "left-back + open",
+      "prototypes": 6,
+      "tasks": 4
+     },
+     {
+      "frame_share": 0.0011708459361888964,
+      "name": "closing",
+      "prototypes": 9,
+      "tasks": 9
+     },
+     {
+      "frame_share": 0.0011708459361888964,
+      "name": "down-left + opening",
+      "prototypes": 11,
+      "tasks": 7
+     },
+     {
+      "frame_share": 0.0011708459361888964,
+      "name": "lift-forward + opening",
+      "prototypes": 10,
+      "tasks": 7
+     },
+     {
+      "frame_share": 0.0011708459361888964,
+      "name": "down-right + opening",
+      "prototypes": 8,
+      "tasks": 5
+     },
+     {
+      "frame_share": 0.0009757049468240804,
+      "name": "back-left + open",
+      "prototypes": 7,
+      "tasks": 3
+     },
+     {
+      "frame_share": 0.0009757049468240804,
+      "name": "left-up + open",
+      "prototypes": 7,
+      "tasks": 5
+     },
+     {
+      "frame_share": 0.0008781344521416723,
+      "name": "left-down + opening",
+      "prototypes": 7,
+      "tasks": 4
+     },
+     {
+      "frame_share": 0.0007805639574592643,
+      "name": "back-left + closed",
+      "prototypes": 4,
+      "tasks": 4
+     },
+     {
+      "frame_share": 0.0007805639574592643,
+      "name": "back-down + opening",
+      "prototypes": 8,
+      "tasks": 6
+     },
+     {
+      "frame_share": 0.0007805639574592643,
+      "name": "down-right + closing",
+      "prototypes": 8,
+      "tasks": 6
+     },
+     {
+      "frame_share": 0.0006829934627768562,
+      "name": "back-up + open",
+      "prototypes": 4,
+      "tasks": 1
+     },
+     {
+      "frame_share": 0.0005854229680944482,
+      "name": "forward-up + opening",
+      "prototypes": 3,
+      "tasks": 5
+     },
+     {
+      "frame_share": 0.0005854229680944482,
+      "name": "left + opening",
+      "prototypes": 5,
+      "tasks": 5
+     },
+     {
+      "frame_share": 0.0004878524734120402,
+      "name": "back-up + opening",
+      "prototypes": 3,
+      "tasks": 3
+     },
+     {
+      "frame_share": 0.0004878524734120402,
+      "name": "back + opening",
+      "prototypes": 4,
+      "tasks": 4
+     },
+     {
+      "frame_share": 0.0004878524734120402,
+      "name": "back-up + closed",
+      "prototypes": 1,
+      "tasks": 1
+     },
+     {
+      "frame_share": 0.00039028197872963214,
+      "name": "back-right + closing",
+      "prototypes": 2,
+      "tasks": 1
+     },
+     {
+      "frame_share": 0.00039028197872963214,
+      "name": "back-right + opening",
+      "prototypes": 3,
+      "tasks": 2
+     },
+     {
+      "frame_share": 0.00039028197872963214,
+      "name": "forward-down + opening",
+      "prototypes": 4,
+      "tasks": 3
+     },
+     {
+      "frame_share": 0.00039028197872963214,
+      "name": "lift-left + opening",
+      "prototypes": 3,
+      "tasks": 1
+     },
+     {
+      "frame_share": 0.0002927114840472241,
+      "name": "forward + opening",
+      "prototypes": 3,
+      "tasks": 2
+     },
+     {
+      "frame_share": 0.0002927114840472241,
+      "name": "left-forward + opening",
+      "prototypes": 3,
+      "tasks": 3
+     },
+     {
+      "frame_share": 0.0002927114840472241,
+      "name": "right-down + opening",
+      "prototypes": 3,
+      "tasks": 2
+     },
+     {
+      "frame_share": 0.0002927114840472241,
+      "name": "right-down + closing",
+      "prototypes": 3,
+      "tasks": 3
+     },
+     {
+      "frame_share": 0.0002927114840472241,
+      "name": "left-up + opening",
+      "prototypes": 3,
+      "tasks": 3
+     },
+     {
+      "frame_share": 0.00019514098936481607,
+      "name": "left-down + closing",
+      "prototypes": 2,
+      "tasks": 2
+     },
+     {
+      "frame_share": 0.00019514098936481607,
+      "name": "back-left + opening",
+      "prototypes": 2,
+      "tasks": 2
+     },
+     {
+      "frame_share": 0.00019514098936481607,
+      "name": "right + opening",
+      "prototypes": 2,
+      "tasks": 2
+     },
+     {
+      "frame_share": 0.00019514098936481607,
+      "name": "forward-left + opening",
+      "prototypes": 2,
+      "tasks": 2
+     },
+     {
+      "frame_share": 9.757049468240804e-05,
+      "name": "left + closing",
+      "prototypes": 1,
+      "tasks": 1
+     },
+     {
+      "frame_share": 9.757049468240804e-05,
+      "name": "left-forward + closing",
+      "prototypes": 1,
+      "tasks": 1
+     },
+     {
+      "frame_share": 9.757049468240804e-05,
+      "name": "twist wrist + closing",
+      "prototypes": 1,
+      "tasks": 1
+     },
+     {
+      "frame_share": 9.757049468240804e-05,
+      "name": "lift-right + opening",
+      "prototypes": 1,
+      "tasks": 1
+     },
+     {
+      "frame_share": 9.757049468240804e-05,
+      "name": "down-forward + closing",
+      "prototypes": 1,
+      "tasks": 1
+     },
+     {
+      "frame_share": 9.757049468240804e-05,
+      "name": "forward-down + closing",
+      "prototypes": 1,
+      "tasks": 1
+     },
+     {
+      "frame_share": 9.757049468240804e-05,
+      "name": "forward + closing",
+      "prototypes": 1,
+      "tasks": 1
+     },
+     {
+      "frame_share": 9.757049468240804e-05,
+      "name": "back + closing",
+      "prototypes": 1,
+      "tasks": 1
+     },
+     {
+      "frame_share": 9.757049468240804e-05,
+      "name": "down-forward + opening",
+      "prototypes": 1,
+      "tasks": 1
+     },
+     {
+      "frame_share": 9.757049468240804e-05,
+      "name": "right-back + opening",
+      "prototypes": 1,
+      "tasks": 1
+     },
+     {
+      "frame_share": 9.757049468240804e-05,
+      "name": "back-left + closing",
+      "prototypes": 1,
+      "tasks": 1
+     },
+     {
+      "frame_share": 9.757049468240804e-05,
+      "name": "right + closing",
+      "prototypes": 1,
+      "tasks": 1
+     },
+     {
+      "frame_share": 9.757049468240804e-05,
+      "name": "left-back + closing",
+      "prototypes": 1,
+      "tasks": 1
+     }
+    ],
+    "word_purity": 0.5742023612059713
+   },
+   "0.4": {
+    "frac_gripper_event": 0.22727272727272727,
+    "gripper_purity": 0.9934627768562787,
+    "median_dist_cm": 6.329990923404694,
+    "n_prototypes": 242,
+    "n_words": 73,
+    "vocabulary": [
+     {
+      "frame_share": 0.3360327836862133,
+      "name": "hold + open",
+      "prototypes": 2,
+      "tasks": 40
+     },
+     {
+      "frame_share": 0.23338862328032003,
+      "name": "hold + closed",
+      "prototypes": 3,
+      "tasks": 38
+     },
+     {
+      "frame_share": 0.12898819397014344,
+      "name": "left + closed",
+      "prototypes": 2,
+      "tasks": 30
+     },
+     {
+      "frame_share": 0.04693140794223827,
+      "name": "forward + open",
+      "prototypes": 7,
+      "tasks": 23
+     },
+     {
+      "frame_share": 0.045760562006049374,
+      "name": "left + open",
+      "prototypes": 2,
+      "tasks": 13
+     },
+     {
+      "frame_share": 0.04185774221875305,
+      "name": "down-back + closing",
+      "prototypes": 9,
+      "tasks": 38
+     },
+     {
+      "frame_share": 0.035027807590984485,
+      "name": "forward-right + open",
+      "prototypes": 5,
+      "tasks": 17
+     },
+     {
+      "frame_share": 0.03092984681432335,
+      "name": "opening",
+      "prototypes": 9,
+      "tasks": 35
+     },
+     {
+      "frame_share": 0.025368328617426092,
+      "name": "lift + closed",
+      "prototypes": 2,
+      "tasks": 28
+     },
+     {
+      "frame_share": 0.011903600351253782,
+      "name": "twist wrist + open",
+      "prototypes": 8,
+      "tasks": 3
+     },
+     {
+      "frame_share": 0.008586203532051908,
+      "name": "lift-right + closed",
+      "prototypes": 9,
+      "tasks": 6
+     },
+     {
+      "frame_share": 0.006927505122450971,
+      "name": "down-back + closed",
+      "prototypes": 12,
+      "tasks": 8
+     },
+     {
+      "frame_share": 0.006829934627768563,
+      "name": "twist wrist + closed",
+      "prototypes": 7,
+      "tasks": 3
+     },
+     {
+      "frame_share": 0.004390672260708362,
+      "name": "right + closed",
+      "prototypes": 7,
+      "tasks": 4
+     },
+     {
+      "frame_share": 0.003122255829837057,
+      "name": "right-forward + closed",
+      "prototypes": 6,
+      "tasks": 7
+     },
+     {
+      "frame_share": 0.002536832861742609,
+      "name": "right-forward + open",
+      "prototypes": 4,
+      "tasks": 3
+     },
+     {
+      "frame_share": 0.0023416918723777927,
+      "name": "back-down + open",
+      "prototypes": 5,
+      "tasks": 2
+     },
+     {
+      "frame_share": 0.002244121377695385,
+      "name": "down-back + open",
+      "prototypes": 5,
+      "tasks": 4
+     },
+     {
+      "frame_share": 0.0019514098936481608,
+      "name": "back + open",
+      "prototypes": 5,
+      "tasks": 2
+     },
+     {
+      "frame_share": 0.0018538393989657527,
+      "name": "down-left + closed",
+      "prototypes": 6,
+      "tasks": 5
+     },
+     {
+      "frame_share": 0.0017562689042833447,
+      "name": "lift-back + open",
+      "prototypes": 2,
+      "tasks": 1
+     },
+     {
+      "frame_share": 0.0012684164308713044,
+      "name": "down-right + open",
+      "prototypes": 4,
+      "tasks": 4
+     },
+     {
+      "frame_share": 0.0010732754415064885,
+      "name": "forward-down + open",
+      "prototypes": 3,
+      "tasks": 3
+     },
+     {
+      "frame_share": 0.0010732754415064885,
+      "name": "right-down + closed",
+      "prototypes": 6,
+      "tasks": 5
+     },
+     {
+      "frame_share": 0.0009757049468240804,
+      "name": "down + closed",
+      "prototypes": 9,
+      "tasks": 3
+     },
+     {
+      "frame_share": 0.0008781344521416723,
+      "name": "back-up + open",
+      "prototypes": 4,
+      "tasks": 1
+     },
+     {
+      "frame_share": 0.0008781344521416723,
+      "name": "left-back + open",
+      "prototypes": 2,
+      "tasks": 2
+     },
+     {
+      "frame_share": 0.0007805639574592643,
+      "name": "down + open",
+      "prototypes": 5,
+      "tasks": 4
+     },
+     {
+      "frame_share": 0.0007805639574592643,
+      "name": "left-forward + open",
+      "prototypes": 2,
+      "tasks": 2
+     },
+     {
+      "frame_share": 0.0007805639574592643,
+      "name": "back-right + open",
+      "prototypes": 3,
+      "tasks": 2
+     },
+     {
+      "frame_share": 0.0007805639574592643,
+      "name": "lift-forward + closed",
+      "prototypes": 4,
+      "tasks": 2
+     },
+     {
+      "frame_share": 0.0007805639574592643,
+      "name": "forward + closed",
+      "prototypes": 5,
+      "tasks": 2
+     },
+     {
+      "frame_share": 0.0006829934627768562,
+      "name": "down + opening",
+      "prototypes": 6,
+      "tasks": 5
+     },
+     {
+      "frame_share": 0.0006829934627768562,
+      "name": "down-forward + closed",
+      "prototypes": 7,
+      "tasks": 2
+     },
+     {
+      "frame_share": 0.0005854229680944482,
+      "name": "right-up + closed",
+      "prototypes": 1,
+      "tasks": 1
+     },
+     {
+      "frame_share": 0.0005854229680944482,
+      "name": "back-right + closed",
+      "prototypes": 1,
+      "tasks": 1
+     },
+     {
+      "frame_share": 0.0005854229680944482,
+      "name": "forward-down + closed",
+      "prototypes": 3,
+      "tasks": 3
+     },
+     {
+      "frame_share": 0.0004878524734120402,
+      "name": "right + open",
+      "prototypes": 3,
+      "tasks": 2
+     },
+     {
+      "frame_share": 0.0004878524734120402,
+      "name": "down-left + open",
+      "prototypes": 3,
+      "tasks": 3
+     },
+     {
+      "frame_share": 0.0004878524734120402,
+      "name": "right-down + open",
+      "prototypes": 5,
+      "tasks": 2
+     },
+     {
+      "frame_share": 0.0004878524734120402,
+      "name": "back-down + closed",
+      "prototypes": 1,
+      "tasks": 1
+     },
+     {
+      "frame_share": 0.00039028197872963214,
+      "name": "left-down + opening",
+      "prototypes": 1,
+      "tasks": 1
+     },
+     {
+      "frame_share": 0.00039028197872963214,
+      "name": "down-left + opening",
+      "prototypes": 3,
+      "tasks": 3
+     },
+     {
+      "frame_share": 0.00039028197872963214,
+      "name": "down-right + opening",
+      "prototypes": 4,
+      "tasks": 2
+     },
+     {
+      "frame_share": 0.00039028197872963214,
+      "name": "forward-up + closed",
+      "prototypes": 2,
+      "tasks": 1
+     },
+     {
+      "frame_share": 0.0002927114840472241,
+      "name": "back-left + open",
+      "prototypes": 1,
+      "tasks": 1
+     },
+     {
+      "frame_share": 0.0002927114840472241,
+      "name": "down-right + closed",
+      "prototypes": 3,
+      "tasks": 3
+     },
+     {
+      "frame_share": 0.0002927114840472241,
+      "name": "forward-up + opening",
+      "prototypes": 1,
+      "tasks": 3
+     },
+     {
+      "frame_share": 0.0002927114840472241,
+      "name": "left-up + closed",
+      "prototypes": 1,
+      "tasks": 1
+     },
+     {
+      "frame_share": 0.0002927114840472241,
+      "name": "back-down + closing",
+      "prototypes": 3,
+      "tasks": 2
+     },
+     {
+      "frame_share": 0.00019514098936481607,
+      "name": "down + closing",
+      "prototypes": 2,
+      "tasks": 2
+     },
+     {
+      "frame_share": 0.00019514098936481607,
+      "name": "twist wrist + closing",
+      "prototypes": 1,
+      "tasks": 1
+     },
+     {
+      "frame_share": 0.00019514098936481607,
+      "name": "lift-forward + open",
+      "prototypes": 2,
+      "tasks": 1
+     },
+     {
+      "frame_share": 0.00019514098936481607,
+      "name": "forward-down + closing",
+      "prototypes": 1,
+      "tasks": 1
+     },
+     {
+      "frame_share": 0.00019514098936481607,
+      "name": "right-down + opening",
+      "prototypes": 2,
+      "tasks": 1
+     },
+     {
+      "frame_share": 0.00019514098936481607,
+      "name": "forward-down + opening",
+      "prototypes": 1,
+      "tasks": 1
+     },
+     {
+      "frame_share": 0.00019514098936481607,
+      "name": "down-back + opening",
+      "prototypes": 2,
+      "tasks": 2
+     },
+     {
+      "frame_share": 0.00019514098936481607,
+      "name": "down-left + closing",
+      "prototypes": 2,
+      "tasks": 1
+     },
+     {
+      "frame_share": 0.00019514098936481607,
+      "name": "forward-right + closed",
+      "prototypes": 2,
+      "tasks": 2
+     },
+     {
+      "frame_share": 9.757049468240804e-05,
+      "name": "down-forward + open",
+      "prototypes": 1,
+      "tasks": 1
+     },
+     {
+      "frame_share": 9.757049468240804e-05,
+      "name": "lift + open",
+      "prototypes": 1,
+      "tasks": 1
+     },
+     {
+      "frame_share": 9.757049468240804e-05,
+      "name": "lift-right + open",
+      "prototypes": 1,
+      "tasks": 1
+     },
+     {
+      "frame_share": 9.757049468240804e-05,
+      "name": "right-back + closed",
+      "prototypes": 1,
+      "tasks": 1
+     },
+     {
+      "frame_share": 9.757049468240804e-05,
+      "name": "lift-right + opening",
+      "prototypes": 1,
+      "tasks": 1
+     },
+     {
+      "frame_share": 9.757049468240804e-05,
+      "name": "forward + closing",
+      "prototypes": 1,
+      "tasks": 1
+     },
+     {
+      "frame_share": 9.757049468240804e-05,
+      "name": "lift + opening",
+      "prototypes": 1,
+      "tasks": 1
+     },
+     {
+      "frame_share": 9.757049468240804e-05,
+      "name": "right + opening",
+      "prototypes": 1,
+      "tasks": 1
+     },
+     {
+      "frame_share": 9.757049468240804e-05,
+      "name": "forward + opening",
+      "prototypes": 1,
+      "tasks": 1
+     },
+     {
+      "frame_share": 9.757049468240804e-05,
+      "name": "forward-up + open",
+      "prototypes": 1,
+      "tasks": 1
+     },
+     {
+      "frame_share": 9.757049468240804e-05,
+      "name": "forward-left + opening",
+      "prototypes": 1,
+      "tasks": 1
+     },
+     {
+      "frame_share": 9.757049468240804e-05,
+      "name": "lift-forward + opening",
+      "prototypes": 1,
+      "tasks": 1
+     },
+     {
+      "frame_share": 9.757049468240804e-05,
+      "name": "forward-left + closed",
+      "prototypes": 1,
+      "tasks": 1
+     },
+     {
+      "frame_share": 9.757049468240804e-05,
+      "name": "back-left + closing",
+      "prototypes": 1,
+      "tasks": 1
+     }
+    ],
+    "word_purity": 0.3080300517123622
+   },
+   "0.55": {
+    "frac_gripper_event": 0.0,
+    "gripper_purity": 0.9951214752658796,
+    "median_dist_cm": 1.6293978318572044,
+    "n_prototypes": 3,
+    "n_words": 3,
+    "vocabulary": [
+     {
+      "frame_share": 0.5413211044979997,
+      "name": "hold + open",
+      "prototypes": 1,
+      "tasks": 40
+     },
+     {
+      "frame_share": 0.3189579471167919,
+      "name": "hold + closed",
+      "prototypes": 1,
+      "tasks": 38
+     },
+     {
+      "frame_share": 0.13972094838520832,
+      "name": "left + closed",
+      "prototypes": 1,
+      "tasks": 26
+     }
+    ],
+    "word_purity": 0.12781734803395453
+   },
+   "0.7": {
+    "frac_gripper_event": 0.0,
+    "gripper_purity": 0.987315835691287,
+    "median_dist_cm": 1.7885793931782246,
+    "n_prototypes": 2,
+    "n_words": 2,
+    "vocabulary": [
+     {
+      "frame_share": 0.5493218850619572,
+      "name": "hold + open",
+      "prototypes": 1,
+      "tasks": 40
+     },
+     {
+      "frame_share": 0.4506781149380427,
+      "name": "hold + closed",
+      "prototypes": 1,
+      "tasks": 38
+     }
+    ],
+    "word_purity": 0.06839691677236803
+   }
+  },
+  "tree": [
+   "- t=0.7: **hold + open** (5630 frames, 40 tasks)",
+   "  - t=0.55: **hold + open** (5548 frames, 40 tasks)",
+   "    - t=0.4: 111 children; by frames: hold + open (3444), forward + open (481), left + open (469), forward-right + open (359), down-back + closing (286), opening (186), twist wrist + open (122), right-forward + open (26)",
+   "- t=0.7: **hold + closed** (4619 frames, 38 tasks)",
+   "  - t=0.55: **hold + closed** (3269 frames, 38 tasks)",
+   "    - t=0.4: 104 children; by frames: down-back + closing (143), opening (131), lift-right + closed (88), twist wrist + closed (69), down-back + closed (67), hold + closed (53), right + closed (45), right-forward + closed (32)",
+   "  - t=0.55: **left + closed** (1432 frames, 26 tasks)",
+   "    - t=0.4: 27 children; by frames: hold + closed (2339), left + closed (1322), lift + closed (260), down-left + closed (17), forward + closed (6), left-down + opening (4), forward-up + closed (4), down-back + closed (4)"
+  ]
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r2c_atlas__libero_40__base__s0__3f45238e",
+ "schema": 1,
+ "script": "experiments/r2c_atlas.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-26T02:27:51+00:00",
+ "stream": null,
+ "tag": ""
+}
