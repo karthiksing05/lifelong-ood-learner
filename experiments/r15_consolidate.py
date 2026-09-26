@@ -60,7 +60,7 @@ def main():
     ap.add_argument("--task", type=int, required=True)
     ap.add_argument("--practice", default="m5_practice")
     ap.add_argument("--library", default="results/robot/r2b_libero_40.npz")
-    ap.add_argument("--steps", type=int, default=2000)
+    ap.add_argument("--steps", type=int, default=1000, help="as the demo's fold and the per-task LoRA (pre-registered: same steps)")
     ap.add_argument("--fold-stride", type=int, default=2, help="every k-th frame of the successes' contact windows")
     ap.add_argument("--lora", action="store_true", help="train ONLY the LoRA baseline on the same data (a separate run: a fresh model)")
     ap.add_argument("--lora-stride", type=int, default=5)
