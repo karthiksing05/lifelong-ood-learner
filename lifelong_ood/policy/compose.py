@@ -67,6 +67,8 @@ class DemoProgram:
     prompt_id: np.ndarray = None   # [T] int: index into prompt_table of the library task that explains the frame
     prompt_table: list = None      # the library tasks' instructions (strings)
     states: np.ndarray = None      # [T, 8] the demo's raw states (for pose keys; 16 B per frame in fp16)
+    dim_ids: np.ndarray = None     # [T, K] prototype ids of a "dimcode" program (policy/dimcode.py)
+    dim_choice: np.ndarray = None  # [T, 7] which of the K each action dimension borrows
     steer: np.ndarray = None       # [T] bool: frames where the prior DISAGREES with the demo (guide only there; 1 bit each)
 
     @classmethod
@@ -106,6 +108,20 @@ class DemoProgram:
         self.prompt_table = [task_text[int(t)] for t in table]
         return self
 
+    @classmethod
+    def from_dimcode(cls, lib, rows, states, K=8):
+        """Each frame's chunk as K library prototypes + which one each action dimension borrows (policy/dimcode.py)."""
+        from . import dimcode
+        key = state_norm()(states)[:, list(ALIGN_DIMS)].astype(np.float16).astype(np.float32)
+        ids, ch, mus, vs = [], [], [], []
+        for r in np.asarray(rows, np.float32):
+            i, c = dimcode.encode(lib, r, K)
+            m, v = dimcode.decode(lib, i, c)
+            ids.append(i); ch.append(c); mus.append(m); vs.append(v)
+        st16 = np.asarray(states, np.float32).astype(np.float16).astype(np.float32)
+        return cls(mu=np.stack(mus), var=np.stack(vs), key=key, codes=[], variant="dimcode", states=st16,
+                   dim_ids=np.stack(ids), dim_choice=np.stack(ch))
+
     def subsample(self, k):
         """Keep every k-th frame (the policy is queried every 5 steps and neighbouring chunks share 9 of 10 actions):
         a k-times smaller program.  The alignment window is counted in kept frames by the hooks."""
@@ -114,7 +130,8 @@ class DemoProgram:
         take = lambda a: None if a is None else np.asarray(a)[sl]          # noqa: E731
         return DemoProgram(mu=take(self.mu), var=take(self.var), key=take(self.key), codes=list(self.codes[sl]) if self.codes else [],
                            variant=self.variant, fold=take(self.fold), prompt_id=take(self.prompt_id), prompt_table=self.prompt_table,
-                           states=take(self.states), steer=take(self.steer))
+                           states=take(self.states), steer=take(self.steer), dim_ids=take(self.dim_ids),
+                           dim_choice=take(self.dim_choice))
 
     def bytes(self):
         """What the program needs to EXECUTE what it executes.  A "code" program's teacher is the per-dimension PoE whose
@@ -122,7 +139,11 @@ class DemoProgram:
         per frame -- as much as the raw chunk.  (Charging only the node ids + one scalar weight each, as before
         2026-09-25 late, under-counted: ids + scalar weights rebuild a teacher 0.25-0.39 rms from the demo chunk where
         the executed one is 0.04-0.08; RETRACTED.)  + the alignment keys, + one uint8 prompt index per frame."""
-        store = 2 * int(self.mu.size)
+        if self.variant == "dimcode":
+            from .dimcode import code_bytes
+            store = len(self.mu) * code_bytes(self.dim_ids.shape[1])          # the chunk is rebuilt from ids + choices
+        else:
+            store = 2 * int(self.mu.size)
         keys = 2 * int(self.states.size) if self.states is not None else 2 * int(self.key.size)
         return int(store + keys + (0 if self.prompt_id is None else len(self.prompt_id))
                    + (0 if self.steer is None else (len(self.steer) + 7) // 8))
@@ -131,6 +152,9 @@ class DemoProgram:
         extra = {} if self.prompt_id is None else dict(prompt_id=self.prompt_id, prompt_table=np.array(self.prompt_table, dtype=object))
         if self.states is not None:
             extra["states"] = self.states
+        if self.dim_ids is not None:
+            extra["dim_ids"] = self.dim_ids
+            extra["dim_choice"] = self.dim_choice
         if self.steer is not None:
             extra["steer"] = self.steer
         np.savez_compressed(path, mu=self.mu, var=self.var, key=self.key, variant=self.variant,
@@ -145,6 +169,7 @@ class DemoProgram:
                    prompt_id=z["prompt_id"] if "prompt_id" in z else None,
                    prompt_table=list(z["prompt_table"]) if "prompt_table" in z else None,
                    states=z["states"] if "states" in z else None,
+                   dim_ids=z["dim_ids"] if "dim_ids" in z else None, dim_choice=z["dim_choice"] if "dim_choice" in z else None,
                    steer=z["steer"] if "steer" in z else None)
 
 
