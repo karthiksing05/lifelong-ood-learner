@@ -165,6 +165,30 @@ def main(a=None):
                                        noise=int(sum(max([v[f"late_noise{s}"]["success"] for s in (1, 2, 3, 4) if f"late_noise{s}" in v] or [0]) for v in vs)),
                                        knob=int(sum(max([v[f"late_{k}"]["success"] for k in KNOBS if f"late_{k}" in v] or [0]) for v in vs)),
                                        concentrated=t in CONCENTRATED)
+    # EXPLORATORY (not pre-registered): where the stalls are.  The pointer aligns the HAND to the demo, so a stall at the demo's
+    # last frames means the hand finished the demo's path and the task still failed; and whether the gripper, where the demo
+    # holds something at the stall frame, is closed tighter than the demo's (it holds less than the demo did)
+    ex = dict(at_end=0, at_end_rescued=0, mid=0, mid_rescued=0, demo_holds=0, tighter=0, tighter_by_task={})
+    for (t, k), v in table.items():
+        i = inst[(t, k)]
+        tag = spec["tasks"][str(t)]["tag"]
+        st = np.load(os.path.join(R, f"m5_practice_{t}_{tag}_rec", f"task{t}_trial{k}.npz"))["state"]
+        dst = np.load(os.path.join(R, f"r3_prog_{t}_raw_lib40.npz"), allow_pickle=True)["states"].astype(np.float32)
+        gap = lambda s: float(s[6] - s[7])                                                   # noqa: E731
+        end = i["stall_frame"] >= i["demo_frames"] - 3
+        rescued = max(b["success"] for b in v.values())
+        ex["at_end" if end else "mid"] += 1
+        ex["at_end_rescued" if end else "mid_rescued"] += int(rescued)
+        g_r, g_d, g_open = gap(st[min(5 * i["stall_query"], len(st) - 1)]), gap(dst[i["stall_frame"]]), max(gap(x) for x in dst)
+        if g_d < 0.5 * g_open:
+            ex["demo_holds"] += 1
+            if g_r < g_d - 0.005:
+                ex["tighter"] += 1
+                ex["tighter_by_task"][str(t)] = ex["tighter_by_task"].get(str(t), 0) + 1
+    res["exploratory"] = ex
+    print(f"[exploratory] stall at the demo's last frames {ex['at_end']} (rescued {ex['at_end_rescued']}), elsewhere {ex['mid']} "
+          f"(rescued {ex['mid_rescued']}); demo holds at the stall frame {ex['demo_holds']}, robot's grip > 5 mm tighter {ex['tighter']} "
+          f"{ex['tighter_by_task']}")
     conc = sum(r["rescued"] for t, r in res["per_task"].items() if int(t) in CONCENTRATED)
     res["rescued_concentrated"] = conc
     print(f"[per task] {res['per_task']}")

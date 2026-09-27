@@ -119,8 +119,9 @@ def main():
     if os.path.exists(f5):
         LS = json.load(open(f5))
         w("## Redo on the practice instances (pre-registered: ledger m3_prereg tag learn_from_practice; ledger m5_learn_stats)\n")
-        w("Reruns with the practice's own noise seed replay the practice episode (the simulator and the sampler are deterministic); "
-          "the controls are fresh-noise retries (policy seeds 1 and 2).\n")
+        w("Reruns with the practice's own noise seed replay the practice episode when they run the same init states in the same "
+          "order (LIBERO's simulator state depends on the episodes before it in a session, not only on the init state: see the "
+          "stall-point branching section); the controls are fresh-noise retries (policy seeds 1 and 2).\n")
         for scope, title in (("L1", "instances the first composition solved"), ("L2", "instances the first composition failed")):
             w(f"**{title}**\n")
             w("| arm | successes |")
@@ -135,6 +136,46 @@ def main():
                 if "-" in k:
                     w(f"| {k} | {v['diff']:+.3f} | {v['lo']:+.3f} to {v['hi']:+.3f} | {v['sign_p']:.4f} |")
             w("")
+    f18 = os.path.join(R, "r18_branch_stats.json")
+    if os.path.exists(f18):
+        B = json.load(open(f18))
+        n_inst = max(v["n"] for k, v in B["D1"].items())
+        w("## Stall-point branching (pre-registered: ledger m3_prereg tags branch, branch_amend1-4; ledger r18_branch tag diagnosis)\n")
+        w(f"The {n_inst} practice instances (init states 0-19) that the first composition and both fresh-noise retries failed.  Each "
+          "branch re-enters the recorded episode two policy queries before its stall (the first query at which the demo-alignment "
+          "pointer reaches its final maximum), or eight for the early arms, and changes one thing to the end of the episode.  The "
+          "prefix executes the recorded actions in a fresh environment built as at the start of the recorded session and reset as "
+          "often as the session had been; the server follows every prefix observation without sampling.\n")
+        w(f"- Gates: prefixes exact in {B['G1']['exact']} of {B['G1']['branches']} branches; full replays reproduce the recorded states "
+          f"in {B['G2']['states_reproduced']} of {B['G2']['replays']}; the recorded-noise continuation reproduces the recorded actions "
+          f"in {B['G3']['reproduced']} of {B['G3']['late_replays']} instances.")
+        w("- Run 1 of this experiment was discarded before any read (amendment 4): one environment per client process let earlier "
+          "branches leave simulator state that re-seeding did not clear on seven tasks, and knob-free branches then 'succeeded'.\n")
+        lab = {"late_replay": "recorded noise, nothing changed", "late_noise1": "fresh noise, seed 1", "late_noise2": "fresh noise, seed 2",
+               "late_noise3": "fresh noise, seed 3", "late_noise4": "fresh noise, seed 4", "late_wx0.5": "guide weight x0.5",
+               "late_wx2": "guide weight x2", "late_leaf2": "next-ranked leaves", "late_release": "the prior alone",
+               "late_nofold": "the program through the fold windows", "late_foldall": "the fold everywhere",
+               "early_noise1": "8 queries earlier, fresh noise 1", "early_noise2": "8 queries earlier, fresh noise 2",
+               "any_late_noise": "any of the four fresh-noise branches", "any_late_knob": "any knob", "any_late": "any late branch",
+               "any_early": "any early branch", "any": "any branch"}
+        w("| branch | rescued | rate (Wilson 95%) | pointer past the stall | actions changed |")
+        w("|---|---|---|---|---|")
+        for k, name in lab.items():
+            v = B["D1"].get(k)
+            if v:
+                w(f"| {name} | {v['k']}/{v['n']} | {v['rate']:.3f} ({v['wilson'][0]:.2f}-{v['wilson'][1]:.2f}) | "
+                  f"{v.get('passes_stall', '')} | {v.get('active', '')} |")
+        w("")
+        w("| knob vs control | knob | control | discordant | sign test p | Holm p |")
+        w("|---|---|---|---|---|---|")
+        for k, d in B["D2"].items():
+            w(f"| {k} | {d['knob']}/{d['n']} | {d['control']}/{d['n']} | {d['discordant'][0]}/{d['discordant'][1]} | {d['sign_p']:.3f} | {d['holm_p']:.3f} |")
+        w("")
+        D3 = B["D3"]
+        w(f"Early vs late fresh noise (seeds 1-2, paired): {D3['early']} vs {D3['late']} of {D3['n']}, discordant {D3['discordant'][0]}/{D3['discordant'][1]}, "
+          f"sign test p {D3['sign_p']:.3f}.  Instances of the nine concentrated tasks rescued by some branch: {B['rescued_concentrated']}.\n")
+        w("Pre-registered reading: every late arm rescues at most 0.10 and no knob beats its control, so the persistent failures are "
+          "not a bad draw near the stall: the budget goes to geometry or an earlier cause (Experiment 5 of the report).\n")
     w("## What composition borrows\n")
     for src, name in (("", "tree prototypes (band t = 0.2-0.4)"), ("_leaf", "leaves (the policy's chunk means)"), ("_seg", "segments of leaves")):
         p = os.path.join(R, f"r8_provenance{src}.json")

@@ -1,0 +1,543 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r18_branch_stats.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "python experiments/r18_branch_stats.py --record",
+ "config": {
+  "tol": 0.001
+ },
+ "env": {
+  "device": "cpu",
+  "host": "jill.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": "3967117",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r18_branch",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "dd95fdd10505700db0ad727ede0a1c6f8c69db6b",
+  "short": "dd95fdd1"
+ },
+ "keys": {},
+ "metrics": {
+  "D1": {
+   "any": {
+    "k": 16,
+    "n": 123,
+    "rate": 0.13008130081300814,
+    "wilson": [
+     0.08167987995453566,
+     0.20088987633992925
+    ]
+   },
+   "any_early": {
+    "k": 6,
+    "n": 123,
+    "rate": 0.04878048780487805,
+    "wilson": [
+     0.022545466884545527,
+     0.10234731277134024
+    ]
+   },
+   "any_late": {
+    "k": 13,
+    "n": 123,
+    "rate": 0.10569105691056911,
+    "wilson": [
+     0.06281252708773513,
+     0.172454136215156
+    ]
+   },
+   "any_late_knob": {
+    "k": 7,
+    "n": 123,
+    "rate": 0.056910569105691054,
+    "wilson": [
+     0.027837625142034084,
+     0.1128228521777096
+    ]
+   },
+   "any_late_noise": {
+    "k": 7,
+    "n": 123,
+    "rate": 0.056910569105691054,
+    "wilson": [
+     0.027837625142034084,
+     0.1128228521777096
+    ]
+   },
+   "early_noise1": {
+    "active": 123,
+    "k": 4,
+    "n": 123,
+    "passes_stall": 10,
+    "rate": 0.032520325203252036,
+    "wilson": [
+     0.0127175527444634,
+     0.08063983158370654
+    ]
+   },
+   "early_noise2": {
+    "active": 123,
+    "k": 4,
+    "n": 123,
+    "passes_stall": 10,
+    "rate": 0.032520325203252036,
+    "wilson": [
+     0.0127175527444634,
+     0.08063983158370654
+    ]
+   },
+   "late_foldall": {
+    "active": 54,
+    "k": 1,
+    "n": 108,
+    "passes_stall": 9,
+    "rate": 0.009259259259259259,
+    "wilson": [
+     0.0016363187318928635,
+     0.05059469369997506
+    ]
+   },
+   "late_leaf2": {
+    "active": 69,
+    "k": 0,
+    "n": 123,
+    "passes_stall": 8,
+    "rate": 0.0,
+    "wilson": [
+     0.0,
+     0.03028659367273828
+    ]
+   },
+   "late_nofold": {
+    "active": 70,
+    "k": 1,
+    "n": 108,
+    "passes_stall": 36,
+    "rate": 0.009259259259259259,
+    "wilson": [
+     0.0016363187318928635,
+     0.05059469369997506
+    ]
+   },
+   "late_noise1": {
+    "active": 123,
+    "k": 2,
+    "n": 123,
+    "passes_stall": 11,
+    "rate": 0.016260162601626018,
+    "wilson": [
+     0.004470414833255703,
+     0.057351574167198396
+    ]
+   },
+   "late_noise2": {
+    "active": 123,
+    "k": 1,
+    "n": 123,
+    "passes_stall": 9,
+    "rate": 0.008130081300813009,
+    "wilson": [
+     0.0014365665731900235,
+     0.04461772476340617
+    ]
+   },
+   "late_noise3": {
+    "active": 123,
+    "k": 6,
+    "n": 123,
+    "passes_stall": 11,
+    "rate": 0.04878048780487805,
+    "wilson": [
+     0.022545466884545527,
+     0.10234731277134024
+    ]
+   },
+   "late_noise4": {
+    "active": 123,
+    "k": 1,
+    "n": 123,
+    "passes_stall": 11,
+    "rate": 0.008130081300813009,
+    "wilson": [
+     0.0014365665731900235,
+     0.04461772476340617
+    ]
+   },
+   "late_release": {
+    "active": 123,
+    "k": 3,
+    "n": 123,
+    "passes_stall": 25,
+    "rate": 0.024390243902439025,
+    "wilson": [
+     0.00832891348479355,
+     0.06926077317951848
+    ]
+   },
+   "late_replay": {
+    "active": 0,
+    "k": 0,
+    "n": 123,
+    "passes_stall": 0,
+    "rate": 0.0,
+    "wilson": [
+     0.0,
+     0.03028659367273828
+    ]
+   },
+   "late_wx0.5": {
+    "active": 69,
+    "k": 2,
+    "n": 123,
+    "passes_stall": 4,
+    "rate": 0.016260162601626018,
+    "wilson": [
+     0.004470414833255703,
+     0.057351574167198396
+    ]
+   },
+   "late_wx2": {
+    "active": 69,
+    "k": 2,
+    "n": 123,
+    "passes_stall": 3,
+    "rate": 0.016260162601626018,
+    "wilson": [
+     0.004470414833255703,
+     0.057351574167198396
+    ]
+   }
+  },
+  "D2": {
+   "foldall-noise1": {
+    "control": 2,
+    "discordant": [
+     1,
+     2
+    ],
+    "holm_p": 1.0,
+    "knob": 1,
+    "n": 108,
+    "sign_p": 1.0
+   },
+   "foldall-replay": {
+    "control": 0,
+    "discordant": [
+     1,
+     0
+    ],
+    "holm_p": 1.0,
+    "knob": 1,
+    "n": 108,
+    "sign_p": 1.0
+   },
+   "leaf2-noise1": {
+    "control": 2,
+    "discordant": [
+     0,
+     2
+    ],
+    "holm_p": 1.0,
+    "knob": 0,
+    "n": 123,
+    "sign_p": 0.5
+   },
+   "leaf2-replay": {
+    "control": 0,
+    "discordant": [
+     0,
+     0
+    ],
+    "holm_p": 1.0,
+    "knob": 0,
+    "n": 123,
+    "sign_p": 1.0
+   },
+   "nofold-noise1": {
+    "control": 2,
+    "discordant": [
+     1,
+     2
+    ],
+    "holm_p": 1.0,
+    "knob": 1,
+    "n": 108,
+    "sign_p": 1.0
+   },
+   "nofold-replay": {
+    "control": 0,
+    "discordant": [
+     1,
+     0
+    ],
+    "holm_p": 1.0,
+    "knob": 1,
+    "n": 108,
+    "sign_p": 1.0
+   },
+   "release-noise1": {
+    "control": 2,
+    "discordant": [
+     3,
+     2
+    ],
+    "holm_p": 1.0,
+    "knob": 3,
+    "n": 123,
+    "sign_p": 1.0
+   },
+   "release-replay": {
+    "control": 0,
+    "discordant": [
+     3,
+     0
+    ],
+    "holm_p": 1.0,
+    "knob": 3,
+    "n": 123,
+    "sign_p": 0.25
+   },
+   "wx0.5-noise1": {
+    "control": 2,
+    "discordant": [
+     2,
+     2
+    ],
+    "holm_p": 1.0,
+    "knob": 2,
+    "n": 123,
+    "sign_p": 1.0
+   },
+   "wx0.5-replay": {
+    "control": 0,
+    "discordant": [
+     2,
+     0
+    ],
+    "holm_p": 1.0,
+    "knob": 2,
+    "n": 123,
+    "sign_p": 0.5
+   },
+   "wx2-noise1": {
+    "control": 2,
+    "discordant": [
+     2,
+     2
+    ],
+    "holm_p": 1.0,
+    "knob": 2,
+    "n": 123,
+    "sign_p": 1.0
+   },
+   "wx2-replay": {
+    "control": 0,
+    "discordant": [
+     2,
+     0
+    ],
+    "holm_p": 1.0,
+    "knob": 2,
+    "n": 123,
+    "sign_p": 0.5
+   }
+  },
+  "D3": {
+   "discordant": [
+    6,
+    1
+   ],
+   "early": 8,
+   "late": 3,
+   "n": 246,
+   "sign_p": 0.125
+  },
+  "G1": {
+   "branches": 1569,
+   "err_quantiles": [
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "exact": 1569,
+   "passing": 1569
+  },
+  "G2": {
+   "diverging": [],
+   "outcome_reproduced": 17,
+   "replays": 17,
+   "states_reproduced": 17
+  },
+  "G3": {
+   "late_replays": 123,
+   "not_reproduced": [],
+   "reproduced": 123
+  },
+  "exploratory": {
+   "at_end": 79,
+   "at_end_rescued": 11,
+   "demo_holds": 54,
+   "mid": 44,
+   "mid_rescued": 5,
+   "tighter": 25,
+   "tighter_by_task": {
+    "36": 2,
+    "40": 1,
+    "41": 3,
+    "42": 14,
+    "58": 2,
+    "62": 3
+   }
+  },
+  "per_task": {
+   "1": {
+    "concentrated": true,
+    "instances": 12,
+    "knob": 0,
+    "noise": 4,
+    "rescued": 5
+   },
+   "32": {
+    "concentrated": true,
+    "instances": 16,
+    "knob": 0,
+    "noise": 0,
+    "rescued": 0
+   },
+   "35": {
+    "concentrated": true,
+    "instances": 12,
+    "knob": 0,
+    "noise": 0,
+    "rescued": 0
+   },
+   "36": {
+    "concentrated": true,
+    "instances": 10,
+    "knob": 0,
+    "noise": 0,
+    "rescued": 2
+   },
+   "37": {
+    "concentrated": false,
+    "instances": 2,
+    "knob": 0,
+    "noise": 2,
+    "rescued": 2
+   },
+   "39": {
+    "concentrated": false,
+    "instances": 2,
+    "knob": 1,
+    "noise": 0,
+    "rescued": 1
+   },
+   "4": {
+    "concentrated": false,
+    "instances": 4,
+    "knob": 1,
+    "noise": 0,
+    "rescued": 1
+   },
+   "40": {
+    "concentrated": true,
+    "instances": 11,
+    "knob": 1,
+    "noise": 1,
+    "rescued": 1
+   },
+   "41": {
+    "concentrated": true,
+    "instances": 8,
+    "knob": 0,
+    "noise": 0,
+    "rescued": 0
+   },
+   "42": {
+    "concentrated": true,
+    "instances": 18,
+    "knob": 0,
+    "noise": 0,
+    "rescued": 0
+   },
+   "48": {
+    "concentrated": false,
+    "instances": 1,
+    "knob": 0,
+    "noise": 0,
+    "rescued": 0
+   },
+   "5": {
+    "concentrated": false,
+    "instances": 1,
+    "knob": 0,
+    "noise": 0,
+    "rescued": 0
+   },
+   "52": {
+    "concentrated": true,
+    "instances": 9,
+    "knob": 0,
+    "noise": 0,
+    "rescued": 0
+   },
+   "58": {
+    "concentrated": false,
+    "instances": 3,
+    "knob": 0,
+    "noise": 0,
+    "rescued": 0
+   },
+   "6": {
+    "concentrated": false,
+    "instances": 3,
+    "knob": 1,
+    "noise": 0,
+    "rescued": 1
+   },
+   "62": {
+    "concentrated": true,
+    "instances": 9,
+    "knob": 2,
+    "noise": 0,
+    "rescued": 2
+   },
+   "63": {
+    "concentrated": false,
+    "instances": 2,
+    "knob": 1,
+    "noise": 0,
+    "rescued": 1
+   }
+  },
+  "rescued_concentrated": 10,
+  "tol": 0.001
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r18_branch__libero_90__diagnosis__s0__dd95fdd1",
+ "schema": 1,
+ "script": "experiments/r18_branch_stats.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-27T20:35:40+00:00",
+ "stream": null,
+ "tag": "diagnosis"
+}

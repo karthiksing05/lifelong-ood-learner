@@ -222,8 +222,10 @@ def recover(a):
     for t in tasks:
         if os.path.exists(os.path.join(R, f"r18rec_{t}_lora.pt")):
             continue
-        args = ["sbatch", "--parsable", "--partition=tail-lab", "--account=tail-lab",
-                f"--export=ALL,ENV=openpi,SCRIPT=experiments/r17_nft.py --task {t} --name r18rec --recovery", "slurm/jobs/robot_gpu.sbatch"]
+        # the recovery data outgrow the GPU (about 26 MB of cached prefix per frame): the bank lives in host memory
+        args = ["sbatch", "--parsable", "--partition=tail-lab", "--account=tail-lab", "--mem=128G",
+                f"--export=ALL,ENV=openpi,SCRIPT=experiments/r17_nft.py --task {t} --name r18rec --recovery --bank-device cpu",
+                "slurm/jobs/robot_gpu.sbatch"]
         if a.dry:
             print("  [dry]", " ".join(args))
             jobs[t] = "DRY"

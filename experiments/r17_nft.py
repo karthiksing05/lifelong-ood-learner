@@ -72,6 +72,8 @@ def main():
                     "RESCUED stall-point branch as positives (<= --max-rec per task, after the cap) + the last W queries up to the "
                     "own stall of each FAILED post-branch segment as negatives (prefix-gated branches of r18_branch_stats.json)")
     ap.add_argument("--max-rec", type=int, default=300)
+    ap.add_argument("--bank-device", default=None, help="cpu: keep the cached prefixes in host memory (same values; for banks "
+                    "larger than the GPU, e.g. with the recovery data)")
     a = ap.parse_args()
     os.chdir(ROOT)
     log = lambda s: print(s, flush=True)                                  # noqa: E731
@@ -147,8 +149,8 @@ def main():
     from lifelong_ood.policy.backbone import PolicyBackbone
     bk = PolicyBackbone("pi05_libero", device="cuda")
     t0 = time.time()
-    pos_bank = adapt.PrefixBank(bk, pos_obs)
-    neg_bank = adapt.PrefixBank(bk, neg_obs) if neg_obs else None
+    pos_bank = adapt.PrefixBank(bk, pos_obs, store=a.bank_device)
+    neg_bank = adapt.PrefixBank(bk, neg_obs, store=a.bank_device) if neg_obs else None
     state, banks = adapt.inject(bk, scope=a.scope)
     key = f"nft_{t}"
     params = r4.add_node(banks, key, a.rank)

@@ -48,27 +48,45 @@ def n_params(params):
 
 
 class PrefixBank:
-    """Prefixes of many observations cached as ONE batched Prefix (built in blocks), gathered by row index."""
+    """Prefixes of many observations cached as ONE batched Prefix (built in blocks), gathered by row index.
 
-    def __init__(self, bk, obs_dicts, block=32):
+    store: where the cached keys / values live -- the policy's device (default) or "cpu", which holds them in host memory and
+    moves each gathered batch to the GPU: the same values, for banks larger than the GPU (about 26 MB per observation in
+    fp32).  Blocks are copied into preallocated tensors, so the peak is the bank plus one block (a concatenation held two
+    copies: experiments/r17_nft.py --recovery ran out of memory at 1,033 observations)."""
+
+    def __init__(self, bk, obs_dicts, block=32, store=None):
         from .backbone import Prefix
         self.bk = bk
-        parts = [bk.prefix(bk.observations(obs_dicts[i:i + block])) for i in range(0, len(obs_dicts), block)]
-        kv0 = parts[0].kv
-        self.state = torch.cat([p.state for p in parts])
-        self.pad = torch.cat([p.pad_masks for p in parts])
-        self.k = [torch.cat([p.kv.key_cache[l] for p in parts]) for l in range(len(kv0.key_cache))]
-        self.v = [torch.cat([p.kv.value_cache[l] for p in parts]) for l in range(len(kv0.value_cache))]
-        self.n = len(self.state)
+        n = len(obs_dicts)
+        self.state = self.pad = self.k = self.v = None
+        for i in range(0, n, block):
+            p = bk.prefix(bk.observations(obs_dicts[i:i + block]))
+            if self.k is None:
+                dev = torch.device(store) if store else p.state.device
+                new = lambda t: torch.empty((n,) + tuple(t.shape[1:]), dtype=t.dtype, device=dev)     # noqa: E731
+                self.state, self.pad = new(p.state), new(p.pad_masks)
+                self.k = [new(t) for t in p.kv.key_cache]
+                self.v = [new(t) for t in p.kv.value_cache]
+                self._cache_type = type(p.kv)
+            j = slice(i, i + len(p.state))
+            self.state[j].copy_(p.state)
+            self.pad[j].copy_(p.pad_masks)
+            for l in range(len(self.k)):
+                self.k[l][j].copy_(p.kv.key_cache[l])
+                self.v[l][j].copy_(p.kv.value_cache[l])
+            del p
+        self.n = n
         self._Prefix = Prefix
-        self._cache_type = type(kv0)
 
     def take(self, idx):
         idx = torch.as_tensor(np.asarray(idx), device=self.state.device, dtype=torch.long)
+        dev = self.bk.device
+        g = lambda t: t.index_select(0, idx).to(dev, non_blocking=True)                       # noqa: E731
         kv = self._cache_type()
         for l in range(len(self.k)):
-            kv.update(self.k[l].index_select(0, idx), self.v[l].index_select(0, idx), l)
-        return self._Prefix(state=self.state.index_select(0, idx), pad_masks=self.pad.index_select(0, idx), kv=kv, n=len(idx))
+            kv.update(g(self.k[l]), g(self.v[l]), l)
+        return self._Prefix(state=g(self.state), pad_masks=g(self.pad), kv=kv, n=len(idx))
 
     def bytes(self):
         return int(sum(t.numel() * t.element_size() for t in self.k + self.v))
