@@ -1,0 +1,306 @@
+{
+ "artifacts": [
+  "results/robot/r17pool_35_lora.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 18710528,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 18710528,
+  "tree": 0
+ },
+ "command": "experiments/r17_nft.py --task 35 --name r17pool --pooled",
+ "config": {
+  "lora_stride": 5,
+  "max_pos": 1000,
+  "name": "r17pool",
+  "neg_batch": 8,
+  "pooled": true,
+  "practice": "m5_practice+m6_round1",
+  "rank": 16,
+  "scope": "expert",
+  "seed": 0,
+  "steps": 1000,
+  "task": 35,
+  "window": 2
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "brainiac.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3965424",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r17_nft",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "16e496a108b9070b2291257b79f825ace7fcbf5a",
+  "short": "16e496a1"
+ },
+ "keys": {
+  "task": 35
+ },
+ "metrics": {
+  "curve": {
+   "loss": [
+    0.07583997398614883,
+    0.015039794147014618,
+    0.00615848321467638,
+    0.0027536542620509863,
+    0.011953992769122124,
+    0.0035927193239331245,
+    0.0044932193122804165,
+    0.002013298450037837,
+    0.004003417212516069,
+    0.00968992244452238,
+    0.004030791576951742
+   ],
+   "neg": [
+    0.03587822988629341,
+    0.0,
+    0.023292943835258484,
+    0.05548842251300812,
+    0.035508688539266586,
+    0.01613333821296692,
+    0.018606973811984062,
+    0.013765211217105389,
+    0.007177114486694336,
+    0.0010691385250538588,
+    0.005723270121961832
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "failed": 28,
+  "negatives": 56,
+  "positives": 665,
+  "rollouts": 50,
+  "stalls": [
+   {
+    "demo_frames": 131,
+    "queries": 80,
+    "stall_frame": 130,
+    "stall_query": 23,
+    "trial": 0
+   },
+   {
+    "demo_frames": 131,
+    "queries": 80,
+    "stall_frame": 130,
+    "stall_query": 27,
+    "trial": 10
+   },
+   {
+    "demo_frames": 131,
+    "queries": 80,
+    "stall_frame": 130,
+    "stall_query": 23,
+    "trial": 12
+   },
+   {
+    "demo_frames": 131,
+    "queries": 80,
+    "stall_frame": 130,
+    "stall_query": 25,
+    "trial": 13
+   },
+   {
+    "demo_frames": 131,
+    "queries": 80,
+    "stall_frame": 130,
+    "stall_query": 31,
+    "trial": 14
+   },
+   {
+    "demo_frames": 131,
+    "queries": 80,
+    "stall_frame": 130,
+    "stall_query": 28,
+    "trial": 15
+   },
+   {
+    "demo_frames": 131,
+    "queries": 80,
+    "stall_frame": 130,
+    "stall_query": 26,
+    "trial": 16
+   },
+   {
+    "demo_frames": 131,
+    "queries": 80,
+    "stall_frame": 130,
+    "stall_query": 33,
+    "trial": 19
+   },
+   {
+    "demo_frames": 131,
+    "queries": 80,
+    "stall_frame": 130,
+    "stall_query": 29,
+    "trial": 2
+   },
+   {
+    "demo_frames": 131,
+    "queries": 80,
+    "stall_frame": 130,
+    "stall_query": 22,
+    "trial": 3
+   },
+   {
+    "demo_frames": 131,
+    "queries": 80,
+    "stall_frame": 130,
+    "stall_query": 34,
+    "trial": 4
+   },
+   {
+    "demo_frames": 131,
+    "queries": 80,
+    "stall_frame": 130,
+    "stall_query": 40,
+    "trial": 8
+   },
+   {
+    "demo_frames": 131,
+    "queries": 80,
+    "stall_frame": 78,
+    "stall_query": 79,
+    "trial": 0
+   },
+   {
+    "demo_frames": 131,
+    "queries": 80,
+    "stall_frame": 79,
+    "stall_query": 62,
+    "trial": 12
+   },
+   {
+    "demo_frames": 131,
+    "queries": 80,
+    "stall_frame": 72,
+    "stall_query": 79,
+    "trial": 14
+   },
+   {
+    "demo_frames": 131,
+    "queries": 80,
+    "stall_frame": 130,
+    "stall_query": 33,
+    "trial": 15
+   },
+   {
+    "demo_frames": 131,
+    "queries": 80,
+    "stall_frame": 130,
+    "stall_query": 32,
+    "trial": 16
+   },
+   {
+    "demo_frames": 131,
+    "queries": 80,
+    "stall_frame": 79,
+    "stall_query": 61,
+    "trial": 19
+   },
+   {
+    "demo_frames": 131,
+    "queries": 80,
+    "stall_frame": 75,
+    "stall_query": 33,
+    "trial": 2
+   },
+   {
+    "demo_frames": 131,
+    "queries": 80,
+    "stall_frame": 72,
+    "stall_query": 22,
+    "trial": 21
+   },
+   {
+    "demo_frames": 131,
+    "queries": 80,
+    "stall_frame": 130,
+    "stall_query": 28,
+    "trial": 22
+   },
+   {
+    "demo_frames": 131,
+    "queries": 80,
+    "stall_frame": 130,
+    "stall_query": 28,
+    "trial": 23
+   },
+   {
+    "demo_frames": 131,
+    "queries": 80,
+    "stall_frame": 130,
+    "stall_query": 29,
+    "trial": 25
+   },
+   {
+    "demo_frames": 131,
+    "queries": 80,
+    "stall_frame": 76,
+    "stall_query": 52,
+    "trial": 29
+   },
+   {
+    "demo_frames": 131,
+    "queries": 80,
+    "stall_frame": 84,
+    "stall_query": 77,
+    "trial": 3
+   },
+   {
+    "demo_frames": 131,
+    "queries": 80,
+    "stall_frame": 130,
+    "stall_query": 44,
+    "trial": 7
+   },
+   {
+    "demo_frames": 131,
+    "queries": 80,
+    "stall_frame": 79,
+    "stall_query": 78,
+    "trial": 8
+   },
+   {
+    "demo_frames": 131,
+    "queries": 80,
+    "stall_frame": 130,
+    "stall_query": 30,
+    "trial": 9
+   }
+  ],
+  "task": 35,
+  "text": "open the microwave"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r17_nft__libero_90__r17pool__task-35__s0__16e496a1",
+ "schema": 1,
+ "script": "experiments/r17_nft.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-27T07:37:03+00:00",
+ "stream": null,
+ "tag": "r17pool"
+}

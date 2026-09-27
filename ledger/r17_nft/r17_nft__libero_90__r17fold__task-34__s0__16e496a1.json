@@ -1,0 +1,131 @@
+{
+ "artifacts": [
+  "results/robot/r17fold_34_lora.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 258048,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 258048,
+  "tree": 0
+ },
+ "command": "experiments/r17_nft.py --task 34 --name r17fold --rank 2 --scope last2",
+ "config": {
+  "lora_stride": 5,
+  "max_pos": 1000,
+  "name": "r17fold",
+  "neg_batch": 8,
+  "pooled": false,
+  "practice": "m5_practice+m6_round1",
+  "rank": 2,
+  "scope": "last2",
+  "seed": 0,
+  "steps": 1000,
+  "task": 34,
+  "window": 2
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "brainiac.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3965458",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r17_nft",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "16e496a108b9070b2291257b79f825ace7fcbf5a",
+  "short": "16e496a1"
+ },
+ "keys": {
+  "task": 34
+ },
+ "metrics": {
+  "curve": {
+   "loss": [
+    0.15018528699874878,
+    0.10152342915534973,
+    0.07057967782020569,
+    0.05221864953637123,
+    0.044288065284490585,
+    0.028995079919695854,
+    0.024898800998926163,
+    0.037097010761499405,
+    0.029497211799025536,
+    0.029963325709104538,
+    0.028398696333169937
+   ],
+   "neg": [
+    0.09705033153295517,
+    0.0895797535777092,
+    0.08848918974399567,
+    0.14968664944171906,
+    0.12630026042461395,
+    0.07814209908246994,
+    0.06965668499469757,
+    0.04530410096049309,
+    0.0326826237142086,
+    0.020267225801944733,
+    0.028964687138795853
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "failed": 3,
+  "negatives": 6,
+  "positives": 1000,
+  "rollouts": 50,
+  "stalls": [
+   {
+    "demo_frames": 144,
+    "queries": 80,
+    "stall_frame": 143,
+    "stall_query": 35,
+    "trial": 25
+   },
+   {
+    "demo_frames": 144,
+    "queries": 80,
+    "stall_frame": 60,
+    "stall_query": 53,
+    "trial": 3
+   },
+   {
+    "demo_frames": 144,
+    "queries": 80,
+    "stall_frame": 143,
+    "stall_query": 33,
+    "trial": 5
+   }
+  ],
+  "task": 34,
+  "text": "put the yellow and white mug to the front of the white mug"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r17_nft__libero_90__r17fold__task-34__s0__16e496a1",
+ "schema": 1,
+ "script": "experiments/r17_nft.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-27T08:17:28+00:00",
+ "stream": null,
+ "tag": "r17fold"
+}

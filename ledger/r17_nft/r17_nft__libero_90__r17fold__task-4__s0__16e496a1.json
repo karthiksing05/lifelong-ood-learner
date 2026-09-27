@@ -1,0 +1,201 @@
+{
+ "artifacts": [
+  "results/robot/r17fold_4_lora.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 258048,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 258048,
+  "tree": 0
+ },
+ "command": "experiments/r17_nft.py --task 4 --name r17fold --rank 2 --scope last2",
+ "config": {
+  "lora_stride": 5,
+  "max_pos": 1000,
+  "name": "r17fold",
+  "neg_batch": 8,
+  "pooled": false,
+  "practice": "m5_practice+m6_round1",
+  "rank": 2,
+  "scope": "last2",
+  "seed": 0,
+  "steps": 1000,
+  "task": 4,
+  "window": 2
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "brainiac.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3965465",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r17_nft",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "16e496a108b9070b2291257b79f825ace7fcbf5a",
+  "short": "16e496a1"
+ },
+ "keys": {
+  "task": 4
+ },
+ "metrics": {
+  "curve": {
+   "loss": [
+    0.08933673799037933,
+    0.0810043066740036,
+    0.07491094619035721,
+    0.04455604776740074,
+    0.06257810443639755,
+    0.03685854747891426,
+    0.03305375203490257,
+    0.033593226224184036,
+    0.029842881485819817,
+    0.0353577546775341,
+    0.02624995820224285
+   ],
+   "neg": [
+    0.10279243439435959,
+    0.08954782783985138,
+    0.08788664638996124,
+    0.11166870594024658,
+    0.10177858918905258,
+    0.06193424388766289,
+    0.07897638529539108,
+    0.062326665967702866,
+    0.039475467056035995,
+    0.023763082921504974,
+    0.06596743315458298
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "failed": 13,
+  "negatives": 26,
+  "positives": 1000,
+  "rollouts": 50,
+  "stalls": [
+   {
+    "demo_frames": 173,
+    "queries": 80,
+    "stall_frame": 172,
+    "stall_query": 36,
+    "trial": 0
+   },
+   {
+    "demo_frames": 173,
+    "queries": 80,
+    "stall_frame": 168,
+    "stall_query": 58,
+    "trial": 14
+   },
+   {
+    "demo_frames": 173,
+    "queries": 80,
+    "stall_frame": 166,
+    "stall_query": 39,
+    "trial": 15
+   },
+   {
+    "demo_frames": 173,
+    "queries": 80,
+    "stall_frame": 172,
+    "stall_query": 70,
+    "trial": 17
+   },
+   {
+    "demo_frames": 173,
+    "queries": 80,
+    "stall_frame": 166,
+    "stall_query": 39,
+    "trial": 3
+   },
+   {
+    "demo_frames": 173,
+    "queries": 80,
+    "stall_frame": 166,
+    "stall_query": 36,
+    "trial": 4
+   },
+   {
+    "demo_frames": 173,
+    "queries": 80,
+    "stall_frame": 172,
+    "stall_query": 45,
+    "trial": 6
+   },
+   {
+    "demo_frames": 173,
+    "queries": 80,
+    "stall_frame": 172,
+    "stall_query": 56,
+    "trial": 10
+   },
+   {
+    "demo_frames": 173,
+    "queries": 80,
+    "stall_frame": 85,
+    "stall_query": 19,
+    "trial": 17
+   },
+   {
+    "demo_frames": 173,
+    "queries": 80,
+    "stall_frame": 85,
+    "stall_query": 18,
+    "trial": 18
+   },
+   {
+    "demo_frames": 173,
+    "queries": 80,
+    "stall_frame": 89,
+    "stall_query": 52,
+    "trial": 19
+   },
+   {
+    "demo_frames": 173,
+    "queries": 80,
+    "stall_frame": 172,
+    "stall_query": 37,
+    "trial": 22
+   },
+   {
+    "demo_frames": 173,
+    "queries": 80,
+    "stall_frame": 172,
+    "stall_query": 76,
+    "trial": 27
+   }
+  ],
+  "task": 4,
+  "text": "put the butter at the front in the top drawer of the cabinet and close it"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r17_nft__libero_90__r17fold__task-4__s0__16e496a1",
+ "schema": 1,
+ "script": "experiments/r17_nft.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-27T08:24:33+00:00",
+ "stream": null,
+ "tag": "r17fold"
+}

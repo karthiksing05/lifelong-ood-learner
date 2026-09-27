@@ -14,11 +14,16 @@ sys.path.insert(0, ROOT)
 from lifelong_ood import ledger                                          # noqa: E402
 
 R = os.path.join(ROOT, "results", "robot")
-NAMES = {"zeroshot": "zero-shot", "practice_replay": "demo replay", "practice_lora": "few-shot LoRA (rank 16)",
-         "ours_dim": "borrowing, every 5th frame", "ours_dim1": "borrowing, every frame", "ours_dim1_last2": "borrowing + 258 KB fold",
-         "ours_codes_full": "PoE codes + 4.7 MB fold", "ours_leaf": "leaf borrowing, every 5th frame",
-         "ours_leaf1_last2": "leaf borrowing + 258 KB fold", "ours_shared1": "shared-prototype borrowing", "ours_seg": "segment borrowing",
-         "ours_alloc": "practice-allocated (program, else LoRA)"}
+def _names():
+    """The arm names of experiments/m3_stats.py (one source)."""
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("m3s", os.path.join(ROOT, "experiments", "m3_stats.py"))
+    m = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(m)
+    return m.NAMES
+
+
+NAMES = _names()
 
 
 def kb(b):
@@ -91,6 +96,45 @@ def main():
           f"success over {len(E['tasks'])} tasks: borrowing + fold Spearman {E['ours']['rho']:+.2f} (permutation p {E['ours']['perm_p']:.3f}), "
           f"LoRA {E['lora']['rho']:+.2f} (p {E['lora']['perm_p']:.3f}), their difference {E['ours_minus_lora']['rho']:+.2f} (p {E['ours_minus_lora']['perm_p']:.3f}).")
     w("")
+    if "second_demo" in S:
+        D2 = S["second_demo"]
+        w("## A second demonstration (pre-registered: ledger m3_prereg tag demo1)\n")
+        w(f"Every arm rebuilt from IPEC episode 1 of each task's text, same init states 30-49, {len(D2['tasks'])} tasks. Borrowing + "
+          "fold uses the fold of that demo (borrowing alone where it does not grasp).\n")
+        names = {"ours_d1": "borrowing + fold, demo 1", "lora_d1": "LoRA, demo 1", "replay_d1": "replay, demo 1",
+                 "ours_both": "borrowing + fold, both demos", "lora_both": "LoRA, both demos", "replay_both": "replay, both demos"}
+        w("| arm | successes |")
+        w("|---|---|")
+        for k, v in D2["rates"].items():
+            w(f"| {names.get(k, k)} | {v['k']}/{v['n']} ({v['k'] / v['n']:.3f}) |")
+        w("")
+        w("| comparison | difference | 95% interval | one-sided lower | non-inferior at -0.10 | sign test p |")
+        w("|---|---|---|---|---|---|")
+        for k, d in D2["compare"].items():
+            w(f"| {k} | {d['diff']:+.3f} | {d['lo']:+.3f} to {d['hi']:+.3f} | {d['lo90']:+.3f} | {'yes' if d['noninferior'] else 'no'} | {d['sign_p']:.3f} |")
+        w("")
+        w("RETRACTION: non-inferiority of borrowing + fold to the per-task LoRA holds with the first demo only; with the second demo "
+          "the LoRA is better, and over both demos pooled it is not shown.\n")
+    f5 = os.path.join(R, "m5_learn_stats.json")
+    if os.path.exists(f5):
+        LS = json.load(open(f5))
+        w("## Redo on the practice instances (pre-registered: ledger m3_prereg tag learn_from_practice; ledger m5_learn_stats)\n")
+        w("Reruns with the practice's own noise seed replay the practice episode (the simulator and the sampler are deterministic); "
+          "the controls are fresh-noise retries (policy seeds 1 and 2).\n")
+        for scope, title in (("L1", "instances the first composition solved"), ("L2", "instances the first composition failed")):
+            w(f"**{title}**\n")
+            w("| arm | successes |")
+            w("|---|---|")
+            for k, v in LS[scope].items():
+                if "-" not in k:
+                    w(f"| {k} | {v['k']}/{v['n']} ({v['rate']:.3f}) |")
+            w("")
+            w("| comparison | difference | 95% interval | sign test p |")
+            w("|---|---|---|---|")
+            for k, v in LS[scope].items():
+                if "-" in k:
+                    w(f"| {k} | {v['diff']:+.3f} | {v['lo']:+.3f} to {v['hi']:+.3f} | {v['sign_p']:.4f} |")
+            w("")
     w("## What composition borrows\n")
     for src, name in (("", "tree prototypes (band t = 0.2-0.4)"), ("_leaf", "leaves (the policy's chunk means)"), ("_seg", "segments of leaves")):
         p = os.path.join(R, f"r8_provenance{src}.json")

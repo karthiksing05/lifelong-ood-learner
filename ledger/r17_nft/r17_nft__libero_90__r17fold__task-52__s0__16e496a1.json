@@ -1,0 +1,285 @@
+{
+ "artifacts": [
+  "results/robot/r17fold_52_lora.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 258048,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 258048,
+  "tree": 0
+ },
+ "command": "experiments/r17_nft.py --task 52 --name r17fold --rank 2 --scope last2",
+ "config": {
+  "lora_stride": 5,
+  "max_pos": 1000,
+  "name": "r17fold",
+  "neg_batch": 8,
+  "pooled": false,
+  "practice": "m5_practice+m6_round1",
+  "rank": 2,
+  "scope": "last2",
+  "seed": 0,
+  "steps": 1000,
+  "task": 52,
+  "window": 2
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "brainiac.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3965461",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r17_nft",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "16e496a108b9070b2291257b79f825ace7fcbf5a",
+  "short": "16e496a1"
+ },
+ "keys": {
+  "task": 52
+ },
+ "metrics": {
+  "curve": {
+   "loss": [
+    0.051359400153160095,
+    0.0383107028901577,
+    0.03224797546863556,
+    0.02133663184940815,
+    0.053930286318063736,
+    0.032387785613536835,
+    0.028874162584543228,
+    0.020702442154288292,
+    0.01922955922782421,
+    0.037977464497089386,
+    0.025025662034749985
+   ],
+   "neg": [
+    0.05262942239642143,
+    0.06001671776175499,
+    0.03785712644457817,
+    0.06413782387971878,
+    0.04007873684167862,
+    0.061477065086364746,
+    0.07242119312286377,
+    0.034737925976514816,
+    0.039477359503507614,
+    0.03349108621478081,
+    0.06252790242433548
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "failed": 25,
+  "negatives": 50,
+  "positives": 764,
+  "rollouts": 50,
+  "stalls": [
+   {
+    "demo_frames": 104,
+    "queries": 80,
+    "stall_frame": 103,
+    "stall_query": 54,
+    "trial": 10
+   },
+   {
+    "demo_frames": 104,
+    "queries": 80,
+    "stall_frame": 103,
+    "stall_query": 47,
+    "trial": 11
+   },
+   {
+    "demo_frames": 104,
+    "queries": 80,
+    "stall_frame": 103,
+    "stall_query": 24,
+    "trial": 12
+   },
+   {
+    "demo_frames": 104,
+    "queries": 80,
+    "stall_frame": 103,
+    "stall_query": 29,
+    "trial": 13
+   },
+   {
+    "demo_frames": 104,
+    "queries": 80,
+    "stall_frame": 103,
+    "stall_query": 34,
+    "trial": 14
+   },
+   {
+    "demo_frames": 104,
+    "queries": 80,
+    "stall_frame": 100,
+    "stall_query": 68,
+    "trial": 15
+   },
+   {
+    "demo_frames": 104,
+    "queries": 80,
+    "stall_frame": 103,
+    "stall_query": 28,
+    "trial": 16
+   },
+   {
+    "demo_frames": 104,
+    "queries": 80,
+    "stall_frame": 103,
+    "stall_query": 34,
+    "trial": 17
+   },
+   {
+    "demo_frames": 104,
+    "queries": 80,
+    "stall_frame": 103,
+    "stall_query": 28,
+    "trial": 18
+   },
+   {
+    "demo_frames": 104,
+    "queries": 80,
+    "stall_frame": 103,
+    "stall_query": 68,
+    "trial": 2
+   },
+   {
+    "demo_frames": 104,
+    "queries": 80,
+    "stall_frame": 103,
+    "stall_query": 42,
+    "trial": 3
+   },
+   {
+    "demo_frames": 104,
+    "queries": 80,
+    "stall_frame": 103,
+    "stall_query": 46,
+    "trial": 4
+   },
+   {
+    "demo_frames": 104,
+    "queries": 80,
+    "stall_frame": 68,
+    "stall_query": 12,
+    "trial": 5
+   },
+   {
+    "demo_frames": 104,
+    "queries": 80,
+    "stall_frame": 103,
+    "stall_query": 30,
+    "trial": 6
+   },
+   {
+    "demo_frames": 104,
+    "queries": 80,
+    "stall_frame": 103,
+    "stall_query": 27,
+    "trial": 8
+   },
+   {
+    "demo_frames": 104,
+    "queries": 80,
+    "stall_frame": 102,
+    "stall_query": 57,
+    "trial": 1
+   },
+   {
+    "demo_frames": 104,
+    "queries": 80,
+    "stall_frame": 103,
+    "stall_query": 26,
+    "trial": 12
+   },
+   {
+    "demo_frames": 104,
+    "queries": 80,
+    "stall_frame": 103,
+    "stall_query": 30,
+    "trial": 18
+   },
+   {
+    "demo_frames": 104,
+    "queries": 80,
+    "stall_frame": 67,
+    "stall_query": 79,
+    "trial": 20
+   },
+   {
+    "demo_frames": 104,
+    "queries": 80,
+    "stall_frame": 60,
+    "stall_query": 30,
+    "trial": 21
+   },
+   {
+    "demo_frames": 104,
+    "queries": 80,
+    "stall_frame": 103,
+    "stall_query": 60,
+    "trial": 23
+   },
+   {
+    "demo_frames": 104,
+    "queries": 80,
+    "stall_frame": 103,
+    "stall_query": 25,
+    "trial": 25
+   },
+   {
+    "demo_frames": 104,
+    "queries": 80,
+    "stall_frame": 103,
+    "stall_query": 31,
+    "trial": 28
+   },
+   {
+    "demo_frames": 104,
+    "queries": 80,
+    "stall_frame": 103,
+    "stall_query": 31,
+    "trial": 7
+   },
+   {
+    "demo_frames": 104,
+    "queries": 80,
+    "stall_frame": 103,
+    "stall_query": 78,
+    "trial": 8
+   }
+  ],
+  "task": 52,
+  "text": "pick up the milk and put it in the basket"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r17_nft__libero_90__r17fold__task-52__s0__16e496a1",
+ "schema": 1,
+ "script": "experiments/r17_nft.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-27T08:19:27+00:00",
+ "stream": null,
+ "tag": "r17fold"
+}

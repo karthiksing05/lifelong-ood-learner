@@ -1,0 +1,117 @@
+{
+ "artifacts": [
+  "results/robot/r17bal_53_lora.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 18710528,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 18710528,
+  "tree": 0
+ },
+ "command": "experiments/r17_nft.py --task 53 --name r17bal",
+ "config": {
+  "lora_stride": 5,
+  "max_pos": 1000,
+  "name": "r17bal",
+  "neg_batch": 8,
+  "pooled": false,
+  "practice": "m5_practice+m6_round1",
+  "rank": 16,
+  "scope": "expert",
+  "seed": 0,
+  "steps": 1000,
+  "task": 53,
+  "window": 2
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "brainiac.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3965406",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r17_nft",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "16e496a108b9070b2291257b79f825ace7fcbf5a",
+  "short": "16e496a1"
+ },
+ "keys": {
+  "task": 53
+ },
+ "metrics": {
+  "curve": {
+   "loss": [
+    0.02836761437356472,
+    0.010320533998310566,
+    0.006088636815547943,
+    0.005422735121101141,
+    0.010509959422051907,
+    0.004198472481220961,
+    0.003538676770403981,
+    0.003810057183727622,
+    0.004087822046130896,
+    0.01320550125092268,
+    0.0033257128670811653
+   ],
+   "neg": [
+    0.06829183548688889,
+    0.036943335086107254,
+    0.009429569356143475,
+    0.002807031851261854,
+    0.0041412049904465675,
+    0.0020744421053677797,
+    0.0012763880658894777,
+    0.0012363799614831805,
+    0.0007876070449128747,
+    0.001694784383289516,
+    0.0052446420304477215
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "failed": 1,
+  "negatives": 2,
+  "positives": 1000,
+  "rollouts": 50,
+  "stalls": [
+   {
+    "demo_frames": 148,
+    "queries": 80,
+    "stall_frame": 147,
+    "stall_query": 47,
+    "trial": 19
+   }
+  ],
+  "task": 53,
+  "text": "pick up the orange juice and put it in the basket"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r17_nft__libero_90__r17bal__task-53__s0__16e496a1",
+ "schema": 1,
+ "script": "experiments/r17_nft.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-27T07:14:23+00:00",
+ "stream": null,
+ "tag": "r17bal"
+}

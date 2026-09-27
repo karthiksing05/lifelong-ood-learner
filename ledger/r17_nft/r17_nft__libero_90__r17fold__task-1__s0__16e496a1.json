@@ -1,0 +1,334 @@
+{
+ "artifacts": [
+  "results/robot/r17fold_1_lora.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 258048,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 258048,
+  "tree": 0
+ },
+ "command": "experiments/r17_nft.py --task 1 --name r17fold --rank 2 --scope last2",
+ "config": {
+  "lora_stride": 5,
+  "max_pos": 1000,
+  "name": "r17fold",
+  "neg_batch": 8,
+  "pooled": false,
+  "practice": "m5_practice+m6_round1",
+  "rank": 2,
+  "scope": "last2",
+  "seed": 0,
+  "steps": 1000,
+  "task": 1,
+  "window": 2
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "brainiac.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3965456",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r17_nft",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "16e496a108b9070b2291257b79f825ace7fcbf5a",
+  "short": "16e496a1"
+ },
+ "keys": {
+  "task": 1
+ },
+ "metrics": {
+  "curve": {
+   "loss": [
+    0.07431989163160324,
+    0.042342402040958405,
+    0.04456721991300583,
+    0.037410054355859756,
+    0.031869467347860336,
+    0.01883874274790287,
+    0.022892581298947334,
+    0.017131779342889786,
+    0.022025398910045624,
+    0.024452337995171547,
+    0.026496505364775658
+   ],
+   "neg": [
+    0.012988612055778503,
+    0.01604606769979,
+    0.018809711560606956,
+    0.0108341658487916,
+    0.03324652835726738,
+    0.005984656512737274,
+    0.015866342931985855,
+    0.019840670749545097,
+    0.0018211192218586802,
+    0.008549717254936695,
+    0.023829085752367973
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "failed": 32,
+  "negatives": 64,
+  "positives": 1000,
+  "rollouts": 50,
+  "stalls": [
+   {
+    "demo_frames": 197,
+    "queries": 80,
+    "stall_frame": 196,
+    "stall_query": 59,
+    "trial": 0
+   },
+   {
+    "demo_frames": 197,
+    "queries": 80,
+    "stall_frame": 196,
+    "stall_query": 37,
+    "trial": 11
+   },
+   {
+    "demo_frames": 197,
+    "queries": 80,
+    "stall_frame": 129,
+    "stall_query": 78,
+    "trial": 12
+   },
+   {
+    "demo_frames": 197,
+    "queries": 80,
+    "stall_frame": 196,
+    "stall_query": 40,
+    "trial": 13
+   },
+   {
+    "demo_frames": 197,
+    "queries": 80,
+    "stall_frame": 196,
+    "stall_query": 40,
+    "trial": 14
+   },
+   {
+    "demo_frames": 197,
+    "queries": 80,
+    "stall_frame": 196,
+    "stall_query": 37,
+    "trial": 15
+   },
+   {
+    "demo_frames": 197,
+    "queries": 80,
+    "stall_frame": 196,
+    "stall_query": 39,
+    "trial": 16
+   },
+   {
+    "demo_frames": 197,
+    "queries": 80,
+    "stall_frame": 161,
+    "stall_query": 28,
+    "trial": 18
+   },
+   {
+    "demo_frames": 197,
+    "queries": 80,
+    "stall_frame": 196,
+    "stall_query": 38,
+    "trial": 19
+   },
+   {
+    "demo_frames": 197,
+    "queries": 80,
+    "stall_frame": 196,
+    "stall_query": 42,
+    "trial": 4
+   },
+   {
+    "demo_frames": 197,
+    "queries": 80,
+    "stall_frame": 196,
+    "stall_query": 37,
+    "trial": 5
+   },
+   {
+    "demo_frames": 197,
+    "queries": 80,
+    "stall_frame": 196,
+    "stall_query": 37,
+    "trial": 8
+   },
+   {
+    "demo_frames": 197,
+    "queries": 80,
+    "stall_frame": 196,
+    "stall_query": 48,
+    "trial": 9
+   },
+   {
+    "demo_frames": 197,
+    "queries": 80,
+    "stall_frame": 196,
+    "stall_query": 41,
+    "trial": 0
+   },
+   {
+    "demo_frames": 197,
+    "queries": 80,
+    "stall_frame": 196,
+    "stall_query": 62,
+    "trial": 10
+   },
+   {
+    "demo_frames": 197,
+    "queries": 80,
+    "stall_frame": 196,
+    "stall_query": 37,
+    "trial": 11
+   },
+   {
+    "demo_frames": 197,
+    "queries": 80,
+    "stall_frame": 196,
+    "stall_query": 50,
+    "trial": 12
+   },
+   {
+    "demo_frames": 197,
+    "queries": 80,
+    "stall_frame": 196,
+    "stall_query": 39,
+    "trial": 13
+   },
+   {
+    "demo_frames": 197,
+    "queries": 80,
+    "stall_frame": 196,
+    "stall_query": 36,
+    "trial": 15
+   },
+   {
+    "demo_frames": 197,
+    "queries": 80,
+    "stall_frame": 196,
+    "stall_query": 39,
+    "trial": 16
+   },
+   {
+    "demo_frames": 197,
+    "queries": 80,
+    "stall_frame": 196,
+    "stall_query": 40,
+    "trial": 18
+   },
+   {
+    "demo_frames": 197,
+    "queries": 80,
+    "stall_frame": 196,
+    "stall_query": 41,
+    "trial": 19
+   },
+   {
+    "demo_frames": 197,
+    "queries": 80,
+    "stall_frame": 166,
+    "stall_query": 38,
+    "trial": 20
+   },
+   {
+    "demo_frames": 197,
+    "queries": 80,
+    "stall_frame": 196,
+    "stall_query": 43,
+    "trial": 21
+   },
+   {
+    "demo_frames": 197,
+    "queries": 80,
+    "stall_frame": 196,
+    "stall_query": 39,
+    "trial": 22
+   },
+   {
+    "demo_frames": 197,
+    "queries": 80,
+    "stall_frame": 196,
+    "stall_query": 42,
+    "trial": 24
+   },
+   {
+    "demo_frames": 197,
+    "queries": 80,
+    "stall_frame": 196,
+    "stall_query": 38,
+    "trial": 25
+   },
+   {
+    "demo_frames": 197,
+    "queries": 80,
+    "stall_frame": 196,
+    "stall_query": 41,
+    "trial": 27
+   },
+   {
+    "demo_frames": 197,
+    "queries": 80,
+    "stall_frame": 196,
+    "stall_query": 41,
+    "trial": 28
+   },
+   {
+    "demo_frames": 197,
+    "queries": 80,
+    "stall_frame": 196,
+    "stall_query": 40,
+    "trial": 4
+   },
+   {
+    "demo_frames": 197,
+    "queries": 80,
+    "stall_frame": 196,
+    "stall_query": 40,
+    "trial": 5
+   },
+   {
+    "demo_frames": 197,
+    "queries": 80,
+    "stall_frame": 196,
+    "stall_query": 40,
+    "trial": 9
+   }
+  ],
+  "task": 1,
+  "text": "close the top drawer of the cabinet and put the black bowl on top of it"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r17_nft__libero_90__r17fold__task-1__s0__16e496a1",
+ "schema": 1,
+ "script": "experiments/r17_nft.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-27T08:14:40+00:00",
+ "stream": null,
+ "tag": "r17fold"
+}

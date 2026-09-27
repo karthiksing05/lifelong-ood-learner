@@ -1,0 +1,222 @@
+{
+ "artifacts": [
+  "results/robot/r17pool_63_lora.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 18710528,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 18710528,
+  "tree": 0
+ },
+ "command": "experiments/r17_nft.py --task 63 --name r17pool --pooled",
+ "config": {
+  "lora_stride": 5,
+  "max_pos": 1000,
+  "name": "r17pool",
+  "neg_batch": 8,
+  "pooled": true,
+  "practice": "m5_practice+m6_round1",
+  "rank": 16,
+  "scope": "expert",
+  "seed": 0,
+  "steps": 1000,
+  "task": 63,
+  "window": 2
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "brainiac.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3965444",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r17_nft",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "16e496a108b9070b2291257b79f825ace7fcbf5a",
+  "short": "16e496a1"
+ },
+ "keys": {
+  "task": 63
+ },
+ "metrics": {
+  "curve": {
+   "loss": [
+    0.07281763851642609,
+    0.0220732931047678,
+    0.027379481121897697,
+    0.016075950115919113,
+    0.02182529866695404,
+    0.012205630540847778,
+    0.011406597681343555,
+    0.015518325380980968,
+    0.011994573287665844,
+    0.021749142557382584,
+    0.013179210014641285
+   ],
+   "neg": [
+    0.01081697829067707,
+    0.0,
+    0.10472122579813004,
+    0.1598469763994217,
+    0.17681734263896942,
+    0.0,
+    0.1297856569290161,
+    0.0,
+    0.014789789915084839,
+    0.0,
+    0.0
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "failed": 16,
+  "negatives": 32,
+  "positives": 1000,
+  "rollouts": 50,
+  "stalls": [
+   {
+    "demo_frames": 195,
+    "queries": 80,
+    "stall_frame": 194,
+    "stall_query": 45,
+    "trial": 1
+   },
+   {
+    "demo_frames": 195,
+    "queries": 80,
+    "stall_frame": 194,
+    "stall_query": 71,
+    "trial": 11
+   },
+   {
+    "demo_frames": 195,
+    "queries": 80,
+    "stall_frame": 194,
+    "stall_query": 55,
+    "trial": 12
+   },
+   {
+    "demo_frames": 195,
+    "queries": 80,
+    "stall_frame": 194,
+    "stall_query": 72,
+    "trial": 14
+   },
+   {
+    "demo_frames": 195,
+    "queries": 80,
+    "stall_frame": 194,
+    "stall_query": 47,
+    "trial": 16
+   },
+   {
+    "demo_frames": 195,
+    "queries": 80,
+    "stall_frame": 194,
+    "stall_query": 40,
+    "trial": 17
+   },
+   {
+    "demo_frames": 195,
+    "queries": 80,
+    "stall_frame": 194,
+    "stall_query": 56,
+    "trial": 18
+   },
+   {
+    "demo_frames": 195,
+    "queries": 80,
+    "stall_frame": 194,
+    "stall_query": 58,
+    "trial": 4
+   },
+   {
+    "demo_frames": 195,
+    "queries": 80,
+    "stall_frame": 194,
+    "stall_query": 47,
+    "trial": 1
+   },
+   {
+    "demo_frames": 195,
+    "queries": 80,
+    "stall_frame": 194,
+    "stall_query": 48,
+    "trial": 17
+   },
+   {
+    "demo_frames": 195,
+    "queries": 80,
+    "stall_frame": 194,
+    "stall_query": 46,
+    "trial": 2
+   },
+   {
+    "demo_frames": 195,
+    "queries": 80,
+    "stall_frame": 194,
+    "stall_query": 52,
+    "trial": 20
+   },
+   {
+    "demo_frames": 195,
+    "queries": 80,
+    "stall_frame": 194,
+    "stall_query": 47,
+    "trial": 25
+   },
+   {
+    "demo_frames": 195,
+    "queries": 80,
+    "stall_frame": 149,
+    "stall_query": 50,
+    "trial": 26
+   },
+   {
+    "demo_frames": 195,
+    "queries": 80,
+    "stall_frame": 194,
+    "stall_query": 70,
+    "trial": 27
+   },
+   {
+    "demo_frames": 195,
+    "queries": 80,
+    "stall_frame": 194,
+    "stall_query": 44,
+    "trial": 28
+   }
+  ],
+  "task": 63,
+  "text": "stack the left bowl on the right bowl and place them in the tray"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r17_nft__libero_90__r17pool__task-63__s0__16e496a1",
+ "schema": 1,
+ "script": "experiments/r17_nft.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-27T08:09:44+00:00",
+ "stream": null,
+ "tag": "r17pool"
+}

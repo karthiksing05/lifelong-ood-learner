@@ -1,0 +1,131 @@
+{
+ "artifacts": [
+  "results/robot/r17bal_34_lora.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 18710528,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 18710528,
+  "tree": 0
+ },
+ "command": "experiments/r17_nft.py --task 34 --name r17bal",
+ "config": {
+  "lora_stride": 5,
+  "max_pos": 1000,
+  "name": "r17bal",
+  "neg_batch": 8,
+  "pooled": false,
+  "practice": "m5_practice+m6_round1",
+  "rank": 16,
+  "scope": "expert",
+  "seed": 0,
+  "steps": 1000,
+  "task": 34,
+  "window": 2
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "brainiac.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3965402",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r17_nft",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "16e496a108b9070b2291257b79f825ace7fcbf5a",
+  "short": "16e496a1"
+ },
+ "keys": {
+  "task": 34
+ },
+ "metrics": {
+  "curve": {
+   "loss": [
+    0.15018528699874878,
+    0.04918355122208595,
+    0.01461938489228487,
+    0.009276161901652813,
+    0.01864001341164112,
+    0.008858880959451199,
+    0.005599865689873695,
+    0.006991456262767315,
+    0.007203625049442053,
+    0.014758126810193062,
+    0.011379009112715721
+   ],
+   "neg": [
+    0.09705033153295517,
+    0.06759170442819595,
+    0.024361690506339073,
+    0.015754086896777153,
+    0.016605835407972336,
+    0.005428973585367203,
+    0.008382453583180904,
+    0.01285613514482975,
+    0.006218750961124897,
+    0.0073855179361999035,
+    0.01407991349697113
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "failed": 3,
+  "negatives": 6,
+  "positives": 1000,
+  "rollouts": 50,
+  "stalls": [
+   {
+    "demo_frames": 144,
+    "queries": 80,
+    "stall_frame": 143,
+    "stall_query": 35,
+    "trial": 25
+   },
+   {
+    "demo_frames": 144,
+    "queries": 80,
+    "stall_frame": 60,
+    "stall_query": 53,
+    "trial": 3
+   },
+   {
+    "demo_frames": 144,
+    "queries": 80,
+    "stall_frame": 143,
+    "stall_query": 33,
+    "trial": 5
+   }
+  ],
+  "task": 34,
+  "text": "put the yellow and white mug to the front of the white mug"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r17_nft__libero_90__r17bal__task-34__s0__16e496a1",
+ "schema": 1,
+ "script": "experiments/r17_nft.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-27T07:06:18+00:00",
+ "stream": null,
+ "tag": "r17bal"
+}

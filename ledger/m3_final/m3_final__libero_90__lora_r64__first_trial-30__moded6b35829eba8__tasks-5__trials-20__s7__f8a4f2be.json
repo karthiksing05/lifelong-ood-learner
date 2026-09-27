@@ -1,0 +1,84 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/m3_final_5_lora_r64.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "roll.sh MODE=lora:/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r3_lora_5_r64.pt SUITE=libero_90 TASKS=5 TRIALS=20 (job 3963111)",
+ "config": {
+  "client": {
+   "first_trial": 30,
+   "host": "127.0.0.1",
+   "max_steps": 0,
+   "no_meta": false,
+   "out": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/m3_final_5_lora_r64.json",
+   "port": 9784,
+   "record": false,
+   "replan": 5,
+   "resize": 224,
+   "seed": 7,
+   "suite": "libero_90",
+   "tasks": "5",
+   "trials": 20,
+   "videos": 2,
+   "wait": 10
+  },
+  "job": "3963111",
+  "mode": "lora:/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r3_lora_5_r64.pt"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "brainiac.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3963111",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_final",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "f8a4f2be9fd3fbb2fab5a70ea0c0771283de1a5a",
+  "short": "f8a4f2be"
+ },
+ "keys": {
+  "first_trial": 30,
+  "mode": "lora:/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r3_lora_5_r64.pt",
+  "tasks": "5",
+  "trials": 20
+ },
+ "metrics": {
+  "complete": true,
+  "n_episodes": 20,
+  "secs": 531.1689693927765,
+  "success_rate": 1.0,
+  "tasks": {
+   "5": {
+    "errors": 0,
+    "language": "put the chocolate pudding in the top drawer of the cabinet and close it",
+    "mean_steps": 172.85,
+    "n": 20,
+    "success_rate": 1.0
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_final__libero_90__lora_r64__first_trial-30__moded6b35829eba8__tasks-5__trials-20__s7__f8a4f2be",
+ "schema": 1,
+ "script": "experiments/libero_client.py",
+ "seconds": null,
+ "seed": 7,
+ "source_commit": null,
+ "started": "2026-09-27T11:02:51+00:00",
+ "stream": null,
+ "tag": "lora_r64"
+}

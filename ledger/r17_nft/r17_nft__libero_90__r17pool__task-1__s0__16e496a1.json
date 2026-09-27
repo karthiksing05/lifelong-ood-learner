@@ -1,0 +1,334 @@
+{
+ "artifacts": [
+  "results/robot/r17pool_1_lora.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 18710528,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 18710528,
+  "tree": 0
+ },
+ "command": "experiments/r17_nft.py --task 1 --name r17pool --pooled",
+ "config": {
+  "lora_stride": 5,
+  "max_pos": 1000,
+  "name": "r17pool",
+  "neg_batch": 8,
+  "pooled": true,
+  "practice": "m5_practice+m6_round1",
+  "rank": 16,
+  "scope": "expert",
+  "seed": 0,
+  "steps": 1000,
+  "task": 1,
+  "window": 2
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "brainiac.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3965428",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r17_nft",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "16e496a108b9070b2291257b79f825ace7fcbf5a",
+  "short": "16e496a1"
+ },
+ "keys": {
+  "task": 1
+ },
+ "metrics": {
+  "curve": {
+   "loss": [
+    0.07971556484699249,
+    0.01847287453711033,
+    0.008312338031828403,
+    0.006845536176115274,
+    0.012048994190990925,
+    0.007080963347107172,
+    0.005706461146473885,
+    0.007482439279556274,
+    0.009363563731312752,
+    0.014764182269573212,
+    0.007650488987565041
+   ],
+   "neg": [
+    0.06819272041320801,
+    0.0,
+    0.02701592445373535,
+    0.055413056164979935,
+    0.04231753200292587,
+    0.0035475261975079775,
+    0.004356770310550928,
+    0.015254105441272259,
+    0.0012653032317757607,
+    0.0010702599538490176,
+    0.056221794337034225
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "failed": 32,
+  "negatives": 64,
+  "positives": 1000,
+  "rollouts": 50,
+  "stalls": [
+   {
+    "demo_frames": 197,
+    "queries": 80,
+    "stall_frame": 196,
+    "stall_query": 59,
+    "trial": 0
+   },
+   {
+    "demo_frames": 197,
+    "queries": 80,
+    "stall_frame": 196,
+    "stall_query": 37,
+    "trial": 11
+   },
+   {
+    "demo_frames": 197,
+    "queries": 80,
+    "stall_frame": 129,
+    "stall_query": 78,
+    "trial": 12
+   },
+   {
+    "demo_frames": 197,
+    "queries": 80,
+    "stall_frame": 196,
+    "stall_query": 40,
+    "trial": 13
+   },
+   {
+    "demo_frames": 197,
+    "queries": 80,
+    "stall_frame": 196,
+    "stall_query": 40,
+    "trial": 14
+   },
+   {
+    "demo_frames": 197,
+    "queries": 80,
+    "stall_frame": 196,
+    "stall_query": 37,
+    "trial": 15
+   },
+   {
+    "demo_frames": 197,
+    "queries": 80,
+    "stall_frame": 196,
+    "stall_query": 39,
+    "trial": 16
+   },
+   {
+    "demo_frames": 197,
+    "queries": 80,
+    "stall_frame": 161,
+    "stall_query": 28,
+    "trial": 18
+   },
+   {
+    "demo_frames": 197,
+    "queries": 80,
+    "stall_frame": 196,
+    "stall_query": 38,
+    "trial": 19
+   },
+   {
+    "demo_frames": 197,
+    "queries": 80,
+    "stall_frame": 196,
+    "stall_query": 42,
+    "trial": 4
+   },
+   {
+    "demo_frames": 197,
+    "queries": 80,
+    "stall_frame": 196,
+    "stall_query": 37,
+    "trial": 5
+   },
+   {
+    "demo_frames": 197,
+    "queries": 80,
+    "stall_frame": 196,
+    "stall_query": 37,
+    "trial": 8
+   },
+   {
+    "demo_frames": 197,
+    "queries": 80,
+    "stall_frame": 196,
+    "stall_query": 48,
+    "trial": 9
+   },
+   {
+    "demo_frames": 197,
+    "queries": 80,
+    "stall_frame": 196,
+    "stall_query": 41,
+    "trial": 0
+   },
+   {
+    "demo_frames": 197,
+    "queries": 80,
+    "stall_frame": 196,
+    "stall_query": 62,
+    "trial": 10
+   },
+   {
+    "demo_frames": 197,
+    "queries": 80,
+    "stall_frame": 196,
+    "stall_query": 37,
+    "trial": 11
+   },
+   {
+    "demo_frames": 197,
+    "queries": 80,
+    "stall_frame": 196,
+    "stall_query": 50,
+    "trial": 12
+   },
+   {
+    "demo_frames": 197,
+    "queries": 80,
+    "stall_frame": 196,
+    "stall_query": 39,
+    "trial": 13
+   },
+   {
+    "demo_frames": 197,
+    "queries": 80,
+    "stall_frame": 196,
+    "stall_query": 36,
+    "trial": 15
+   },
+   {
+    "demo_frames": 197,
+    "queries": 80,
+    "stall_frame": 196,
+    "stall_query": 39,
+    "trial": 16
+   },
+   {
+    "demo_frames": 197,
+    "queries": 80,
+    "stall_frame": 196,
+    "stall_query": 40,
+    "trial": 18
+   },
+   {
+    "demo_frames": 197,
+    "queries": 80,
+    "stall_frame": 196,
+    "stall_query": 41,
+    "trial": 19
+   },
+   {
+    "demo_frames": 197,
+    "queries": 80,
+    "stall_frame": 166,
+    "stall_query": 38,
+    "trial": 20
+   },
+   {
+    "demo_frames": 197,
+    "queries": 80,
+    "stall_frame": 196,
+    "stall_query": 43,
+    "trial": 21
+   },
+   {
+    "demo_frames": 197,
+    "queries": 80,
+    "stall_frame": 196,
+    "stall_query": 39,
+    "trial": 22
+   },
+   {
+    "demo_frames": 197,
+    "queries": 80,
+    "stall_frame": 196,
+    "stall_query": 42,
+    "trial": 24
+   },
+   {
+    "demo_frames": 197,
+    "queries": 80,
+    "stall_frame": 196,
+    "stall_query": 38,
+    "trial": 25
+   },
+   {
+    "demo_frames": 197,
+    "queries": 80,
+    "stall_frame": 196,
+    "stall_query": 41,
+    "trial": 27
+   },
+   {
+    "demo_frames": 197,
+    "queries": 80,
+    "stall_frame": 196,
+    "stall_query": 41,
+    "trial": 28
+   },
+   {
+    "demo_frames": 197,
+    "queries": 80,
+    "stall_frame": 196,
+    "stall_query": 40,
+    "trial": 4
+   },
+   {
+    "demo_frames": 197,
+    "queries": 80,
+    "stall_frame": 196,
+    "stall_query": 40,
+    "trial": 5
+   },
+   {
+    "demo_frames": 197,
+    "queries": 80,
+    "stall_frame": 196,
+    "stall_query": 40,
+    "trial": 9
+   }
+  ],
+  "task": 1,
+  "text": "close the top drawer of the cabinet and put the black bowl on top of it"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r17_nft__libero_90__r17pool__task-1__s0__16e496a1",
+ "schema": 1,
+ "script": "experiments/r17_nft.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-27T07:44:16+00:00",
+ "stream": null,
+ "tag": "r17pool"
+}

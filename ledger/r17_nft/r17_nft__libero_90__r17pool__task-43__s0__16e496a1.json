@@ -1,0 +1,124 @@
+{
+ "artifacts": [
+  "results/robot/r17pool_43_lora.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 18710528,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 18710528,
+  "tree": 0
+ },
+ "command": "experiments/r17_nft.py --task 43 --name r17pool --pooled",
+ "config": {
+  "lora_stride": 5,
+  "max_pos": 1000,
+  "name": "r17pool",
+  "neg_batch": 8,
+  "pooled": true,
+  "practice": "m5_practice+m6_round1",
+  "rank": 16,
+  "scope": "expert",
+  "seed": 0,
+  "steps": 1000,
+  "task": 43,
+  "window": 2
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "brainiac.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3965441",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r17_nft",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "16e496a108b9070b2291257b79f825ace7fcbf5a",
+  "short": "16e496a1"
+ },
+ "keys": {
+  "task": 43
+ },
+ "metrics": {
+  "curve": {
+   "loss": [
+    0.0627184510231018,
+    0.013698890805244446,
+    0.011032347567379475,
+    0.005031895823776722,
+    0.011186482384800911,
+    0.006984836887568235,
+    0.004066650290042162,
+    0.005759731866419315,
+    0.007045780308544636,
+    0.012687191367149353,
+    0.010480831377208233
+   ],
+   "neg": [
+    0.0,
+    0.0,
+    0.09076287597417831,
+    0.0,
+    0.034585099667310715,
+    0.0,
+    0.055103398859500885,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "failed": 2,
+  "negatives": 4,
+  "positives": 1000,
+  "rollouts": 50,
+  "stalls": [
+   {
+    "demo_frames": 144,
+    "queries": 80,
+    "stall_frame": 143,
+    "stall_query": 35,
+    "trial": 14
+   },
+   {
+    "demo_frames": 144,
+    "queries": 80,
+    "stall_frame": 133,
+    "stall_query": 44,
+    "trial": 15
+   }
+  ],
+  "task": 43,
+  "text": "put the white bowl on top of the cabinet"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r17_nft__libero_90__r17pool__task-43__s0__16e496a1",
+ "schema": 1,
+ "script": "experiments/r17_nft.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-27T08:02:12+00:00",
+ "stream": null,
+ "tag": "r17pool"
+}

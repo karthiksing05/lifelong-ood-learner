@@ -1,0 +1,159 @@
+{
+ "artifacts": [
+  "results/robot/r17pool_48_lora.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 18710528,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 18710528,
+  "tree": 0
+ },
+ "command": "experiments/r17_nft.py --task 48 --name r17pool --pooled",
+ "config": {
+  "lora_stride": 5,
+  "max_pos": 1000,
+  "name": "r17pool",
+  "neg_batch": 8,
+  "pooled": true,
+  "practice": "m5_practice+m6_round1",
+  "rank": 16,
+  "scope": "expert",
+  "seed": 0,
+  "steps": 1000,
+  "task": 48,
+  "window": 2
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "brainiac.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3965442",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r17_nft",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "16e496a108b9070b2291257b79f825ace7fcbf5a",
+  "short": "16e496a1"
+ },
+ "keys": {
+  "task": 48
+ },
+ "metrics": {
+  "curve": {
+   "loss": [
+    0.034730587154626846,
+    0.00742461159825325,
+    0.010278506204485893,
+    0.0028006669599562883,
+    0.01777242124080658,
+    0.004002430941909552,
+    0.004475391004234552,
+    0.007425212766975164,
+    0.009755288250744343,
+    0.014207849279046059,
+    0.005846582818776369
+   ],
+   "neg": [
+    0.0,
+    0.0,
+    0.12015487253665924,
+    0.04669465124607086,
+    0.029368434101343155,
+    0.0,
+    0.1480458825826645,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "failed": 7,
+  "negatives": 14,
+  "positives": 1000,
+  "rollouts": 50,
+  "stalls": [
+   {
+    "demo_frames": 173,
+    "queries": 80,
+    "stall_frame": 172,
+    "stall_query": 31,
+    "trial": 13
+   },
+   {
+    "demo_frames": 173,
+    "queries": 80,
+    "stall_frame": 172,
+    "stall_query": 48,
+    "trial": 4
+   },
+   {
+    "demo_frames": 173,
+    "queries": 80,
+    "stall_frame": 121,
+    "stall_query": 55,
+    "trial": 10
+   },
+   {
+    "demo_frames": 173,
+    "queries": 80,
+    "stall_frame": 107,
+    "stall_query": 39,
+    "trial": 15
+   },
+   {
+    "demo_frames": 173,
+    "queries": 80,
+    "stall_frame": 92,
+    "stall_query": 22,
+    "trial": 18
+   },
+   {
+    "demo_frames": 173,
+    "queries": 80,
+    "stall_frame": 172,
+    "stall_query": 71,
+    "trial": 25
+   },
+   {
+    "demo_frames": 173,
+    "queries": 80,
+    "stall_frame": 109,
+    "stall_query": 75,
+    "trial": 4
+   }
+  ],
+  "task": 48,
+  "text": "pick up the ketchup and put it in the basket"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r17_nft__libero_90__r17pool__task-48__s0__16e496a1",
+ "schema": 1,
+ "script": "experiments/r17_nft.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-27T08:03:58+00:00",
+ "stream": null,
+ "tag": "r17pool"
+}

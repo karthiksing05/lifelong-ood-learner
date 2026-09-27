@@ -1,0 +1,145 @@
+{
+ "artifacts": [
+  "results/robot/r17fold_5_lora.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 258048,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 258048,
+  "tree": 0
+ },
+ "command": "experiments/r17_nft.py --task 5 --name r17fold --rank 2 --scope last2",
+ "config": {
+  "lora_stride": 5,
+  "max_pos": 1000,
+  "name": "r17fold",
+  "neg_batch": 8,
+  "pooled": false,
+  "practice": "m5_practice+m6_round1",
+  "rank": 2,
+  "scope": "last2",
+  "seed": 0,
+  "steps": 1000,
+  "task": 5,
+  "window": 2
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "brainiac.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3965466",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r17_nft",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "16e496a108b9070b2291257b79f825ace7fcbf5a",
+  "short": "16e496a1"
+ },
+ "keys": {
+  "task": 5
+ },
+ "metrics": {
+  "curve": {
+   "loss": [
+    0.05380477011203766,
+    0.06138559803366661,
+    0.06308682262897491,
+    0.02987125888466835,
+    0.03711296245455742,
+    0.04175063222646713,
+    0.02957906946539879,
+    0.04609110578894615,
+    0.028550487011671066,
+    0.039296649396419525,
+    0.025535060092806816
+   ],
+   "neg": [
+    0.09870511293411255,
+    0.09195655584335327,
+    0.12724463641643524,
+    0.09798016399145126,
+    0.11985429376363754,
+    0.08195895701646805,
+    0.05709807202219963,
+    0.07050413638353348,
+    0.048568952828645706,
+    0.033584821969270706,
+    0.0373283326625824
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "failed": 5,
+  "negatives": 10,
+  "positives": 1000,
+  "rollouts": 50,
+  "stalls": [
+   {
+    "demo_frames": 168,
+    "queries": 80,
+    "stall_frame": 167,
+    "stall_query": 52,
+    "trial": 0
+   },
+   {
+    "demo_frames": 168,
+    "queries": 80,
+    "stall_frame": 73,
+    "stall_query": 32,
+    "trial": 1
+   },
+   {
+    "demo_frames": 168,
+    "queries": 80,
+    "stall_frame": 72,
+    "stall_query": 15,
+    "trial": 11
+   },
+   {
+    "demo_frames": 168,
+    "queries": 80,
+    "stall_frame": 160,
+    "stall_query": 79,
+    "trial": 6
+   },
+   {
+    "demo_frames": 168,
+    "queries": 80,
+    "stall_frame": 92,
+    "stall_query": 70,
+    "trial": 1
+   }
+  ],
+  "task": 5,
+  "text": "put the chocolate pudding in the top drawer of the cabinet and close it"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r17_nft__libero_90__r17fold__task-5__s0__16e496a1",
+ "schema": 1,
+ "script": "experiments/r17_nft.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-27T08:27:32+00:00",
+ "stream": null,
+ "tag": "r17fold"
+}

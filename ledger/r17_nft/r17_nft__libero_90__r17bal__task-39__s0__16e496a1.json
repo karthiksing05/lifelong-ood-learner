@@ -1,0 +1,173 @@
+{
+ "artifacts": [
+  "results/robot/r17bal_39_lora.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 18710528,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 18710528,
+  "tree": 0
+ },
+ "command": "experiments/r17_nft.py --task 39 --name r17bal",
+ "config": {
+  "lora_stride": 5,
+  "max_pos": 1000,
+  "name": "r17bal",
+  "neg_batch": 8,
+  "pooled": false,
+  "practice": "m5_practice+m6_round1",
+  "rank": 16,
+  "scope": "expert",
+  "seed": 0,
+  "steps": 1000,
+  "task": 39,
+  "window": 2
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "brainiac.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3965398",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r17_nft",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "16e496a108b9070b2291257b79f825ace7fcbf5a",
+  "short": "16e496a1"
+ },
+ "keys": {
+  "task": 39
+ },
+ "metrics": {
+  "curve": {
+   "loss": [
+    0.15017491579055786,
+    0.055534541606903076,
+    0.025241047143936157,
+    0.017254620790481567,
+    0.03385182470083237,
+    0.020641330629587173,
+    0.015761708840727806,
+    0.013196488842368126,
+    0.021803690120577812,
+    0.025492487475275993,
+    0.014931516721844673
+   ],
+   "neg": [
+    0.18202145397663116,
+    0.1634058803319931,
+    0.052440907806158066,
+    0.025494525209069252,
+    0.06898357719182968,
+    0.023304278030991554,
+    0.020390162244439125,
+    0.020659390836954117,
+    0.010964259505271912,
+    0.01652871072292328,
+    0.04818231984972954
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "failed": 9,
+  "negatives": 18,
+  "positives": 1000,
+  "rollouts": 50,
+  "stalls": [
+   {
+    "demo_frames": 116,
+    "queries": 80,
+    "stall_frame": 72,
+    "stall_query": 52,
+    "trial": 0
+   },
+   {
+    "demo_frames": 116,
+    "queries": 80,
+    "stall_frame": 106,
+    "stall_query": 29,
+    "trial": 1
+   },
+   {
+    "demo_frames": 116,
+    "queries": 80,
+    "stall_frame": 115,
+    "stall_query": 22,
+    "trial": 3
+   },
+   {
+    "demo_frames": 116,
+    "queries": 80,
+    "stall_frame": 106,
+    "stall_query": 20,
+    "trial": 4
+   },
+   {
+    "demo_frames": 116,
+    "queries": 80,
+    "stall_frame": 106,
+    "stall_query": 18,
+    "trial": 1
+   },
+   {
+    "demo_frames": 116,
+    "queries": 80,
+    "stall_frame": 73,
+    "stall_query": 17,
+    "trial": 12
+   },
+   {
+    "demo_frames": 116,
+    "queries": 80,
+    "stall_frame": 67,
+    "stall_query": 14,
+    "trial": 18
+   },
+   {
+    "demo_frames": 116,
+    "queries": 80,
+    "stall_frame": 106,
+    "stall_query": 18,
+    "trial": 21
+   },
+   {
+    "demo_frames": 116,
+    "queries": 80,
+    "stall_frame": 108,
+    "stall_query": 59,
+    "trial": 4
+   }
+  ],
+  "task": 39,
+  "text": "turn off the stove"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r17_nft__libero_90__r17bal__task-39__s0__16e496a1",
+ "schema": 1,
+ "script": "experiments/r17_nft.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-27T06:58:25+00:00",
+ "stream": null,
+ "tag": "r17bal"
+}

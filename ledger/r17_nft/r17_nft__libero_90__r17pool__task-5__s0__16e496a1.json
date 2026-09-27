@@ -1,0 +1,145 @@
+{
+ "artifacts": [
+  "results/robot/r17pool_5_lora.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 18710528,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 18710528,
+  "tree": 0
+ },
+ "command": "experiments/r17_nft.py --task 5 --name r17pool --pooled",
+ "config": {
+  "lora_stride": 5,
+  "max_pos": 1000,
+  "name": "r17pool",
+  "neg_batch": 8,
+  "pooled": true,
+  "practice": "m5_practice+m6_round1",
+  "rank": 16,
+  "scope": "expert",
+  "seed": 0,
+  "steps": 1000,
+  "task": 5,
+  "window": 2
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "brainiac.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3965438",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r17_nft",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "16e496a108b9070b2291257b79f825ace7fcbf5a",
+  "short": "16e496a1"
+ },
+ "keys": {
+  "task": 5
+ },
+ "metrics": {
+  "curve": {
+   "loss": [
+    0.05884963274002075,
+    0.015847502276301384,
+    0.013962996192276478,
+    0.0127980662509799,
+    0.02527124062180519,
+    0.013790130615234375,
+    0.008189924992620945,
+    0.011843404732644558,
+    0.013128993101418018,
+    0.016769317910075188,
+    0.016630640253424644
+   ],
+   "neg": [
+    0.0,
+    0.0,
+    0.1567157357931137,
+    0.0,
+    0.09565593302249908,
+    0.0,
+    0.3538496494293213,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "failed": 5,
+  "negatives": 10,
+  "positives": 1000,
+  "rollouts": 50,
+  "stalls": [
+   {
+    "demo_frames": 168,
+    "queries": 80,
+    "stall_frame": 167,
+    "stall_query": 52,
+    "trial": 0
+   },
+   {
+    "demo_frames": 168,
+    "queries": 80,
+    "stall_frame": 73,
+    "stall_query": 32,
+    "trial": 1
+   },
+   {
+    "demo_frames": 168,
+    "queries": 80,
+    "stall_frame": 72,
+    "stall_query": 15,
+    "trial": 11
+   },
+   {
+    "demo_frames": 168,
+    "queries": 80,
+    "stall_frame": 160,
+    "stall_query": 79,
+    "trial": 6
+   },
+   {
+    "demo_frames": 168,
+    "queries": 80,
+    "stall_frame": 92,
+    "stall_query": 70,
+    "trial": 1
+   }
+  ],
+  "task": 5,
+  "text": "put the chocolate pudding in the top drawer of the cabinet and close it"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r17_nft__libero_90__r17pool__task-5__s0__16e496a1",
+ "schema": 1,
+ "script": "experiments/r17_nft.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-27T07:57:41+00:00",
+ "stream": null,
+ "tag": "r17pool"
+}

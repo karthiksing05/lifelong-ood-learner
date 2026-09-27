@@ -1,0 +1,348 @@
+{
+ "artifacts": [
+  "results/robot/r17fold_40_lora.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 258048,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 258048,
+  "tree": 0
+ },
+ "command": "experiments/r17_nft.py --task 40 --name r17fold --rank 2 --scope last2",
+ "config": {
+  "lora_stride": 5,
+  "max_pos": 1000,
+  "name": "r17fold",
+  "neg_batch": 8,
+  "pooled": false,
+  "practice": "m5_practice+m6_round1",
+  "rank": 2,
+  "scope": "last2",
+  "seed": 0,
+  "steps": 1000,
+  "task": 40,
+  "window": 2
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "brainiac.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3965460",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r17_nft",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "16e496a108b9070b2291257b79f825ace7fcbf5a",
+  "short": "16e496a1"
+ },
+ "keys": {
+  "task": 40
+ },
+ "metrics": {
+  "curve": {
+   "loss": [
+    0.08175662904977798,
+    0.07882922887802124,
+    0.048892706632614136,
+    0.05977383628487587,
+    0.036459844559431076,
+    0.032517481595277786,
+    0.03810437023639679,
+    0.035465631633996964,
+    0.024602437391877174,
+    0.030096417292952538,
+    0.03173355758190155
+   ],
+   "neg": [
+    0.11019425839185715,
+    0.1291334182024002,
+    0.10962025076150894,
+    0.1218070313334465,
+    0.09196184575557709,
+    0.051479268819093704,
+    0.12938199937343597,
+    0.0751044973731041,
+    0.09752034395933151,
+    0.07050786912441254,
+    0.10009407997131348
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "failed": 34,
+  "negatives": 68,
+  "positives": 842,
+  "rollouts": 50,
+  "stalls": [
+   {
+    "demo_frames": 177,
+    "queries": 80,
+    "stall_frame": 176,
+    "stall_query": 40,
+    "trial": 0
+   },
+   {
+    "demo_frames": 177,
+    "queries": 80,
+    "stall_frame": 90,
+    "stall_query": 28,
+    "trial": 10
+   },
+   {
+    "demo_frames": 177,
+    "queries": 80,
+    "stall_frame": 176,
+    "stall_query": 43,
+    "trial": 11
+   },
+   {
+    "demo_frames": 177,
+    "queries": 80,
+    "stall_frame": 176,
+    "stall_query": 42,
+    "trial": 12
+   },
+   {
+    "demo_frames": 177,
+    "queries": 80,
+    "stall_frame": 176,
+    "stall_query": 52,
+    "trial": 13
+   },
+   {
+    "demo_frames": 177,
+    "queries": 80,
+    "stall_frame": 176,
+    "stall_query": 42,
+    "trial": 14
+   },
+   {
+    "demo_frames": 177,
+    "queries": 80,
+    "stall_frame": 175,
+    "stall_query": 78,
+    "trial": 15
+   },
+   {
+    "demo_frames": 177,
+    "queries": 80,
+    "stall_frame": 176,
+    "stall_query": 40,
+    "trial": 16
+   },
+   {
+    "demo_frames": 177,
+    "queries": 80,
+    "stall_frame": 176,
+    "stall_query": 38,
+    "trial": 18
+   },
+   {
+    "demo_frames": 177,
+    "queries": 80,
+    "stall_frame": 176,
+    "stall_query": 47,
+    "trial": 19
+   },
+   {
+    "demo_frames": 177,
+    "queries": 80,
+    "stall_frame": 176,
+    "stall_query": 39,
+    "trial": 2
+   },
+   {
+    "demo_frames": 177,
+    "queries": 80,
+    "stall_frame": 176,
+    "stall_query": 40,
+    "trial": 4
+   },
+   {
+    "demo_frames": 177,
+    "queries": 80,
+    "stall_frame": 176,
+    "stall_query": 39,
+    "trial": 5
+   },
+   {
+    "demo_frames": 177,
+    "queries": 80,
+    "stall_frame": 176,
+    "stall_query": 42,
+    "trial": 6
+   },
+   {
+    "demo_frames": 177,
+    "queries": 80,
+    "stall_frame": 176,
+    "stall_query": 44,
+    "trial": 7
+   },
+   {
+    "demo_frames": 177,
+    "queries": 80,
+    "stall_frame": 93,
+    "stall_query": 20,
+    "trial": 0
+   },
+   {
+    "demo_frames": 177,
+    "queries": 80,
+    "stall_frame": 176,
+    "stall_query": 37,
+    "trial": 1
+   },
+   {
+    "demo_frames": 177,
+    "queries": 80,
+    "stall_frame": 176,
+    "stall_query": 50,
+    "trial": 10
+   },
+   {
+    "demo_frames": 177,
+    "queries": 80,
+    "stall_frame": 176,
+    "stall_query": 48,
+    "trial": 11
+   },
+   {
+    "demo_frames": 177,
+    "queries": 80,
+    "stall_frame": 176,
+    "stall_query": 36,
+    "trial": 12
+   },
+   {
+    "demo_frames": 177,
+    "queries": 80,
+    "stall_frame": 176,
+    "stall_query": 37,
+    "trial": 13
+   },
+   {
+    "demo_frames": 177,
+    "queries": 80,
+    "stall_frame": 176,
+    "stall_query": 40,
+    "trial": 14
+   },
+   {
+    "demo_frames": 177,
+    "queries": 80,
+    "stall_frame": 92,
+    "stall_query": 18,
+    "trial": 15
+   },
+   {
+    "demo_frames": 177,
+    "queries": 80,
+    "stall_frame": 92,
+    "stall_query": 18,
+    "trial": 18
+   },
+   {
+    "demo_frames": 177,
+    "queries": 80,
+    "stall_frame": 176,
+    "stall_query": 40,
+    "trial": 20
+   },
+   {
+    "demo_frames": 177,
+    "queries": 80,
+    "stall_frame": 176,
+    "stall_query": 42,
+    "trial": 21
+   },
+   {
+    "demo_frames": 177,
+    "queries": 80,
+    "stall_frame": 155,
+    "stall_query": 35,
+    "trial": 22
+   },
+   {
+    "demo_frames": 177,
+    "queries": 80,
+    "stall_frame": 176,
+    "stall_query": 44,
+    "trial": 24
+   },
+   {
+    "demo_frames": 177,
+    "queries": 80,
+    "stall_frame": 176,
+    "stall_query": 45,
+    "trial": 25
+   },
+   {
+    "demo_frames": 177,
+    "queries": 80,
+    "stall_frame": 176,
+    "stall_query": 40,
+    "trial": 27
+   },
+   {
+    "demo_frames": 177,
+    "queries": 80,
+    "stall_frame": 176,
+    "stall_query": 46,
+    "trial": 29
+   },
+   {
+    "demo_frames": 177,
+    "queries": 80,
+    "stall_frame": 176,
+    "stall_query": 41,
+    "trial": 3
+   },
+   {
+    "demo_frames": 177,
+    "queries": 80,
+    "stall_frame": 176,
+    "stall_query": 41,
+    "trial": 6
+   },
+   {
+    "demo_frames": 177,
+    "queries": 80,
+    "stall_frame": 176,
+    "stall_query": 46,
+    "trial": 9
+   }
+  ],
+  "task": 40,
+  "text": "put the frying pan on the cabinet shelf"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r17_nft__libero_90__r17fold__task-40__s0__16e496a1",
+ "schema": 1,
+ "script": "experiments/r17_nft.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-27T08:19:32+00:00",
+ "stream": null,
+ "tag": "r17fold"
+}

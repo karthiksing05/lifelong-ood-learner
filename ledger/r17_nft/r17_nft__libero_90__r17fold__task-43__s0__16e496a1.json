@@ -1,0 +1,124 @@
+{
+ "artifacts": [
+  "results/robot/r17fold_43_lora.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 258048,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 258048,
+  "tree": 0
+ },
+ "command": "experiments/r17_nft.py --task 43 --name r17fold --rank 2 --scope last2",
+ "config": {
+  "lora_stride": 5,
+  "max_pos": 1000,
+  "name": "r17fold",
+  "neg_batch": 8,
+  "pooled": false,
+  "practice": "m5_practice+m6_round1",
+  "rank": 2,
+  "scope": "last2",
+  "seed": 0,
+  "steps": 1000,
+  "task": 43,
+  "window": 2
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "brainiac.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3965469",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r17_nft",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "16e496a108b9070b2291257b79f825ace7fcbf5a",
+  "short": "16e496a1"
+ },
+ "keys": {
+  "task": 43
+ },
+ "metrics": {
+  "curve": {
+   "loss": [
+    0.06664590537548065,
+    0.03402754291892052,
+    0.06090250983834267,
+    0.025611035525798798,
+    0.027549972757697105,
+    0.024665916338562965,
+    0.023676900193095207,
+    0.016475461423397064,
+    0.016972877085208893,
+    0.023318490013480186,
+    0.01284391526132822
+   ],
+   "neg": [
+    0.08201030641794205,
+    0.04834495112299919,
+    0.028188025578856468,
+    0.01913963258266449,
+    0.01703319139778614,
+    0.01143626868724823,
+    0.00948330294340849,
+    0.004123425576835871,
+    0.0040272437036037445,
+    0.006664457265287638,
+    0.02246447652578354
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "failed": 2,
+  "negatives": 4,
+  "positives": 1000,
+  "rollouts": 50,
+  "stalls": [
+   {
+    "demo_frames": 144,
+    "queries": 80,
+    "stall_frame": 143,
+    "stall_query": 35,
+    "trial": 14
+   },
+   {
+    "demo_frames": 144,
+    "queries": 80,
+    "stall_frame": 133,
+    "stall_query": 44,
+    "trial": 15
+   }
+  ],
+  "task": 43,
+  "text": "put the white bowl on top of the cabinet"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r17_nft__libero_90__r17fold__task-43__s0__16e496a1",
+ "schema": 1,
+ "script": "experiments/r17_nft.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-27T08:32:28+00:00",
+ "stream": null,
+ "tag": "r17fold"
+}

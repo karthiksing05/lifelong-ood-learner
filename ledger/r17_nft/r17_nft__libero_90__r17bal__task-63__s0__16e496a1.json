@@ -1,0 +1,222 @@
+{
+ "artifacts": [
+  "results/robot/r17bal_63_lora.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 18710528,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 18710528,
+  "tree": 0
+ },
+ "command": "experiments/r17_nft.py --task 63 --name r17bal",
+ "config": {
+  "lora_stride": 5,
+  "max_pos": 1000,
+  "name": "r17bal",
+  "neg_batch": 8,
+  "pooled": false,
+  "practice": "m5_practice+m6_round1",
+  "rank": 16,
+  "scope": "expert",
+  "seed": 0,
+  "steps": 1000,
+  "task": 63,
+  "window": 2
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "brainiac.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3965416",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r17_nft",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "16e496a108b9070b2291257b79f825ace7fcbf5a",
+  "short": "16e496a1"
+ },
+ "keys": {
+  "task": 63
+ },
+ "metrics": {
+  "curve": {
+   "loss": [
+    0.09191548824310303,
+    0.024265587329864502,
+    0.034730587154626846,
+    0.029486358165740967,
+    0.024798549711704254,
+    0.013565546832978725,
+    0.02022632770240307,
+    0.014410863630473614,
+    0.015667546540498734,
+    0.02091589756309986,
+    0.01952258124947548
+   ],
+   "neg": [
+    0.07950836420059204,
+    0.05854898691177368,
+    0.06675427407026291,
+    0.030644943937659264,
+    0.025389743968844414,
+    0.027783459052443504,
+    0.023695018142461777,
+    0.01281921286135912,
+    0.011354334652423859,
+    0.010585660114884377,
+    0.03965408727526665
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "failed": 16,
+  "negatives": 32,
+  "positives": 1000,
+  "rollouts": 50,
+  "stalls": [
+   {
+    "demo_frames": 195,
+    "queries": 80,
+    "stall_frame": 194,
+    "stall_query": 45,
+    "trial": 1
+   },
+   {
+    "demo_frames": 195,
+    "queries": 80,
+    "stall_frame": 194,
+    "stall_query": 71,
+    "trial": 11
+   },
+   {
+    "demo_frames": 195,
+    "queries": 80,
+    "stall_frame": 194,
+    "stall_query": 55,
+    "trial": 12
+   },
+   {
+    "demo_frames": 195,
+    "queries": 80,
+    "stall_frame": 194,
+    "stall_query": 72,
+    "trial": 14
+   },
+   {
+    "demo_frames": 195,
+    "queries": 80,
+    "stall_frame": 194,
+    "stall_query": 47,
+    "trial": 16
+   },
+   {
+    "demo_frames": 195,
+    "queries": 80,
+    "stall_frame": 194,
+    "stall_query": 40,
+    "trial": 17
+   },
+   {
+    "demo_frames": 195,
+    "queries": 80,
+    "stall_frame": 194,
+    "stall_query": 56,
+    "trial": 18
+   },
+   {
+    "demo_frames": 195,
+    "queries": 80,
+    "stall_frame": 194,
+    "stall_query": 58,
+    "trial": 4
+   },
+   {
+    "demo_frames": 195,
+    "queries": 80,
+    "stall_frame": 194,
+    "stall_query": 47,
+    "trial": 1
+   },
+   {
+    "demo_frames": 195,
+    "queries": 80,
+    "stall_frame": 194,
+    "stall_query": 48,
+    "trial": 17
+   },
+   {
+    "demo_frames": 195,
+    "queries": 80,
+    "stall_frame": 194,
+    "stall_query": 46,
+    "trial": 2
+   },
+   {
+    "demo_frames": 195,
+    "queries": 80,
+    "stall_frame": 194,
+    "stall_query": 52,
+    "trial": 20
+   },
+   {
+    "demo_frames": 195,
+    "queries": 80,
+    "stall_frame": 194,
+    "stall_query": 47,
+    "trial": 25
+   },
+   {
+    "demo_frames": 195,
+    "queries": 80,
+    "stall_frame": 149,
+    "stall_query": 50,
+    "trial": 26
+   },
+   {
+    "demo_frames": 195,
+    "queries": 80,
+    "stall_frame": 194,
+    "stall_query": 70,
+    "trial": 27
+   },
+   {
+    "demo_frames": 195,
+    "queries": 80,
+    "stall_frame": 194,
+    "stall_query": 44,
+    "trial": 28
+   }
+  ],
+  "task": 63,
+  "text": "stack the left bowl on the right bowl and place them in the tray"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r17_nft__libero_90__r17bal__task-63__s0__16e496a1",
+ "schema": 1,
+ "script": "experiments/r17_nft.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-27T07:34:36+00:00",
+ "stream": null,
+ "tag": "r17bal"
+}

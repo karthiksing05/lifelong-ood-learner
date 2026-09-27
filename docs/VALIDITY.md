@@ -27,6 +27,29 @@ Tasks where the prior's practice fails: 21 of 23; kept prior on 19, 67.
 | shared-prototype borrowing (not every task) | 65/240 | 0.271 (0.22-0.33) | 0.16-0.39 | 12 | 61.8 KB |
 | segment borrowing | 160/420 | 0.381 (0.34-0.43) | 0.27-0.50 | 21 | 16.3 KB |
 | practice-allocated (program, else LoRA) | 270/420 | 0.643 (0.60-0.69) | 0.53-0.75 | 21 | 97.4 MB |
+| borrowing + one shared fold | 146/420 | 0.348 (0.30-0.39) | 0.23-0.47 | 21 | 375.3 KB |
+| borrowing + the other half's fold | 107/420 | 0.255 (0.22-0.30) | 0.14-0.38 | 21 | 633.4 KB |
+| open-loop demo playback | 187/420 | 0.445 (0.40-0.49) | 0.34-0.55 | 21 | 49.4 KB |
+| VINN (nearest demo frame) | 167/420 | 0.398 (0.35-0.45) | 0.29-0.51 | 21 | 6.9 MB |
+| instruction retrieval | 0/420 | 0.000 (0.00-0.01) | 0.00-0.00 | 21 | 0.0 KB |
+| adapter retrieval (nearest task's LoRA) | 19/420 | 0.045 (0.03-0.07) | 0.00-0.11 | 21 | 0.0 KB |
+| compose, practise, consolidate | 253/420 | 0.602 (0.55-0.65) | 0.49-0.71 | 21 | 6.9 MB |
+| consolidated fold, no memory | 261/420 | 0.621 (0.57-0.67) | 0.50-0.74 | 21 | 5.1 MB |
+| memory, the demo's fold | 234/420 | 0.557 (0.51-0.60) | 0.44-0.67 | 21 | 7.2 MB |
+| LoRA on the demo + practice successes | 274/420 | 0.652 (0.61-0.70) | 0.54-0.76 | 21 | 392.9 MB |
+| DemoDiffusion (s* 0.2) | 36/420 | 0.086 (0.06-0.12) | 0.03-0.16 | 21 | 49.4 KB |
+| DemoDiffusion, state-aligned | 58/420 | 0.138 (0.11-0.17) | 0.05-0.24 | 21 | 106.2 KB |
+| equal-bytes adapter (258 KB, whole demo) | 184/420 | 0.438 (0.39-0.49) | 0.31-0.56 | 21 | 5.4 MB |
+| LoRA rank 64 | 267/420 | 0.636 (0.59-0.68) | 0.51-0.75 | 21 | 1571.7 MB |
+| full fine-tuning | 267/420 | 0.636 (0.59-0.68) | 0.51-0.75 | 21 | 33926.0 MB |
+| 258 KB learner, round 1 | 213/420 | 0.507 (0.46-0.55) | 0.39-0.63 | 21 | 5.4 MB |
+| LoRA, round 2 (success-only) | 281/420 | 0.669 (0.62-0.71) | 0.56-0.77 | 21 | 392.9 MB |
+| 258 KB learner, round 2 | 204/420 | 0.486 (0.44-0.53) | 0.37-0.60 | 21 | 5.4 MB |
+| LoRA, round 3 | 294/420 | 0.700 (0.65-0.74) | 0.59-0.80 | 21 | 392.9 MB |
+| 258 KB learner, round 3 | 198/420 | 0.471 (0.42-0.52) | 0.35-0.60 | 21 | 5.4 MB |
+| LoRA + failure negatives (balanced) | 302/420 | 0.719 (0.67-0.76) | 0.62-0.81 | 21 | 392.9 MB |
+| LoRA + failure negatives (pooled) | 296/420 | 0.705 (0.66-0.75) | 0.59-0.81 | 21 | 392.9 MB |
+| 258 KB + failure negatives | 175/420 | 0.417 (0.37-0.46) | 0.30-0.54 | 21 | 5.4 MB |
 
 | comparison | pooled difference | 95% interval | one-sided lower | non-inferior at the margin | discordant | sign test p | pairs, tasks |
 |---|---|---|---|---|---|---|---|
@@ -48,6 +71,36 @@ Tasks where the prior's practice fails: 21 of 23; kept prior on 19, 67.
 | borrowing + 258 KB fold vs borrowing, every frame | +0.202 | +0.095 to +0.307 | +0.112 | yes | 113 vs 28 | 0.000 | 420, 21 |
 | practice-allocated (program, else LoRA) vs few-shot LoRA (rank 16) | +0.043 | -0.055 to +0.138 | -0.038 | yes | 65 vs 47 | 0.108 | 420, 21 |
 | practice-allocated (program, else LoRA) vs borrowing + 258 KB fold | +0.040 | -0.005 to +0.100 | +0.000 | yes | 26 vs 9 | 0.006 | 420, 21 |
+| borrowing + one shared fold vs borrowing + 258 KB fold | -0.255 | -0.364 to -0.145 | -0.348 | not shown | 26 vs 133 | 0.000 | 420, 21 |
+| borrowing + the other half's fold vs borrowing + 258 KB fold | -0.348 | -0.469 to -0.224 | -0.452 | not shown | 17 vs 163 | 0.000 | 420, 21 |
+| borrowing + one shared fold vs few-shot LoRA (rank 16) | -0.252 | -0.381 to -0.124 | -0.360 | not shown | 32 vs 138 | 0.000 | 420, 21 |
+| borrowing + the other half's fold vs few-shot LoRA (rank 16) | -0.345 | -0.495 to -0.188 | -0.471 | not shown | 34 vs 179 | 0.000 | 420, 21 |
+| borrowing + the other half's fold vs borrowing, every frame | -0.145 | -0.276 to -0.012 | -0.255 | not shown | 48 vs 109 | 0.000 | 420, 21 |
+| borrowing + 258 KB fold vs open-loop demo playback | +0.157 | +0.043 to +0.274 | +0.060 | yes | 104 vs 38 | 0.000 | 420, 21 |
+| borrowing + 258 KB fold vs VINN (nearest demo frame) | +0.205 | +0.050 to +0.352 | +0.076 | yes | 135 vs 49 | 0.000 | 420, 21 |
+| borrowing + 258 KB fold vs instruction retrieval | +0.602 | +0.476 to +0.724 | +0.498 | yes | 253 vs 0 | 0.000 | 420, 21 |
+| borrowing + 258 KB fold vs adapter retrieval (nearest task's LoRA) | +0.557 | +0.417 to +0.690 | +0.440 | yes | 238 vs 4 | 0.000 | 420, 21 |
+| demo replay vs open-loop demo playback | -0.038 | -0.105 to +0.031 | -0.095 | yes | 34 vs 50 | 0.101 | 420, 21 |
+| compose, practise, consolidate vs borrowing + 258 KB fold | +0.000 | -0.067 to +0.067 | -0.055 | yes | 55 vs 55 | 1.000 | 420, 21 |
+| compose, practise, consolidate vs LoRA on the demo + practice successes | -0.050 | -0.143 to +0.043 | -0.129 | not shown | 50 vs 71 | 0.069 | 420, 21 |
+| compose, practise, consolidate vs few-shot LoRA (rank 16) | +0.002 | -0.098 to +0.102 | -0.083 | yes | 70 vs 69 | 1.000 | 420, 21 |
+| consolidated fold, no memory vs borrowing + 258 KB fold | +0.019 | -0.036 to +0.074 | -0.026 | yes | 45 vs 37 | 0.440 | 420, 21 |
+| memory, the demo's fold vs borrowing + 258 KB fold | -0.045 | -0.110 to +0.021 | -0.100 | not shown | 47 vs 66 | 0.090 | 420, 21 |
+| LoRA on the demo + practice successes vs few-shot LoRA (rank 16) | +0.052 | -0.040 to +0.148 | -0.026 | yes | 78 vs 56 | 0.069 | 420, 21 |
+| borrowing + 258 KB fold vs DemoDiffusion (s* 0.2) | +0.517 | +0.379 to +0.650 | +0.402 | yes | 229 vs 12 | 0.000 | 420, 21 |
+| borrowing + 258 KB fold vs DemoDiffusion, state-aligned | +0.464 | +0.338 to +0.588 | +0.360 | yes | 210 vs 15 | 0.000 | 420, 21 |
+| segment borrowing vs DemoDiffusion (s* 0.2) | +0.295 | +0.171 to +0.421 | +0.190 | yes | 140 vs 16 | 0.000 | 420, 21 |
+| borrowing + 258 KB fold vs equal-bytes adapter (258 KB, whole demo) | +0.164 | +0.067 to +0.267 | +0.081 | yes | 114 vs 45 | 0.000 | 420, 21 |
+| borrowing + 258 KB fold vs LoRA rank 64 | -0.033 | -0.140 to +0.069 | -0.124 | not shown | 55 vs 69 | 0.243 | 420, 21 |
+| borrowing + 258 KB fold vs full fine-tuning | -0.033 | -0.133 to +0.060 | -0.117 | not shown | 52 vs 66 | 0.231 | 420, 21 |
+| LoRA, round 2 (success-only) vs LoRA on the demo + practice successes | +0.017 | -0.055 to +0.091 | -0.043 | yes | 49 vs 42 | 0.530 | 420, 21 |
+| LoRA, round 3 vs LoRA on the demo + practice successes | +0.048 | -0.010 to +0.110 | -0.002 | yes | 51 vs 31 | 0.035 | 420, 21 |
+| LoRA, round 3 vs few-shot LoRA (rank 16) | +0.100 | +0.005 to +0.195 | +0.021 | yes | 88 vs 46 | 0.000 | 420, 21 |
+| 258 KB learner, round 3 vs LoRA, round 3 | -0.229 | -0.352 to -0.105 | -0.331 | not shown | 38 vs 134 | 0.000 | 420, 21 |
+| 258 KB learner, round 1 vs LoRA on the demo + practice successes | -0.145 | -0.260 to -0.033 | -0.240 | not shown | 43 vs 104 | 0.000 | 420, 21 |
+| LoRA + failure negatives (balanced) vs LoRA, round 2 (success-only) | +0.050 | -0.021 to +0.124 | -0.010 | yes | 56 vs 35 | 0.035 | 420, 21 |
+| LoRA + failure negatives (pooled) vs LoRA, round 2 (success-only) | +0.036 | -0.031 to +0.098 | -0.019 | yes | 54 vs 39 | 0.146 | 420, 21 |
+| 258 KB + failure negatives vs 258 KB learner, round 2 | -0.069 | -0.150 to +0.012 | -0.138 | not shown | 53 vs 82 | 0.016 | 420, 21 |
 
 ## Pooled success, all tasks
 
@@ -65,6 +118,29 @@ Tasks where the prior's practice fails: 21 of 23; kept prior on 19, 67.
 | shared-prototype borrowing (not every task) | 105/280 | 0.375 (0.32-0.43) | 0.22-0.55 | 14 | 61.8 KB |
 | segment borrowing | 200/460 | 0.435 (0.39-0.48) | 0.31-0.56 | 23 | 16.3 KB |
 | practice-allocated (program, else LoRA) | 310/460 | 0.674 (0.63-0.72) | 0.56-0.78 | 23 | 97.4 MB |
+| borrowing + one shared fold | 186/460 | 0.404 (0.36-0.45) | 0.28-0.54 | 23 | 375.3 KB |
+| borrowing + the other half's fold | 147/460 | 0.320 (0.28-0.36) | 0.18-0.47 | 23 | 633.4 KB |
+| open-loop demo playback | 227/460 | 0.493 (0.45-0.54) | 0.38-0.61 | 23 | 49.4 KB |
+| VINN (nearest demo frame) | 207/460 | 0.450 (0.41-0.50) | 0.33-0.57 | 23 | 6.9 MB |
+| instruction retrieval | 40/460 | 0.087 (0.06-0.12) | 0.00-0.22 | 23 | 0.0 KB |
+| adapter retrieval (nearest task's LoRA) | 59/460 | 0.128 (0.10-0.16) | 0.02-0.27 | 23 | 0.0 KB |
+| compose, practise, consolidate | 293/460 | 0.637 (0.59-0.68) | 0.53-0.75 | 23 | 6.9 MB |
+| consolidated fold, no memory | 301/460 | 0.654 (0.61-0.70) | 0.53-0.77 | 23 | 5.1 MB |
+| memory, the demo's fold | 274/460 | 0.596 (0.55-0.64) | 0.48-0.71 | 23 | 7.2 MB |
+| LoRA on the demo + practice successes | 314/460 | 0.683 (0.64-0.72) | 0.57-0.79 | 23 | 392.9 MB |
+| DemoDiffusion (s* 0.2) | 76/460 | 0.165 (0.13-0.20) | 0.06-0.30 | 23 | 49.4 KB |
+| DemoDiffusion, state-aligned | 98/460 | 0.213 (0.18-0.25) | 0.10-0.36 | 23 | 106.2 KB |
+| equal-bytes adapter (258 KB, whole demo) | 224/460 | 0.487 (0.44-0.53) | 0.35-0.62 | 23 | 5.4 MB |
+| LoRA rank 64 | 307/460 | 0.667 (0.62-0.71) | 0.55-0.78 | 23 | 1571.7 MB |
+| full fine-tuning | 307/460 | 0.667 (0.62-0.71) | 0.55-0.78 | 23 | 33926.0 MB |
+| 258 KB learner, round 1 | 253/460 | 0.550 (0.50-0.59) | 0.42-0.68 | 23 | 5.4 MB |
+| LoRA, round 2 (success-only) | 321/460 | 0.698 (0.65-0.74) | 0.59-0.80 | 23 | 392.9 MB |
+| 258 KB learner, round 2 | 244/460 | 0.530 (0.48-0.58) | 0.41-0.66 | 23 | 5.4 MB |
+| LoRA, round 3 | 334/460 | 0.726 (0.68-0.76) | 0.62-0.83 | 23 | 392.9 MB |
+| 258 KB learner, round 3 | 238/460 | 0.517 (0.47-0.56) | 0.39-0.64 | 23 | 5.4 MB |
+| LoRA + failure negatives (balanced) | 342/460 | 0.743 (0.70-0.78) | 0.64-0.84 | 23 | 392.9 MB |
+| LoRA + failure negatives (pooled) | 336/460 | 0.730 (0.69-0.77) | 0.62-0.83 | 23 | 392.9 MB |
+| 258 KB + failure negatives | 215/460 | 0.467 (0.42-0.51) | 0.34-0.60 | 23 | 5.4 MB |
 
 | comparison | pooled difference | 95% interval | one-sided lower | non-inferior at the margin | discordant | sign test p | pairs, tasks |
 |---|---|---|---|---|---|---|---|
@@ -86,13 +162,111 @@ Tasks where the prior's practice fails: 21 of 23; kept prior on 19, 67.
 | borrowing + 258 KB fold vs borrowing, every frame | +0.185 | +0.085 to +0.289 | +0.100 | yes | 113 vs 28 | 0.000 | 460, 23 |
 | practice-allocated (program, else LoRA) vs few-shot LoRA (rank 16) | +0.039 | -0.050 to +0.128 | -0.037 | yes | 65 vs 47 | 0.108 | 460, 23 |
 | practice-allocated (program, else LoRA) vs borrowing + 258 KB fold | +0.037 | -0.004 to +0.091 | +0.000 | yes | 26 vs 9 | 0.006 | 460, 23 |
+| borrowing + one shared fold vs borrowing + 258 KB fold | -0.233 | -0.335 to -0.128 | -0.320 | not shown | 26 vs 133 | 0.000 | 460, 23 |
+| borrowing + the other half's fold vs borrowing + 258 KB fold | -0.317 | -0.433 to -0.200 | -0.415 | not shown | 17 vs 163 | 0.000 | 460, 23 |
+| borrowing + one shared fold vs few-shot LoRA (rank 16) | -0.230 | -0.350 to -0.109 | -0.330 | not shown | 32 vs 138 | 0.000 | 460, 23 |
+| borrowing + the other half's fold vs few-shot LoRA (rank 16) | -0.315 | -0.457 to -0.167 | -0.435 | not shown | 34 vs 179 | 0.000 | 460, 23 |
+| borrowing + the other half's fold vs borrowing, every frame | -0.133 | -0.254 to -0.009 | -0.237 | not shown | 48 vs 109 | 0.000 | 460, 23 |
+| borrowing + 258 KB fold vs open-loop demo playback | +0.143 | +0.039 to +0.254 | +0.054 | yes | 104 vs 38 | 0.000 | 460, 23 |
+| borrowing + 258 KB fold vs VINN (nearest demo frame) | +0.187 | +0.046 to +0.324 | +0.067 | yes | 135 vs 49 | 0.000 | 460, 23 |
+| borrowing + 258 KB fold vs instruction retrieval | +0.550 | +0.417 to +0.680 | +0.437 | yes | 253 vs 0 | 0.000 | 460, 23 |
+| borrowing + 258 KB fold vs adapter retrieval (nearest task's LoRA) | +0.509 | +0.367 to +0.643 | +0.389 | yes | 238 vs 4 | 0.000 | 460, 23 |
+| demo replay vs open-loop demo playback | -0.035 | -0.096 to +0.026 | -0.085 | yes | 34 vs 50 | 0.101 | 460, 23 |
+| compose, practise, consolidate vs borrowing + 258 KB fold | +0.000 | -0.059 to +0.061 | -0.048 | yes | 55 vs 55 | 1.000 | 460, 23 |
+| compose, practise, consolidate vs LoRA on the demo + practice successes | -0.046 | -0.130 to +0.039 | -0.117 | not shown | 50 vs 71 | 0.069 | 460, 23 |
+| compose, practise, consolidate vs few-shot LoRA (rank 16) | +0.002 | -0.091 to +0.093 | -0.076 | yes | 70 vs 69 | 1.000 | 460, 23 |
+| consolidated fold, no memory vs borrowing + 258 KB fold | +0.017 | -0.033 to +0.067 | -0.026 | yes | 45 vs 37 | 0.440 | 460, 23 |
+| memory, the demo's fold vs borrowing + 258 KB fold | -0.041 | -0.100 to +0.017 | -0.091 | yes | 47 vs 66 | 0.090 | 460, 23 |
+| LoRA on the demo + practice successes vs few-shot LoRA (rank 16) | +0.048 | -0.035 to +0.137 | -0.024 | yes | 78 vs 56 | 0.069 | 460, 23 |
+| borrowing + 258 KB fold vs DemoDiffusion (s* 0.2) | +0.472 | +0.333 to +0.607 | +0.354 | yes | 229 vs 12 | 0.000 | 460, 23 |
+| borrowing + 258 KB fold vs DemoDiffusion, state-aligned | +0.424 | +0.298 to +0.548 | +0.317 | yes | 210 vs 15 | 0.000 | 460, 23 |
+| segment borrowing vs DemoDiffusion (s* 0.2) | +0.270 | +0.150 to +0.387 | +0.167 | yes | 140 vs 16 | 0.000 | 460, 23 |
+| borrowing + 258 KB fold vs equal-bytes adapter (258 KB, whole demo) | +0.150 | +0.059 to +0.248 | +0.074 | yes | 114 vs 45 | 0.000 | 460, 23 |
+| borrowing + 258 KB fold vs LoRA rank 64 | -0.030 | -0.128 to +0.063 | -0.111 | not shown | 55 vs 69 | 0.243 | 460, 23 |
+| borrowing + 258 KB fold vs full fine-tuning | -0.030 | -0.120 to +0.057 | -0.104 | not shown | 52 vs 66 | 0.231 | 460, 23 |
+| LoRA, round 2 (success-only) vs LoRA on the demo + practice successes | +0.015 | -0.048 to +0.083 | -0.039 | yes | 49 vs 42 | 0.530 | 460, 23 |
+| LoRA, round 3 vs LoRA on the demo + practice successes | +0.043 | -0.009 to +0.100 | -0.002 | yes | 51 vs 31 | 0.035 | 460, 23 |
+| LoRA, round 3 vs few-shot LoRA (rank 16) | +0.091 | +0.004 to +0.180 | +0.020 | yes | 88 vs 46 | 0.000 | 460, 23 |
+| 258 KB learner, round 3 vs LoRA, round 3 | -0.209 | -0.326 to -0.093 | -0.307 | not shown | 38 vs 134 | 0.000 | 460, 23 |
+| 258 KB learner, round 1 vs LoRA on the demo + practice successes | -0.133 | -0.241 to -0.028 | -0.224 | not shown | 43 vs 104 | 0.000 | 460, 23 |
+| LoRA + failure negatives (balanced) vs LoRA, round 2 (success-only) | +0.046 | -0.020 to +0.113 | -0.009 | yes | 56 vs 35 | 0.035 | 460, 23 |
+| LoRA + failure negatives (pooled) vs LoRA, round 2 (success-only) | +0.033 | -0.028 to +0.089 | -0.017 | yes | 54 vs 39 | 0.146 | 460, 23 |
+| 258 KB + failure negatives vs 258 KB learner, round 2 | -0.063 | -0.139 to +0.011 | -0.126 | not shown | 53 vs 82 | 0.016 | 460, 23 |
 
 ## Reliability
 
 - Test-retest: the same (task, arm) on two disjoint init-state sets (10-29 and 30-49) over 22 cells: Pearson r = 0.958, mean absolute difference 0.073.
-- A second demonstration (IPEC episode 1) on tasks 35, 36, 39, 42, same init states: replay 32/80 with demo 0, 58/80 with demo 1; borrowing (+ fold where it grasps) 34/80 with demo 0, 63/80 with demo 1; few-shot LoRA 34/80 with demo 0, 53/80 with demo 1; segment borrowing 33/80 with demo 0, 59/80 with demo 1.
+- A second demonstration (IPEC episode 1) on tasks 1, 3, 4, 5, 6, 32, 34, 35, 36, 37, 39, 40, 41, 42, 43, 48, 52, 53, 58, 62, 63, same init states: replay 171/420 with demo 0, 251/420 with demo 1; borrowing (+ fold where it grasps) 253/420 with demo 0, 261/420 with demo 1; few-shot LoRA 252/420 with demo 0, 298/420 with demo 1; segment borrowing 33/80 with demo 0, 59/80 with demo 1.
 - Forced execution (M2 validation iv, run retroactively; `ledger/r12_forced`): the 20 most-shared t = 0.4 prototypes executed open-loop in 5 scenes x 2 init states; the 16 that command at least 1.5 cm realise a median fraction 1.05 of the commanded displacement, cosine 0.998.  Kill (< 0.5): not triggered.
 - EXPLORATORY (not pre-registered): the library's novelty read (fraction of the demo's frames it leaves unexplained) against success over 21 tasks: borrowing + fold Spearman +0.01 (permutation p 0.986), LoRA +0.08 (p 0.736), their difference -0.19 (p 0.418).
+
+## A second demonstration (pre-registered: ledger m3_prereg tag demo1)
+
+Every arm rebuilt from IPEC episode 1 of each task's text, same init states 30-49, 21 tasks. Borrowing + fold uses the fold of that demo (borrowing alone where it does not grasp).
+
+| arm | successes |
+|---|---|
+| borrowing + fold, demo 1 | 261/420 (0.621) |
+| LoRA, demo 1 | 298/420 (0.710) |
+| replay, demo 1 | 251/420 (0.598) |
+| borrowing + fold, both demos | 514/840 (0.612) |
+| LoRA, both demos | 550/840 (0.655) |
+| replay, both demos | 422/840 (0.502) |
+
+| comparison | difference | 95% interval | one-sided lower | non-inferior at -0.10 | sign test p |
+|---|---|---|---|---|---|
+| ours_d1-lora_d1 | -0.088 | -0.219 to +0.040 | -0.198 | no | 0.002 |
+| ours_d1-replay_d1 | +0.024 | -0.102 to +0.145 | -0.081 | yes | 0.430 |
+| ours_both-lora_both | -0.043 | -0.132 to +0.044 | -0.118 | no | 0.037 |
+| ours_both-replay_both | +0.110 | +0.017 to +0.206 | +0.031 | yes | 0.000 |
+
+RETRACTION: non-inferiority of borrowing + fold to the per-task LoRA holds with the first demo only; with the second demo the LoRA is better, and over both demos pooled it is not shown.
+
+## Redo on the practice instances (pre-registered: ledger m3_prereg tag learn_from_practice; ledger m5_learn_stats)
+
+Reruns with the practice's own noise seed replay the practice episode (the simulator and the sampler are deterministic); the controls are fresh-noise retries (policy seeds 1 and 2).
+
+**instances the first composition solved**
+
+| arm | successes |
+|---|---|
+| same_noise | 252/256 (0.984) |
+| retry1 | 212/256 (0.828) |
+| retry2 | 225/256 (0.879) |
+| learned | 209/256 (0.816) |
+| learned_mem0 | 211/256 (0.824) |
+| lora_learn | 211/256 (0.824) |
+
+| comparison | difference | 95% interval | sign test p |
+|---|---|---|---|
+| learned-retry1 | -0.012 | -0.102 to +0.076 | 0.7948 |
+| learned-retry2 | -0.062 | -0.180 to +0.049 | 0.0640 |
+| learned_mem0-retry1 | -0.004 | -0.119 to +0.095 | 1.0000 |
+| learned_mem0-retry2 | -0.055 | -0.178 to +0.054 | 0.0869 |
+| lora_learn-retry1 | -0.004 | -0.107 to +0.096 | 1.0000 |
+| lora_learn-retry2 | -0.055 | -0.156 to +0.040 | 0.0759 |
+| retry2-retry1 | +0.051 | -0.014 to +0.126 | 0.0351 |
+
+**instances the first composition failed**
+
+| arm | successes |
+|---|---|
+| same_noise | 3/164 (0.018) |
+| retry1 | 36/164 (0.220) |
+| retry2 | 26/164 (0.159) |
+| learned | 52/164 (0.317) |
+| learned_mem0 | 42/164 (0.256) |
+| lora_learn | 69/164 (0.421) |
+
+| comparison | difference | 95% interval | sign test p |
+|---|---|---|---|
+| learned-retry1 | +0.098 | -0.032 to +0.233 | 0.0440 |
+| learned-retry2 | +0.159 | +0.044 to +0.280 | 0.0002 |
+| learned_mem0-retry1 | +0.037 | -0.098 to +0.184 | 0.4514 |
+| learned_mem0-retry2 | +0.098 | -0.007 to +0.224 | 0.0113 |
+| lora_learn-retry1 | +0.201 | +0.079 to +0.342 | 0.0000 |
+| lora_learn-retry2 | +0.262 | +0.144 to +0.402 | 0.0000 |
+| retry2-retry1 | -0.061 | -0.160 to +0.019 | 0.0414 |
 
 ## What composition borrows
 

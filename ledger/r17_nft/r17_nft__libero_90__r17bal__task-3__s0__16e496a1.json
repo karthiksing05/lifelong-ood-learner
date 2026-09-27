@@ -1,0 +1,124 @@
+{
+ "artifacts": [
+  "results/robot/r17bal_3_lora.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 18710528,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 18710528,
+  "tree": 0
+ },
+ "command": "experiments/r17_nft.py --task 3 --name r17bal",
+ "config": {
+  "lora_stride": 5,
+  "max_pos": 1000,
+  "name": "r17bal",
+  "neg_batch": 8,
+  "pooled": false,
+  "practice": "m5_practice+m6_round1",
+  "rank": 16,
+  "scope": "expert",
+  "seed": 0,
+  "steps": 1000,
+  "task": 3,
+  "window": 2
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "brainiac.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3965408",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r17_nft",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "16e496a108b9070b2291257b79f825ace7fcbf5a",
+  "short": "16e496a1"
+ },
+ "keys": {
+  "task": 3
+ },
+ "metrics": {
+  "curve": {
+   "loss": [
+    0.07040466368198395,
+    0.028200605884194374,
+    0.011616483330726624,
+    0.010557947680354118,
+    0.018618958070874214,
+    0.009173639118671417,
+    0.012775401584804058,
+    0.006597086787223816,
+    0.01023469865322113,
+    0.019778069108724594,
+    0.008649689145386219
+   ],
+   "neg": [
+    0.0854121670126915,
+    0.040417373180389404,
+    0.00920931901782751,
+    0.0037003536708652973,
+    0.012394784949719906,
+    0.00286028441041708,
+    0.0017426757840439677,
+    0.001507293083705008,
+    0.0011450976599007845,
+    0.003512538271024823,
+    0.01229029893875122
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "failed": 2,
+  "negatives": 4,
+  "positives": 1000,
+  "rollouts": 50,
+  "stalls": [
+   {
+    "demo_frames": 183,
+    "queries": 80,
+    "stall_frame": 182,
+    "stall_query": 40,
+    "trial": 7
+   },
+   {
+    "demo_frames": 183,
+    "queries": 80,
+    "stall_frame": 79,
+    "stall_query": 66,
+    "trial": 17
+   }
+  ],
+  "task": 3,
+  "text": "put the butter at the back in the top drawer of the cabinet and close it"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r17_nft__libero_90__r17bal__task-3__s0__16e496a1",
+ "schema": 1,
+ "script": "experiments/r17_nft.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-27T07:18:24+00:00",
+ "stream": null,
+ "tag": "r17bal"
+}

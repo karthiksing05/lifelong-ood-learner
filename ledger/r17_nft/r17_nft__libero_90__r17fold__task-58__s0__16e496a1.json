@@ -1,0 +1,229 @@
+{
+ "artifacts": [
+  "results/robot/r17fold_58_lora.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 258048,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 258048,
+  "tree": 0
+ },
+ "command": "experiments/r17_nft.py --task 58 --name r17fold --rank 2 --scope last2",
+ "config": {
+  "lora_stride": 5,
+  "max_pos": 1000,
+  "name": "r17fold",
+  "neg_batch": 8,
+  "pooled": false,
+  "practice": "m5_practice+m6_round1",
+  "rank": 2,
+  "scope": "last2",
+  "seed": 0,
+  "steps": 1000,
+  "task": 58,
+  "window": 2
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "brainiac.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3965471",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r17_nft",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "16e496a108b9070b2291257b79f825ace7fcbf5a",
+  "short": "16e496a1"
+ },
+ "keys": {
+  "task": 58
+ },
+ "metrics": {
+  "curve": {
+   "loss": [
+    0.05932966247200966,
+    0.05272072181105614,
+    0.030815364792943,
+    0.03938223794102669,
+    0.04735700413584709,
+    0.018642501905560493,
+    0.02591506764292717,
+    0.022342992946505547,
+    0.022838808596134186,
+    0.028156548738479614,
+    0.025561504065990448
+   ],
+   "neg": [
+    0.036918047815561295,
+    0.06481625139713287,
+    0.10046400874853134,
+    0.04902466759085655,
+    0.10162675380706787,
+    0.056236233562231064,
+    0.09170057624578476,
+    0.07244390994310379,
+    0.023393047973513603,
+    0.040575284510850906,
+    0.07950688898563385
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "failed": 17,
+  "negatives": 34,
+  "positives": 1000,
+  "rollouts": 50,
+  "stalls": [
+   {
+    "demo_frames": 143,
+    "queries": 80,
+    "stall_frame": 142,
+    "stall_query": 35,
+    "trial": 11
+   },
+   {
+    "demo_frames": 143,
+    "queries": 80,
+    "stall_frame": 110,
+    "stall_query": 23,
+    "trial": 13
+   },
+   {
+    "demo_frames": 143,
+    "queries": 80,
+    "stall_frame": 142,
+    "stall_query": 37,
+    "trial": 15
+   },
+   {
+    "demo_frames": 143,
+    "queries": 80,
+    "stall_frame": 142,
+    "stall_query": 46,
+    "trial": 3
+   },
+   {
+    "demo_frames": 143,
+    "queries": 80,
+    "stall_frame": 142,
+    "stall_query": 37,
+    "trial": 5
+   },
+   {
+    "demo_frames": 143,
+    "queries": 80,
+    "stall_frame": 109,
+    "stall_query": 21,
+    "trial": 7
+   },
+   {
+    "demo_frames": 143,
+    "queries": 80,
+    "stall_frame": 112,
+    "stall_query": 24,
+    "trial": 8
+   },
+   {
+    "demo_frames": 143,
+    "queries": 80,
+    "stall_frame": 112,
+    "stall_query": 26,
+    "trial": 9
+   },
+   {
+    "demo_frames": 143,
+    "queries": 80,
+    "stall_frame": 96,
+    "stall_query": 79,
+    "trial": 13
+   },
+   {
+    "demo_frames": 143,
+    "queries": 80,
+    "stall_frame": 90,
+    "stall_query": 28,
+    "trial": 14
+   },
+   {
+    "demo_frames": 143,
+    "queries": 80,
+    "stall_frame": 82,
+    "stall_query": 32,
+    "trial": 17
+   },
+   {
+    "demo_frames": 143,
+    "queries": 80,
+    "stall_frame": 142,
+    "stall_query": 40,
+    "trial": 20
+   },
+   {
+    "demo_frames": 143,
+    "queries": 80,
+    "stall_frame": 111,
+    "stall_query": 78,
+    "trial": 27
+   },
+   {
+    "demo_frames": 143,
+    "queries": 80,
+    "stall_frame": 111,
+    "stall_query": 74,
+    "trial": 28
+   },
+   {
+    "demo_frames": 143,
+    "queries": 80,
+    "stall_frame": 80,
+    "stall_query": 38,
+    "trial": 3
+   },
+   {
+    "demo_frames": 143,
+    "queries": 80,
+    "stall_frame": 142,
+    "stall_query": 52,
+    "trial": 4
+   },
+   {
+    "demo_frames": 143,
+    "queries": 80,
+    "stall_frame": 101,
+    "stall_query": 79,
+    "trial": 5
+   }
+  ],
+  "task": 58,
+  "text": "pick up the ketchup and put it in the tray"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r17_nft__libero_90__r17fold__task-58__s0__16e496a1",
+ "schema": 1,
+ "script": "experiments/r17_nft.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-27T08:34:36+00:00",
+ "stream": null,
+ "tag": "r17fold"
+}

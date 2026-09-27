@@ -1,0 +1,229 @@
+{
+ "artifacts": [
+  "results/robot/r17pool_58_lora.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 18710528,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 18710528,
+  "tree": 0
+ },
+ "command": "experiments/r17_nft.py --task 58 --name r17pool --pooled",
+ "config": {
+  "lora_stride": 5,
+  "max_pos": 1000,
+  "name": "r17pool",
+  "neg_batch": 8,
+  "pooled": true,
+  "practice": "m5_practice+m6_round1",
+  "rank": 16,
+  "scope": "expert",
+  "seed": 0,
+  "steps": 1000,
+  "task": 58,
+  "window": 2
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "brainiac.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3965443",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r17_nft",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "16e496a108b9070b2291257b79f825ace7fcbf5a",
+  "short": "16e496a1"
+ },
+ "keys": {
+  "task": 58
+ },
+ "metrics": {
+  "curve": {
+   "loss": [
+    0.058334458619356155,
+    0.0142078697681427,
+    0.01584746316075325,
+    0.00380150880664587,
+    0.009186089970171452,
+    0.0037670661695301533,
+    0.012774995528161526,
+    0.007828364148736,
+    0.011265208013355732,
+    0.012838074937462807,
+    0.005880467593669891
+   ],
+   "neg": [
+    0.012622115202248096,
+    0.0,
+    0.07764147222042084,
+    0.11890938133001328,
+    0.2194966822862625,
+    0.0,
+    0.13460908830165863,
+    0.0,
+    0.014200671575963497,
+    0.0,
+    0.0
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "failed": 17,
+  "negatives": 34,
+  "positives": 1000,
+  "rollouts": 50,
+  "stalls": [
+   {
+    "demo_frames": 143,
+    "queries": 80,
+    "stall_frame": 142,
+    "stall_query": 35,
+    "trial": 11
+   },
+   {
+    "demo_frames": 143,
+    "queries": 80,
+    "stall_frame": 110,
+    "stall_query": 23,
+    "trial": 13
+   },
+   {
+    "demo_frames": 143,
+    "queries": 80,
+    "stall_frame": 142,
+    "stall_query": 37,
+    "trial": 15
+   },
+   {
+    "demo_frames": 143,
+    "queries": 80,
+    "stall_frame": 142,
+    "stall_query": 46,
+    "trial": 3
+   },
+   {
+    "demo_frames": 143,
+    "queries": 80,
+    "stall_frame": 142,
+    "stall_query": 37,
+    "trial": 5
+   },
+   {
+    "demo_frames": 143,
+    "queries": 80,
+    "stall_frame": 109,
+    "stall_query": 21,
+    "trial": 7
+   },
+   {
+    "demo_frames": 143,
+    "queries": 80,
+    "stall_frame": 112,
+    "stall_query": 24,
+    "trial": 8
+   },
+   {
+    "demo_frames": 143,
+    "queries": 80,
+    "stall_frame": 112,
+    "stall_query": 26,
+    "trial": 9
+   },
+   {
+    "demo_frames": 143,
+    "queries": 80,
+    "stall_frame": 96,
+    "stall_query": 79,
+    "trial": 13
+   },
+   {
+    "demo_frames": 143,
+    "queries": 80,
+    "stall_frame": 90,
+    "stall_query": 28,
+    "trial": 14
+   },
+   {
+    "demo_frames": 143,
+    "queries": 80,
+    "stall_frame": 82,
+    "stall_query": 32,
+    "trial": 17
+   },
+   {
+    "demo_frames": 143,
+    "queries": 80,
+    "stall_frame": 142,
+    "stall_query": 40,
+    "trial": 20
+   },
+   {
+    "demo_frames": 143,
+    "queries": 80,
+    "stall_frame": 111,
+    "stall_query": 78,
+    "trial": 27
+   },
+   {
+    "demo_frames": 143,
+    "queries": 80,
+    "stall_frame": 111,
+    "stall_query": 74,
+    "trial": 28
+   },
+   {
+    "demo_frames": 143,
+    "queries": 80,
+    "stall_frame": 80,
+    "stall_query": 38,
+    "trial": 3
+   },
+   {
+    "demo_frames": 143,
+    "queries": 80,
+    "stall_frame": 142,
+    "stall_query": 52,
+    "trial": 4
+   },
+   {
+    "demo_frames": 143,
+    "queries": 80,
+    "stall_frame": 101,
+    "stall_query": 79,
+    "trial": 5
+   }
+  ],
+  "task": 58,
+  "text": "pick up the ketchup and put it in the tray"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r17_nft__libero_90__r17pool__task-58__s0__16e496a1",
+ "schema": 1,
+ "script": "experiments/r17_nft.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-27T08:09:42+00:00",
+ "stream": null,
+ "tag": "r17pool"
+}

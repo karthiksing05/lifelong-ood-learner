@@ -1,0 +1,397 @@
+{
+ "artifacts": [
+  "results/robot/r17bal_32_lora.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 18710528,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 18710528,
+  "tree": 0
+ },
+ "command": "experiments/r17_nft.py --task 32 --name r17bal",
+ "config": {
+  "lora_stride": 5,
+  "max_pos": 1000,
+  "name": "r17bal",
+  "neg_batch": 8,
+  "pooled": false,
+  "practice": "m5_practice+m6_round1",
+  "rank": 16,
+  "scope": "expert",
+  "seed": 0,
+  "steps": 1000,
+  "task": 32,
+  "window": 2
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "brainiac.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3965411",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r17_nft",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "16e496a108b9070b2291257b79f825ace7fcbf5a",
+  "short": "16e496a1"
+ },
+ "keys": {
+  "task": 32
+ },
+ "metrics": {
+  "curve": {
+   "loss": [
+    0.12376005947589874,
+    0.027674052864313126,
+    0.02645799145102501,
+    0.01735200546681881,
+    0.016741275787353516,
+    0.028056690469384193,
+    0.007640432566404343,
+    0.009692437015473843,
+    0.021478205919265747,
+    0.020074568688869476,
+    0.008729664608836174
+   ],
+   "neg": [
+    0.055734314024448395,
+    0.037265993654727936,
+    0.03094458021223545,
+    0.047520022839307785,
+    0.11953135579824448,
+    0.049952901899814606,
+    0.035701435059309006,
+    0.028969157487154007,
+    0.010316289030015469,
+    0.01954878307878971,
+    0.02262951247394085
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "failed": 41,
+  "negatives": 82,
+  "positives": 626,
+  "rollouts": 50,
+  "stalls": [
+   {
+    "demo_frames": 200,
+    "queries": 80,
+    "stall_frame": 90,
+    "stall_query": 60,
+    "trial": 0
+   },
+   {
+    "demo_frames": 200,
+    "queries": 80,
+    "stall_frame": 97,
+    "stall_query": 58,
+    "trial": 1
+   },
+   {
+    "demo_frames": 200,
+    "queries": 80,
+    "stall_frame": 90,
+    "stall_query": 60,
+    "trial": 10
+   },
+   {
+    "demo_frames": 200,
+    "queries": 80,
+    "stall_frame": 92,
+    "stall_query": 66,
+    "trial": 11
+   },
+   {
+    "demo_frames": 200,
+    "queries": 80,
+    "stall_frame": 92,
+    "stall_query": 57,
+    "trial": 12
+   },
+   {
+    "demo_frames": 200,
+    "queries": 80,
+    "stall_frame": 197,
+    "stall_query": 71,
+    "trial": 13
+   },
+   {
+    "demo_frames": 200,
+    "queries": 80,
+    "stall_frame": 88,
+    "stall_query": 64,
+    "trial": 14
+   },
+   {
+    "demo_frames": 200,
+    "queries": 80,
+    "stall_frame": 199,
+    "stall_query": 64,
+    "trial": 16
+   },
+   {
+    "demo_frames": 200,
+    "queries": 80,
+    "stall_frame": 88,
+    "stall_query": 61,
+    "trial": 17
+   },
+   {
+    "demo_frames": 200,
+    "queries": 80,
+    "stall_frame": 198,
+    "stall_query": 65,
+    "trial": 2
+   },
+   {
+    "demo_frames": 200,
+    "queries": 80,
+    "stall_frame": 199,
+    "stall_query": 60,
+    "trial": 3
+   },
+   {
+    "demo_frames": 200,
+    "queries": 80,
+    "stall_frame": 91,
+    "stall_query": 76,
+    "trial": 4
+   },
+   {
+    "demo_frames": 200,
+    "queries": 80,
+    "stall_frame": 88,
+    "stall_query": 72,
+    "trial": 5
+   },
+   {
+    "demo_frames": 200,
+    "queries": 80,
+    "stall_frame": 88,
+    "stall_query": 59,
+    "trial": 6
+   },
+   {
+    "demo_frames": 200,
+    "queries": 80,
+    "stall_frame": 191,
+    "stall_query": 70,
+    "trial": 7
+   },
+   {
+    "demo_frames": 200,
+    "queries": 80,
+    "stall_frame": 190,
+    "stall_query": 76,
+    "trial": 8
+   },
+   {
+    "demo_frames": 200,
+    "queries": 80,
+    "stall_frame": 92,
+    "stall_query": 79,
+    "trial": 0
+   },
+   {
+    "demo_frames": 200,
+    "queries": 80,
+    "stall_frame": 121,
+    "stall_query": 59,
+    "trial": 1
+   },
+   {
+    "demo_frames": 200,
+    "queries": 80,
+    "stall_frame": 93,
+    "stall_query": 34,
+    "trial": 10
+   },
+   {
+    "demo_frames": 200,
+    "queries": 80,
+    "stall_frame": 97,
+    "stall_query": 30,
+    "trial": 11
+   },
+   {
+    "demo_frames": 200,
+    "queries": 80,
+    "stall_frame": 93,
+    "stall_query": 69,
+    "trial": 12
+   },
+   {
+    "demo_frames": 200,
+    "queries": 80,
+    "stall_frame": 128,
+    "stall_query": 70,
+    "trial": 13
+   },
+   {
+    "demo_frames": 200,
+    "queries": 80,
+    "stall_frame": 128,
+    "stall_query": 79,
+    "trial": 14
+   },
+   {
+    "demo_frames": 200,
+    "queries": 80,
+    "stall_frame": 90,
+    "stall_query": 42,
+    "trial": 16
+   },
+   {
+    "demo_frames": 200,
+    "queries": 80,
+    "stall_frame": 110,
+    "stall_query": 79,
+    "trial": 17
+   },
+   {
+    "demo_frames": 200,
+    "queries": 80,
+    "stall_frame": 161,
+    "stall_query": 56,
+    "trial": 2
+   },
+   {
+    "demo_frames": 200,
+    "queries": 80,
+    "stall_frame": 185,
+    "stall_query": 78,
+    "trial": 20
+   },
+   {
+    "demo_frames": 200,
+    "queries": 80,
+    "stall_frame": 92,
+    "stall_query": 40,
+    "trial": 21
+   },
+   {
+    "demo_frames": 200,
+    "queries": 80,
+    "stall_frame": 123,
+    "stall_query": 79,
+    "trial": 23
+   },
+   {
+    "demo_frames": 200,
+    "queries": 80,
+    "stall_frame": 97,
+    "stall_query": 73,
+    "trial": 24
+   },
+   {
+    "demo_frames": 200,
+    "queries": 80,
+    "stall_frame": 133,
+    "stall_query": 79,
+    "trial": 25
+   },
+   {
+    "demo_frames": 200,
+    "queries": 80,
+    "stall_frame": 92,
+    "stall_query": 44,
+    "trial": 26
+   },
+   {
+    "demo_frames": 200,
+    "queries": 80,
+    "stall_frame": 92,
+    "stall_query": 28,
+    "trial": 27
+   },
+   {
+    "demo_frames": 200,
+    "queries": 80,
+    "stall_frame": 190,
+    "stall_query": 79,
+    "trial": 28
+   },
+   {
+    "demo_frames": 200,
+    "queries": 80,
+    "stall_frame": 92,
+    "stall_query": 65,
+    "trial": 29
+   },
+   {
+    "demo_frames": 200,
+    "queries": 80,
+    "stall_frame": 133,
+    "stall_query": 73,
+    "trial": 3
+   },
+   {
+    "demo_frames": 200,
+    "queries": 80,
+    "stall_frame": 87,
+    "stall_query": 75,
+    "trial": 4
+   },
+   {
+    "demo_frames": 200,
+    "queries": 80,
+    "stall_frame": 92,
+    "stall_query": 66,
+    "trial": 5
+   },
+   {
+    "demo_frames": 200,
+    "queries": 80,
+    "stall_frame": 191,
+    "stall_query": 78,
+    "trial": 7
+   },
+   {
+    "demo_frames": 200,
+    "queries": 80,
+    "stall_frame": 90,
+    "stall_query": 46,
+    "trial": 8
+   },
+   {
+    "demo_frames": 200,
+    "queries": 80,
+    "stall_frame": 102,
+    "stall_query": 69,
+    "trial": 9
+   }
+  ],
+  "task": 32,
+  "text": "put the ketchup in the top drawer of the cabinet"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r17_nft__libero_90__r17bal__task-32__s0__16e496a1",
+ "schema": 1,
+ "script": "experiments/r17_nft.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-27T07:22:24+00:00",
+ "stream": null,
+ "tag": "r17bal"
+}
