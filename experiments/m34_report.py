@@ -46,6 +46,8 @@ def arm_bytes(t, arm):
     from lifelong_ood.policy.compose import DemoProgram
     if arm == "zeroshot":
         return 0
+    if arm.startswith(("lora_r16", "lora_r17")):                         # the loop's learners and experiment 1's adapters
+        return adapter_bytes(t, arm[5:])
     if arm == "lora":
         r = [x for x in ledger.load("r3_fewshot") if str(x["metrics"]["task"]) == str(t) and not x.get("tag")]
         return int(r[-1]["bytes"]["experts"]) if r else 0
@@ -87,6 +89,15 @@ XFIT_B = {3, 4, 5, 32, 41, 43, 48, 58, 63}
 def fewshot_bytes(t, tag):
     r = [x for x in ledger.load("r3_fewshot") if str(x["metrics"]["task"]) == str(t) and x.get("tag") == tag]
     return int(r[-1]["bytes"]["experts"]) if r else 0
+
+
+def adapter_bytes(t, name):
+    """A named per-task adapter's fp16 bytes, from its training row (r15_consolidate --lora --name, or r17_nft)."""
+    for exp, tag in (("r15_consolidate", f"_lora_{name}"), ("r17_nft", name)):
+        r = [x for x in ledger.load(exp) if x.get("tag") == tag and str(x["metrics"]["task"]) == str(t)]
+        if r:
+            return int(r[-1]["bytes"]["experts"])
+    return 0
 
 
 def r15_row(t, tag=""):
