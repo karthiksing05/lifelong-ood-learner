@@ -1,0 +1,50 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "second amendment of the stall-point branching pre-registration",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky2.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "783c313788e88491f60bbfc9b47eb3507f23cb4b",
+  "short": "783c3137"
+ },
+ "keys": {},
+ "metrics": {
+  "amends": "m3_prereg tags branch and branch_amend1",
+  "change": "each branch re-seeds and performs as many resets as preceded its recorded episode (practice sessions ran init states 0-19 in order: `trial` resets) before its own reset + set_init_state; the prefix still executes the recorded actions (exact given the simulator; independent of any residual server nondeterminism, e.g. m5_redo same_noise replayed 408 of 420 episodes)",
+  "consequence_for_earlier_results": "none for paired reads: every arm of a comparison ran the same init states in the same order from the same first state, so each episode saw the same reset history; LIBERO outcomes depend on the session position, which the init state does not fix",
+  "correction": "branch_amend1's reason is WITHDRAWN as unestablished: it blamed the policy server. The smoke test's chunk differences at query 12-13 follow a SIMULATOR divergence -- the agentview image differs from step 60 on (the objects, not the 8-d robot state), so the server received different inputs. r18_sim_check.py (jobs 3966239, 3966240): replaying the recorded actions of task 58 state 3 as the 1st-6th episode of one env session reproduces only the 4th (the recorded session position); re-seeding (np.random.seed, env.seed) and repeating the recorded session's resets before the episode reproduces all 6 bit-identically. The latent state: MuJoCo's solver warm-start (qacc_warmstart; ~1e-12 differences after set_init_state) is not in LIBERO's init state and depends on the random placement drawn by the preceding reset",
+  "unchanged": "everything else in branch and branch_amend1 (arms incl. late replay, gates, D1-D3, rule, recovery arm)",
+  "written_before": "any r18 branch rollout of the read (smoke tests excluded)"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_90__branch_amend2__s0__783c3137",
+ "schema": 1,
+ "script": "(inline, session 2026-09-27)",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-27T16:02:34+00:00",
+ "stream": null,
+ "tag": "branch_amend2"
+}

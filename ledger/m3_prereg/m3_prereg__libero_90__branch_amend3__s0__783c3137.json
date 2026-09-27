@@ -1,0 +1,53 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "third amendment of the stall-point branching pre-registration",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky2.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "783c313788e88491f60bbfc9b47eb3507f23cb4b",
+  "short": "783c3137"
+ },
+ "keys": {},
+ "metrics": {
+  "amends": "m3_prereg tags branch, branch_amend1, branch_amend2",
+  "change": {
+   "D2": "the knobs are wx0.5, wx2, leaf2, release, nofold, foldall; each vs late replay (primary) and vs late noise1 (secondary); p-values Holm-adjusted over the six knobs, and the decision rule's 'a knob beats the control' uses Holm p < 0.05",
+   "arms": "late arms on tasks whose composition has a fold (all but tasks 35 and 6) gain nofold (the program guides the fold windows too) and foldall (the fold expert everywhere, no guide): 1,586 branch episodes",
+   "descriptive": "per arm, the number of branches whose actions changed from the branch point on (an inactive knob is reported as such); groups any_late / any_late_knob take the maximum over the arms each instance ran"
+  },
+  "reason": "smoke test 3 (job 3966245, excluded from reads): with the reset count reproduced, the full replay and the late recorded-noise continuation reproduce the recording bit-identically (the server is deterministic here), noise1 and release diverge exactly at the branch point, and wx0.5 / leaf2 change nothing on task 58 state 3 because every post-branch query falls in a fold window (the fold expert acts, the guide is off). Over the 123 instances the post-branch queries are all in fold windows for 54, all guided for 53, mixed for 16 (the recorded pointer against the fold masks)",
+  "unchanged": "instances, stall locator, branch points, rescue definition, gates G1-G2, D1, D3, the rest of the rule, the recovery arm and R1/R2",
+  "written_before": "any r18 branch rollout of the read (smoke tests excluded)"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_90__branch_amend3__s0__783c3137",
+ "schema": 1,
+ "script": "(inline, session 2026-09-27)",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-27T16:11:15+00:00",
+ "stream": null,
+ "tag": "branch_amend3"
+}

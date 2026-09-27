@@ -87,6 +87,8 @@ def main():
                              use_prompt=how in ("prompt", "prompt+guide"), stall=int(kv.get("stall", 0)),
                              key_mode=kv.get("key", "pos"), agree=float(kv["agree"]) if kv.get("agree") else None,
                              contact=int(kv.get("contact", 0)), arm_only=kv.get("arm", "0") == "1")
+        if kv.get("alt"):                          # the next-ranked leaves, executed only by a "leaf2" branch (r18_branch.py)
+            hooks.alt = DemoProgram.load(kv["alt"])
         logging.info(f"program {path}: variant {prog.variant}, {len(prog.mu)} frames, {prog.bytes()} B, params {kv}")
     elif a.mode.startswith("composer:"):
         # composer:<r6_comp.npz>?w0=1&sched=const&var=0.001&key=pose&stall=3 -- the learned borrowing PoE over library prototypes
@@ -131,6 +133,8 @@ def main():
         hooks = HybridHooks(prog, state, key, w0=float(kv.get("w0", 1.2)), schedule=kv.get("sched", "variance"),
                             var=float(kv["var"]) if kv.get("var") else None, stall=int(kv.get("stall", 0)),
                             key_mode=kv.get("key", "pos"), window=int(kv.get("window", 20)))
+        if kv.get("alt"):                          # the next-ranked leaves, executed only by a "leaf2" branch (r18_branch.py)
+            hooks.alt = DemoProgram.load(kv["alt"])
         logging.info(f"hybrid: program {body} ({int(prog.fold.sum()) if prog.fold is not None else 0} fold frames of {len(prog.mu)}), expert {key}, params {kv}")
     elif a.mode.startswith("program:"):
         # program:<program.npz>[:w0[:window[:schedule[:var[:how]]]]] -- COMPOSE: follow one demo's prototype program (or

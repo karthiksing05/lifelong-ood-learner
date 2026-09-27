@@ -55,6 +55,11 @@ def main():
     ap.add_argument("--no-meta", action="store_true")
     ap.add_argument("--record", action="store_true", help="save every episode's policy-input frames, states, executed actions "
                     "and outcome to <out without .json>_rec/task<t>_trial<k>.npz (learning from practice)")
+    ap.add_argument("--branches", default="", help="a JSON list of stall-point branches of ONE task (experiments/r18_branch.py): "
+                    "{id, trial, seed_base, at, variant}; each replays a recorded episode's noise up to query `at`, then the "
+                    "server changes one knob; replaces --first-trial / --trials.  The prefix (queries < at) executes the recorded "
+                    "actions of `rec` (the simulator is bit-deterministic given the actions and the session's reset count, "
+                    "`resets`); the server only follows it (meta/ff)")
     a = ap.parse_args()
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(message)s")
     np.random.seed(a.seed)
@@ -72,7 +77,18 @@ def main():
         env = OffScreenRenderEnv(bddl_file_name=str(bddl), camera_heights=256, camera_widths=256)
         env.seed(a.seed)
         eps = []
-        for k in range(a.first_trial, a.first_trial + a.trials):
+        todo = ([(int(b["trial"]), b) for b in json.load(open(a.branches))] if a.branches
+                else [(k, None) for k in range(a.first_trial, a.first_trial + a.trials)])
+        for k, br in todo:
+            prefix = np.load(br["rec"])["action"] if br is not None and br.get("rec") else None
+            if br is not None:
+                # the recorded episode's simulator: MuJoCo's solver warm-start is not in the init state and depends on the random
+                # placement of the reset that precedes set_init_state, i.e. on the resets since env.seed; re-seed and repeat the
+                # recorded session's resets (experiments/r18_sim_check.py: bit-identical states only this way)
+                np.random.seed(a.seed)
+                env.seed(a.seed)
+                for _ in range(int(br.get("resets", 0))):
+                    env.reset()
             env.reset()
             obs = env.set_init_state(init_states[k % len(init_states)])
             plan = collections.deque()
@@ -98,7 +114,15 @@ def main():
                               "prompt": str(task.language)}
                         if not a.no_meta:
                             el.update({"meta/episode_start": calls == 0, "meta/task_id": tid, "meta/episode": k, "meta/t": t - a.wait})
+                            if br is not None:
+                                el.update({"meta/seed_base": int(br["seed_base"]), "meta/branch_at": int(br["at"]),
+                                           "meta/variant": str(br["variant"])})
+                        ff = prefix is not None and calls < int(br["at"]) and a.replan * (calls + 1) <= len(prefix)
+                        if ff:
+                            el["meta/ff"] = True
                         chunk = client.infer(el)["actions"]
+                        if ff:                          # the branch's prefix: the recorded episode's own actions
+                            chunk = prefix[a.replan * calls: a.replan * (calls + 1)]
                         calls += 1
                         plan.extend(chunk[: a.replan])
                     act = np.asarray(plan.popleft(), np.float32)
@@ -113,16 +137,18 @@ def main():
                     err = repr(ex)
                     logging.error(f"episode error: {ex}")
                     break
-            eps.append(dict(trial=k, success=bool(done), steps=t - a.wait, calls=calls, secs=time.time() - t0, error=err))
+            eps.append(dict(trial=k, success=bool(done), steps=t - a.wait, calls=calls, secs=time.time() - t0, error=err,
+                            **({} if br is None else dict(branch=br["id"], variant=br["variant"], at=int(br["at"])))))
             if rec is not None and rec["action"]:
                 rec_dir = pathlib.Path(a.out).with_suffix("").parent / (pathlib.Path(a.out).stem + "_rec")
                 rec_dir.mkdir(parents=True, exist_ok=True)
-                np.savez_compressed(str(rec_dir / f"task{tid}_trial{k}.npz"), state=np.stack(rec["state"]), action=np.stack(rec["action"]),
+                np.savez_compressed(str(rec_dir / (f"task{tid}_trial{k}" + ("" if br is None else f"_{br['id']}") + ".npz")), state=np.stack(rec["state"]), action=np.stack(rec["action"]),
                                     image=np.stack(rec["image"]), wrist=np.stack(rec["wrist"]), success=bool(done), trial=k, task=tid)
             if frames:
                 import imageio
                 imageio.mimwrite(str(vid_dir / f"task{tid}_trial{k}_{'success' if done else 'failure'}.mp4"), frames, fps=10)
-            logging.info(f"[client] task {tid} '{task.language}' trial {k}: success={done} steps={t - a.wait} ({time.time() - t0:.0f}s)")
+            logging.info(f"[client] task {tid} '{task.language}' trial {k}{'' if br is None else ' branch ' + br['id']}: success={done} "
+                         f"steps={t - a.wait} ({time.time() - t0:.0f}s)")
         sr = float(np.mean([e["success"] for e in eps]))
         res["tasks"][str(tid)] = dict(language=task.language, success_rate=sr, episodes=eps)
         logging.info(f"[client] task {tid} success rate {sr:.2f} over {len(eps)}")

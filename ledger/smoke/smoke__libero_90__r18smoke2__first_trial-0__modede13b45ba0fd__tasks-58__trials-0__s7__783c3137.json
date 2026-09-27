@@ -1,0 +1,85 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r18smoke2_58.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "roll.sh MODE=hybrid:/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r7_dim_58_s1.npz?expert=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r4_58_approach_last2_expert.pt&foldprog=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r4_58_approach_last2_program.npz&w0=1.0&sched=const&var=0.001&key=pose&stall=3&window=20&alt=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r18_leaf2_58.npz SUITE=libero_90 TASKS=58 TRIALS=0 (job 3966106)",
+ "config": {
+  "client": {
+   "branches": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r18smoke2_58.list.json",
+   "first_trial": 0,
+   "host": "127.0.0.1",
+   "max_steps": 0,
+   "no_meta": false,
+   "out": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r18smoke2_58.json",
+   "port": 9198,
+   "record": true,
+   "replan": 5,
+   "resize": 224,
+   "seed": 7,
+   "suite": "libero_90",
+   "tasks": "58",
+   "trials": 0,
+   "videos": 0,
+   "wait": 10
+  },
+  "job": "3966106",
+  "mode": "hybrid:/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r7_dim_58_s1.npz?expert=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r4_58_approach_last2_expert.pt&foldprog=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r4_58_approach_last2_program.npz&w0=1.0&sched=const&var=0.001&key=pose&stall=3&window=20&alt=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r18_leaf2_58.npz"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "brainiac.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3966106",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "smoke",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "783c313788e88491f60bbfc9b47eb3507f23cb4b",
+  "short": "783c3137"
+ },
+ "keys": {
+  "first_trial": 0,
+  "mode": "hybrid:/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r7_dim_58_s1.npz?expert=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r4_58_approach_last2_expert.pt&foldprog=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r4_58_approach_last2_program.npz&w0=1.0&sched=const&var=0.001&key=pose&stall=3&window=20&alt=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r18_leaf2_58.npz",
+  "tasks": "58",
+  "trials": 0
+ },
+ "metrics": {
+  "complete": true,
+  "n_episodes": 6,
+  "secs": 187.42284607887268,
+  "success_rate": 0.0,
+  "tasks": {
+   "58": {
+    "errors": 0,
+    "language": "pick up the ketchup and put it in the tray",
+    "mean_steps": 400.0,
+    "n": 6,
+    "success_rate": 0.0
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "smoke__libero_90__r18smoke2__first_trial-0__modede13b45ba0fd__tasks-58__trials-0__s7__783c3137",
+ "schema": 1,
+ "script": "experiments/libero_client.py",
+ "seconds": null,
+ "seed": 7,
+ "source_commit": null,
+ "started": "2026-09-27T15:55:42+00:00",
+ "stream": null,
+ "tag": "r18smoke2"
+}

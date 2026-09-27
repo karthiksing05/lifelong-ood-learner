@@ -247,6 +247,10 @@ class ComposeHooks:
         self._jg = None
         self._still, self._released = 0, 0
         self._j = None
+        # BRANCH knobs (experiments/r18_branch.py), restored at every reset: the guide weight, the prior alone, and an
+        # alternative program (`alt`: the next-ranked leaves) used from frame _alt_from on
+        self._w0, self._off, self.alt, self._alt_from = self.w0, False, None, None
+        self._nofold, self._foldall = False, False
         self.norm = state_norm()
         # alignment keys: "pose" adds the eef orientation (turning a knob barely moves the eef position)
         self.key_mode = key_mode if (key_mode == "pos" or program.states is not None) else "pos"
@@ -270,6 +274,25 @@ class ComposeHooks:
         self.trace = []
         self._j = None
         self._still, self._released = 0, 0
+        self.w0, self._off, self._alt_from = self._w0, False, None
+        self._nofold, self._foldall = False, False
+
+    def branch(self, variant):
+        """Change one knob from the current call to the end of the episode: "wx<f>" scales the guide weight, "release" leaves
+        the frozen prior alone (no guide, no fold), "leaf2" executes the alternative program from the aligned frame on,
+        "nofold" guides the fold windows by the program too, "foldall" switches the fold expert on everywhere (no guide);
+        "noise<s>" and "replay" change nothing here (the server draws the noise)."""
+        if variant.startswith("wx"):
+            self.w0 = self._w0 * float(variant[2:])
+        elif variant == "release":
+            self._off = True
+        elif variant == "leaf2":
+            assert self.alt is not None, "leaf2 needs the alternative program (mode parameter alt=)"
+            self._alt_from = self.trace[-1] if self.trace else 0
+        elif variant == "nofold":
+            self._nofold = True
+        elif variant == "foldall":
+            self._foldall = True
 
     def _released_now(self):
         """Advance the stall counters for the frame just aligned; True while the guide is released."""
@@ -315,11 +338,12 @@ class ComposeHooks:
 
     def guide_at(self, j):
         self._jg = j
-        v = self.prog.var[j] if self.var is None else np.full_like(self.prog.var[j], self.var)
+        src = self.alt if (self._alt_from is not None and j >= self._alt_from) else self.prog
+        v = src.var[j] if self.var is None else np.full_like(src.var[j], self.var)
         if self.schedule == "const":
-            g = guide(self.prog.mu[j], v, wmax=self.w0, schedule="const", path="flow")
+            g = guide(src.mu[j], v, wmax=self.w0, schedule="const", path="flow")
         else:
-            g = guide(self.prog.mu[j], v, w0=self.w0, wmax=self.wmax, path="flow")
+            g = guide(src.mu[j], v, w0=self.w0, wmax=self.wmax, path="flow")
         if self.arm_only:
             eps_fn, w_fn = g
             mask = self.arm_mask
@@ -339,7 +363,7 @@ class ComposeHooks:
 
     def __call__(self, obs, pre, meta=None):
         j = self._frame(obs)
-        if self._released_now() or self.near_contact[j]:
+        if self._off or self._released_now() or self.near_contact[j]:
             return None, None
         return (self.guide_at(j) if self.steering(j) else None), None
 
@@ -356,7 +380,9 @@ class HybridHooks(ComposeHooks):
 
     def __call__(self, obs, pre, meta=None):
         j = self._frame(obs)
-        if self.prog.fold is not None and bool(self.prog.fold[j]):
+        if self._off:
+            return None, None
+        if self._foldall or (self.prog.fold is not None and bool(self.prog.fold[j]) and not self._nofold):
             return None, (lambda x, t: self.on)
         if self._released_now():
             return None, None

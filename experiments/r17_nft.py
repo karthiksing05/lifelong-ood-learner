@@ -11,10 +11,12 @@ loss on positives).
     python experiments/r17_nft.py --task 39 --name r17bal                       # rank 16, 8 negatives per batch of 32
     python experiments/r17_nft.py --task 39 --name r17pool --pooled             # rank 16, natural frequency
     python experiments/r17_nft.py --task 39 --name r17fold --rank 2 --scope last2
+    python experiments/r17_nft.py --task 42 --name r18rec --recovery            # Exp. 2: + the stall-point branches' recovery data
 """
 import argparse
 import glob
 import importlib.util
+import json
 import os
 import sys
 import time
@@ -66,6 +68,10 @@ def main():
     ap.add_argument("--lora-stride", type=int, default=5)
     ap.add_argument("--max-pos", type=int, default=1000)
     ap.add_argument("--seed", type=int, default=0)
+    ap.add_argument("--recovery", action="store_true", help="Exp. 2 (m3_prereg tag branch): + every 5th post-branch step of each "
+                    "RESCUED stall-point branch as positives (<= --max-rec per task, after the cap) + the last W queries up to the "
+                    "own stall of each FAILED post-branch segment as negatives (prefix-gated branches of r18_branch_stats.json)")
+    ap.add_argument("--max-rec", type=int, default=300)
     a = ap.parse_args()
     os.chdir(ROOT)
     log = lambda s: print(s, flush=True)                                  # noqa: E731
@@ -105,6 +111,35 @@ def main():
     if len(pos_obs) > a.max_pos:
         keep = np.linspace(0, len(pos_obs) - 1, a.max_pos).round().astype(int)
         pos_obs, pos_rows = [pos_obs[i] for i in keep], [pos_rows[i] for i in keep]
+    rec_pos = rec_neg = 0
+    if a.recovery:
+        brs = [b for b in json.load(open(f"{R}/r18_branch_stats.json"))["branches"]
+               if b["task"] == t and "_full_" not in b["id"] and b.get("prefix_ok")]
+        rp_obs, rp_rows = [], []
+        for b in brs:
+            f = next(iter(glob.glob(f"{R}/r18_branch_{t}_*_rec/task{t}_trial{b['trial']}_{b['id']}.npz")), None)
+            if f is None:
+                continue
+            e = dict(np.load(f))
+            acts, sts = e["action"], e["state"]
+            T = len(acts)
+            rows = D.to_rows(acts[D.chunk_indices(T, 10)[0]], norm)
+            mk = lambda i, e=e, sts=sts: {"observation/image": e["image"][i], "observation/wrist_image": e["wrist"][i],   # noqa: E731
+                                          "observation/state": sts[i], "prompt": text}
+            if b["success"]:
+                for i in range(5 * b["at"], T, a.lora_stride):
+                    rp_obs.append(mk(int(i))); rp_rows.append(rows[i])
+            else:
+                steps, _ = stall_queries(demo_prog, sts, a.window)
+                if steps[-1] // 5 >= b["at"]:                      # a new stall after the branch point (else: the recorded one)
+                    for i in steps:
+                        if i < T:
+                            neg_obs.append(mk(int(i))); neg_rows.append(rows[i]); rec_neg += 1
+        if len(rp_obs) > a.max_rec:
+            keep = np.linspace(0, len(rp_obs) - 1, a.max_rec).round().astype(int)
+            rp_obs, rp_rows = [rp_obs[i] for i in keep], [rp_rows[i] for i in keep]
+        pos_obs += rp_obs; pos_rows += rp_rows; rec_pos = len(rp_obs)
+        log(f"[r17] recovery data: {len(brs)} branches, {rec_pos} positive frames from rescued segments, {rec_neg} negatives")
     n_fail = sum(1 for e in eps if not bool(e["success"]))
     log(f"[r17] task {t} '{text}': {len(eps)} rollouts ({n_fail} failed); {len(pos_obs)} positive frames, {len(neg_obs)} negative "
         f"frames (W = {a.window}); stall at a median {np.median([s['stall_frame'] / s['demo_frames'] for s in stalls]) if stalls else float('nan'):.2f} "
@@ -124,7 +159,7 @@ def main():
     nb = adapt.save(banks, key, path, meta=dict(task=t, rank=a.rank, scope=a.scope, nft=True, window=a.window, pooled=a.pooled))
     log(f"[r17] saved {path} ({nb} B) in {time.time() - t0:.0f}s")
     ledger.record("r17_nft", bench="libero_90", tag=a.name, seed=a.seed, keys=dict(task=t),
-                  metrics=dict(task=t, text=text, rollouts=len(eps), failed=n_fail, positives=len(pos_obs), negatives=len(neg_obs),
+                  metrics=dict(task=t, text=text, rollouts=len(eps), failed=n_fail, positives=len(pos_obs), negatives=len(neg_obs), recovery_positives=rec_pos, recovery_negatives=rec_neg,
                                stalls=stalls, curve=hist),
                   bytes=dict(experts=nb, tree=0, codes=0, samples=0, teacher_copies=0, total=nb), config=vars(a),
                   script="experiments/r17_nft.py", command=" ".join(sys.argv), artifacts=[path])

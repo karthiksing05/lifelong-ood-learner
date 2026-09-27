@@ -23,33 +23,63 @@ class GuidedPolicy:
         self.calls = 0
         self.log_every = log_every
         self.secs = 0.0
+        self.ep_q = 0                     # query index inside the current episode
+        self.branch = None                # a stall-point branch (experiments/r18_branch.py), set per episode by the client
+
+    def _seed(self):
+        """The noise seed of this query.  Default: seed + the server's call count (a rerun of the same trials in the same order
+        draws the same noise).  A BRANCH (experiments/r18_branch.py; its prefix fast-forwarded on the recorded actions)
+        continues from query `at` with the recorded episode's noise, seed_base + query, and one knob changed -- or, for a
+        "noise<s>" variant, fresh noise."""
+        b = self.branch
+        if b is None:
+            return self.seed + self.calls
+        if self.ep_q >= b["at"] and b["variant"].startswith("noise"):
+            return 1_000_003 * int(b["variant"][5:]) + self.ep_q
+        return b["seed_base"] + self.ep_q
 
     def infer(self, obs, *, noise=None):
         t0 = time.monotonic()
         meta = {k[5:]: v for k, v in obs.items() if k.startswith("meta/")}
         obs = {k: v for k, v in obs.items() if not k.startswith("meta/")}
-        if meta.get("episode_start") and hasattr(self.hooks, "reset"):
-            self.hooks.reset(meta)
+        if meta.get("episode_start"):
+            self.ep_q = 0
+            self.branch = (dict(seed_base=int(meta["seed_base"]), at=int(meta["branch_at"]), variant=str(meta["variant"]))
+                           if "branch_at" in meta else None)
+            if hasattr(self.hooks, "reset"):
+                self.hooks.reset(meta)
         if hasattr(self.hooks, "rewrite"):
             obs = self.hooks.rewrite(obs, meta)
+        if meta.get("ff"):
+            # FAST-FORWARD (a branch's prefix): the client executes the recorded actions; the hooks see the observation, so
+            # their pointer and stall state evolve exactly as in the recorded episode, and nothing is sampled
+            if self.hooks is not None:
+                self.hooks(obs, None, meta)
+            self.calls += 1
+            self.ep_q += 1
+            return {"actions": np.zeros((self.bk.H, 7), np.float32), "state": np.asarray(obs["observation/state"], np.float32)}
+        if self.branch is not None and self.ep_q == self.branch["at"] and hasattr(self.hooks, "branch"):
+            self.hooks.branch(self.branch["variant"])        # the knob changes from this query to the end of the episode
+        sd = self._seed()
         observation = self.bk.observation(obs)
         pre = self.bk.prefix(observation)
         nz = None if noise is None else np.asarray(noise).reshape(1, -1)
         if getattr(self.hooks, "needs_prior", False):
             # the PRIOR expert: the frozen policy's own chunk on this observation, before the composed teacher is built
-            self.hooks.set_prior(self.bk.sample(1, pre, seed=self.seed + self.calls, num_steps=self.num_steps, noise=nz)[0])
+            self.hooks.set_prior(self.bk.sample(1, pre, seed=sd, num_steps=self.num_steps, noise=nz)[0])
         guide, gate = (None, None) if self.hooks is None else self.hooks(obs, pre, meta)
         rows = None
         if guide is not None and getattr(self.hooks, "agree", None) is not None:
-            own = self.bk.sample(1, pre, seed=self.seed + self.calls, num_steps=self.num_steps, step_gate=gate, noise=nz)
+            own = self.bk.sample(1, pre, seed=sd, num_steps=self.num_steps, step_gate=gate, noise=nz)
             if self.hooks.agrees(own[0]):
                 rows = own                                   # the prior already does what the program asks
         if rows is None:
             start = self.hooks.sdedit(obs, meta) if hasattr(self.hooks, "sdedit") else None
-            rows = self.bk.sample(1, pre, seed=self.seed + self.calls, num_steps=self.num_steps, guide=guide, step_gate=gate, noise=nz,
+            rows = self.bk.sample(1, pre, seed=sd, num_steps=self.num_steps, guide=guide, step_gate=gate, noise=nz,
                                   start=start)
         actions = self.bk.unnormalize(rows)[0]
         self.calls += 1
+        self.ep_q += 1
         self.secs += time.monotonic() - t0
         if self.log_every and self.calls % self.log_every == 0:
             logging.info(f"[serve] {self.calls} calls, {1000 * self.secs / self.calls:.0f} ms each")

@@ -1,0 +1,72 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration of stall-point branching (experiment 2)",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky2.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "783c313788e88491f60bbfc9b47eb3507f23cb4b",
+  "short": "783c3137"
+ },
+ "keys": {},
+ "metrics": {
+  "arms": {
+   "early": "at = max(0, stall - 8): noise1, noise2",
+   "late": "at = max(0, stall - 2): noise1-4 (fresh noise), wx0.5 and wx2 (guide weight x0.5, x2), leaf2 (every action dimension's next-ranked leaf among the frame's K = 8 prototypes, from the aligned frame on), release (frozen prior alone: no guide, no fold)",
+   "replay": "no change; the first all-fail instance of each task"
+  },
+  "branch": "exact replay of the recorded episode (same server mode, program and fold; noise seed = the practice server's call count at each query) up to query `at`, then ONE change to the end of the episode",
+  "experiment": "Exp. 2 of reports/RL from practice for composition.md: stall-point branching on the persistent failures, then recovery data",
+  "gates": {
+   "G1": "prefix gate: a branch counts only if its recorded 8-d states over steps < 5*at match the practice recording to max |diff| <= 1e-3; the fraction passing is reported; the primary reads use passing branches (and instances whose noise1 and knob branches both pass)",
+   "G2": "replay gate: each replay branch reproduces the recorded outcome; a mismatch is reported with its first diverging step"
+  },
+  "hypotheses": {
+   "D1": "rescue rate per arm on the 123 instances, Wilson 95%; any-late-arm rescue rate",
+   "D2": "each knob (wx0.5, wx2, leaf2, release) vs late noise1 at the same state: paired by instance, exact two-sided sign test on discordant pairs",
+   "D3": "early vs late fresh noise (noise1, noise2 pooled; paired by instance and seed): exact sign test -- does the cause precede the stall?",
+   "rule": "fresh-noise pass@4 from the late state >= 0.25: budget to selection (Exp. 3); a knob beats noise1 (D2 p < 0.05): per-phase repair (Exp. 6); every late arm <= 0.10: geometry or an earlier cause (Exp. 5)"
+  },
+  "instances": "the 123 (task, init state) pairs of states 0-19 on which the first composition (m5_practice) and both fresh-noise retries (m5_redo _seed1, _seed2) failed; 17 tasks",
+  "recovery": {
+   "R1": "r18rec > r17bal (nft_bal) on init states 30-49 of the 9 concentrated tasks (42, 32, 1, 35, 40, 36, 52, 62, 41; 180 paired): exact sign test p < 0.05",
+   "R2": "r18rec vs r17bal on every task with >= 1 rescue (secondary)",
+   "arm": "r18rec: Experiment 1's r17bal data and loss unchanged (rank-16 LoRA, 8 negatives per batch of 32, 1000 steps, seed 0) + recovery positives: every 5th step of the post-branch segment (steps >= 5*at) of every RESCUED late or early branch (at most 300 per task, uniform subsample), added after r17bal's 1000-positive cap; + recovery negatives: the executed chunks of the last 2 queries up to the stall of each FAILED post-branch segment (its own pointer maximum, only if after the branch point)",
+   "caveat": "the branches are extra rollouts (about 1,250 episodes); the budget-matched comparison is the round-3 success-only learner (loop L3, 630 more practice episodes)",
+   "condition": "trained and scored only if >= 10 instances of the concentrated tasks are rescued by some branch; otherwise the diagnosis is the result"
+  },
+  "rescue": "the branch episode succeeds (simulator success); secondary: the recomputed pointer passes the recorded stall frame",
+  "stall": "first policy query at which the demo-alignment pointer (recomputed from the recorded states; Experiment 1's locator) reaches its final maximum",
+  "written_before": "any r18 branch rollout (the prep job builds specs and programs only)"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_90__branch__s0__783c3137",
+ "schema": 1,
+ "script": "(inline, session 2026-09-27)",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-27T15:39:08+00:00",
+ "stream": null,
+ "tag": "branch"
+}
