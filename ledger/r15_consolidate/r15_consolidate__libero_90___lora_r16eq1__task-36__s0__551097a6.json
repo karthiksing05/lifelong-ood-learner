@@ -1,0 +1,107 @@
+{
+ "artifacts": [
+  "results/robot/r16eq1_36_lora.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 258048,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 258048,
+  "tree": 0
+ },
+ "command": "experiments/r15_consolidate.py --task 36 --lora --practice m5_practice --name r16eq1 --lora-rank 2 --lora-scope last2",
+ "config": {
+  "fold_stride": 2,
+  "library": "results/robot/r2b_libero_40.npz",
+  "lora": true,
+  "lora_rank": 2,
+  "lora_scope": "last2",
+  "lora_stride": 5,
+  "max_fold_frames": 700,
+  "max_lora_frames": 1000,
+  "n_anchor": 384,
+  "name": "r16eq1",
+  "practice": "m5_practice",
+  "seed": 0,
+  "steps": 1000,
+  "task": 36
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "brainiac.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3964453",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r15_consolidate",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "551097a66584c229a4125c9bc159613339729702",
+  "short": "551097a6"
+ },
+ "keys": {
+  "task": 36
+ },
+ "metrics": {
+  "curve": {
+   "anchor": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "loss": [
+    0.07019815593957901,
+    0.0561864972114563,
+    0.04846836254000664,
+    0.017538702115416527,
+    0.03008107654750347,
+    0.017159579321742058,
+    0.013239964842796326,
+    0.010519134812057018,
+    0.009391920641064644,
+    0.0208051148802042,
+    0.01838522218167782
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "frames": 684,
+  "successes": 10,
+  "task": 36
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r15_consolidate__libero_90___lora_r16eq1__task-36__s0__551097a6",
+ "schema": 1,
+ "script": "experiments/r15_consolidate.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-27T01:03:07+00:00",
+ "stream": null,
+ "tag": "_lora_r16eq1"
+}

@@ -1,0 +1,59 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration of negative-aware retraining (experiment 1)",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky2.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "551097a66584c229a4125c9bc159613339729702",
+  "short": "551097a6"
+ },
+ "keys": {},
+ "metrics": {
+  "arms": {
+   "r17bal": "rank 16 on the action expert, 8 negatives per batch of 32 (PRIMARY)",
+   "r17fold": "rank 2 on the last two layers (258 KB), 8 per batch",
+   "r17pool": "rank 16, negatives at their natural frequency"
+  },
+  "data": "m5_practice + m6_round1 recordings (the success-only round-2 learner r16L2's data); positives identical to r16L2's",
+  "experiment": "Exp. 1 of reports/RL from practice for composition.md: negative-aware retraining on the recordings of rounds 0-1",
+  "hypotheses": {
+   "N1": "r17bal > lora_r16L2 (success-only, same data) on states 30-49 of the 21 tasks: paired sign test p < 0.05",
+   "N2": "r17fold > lora_r16eq2 (success-only 258 KB, same data): paired sign test p < 0.05",
+   "N3": "r17pool vs lora_r16L2 (secondary)"
+  },
+  "loss": "DiffusionNFT, beta = 1 (positives: plain flow matching, as the control; negatives: reflected velocity 2 v_ref - v_theta toward the executed chunk), reference = the frozen prior (adapter off); 1000 steps, lr 1e-4, batch 32",
+  "negatives": "failed rollouts: the executed chunks at the last W = 2 policy queries up to the stall (first query at which the composition's demo-alignment pointer, recomputed from recorded states, reaches its final maximum); rest unlabelled",
+  "written_before": "any r17 training or rollout"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_90__nft__s0__551097a6",
+ "schema": 1,
+ "script": "(inline, session 2026-09-27)",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-27T06:39:56+00:00",
+ "stream": null,
+ "tag": "nft"
+}

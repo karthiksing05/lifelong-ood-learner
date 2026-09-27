@@ -1,0 +1,84 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/m3_final_4_lora_r16eq3.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "roll.sh MODE=lora:/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r16eq3_4_lora.pt SUITE=libero_90 TASKS=4 TRIALS=20 (job 3964597)",
+ "config": {
+  "client": {
+   "first_trial": 30,
+   "host": "127.0.0.1",
+   "max_steps": 0,
+   "no_meta": false,
+   "out": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/m3_final_4_lora_r16eq3.json",
+   "port": 9022,
+   "record": false,
+   "replan": 5,
+   "resize": 224,
+   "seed": 7,
+   "suite": "libero_90",
+   "tasks": "4",
+   "trials": 20,
+   "videos": 2,
+   "wait": 10
+  },
+  "job": "3964597",
+  "mode": "lora:/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r16eq3_4_lora.pt"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "brainiac.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3964597",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_final",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "551097a66584c229a4125c9bc159613339729702",
+  "short": "551097a6"
+ },
+ "keys": {
+  "first_trial": 30,
+  "mode": "lora:/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r16eq3_4_lora.pt",
+  "tasks": "4",
+  "trials": 20
+ },
+ "metrics": {
+  "complete": true,
+  "n_episodes": 20,
+  "secs": 777.7715692520142,
+  "success_rate": 0.4,
+  "tasks": {
+   "4": {
+    "errors": 0,
+    "language": "put the butter at the front in the top drawer of the cabinet and close it",
+    "mean_steps": 334.4,
+    "n": 20,
+    "success_rate": 0.4
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_final__libero_90__lora_r16eq3__first_trial-30__mode27ff3b829dfb__tasks-4__trials-20__s7__551097a6",
+ "schema": 1,
+ "script": "experiments/libero_client.py",
+ "seconds": null,
+ "seed": 7,
+ "source_commit": null,
+ "started": "2026-09-27T05:25:34+00:00",
+ "stream": null,
+ "tag": "lora_r16eq3"
+}

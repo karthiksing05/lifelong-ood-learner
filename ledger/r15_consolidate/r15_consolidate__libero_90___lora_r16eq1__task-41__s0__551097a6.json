@@ -1,0 +1,107 @@
+{
+ "artifacts": [
+  "results/robot/r16eq1_41_lora.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 258048,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 258048,
+  "tree": 0
+ },
+ "command": "experiments/r15_consolidate.py --task 41 --lora --practice m5_practice --name r16eq1 --lora-rank 2 --lora-scope last2",
+ "config": {
+  "fold_stride": 2,
+  "library": "results/robot/r2b_libero_40.npz",
+  "lora": true,
+  "lora_rank": 2,
+  "lora_scope": "last2",
+  "lora_stride": 5,
+  "max_fold_frames": 700,
+  "max_lora_frames": 1000,
+  "n_anchor": 384,
+  "name": "r16eq1",
+  "practice": "m5_practice",
+  "seed": 0,
+  "steps": 1000,
+  "task": 41
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "major.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3964468",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r15_consolidate",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "551097a66584c229a4125c9bc159613339729702",
+  "short": "551097a6"
+ },
+ "keys": {
+  "task": 41
+ },
+ "metrics": {
+  "curve": {
+   "anchor": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "loss": [
+    0.135410338640213,
+    0.08676031976938248,
+    0.06997810304164886,
+    0.03669555485248566,
+    0.0407073087990284,
+    0.03149458393454552,
+    0.021450720727443695,
+    0.02786530926823616,
+    0.02354384772479534,
+    0.03604831174015999,
+    0.026088640093803406
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "frames": 594,
+  "successes": 10,
+  "task": 41
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r15_consolidate__libero_90___lora_r16eq1__task-41__s0__551097a6",
+ "schema": 1,
+ "script": "experiments/r15_consolidate.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-27T01:22:59+00:00",
+ "stream": null,
+ "tag": "_lora_r16eq1"
+}

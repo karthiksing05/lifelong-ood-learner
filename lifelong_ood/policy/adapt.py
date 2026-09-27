@@ -188,3 +188,58 @@ def train_full(bk, bank, chunks_full, steps=1000, lr=2.5e-5, batch=32, seed=0, l
     for p in params:
         p.requires_grad_(False)
     return hist
+
+
+def train_nft(bk, state, key, params, pos_bank, pos_chunks, neg_bank=None, neg_chunks=None, steps=1000, lr=1e-4, batch=32,
+              neg_batch=8, pooled=False, beta=1.0, seed=0, log_every=100, log=print):
+    """Negative-aware flow matching (DiffusionNFT, arXiv 2509.16117) on the adapter `key`, reference = the frozen prior
+    (adapter off).  Positive rows train v+ = (1 - beta) v_ref + beta v_theta toward u = eps - a; negative rows train
+    v- = (1 + beta) v_ref - beta v_theta toward their u, which moves v_theta AWAY from them by reflection through the
+    prior.  beta = 1: the positive loss is exactly the plain flow-matching loss (the success-only control).
+    pooled = sample positives and negatives at their natural frequency; else `neg_batch` of every `batch` are negatives."""
+    torch.manual_seed(seed)
+    gen = torch.Generator(device="cpu").manual_seed(seed)
+    rng = np.random.default_rng(seed)
+    opt = torch.optim.AdamW(params, lr=lr)
+    Ap = torch.as_tensor(np.asarray(pos_chunks, np.float32), device=bk.device)
+    An = None if neg_bank is None else torch.as_tensor(np.asarray(neg_chunks, np.float32), device=bk.device)
+    nneg = 0 if neg_bank is None else neg_bank.n
+    on = keys_on(state, {key})
+    hist = dict(step=[], loss=[], neg=[])
+    t0 = time.time()
+
+    def part(bank, A, idx, positive):
+        pre = bank.take(idx)
+        a = A[idx]
+        t, eps = _flow_batch(len(idx), bk.H, bk.A, gen, bk.device)
+        xt = t[:, None, None] * eps + (1 - t[:, None, None]) * a
+        u = (eps - a).reshape(len(idx), -1)
+        with on():
+            v_th = bk.v_full(xt, t, pre)
+        if positive and beta == 1.0:
+            v = v_th
+        else:
+            with torch.no_grad():
+                v_ref = bk.v_full(xt, t, pre)
+            v = (1 - beta) * v_ref + beta * v_th if positive else (1 + beta) * v_ref - beta * v_th
+        return ((v - u) ** 2).mean()
+
+    for s in 1 + np.arange(steps):
+        if nneg == 0:
+            kn = 0
+        elif pooled:
+            kn = int(rng.binomial(batch, nneg / (nneg + pos_bank.n)))
+        else:
+            kn = min(neg_batch, batch - 1)
+        kp = batch - kn
+        lp = part(pos_bank, Ap, rng.integers(0, pos_bank.n, size=min(kp, pos_bank.n)), True)
+        ln = part(neg_bank, An, rng.integers(0, nneg, size=kn), False) if kn else torch.zeros((), device=bk.device)
+        tot = (kp * lp + kn * ln) / batch
+        opt.zero_grad(set_to_none=True)
+        tot.backward()
+        torch.nn.utils.clip_grad_norm_(params, 1.0)
+        opt.step()
+        if s % log_every == 0 or s == 1:
+            hist["step"].append(int(s)); hist["loss"].append(float(lp)); hist["neg"].append(float(ln))
+            log(f"[nft] {key} step {s}/{steps}: positive {float(lp):.4f} negative {float(ln):.4f} (k-={kn}) ({time.time() - t0:.0f}s)")
+    return hist

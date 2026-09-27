@@ -1,0 +1,84 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/m3_final_39_lora_r64.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "roll.sh MODE=lora:/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r3_lora_39_r64.pt SUITE=libero_90 TASKS=39 TRIALS=20 (job 3963099)",
+ "config": {
+  "client": {
+   "first_trial": 30,
+   "host": "127.0.0.1",
+   "max_steps": 0,
+   "no_meta": false,
+   "out": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/m3_final_39_lora_r64.json",
+   "port": 9748,
+   "record": false,
+   "replan": 5,
+   "resize": 224,
+   "seed": 7,
+   "suite": "libero_90",
+   "tasks": "39",
+   "trials": 20,
+   "videos": 2,
+   "wait": 10
+  },
+  "job": "3963099",
+  "mode": "lora:/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r3_lora_39_r64.pt"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "brainiac.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3963099",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_final",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "551097a66584c229a4125c9bc159613339729702",
+  "short": "551097a6"
+ },
+ "keys": {
+  "first_trial": 30,
+  "mode": "lora:/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r3_lora_39_r64.pt",
+  "tasks": "39",
+  "trials": 20
+ },
+ "metrics": {
+  "complete": true,
+  "n_episodes": 20,
+  "secs": 690.1125438213348,
+  "success_rate": 0.7,
+  "tasks": {
+   "39": {
+    "errors": 0,
+    "language": "turn off the stove",
+    "mean_steps": 232.45,
+    "n": 20,
+    "success_rate": 0.7
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_final__libero_90__lora_r64__first_trial-30__mode36461f561496__tasks-39__trials-20__s7__551097a6",
+ "schema": 1,
+ "script": "experiments/libero_client.py",
+ "seconds": null,
+ "seed": 7,
+ "source_commit": null,
+ "started": "2026-09-26T23:47:02+00:00",
+ "stream": null,
+ "tag": "lora_r64"
+}

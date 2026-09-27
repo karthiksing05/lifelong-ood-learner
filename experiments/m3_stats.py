@@ -40,7 +40,10 @@ METHODS = {"zeroshot": None, "practice_replay": ("raw_replay", None), "practice_
            "ours_learned": ("learned", None), "ours_learned_mem0": ("learned_mem0", None),
            "ours_learned_origfold": ("learned_origfold", None), "base_lora_learn": ("lora_learn", None),
            "base_demodiff": ("demodiff", None), "base_demodiff_state": ("demodiff_state", None),
-           "base_lora_eq": ("lora_eq", None), "base_lora_r64": ("lora_r64", None), "base_fullft": ("fullft", None)}
+           "base_lora_eq": ("lora_eq", None), "base_lora_r64": ("lora_r64", None), "base_fullft": ("fullft", None),
+           "loop_eq1": ("lora_r16eq1", None), "loop_L2": ("lora_r16L2", None), "loop_eq2": ("lora_r16eq2", None),
+           "loop_L3": ("lora_r16L3", None), "loop_eq3": ("lora_r16eq3", None),
+           "nft_bal": ("lora_r17bal", None), "nft_pool": ("lora_r17pool", None), "nft_fold": ("lora_r17fold", None)}
 NAMES = {"zeroshot": "zero-shot", "practice_replay": "demo replay", "practice_lora": "few-shot LoRA (rank 16)",
          "ours_dim": "borrowing, every 5th frame", "ours_dim1": "borrowing, every frame",
          "ours_dim1_last2": "borrowing + 258 KB fold", "ours_codes_full": "PoE codes + 4.7 MB fold",
@@ -53,7 +56,11 @@ NAMES = {"zeroshot": "zero-shot", "practice_replay": "demo replay", "practice_lo
          "ours_learned": "compose, practise, consolidate", "ours_learned_mem0": "consolidated fold, no memory",
          "ours_learned_origfold": "memory, the demo's fold", "base_lora_learn": "LoRA on the demo + practice successes",
          "base_demodiff": "DemoDiffusion (s* 0.2)", "base_demodiff_state": "DemoDiffusion, state-aligned",
-         "base_lora_eq": "equal-bytes adapter (258 KB, whole demo)", "base_lora_r64": "LoRA rank 64", "base_fullft": "full fine-tuning"}
+         "base_lora_eq": "equal-bytes adapter (258 KB, whole demo)", "base_lora_r64": "LoRA rank 64", "base_fullft": "full fine-tuning",
+         "loop_eq1": "258 KB learner, round 1", "loop_L2": "LoRA, round 2 (success-only)", "loop_eq2": "258 KB learner, round 2",
+         "loop_L3": "LoRA, round 3", "loop_eq3": "258 KB learner, round 3",
+         "nft_bal": "LoRA + failure negatives (balanced)", "nft_pool": "LoRA + failure negatives (pooled)",
+         "nft_fold": "258 KB + failure negatives"}
 COMPARE = [("ours_dim1_last2", "practice_lora"), ("ours_dim1_last2", "practice_replay"), ("ours_dim1_last2", "zeroshot"),
            ("ours_dim", "practice_lora"), ("ours_dim", "practice_replay"), ("ours_dim1", "practice_replay"),
            ("practice_lora", "practice_replay"), ("ours_leaf1_last2", "practice_lora"), ("ours_leaf1_last2", "practice_replay"),
@@ -67,7 +74,9 @@ COMPARE = [("ours_dim1_last2", "practice_lora"), ("ours_dim1_last2", "practice_r
            ("ours_learned", "ours_dim1_last2"), ("ours_learned", "base_lora_learn"), ("ours_learned", "practice_lora"),
            ("ours_learned_mem0", "ours_dim1_last2"), ("ours_learned_origfold", "ours_dim1_last2"), ("base_lora_learn", "practice_lora"),
            ("ours_dim1_last2", "base_demodiff"), ("ours_dim1_last2", "base_demodiff_state"), ("ours_seg", "base_demodiff"),
-           ("ours_dim1_last2", "base_lora_eq"), ("ours_dim1_last2", "base_lora_r64"), ("ours_dim1_last2", "base_fullft")]
+           ("ours_dim1_last2", "base_lora_eq"), ("ours_dim1_last2", "base_lora_r64"), ("ours_dim1_last2", "base_fullft"),
+           ("loop_L2", "base_lora_learn"), ("loop_L3", "base_lora_learn"), ("loop_L3", "practice_lora"), ("loop_eq3", "loop_L3"),
+           ("loop_eq1", "base_lora_learn"), ("nft_bal", "loop_L2"), ("nft_pool", "loop_L2"), ("nft_fold", "loop_eq2")]
 
 
 def episodes(experiment):
