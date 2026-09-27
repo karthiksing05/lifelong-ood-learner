@@ -108,7 +108,12 @@ def main(a=None):
             continue
         arm = ("late_" if b["id"].split("_")[1] == "late" else "early_") + b["variant"]
         table.setdefault((b["task"], b["trial"]), {})[arm] = b
-    res = dict(G1=g1, G2=g2, D1={}, D2={}, D3={}, per_task={}, tol=TOL)
+    # G3 (amendment 4): the late replay -- recorded noise, nothing changed -- must reproduce the recorded episode's actions
+    lr = [b for b in ok if b["id"].split("_", 1)[1] == "late_replay"]
+    g3 = dict(late_replays=len(lr), reproduced=int(sum(1 - b["active"] for b in lr)),
+              not_reproduced=[dict(task=b["task"], trial=b["trial"], success=b["success"]) for b in lr if b["active"]])
+    print(f"[G3] late replays reproducing the recorded actions {g3['reproduced']}/{g3['late_replays']}; not: {g3['not_reproduced']}")
+    res = dict(G1=g1, G2=g2, G3=g3, D1={}, D2={}, D3={}, per_task={}, tol=TOL)
     arms = [f"late_{v}" for v in LATE] + ["early_noise1", "early_noise2"]
     for arm in arms:
         xs = [v[arm]["success"] for v in table.values() if arm in v]

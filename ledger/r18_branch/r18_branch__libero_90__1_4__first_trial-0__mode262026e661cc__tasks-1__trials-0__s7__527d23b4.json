@@ -1,0 +1,88 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r18_branch_1_4.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "roll.sh MODE=hybrid:/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r7_dim_1_s1.npz?expert=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r4_1_approach_last2_expert.pt&foldprog=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r4_1_approach_last2_program.npz&w0=1.0&sched=const&var=0.001&key=pose&stall=3&window=20&alt=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r18_leaf2_1.npz SUITE=libero_90 TASKS=1 TRIALS=0 (job 3966266)",
+ "config": {
+  "client": {
+   "branches": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r18_branch_1_4.list.json",
+   "first_trial": 0,
+   "host": "127.0.0.1",
+   "max_steps": 0,
+   "no_meta": false,
+   "out": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r18_branch_1_4.json",
+   "port": 9679,
+   "record": true,
+   "replan": 5,
+   "resize": 224,
+   "seed": 7,
+   "suite": "libero_90",
+   "tasks": "1",
+   "trials": 0,
+   "videos": 0,
+   "wait": 10
+  },
+  "job": "3966266",
+  "mode": "hybrid:/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r7_dim_1_s1.npz?expert=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r4_1_approach_last2_expert.pt&foldprog=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r4_1_approach_last2_program.npz&w0=1.0&sched=const&var=0.001&key=pose&stall=3&window=20&alt=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r18_leaf2_1.npz"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "spot.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3966266",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r18_branch",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "527d23b413278486cece20d3d91921fab498f11e",
+  "short": "527d23b4"
+ },
+ "keys": {
+  "first_trial": 0,
+  "mode": "hybrid:/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r7_dim_1_s1.npz?expert=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r4_1_approach_last2_expert.pt&foldprog=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r4_1_approach_last2_program.npz&w0=1.0&sched=const&var=0.001&key=pose&stall=3&window=20&alt=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r18_leaf2_1.npz",
+  "tasks": "1",
+  "trials": 0
+ },
+ "metrics": {
+  "complete": true,
+  "n_episodes": 30,
+  "secs": 1617.5090594291687,
+  "success_rate": 0.03333333333333333,
+  "tasks": {
+   "1": {
+    "errors": 0,
+    "language": "close the top drawer of the cabinet and put the black bowl on top of it",
+    "mean_steps": 397.76666666666665,
+    "n": 30,
+    "success_rate": 0.03333333333333333
+   }
+  }
+ },
+ "notes": null,
+ "retired": {
+  "reason": "r18 run 1 INVALID: within one client process, earlier episodes leave simulator state that re-seeding does not clear on some tasks (only each shard's first branch replayed its prefix; branches rescued with the knob inactive); rerun with a fresh env per branch (m3_prereg branch_amend4); files moved to results/robot/r18_run1_invalid/",
+  "when": "2026-09-27T18:21:26+00:00"
+ },
+ "run_id": "r18_branch__libero_90__1_4__first_trial-0__mode262026e661cc__tasks-1__trials-0__s7__527d23b4",
+ "schema": 1,
+ "script": "experiments/libero_client.py",
+ "seconds": null,
+ "seed": 7,
+ "source_commit": null,
+ "started": "2026-09-27T16:43:09+00:00",
+ "stream": null,
+ "tag": "1_4"
+}

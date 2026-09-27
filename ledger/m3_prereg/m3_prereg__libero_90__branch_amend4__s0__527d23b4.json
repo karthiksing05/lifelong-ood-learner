@@ -1,0 +1,49 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "fourth amendment of the stall-point branching pre-registration",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky2.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "527d23b413278486cece20d3d91921fab498f11e",
+  "short": "527d23b4"
+ },
+ "keys": {},
+ "metrics": {
+  "amends": "m3_prereg tags branch, branch_amend1-3",
+  "change": "the client closes the env and builds a fresh one before every branch, exactly as at process start (np.random.seed, env, env.seed), then the recorded session's resets; everything else unchanged. Added check G3: the late replay (recorded noise, no change) must reproduce the recorded episode's actions; instances where it does not are listed",
+  "reason": "run 1 (1,586 branches, jobs 3966265-3966284) is INVALID and discarded: the prefix gate failed for 426 of 1,569 branches, clustered in tasks 1, 35, 36, 4, 39, 32, 5; in every shard only the FIRST branch (a fresh client process) replayed its prefix, later ones diverged near step 42-52 whatever their knob. On these tasks earlier episodes of a process leave simulator state that re-seeding plus the recorded resets does not clear (task 58, used by the smoke tests, is not affected). Such branches also rescued with their knob inactive (task 1 state 4: late replay and wx2 'succeeded' in run 1; with a fresh env both reproduce the recorded failure exactly, smoke test job 3966688). An exact prefix does not certify the continuation (the latent state can diverge after the branch point), so the whole run is repeated, not filtered. Run 1's files: results/robot/r18_run1_invalid/; its ledger rows are retired",
+  "unchanged": "instances, stall locator, arms, rescue definition, G1-G2, D1-D3 with Holm, the rule, the recovery arm r18rec and R1/R2 (its condition is read on the rerun)",
+  "written_before": "the rerun; run 1's outcomes were seen (any-late rescue 13 of 107) and are not used"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_90__branch_amend4__s0__527d23b4",
+ "schema": 1,
+ "script": "(inline, session 2026-09-27)",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-27T18:21:41+00:00",
+ "stream": null,
+ "tag": "branch_amend4"
+}

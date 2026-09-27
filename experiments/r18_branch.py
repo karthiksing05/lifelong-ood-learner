@@ -25,6 +25,8 @@ must match the recording (the prefix gate of the pre-registration, ledger m3_pre
     python experiments/r18_branch.py lists               # the branch shards again from r18_branch_specs.json
     python experiments/r18_branch.py launch [--dry]      # packs of 3 instances per GPU (roll_pack.sbatch)
     python experiments/r18_branch.py stats [--record]    # the prefix gate and the rescue reads
+    python experiments/r18_branch.py recover [--dry]     # part b (if >= 10 concentrated instances rescued): r18rec training
+                                                         # (r17_nft.py --recovery) + its scoring on init states 30-49
 """
 import argparse
 import glob
@@ -45,6 +47,7 @@ SPEC = os.path.join(R, "r18_branch_specs.json")
 LATE = ["replay", "noise1", "noise2", "noise3", "noise4", "wx0.5", "wx2", "leaf2", "release"]
 EARLY = ["noise1", "noise2"]
 FOLDKNOBS = ["nofold", "foldall"]
+CONCENTRATED = [42, 32, 1, 35, 40, 36, 52, 62, 41]
 SHARD = 30
 WARM = 2                                   # serve.warm(): two calls before the first episode
 
@@ -208,16 +211,42 @@ def launch(a):
         print(f"pack {os.path.basename(path)} [{', '.join(str(s['task']) + '_' + str(s['shard']) for s in grp)}] -> job {j}")
 
 
+def recover(a):
+    """Part b of the pre-registration: the recovery LoRA r18rec on the 9 concentrated tasks and every task with a rescue."""
+    st = json.load(open(os.path.join(R, "r18_branch_stats.json")))
+    if st["rescued_concentrated"] < 10:
+        print(f"[r18] {st['rescued_concentrated']} concentrated instances rescued (< 10): part b does not run (pre-registered)")
+        return
+    tasks = sorted(set(CONCENTRATED) | {int(t) for t, r in st["per_task"].items() if r["rescued"] > 0})
+    jobs = {}
+    for t in tasks:
+        if os.path.exists(os.path.join(R, f"r18rec_{t}_lora.pt")):
+            continue
+        args = ["sbatch", "--parsable", "--partition=tail-lab", "--account=tail-lab",
+                f"--export=ALL,ENV=openpi,SCRIPT=experiments/r17_nft.py --task {t} --name r18rec --recovery", "slurm/jobs/robot_gpu.sbatch"]
+        if a.dry:
+            print("  [dry]", " ".join(args))
+            jobs[t] = "DRY"
+            continue
+        jobs[t] = subprocess.run(args, capture_output=True, text=True, check=True).stdout.strip().split(";")[0]
+        print(f"[r18] r18rec task {t} -> job {jobs[t]}")
+    PY = os.path.expanduser("~/flash/miniconda3/envs/chunks/bin/python")
+    cmd = [PY, "experiments/launch_pack.py", "--per", "3", "--tasks", ",".join(map(str, tasks)), "--arms", "lora@r18rec"]
+    if jobs:
+        cmd += ["--task-after", ",".join(f"{t}:{j}" for t, j in jobs.items())]
+    print(subprocess.run(cmd + (["--dry"] if a.dry else []), capture_output=True, text=True).stdout)
+
+
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("cmd", choices=["prep", "lists", "launch", "stats"])
+    ap.add_argument("cmd", choices=["prep", "lists", "launch", "recover", "stats"])
     ap.add_argument("--per", type=int, default=3)
     ap.add_argument("--dry", action="store_true")
     ap.add_argument("--record", action="store_true")
     ap.add_argument("--B", type=int, default=10000)
     a = ap.parse_args()
     os.chdir(ROOT)
-    {"prep": prep, "lists": lists, "launch": launch, "stats": lambda a: load_module("r18s", os.path.join(ROOT, "experiments", "r18_branch_stats.py")).main(a)}[a.cmd](a)
+    {"prep": prep, "lists": lists, "launch": launch, "recover": recover, "stats": lambda a: load_module("r18s", os.path.join(ROOT, "experiments", "r18_branch_stats.py")).main(a)}[a.cmd](a)
 
 
 if __name__ == "__main__":

@@ -82,10 +82,14 @@ def main():
         for k, br in todo:
             prefix = np.load(br["rec"])["action"] if br is not None and br.get("rec") else None
             if br is not None:
-                # the recorded episode's simulator: MuJoCo's solver warm-start is not in the init state and depends on the random
-                # placement of the reset that precedes set_init_state, i.e. on the resets since env.seed; re-seed and repeat the
-                # recorded session's resets (experiments/r18_sim_check.py: bit-identical states only this way)
+                # the recorded episode's simulator.  MuJoCo's solver warm-start is not in the init state and depends on the random
+                # placement of the reset that precedes set_init_state, i.e. on the resets since env.seed (r18_sim_check.py); and on
+                # some tasks (articulated fixtures) earlier episodes of the process leave state that re-seeding does not clear
+                # (r18 branches: only a shard's first branch replayed).  So: a fresh env as at process start, re-seeded, and the
+                # recorded session's resets
+                env.close()
                 np.random.seed(a.seed)
+                env = OffScreenRenderEnv(bddl_file_name=str(bddl), camera_heights=256, camera_widths=256)
                 env.seed(a.seed)
                 for _ in range(int(br.get("resets", 0))):
                     env.reset()
