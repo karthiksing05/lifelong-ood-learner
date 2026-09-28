@@ -1,0 +1,176 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r21rnd_36_lora.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 18710528,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 18710528,
+  "tree": 0
+ },
+ "command": "experiments/r20_family.py --task 36 --arm rnd --two-stage",
+ "config": {
+  "arm": "rnd",
+  "bank_device": "cpu",
+  "dry": false,
+  "level": "0.4",
+  "name": null,
+  "own_per_batch": 16,
+  "pool_cap": 1000,
+  "rank": 16,
+  "seed": 0,
+  "steps": 1000,
+  "stride": 5,
+  "task": 36,
+  "two_stage": true
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "voltron.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3977186",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r20_family",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "db20dee4ca415c32139070b115153dc5da6276bd",
+  "short": "db20dee4"
+ },
+ "keys": {
+  "task": 36
+ },
+ "metrics": {
+  "arm": "rnd",
+  "curve": {
+   "stage1": {
+    "anchor": [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "loss": [
+     0.0968206450343132,
+     0.024876216426491737,
+     0.024613438174128532,
+     0.021272165700793266,
+     0.019423862919211388,
+     0.012394094839692116,
+     0.011648374609649181,
+     0.008194304071366787,
+     0.011741824448108673,
+     0.013559210114181042,
+     0.009424707852303982
+    ],
+    "step": [
+     1,
+     100,
+     200,
+     300,
+     400,
+     500,
+     600,
+     700,
+     800,
+     900,
+     1000
+    ]
+   },
+   "stage2": {
+    "anchor": [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "loss": [
+     0.05268464237451553,
+     0.004204512573778629,
+     0.0027037158142775297,
+     0.0014076664811000228,
+     0.005189159419387579,
+     0.0018108676886186004,
+     0.0011068428866565228,
+     0.0011881146347150207,
+     0.002180931158363819,
+     0.005681798327714205,
+     0.003233273746445775
+    ],
+    "step": [
+     1,
+     100,
+     200,
+     300,
+     400,
+     500,
+     600,
+     700,
+     800,
+     900,
+     1000
+    ]
+   }
+  },
+  "family": [
+   36,
+   37,
+   48,
+   52,
+   53,
+   58,
+   62
+  ],
+  "own": 218,
+  "pool": 996,
+  "sources": [
+   1,
+   5,
+   6,
+   35,
+   40,
+   42
+  ],
+  "successes": {
+   "1": 28,
+   "35": 29,
+   "40": 31,
+   "42": 14,
+   "5": 73,
+   "6": 53
+  },
+  "task": 36,
+  "text": "put the white bowl on the plate"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r20_family__libero_90__r21rnd__task-36__s0__db20dee4",
+ "schema": 1,
+ "script": "experiments/r20_family.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-28T20:46:01+00:00",
+ "stream": null,
+ "tag": "r21rnd"
+}

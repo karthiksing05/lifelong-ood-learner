@@ -1,0 +1,176 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r21fam_52_lora.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 18710528,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 18710528,
+  "tree": 0
+ },
+ "command": "experiments/r20_family.py --task 52 --arm fam --two-stage",
+ "config": {
+  "arm": "fam",
+  "bank_device": "cpu",
+  "dry": false,
+  "level": "0.4",
+  "name": null,
+  "own_per_batch": 16,
+  "pool_cap": 1000,
+  "rank": 16,
+  "seed": 0,
+  "steps": 1000,
+  "stride": 5,
+  "task": 52,
+  "two_stage": true
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "crushinator.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3977177",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r20_family",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "704a18999791593c565893298552f553b59bd2ab",
+  "short": "704a1899"
+ },
+ "keys": {
+  "task": 52
+ },
+ "metrics": {
+  "arm": "fam",
+  "curve": {
+   "stage1": {
+    "anchor": [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "loss": [
+     0.0673341155052185,
+     0.020730677992105484,
+     0.024821022525429726,
+     0.01591264270246029,
+     0.014517015777528286,
+     0.012622887268662453,
+     0.0069517092779278755,
+     0.012053780257701874,
+     0.008254952728748322,
+     0.0145081402733922,
+     0.01401898730546236
+    ],
+    "step": [
+     1,
+     100,
+     200,
+     300,
+     400,
+     500,
+     600,
+     700,
+     800,
+     900,
+     1000
+    ]
+   },
+   "stage2": {
+    "anchor": [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "loss": [
+     0.037810951471328735,
+     0.007180146407335997,
+     0.0023198036942631006,
+     0.0014738868921995163,
+     0.005854104645550251,
+     0.0014951983466744423,
+     0.001305053592659533,
+     0.0012184508377686143,
+     0.0018282582750543952,
+     0.005939100868999958,
+     0.003052470972761512
+    ],
+    "step": [
+     1,
+     100,
+     200,
+     300,
+     400,
+     500,
+     600,
+     700,
+     800,
+     900,
+     1000
+    ]
+   }
+  },
+  "family": [
+   36,
+   37,
+   48,
+   52,
+   53,
+   58,
+   62
+  ],
+  "own": 104,
+  "pool": 996,
+  "sources": [
+   36,
+   37,
+   48,
+   53,
+   58,
+   62
+  ],
+  "successes": {
+   "36": 53,
+   "37": 65,
+   "48": 73,
+   "53": 79,
+   "58": 55,
+   "62": 51
+  },
+  "task": 52,
+  "text": "pick up the milk and put it in the basket"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r20_family__libero_90__r21fam__task-52__s0__704a1899",
+ "schema": 1,
+ "script": "experiments/r20_family.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-28T20:21:12+00:00",
+ "stream": null,
+ "tag": "r21fam"
+}

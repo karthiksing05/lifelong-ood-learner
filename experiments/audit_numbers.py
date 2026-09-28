@@ -79,10 +79,10 @@ def st_ratio(num, den, tag="final_23tasks"):
     return lambda: (L.mean("m3_stats", num, tag=tag)[0] / L.mean("m3_stats", den, tag=tag)[0], 0.0, 1)
 
 
-def fam_tasks(arm, tasks):
-    """Successes of a family-transfer arm summed over some target tasks (ledger r20_family tag read)."""
+def fam_tasks(arm, tasks, tag="read"):
+    """Successes of a family-transfer arm summed over some target tasks (ledger r20_family tag read / read_r21)."""
     def f():
-        rows = L.load("r20_family", tag="read")
+        rows = L.load("r20_family", tag=tag)
         if not rows:
             return (float("nan"), float("nan"), 0)
         pt = rows[-1]["metrics"]["all_targets"]["per_task"]
@@ -225,6 +225,10 @@ EMBODIED = [
     ("family: drawer tasks, family pool", fam_tasks("fam", (3, 4, 5)), "8"),
     ("family: drawer tasks, episodes", lambda: (float(sum(L.load("m3_final", tag="lora_r20fam", keys__tasks=str(t))[-1]["metrics"]["n_episodes"]
                                                            for t in (3, 4, 5))), 0.0, 1), "60"),
+    ("family2: family pretraining successes", emb("r20_family", "metrics.all_targets.fam.k", tag="read_r21"), "148"),
+    ("family2: random pretraining successes", emb("r20_family", "metrics.all_targets.rnd.k", tag="read_r21"), "144"),
+    ("family2: one-demo LoRA successes", emb("r20_family", "metrics.all_targets.onedemo.k", tag="read_r21"), "153"),
+    ("family2: drawer tasks, family pretraining", fam_tasks("fam", (3, 4, 5), tag="read_r21"), "48"),
     ("shared fold successes", st("metrics.methods.ours_shared_all.prior_fails.k"), "146"),
     ("other half's fold successes", st("metrics.methods.ours_shared_xfit.prior_fails.k"), "107"),
     ("borrowing without a fold successes", st("metrics.methods.ours_dim1.prior_fails.k"), "168"),

@@ -8098,7 +8098,10 @@
   ]
  },
  "notes": "derived from the per-episode result files of ledger/m3_final (states 30-49) and ledger/m3_compose zero-shot (states 0-9, the practice); bootstrap = tasks, then init states, paired across methods",
- "retired": null,
+ "retired": {
+  "reason": "superseded by the row with the two-stage family arms; every shared value identical",
+  "when": "2026-09-28T21:48:11+00:00"
+ },
  "run_id": "m3_stats__libero_90__final_23tasks__s0__e5cced56",
  "schema": 1,
  "script": "experiments/m3_stats.py",

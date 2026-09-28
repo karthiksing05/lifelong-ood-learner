@@ -1,0 +1,176 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r21fam_58_lora.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 18710528,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 18710528,
+  "tree": 0
+ },
+ "command": "experiments/r20_family.py --task 58 --arm fam --two-stage",
+ "config": {
+  "arm": "fam",
+  "bank_device": "cpu",
+  "dry": false,
+  "level": "0.4",
+  "name": null,
+  "own_per_batch": 16,
+  "pool_cap": 1000,
+  "rank": 16,
+  "seed": 0,
+  "steps": 1000,
+  "stride": 5,
+  "task": 58,
+  "two_stage": true
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "voltron.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3977179",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r20_family",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "db20dee4ca415c32139070b115153dc5da6276bd",
+  "short": "db20dee4"
+ },
+ "keys": {
+  "task": 58
+ },
+ "metrics": {
+  "arm": "fam",
+  "curve": {
+   "stage1": {
+    "anchor": [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "loss": [
+     0.06185850128531456,
+     0.020940138027071953,
+     0.02309396117925644,
+     0.014833077788352966,
+     0.01492382027208805,
+     0.018263835459947586,
+     0.01091710664331913,
+     0.01483834721148014,
+     0.007775390055030584,
+     0.011992852203547955,
+     0.011478533037006855
+    ],
+    "step": [
+     1,
+     100,
+     200,
+     300,
+     400,
+     500,
+     600,
+     700,
+     800,
+     900,
+     1000
+    ]
+   },
+   "stage2": {
+    "anchor": [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "loss": [
+     0.04177263006567955,
+     0.004177808295935392,
+     0.0023618738632649183,
+     0.0019127142149955034,
+     0.0062221563421189785,
+     0.0015015933895483613,
+     0.0018635854357853532,
+     0.001263079117052257,
+     0.0018241051584482193,
+     0.006574075203388929,
+     0.002361457562074065
+    ],
+    "step": [
+     1,
+     100,
+     200,
+     300,
+     400,
+     500,
+     600,
+     700,
+     800,
+     900,
+     1000
+    ]
+   }
+  },
+  "family": [
+   36,
+   37,
+   48,
+   52,
+   53,
+   58,
+   62
+  ],
+  "own": 143,
+  "pool": 996,
+  "sources": [
+   36,
+   37,
+   48,
+   52,
+   53,
+   62
+  ],
+  "successes": {
+   "36": 53,
+   "37": 65,
+   "48": 73,
+   "52": 43,
+   "53": 79,
+   "62": 51
+  },
+  "task": 58,
+  "text": "pick up the ketchup and put it in the tray"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r20_family__libero_90__r21fam__task-58__s0__db20dee4",
+ "schema": 1,
+ "script": "experiments/r20_family.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-28T20:29:52+00:00",
+ "stream": null,
+ "tag": "r21fam"
+}

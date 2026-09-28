@@ -229,6 +229,21 @@ def main():
         w("F1 fails in the reverse direction: family data hurt.  Per task (fam / rnd / one demo): " +
           "; ".join(f"{t} {v['fam']}/{v['rnd']}/{v['onedemo']}" for t, v in F["all_targets"]["per_task"].items()) +
           ".  On the drawer tasks the family-trained adapter carries out a sibling's instruction (figures/robot/r20_task3_objects.png).\n")
+    f21 = os.path.join(R, "r21_family_stats.json")
+    if os.path.exists(f21):
+        F2 = json.load(open(f21))
+        w("## Two-stage family transfer (pre-registered: ledger m3_prereg tag family2; ledger r20_family tag read_r21)\n")
+        w("Stage 1: LoRA on the family's (fam) or the random tasks' (rnd) pool alone; stage 2: the one-demo LoRA's exact recipe from the "
+          "stage-1 adapter.  T1: fam vs the one-demo LoRA; T2: fam vs rnd; Holm over the two.\n")
+        w("| scope | fam | rnd | one-demo LoRA | T1 fam - one demo (sign p, Holm) | T2 fam - rnd (sign p, Holm) |")
+        w("|---|---|---|---|---|---|")
+        for sc, name in (("all_targets", "all 12 targets"), ("pick_place_family", "pick-and-place family")):
+            o_ = F2[sc]
+            d1, d2 = o_["fam-onedemo"], o_["fam-rnd"]
+            w(f"| {name} | {o_['fam']['k']}/{o_['fam']['n']} | {o_['rnd']['k']}/{o_['rnd']['n']} | {o_['onedemo']['k']}/{o_['onedemo']['n']} | "
+              f"{d1['diff']:+.3f} ({d1['sign_p']:.3f}, {d1['holm_p']:.3f}) | {d2['diff']:+.3f} ({d2['sign_p']:.3f}, {d2['holm_p']:.3f}) |")
+        w("")
+        w("Both fail: the second stage restores the target's binding, and the family's pretraining adds nothing to it.\n")
     w("## What composition borrows\n")
     for src, name in (("", "tree prototypes (band t = 0.2-0.4)"), ("_leaf", "leaves (the policy's chunk means)"), ("_seg", "segments of leaves")):
         p = os.path.join(R, f"r8_provenance{src}.json")

@@ -1,0 +1,164 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r21fam_5_lora.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 18710528,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 18710528,
+  "tree": 0
+ },
+ "command": "experiments/r20_family.py --task 5 --arm fam --two-stage",
+ "config": {
+  "arm": "fam",
+  "bank_device": "cpu",
+  "dry": false,
+  "level": "0.4",
+  "name": null,
+  "own_per_batch": 16,
+  "pool_cap": 1000,
+  "rank": 16,
+  "seed": 0,
+  "steps": 1000,
+  "stride": 5,
+  "task": 5,
+  "two_stage": true
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "voltron.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3977183",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r20_family",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "db20dee4ca415c32139070b115153dc5da6276bd",
+  "short": "db20dee4"
+ },
+ "keys": {
+  "task": 5
+ },
+ "metrics": {
+  "arm": "fam",
+  "curve": {
+   "stage1": {
+    "anchor": [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "loss": [
+     0.08949154615402222,
+     0.03214549645781517,
+     0.020740201696753502,
+     0.014294818043708801,
+     0.013881350867450237,
+     0.014636605978012085,
+     0.015168937854468822,
+     0.009864669293165207,
+     0.013787679374217987,
+     0.015245161019265652,
+     0.01362139917910099
+    ],
+    "step": [
+     1,
+     100,
+     200,
+     300,
+     400,
+     500,
+     600,
+     700,
+     800,
+     900,
+     1000
+    ]
+   },
+   "stage2": {
+    "anchor": [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "loss": [
+     0.039757147431373596,
+     0.00868224073201418,
+     0.0061897048726677895,
+     0.0033802525140345097,
+     0.007147423457354307,
+     0.002216433873400092,
+     0.0022529498673975468,
+     0.001659159897826612,
+     0.0025867752265185118,
+     0.007244510110467672,
+     0.005055985879153013
+    ],
+    "step": [
+     1,
+     100,
+     200,
+     300,
+     400,
+     500,
+     600,
+     700,
+     800,
+     900,
+     1000
+    ]
+   }
+  },
+  "family": [
+   3,
+   4,
+   5
+  ],
+  "own": 168,
+  "pool": 1000,
+  "sources": [
+   3,
+   4
+  ],
+  "successes": {
+   "3": 74,
+   "4": 58
+  },
+  "task": 5,
+  "text": "put the chocolate pudding in the top drawer of the cabinet and close it"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r20_family__libero_90__r21fam__task-5__s0__db20dee4",
+ "schema": 1,
+ "script": "experiments/r20_family.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-28T20:38:37+00:00",
+ "stream": null,
+ "tag": "r21fam"
+}

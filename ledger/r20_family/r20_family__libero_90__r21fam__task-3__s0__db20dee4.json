@@ -1,0 +1,164 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r21fam_3_lora.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 18710528,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 18710528,
+  "tree": 0
+ },
+ "command": "experiments/r20_family.py --task 3 --arm fam --two-stage",
+ "config": {
+  "arm": "fam",
+  "bank_device": "cpu",
+  "dry": false,
+  "level": "0.4",
+  "name": null,
+  "own_per_batch": 16,
+  "pool_cap": 1000,
+  "rank": 16,
+  "seed": 0,
+  "steps": 1000,
+  "stride": 5,
+  "task": 3,
+  "two_stage": true
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "voltron.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3977181",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r20_family",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "db20dee4ca415c32139070b115153dc5da6276bd",
+  "short": "db20dee4"
+ },
+ "keys": {
+  "task": 3
+ },
+ "metrics": {
+  "arm": "fam",
+  "curve": {
+   "stage1": {
+    "anchor": [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "loss": [
+     0.07976207137107849,
+     0.03393229469656944,
+     0.022307980805635452,
+     0.013531704433262348,
+     0.020880287513136864,
+     0.009167254902422428,
+     0.012335378676652908,
+     0.00879198219627142,
+     0.013475787825882435,
+     0.0143091706559062,
+     0.01570156030356884
+    ],
+    "step": [
+     1,
+     100,
+     200,
+     300,
+     400,
+     500,
+     600,
+     700,
+     800,
+     900,
+     1000
+    ]
+   },
+   "stage2": {
+    "anchor": [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "loss": [
+     0.0391702838242054,
+     0.00416077533736825,
+     0.002343737753108144,
+     0.001175598124973476,
+     0.00816714484244585,
+     0.0027962399180978537,
+     0.0018539911834523082,
+     0.002006873022764921,
+     0.0031533725559711456,
+     0.006487030070275068,
+     0.0031482980120927095
+    ],
+    "step": [
+     1,
+     100,
+     200,
+     300,
+     400,
+     500,
+     600,
+     700,
+     800,
+     900,
+     1000
+    ]
+   }
+  },
+  "family": [
+   3,
+   4,
+   5
+  ],
+  "own": 183,
+  "pool": 1000,
+  "sources": [
+   4,
+   5
+  ],
+  "successes": {
+   "4": 58,
+   "5": 73
+  },
+  "task": 3,
+  "text": "put the butter at the back in the top drawer of the cabinet and close it"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r20_family__libero_90__r21fam__task-3__s0__db20dee4",
+ "schema": 1,
+ "script": "experiments/r20_family.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-28T20:31:02+00:00",
+ "stream": null,
+ "tag": "r21fam"
+}

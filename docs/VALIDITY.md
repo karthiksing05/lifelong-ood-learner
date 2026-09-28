@@ -53,6 +53,8 @@ Tasks where the prior's practice fails: 21 of 23; kept prior on 19, 67.
 | LoRA + failure negatives + recovery branches (not every task) | 185/280 | 0.661 (0.60-0.71) | 0.53-0.78 | 14 | 261.9 MB |
 | one demo + the family's data (t = 0.4) (not every task) | 104/240 | 0.433 (0.37-0.50) | 0.27-0.60 | 12 | 224.5 MB |
 | one demo + random tasks' data (not every task) | 137/240 | 0.571 (0.51-0.63) | 0.38-0.75 | 12 | 224.5 MB |
+| family pretraining, then the one demo (not every task) | 148/240 | 0.617 (0.55-0.68) | 0.46-0.76 | 12 | 224.5 MB |
+| random-task pretraining, then the one demo (not every task) | 144/240 | 0.600 (0.54-0.66) | 0.40-0.79 | 12 | 224.5 MB |
 
 | comparison | pooled difference | 95% interval | one-sided lower | non-inferior at the margin | discordant | sign test p | pairs, tasks |
 |---|---|---|---|---|---|---|---|
@@ -109,6 +111,9 @@ Tasks where the prior's practice fails: 21 of 23; kept prior on 19, 67.
 | one demo + the family's data (t = 0.4) vs one demo + random tasks' data | -0.138 | -0.375 to +0.087 | -0.338 | not shown | 38 vs 71 | 0.002 | 240, 12 |
 | one demo + the family's data (t = 0.4) vs few-shot LoRA (rank 16) | -0.204 | -0.438 to +0.017 | -0.400 | not shown | 33 vs 82 | 0.000 | 240, 12 |
 | one demo + random tasks' data vs few-shot LoRA (rank 16) | -0.067 | -0.158 to +0.021 | -0.142 | not shown | 22 vs 38 | 0.052 | 240, 12 |
+| family pretraining, then the one demo vs few-shot LoRA (rank 16) | -0.021 | -0.138 to +0.096 | -0.117 | not shown | 30 vs 35 | 0.620 | 240, 12 |
+| family pretraining, then the one demo vs random-task pretraining, then the one demo | +0.017 | -0.092 to +0.133 | -0.075 | yes | 32 vs 28 | 0.699 | 240, 12 |
+| random-task pretraining, then the one demo vs few-shot LoRA (rank 16) | -0.037 | -0.138 to +0.058 | -0.121 | not shown | 18 vs 27 | 0.233 | 240, 12 |
 
 ## Pooled success, all tasks
 
@@ -152,6 +157,8 @@ Tasks where the prior's practice fails: 21 of 23; kept prior on 19, 67.
 | LoRA + failure negatives + recovery branches (not every task) | 225/320 | 0.703 (0.65-0.75) | 0.58-0.82 | 16 | 261.9 MB |
 | one demo + the family's data (t = 0.4) (not every task) | 144/280 | 0.514 (0.46-0.57) | 0.34-0.70 | 14 | 224.5 MB |
 | one demo + random tasks' data (not every task) | 177/280 | 0.632 (0.57-0.69) | 0.45-0.80 | 14 | 224.5 MB |
+| family pretraining, then the one demo (not every task) | 188/280 | 0.671 (0.61-0.72) | 0.52-0.81 | 14 | 224.5 MB |
+| random-task pretraining, then the one demo (not every task) | 184/280 | 0.657 (0.60-0.71) | 0.47-0.82 | 14 | 224.5 MB |
 
 | comparison | pooled difference | 95% interval | one-sided lower | non-inferior at the margin | discordant | sign test p | pairs, tasks |
 |---|---|---|---|---|---|---|---|
@@ -208,6 +215,9 @@ Tasks where the prior's practice fails: 21 of 23; kept prior on 19, 67.
 | one demo + the family's data (t = 0.4) vs one demo + random tasks' data | -0.118 | -0.325 to +0.071 | -0.293 | not shown | 38 vs 71 | 0.002 | 280, 14 |
 | one demo + the family's data (t = 0.4) vs few-shot LoRA (rank 16) | -0.175 | -0.382 to +0.014 | -0.350 | not shown | 33 vs 82 | 0.000 | 280, 14 |
 | one demo + random tasks' data vs few-shot LoRA (rank 16) | -0.057 | -0.136 to +0.018 | -0.121 | not shown | 22 vs 38 | 0.052 | 280, 14 |
+| family pretraining, then the one demo vs few-shot LoRA (rank 16) | -0.018 | -0.118 to +0.082 | -0.104 | not shown | 30 vs 35 | 0.620 | 280, 14 |
+| family pretraining, then the one demo vs random-task pretraining, then the one demo | +0.014 | -0.079 to +0.114 | -0.064 | yes | 32 vs 28 | 0.699 | 280, 14 |
+| random-task pretraining, then the one demo vs few-shot LoRA (rank 16) | -0.032 | -0.121 to +0.050 | -0.107 | not shown | 18 vs 27 | 0.233 | 280, 14 |
 
 ## Reliability
 
@@ -368,6 +378,17 @@ Families at t = 0.4: [[36, 37, 48, 52, 53, 58, 62], [3, 4, 5], [34, 42]].  Each 
 | pick-and-place family (F2) | 72/140 | 65/140 | 77/140 | +0.050 (0.419) | -0.036 (0.597) |
 
 F1 fails in the reverse direction: family data hurt.  Per task (fam / rnd / one demo): 3 1/19/19; 4 4/15/17; 5 3/16/19; 34 18/19/18; 36 9/15/13; 37 8/1/7; 42 6/3/3; 48 18/13/12; 52 4/12/13; 53 17/15/20; 58 10/8/9; 62 6/1/3.  On the drawer tasks the family-trained adapter carries out a sibling's instruction (figures/robot/r20_task3_objects.png).
+
+## Two-stage family transfer (pre-registered: ledger m3_prereg tag family2; ledger r20_family tag read_r21)
+
+Stage 1: LoRA on the family's (fam) or the random tasks' (rnd) pool alone; stage 2: the one-demo LoRA's exact recipe from the stage-1 adapter.  T1: fam vs the one-demo LoRA; T2: fam vs rnd; Holm over the two.
+
+| scope | fam | rnd | one-demo LoRA | T1 fam - one demo (sign p, Holm) | T2 fam - rnd (sign p, Holm) |
+|---|---|---|---|---|---|
+| all 12 targets | 148/240 | 144/240 | 153/240 | -0.021 (0.620, 1.000) | +0.017 (0.699, 1.000) |
+| pick-and-place family | 79/140 | 70/140 | 77/140 | +0.014 (0.880, 0.880) | +0.064 (0.188, 0.375) |
+
+Both fail: the second stage restores the target's binding, and the family's pretraining adds nothing to it.
 
 ## What composition borrows
 

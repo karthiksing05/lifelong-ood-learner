@@ -1,0 +1,176 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r21rnd_52_lora.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 18710528,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 18710528,
+  "tree": 0
+ },
+ "command": "experiments/r20_family.py --task 52 --arm rnd --two-stage",
+ "config": {
+  "arm": "rnd",
+  "bank_device": "cpu",
+  "dry": false,
+  "level": "0.4",
+  "name": null,
+  "own_per_batch": 16,
+  "pool_cap": 1000,
+  "rank": 16,
+  "seed": 0,
+  "steps": 1000,
+  "stride": 5,
+  "task": 52,
+  "two_stage": true
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "voltron.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3977189",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r20_family",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "db20dee4ca415c32139070b115153dc5da6276bd",
+  "short": "db20dee4"
+ },
+ "keys": {
+  "task": 52
+ },
+ "metrics": {
+  "arm": "rnd",
+  "curve": {
+   "stage1": {
+    "anchor": [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "loss": [
+     0.1112605556845665,
+     0.027774283662438393,
+     0.04961578920483589,
+     0.019066981971263885,
+     0.01836497150361538,
+     0.02030496671795845,
+     0.012107347138226032,
+     0.010663394816219807,
+     0.017206912860274315,
+     0.0209218617528677,
+     0.017521314322948456
+    ],
+    "step": [
+     1,
+     100,
+     200,
+     300,
+     400,
+     500,
+     600,
+     700,
+     800,
+     900,
+     1000
+    ]
+   },
+   "stage2": {
+    "anchor": [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "loss": [
+     0.05290673300623894,
+     0.009604744613170624,
+     0.0026220015715807676,
+     0.0022957876790314913,
+     0.0058881244622170925,
+     0.0016634812345728278,
+     0.001861530588939786,
+     0.0010861213086172938,
+     0.0015664827078580856,
+     0.007484727539122105,
+     0.003084760159254074
+    ],
+    "step": [
+     1,
+     100,
+     200,
+     300,
+     400,
+     500,
+     600,
+     700,
+     800,
+     900,
+     1000
+    ]
+   }
+  },
+  "family": [
+   36,
+   37,
+   48,
+   52,
+   53,
+   58,
+   62
+  ],
+  "own": 104,
+  "pool": 996,
+  "sources": [
+   32,
+   34,
+   41,
+   42,
+   43,
+   63
+  ],
+  "successes": {
+   "32": 17,
+   "34": 72,
+   "41": 56,
+   "42": 14,
+   "43": 78,
+   "63": 54
+  },
+  "task": 52,
+  "text": "pick up the milk and put it in the basket"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r20_family__libero_90__r21rnd__task-52__s0__db20dee4",
+ "schema": 1,
+ "script": "experiments/r20_family.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-28T20:47:37+00:00",
+ "stream": null,
+ "tag": "r21rnd"
+}
