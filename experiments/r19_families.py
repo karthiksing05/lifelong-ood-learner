@@ -50,7 +50,9 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--levels", default="0.3,0.4,0.55")
     ap.add_argument("--cut", type=float, default=0.5)
+    ap.add_argument("--out", default="", help="write the families of each level to this JSON")
     a = ap.parse_args()
+    saved = {}
     z = np.load(os.path.join(R, "r19_invariance_sequences.npz"), allow_pickle=True)
     task, src = z["task"], z["source"]
     T = sorted(set(task.tolist()))
@@ -66,10 +68,15 @@ def main():
                 block = Dm[np.ix_(ii, jj)]
                 Dt[i, j] = block[~np.eye(len(ii), dtype=bool)].mean() if i == j else block.mean()
         fam = average_linkage(Dt, a.cut)
+        saved[u] = [sorted(int(T[i]) for i in f) for f in sorted(fam, key=len, reverse=True)]
         within = np.mean([Dt[i, i] for i in range(len(T))])
         print(f"\nt={u}: within-task {within:.3f}; {len(fam)} families at cut {a.cut}")
         for f in sorted(fam, key=len, reverse=True):
             print(f"  [{len(f)}] " + " | ".join(f"{T[i]}: {tx[T[i]]}" for i in f))
+    if a.out:
+        import json
+        json.dump(dict(cut=a.cut, families=saved), open(a.out, "w"), indent=1)
+        print(f"[r19] families -> {a.out}")
 
 
 if __name__ == "__main__":

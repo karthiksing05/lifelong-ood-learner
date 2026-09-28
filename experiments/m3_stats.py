@@ -44,7 +44,7 @@ METHODS = {"zeroshot": None, "practice_replay": ("raw_replay", None), "practice_
            "loop_eq1": ("lora_r16eq1", None), "loop_L2": ("lora_r16L2", None), "loop_eq2": ("lora_r16eq2", None),
            "loop_L3": ("lora_r16L3", None), "loop_eq3": ("lora_r16eq3", None),
            "nft_bal": ("lora_r17bal", None), "nft_pool": ("lora_r17pool", None), "nft_fold": ("lora_r17fold", None),
-           "rec_bal": ("lora_r18rec", None)}
+           "rec_bal": ("lora_r18rec", None), "fam_pool": ("lora_r20fam", None), "rnd_pool": ("lora_r20rnd", None)}
 NAMES = {"zeroshot": "zero-shot", "practice_replay": "demo replay", "practice_lora": "few-shot LoRA (rank 16)",
          "ours_dim": "borrowing, every 5th frame", "ours_dim1": "borrowing, every frame",
          "ours_dim1_last2": "borrowing + 258 KB fold", "ours_codes_full": "PoE codes + 4.7 MB fold",
@@ -61,7 +61,8 @@ NAMES = {"zeroshot": "zero-shot", "practice_replay": "demo replay", "practice_lo
          "loop_eq1": "258 KB learner, round 1", "loop_L2": "LoRA, round 2 (success-only)", "loop_eq2": "258 KB learner, round 2",
          "loop_L3": "LoRA, round 3", "loop_eq3": "258 KB learner, round 3",
          "nft_bal": "LoRA + failure negatives (balanced)", "nft_pool": "LoRA + failure negatives (pooled)",
-         "nft_fold": "258 KB + failure negatives", "rec_bal": "LoRA + failure negatives + recovery branches"}
+         "nft_fold": "258 KB + failure negatives", "rec_bal": "LoRA + failure negatives + recovery branches",
+         "fam_pool": "one demo + the family's data (t = 0.4)", "rnd_pool": "one demo + random tasks' data"}
 COMPARE = [("ours_dim1_last2", "practice_lora"), ("ours_dim1_last2", "practice_replay"), ("ours_dim1_last2", "zeroshot"),
            ("ours_dim", "practice_lora"), ("ours_dim", "practice_replay"), ("ours_dim1", "practice_replay"),
            ("practice_lora", "practice_replay"), ("ours_leaf1_last2", "practice_lora"), ("ours_leaf1_last2", "practice_replay"),
@@ -78,7 +79,8 @@ COMPARE = [("ours_dim1_last2", "practice_lora"), ("ours_dim1_last2", "practice_r
            ("ours_dim1_last2", "base_lora_eq"), ("ours_dim1_last2", "base_lora_r64"), ("ours_dim1_last2", "base_fullft"),
            ("loop_L2", "base_lora_learn"), ("loop_L3", "base_lora_learn"), ("loop_L3", "practice_lora"), ("loop_eq3", "loop_L3"),
            ("loop_eq1", "base_lora_learn"), ("nft_bal", "loop_L2"), ("nft_pool", "loop_L2"), ("nft_fold", "loop_eq2"),
-           ("rec_bal", "nft_bal"), ("rec_bal", "loop_L3")]
+           ("rec_bal", "nft_bal"), ("rec_bal", "loop_L3"),
+           ("fam_pool", "rnd_pool"), ("fam_pool", "practice_lora"), ("rnd_pool", "practice_lora")]
 
 
 def episodes(experiment):

@@ -1,0 +1,99 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration of the family-transfer test",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky2.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "7a4839baa46a1e84084e5a4cfb842e9fb485123a",
+  "short": "7a4839ba"
+ },
+ "keys": {},
+ "metrics": {
+  "arms": {
+   "r20fam": "own ONE demo (every frame) + pool from the other family members",
+   "r20rnd": "own ONE demo + pool from as many tasks drawn (seed 1000 + task) from the held-out tasks outside the family, capped at the family pool's size for that target"
+  },
+  "experiment": "family transfer: do the coarse prototype levels predict which OTHER tasks' data teach a held-out task?",
+  "families": {
+   "level": "t = 0.4",
+   "rule": "average-linkage clustering of the 21 held-out tasks by the mean edit distance between their human demos' collapsed label sequences, cut 0.5 (experiments/r19_families.py; results/robot/r20_families.json)",
+   "sets": [
+    [
+     36,
+     37,
+     48,
+     52,
+     53,
+     58,
+     62
+    ],
+    [
+     3,
+     4,
+     5
+    ],
+    [
+     34,
+     42
+    ]
+   ],
+   "targets": [
+    3,
+    4,
+    5,
+    34,
+    36,
+    37,
+    42,
+    48,
+    52,
+    53,
+    58,
+    62
+   ]
+  },
+  "hypotheses": {
+   "F1": "PRIMARY: r20fam > r20rnd over the 12 targets (240 paired episodes): exact two-sided sign test p < 0.05; the pooled paired difference with the two-level bootstrap reported",
+   "F2": "secondary: F1 within the 7-task pick-and-place family (140 pairs)",
+   "F3": "secondary: each pooled arm vs the one-demo LoRA (m3_final tag lora) on the same 12 tasks: does pooling help or hurt at all",
+   "descriptive": "each vs the task's own practice learners (lora_r16L2, lora_r17bal), which used the target's own practice"
+  },
+  "motivation": "r19_invariance (commit 7a4839b): task identity lives at the fine levels; the coarse levels are near-invariant within a task and group tasks into verb-like families without language",
+  "pool": "per source task: its demo (every frame) + every 5th frame of its successful practice rollouts (m5_practice, m6_round1, m6_round2; init states 0-29) under its own instruction; 1000 frames in all, an equal share per source, uniform subsample; the target's own practice is never used",
+  "reading": "F1 passes: the coarse levels predict cross-task transfer (the next step, pre-registered separately, is one adapter per family); F1 fails with both pooled arms alike: any transfer is not family-specific; both below the one-demo LoRA: pooling other tasks hurts",
+  "scoring": "init states 30-49, 20 episodes per task and arm (m3_final tags lora_r20fam, lora_r20rnd)",
+  "training": "LoRA rank 16 on the action expert, 1000 steps, lr 1e-4, batch 32 = 16 own-demo rows + 16 pool rows, seed 0 (experiments/r20_family.py)",
+  "written_before": "any r20 training or rollout (dry runs listed the data only)"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_90__family__s0__7a4839ba",
+ "schema": 1,
+ "script": "(inline, session 2026-09-28)",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-28T18:24:11+00:00",
+ "stream": null,
+ "tag": "family"
+}

@@ -100,10 +100,11 @@ def _flow_batch(n, H, A, gen, device):
 
 
 def train(bk, state, key, params, bank, chunks_full, steps=1000, lr=1e-4, batch=32, seed=0, anchor=None,
-          anchor_weight=1.0, log_every=100, log=print, weight_decay=0.0):
+          anchor_weight=1.0, log_every=100, log=print, weight_decay=0.0, groups=None):
     """Flow-matching fine-tune of the expert `key` on (bank rows, chunks_full [N, H, A] padded, normalised).
     anchor = (anchor_bank, anchor_chunks_full): the r ~ 0 half, target = the base velocity (expert off).
-    -> dict of loss curves."""
+    groups = [(row indices, rows per batch), ...]: every batch draws that many rows from each group (default: uniform over the
+    bank).  -> dict of loss curves."""
     torch.manual_seed(seed)
     gen = torch.Generator(device="cpu").manual_seed(seed)
     rng = np.random.default_rng(seed)
@@ -113,7 +114,10 @@ def train(bk, state, key, params, bank, chunks_full, steps=1000, lr=1e-4, batch=
     hist = dict(step=[], loss=[], anchor=[])
     t0 = time.time()
     for s in range(1, steps + 1):
-        idx = rng.integers(0, bank.n, size=min(batch, bank.n))
+        if groups is None:
+            idx = rng.integers(0, bank.n, size=min(batch, bank.n))
+        else:
+            idx = np.concatenate([np.asarray(g)[rng.integers(0, len(g), size=k)] for g, k in groups])
         pre = bank.take(idx)
         a = A[idx]
         t, eps = _flow_batch(len(idx), bk.H, bk.A, gen, bk.device)
