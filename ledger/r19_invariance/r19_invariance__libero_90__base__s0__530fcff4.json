@@ -1,0 +1,162 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r19_invariance.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "experiments/r19_invariance.py --record",
+ "config": {
+  "demos": 10,
+  "device": "cuda",
+  "record": true,
+  "robot": 10
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "brainiac.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3973965",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r19_invariance",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "530fcff48cb300d7785969ff8e5fbb2b4d94eff6",
+  "short": "530fcff4"
+ },
+ "keys": {},
+ "metrics": {
+  "chance": 0.047619047619047616,
+  "levels": {
+   "0.05": {
+    "acc_human": 0.7047619047619048,
+    "acc_robot": 1.0,
+    "acc_robot_by_human": 0.9619047619047619,
+    "between": 0.995568111047208,
+    "prototypes": 9883,
+    "seq_len": 29.669047619047618,
+    "u": 0.05,
+    "used": 3584,
+    "within": 0.881761864876734
+   },
+   "0.1": {
+    "acc_human": 0.6952380952380952,
+    "acc_robot": 1.0,
+    "acc_robot_by_human": 0.9714285714285714,
+    "between": 0.9945984775455533,
+    "prototypes": 9109,
+    "seq_len": 29.433333333333334,
+    "u": 0.1,
+    "used": 3430,
+    "within": 0.8789084921077241
+   },
+   "0.2": {
+    "acc_human": 0.719047619047619,
+    "acc_robot": 1.0,
+    "acc_robot_by_human": 0.9619047619047619,
+    "between": 0.9599540678195654,
+    "prototypes": 6098,
+    "seq_len": 25.37142857142857,
+    "u": 0.2,
+    "used": 2093,
+    "within": 0.8048710905877665
+   },
+   "0.3": {
+    "acc_human": 0.5761904761904761,
+    "acc_robot": 0.9714285714285714,
+    "acc_robot_by_human": 0.7571428571428571,
+    "between": 0.8212729858377897,
+    "prototypes": 1936,
+    "seq_len": 16.814285714285713,
+    "u": 0.3,
+    "used": 483,
+    "within": 0.5793909080764478
+   },
+   "0.4": {
+    "acc_human": 0.5285714285714286,
+    "acc_robot": 0.7619047619047619,
+    "acc_robot_by_human": 0.6,
+    "between": 0.6642810069319136,
+    "prototypes": 242,
+    "seq_len": 9.904761904761905,
+    "u": 0.4,
+    "used": 55,
+    "within": 0.37162720621527273
+   },
+   "0.55": {
+    "acc_human": 0.21904761904761905,
+    "acc_robot": 0.23809523809523808,
+    "acc_robot_by_human": 0.20476190476190476,
+    "between": 0.4326542250738679,
+    "prototypes": 3,
+    "seq_len": 3.711904761904762,
+    "u": 0.55,
+    "used": 3,
+    "within": 0.10459644782953054
+   },
+   "0.7": {
+    "acc_human": 0.11428571428571428,
+    "acc_robot": 0.09047619047619047,
+    "acc_robot_by_human": 0.08571428571428572,
+    "between": 0.294258843537415,
+    "prototypes": 2,
+    "seq_len": 2.676190476190476,
+    "u": 0.7,
+    "used": 2,
+    "within": 0.11170127700202888
+   }
+  },
+  "n_episodes": 420,
+  "n_human": 210,
+  "n_robot": 210,
+  "raw": {
+   "acc_human": 0.8666666666666667,
+   "acc_robot": 0.9761904761904762,
+   "acc_robot_by_human": 0.7619047619047619
+  },
+  "tasks": [
+   35,
+   36,
+   39,
+   42,
+   1,
+   6,
+   34,
+   37,
+   40,
+   52,
+   53,
+   62,
+   3,
+   4,
+   5,
+   32,
+   41,
+   43,
+   48,
+   58,
+   63
+  ]
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r19_invariance__libero_90__base__s0__530fcff4",
+ "schema": 1,
+ "script": "experiments/r19_invariance.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-28T14:02:10+00:00",
+ "stream": null,
+ "tag": ""
+}
