@@ -1,0 +1,95 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration of the two-stage family-transfer test",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky2.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "704a18999791593c565893298552f553b59bd2ab",
+  "short": "704a1899"
+ },
+ "keys": {},
+ "metrics": {
+  "arms": {
+   "control": "the existing one-demo LoRA (m3_final tag lora; r3_fewshot.py): the same stage-2 call from a fresh adapter, so each arm is paired with it step for step",
+   "r21fam": "stage 1: LoRA on the family pool ALONE (the same pools as r20fam); stage 2: the one-demo LoRA's exact recipe from the stage-1 adapter",
+   "r21rnd": "the same with the size-matched random-task pool of r20rnd"
+  },
+  "experiment": "two-stage family transfer: does a family's grammar transfer once the target's own binding is restored?",
+  "families": [
+   [
+    36,
+    37,
+    48,
+    52,
+    53,
+    58,
+    62
+   ],
+   [
+    3,
+    4,
+    5
+   ],
+   [
+    34,
+    42
+   ]
+  ],
+  "follows": "m3_prereg tag family (NEGATIVE, reversed: pooling family data at training time made the adapter carry out a sibling's instruction)",
+  "hypotheses": {
+   "T1": "r21fam > the one-demo LoRA over the 12 targets (240 paired): exact two-sided sign test -- the family's pretraining helps once the binding is restored",
+   "T2": "r21fam > r21rnd over the 12 targets (240 paired): exact two-sided sign test -- the help is family-specific (what the coarse levels would predict)",
+   "correction": "T1 and T2 Holm-adjusted together; each passes at adjusted p < 0.05",
+   "secondary": "the same within the pick-and-place family (140 pairs) and on the drawer family (60); r21rnd vs the one-demo LoRA"
+  },
+  "reading": "T1 and T2 pass: the coarse levels predict transferable grammar once binding is separated -- value for the hierarchy; T1 passes, T2 fails: pretraining on any tasks helps, the families add nothing; both fail: cross-task sharing is closed in this setting (the fourth negative after the shared fold, the other half's fold and family pooling)",
+  "scoring": "init states 30-49, 20 episodes per task and arm (m3_final tags lora_r21fam, lora_r21rnd)",
+  "targets": [
+   3,
+   4,
+   5,
+   34,
+   36,
+   37,
+   42,
+   48,
+   52,
+   53,
+   58,
+   62
+  ],
+  "training": "stage 1: rank 16 on the action expert, 1000 steps, lr 1e-4, batch 32 uniform over the pool, seed 0; stage 2: every frame of the target's one demo, 1000 steps, lr 1e-4, batch 32, seed 0, fresh AdamW (experiments/r20_family.py --two-stage)",
+  "written_before": "any r21 training or rollout"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_90__family2__s0__704a1899",
+ "schema": 1,
+ "script": "(inline, session 2026-09-28)",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-28T20:10:58+00:00",
+ "stream": null,
+ "tag": "family2"
+}

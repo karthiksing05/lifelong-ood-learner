@@ -69,9 +69,12 @@ def main():
     ap.add_argument("--bank-device", default="cpu")
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--dry", action="store_true", help="list the data only (no model)")
+    ap.add_argument("--two-stage", action="store_true", help="pre-registered tag family2: stage 1 = the pool ALONE (uniform batches), "
+                    "stage 2 = the one-demo LoRA's recipe (r3_fewshot.py: every demo frame, 1000 steps, lr 1e-4, batch 32, seed 0) "
+                    "continued from the stage-1 adapter with a fresh optimizer")
     a = ap.parse_args()
     os.chdir(ROOT)
-    name = a.name or f"r20{a.arm}"
+    name = a.name or (f"r21{a.arm}" if a.two_stage else f"r20{a.arm}")
     log = lambda s: print(s, flush=True)                                  # noqa: E731
     t = a.task
     fam, src = sources(t, a.arm, a.level)
@@ -135,15 +138,28 @@ def main():
     from lifelong_ood.policy.backbone import PolicyBackbone
     bk = PolicyBackbone("pi05_libero", device="cuda")
     t0 = time.time()
-    bank = adapt.PrefixBank(bk, obs, store=a.bank_device)
     state, banks = adapt.inject(bk, scope="expert")
     key = f"{name}_{t}"
     params = r4.add_node(banks, key, a.rank)
-    groups = [(np.arange(len(own)), a.own_per_batch), (np.arange(len(own), len(obs)), 32 - a.own_per_batch)]
-    hist = adapt.train(bk, state, key, params, bank, D.pad_rows(np.stack(rows), bk.H), steps=a.steps, lr=1e-4, batch=32,
-                       seed=a.seed, log=log, groups=groups)
+    if a.two_stage:
+        # stage 1: the pool alone -- the family's (or random tasks') grammar and bindings
+        n_own = len(own)
+        pool_bank = adapt.PrefixBank(bk, obs[n_own:], store=a.bank_device)
+        h1 = adapt.train(bk, state, key, params, pool_bank, D.pad_rows(np.stack(rows[n_own:]), bk.H), steps=a.steps, lr=1e-4,
+                         batch=32, seed=a.seed, log=log)
+        del pool_bank
+        # stage 2: exactly the one-demo LoRA's call (r3_fewshot.py), from the stage-1 adapter: the target's own bindings
+        own_bank = adapt.PrefixBank(bk, obs[:n_own])
+        h2 = adapt.train(bk, state, key, params, own_bank, D.pad_rows(np.stack(rows[:n_own]), bk.H), steps=a.steps, lr=1e-4,
+                         batch=32, seed=a.seed, log=log)
+        hist = dict(stage1=h1, stage2=h2)
+    else:
+        bank = adapt.PrefixBank(bk, obs, store=a.bank_device)
+        groups = [(np.arange(len(own)), a.own_per_batch), (np.arange(len(own), len(obs)), 32 - a.own_per_batch)]
+        hist = adapt.train(bk, state, key, params, bank, D.pad_rows(np.stack(rows), bk.H), steps=a.steps, lr=1e-4, batch=32,
+                           seed=a.seed, log=log, groups=groups)
     path = f"{R}/{name}_{t}_lora.pt"
-    nb = adapt.save(banks, key, path, meta=dict(task=t, rank=a.rank, arm=a.arm, family=fam, sources=src))
+    nb = adapt.save(banks, key, path, meta=dict(task=t, rank=a.rank, arm=a.arm, family=fam, sources=src, two_stage=a.two_stage))
     log(f"[r20] saved {path} ({nb} B) in {time.time() - t0:.0f}s")
     ledger.record("r20_family", bench="libero_90", tag=name, seed=a.seed, keys=dict(task=t),
                   metrics=dict(task=t, text=texts[t], arm=a.arm, family=fam, sources=src, successes=n_succ, own=len(own),

@@ -46,7 +46,7 @@ def arm_bytes(t, arm):
     from lifelong_ood.policy.compose import DemoProgram
     if arm == "zeroshot":
         return 0
-    if arm.startswith(("lora_r16", "lora_r17", "lora_r18", "lora_r20")):  # the loop's learners, experiments 1-2, family transfer
+    if arm.startswith(("lora_r16", "lora_r17", "lora_r18", "lora_r20", "lora_r21")):  # loop learners, experiments 1-2, family tests
         return adapter_bytes(t, arm[5:])
     if arm == "lora":
         r = [x for x in ledger.load("r3_fewshot") if str(x["metrics"]["task"]) == str(t) and not x.get("tag")]
