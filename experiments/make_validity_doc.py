@@ -198,6 +198,37 @@ def main():
             w("")
             w("R1 fails: the recovery data add nothing detectable to the learner with failure negatives.  Its lead over the round-3 "
               "learner (which used 630 more practice episodes) is the negatives' lead: the learner with negatives alone shows it too.\n")
+    f19, f20 = os.path.join(R, "r19_invariance.json"), os.path.join(R, "r20_family_stats.json")
+    if os.path.exists(f19):
+        V = json.load(open(f19))
+        w("## What the levels of the hierarchy carry (ledger r19_invariance)\n")
+        w(f"{V['n_human']} human demos and {V['n_robot']} successful closed-loop practice rollouts of {len(V['tasks'])} held-out tasks; every "
+          "chunk labelled at every level by the tree's basin rule, an episode = its label sequence with repeats collapsed.  Task "
+          f"identification by the nearest other episode (normalised edit distance), chance {V['chance']:.3f}.\n")
+        w("| level t | prototypes used | labels per episode | edit distance within / between tasks | human demos | robot rollouts | robot by human demos |")
+        w("|---|---|---|---|---|---|---|")
+        for u, r in V["levels"].items():
+            w(f"| {u} | {r['used']} | {r['seq_len']:.1f} | {r['within']:.3f} / {r['between']:.3f} | {r['acc_human']:.3f} | {r['acc_robot']:.3f} | "
+              f"{r['acc_robot_by_human']:.3f} |")
+        w(f"| raw trajectories | - | - | - | {V['raw']['acc_human']:.3f} | {V['raw']['acc_robot']:.3f} | {V['raw']['acc_robot_by_human']:.3f} |")
+        w("")
+    if os.path.exists(f20):
+        F = json.load(open(f20))
+        w("## Family transfer (pre-registered: ledger m3_prereg tag family; ledger r20_family tag read)\n")
+        w(f"Families at t = 0.4: {F['families']}.  Each target: its one demo + 1,000 frames of practice data from the other family members "
+          "(fam) or from as many random tasks outside the family (rnd, size-matched); LoRA rank 16, half of every batch from the own demo; "
+          "the target's own practice is never used; init states 30-49.\n")
+        w("| scope | fam | rnd | one-demo LoRA | fam - rnd (sign p) | fam - one demo (sign p) |")
+        w("|---|---|---|---|---|---|")
+        for sc, name in (("all_targets", "all 12 targets (F1)"), ("pick_place_family", "pick-and-place family (F2)")):
+            o_ = F[sc]
+            d1, d2 = o_["fam-rnd"], o_["fam-onedemo"]
+            w(f"| {name} | {o_['fam']['k']}/{o_['fam']['n']} | {o_['rnd']['k']}/{o_['rnd']['n']} | {o_['onedemo']['k']}/{o_['onedemo']['n']} | "
+              f"{d1['diff']:+.3f} ({d1['sign_p']:.3f}) | {d2['diff']:+.3f} ({d2['sign_p']:.3f}) |")
+        w("")
+        w("F1 fails in the reverse direction: family data hurt.  Per task (fam / rnd / one demo): " +
+          "; ".join(f"{t} {v['fam']}/{v['rnd']}/{v['onedemo']}" for t, v in F["all_targets"]["per_task"].items()) +
+          ".  On the drawer tasks the family-trained adapter carries out a sibling's instruction (figures/robot/r20_task3_objects.png).\n")
     w("## What composition borrows\n")
     for src, name in (("", "tree prototypes (band t = 0.2-0.4)"), ("_leaf", "leaves (the policy's chunk means)"), ("_seg", "segments of leaves")):
         p = os.path.join(R, f"r8_provenance{src}.json")

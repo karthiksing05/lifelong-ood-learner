@@ -1,0 +1,132 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r20fam_37_lora.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 18710528,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 18710528,
+  "tree": 0
+ },
+ "command": "experiments/r20_family.py --task 37 --arm fam",
+ "config": {
+  "arm": "fam",
+  "bank_device": "cpu",
+  "dry": false,
+  "level": "0.4",
+  "name": null,
+  "own_per_batch": 16,
+  "pool_cap": 1000,
+  "rank": 16,
+  "seed": 0,
+  "steps": 1000,
+  "stride": 5,
+  "task": 37
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "spd-13.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3976585",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r20_family",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "e5cced568ed44f87efa7d6be2bbb9bc5adb735e3",
+  "short": "e5cced56"
+ },
+ "keys": {
+  "task": 37
+ },
+ "metrics": {
+  "arm": "fam",
+  "curve": {
+   "anchor": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "loss": [
+    0.0917033925652504,
+    0.026402289047837257,
+    0.011645646765828133,
+    0.012333039194345474,
+    0.015699390321969986,
+    0.00813707709312439,
+    0.006477578077465296,
+    0.01220487616956234,
+    0.009916103444993496,
+    0.012700292281806469,
+    0.01354711689054966
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "family": [
+   36,
+   37,
+   48,
+   52,
+   53,
+   58,
+   62
+  ],
+  "own": 120,
+  "pool": 996,
+  "sources": [
+   36,
+   48,
+   52,
+   53,
+   58,
+   62
+  ],
+  "successes": {
+   "36": 53,
+   "48": 73,
+   "52": 43,
+   "53": 79,
+   "58": 55,
+   "62": 51
+  },
+  "task": 37,
+  "text": "put the white bowl to the right of the plate"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r20_family__libero_90__r20fam__task-37__s0__e5cced56",
+ "schema": 1,
+ "script": "experiments/r20_family.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-28T18:32:14+00:00",
+ "stream": null,
+ "tag": "r20fam"
+}

@@ -51,6 +51,8 @@ Tasks where the prior's practice fails: 21 of 23; kept prior on 19, 67.
 | LoRA + failure negatives (pooled) | 296/420 | 0.705 (0.66-0.75) | 0.59-0.81 | 21 | 392.9 MB |
 | 258 KB + failure negatives | 175/420 | 0.417 (0.37-0.46) | 0.30-0.54 | 21 | 5.4 MB |
 | LoRA + failure negatives + recovery branches (not every task) | 185/280 | 0.661 (0.60-0.71) | 0.53-0.78 | 14 | 261.9 MB |
+| one demo + the family's data (t = 0.4) (not every task) | 104/240 | 0.433 (0.37-0.50) | 0.27-0.60 | 12 | 224.5 MB |
+| one demo + random tasks' data (not every task) | 137/240 | 0.571 (0.51-0.63) | 0.38-0.75 | 12 | 224.5 MB |
 
 | comparison | pooled difference | 95% interval | one-sided lower | non-inferior at the margin | discordant | sign test p | pairs, tasks |
 |---|---|---|---|---|---|---|---|
@@ -104,6 +106,9 @@ Tasks where the prior's practice fails: 21 of 23; kept prior on 19, 67.
 | 258 KB + failure negatives vs 258 KB learner, round 2 | -0.069 | -0.150 to +0.012 | -0.138 | not shown | 53 vs 82 | 0.016 | 420, 21 |
 | LoRA + failure negatives + recovery branches vs LoRA + failure negatives (balanced) | +0.029 | -0.050 to +0.104 | -0.036 | yes | 40 vs 32 | 0.410 | 280, 14 |
 | LoRA + failure negatives + recovery branches vs LoRA, round 3 | +0.071 | -0.050 to +0.193 | -0.029 | yes | 50 vs 30 | 0.033 | 280, 14 |
+| one demo + the family's data (t = 0.4) vs one demo + random tasks' data | -0.138 | -0.375 to +0.087 | -0.338 | not shown | 38 vs 71 | 0.002 | 240, 12 |
+| one demo + the family's data (t = 0.4) vs few-shot LoRA (rank 16) | -0.204 | -0.438 to +0.017 | -0.400 | not shown | 33 vs 82 | 0.000 | 240, 12 |
+| one demo + random tasks' data vs few-shot LoRA (rank 16) | -0.067 | -0.158 to +0.021 | -0.142 | not shown | 22 vs 38 | 0.052 | 240, 12 |
 
 ## Pooled success, all tasks
 
@@ -145,6 +150,8 @@ Tasks where the prior's practice fails: 21 of 23; kept prior on 19, 67.
 | LoRA + failure negatives (pooled) | 336/460 | 0.730 (0.69-0.77) | 0.62-0.83 | 23 | 392.9 MB |
 | 258 KB + failure negatives | 215/460 | 0.467 (0.42-0.51) | 0.34-0.60 | 23 | 5.4 MB |
 | LoRA + failure negatives + recovery branches (not every task) | 225/320 | 0.703 (0.65-0.75) | 0.58-0.82 | 16 | 261.9 MB |
+| one demo + the family's data (t = 0.4) (not every task) | 144/280 | 0.514 (0.46-0.57) | 0.34-0.70 | 14 | 224.5 MB |
+| one demo + random tasks' data (not every task) | 177/280 | 0.632 (0.57-0.69) | 0.45-0.80 | 14 | 224.5 MB |
 
 | comparison | pooled difference | 95% interval | one-sided lower | non-inferior at the margin | discordant | sign test p | pairs, tasks |
 |---|---|---|---|---|---|---|---|
@@ -198,6 +205,9 @@ Tasks where the prior's practice fails: 21 of 23; kept prior on 19, 67.
 | 258 KB + failure negatives vs 258 KB learner, round 2 | -0.063 | -0.139 to +0.011 | -0.126 | not shown | 53 vs 82 | 0.016 | 460, 23 |
 | LoRA + failure negatives + recovery branches vs LoRA + failure negatives (balanced) | +0.025 | -0.041 to +0.094 | -0.031 | yes | 40 vs 32 | 0.410 | 320, 16 |
 | LoRA + failure negatives + recovery branches vs LoRA, round 3 | +0.062 | -0.044 to +0.169 | -0.025 | yes | 50 vs 30 | 0.033 | 320, 16 |
+| one demo + the family's data (t = 0.4) vs one demo + random tasks' data | -0.118 | -0.325 to +0.071 | -0.293 | not shown | 38 vs 71 | 0.002 | 280, 14 |
+| one demo + the family's data (t = 0.4) vs few-shot LoRA (rank 16) | -0.175 | -0.382 to +0.014 | -0.350 | not shown | 33 vs 82 | 0.000 | 280, 14 |
+| one demo + random tasks' data vs few-shot LoRA (rank 16) | -0.057 | -0.136 to +0.018 | -0.121 | not shown | 22 vs 38 | 0.052 | 280, 14 |
 
 ## Reliability
 
@@ -332,6 +342,32 @@ Exploratory: 79 of 123 stalls sit at the demo's last frames (the alignment point
 | all 14 trained tasks | 185/280 | 177/280 | 165/280 | +0.029 (0.410) | +0.071 (0.033) |
 
 R1 fails: the recovery data add nothing detectable to the learner with failure negatives.  Its lead over the round-3 learner (which used 630 more practice episodes) is the negatives' lead: the learner with negatives alone shows it too.
+
+## What the levels of the hierarchy carry (ledger r19_invariance)
+
+210 human demos and 210 successful closed-loop practice rollouts of 21 held-out tasks; every chunk labelled at every level by the tree's basin rule, an episode = its label sequence with repeats collapsed.  Task identification by the nearest other episode (normalised edit distance), chance 0.048.
+
+| level t | prototypes used | labels per episode | edit distance within / between tasks | human demos | robot rollouts | robot by human demos |
+|---|---|---|---|---|---|---|
+| 0.05 | 3584 | 29.7 | 0.882 / 0.996 | 0.705 | 1.000 | 0.962 |
+| 0.1 | 3430 | 29.4 | 0.879 / 0.995 | 0.695 | 1.000 | 0.971 |
+| 0.2 | 2093 | 25.4 | 0.805 / 0.960 | 0.719 | 1.000 | 0.962 |
+| 0.3 | 483 | 16.8 | 0.579 / 0.821 | 0.576 | 0.971 | 0.757 |
+| 0.4 | 55 | 9.9 | 0.372 / 0.664 | 0.529 | 0.762 | 0.600 |
+| 0.55 | 3 | 3.7 | 0.105 / 0.433 | 0.219 | 0.238 | 0.205 |
+| 0.7 | 2 | 2.7 | 0.112 / 0.294 | 0.114 | 0.090 | 0.086 |
+| raw trajectories | - | - | - | 0.867 | 0.976 | 0.762 |
+
+## Family transfer (pre-registered: ledger m3_prereg tag family; ledger r20_family tag read)
+
+Families at t = 0.4: [[36, 37, 48, 52, 53, 58, 62], [3, 4, 5], [34, 42]].  Each target: its one demo + 1,000 frames of practice data from the other family members (fam) or from as many random tasks outside the family (rnd, size-matched); LoRA rank 16, half of every batch from the own demo; the target's own practice is never used; init states 30-49.
+
+| scope | fam | rnd | one-demo LoRA | fam - rnd (sign p) | fam - one demo (sign p) |
+|---|---|---|---|---|---|
+| all 12 targets (F1) | 104/240 | 137/240 | 153/240 | -0.138 (0.002) | -0.204 (0.000) |
+| pick-and-place family (F2) | 72/140 | 65/140 | 77/140 | +0.050 (0.419) | -0.036 (0.597) |
+
+F1 fails in the reverse direction: family data hurt.  Per task (fam / rnd / one demo): 3 1/19/19; 4 4/15/17; 5 3/16/19; 34 18/19/18; 36 9/15/13; 37 8/1/7; 42 6/3/3; 48 18/13/12; 52 4/12/13; 53 17/15/20; 58 10/8/9; 62 6/1/3.  On the drawer tasks the family-trained adapter carries out a sibling's instruction (figures/robot/r20_task3_objects.png).
 
 ## What composition borrows
 

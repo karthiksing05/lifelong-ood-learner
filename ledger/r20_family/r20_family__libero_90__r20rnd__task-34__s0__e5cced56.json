@@ -1,0 +1,117 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r20rnd_34_lora.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 18710528,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 18710528,
+  "tree": 0
+ },
+ "command": "experiments/r20_family.py --task 34 --arm rnd",
+ "config": {
+  "arm": "rnd",
+  "bank_device": "cpu",
+  "dry": false,
+  "level": "0.4",
+  "name": null,
+  "own_per_batch": 16,
+  "pool_cap": 1000,
+  "rank": 16,
+  "seed": 0,
+  "steps": 1000,
+  "stride": 5,
+  "task": 34
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "brainiac.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3976606",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r20_family",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "e5cced568ed44f87efa7d6be2bbb9bc5adb735e3",
+  "short": "e5cced56"
+ },
+ "keys": {
+  "task": 34
+ },
+ "metrics": {
+  "arm": "rnd",
+  "curve": {
+   "anchor": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "loss": [
+    0.13440978527069092,
+    0.03391536697745323,
+    0.020302578806877136,
+    0.01384673174470663,
+    0.014834687113761902,
+    0.007559719029814005,
+    0.010166505351662636,
+    0.010022087022662163,
+    0.007270404137670994,
+    0.013041719794273376,
+    0.015087977051734924
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "family": [
+   34,
+   42
+  ],
+  "own": 144,
+  "pool": 639,
+  "sources": [
+   4
+  ],
+  "successes": {
+   "4": 58
+  },
+  "task": 34,
+  "text": "put the yellow and white mug to the front of the white mug"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r20_family__libero_90__r20rnd__task-34__s0__e5cced56",
+ "schema": 1,
+ "script": "experiments/r20_family.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-28T19:09:54+00:00",
+ "stream": null,
+ "tag": "r20rnd"
+}

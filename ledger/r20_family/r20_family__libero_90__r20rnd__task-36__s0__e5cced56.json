@@ -1,0 +1,132 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r20rnd_36_lora.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 18710528,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 18710528,
+  "tree": 0
+ },
+ "command": "experiments/r20_family.py --task 36 --arm rnd",
+ "config": {
+  "arm": "rnd",
+  "bank_device": "cpu",
+  "dry": false,
+  "level": "0.4",
+  "name": null,
+  "own_per_batch": 16,
+  "pool_cap": 1000,
+  "rank": 16,
+  "seed": 0,
+  "steps": 1000,
+  "stride": 5,
+  "task": 36
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "ig-88.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3976596",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r20_family",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "e5cced568ed44f87efa7d6be2bbb9bc5adb735e3",
+  "short": "e5cced56"
+ },
+ "keys": {
+  "task": 36
+ },
+ "metrics": {
+  "arm": "rnd",
+  "curve": {
+   "anchor": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "loss": [
+    0.07802838087081909,
+    0.024110330268740654,
+    0.021330080926418304,
+    0.016940230503678322,
+    0.015171428211033344,
+    0.014524871483445168,
+    0.005158691201359034,
+    0.00529037369415164,
+    0.00875513069331646,
+    0.012713218107819557,
+    0.009059950709342957
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "family": [
+   36,
+   37,
+   48,
+   52,
+   53,
+   58,
+   62
+  ],
+  "own": 218,
+  "pool": 996,
+  "sources": [
+   1,
+   5,
+   6,
+   35,
+   40,
+   42
+  ],
+  "successes": {
+   "1": 28,
+   "35": 29,
+   "40": 31,
+   "42": 14,
+   "5": 73,
+   "6": 53
+  },
+  "task": 36,
+  "text": "put the white bowl on the plate"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r20_family__libero_90__r20rnd__task-36__s0__e5cced56",
+ "schema": 1,
+ "script": "experiments/r20_family.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-28T18:51:42+00:00",
+ "stream": null,
+ "tag": "r20rnd"
+}

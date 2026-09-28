@@ -79,6 +79,17 @@ def st_ratio(num, den, tag="final_23tasks"):
     return lambda: (L.mean("m3_stats", num, tag=tag)[0] / L.mean("m3_stats", den, tag=tag)[0], 0.0, 1)
 
 
+def fam_tasks(arm, tasks):
+    """Successes of a family-transfer arm summed over some target tasks (ledger r20_family tag read)."""
+    def f():
+        rows = L.load("r20_family", tag="read")
+        if not rows:
+            return (float("nan"), float("nan"), 0)
+        pt = rows[-1]["metrics"]["all_targets"]["per_task"]
+        return (float(sum(pt[str(t)][arm] for t in tasks)), 0.0, 1)
+    return f
+
+
 EMBODIED = [
     ("M0: LIBERO-Goal ms per simulation step", emb("r0_env_smoke", "metrics.ms_per_step_median", bench="libero_goal"), "16.9"),
     ("M1: parity with openpi's sampler", emb("r1_policy_smoke", "metrics.parity_max_abs_diff", bench="libero_goal"), "0.0"),
@@ -201,6 +212,19 @@ EMBODIED = [
     ("recovery: negatives learner on the concentrated tasks", emb("r18_branch", "metrics.R1_concentrated.r17bal.k", tag="recovery"), "102"),
     ("recovery: concentrated-task episodes", emb("r18_branch", "metrics.R1_concentrated.r18rec.n", tag="recovery"), "180"),
     ("recovery: R1 sign test p", emb("r18_branch", "metrics.R1_concentrated.r18rec-r17bal.sign_p", tag="recovery"), "0.76"),
+    ("levels: task by nearest human demo, t=0.2", emb("r19_invariance", "metrics.levels.0.2.acc_human"), "0.72"),
+    ("levels: robot rollout by nearest human demo, t=0.1", emb("r19_invariance", "metrics.levels.0.1.acc_robot_by_human"), "0.97"),
+    ("levels: robot rollout by nearest human demo, raw", emb("r19_invariance", "metrics.raw.acc_robot_by_human"), "0.76"),
+    ("levels: within-task edit distance, t=0.55", emb("r19_invariance", "metrics.levels.0.55.within"), "0.105"),
+    ("levels: between-task edit distance, t=0.55", emb("r19_invariance", "metrics.levels.0.55.between"), "0.433"),
+    ("family: family pool successes", emb("r20_family", "metrics.all_targets.fam.k", tag="read"), "104"),
+    ("family: random pool successes", emb("r20_family", "metrics.all_targets.rnd.k", tag="read"), "137"),
+    ("family: episodes", emb("r20_family", "metrics.all_targets.fam.n", tag="read"), "240"),
+    ("family: sign test p", emb("r20_family", "metrics.all_targets.fam-rnd.sign_p", tag="read"), "0.002"),
+    ("family: one-demo LoRA successes", emb("r20_family", "metrics.all_targets.onedemo.k", tag="read"), "153"),
+    ("family: drawer tasks, family pool", fam_tasks("fam", (3, 4, 5)), "8"),
+    ("family: drawer tasks, episodes", lambda: (float(sum(L.load("m3_final", tag="lora_r20fam", keys__tasks=str(t))[-1]["metrics"]["n_episodes"]
+                                                           for t in (3, 4, 5))), 0.0, 1), "60"),
     ("shared fold successes", st("metrics.methods.ours_shared_all.prior_fails.k"), "146"),
     ("other half's fold successes", st("metrics.methods.ours_shared_xfit.prior_fails.k"), "107"),
     ("borrowing without a fold successes", st("metrics.methods.ours_dim1.prior_fails.k"), "168"),
