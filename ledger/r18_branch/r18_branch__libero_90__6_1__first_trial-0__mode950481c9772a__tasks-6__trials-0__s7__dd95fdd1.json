@@ -1,0 +1,85 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r18_branch_6_1.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "roll.sh MODE=program:/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r7_dim_6_s1.npz?w0=1.0&sched=const&var=0.001&key=pose&stall=3&window=20&alt=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r18_leaf2_6.npz SUITE=libero_90 TASKS=6 TRIALS=0 (job 3966727)",
+ "config": {
+  "client": {
+   "branches": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r18_branch_6_1.list.json",
+   "first_trial": 0,
+   "host": "127.0.0.1",
+   "max_steps": 0,
+   "no_meta": false,
+   "out": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r18_branch_6_1.json",
+   "port": 9322,
+   "record": true,
+   "replan": 5,
+   "resize": 224,
+   "seed": 7,
+   "suite": "libero_90",
+   "tasks": "6",
+   "trials": 0,
+   "videos": 0,
+   "wait": 10
+  },
+  "job": "3966727",
+  "mode": "program:/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r7_dim_6_s1.npz?w0=1.0&sched=const&var=0.001&key=pose&stall=3&window=20&alt=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r18_leaf2_6.npz"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "brainiac.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3966727",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r18_branch",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "dd95fdd10505700db0ad727ede0a1c6f8c69db6b",
+  "short": "dd95fdd1"
+ },
+ "keys": {
+  "first_trial": 0,
+  "mode": "program:/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r7_dim_6_s1.npz?w0=1.0&sched=const&var=0.001&key=pose&stall=3&window=20&alt=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r18_leaf2_6.npz",
+  "tasks": "6",
+  "trials": 0
+ },
+ "metrics": {
+  "complete": true,
+  "n_episodes": 4,
+  "secs": 185.1153380870819,
+  "success_rate": 0.25,
+  "tasks": {
+   "6": {
+    "errors": 0,
+    "language": "open the bottom drawer of the cabinet",
+    "mean_steps": 330.75,
+    "n": 4,
+    "success_rate": 0.25
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r18_branch__libero_90__6_1__first_trial-0__mode950481c9772a__tasks-6__trials-0__s7__dd95fdd1",
+ "schema": 1,
+ "script": "experiments/libero_client.py",
+ "seconds": null,
+ "seed": 7,
+ "source_commit": null,
+ "started": "2026-09-27T20:19:27+00:00",
+ "stream": null,
+ "tag": "6_1"
+}

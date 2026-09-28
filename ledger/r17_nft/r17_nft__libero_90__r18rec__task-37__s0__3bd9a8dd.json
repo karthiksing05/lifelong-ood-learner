@@ -1,0 +1,199 @@
+{
+ "artifacts": [
+  "results/robot/r18rec_37_lora.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 18710528,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 18710528,
+  "tree": 0
+ },
+ "command": "experiments/r17_nft.py --task 37 --name r18rec --recovery --bank-device cpu",
+ "config": {
+  "bank_device": "cpu",
+  "lora_stride": 5,
+  "max_pos": 1000,
+  "max_rec": 300,
+  "name": "r18rec",
+  "neg_batch": 8,
+  "pooled": false,
+  "practice": "m5_practice+m6_round1",
+  "rank": 16,
+  "recovery": true,
+  "scope": "expert",
+  "seed": 0,
+  "steps": 1000,
+  "task": 37,
+  "window": 2
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "brainiac.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3967155",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r17_nft",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "3bd9a8dd18ece4df70643157c3144b2dd427f2e1",
+  "short": "3bd9a8dd"
+ },
+ "keys": {
+  "task": 37
+ },
+ "metrics": {
+  "curve": {
+   "loss": [
+    0.10437612980604172,
+    0.03217067942023277,
+    0.016968760639429092,
+    0.012965042144060135,
+    0.03180195763707161,
+    0.01161352638155222,
+    0.03736726939678192,
+    0.005481431260704994,
+    0.019936122000217438,
+    0.04364240542054176,
+    0.008376210927963257
+   ],
+   "neg": [
+    0.081170454621315,
+    0.11114972084760666,
+    0.09045819193124771,
+    0.07329462468624115,
+    0.047048717737197876,
+    0.062368106096982956,
+    0.039822038263082504,
+    0.03687503561377525,
+    0.03933998942375183,
+    0.031633567065000534,
+    0.03664768859744072
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "failed": 12,
+  "negatives": 64,
+  "positives": 1036,
+  "recovery_negatives": 40,
+  "recovery_positives": 36,
+  "rollouts": 50,
+  "stalls": [
+   {
+    "demo_frames": 120,
+    "queries": 80,
+    "stall_frame": 119,
+    "stall_query": 27,
+    "trial": 1
+   },
+   {
+    "demo_frames": 120,
+    "queries": 80,
+    "stall_frame": 119,
+    "stall_query": 30,
+    "trial": 15
+   },
+   {
+    "demo_frames": 120,
+    "queries": 80,
+    "stall_frame": 119,
+    "stall_query": 25,
+    "trial": 7
+   },
+   {
+    "demo_frames": 120,
+    "queries": 80,
+    "stall_frame": 119,
+    "stall_query": 25,
+    "trial": 1
+   },
+   {
+    "demo_frames": 120,
+    "queries": 80,
+    "stall_frame": 119,
+    "stall_query": 30,
+    "trial": 15
+   },
+   {
+    "demo_frames": 120,
+    "queries": 80,
+    "stall_frame": 119,
+    "stall_query": 32,
+    "trial": 17
+   },
+   {
+    "demo_frames": 120,
+    "queries": 80,
+    "stall_frame": 119,
+    "stall_query": 23,
+    "trial": 23
+   },
+   {
+    "demo_frames": 120,
+    "queries": 80,
+    "stall_frame": 119,
+    "stall_query": 28,
+    "trial": 24
+   },
+   {
+    "demo_frames": 120,
+    "queries": 80,
+    "stall_frame": 119,
+    "stall_query": 25,
+    "trial": 26
+   },
+   {
+    "demo_frames": 120,
+    "queries": 80,
+    "stall_frame": 119,
+    "stall_query": 26,
+    "trial": 27
+   },
+   {
+    "demo_frames": 120,
+    "queries": 80,
+    "stall_frame": 119,
+    "stall_query": 24,
+    "trial": 4
+   },
+   {
+    "demo_frames": 120,
+    "queries": 80,
+    "stall_frame": 119,
+    "stall_query": 26,
+    "trial": 5
+   }
+  ],
+  "task": 37,
+  "text": "put the white bowl to the right of the plate"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r17_nft__libero_90__r18rec__task-37__s0__3bd9a8dd",
+ "schema": 1,
+ "script": "experiments/r17_nft.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-27T20:50:24+00:00",
+ "stream": null,
+ "tag": "r18rec"
+}

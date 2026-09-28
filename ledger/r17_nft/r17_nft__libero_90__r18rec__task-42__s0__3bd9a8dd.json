@@ -1,0 +1,423 @@
+{
+ "artifacts": [
+  "results/robot/r18rec_42_lora.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 18710528,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 18710528,
+  "tree": 0
+ },
+ "command": "experiments/r17_nft.py --task 42 --name r18rec --recovery --bank-device cpu",
+ "config": {
+  "bank_device": "cpu",
+  "lora_stride": 5,
+  "max_pos": 1000,
+  "max_rec": 300,
+  "name": "r18rec",
+  "neg_batch": 8,
+  "pooled": false,
+  "practice": "m5_practice+m6_round1",
+  "rank": 16,
+  "recovery": true,
+  "scope": "expert",
+  "seed": 0,
+  "steps": 1000,
+  "task": 42,
+  "window": 2
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "voltron.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3967159",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r17_nft",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "3bd9a8dd18ece4df70643157c3144b2dd427f2e1",
+  "short": "3bd9a8dd"
+ },
+ "keys": {
+  "task": 42
+ },
+ "metrics": {
+  "curve": {
+   "loss": [
+    0.07056307792663574,
+    0.014789069071412086,
+    0.010435866191983223,
+    0.005655589047819376,
+    0.01090384740382433,
+    0.00409018574282527,
+    0.004019289743155241,
+    0.0027089209761470556,
+    0.0063768294639885426,
+    0.01111140288412571,
+    0.0028460936155170202
+   ],
+   "neg": [
+    0.1355230063199997,
+    0.033417701721191406,
+    0.049517374485731125,
+    0.035275962203741074,
+    0.023691285401582718,
+    0.051331616938114166,
+    0.019558457657694817,
+    0.027578307315707207,
+    0.01567295752465725,
+    0.012379555962979794,
+    0.016692860051989555
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "failed": 44,
+  "negatives": 556,
+  "positives": 373,
+  "recovery_negatives": 468,
+  "recovery_positives": 0,
+  "rollouts": 50,
+  "stalls": [
+   {
+    "demo_frames": 172,
+    "queries": 80,
+    "stall_frame": 171,
+    "stall_query": 47,
+    "trial": 0
+   },
+   {
+    "demo_frames": 172,
+    "queries": 80,
+    "stall_frame": 171,
+    "stall_query": 41,
+    "trial": 1
+   },
+   {
+    "demo_frames": 172,
+    "queries": 80,
+    "stall_frame": 171,
+    "stall_query": 41,
+    "trial": 10
+   },
+   {
+    "demo_frames": 172,
+    "queries": 80,
+    "stall_frame": 171,
+    "stall_query": 39,
+    "trial": 11
+   },
+   {
+    "demo_frames": 172,
+    "queries": 80,
+    "stall_frame": 171,
+    "stall_query": 42,
+    "trial": 12
+   },
+   {
+    "demo_frames": 172,
+    "queries": 80,
+    "stall_frame": 171,
+    "stall_query": 49,
+    "trial": 13
+   },
+   {
+    "demo_frames": 172,
+    "queries": 80,
+    "stall_frame": 171,
+    "stall_query": 41,
+    "trial": 14
+   },
+   {
+    "demo_frames": 172,
+    "queries": 80,
+    "stall_frame": 171,
+    "stall_query": 47,
+    "trial": 15
+   },
+   {
+    "demo_frames": 172,
+    "queries": 80,
+    "stall_frame": 171,
+    "stall_query": 48,
+    "trial": 16
+   },
+   {
+    "demo_frames": 172,
+    "queries": 80,
+    "stall_frame": 171,
+    "stall_query": 41,
+    "trial": 17
+   },
+   {
+    "demo_frames": 172,
+    "queries": 80,
+    "stall_frame": 171,
+    "stall_query": 40,
+    "trial": 18
+   },
+   {
+    "demo_frames": 172,
+    "queries": 80,
+    "stall_frame": 171,
+    "stall_query": 40,
+    "trial": 19
+   },
+   {
+    "demo_frames": 172,
+    "queries": 80,
+    "stall_frame": 171,
+    "stall_query": 45,
+    "trial": 2
+   },
+   {
+    "demo_frames": 172,
+    "queries": 80,
+    "stall_frame": 171,
+    "stall_query": 40,
+    "trial": 3
+   },
+   {
+    "demo_frames": 172,
+    "queries": 80,
+    "stall_frame": 171,
+    "stall_query": 40,
+    "trial": 5
+   },
+   {
+    "demo_frames": 172,
+    "queries": 80,
+    "stall_frame": 171,
+    "stall_query": 43,
+    "trial": 6
+   },
+   {
+    "demo_frames": 172,
+    "queries": 80,
+    "stall_frame": 171,
+    "stall_query": 44,
+    "trial": 7
+   },
+   {
+    "demo_frames": 172,
+    "queries": 80,
+    "stall_frame": 171,
+    "stall_query": 41,
+    "trial": 8
+   },
+   {
+    "demo_frames": 172,
+    "queries": 80,
+    "stall_frame": 171,
+    "stall_query": 43,
+    "trial": 9
+   },
+   {
+    "demo_frames": 172,
+    "queries": 80,
+    "stall_frame": 171,
+    "stall_query": 67,
+    "trial": 1
+   },
+   {
+    "demo_frames": 172,
+    "queries": 80,
+    "stall_frame": 171,
+    "stall_query": 54,
+    "trial": 11
+   },
+   {
+    "demo_frames": 172,
+    "queries": 80,
+    "stall_frame": 171,
+    "stall_query": 73,
+    "trial": 12
+   },
+   {
+    "demo_frames": 172,
+    "queries": 80,
+    "stall_frame": 171,
+    "stall_query": 58,
+    "trial": 13
+   },
+   {
+    "demo_frames": 172,
+    "queries": 80,
+    "stall_frame": 171,
+    "stall_query": 60,
+    "trial": 14
+   },
+   {
+    "demo_frames": 172,
+    "queries": 80,
+    "stall_frame": 171,
+    "stall_query": 47,
+    "trial": 15
+   },
+   {
+    "demo_frames": 172,
+    "queries": 80,
+    "stall_frame": 171,
+    "stall_query": 48,
+    "trial": 16
+   },
+   {
+    "demo_frames": 172,
+    "queries": 80,
+    "stall_frame": 171,
+    "stall_query": 68,
+    "trial": 17
+   },
+   {
+    "demo_frames": 172,
+    "queries": 80,
+    "stall_frame": 171,
+    "stall_query": 46,
+    "trial": 18
+   },
+   {
+    "demo_frames": 172,
+    "queries": 80,
+    "stall_frame": 171,
+    "stall_query": 45,
+    "trial": 19
+   },
+   {
+    "demo_frames": 172,
+    "queries": 80,
+    "stall_frame": 171,
+    "stall_query": 52,
+    "trial": 2
+   },
+   {
+    "demo_frames": 172,
+    "queries": 80,
+    "stall_frame": 171,
+    "stall_query": 63,
+    "trial": 21
+   },
+   {
+    "demo_frames": 172,
+    "queries": 80,
+    "stall_frame": 171,
+    "stall_query": 62,
+    "trial": 22
+   },
+   {
+    "demo_frames": 172,
+    "queries": 80,
+    "stall_frame": 171,
+    "stall_query": 62,
+    "trial": 23
+   },
+   {
+    "demo_frames": 172,
+    "queries": 80,
+    "stall_frame": 171,
+    "stall_query": 61,
+    "trial": 24
+   },
+   {
+    "demo_frames": 172,
+    "queries": 80,
+    "stall_frame": 171,
+    "stall_query": 44,
+    "trial": 25
+   },
+   {
+    "demo_frames": 172,
+    "queries": 80,
+    "stall_frame": 171,
+    "stall_query": 54,
+    "trial": 26
+   },
+   {
+    "demo_frames": 172,
+    "queries": 80,
+    "stall_frame": 171,
+    "stall_query": 60,
+    "trial": 27
+   },
+   {
+    "demo_frames": 172,
+    "queries": 80,
+    "stall_frame": 171,
+    "stall_query": 49,
+    "trial": 28
+   },
+   {
+    "demo_frames": 172,
+    "queries": 80,
+    "stall_frame": 171,
+    "stall_query": 61,
+    "trial": 29
+   },
+   {
+    "demo_frames": 172,
+    "queries": 80,
+    "stall_frame": 171,
+    "stall_query": 46,
+    "trial": 3
+   },
+   {
+    "demo_frames": 172,
+    "queries": 80,
+    "stall_frame": 171,
+    "stall_query": 55,
+    "trial": 4
+   },
+   {
+    "demo_frames": 172,
+    "queries": 80,
+    "stall_frame": 171,
+    "stall_query": 46,
+    "trial": 6
+   },
+   {
+    "demo_frames": 172,
+    "queries": 80,
+    "stall_frame": 171,
+    "stall_query": 47,
+    "trial": 8
+   },
+   {
+    "demo_frames": 172,
+    "queries": 80,
+    "stall_frame": 171,
+    "stall_query": 63,
+    "trial": 9
+   }
+  ],
+  "task": 42,
+  "text": "put the frying pan under the cabinet shelf"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r17_nft__libero_90__r18rec__task-42__s0__3bd9a8dd",
+ "schema": 1,
+ "script": "experiments/r17_nft.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-27T21:05:01+00:00",
+ "stream": null,
+ "tag": "r18rec"
+}

@@ -1,0 +1,255 @@
+{
+ "artifacts": [
+  "results/robot/r18rec_41_lora.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 18710528,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 18710528,
+  "tree": 0
+ },
+ "command": "experiments/r17_nft.py --task 41 --name r18rec --recovery --bank-device cpu",
+ "config": {
+  "bank_device": "cpu",
+  "lora_stride": 5,
+  "max_pos": 1000,
+  "max_rec": 300,
+  "name": "r18rec",
+  "neg_batch": 8,
+  "pooled": false,
+  "practice": "m5_practice+m6_round1",
+  "rank": 16,
+  "recovery": true,
+  "scope": "expert",
+  "seed": 0,
+  "steps": 1000,
+  "task": 41,
+  "window": 2
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "brainiac.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3967158",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r17_nft",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "3bd9a8dd18ece4df70643157c3144b2dd427f2e1",
+  "short": "3bd9a8dd"
+ },
+ "keys": {
+  "task": 41
+ },
+ "metrics": {
+  "curve": {
+   "loss": [
+    0.1070898026227951,
+    0.03077254816889763,
+    0.044471289962530136,
+    0.014679736457765102,
+    0.019309379160404205,
+    0.0171415563672781,
+    0.025242697447538376,
+    0.010160242207348347,
+    0.03030599281191826,
+    0.03455796465277672,
+    0.023499585688114166
+   ],
+   "neg": [
+    0.05755500867962837,
+    0.06053776666522026,
+    0.06684967130422592,
+    0.044826094061136246,
+    0.025822436437010765,
+    0.07088296115398407,
+    0.026883944869041443,
+    0.049705810844898224,
+    0.04333062842488289,
+    0.030967403203248978,
+    0.08209285885095596
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "failed": 20,
+  "negatives": 232,
+  "positives": 1000,
+  "recovery_negatives": 192,
+  "recovery_positives": 0,
+  "rollouts": 50,
+  "stalls": [
+   {
+    "demo_frames": 195,
+    "queries": 80,
+    "stall_frame": 160,
+    "stall_query": 77,
+    "trial": 12
+   },
+   {
+    "demo_frames": 195,
+    "queries": 80,
+    "stall_frame": 157,
+    "stall_query": 75,
+    "trial": 13
+   },
+   {
+    "demo_frames": 195,
+    "queries": 80,
+    "stall_frame": 156,
+    "stall_query": 29,
+    "trial": 14
+   },
+   {
+    "demo_frames": 195,
+    "queries": 80,
+    "stall_frame": 134,
+    "stall_query": 58,
+    "trial": 17
+   },
+   {
+    "demo_frames": 195,
+    "queries": 80,
+    "stall_frame": 156,
+    "stall_query": 31,
+    "trial": 18
+   },
+   {
+    "demo_frames": 195,
+    "queries": 80,
+    "stall_frame": 155,
+    "stall_query": 31,
+    "trial": 19
+   },
+   {
+    "demo_frames": 195,
+    "queries": 80,
+    "stall_frame": 154,
+    "stall_query": 50,
+    "trial": 2
+   },
+   {
+    "demo_frames": 195,
+    "queries": 80,
+    "stall_frame": 154,
+    "stall_query": 55,
+    "trial": 3
+   },
+   {
+    "demo_frames": 195,
+    "queries": 80,
+    "stall_frame": 159,
+    "stall_query": 35,
+    "trial": 6
+   },
+   {
+    "demo_frames": 195,
+    "queries": 80,
+    "stall_frame": 157,
+    "stall_query": 77,
+    "trial": 7
+   },
+   {
+    "demo_frames": 195,
+    "queries": 80,
+    "stall_frame": 92,
+    "stall_query": 40,
+    "trial": 0
+   },
+   {
+    "demo_frames": 195,
+    "queries": 80,
+    "stall_frame": 129,
+    "stall_query": 57,
+    "trial": 1
+   },
+   {
+    "demo_frames": 195,
+    "queries": 80,
+    "stall_frame": 133,
+    "stall_query": 67,
+    "trial": 12
+   },
+   {
+    "demo_frames": 195,
+    "queries": 80,
+    "stall_frame": 139,
+    "stall_query": 30,
+    "trial": 14
+   },
+   {
+    "demo_frames": 195,
+    "queries": 80,
+    "stall_frame": 141,
+    "stall_query": 34,
+    "trial": 17
+   },
+   {
+    "demo_frames": 195,
+    "queries": 80,
+    "stall_frame": 130,
+    "stall_query": 42,
+    "trial": 18
+   },
+   {
+    "demo_frames": 195,
+    "queries": 80,
+    "stall_frame": 151,
+    "stall_query": 72,
+    "trial": 22
+   },
+   {
+    "demo_frames": 195,
+    "queries": 80,
+    "stall_frame": 142,
+    "stall_query": 54,
+    "trial": 29
+   },
+   {
+    "demo_frames": 195,
+    "queries": 80,
+    "stall_frame": 194,
+    "stall_query": 63,
+    "trial": 3
+   },
+   {
+    "demo_frames": 195,
+    "queries": 80,
+    "stall_frame": 149,
+    "stall_query": 39,
+    "trial": 7
+   }
+  ],
+  "task": 41,
+  "text": "put the frying pan on top of the cabinet"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r17_nft__libero_90__r18rec__task-41__s0__3bd9a8dd",
+ "schema": 1,
+ "script": "experiments/r17_nft.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-27T21:01:24+00:00",
+ "stream": null,
+ "tag": "r18rec"
+}

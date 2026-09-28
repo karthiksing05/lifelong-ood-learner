@@ -176,6 +176,28 @@ def main():
           f"sign test p {D3['sign_p']:.3f}.  Instances of the nine concentrated tasks rescued by some branch: {B['rescued_concentrated']}.\n")
         w("Pre-registered reading: every late arm rescues at most 0.10 and no knob beats its control, so the persistent failures are "
           "not a bad draw near the stall: the budget goes to geometry or an earlier cause (Experiment 5 of the report).\n")
+        ex = B.get("exploratory")
+        if ex:
+            w(f"Exploratory: {ex['at_end']} of {n_inst} stalls sit at the demo's last frames (the alignment pointer follows the hand, so "
+              f"there the hand finished the demo's path and the task still failed; {ex['at_end_rescued']} rescued), {ex['mid']} elsewhere "
+              f"({ex['mid_rescued']} rescued).  Where the demo holds something at the stall frame ({ex['demo_holds']} instances), the "
+              f"robot's gripper is more than 5 mm tighter than the demo's in {ex['tighter']}.\n")
+        f18b = os.path.join(R, "r18_recovery_stats.json")
+        if os.path.exists(f18b):
+            RB = json.load(open(f18b))
+            w("**Recovery data (part b, pre-registered R1 / R2).**  r18rec = Experiment 1's learner (LoRA + failure negatives) plus the "
+              "rescued post-branch segments as positives and the failed branches' own stalls as negatives, scored on init states 30-49.\n")
+            w("| scope | r18rec | LoRA + failure negatives | LoRA round 3 (success-only) | r18rec - negatives (sign p) | r18rec - round 3 (sign p) |")
+            w("|---|---|---|---|---|---|")
+            for sc, name in (("R1_concentrated", "R1: the 9 concentrated tasks"), ("R2_rescued", "R2: tasks with a rescue"),
+                             ("all_trained", "all 14 trained tasks")):
+                o_ = RB[sc]
+                d1, d2 = o_["r18rec-r17bal"], o_["r18rec-L3"]
+                w(f"| {name} | {o_['r18rec']['k']}/{o_['r18rec']['n']} | {o_['r17bal']['k']}/{o_['r17bal']['n']} | {o_['L3']['k']}/{o_['L3']['n']} | "
+                  f"{d1['diff']:+.3f} ({d1['sign_p']:.3f}) | {d2['diff']:+.3f} ({d2['sign_p']:.3f}) |")
+            w("")
+            w("R1 fails: the recovery data add nothing detectable to the learner with failure negatives.  Its lead over the round-3 "
+              "learner (which used 630 more practice episodes) is the negatives' lead: the learner with negatives alone shows it too.\n")
     w("## What composition borrows\n")
     for src, name in (("", "tree prototypes (band t = 0.2-0.4)"), ("_leaf", "leaves (the policy's chunk means)"), ("_seg", "segments of leaves")):
         p = os.path.join(R, f"r8_provenance{src}.json")

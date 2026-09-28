@@ -50,6 +50,7 @@ Tasks where the prior's practice fails: 21 of 23; kept prior on 19, 67.
 | LoRA + failure negatives (balanced) | 302/420 | 0.719 (0.67-0.76) | 0.62-0.81 | 21 | 392.9 MB |
 | LoRA + failure negatives (pooled) | 296/420 | 0.705 (0.66-0.75) | 0.59-0.81 | 21 | 392.9 MB |
 | 258 KB + failure negatives | 175/420 | 0.417 (0.37-0.46) | 0.30-0.54 | 21 | 5.4 MB |
+| LoRA + failure negatives + recovery branches (not every task) | 185/280 | 0.661 (0.60-0.71) | 0.53-0.78 | 14 | 261.9 MB |
 
 | comparison | pooled difference | 95% interval | one-sided lower | non-inferior at the margin | discordant | sign test p | pairs, tasks |
 |---|---|---|---|---|---|---|---|
@@ -101,6 +102,8 @@ Tasks where the prior's practice fails: 21 of 23; kept prior on 19, 67.
 | LoRA + failure negatives (balanced) vs LoRA, round 2 (success-only) | +0.050 | -0.021 to +0.124 | -0.010 | yes | 56 vs 35 | 0.035 | 420, 21 |
 | LoRA + failure negatives (pooled) vs LoRA, round 2 (success-only) | +0.036 | -0.031 to +0.098 | -0.019 | yes | 54 vs 39 | 0.146 | 420, 21 |
 | 258 KB + failure negatives vs 258 KB learner, round 2 | -0.069 | -0.150 to +0.012 | -0.138 | not shown | 53 vs 82 | 0.016 | 420, 21 |
+| LoRA + failure negatives + recovery branches vs LoRA + failure negatives (balanced) | +0.029 | -0.050 to +0.104 | -0.036 | yes | 40 vs 32 | 0.410 | 280, 14 |
+| LoRA + failure negatives + recovery branches vs LoRA, round 3 | +0.071 | -0.050 to +0.193 | -0.029 | yes | 50 vs 30 | 0.033 | 280, 14 |
 
 ## Pooled success, all tasks
 
@@ -141,6 +144,7 @@ Tasks where the prior's practice fails: 21 of 23; kept prior on 19, 67.
 | LoRA + failure negatives (balanced) | 342/460 | 0.743 (0.70-0.78) | 0.64-0.84 | 23 | 392.9 MB |
 | LoRA + failure negatives (pooled) | 336/460 | 0.730 (0.69-0.77) | 0.62-0.83 | 23 | 392.9 MB |
 | 258 KB + failure negatives | 215/460 | 0.467 (0.42-0.51) | 0.34-0.60 | 23 | 5.4 MB |
+| LoRA + failure negatives + recovery branches (not every task) | 225/320 | 0.703 (0.65-0.75) | 0.58-0.82 | 16 | 261.9 MB |
 
 | comparison | pooled difference | 95% interval | one-sided lower | non-inferior at the margin | discordant | sign test p | pairs, tasks |
 |---|---|---|---|---|---|---|---|
@@ -192,6 +196,8 @@ Tasks where the prior's practice fails: 21 of 23; kept prior on 19, 67.
 | LoRA + failure negatives (balanced) vs LoRA, round 2 (success-only) | +0.046 | -0.020 to +0.113 | -0.009 | yes | 56 vs 35 | 0.035 | 460, 23 |
 | LoRA + failure negatives (pooled) vs LoRA, round 2 (success-only) | +0.033 | -0.028 to +0.089 | -0.017 | yes | 54 vs 39 | 0.146 | 460, 23 |
 | 258 KB + failure negatives vs 258 KB learner, round 2 | -0.063 | -0.139 to +0.011 | -0.126 | not shown | 53 vs 82 | 0.016 | 460, 23 |
+| LoRA + failure negatives + recovery branches vs LoRA + failure negatives (balanced) | +0.025 | -0.041 to +0.094 | -0.031 | yes | 40 vs 32 | 0.410 | 320, 16 |
+| LoRA + failure negatives + recovery branches vs LoRA, round 3 | +0.062 | -0.044 to +0.169 | -0.025 | yes | 50 vs 30 | 0.033 | 320, 16 |
 
 ## Reliability
 
@@ -224,7 +230,7 @@ RETRACTION: non-inferiority of borrowing + fold to the per-task LoRA holds with 
 
 ## Redo on the practice instances (pre-registered: ledger m3_prereg tag learn_from_practice; ledger m5_learn_stats)
 
-Reruns with the practice's own noise seed replay the practice episode (the simulator and the sampler are deterministic); the controls are fresh-noise retries (policy seeds 1 and 2).
+Reruns with the practice's own noise seed replay the practice episode when they run the same init states in the same order (LIBERO's simulator state depends on the episodes before it in a session, not only on the init state: see the stall-point branching section); the controls are fresh-noise retries (policy seeds 1 and 2).
 
 **instances the first composition solved**
 
@@ -267,6 +273,65 @@ Reruns with the practice's own noise seed replay the practice episode (the simul
 | lora_learn-retry1 | +0.201 | +0.079 to +0.342 | 0.0000 |
 | lora_learn-retry2 | +0.262 | +0.144 to +0.402 | 0.0000 |
 | retry2-retry1 | -0.061 | -0.160 to +0.019 | 0.0414 |
+
+## Stall-point branching (pre-registered: ledger m3_prereg tags branch, branch_amend1-4; ledger r18_branch tag diagnosis)
+
+The 123 practice instances (init states 0-19) that the first composition and both fresh-noise retries failed.  Each branch re-enters the recorded episode two policy queries before its stall (the first query at which the demo-alignment pointer reaches its final maximum), or eight for the early arms, and changes one thing to the end of the episode.  The prefix executes the recorded actions in a fresh environment built as at the start of the recorded session and reset as often as the session had been; the server follows every prefix observation without sampling.
+
+- Gates: prefixes exact in 1569 of 1569 branches; full replays reproduce the recorded states in 17 of 17; the recorded-noise continuation reproduces the recorded actions in 123 of 123 instances.
+- Run 1 of this experiment was discarded before any read (amendment 4): one environment per client process let earlier branches leave simulator state that re-seeding did not clear on seven tasks, and knob-free branches then 'succeeded'.
+
+| branch | rescued | rate (Wilson 95%) | pointer past the stall | actions changed |
+|---|---|---|---|---|
+| recorded noise, nothing changed | 0/123 | 0.000 (0.00-0.03) | 0 | 0 |
+| fresh noise, seed 1 | 2/123 | 0.016 (0.00-0.06) | 11 | 123 |
+| fresh noise, seed 2 | 1/123 | 0.008 (0.00-0.04) | 9 | 123 |
+| fresh noise, seed 3 | 6/123 | 0.049 (0.02-0.10) | 11 | 123 |
+| fresh noise, seed 4 | 1/123 | 0.008 (0.00-0.04) | 11 | 123 |
+| guide weight x0.5 | 2/123 | 0.016 (0.00-0.06) | 4 | 69 |
+| guide weight x2 | 2/123 | 0.016 (0.00-0.06) | 3 | 69 |
+| next-ranked leaves | 0/123 | 0.000 (0.00-0.03) | 8 | 69 |
+| the prior alone | 3/123 | 0.024 (0.01-0.07) | 25 | 123 |
+| the program through the fold windows | 1/108 | 0.009 (0.00-0.05) | 36 | 70 |
+| the fold everywhere | 1/108 | 0.009 (0.00-0.05) | 9 | 54 |
+| 8 queries earlier, fresh noise 1 | 4/123 | 0.033 (0.01-0.08) | 10 | 123 |
+| 8 queries earlier, fresh noise 2 | 4/123 | 0.033 (0.01-0.08) | 10 | 123 |
+| any of the four fresh-noise branches | 7/123 | 0.057 (0.03-0.11) |  |  |
+| any knob | 7/123 | 0.057 (0.03-0.11) |  |  |
+| any late branch | 13/123 | 0.106 (0.06-0.17) |  |  |
+| any early branch | 6/123 | 0.049 (0.02-0.10) |  |  |
+| any branch | 16/123 | 0.130 (0.08-0.20) |  |  |
+
+| knob vs control | knob | control | discordant | sign test p | Holm p |
+|---|---|---|---|---|---|
+| wx0.5-replay | 2/123 | 0/123 | 2/0 | 0.500 | 1.000 |
+| wx2-replay | 2/123 | 0/123 | 2/0 | 0.500 | 1.000 |
+| leaf2-replay | 0/123 | 0/123 | 0/0 | 1.000 | 1.000 |
+| release-replay | 3/123 | 0/123 | 3/0 | 0.250 | 1.000 |
+| nofold-replay | 1/108 | 0/108 | 1/0 | 1.000 | 1.000 |
+| foldall-replay | 1/108 | 0/108 | 1/0 | 1.000 | 1.000 |
+| wx0.5-noise1 | 2/123 | 2/123 | 2/2 | 1.000 | 1.000 |
+| wx2-noise1 | 2/123 | 2/123 | 2/2 | 1.000 | 1.000 |
+| leaf2-noise1 | 0/123 | 2/123 | 0/2 | 0.500 | 1.000 |
+| release-noise1 | 3/123 | 2/123 | 3/2 | 1.000 | 1.000 |
+| nofold-noise1 | 1/108 | 2/108 | 1/2 | 1.000 | 1.000 |
+| foldall-noise1 | 1/108 | 2/108 | 1/2 | 1.000 | 1.000 |
+
+Early vs late fresh noise (seeds 1-2, paired): 8 vs 3 of 246, discordant 6/1, sign test p 0.125.  Instances of the nine concentrated tasks rescued by some branch: 10.
+
+Pre-registered reading: every late arm rescues at most 0.10 and no knob beats its control, so the persistent failures are not a bad draw near the stall: the budget goes to geometry or an earlier cause (Experiment 5 of the report).
+
+Exploratory: 79 of 123 stalls sit at the demo's last frames (the alignment pointer follows the hand, so there the hand finished the demo's path and the task still failed; 11 rescued), 44 elsewhere (5 rescued).  Where the demo holds something at the stall frame (54 instances), the robot's gripper is more than 5 mm tighter than the demo's in 25.
+
+**Recovery data (part b, pre-registered R1 / R2).**  r18rec = Experiment 1's learner (LoRA + failure negatives) plus the rescued post-branch segments as positives and the failed branches' own stalls as negatives, scored on init states 30-49.
+
+| scope | r18rec | LoRA + failure negatives | LoRA round 3 (success-only) | r18rec - negatives (sign p) | r18rec - round 3 (sign p) |
+|---|---|---|---|---|---|
+| R1: the 9 concentrated tasks | 105/180 | 102/180 | 84/180 | +0.017 (0.755) | +0.117 (0.005) |
+| R2: tasks with a rescue | 129/180 | 119/180 | 118/180 | +0.056 (0.203) | +0.061 (0.177) |
+| all 14 trained tasks | 185/280 | 177/280 | 165/280 | +0.029 (0.410) | +0.071 (0.033) |
+
+R1 fails: the recovery data add nothing detectable to the learner with failure negatives.  Its lead over the round-3 learner (which used 630 more practice episodes) is the negatives' lead: the learner with negatives alone shows it too.
 
 ## What composition borrows
 

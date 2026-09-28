@@ -1,0 +1,178 @@
+{
+ "artifacts": [
+  "results/robot/r18rec_39_lora.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 18710528,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 18710528,
+  "tree": 0
+ },
+ "command": "experiments/r17_nft.py --task 39 --name r18rec --recovery --bank-device cpu",
+ "config": {
+  "bank_device": "cpu",
+  "lora_stride": 5,
+  "max_pos": 1000,
+  "max_rec": 300,
+  "name": "r18rec",
+  "neg_batch": 8,
+  "pooled": false,
+  "practice": "m5_practice+m6_round1",
+  "rank": 16,
+  "recovery": true,
+  "scope": "expert",
+  "seed": 0,
+  "steps": 1000,
+  "task": 39,
+  "window": 2
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "voltron.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3967156",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r17_nft",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "3bd9a8dd18ece4df70643157c3144b2dd427f2e1",
+  "short": "3bd9a8dd"
+ },
+ "keys": {
+  "task": 39
+ },
+ "metrics": {
+  "curve": {
+   "loss": [
+    0.12656915187835693,
+    0.049223341047763824,
+    0.024820556864142418,
+    0.021538179367780685,
+    0.029926342889666557,
+    0.022751757875084877,
+    0.020889120176434517,
+    0.026158399879932404,
+    0.025900661945343018,
+    0.024120686575770378,
+    0.012570763006806374
+   ],
+   "neg": [
+    0.12939712405204773,
+    0.07619791477918625,
+    0.056116439402103424,
+    0.07742779701948166,
+    0.03586607053875923,
+    0.051787346601486206,
+    0.02159963548183441,
+    0.028676414862275124,
+    0.02797660045325756,
+    0.012093593366444111,
+    0.02316451258957386
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "failed": 9,
+  "negatives": 66,
+  "positives": 1049,
+  "recovery_negatives": 48,
+  "recovery_positives": 49,
+  "rollouts": 50,
+  "stalls": [
+   {
+    "demo_frames": 116,
+    "queries": 80,
+    "stall_frame": 72,
+    "stall_query": 52,
+    "trial": 0
+   },
+   {
+    "demo_frames": 116,
+    "queries": 80,
+    "stall_frame": 106,
+    "stall_query": 29,
+    "trial": 1
+   },
+   {
+    "demo_frames": 116,
+    "queries": 80,
+    "stall_frame": 115,
+    "stall_query": 22,
+    "trial": 3
+   },
+   {
+    "demo_frames": 116,
+    "queries": 80,
+    "stall_frame": 106,
+    "stall_query": 20,
+    "trial": 4
+   },
+   {
+    "demo_frames": 116,
+    "queries": 80,
+    "stall_frame": 106,
+    "stall_query": 18,
+    "trial": 1
+   },
+   {
+    "demo_frames": 116,
+    "queries": 80,
+    "stall_frame": 73,
+    "stall_query": 17,
+    "trial": 12
+   },
+   {
+    "demo_frames": 116,
+    "queries": 80,
+    "stall_frame": 67,
+    "stall_query": 14,
+    "trial": 18
+   },
+   {
+    "demo_frames": 116,
+    "queries": 80,
+    "stall_frame": 106,
+    "stall_query": 18,
+    "trial": 21
+   },
+   {
+    "demo_frames": 116,
+    "queries": 80,
+    "stall_frame": 108,
+    "stall_query": 59,
+    "trial": 4
+   }
+  ],
+  "task": 39,
+  "text": "turn off the stove"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r17_nft__libero_90__r18rec__task-39__s0__3bd9a8dd",
+ "schema": 1,
+ "script": "experiments/r17_nft.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-27T20:55:34+00:00",
+ "stream": null,
+ "tag": "r18rec"
+}

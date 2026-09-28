@@ -1,0 +1,248 @@
+{
+ "artifacts": [
+  "results/robot/r18rec_36_lora.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 18710528,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 18710528,
+  "tree": 0
+ },
+ "command": "experiments/r17_nft.py --task 36 --name r18rec --recovery --bank-device cpu",
+ "config": {
+  "bank_device": "cpu",
+  "lora_stride": 5,
+  "max_pos": 1000,
+  "max_rec": 300,
+  "name": "r18rec",
+  "neg_batch": 8,
+  "pooled": false,
+  "practice": "m5_practice+m6_round1",
+  "rank": 16,
+  "recovery": true,
+  "scope": "expert",
+  "seed": 0,
+  "steps": 1000,
+  "task": 36,
+  "window": 2
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "voltron.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3967154",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r17_nft",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "3bd9a8dd18ece4df70643157c3144b2dd427f2e1",
+  "short": "3bd9a8dd"
+ },
+ "keys": {
+  "task": 36
+ },
+ "metrics": {
+  "curve": {
+   "loss": [
+    0.07921112328767776,
+    0.02636273391544819,
+    0.011180770583450794,
+    0.011180113069713116,
+    0.028915533795952797,
+    0.012268266640603542,
+    0.004992665257304907,
+    0.008318695239722729,
+    0.0072410511784255505,
+    0.015678316354751587,
+    0.009349890053272247
+   ],
+   "neg": [
+    0.06483805179595947,
+    0.026760203763842583,
+    0.049675147980451584,
+    0.028515785932540894,
+    0.0327104888856411,
+    0.044714465737342834,
+    0.03711453825235367,
+    0.017483437433838844,
+    0.005433954764157534,
+    0.032147474586963654,
+    0.025141794234514236
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "failed": 19,
+  "negatives": 294,
+  "positives": 1040,
+  "recovery_negatives": 256,
+  "recovery_positives": 40,
+  "rollouts": 50,
+  "stalls": [
+   {
+    "demo_frames": 218,
+    "queries": 80,
+    "stall_frame": 89,
+    "stall_query": 73,
+    "trial": 0
+   },
+   {
+    "demo_frames": 218,
+    "queries": 80,
+    "stall_frame": 217,
+    "stall_query": 46,
+    "trial": 1
+   },
+   {
+    "demo_frames": 218,
+    "queries": 80,
+    "stall_frame": 89,
+    "stall_query": 71,
+    "trial": 15
+   },
+   {
+    "demo_frames": 218,
+    "queries": 80,
+    "stall_frame": 88,
+    "stall_query": 18,
+    "trial": 17
+   },
+   {
+    "demo_frames": 218,
+    "queries": 80,
+    "stall_frame": 173,
+    "stall_query": 44,
+    "trial": 19
+   },
+   {
+    "demo_frames": 218,
+    "queries": 80,
+    "stall_frame": 217,
+    "stall_query": 48,
+    "trial": 3
+   },
+   {
+    "demo_frames": 218,
+    "queries": 80,
+    "stall_frame": 176,
+    "stall_query": 72,
+    "trial": 4
+   },
+   {
+    "demo_frames": 218,
+    "queries": 80,
+    "stall_frame": 176,
+    "stall_query": 52,
+    "trial": 5
+   },
+   {
+    "demo_frames": 218,
+    "queries": 80,
+    "stall_frame": 217,
+    "stall_query": 52,
+    "trial": 7
+   },
+   {
+    "demo_frames": 218,
+    "queries": 80,
+    "stall_frame": 217,
+    "stall_query": 43,
+    "trial": 8
+   },
+   {
+    "demo_frames": 218,
+    "queries": 80,
+    "stall_frame": 217,
+    "stall_query": 48,
+    "trial": 11
+   },
+   {
+    "demo_frames": 218,
+    "queries": 80,
+    "stall_frame": 217,
+    "stall_query": 41,
+    "trial": 13
+   },
+   {
+    "demo_frames": 218,
+    "queries": 80,
+    "stall_frame": 93,
+    "stall_query": 66,
+    "trial": 14
+   },
+   {
+    "demo_frames": 218,
+    "queries": 80,
+    "stall_frame": 132,
+    "stall_query": 62,
+    "trial": 21
+   },
+   {
+    "demo_frames": 218,
+    "queries": 80,
+    "stall_frame": 131,
+    "stall_query": 79,
+    "trial": 24
+   },
+   {
+    "demo_frames": 218,
+    "queries": 80,
+    "stall_frame": 96,
+    "stall_query": 21,
+    "trial": 26
+   },
+   {
+    "demo_frames": 218,
+    "queries": 80,
+    "stall_frame": 217,
+    "stall_query": 55,
+    "trial": 4
+   },
+   {
+    "demo_frames": 218,
+    "queries": 80,
+    "stall_frame": 50,
+    "stall_query": 14,
+    "trial": 6
+   },
+   {
+    "demo_frames": 218,
+    "queries": 80,
+    "stall_frame": 204,
+    "stall_query": 65,
+    "trial": 8
+   }
+  ],
+  "task": 36,
+  "text": "put the white bowl on the plate"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r17_nft__libero_90__r18rec__task-36__s0__3bd9a8dd",
+ "schema": 1,
+ "script": "experiments/r17_nft.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-27T20:48:58+00:00",
+ "stream": null,
+ "tag": "r18rec"
+}

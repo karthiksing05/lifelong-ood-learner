@@ -1,0 +1,85 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r18_branch_42_5.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "roll.sh MODE=hybrid:/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r7_dim_42_s1.npz?expert=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r4_42_approach_last2_expert.pt&foldprog=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r4_42_approach_last2_program.npz&w0=1.0&sched=const&var=0.001&key=pose&stall=3&window=20&alt=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r18_leaf2_42.npz SUITE=libero_90 TASKS=42 TRIALS=0 (job 3966719)",
+ "config": {
+  "client": {
+   "branches": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r18_branch_42_5.list.json",
+   "first_trial": 0,
+   "host": "127.0.0.1",
+   "max_steps": 0,
+   "no_meta": false,
+   "out": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r18_branch_42_5.json",
+   "port": 9297,
+   "record": true,
+   "replan": 5,
+   "resize": 224,
+   "seed": 7,
+   "suite": "libero_90",
+   "tasks": "42",
+   "trials": 0,
+   "videos": 0,
+   "wait": 10
+  },
+  "job": "3966719",
+  "mode": "hybrid:/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r7_dim_42_s1.npz?expert=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r4_42_approach_last2_expert.pt&foldprog=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r4_42_approach_last2_program.npz&w0=1.0&sched=const&var=0.001&key=pose&stall=3&window=20&alt=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r18_leaf2_42.npz"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "consu.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3966719",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r18_branch",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "dd95fdd10505700db0ad727ede0a1c6f8c69db6b",
+  "short": "dd95fdd1"
+ },
+ "keys": {
+  "first_trial": 0,
+  "mode": "hybrid:/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r7_dim_42_s1.npz?expert=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r4_42_approach_last2_expert.pt&foldprog=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r4_42_approach_last2_program.npz&w0=1.0&sched=const&var=0.001&key=pose&stall=3&window=20&alt=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r18_leaf2_42.npz",
+  "tasks": "42",
+  "trials": 0
+ },
+ "metrics": {
+  "complete": true,
+  "n_episodes": 30,
+  "secs": 1371.0561230182648,
+  "success_rate": 0.0,
+  "tasks": {
+   "42": {
+    "errors": 0,
+    "language": "put the frying pan under the cabinet shelf",
+    "mean_steps": 400.0,
+    "n": 30,
+    "success_rate": 0.0
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r18_branch__libero_90__42_5__first_trial-0__mode825785f3c9b4__tasks-42__trials-0__s7__dd95fdd1",
+ "schema": 1,
+ "script": "experiments/libero_client.py",
+ "seconds": null,
+ "seed": 7,
+ "source_commit": null,
+ "started": "2026-09-27T19:42:16+00:00",
+ "stream": null,
+ "tag": "42_5"
+}

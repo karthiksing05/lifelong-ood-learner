@@ -1,0 +1,220 @@
+{
+ "artifacts": [
+  "results/robot/r18rec_6_lora.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 18710528,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 18710528,
+  "tree": 0
+ },
+ "command": "experiments/r17_nft.py --task 6 --name r18rec --recovery --bank-device cpu",
+ "config": {
+  "bank_device": "cpu",
+  "lora_stride": 5,
+  "max_pos": 1000,
+  "max_rec": 300,
+  "name": "r18rec",
+  "neg_batch": 8,
+  "pooled": false,
+  "practice": "m5_practice+m6_round1",
+  "rank": 16,
+  "recovery": true,
+  "scope": "expert",
+  "seed": 0,
+  "steps": 1000,
+  "task": 6,
+  "window": 2
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "major.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3967153",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r17_nft",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "3bd9a8dd18ece4df70643157c3144b2dd427f2e1",
+  "short": "3bd9a8dd"
+ },
+ "keys": {
+  "task": 6
+ },
+ "metrics": {
+  "curve": {
+   "loss": [
+    0.04486556351184845,
+    0.02300092950463295,
+    0.016256270930171013,
+    0.014784450642764568,
+    0.022733669728040695,
+    0.006929484196007252,
+    0.009816614910960197,
+    0.009970242157578468,
+    0.007330005057156086,
+    0.014648107811808586,
+    0.010774731636047363
+   ],
+   "neg": [
+    0.08042397350072861,
+    0.026308149099349976,
+    0.009040196426212788,
+    0.0221042949706316,
+    0.020372282713651657,
+    0.03959568962454796,
+    0.07155989855527878,
+    0.01576979272067547,
+    0.022633174434304237,
+    0.0019353552488610148,
+    0.0414121113717556
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "failed": 15,
+  "negatives": 92,
+  "positives": 1033,
+  "recovery_negatives": 62,
+  "recovery_positives": 33,
+  "rollouts": 50,
+  "stalls": [
+   {
+    "demo_frames": 124,
+    "queries": 80,
+    "stall_frame": 123,
+    "stall_query": 27,
+    "trial": 0
+   },
+   {
+    "demo_frames": 124,
+    "queries": 80,
+    "stall_frame": 123,
+    "stall_query": 25,
+    "trial": 11
+   },
+   {
+    "demo_frames": 124,
+    "queries": 80,
+    "stall_frame": 123,
+    "stall_query": 25,
+    "trial": 17
+   },
+   {
+    "demo_frames": 124,
+    "queries": 80,
+    "stall_frame": 123,
+    "stall_query": 27,
+    "trial": 3
+   },
+   {
+    "demo_frames": 124,
+    "queries": 80,
+    "stall_frame": 123,
+    "stall_query": 27,
+    "trial": 5
+   },
+   {
+    "demo_frames": 124,
+    "queries": 80,
+    "stall_frame": 85,
+    "stall_query": 21,
+    "trial": 0
+   },
+   {
+    "demo_frames": 124,
+    "queries": 80,
+    "stall_frame": 123,
+    "stall_query": 36,
+    "trial": 17
+   },
+   {
+    "demo_frames": 124,
+    "queries": 80,
+    "stall_frame": 123,
+    "stall_query": 24,
+    "trial": 19
+   },
+   {
+    "demo_frames": 124,
+    "queries": 80,
+    "stall_frame": 123,
+    "stall_query": 27,
+    "trial": 20
+   },
+   {
+    "demo_frames": 124,
+    "queries": 80,
+    "stall_frame": 123,
+    "stall_query": 24,
+    "trial": 21
+   },
+   {
+    "demo_frames": 124,
+    "queries": 80,
+    "stall_frame": 85,
+    "stall_query": 19,
+    "trial": 22
+   },
+   {
+    "demo_frames": 124,
+    "queries": 80,
+    "stall_frame": 123,
+    "stall_query": 43,
+    "trial": 25
+   },
+   {
+    "demo_frames": 124,
+    "queries": 80,
+    "stall_frame": 123,
+    "stall_query": 53,
+    "trial": 3
+   },
+   {
+    "demo_frames": 124,
+    "queries": 80,
+    "stall_frame": 123,
+    "stall_query": 53,
+    "trial": 6
+   },
+   {
+    "demo_frames": 124,
+    "queries": 80,
+    "stall_frame": 123,
+    "stall_query": 25,
+    "trial": 7
+   }
+  ],
+  "task": 6,
+  "text": "open the bottom drawer of the cabinet"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r17_nft__libero_90__r18rec__task-6__s0__3bd9a8dd",
+ "schema": 1,
+ "script": "experiments/r17_nft.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-27T20:47:08+00:00",
+ "stream": null,
+ "tag": "r18rec"
+}

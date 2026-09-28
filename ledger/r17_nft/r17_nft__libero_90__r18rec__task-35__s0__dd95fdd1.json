@@ -1,0 +1,310 @@
+{
+ "artifacts": [
+  "results/robot/r18rec_35_lora.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 18710528,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 18710528,
+  "tree": 0
+ },
+ "command": "experiments/r17_nft.py --task 35 --name r18rec --recovery",
+ "config": {
+  "lora_stride": 5,
+  "max_pos": 1000,
+  "max_rec": 300,
+  "name": "r18rec",
+  "neg_batch": 8,
+  "pooled": false,
+  "practice": "m5_practice+m6_round1",
+  "rank": 16,
+  "recovery": true,
+  "scope": "expert",
+  "seed": 0,
+  "steps": 1000,
+  "task": 35,
+  "window": 2
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "brainiac.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3967095",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r17_nft",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "dd95fdd10505700db0ad727ede0a1c6f8c69db6b",
+  "short": "dd95fdd1"
+ },
+ "keys": {
+  "task": 35
+ },
+ "metrics": {
+  "curve": {
+   "loss": [
+    0.0772729218006134,
+    0.013674754649400711,
+    0.006162432953715324,
+    0.006726651452481747,
+    0.010651609860360622,
+    0.0036722200457006693,
+    0.00269484450109303,
+    0.0020248848013579845,
+    0.0037675206549465656,
+    0.008087205700576305,
+    0.005330273881554604
+   ],
+   "neg": [
+    0.02376418374478817,
+    0.008835669606924057,
+    0.007789394352585077,
+    0.007707484066486359,
+    0.017170177772641182,
+    0.0019132894231006503,
+    0.021774955093860626,
+    0.009650378488004208,
+    0.0011863823747262359,
+    0.003942124079912901,
+    0.01583954691886902
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "failed": 28,
+  "negatives": 320,
+  "positives": 665,
+  "recovery_negatives": 264,
+  "recovery_positives": 0,
+  "rollouts": 50,
+  "stalls": [
+   {
+    "demo_frames": 131,
+    "queries": 80,
+    "stall_frame": 130,
+    "stall_query": 23,
+    "trial": 0
+   },
+   {
+    "demo_frames": 131,
+    "queries": 80,
+    "stall_frame": 130,
+    "stall_query": 27,
+    "trial": 10
+   },
+   {
+    "demo_frames": 131,
+    "queries": 80,
+    "stall_frame": 130,
+    "stall_query": 23,
+    "trial": 12
+   },
+   {
+    "demo_frames": 131,
+    "queries": 80,
+    "stall_frame": 130,
+    "stall_query": 25,
+    "trial": 13
+   },
+   {
+    "demo_frames": 131,
+    "queries": 80,
+    "stall_frame": 130,
+    "stall_query": 31,
+    "trial": 14
+   },
+   {
+    "demo_frames": 131,
+    "queries": 80,
+    "stall_frame": 130,
+    "stall_query": 28,
+    "trial": 15
+   },
+   {
+    "demo_frames": 131,
+    "queries": 80,
+    "stall_frame": 130,
+    "stall_query": 26,
+    "trial": 16
+   },
+   {
+    "demo_frames": 131,
+    "queries": 80,
+    "stall_frame": 130,
+    "stall_query": 33,
+    "trial": 19
+   },
+   {
+    "demo_frames": 131,
+    "queries": 80,
+    "stall_frame": 130,
+    "stall_query": 29,
+    "trial": 2
+   },
+   {
+    "demo_frames": 131,
+    "queries": 80,
+    "stall_frame": 130,
+    "stall_query": 22,
+    "trial": 3
+   },
+   {
+    "demo_frames": 131,
+    "queries": 80,
+    "stall_frame": 130,
+    "stall_query": 34,
+    "trial": 4
+   },
+   {
+    "demo_frames": 131,
+    "queries": 80,
+    "stall_frame": 130,
+    "stall_query": 40,
+    "trial": 8
+   },
+   {
+    "demo_frames": 131,
+    "queries": 80,
+    "stall_frame": 78,
+    "stall_query": 79,
+    "trial": 0
+   },
+   {
+    "demo_frames": 131,
+    "queries": 80,
+    "stall_frame": 79,
+    "stall_query": 62,
+    "trial": 12
+   },
+   {
+    "demo_frames": 131,
+    "queries": 80,
+    "stall_frame": 72,
+    "stall_query": 79,
+    "trial": 14
+   },
+   {
+    "demo_frames": 131,
+    "queries": 80,
+    "stall_frame": 130,
+    "stall_query": 33,
+    "trial": 15
+   },
+   {
+    "demo_frames": 131,
+    "queries": 80,
+    "stall_frame": 130,
+    "stall_query": 32,
+    "trial": 16
+   },
+   {
+    "demo_frames": 131,
+    "queries": 80,
+    "stall_frame": 79,
+    "stall_query": 61,
+    "trial": 19
+   },
+   {
+    "demo_frames": 131,
+    "queries": 80,
+    "stall_frame": 75,
+    "stall_query": 33,
+    "trial": 2
+   },
+   {
+    "demo_frames": 131,
+    "queries": 80,
+    "stall_frame": 72,
+    "stall_query": 22,
+    "trial": 21
+   },
+   {
+    "demo_frames": 131,
+    "queries": 80,
+    "stall_frame": 130,
+    "stall_query": 28,
+    "trial": 22
+   },
+   {
+    "demo_frames": 131,
+    "queries": 80,
+    "stall_frame": 130,
+    "stall_query": 28,
+    "trial": 23
+   },
+   {
+    "demo_frames": 131,
+    "queries": 80,
+    "stall_frame": 130,
+    "stall_query": 29,
+    "trial": 25
+   },
+   {
+    "demo_frames": 131,
+    "queries": 80,
+    "stall_frame": 76,
+    "stall_query": 52,
+    "trial": 29
+   },
+   {
+    "demo_frames": 131,
+    "queries": 80,
+    "stall_frame": 84,
+    "stall_query": 77,
+    "trial": 3
+   },
+   {
+    "demo_frames": 131,
+    "queries": 80,
+    "stall_frame": 130,
+    "stall_query": 44,
+    "trial": 7
+   },
+   {
+    "demo_frames": 131,
+    "queries": 80,
+    "stall_frame": 79,
+    "stall_query": 78,
+    "trial": 8
+   },
+   {
+    "demo_frames": 131,
+    "queries": 80,
+    "stall_frame": 130,
+    "stall_query": 30,
+    "trial": 9
+   }
+  ],
+  "task": 35,
+  "text": "open the microwave"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r17_nft__libero_90__r18rec__task-35__s0__dd95fdd1",
+ "schema": 1,
+ "script": "experiments/r17_nft.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-27T20:40:55+00:00",
+ "stream": null,
+ "tag": "r18rec"
+}
