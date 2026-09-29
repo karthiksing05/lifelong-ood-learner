@@ -111,11 +111,12 @@ def arm_spec(tid, arm, fold, demo=0):
         return (f"phasebind:{tid}?fold=0&rules=2&g={g}&p={tab[str(tid)]['p']}&obj={tab[str(tid)]['object']}{rd}&var=0.001", "0", False)
     if arm == "phasebind2_rjpred":                                       # P5: own demo, rendered-only reader, predicted carry
         return (f"phasebind:{tid}?fold=0&rules=2&reader=spatial4_synthonly_rj&carry=pred&var=0.001", "0", False)
-    if arm.startswith("streamc@"):                                       # P5: composed arrival, streamc@<g>-<p> (p5_pool.json names)
-        g, p = arm[len("streamc@"):].split("-")
+    if arm.startswith(("streamc@", "streamw@")):                         # P5: composed arrival, streamc@<g>-<p> (p5_pool.json names)
+        g, p = arm[len("streamc@"):].split("-")                          # streamw: the same with the carry warped (phase.py warp)
+        wp = "&warp=1" if arm.startswith("streamw@") else ""
         pool = json.load(open(os.path.join(R, "p5_pool.json")))[str(tid)]
         return (f"phasebind:{tid}?fold=0&rules=2&g={g}&p={p}&objn={pool['object']}&recn={pool['receptacle']}"
-                f"&reader=spatial4_synthonly_rj&carry=pred&var=0.001", "0", False)
+                f"&reader=spatial4_synthonly_rj&carry=pred{wp}&var=0.001", "0", False)
     if arm.startswith("phasebind2_reader_"):                             # rules v2 with reader variant <v> (p6_reader_<v>_<t>.npz)
         return (f"phasebind:{tid}?fold=0&rules=2&reader={arm[len('phasebind2_reader_'):]}&var=0.001", "0", False)
     if arm == "growleaf":                                                # P4: leaf borrowing over the success-grown library + the fold
@@ -175,7 +176,7 @@ def main():
             if s is None:
                 continue
             tag = ("leaffold_s1_last2" if fold else "leaf_s1") if arm == "leafbest" else arm.replace("lora@", "lora_")
-            tag = tag.replace("streamc@", "streamc_").replace("-", "_")
+            tag = tag.replace("streamc@", "streamc_").replace("streamw@", "streamw_").replace("-", "_")
             tag = ("dimfold_s1_last2" if fold else "dimcode_s1") if arm == "dimbest" else tag
             tag += dsfx + (f"_seed{a.seed}" if a.seed else "")
             first = a.first if a.first is not None else (30 if a.experiment == "m3_final" else 0)

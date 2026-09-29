@@ -223,7 +223,7 @@ def main():
                           features=str(rz["features"]) if "features" in rz.files else "pooled", pool=int(rz["pool"]) if "pool" in rz.files else 4)
             logging.info(f"phasebind: reader p6_reader{sfx}_{t}.npz ({reader['features']})")
         hooks = PhaseBindHooks(src, parts, D.Norm.load(), fold=fold, state=state, key=key, var=float(kv.get("var", 1e-3)), H=bk.H,
-                               reader=reader, carry="predicted" if kv.get("carry") == "pred" else "live")
+                               reader=reader, carry="predicted" if kv.get("carry") == "pred" else "live", warp=kv.get("warp") == "1")
         logging.info(f"phasebind: task {t}, {len(parts)} phases ({'object phases' if g and p_ else 'world frame'}; anchors "
                      f"{[None if q[6] is None else str(q[0]['names'][q[6]]) for q in parts]}), rules {kv.get('rules', '1')}, "
                      f"sources g={kv.get('g', t)} p={kv.get('p', t)}, fold {key}")

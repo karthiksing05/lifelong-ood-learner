@@ -328,7 +328,7 @@ def main():
         res = p1(P1_TASKS if a.read == "primary" else HELD)
         exp, tag = "p1_bindings", ("read" if a.read == "primary" else "secondary")
         what = f"P1 {a.read} read: phasebind / phasebind_nofold vs dimfold_s1_last2 on {9 if a.read == 'primary' else 21} tasks, states 30-49"
-    print(res["per_task"])
+    print(res.get("per_task", ""))
     if a.record:
         print(ledger.record(exp, bench="libero_90", tag=tag, seed=0, metrics=res, bytes=ZERO, config=vars(a),
                             script="experiments/p1_read.py", command=" ".join(sys.argv) + "  # " + what))

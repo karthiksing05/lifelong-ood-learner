@@ -193,7 +193,8 @@ class PhaseBindHooks:
     agree = None
     needs_prior = False
 
-    def __init__(self, source, parts, norm, fold=None, state=None, key=None, var=1e-3, H=10, replan=5, reader=None, carry="live"):
+    def __init__(self, source, parts, norm, fold=None, state=None, key=None, var=1e-3, H=10, replan=5, reader=None, carry="live",
+                 warp=False):
         """reader = dict(W, mx, my, names, enc): a LEARNED pose reader (experiments/p6_reader.py) in place of the client's
         simulator poses -- the objects' positions are predicted from the first frame's images, their orientations are the
         demo's (fixed yaw), and the carry assumes the planned grasp (no live held-object pose)."""
@@ -203,6 +204,10 @@ class PhaseBindHooks:
         # approach's source had after its close (the grasp binding), no sensing: identity for a task's own demo, the correction a
         # composed program needs when the place source carried another object type
         self.carry = carry
+        # warp: a carry starts where the hand holds the object and ends relative to the receptacle -- the start mismatch (a source
+        # whose object-receptacle layout differs from the scene's) is blended out over the transport (until the held object's last
+        # frame at the carry's height), so the descent onto the receptacle stays receptacle-relative
+        self.warp = bool(warp)
         self.names = [str(x) for x in source["names"]]
         self.fold = None if fold is None else np.asarray(fold, bool)
         self.var, self.H, self.replan = float(var), int(H), int(replan)
@@ -272,6 +277,15 @@ class PhaseBindHooks:
         # the source's ACHIEVED poses under the same transform: where the arm will be when the goal is commanded (the controller
         # lags its goal; predicting that goals are reached would close the gripper before the hand arrives)
         achieved = [M @ pose(z["eef_pos"][i], q2m(z["eef_quat"][i])) @ C for i in range(s0, s1)]
+        if self.warp and held is not None and len(goals) > 1:
+            hz = np.asarray(z["obj_pos"])[s0:s1, held, 2]
+            apex = int(np.where(hz >= hz.max() - 0.01)[0][-1])       # the end of the transport: the last frame at the carry's height
+            Dp, Da = p_now - goals[0][:3, 3], m2aa(R_now @ goals[0][:3, :3].T)
+            for i in range(len(goals)):
+                wgt = max(0.0, 1.0 - i / apex) if apex > 0 else 0.0
+                Rc = aa2m(Da * wgt)
+                goals[i] = pose(goals[i][:3, 3] + wgt * Dp, Rc @ goals[i][:3, :3])
+                achieved[i] = pose(achieved[i][:3, 3] + wgt * Dp, Rc @ achieved[i][:3, :3])
         n = max(5, int(math.ceil(np.linalg.norm(goals[0][:3, 3] - p_now) / 0.01)))
         rel = m2aa(goals[0][:3, :3] @ R_now.T)
         g_hold = float(z["action"][s0 - 1, 6]) if s0 > 0 else g_now

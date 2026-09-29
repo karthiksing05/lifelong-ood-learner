@@ -152,3 +152,42 @@ def test_reader_mode_reads_once_takes_demo_orientations_and_ignores_the_held_pos
         assert np.allclose(p, GP[i] + d, atol=1e-12) and np.allclose(R_, Rn @ Rn.T @ GQ[i], atol=1e-12)
     h.reset()
     assert h._objs == {}
+
+
+def test_warped_carry_starts_at_the_hand_and_ends_receptacle_relative():
+    """A carry whose source layout differs (the receptacle far from where the object is held) starts where the hand is and still
+    ends relative to the receptacle; after the transport the warped and unwarped paths agree."""
+    T = 30
+    names = np.array(["obj_1", "bin_1"])
+    obj_pos = np.zeros((T, 2, 3))
+    obj_pos[:, 1] = [0.3, 0.3, 0.9]                                   # the receptacle
+    eef_pos = np.zeros((T, 3))
+    for i in range(T):                                                # grasp at 0-9, lift 10-14, transport 15-24, descend 25-29
+        if i < 10:
+            p = [0.0, 0.0, 0.95]
+        elif i < 15:
+            p = [0.0, 0.0, 0.95 + 0.02 * (i - 9)]
+        elif i < 25:
+            p = [0.3 * (i - 14) / 10, 0.3 * (i - 14) / 10, 1.05]
+        else:
+            p = [0.3, 0.3, 1.05 - 0.02 * (i - 24)]
+        eef_pos[i] = p
+        obj_pos[i, 0] = np.array(p) - [0, 0, 0.05]
+    z = dict(names=names, movable=np.array([True, False]), obj_pos=obj_pos, obj_quat=np.tile([0, 0, 0, 1.0], (T, 2, 1)),
+             eef_pos=eef_pos, eef_quat=np.tile([1.0, 0, 0, 0], (T, 1)), action=np.zeros((T, 7), np.float32))
+    GP = eef_pos.copy()
+    GQ = np.stack([q2m(q) for q in z["eef_quat"]])
+    parts = [(z, GP, GQ, 10, T, "rec", 1, 0)]
+    moved = np.array([-0.3, -0.6, 0.9])                               # the scene's receptacle, far from the source's layout
+    meta = {"obj_names": ["obj_1", "bin_1"], "obj_pos": [0.0, 0.0, 0.9] + moved.tolist(), "obj_quat": [0, 0, 0, 1.0] * 2}
+    plans = {}
+    for warp in (False, True):
+        h = PhaseBindHooks(z, parts, norm=None, warp=warp, carry="predicted")
+        h._inhand["obj_1"] = np.linalg.inv(pose(obj_pos[9, 0], np.eye(3))) @ pose(eef_pos[9], q2m(z["eef_quat"][9]))
+        h.rewrite({}, meta)
+        h._start(0, eef_pos[9], q2m(z["eef_quat"][9]), 1.0)
+        plans[warp] = [q[0] for q in h.queue if q[3] >= 0]
+    assert np.linalg.norm(plans[True][0] - eef_pos[9]) < 0.02          # starts at the hand
+    assert np.linalg.norm(plans[False][0] - eef_pos[9]) > 0.3          # unwarped: starts where the source layout puts it
+    assert np.allclose(plans[True][-1], plans[False][-1])               # the same end relative to the receptacle
+    assert np.allclose(plans[True][15:], plans[False][15:])             # after the transport (source frame 25+) unchanged

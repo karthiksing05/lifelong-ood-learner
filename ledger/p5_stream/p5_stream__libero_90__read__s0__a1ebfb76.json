@@ -1,0 +1,816 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "experiments/p1_read.py p5 --record  # P5 stream: 50 tasks, two mirrored orders, binding table, no simulator state at test",
+ "config": {
+  "read": "p5",
+  "record": true
+ },
+ "env": {
+  "device": "cpu",
+  "host": "sky2.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "p5_stream",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "a1ebfb7686bb2ddc78e8b85b5f364a12ef9bf8e8",
+  "short": "a1ebfb76"
+ },
+ "keys": {},
+ "metrics": {
+  "S1": {
+   "composed_both": 4,
+   "only_early": 4,
+   "only_late": 20,
+   "sign_p": 0.001543879508972168
+  },
+  "S2": {
+   "control": 561,
+   "diff": {
+    "diff": -0.4828125,
+    "hi": -0.33125,
+    "hi90": -0.353125,
+    "lo": -0.6359375,
+    "lo90": -0.6109375,
+    "n_pairs": 640,
+    "n_tasks": 32
+   },
+   "discordant": [
+    14,
+    323
+   ],
+   "n": 640,
+   "non_inferior": false,
+   "sign_p": 1.5870085556975092e-77,
+   "x": 252,
+   "x_arm": "composed arrivals",
+   "y_arm": "phasebind2_rjpred (own demo)"
+  },
+  "orders": {
+   "A": {
+    "all_demo": 874,
+    "arrivals": [
+     {
+      "action": "demo",
+      "k": 4,
+      "own": 4,
+      "pos": 0,
+      "task": 83
+     },
+     {
+      "action": "demo",
+      "k": 20,
+      "own": 20,
+      "pos": 1,
+      "task": 3
+     },
+     {
+      "action": "demo",
+      "k": 20,
+      "own": 20,
+      "pos": 2,
+      "task": 53
+     },
+     {
+      "action": "demo",
+      "k": 20,
+      "own": 20,
+      "pos": 3,
+      "task": 26
+     },
+     {
+      "action": "demo",
+      "k": 12,
+      "own": 12,
+      "pos": 4,
+      "task": 73
+     },
+     {
+      "action": "demo",
+      "k": 8,
+      "own": 8,
+      "pos": 5,
+      "task": 23
+     },
+     {
+      "action": "demo",
+      "k": 18,
+      "own": 18,
+      "pos": 6,
+      "task": 1
+     },
+     {
+      "action": "demo",
+      "k": 20,
+      "own": 20,
+      "pos": 7,
+      "task": 52
+     },
+     {
+      "action": "demo",
+      "k": 20,
+      "own": 20,
+      "pos": 8,
+      "task": 87
+     },
+     {
+      "action": "demo",
+      "k": 20,
+      "own": 20,
+      "pos": 9,
+      "task": 13
+     },
+     {
+      "action": "demo",
+      "k": 20,
+      "own": 20,
+      "pos": 10,
+      "task": 66
+     },
+     {
+      "action": "demo",
+      "k": 20,
+      "own": 20,
+      "pos": 11,
+      "task": 69
+     },
+     {
+      "action": "demo",
+      "k": 20,
+      "own": 20,
+      "pos": 12,
+      "task": 37
+     },
+     {
+      "action": "demo",
+      "k": 20,
+      "own": 20,
+      "pos": 13,
+      "task": 89
+     },
+     {
+      "action": "demo",
+      "k": 16,
+      "own": 16,
+      "pos": 14,
+      "task": 8
+     },
+     {
+      "action": "demo",
+      "k": 20,
+      "own": 20,
+      "pos": 15,
+      "task": 75
+     },
+     {
+      "action": "demo",
+      "k": 14,
+      "own": 14,
+      "pos": 16,
+      "task": 21
+     },
+     {
+      "action": "compose",
+      "k": 8,
+      "own": 18,
+      "pos": 17,
+      "task": 41
+     },
+     {
+      "action": "compose",
+      "k": 12,
+      "own": 12,
+      "pos": 18,
+      "task": 78
+     },
+     {
+      "action": "demo",
+      "k": 11,
+      "own": 11,
+      "pos": 19,
+      "task": 27
+     },
+     {
+      "action": "demo",
+      "k": 18,
+      "own": 18,
+      "pos": 20,
+      "task": 18
+     },
+     {
+      "action": "demo",
+      "k": 6,
+      "own": 6,
+      "pos": 21,
+      "task": 39
+     },
+     {
+      "action": "demo",
+      "k": 14,
+      "own": 14,
+      "pos": 22,
+      "task": 86
+     },
+     {
+      "action": "compose",
+      "k": 12,
+      "own": 18,
+      "pos": 23,
+      "task": 5
+     },
+     {
+      "action": "demo",
+      "k": 20,
+      "own": 20,
+      "pos": 24,
+      "task": 17
+     },
+     {
+      "action": "demo",
+      "k": 20,
+      "own": 20,
+      "pos": 25,
+      "task": 6
+     },
+     {
+      "action": "compose",
+      "k": 19,
+      "own": 20,
+      "pos": 26,
+      "task": 80
+     },
+     {
+      "action": "compose",
+      "k": 3,
+      "own": 13,
+      "pos": 27,
+      "task": 81
+     },
+     {
+      "action": "demo",
+      "k": 18,
+      "own": 18,
+      "pos": 28,
+      "task": 76
+     },
+     {
+      "action": "demo",
+      "k": 20,
+      "own": 20,
+      "pos": 29,
+      "task": 34
+     },
+     {
+      "action": "demo",
+      "k": 19,
+      "own": 19,
+      "pos": 30,
+      "task": 58
+     },
+     {
+      "action": "demo",
+      "k": 20,
+      "own": 20,
+      "pos": 31,
+      "task": 85
+     },
+     {
+      "action": "demo",
+      "k": 19,
+      "own": 19,
+      "pos": 32,
+      "task": 11
+     },
+     {
+      "action": "compose",
+      "k": 0,
+      "own": 20,
+      "pos": 33,
+      "task": 71
+     },
+     {
+      "action": "demo",
+      "k": 20,
+      "own": 20,
+      "pos": 34,
+      "task": 35
+     },
+     {
+      "action": "compose",
+      "k": 0,
+      "own": 20,
+      "pos": 35,
+      "task": 16
+     },
+     {
+      "action": "compose",
+      "k": 0,
+      "own": 20,
+      "pos": 36,
+      "task": 84
+     },
+     {
+      "action": "demo",
+      "k": 20,
+      "own": 20,
+      "pos": 37,
+      "task": 25
+     },
+     {
+      "action": "demo",
+      "k": 20,
+      "own": 20,
+      "pos": 38,
+      "task": 74
+     },
+     {
+      "action": "demo",
+      "k": 7,
+      "own": 7,
+      "pos": 39,
+      "task": 40
+     },
+     {
+      "action": "demo",
+      "k": 13,
+      "own": 13,
+      "pos": 40,
+      "task": 62
+     },
+     {
+      "action": "compose",
+      "k": 0,
+      "own": 20,
+      "pos": 41,
+      "task": 36
+     },
+     {
+      "action": "compose",
+      "k": 20,
+      "own": 20,
+      "pos": 42,
+      "task": 43
+     },
+     {
+      "action": "demo",
+      "k": 20,
+      "own": 20,
+      "pos": 43,
+      "task": 63
+     },
+     {
+      "action": "compose",
+      "k": 0,
+      "own": 18,
+      "pos": 44,
+      "task": 65
+     },
+     {
+      "action": "demo",
+      "k": 20,
+      "own": 20,
+      "pos": 45,
+      "task": 32
+     },
+     {
+      "action": "compose",
+      "k": 20,
+      "own": 20,
+      "pos": 46,
+      "task": 4
+     },
+     {
+      "action": "compose",
+      "k": 20,
+      "own": 18,
+      "pos": 47,
+      "task": 48
+     },
+     {
+      "action": "compose",
+      "k": 0,
+      "own": 20,
+      "pos": 48,
+      "task": 88
+     },
+     {
+      "action": "compose",
+      "k": 0,
+      "own": 20,
+      "pos": 49,
+      "task": 42
+     }
+    ],
+    "composed_first_half": 3,
+    "composed_second_half": 12,
+    "demos": 35,
+    "n": 1000,
+    "stream": 711
+   },
+   "B": {
+    "all_demo": 874,
+    "arrivals": [
+     {
+      "action": "demo",
+      "k": 20,
+      "own": 20,
+      "pos": 0,
+      "task": 42
+     },
+     {
+      "action": "demo",
+      "k": 20,
+      "own": 20,
+      "pos": 1,
+      "task": 88
+     },
+     {
+      "action": "demo",
+      "k": 18,
+      "own": 18,
+      "pos": 2,
+      "task": 48
+     },
+     {
+      "action": "demo",
+      "k": 20,
+      "own": 20,
+      "pos": 3,
+      "task": 4
+     },
+     {
+      "action": "demo",
+      "k": 20,
+      "own": 20,
+      "pos": 4,
+      "task": 32
+     },
+     {
+      "action": "demo",
+      "k": 18,
+      "own": 18,
+      "pos": 5,
+      "task": 65
+     },
+     {
+      "action": "demo",
+      "k": 20,
+      "own": 20,
+      "pos": 6,
+      "task": 63
+     },
+     {
+      "action": "demo",
+      "k": 20,
+      "own": 20,
+      "pos": 7,
+      "task": 43
+     },
+     {
+      "action": "compose",
+      "k": 0,
+      "own": 20,
+      "pos": 8,
+      "task": 36
+     },
+     {
+      "action": "demo",
+      "k": 13,
+      "own": 13,
+      "pos": 9,
+      "task": 62
+     },
+     {
+      "action": "compose",
+      "k": 0,
+      "own": 7,
+      "pos": 10,
+      "task": 40
+     },
+     {
+      "action": "demo",
+      "k": 20,
+      "own": 20,
+      "pos": 11,
+      "task": 74
+     },
+     {
+      "action": "demo",
+      "k": 20,
+      "own": 20,
+      "pos": 12,
+      "task": 25
+     },
+     {
+      "action": "demo",
+      "k": 20,
+      "own": 20,
+      "pos": 13,
+      "task": 84
+     },
+     {
+      "action": "demo",
+      "k": 20,
+      "own": 20,
+      "pos": 14,
+      "task": 16
+     },
+     {
+      "action": "demo",
+      "k": 20,
+      "own": 20,
+      "pos": 15,
+      "task": 35
+     },
+     {
+      "action": "compose",
+      "k": 20,
+      "own": 20,
+      "pos": 16,
+      "task": 71
+     },
+     {
+      "action": "demo",
+      "k": 19,
+      "own": 19,
+      "pos": 17,
+      "task": 11
+     },
+     {
+      "action": "demo",
+      "k": 20,
+      "own": 20,
+      "pos": 18,
+      "task": 85
+     },
+     {
+      "action": "compose",
+      "k": 13,
+      "own": 19,
+      "pos": 19,
+      "task": 58
+     },
+     {
+      "action": "demo",
+      "k": 20,
+      "own": 20,
+      "pos": 20,
+      "task": 34
+     },
+     {
+      "action": "compose",
+      "k": 6,
+      "own": 18,
+      "pos": 21,
+      "task": 76
+     },
+     {
+      "action": "demo",
+      "k": 13,
+      "own": 13,
+      "pos": 22,
+      "task": 81
+     },
+     {
+      "action": "demo",
+      "k": 20,
+      "own": 20,
+      "pos": 23,
+      "task": 80
+     },
+     {
+      "action": "demo",
+      "k": 20,
+      "own": 20,
+      "pos": 24,
+      "task": 6
+     },
+     {
+      "action": "compose",
+      "k": 15,
+      "own": 20,
+      "pos": 25,
+      "task": 17
+     },
+     {
+      "action": "demo",
+      "k": 18,
+      "own": 18,
+      "pos": 26,
+      "task": 5
+     },
+     {
+      "action": "compose",
+      "k": 16,
+      "own": 14,
+      "pos": 27,
+      "task": 86
+     },
+     {
+      "action": "demo",
+      "k": 6,
+      "own": 6,
+      "pos": 28,
+      "task": 39
+     },
+     {
+      "action": "demo",
+      "k": 18,
+      "own": 18,
+      "pos": 29,
+      "task": 18
+     },
+     {
+      "action": "demo",
+      "k": 11,
+      "own": 11,
+      "pos": 30,
+      "task": 27
+     },
+     {
+      "action": "compose",
+      "k": 10,
+      "own": 12,
+      "pos": 31,
+      "task": 78
+     },
+     {
+      "action": "compose",
+      "k": 19,
+      "own": 18,
+      "pos": 32,
+      "task": 41
+     },
+     {
+      "action": "demo",
+      "k": 14,
+      "own": 14,
+      "pos": 33,
+      "task": 21
+     },
+     {
+      "action": "compose",
+      "k": 19,
+      "own": 20,
+      "pos": 34,
+      "task": 75
+     },
+     {
+      "action": "demo",
+      "k": 16,
+      "own": 16,
+      "pos": 35,
+      "task": 8
+     },
+     {
+      "action": "compose",
+      "k": 0,
+      "own": 20,
+      "pos": 36,
+      "task": 89
+     },
+     {
+      "action": "demo",
+      "k": 20,
+      "own": 20,
+      "pos": 37,
+      "task": 37
+     },
+     {
+      "action": "demo",
+      "k": 20,
+      "own": 20,
+      "pos": 38,
+      "task": 69
+     },
+     {
+      "action": "compose",
+      "k": 0,
+      "own": 20,
+      "pos": 39,
+      "task": 66
+     },
+     {
+      "action": "compose",
+      "k": 0,
+      "own": 20,
+      "pos": 40,
+      "task": 13
+     },
+     {
+      "action": "compose",
+      "k": 0,
+      "own": 20,
+      "pos": 41,
+      "task": 87
+     },
+     {
+      "action": "demo",
+      "k": 20,
+      "own": 20,
+      "pos": 42,
+      "task": 52
+     },
+     {
+      "action": "demo",
+      "k": 18,
+      "own": 18,
+      "pos": 43,
+      "task": 1
+     },
+     {
+      "action": "demo",
+      "k": 8,
+      "own": 8,
+      "pos": 44,
+      "task": 23
+     },
+     {
+      "action": "compose",
+      "k": 0,
+      "own": 12,
+      "pos": 45,
+      "task": 73
+     },
+     {
+      "action": "demo",
+      "k": 20,
+      "own": 20,
+      "pos": 46,
+      "task": 26
+     },
+     {
+      "action": "demo",
+      "k": 20,
+      "own": 20,
+      "pos": 47,
+      "task": 53
+     },
+     {
+      "action": "compose",
+      "k": 20,
+      "own": 20,
+      "pos": 48,
+      "task": 3
+     },
+     {
+      "action": "compose",
+      "k": 0,
+      "own": 4,
+      "pos": 49,
+      "task": 83
+     }
+    ],
+    "composed_first_half": 5,
+    "composed_second_half": 12,
+    "demos": 33,
+    "n": 1000,
+    "stream": 728
+   }
+  },
+  "ungated": {
+   "A": {
+    "demos": 33,
+    "poisoned": {
+     "40<-21+86": 0,
+     "75<-83+83": 11,
+     "78<-83+73": 17,
+     "80<-83+83": 3,
+     "81<-83+73": 15,
+     "88<-87+86": 0
+    },
+    "stream": 696
+   },
+   "B": {
+    "demos": 33,
+    "poisoned": {},
+    "stream": 728
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "p5_stream__libero_90__read__s0__a1ebfb76",
+ "schema": 1,
+ "script": "experiments/p1_read.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-29T19:53:07+00:00",
+ "stream": null,
+ "tag": "read"
+}
