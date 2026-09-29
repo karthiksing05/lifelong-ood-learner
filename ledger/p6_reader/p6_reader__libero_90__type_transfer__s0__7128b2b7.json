@@ -1,0 +1,1333 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/p6_type_reader.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "experiments/p6_type_reader.py --record",
+ "config": {
+  "per_task": 150,
+  "record": true
+ },
+ "env": {
+  "device": "cpu",
+  "host": "asimo.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": "3983758",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "p6_reader",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "7128b2b74d25ddadf86d88a3fc7344112b258993",
+  "short": "7128b2b7"
+ },
+ "keys": {},
+ "metrics": {
+  "fixture_median_cm": 0.20445550408210142,
+  "lams": [
+   1.0,
+   10.0,
+   100.0,
+   1000.0,
+   10000.0,
+   100000.0
+  ],
+  "median_cm": 0.8109471127136254,
+  "movable_median_cm": 3.1201767192051815,
+  "movable_within_1cm": 0.2641509433962264,
+  "n_fixture": 32,
+  "n_movable": 53,
+  "n_objects": 85,
+  "per_object": {
+   "11:wooden_cabinet_1": {
+    "cv_cm": 0.1668005146706693,
+    "err_cm_max": 1.0394897004168726,
+    "err_cm_median": 0.49915600189216264,
+    "lam": 1000.0,
+    "source_tasks": [
+     1,
+     3,
+     6,
+     5,
+     4,
+     8
+    ],
+    "sources": 6,
+    "type": "wooden_cabinet"
+   },
+   "13:akita_black_bowl_1": {
+    "cv_cm": 15.729441198686626,
+    "err_cm_max": 22.29987435280662,
+    "err_cm_median": 18.150497044832893,
+    "lam": 100000.0,
+    "source_tasks": [
+     1,
+     8,
+     25
+    ],
+    "sources": 3,
+    "type": "akita_black_bowl"
+   },
+   "13:plate_1": {
+    "cv_cm": 20.996767702852846,
+    "err_cm_max": 12.638186846515717,
+    "err_cm_median": 11.349894263889038,
+    "lam": 100000.0,
+    "source_tasks": [
+     66,
+     65,
+     36,
+     37,
+     69,
+     71
+    ],
+    "sources": 6,
+    "type": "plate"
+   },
+   "18:chefmate_8_frypan_1": {
+    "cv_cm": 6.2358743575426425,
+    "err_cm_max": 2.633129579695245,
+    "err_cm_median": 1.259094715469842,
+    "lam": 100000.0,
+    "source_tasks": [
+     42,
+     41,
+     40,
+     21
+    ],
+    "sources": 4,
+    "type": "chefmate_8_frypan"
+   },
+   "18:flat_stove_1": {
+    "cv_cm": 40.39372740487299,
+    "err_cm_max": 1.4797012192996724,
+    "err_cm_median": 0.4788417421511063,
+    "lam": 10000.0,
+    "source_tasks": [
+     39,
+     21
+    ],
+    "sources": 2,
+    "type": "flat_stove"
+   },
+   "1:akita_black_bowl_1": {
+    "cv_cm": 17.249496129975274,
+    "err_cm_max": 16.87387033748056,
+    "err_cm_median": 13.408199275192779,
+    "lam": 100000.0,
+    "source_tasks": [
+     13,
+     8,
+     25
+    ],
+    "sources": 3,
+    "type": "akita_black_bowl"
+   },
+   "1:wooden_cabinet_1": {
+    "cv_cm": 0.22925036409166236,
+    "err_cm_max": 0.3544625405458947,
+    "err_cm_median": 0.13452699264981222,
+    "lam": 10000.0,
+    "source_tasks": [
+     11,
+     3,
+     6,
+     5,
+     4,
+     8
+    ],
+    "sources": 6,
+    "type": "wooden_cabinet"
+   },
+   "21:chefmate_8_frypan_1": {
+    "cv_cm": 6.323907300213029,
+    "err_cm_max": 2.482740405128623,
+    "err_cm_median": 1.2883210922950294,
+    "lam": 100000.0,
+    "source_tasks": [
+     18,
+     42,
+     41,
+     40
+    ],
+    "sources": 4,
+    "type": "chefmate_8_frypan"
+   },
+   "21:flat_stove_1": {
+    "cv_cm": 41.97746121868115,
+    "err_cm_max": 1.6738675585786824,
+    "err_cm_median": 1.20233518527899,
+    "lam": 100000.0,
+    "source_tasks": [
+     18,
+     39
+    ],
+    "sources": 2,
+    "type": "flat_stove"
+   },
+   "23:white_cabinet_1": {
+    "cv_cm": 1.1891144391742194,
+    "err_cm_max": 0.8462995291159262,
+    "err_cm_median": 0.5758401861447661,
+    "lam": 100000.0,
+    "source_tasks": [
+     32,
+     26,
+     25
+    ],
+    "sources": 3,
+    "type": "white_cabinet"
+   },
+   "25:akita_black_bowl_1": {
+    "cv_cm": 14.807202011598736,
+    "err_cm_max": 46.31558202212207,
+    "err_cm_median": 16.745132021906908,
+    "lam": 10000.0,
+    "source_tasks": [
+     13,
+     1,
+     8
+    ],
+    "sources": 3,
+    "type": "akita_black_bowl"
+   },
+   "25:white_cabinet_1": {
+    "cv_cm": 0.9900733118528422,
+    "err_cm_max": 0.9646382308775294,
+    "err_cm_median": 0.5328225369568271,
+    "lam": 100000.0,
+    "source_tasks": [
+     32,
+     23,
+     26
+    ],
+    "sources": 3,
+    "type": "white_cabinet"
+   },
+   "26:white_cabinet_1": {
+    "cv_cm": 1.2321352743436682,
+    "err_cm_max": 0.858482868331773,
+    "err_cm_median": 0.47667971770755146,
+    "lam": 100000.0,
+    "source_tasks": [
+     32,
+     23,
+     25
+    ],
+    "sources": 3,
+    "type": "white_cabinet"
+   },
+   "26:wine_bottle_1": {
+    "cv_cm": null,
+    "err_cm_max": 0.8035964060419204,
+    "err_cm_median": 0.3805626697370079,
+    "lam": 1000.0,
+    "source_tasks": [
+     27
+    ],
+    "sources": 1,
+    "type": "wine_bottle"
+   },
+   "27:wine_bottle_1": {
+    "cv_cm": null,
+    "err_cm_max": 8.573128082459915,
+    "err_cm_median": 3.5787111873595308,
+    "lam": 1000.0,
+    "source_tasks": [
+     26
+    ],
+    "sources": 1,
+    "type": "wine_bottle"
+   },
+   "27:wine_rack_1": {
+    "sources": 0,
+    "type": "wine_rack"
+   },
+   "32:ketchup_1": {
+    "cv_cm": 10.09754949910304,
+    "err_cm_max": 55.56631901349445,
+    "err_cm_median": 47.93210185322978,
+    "lam": 100000.0,
+    "source_tasks": [
+     48,
+     58
+    ],
+    "sources": 2,
+    "type": "ketchup"
+   },
+   "32:white_cabinet_1": {
+    "cv_cm": 0.17587220466881048,
+    "err_cm_max": 45.96245877866792,
+    "err_cm_median": 20.892143158132413,
+    "lam": 1000.0,
+    "source_tasks": [
+     23,
+     26,
+     25
+    ],
+    "sources": 3,
+    "type": "white_cabinet"
+   },
+   "34:porcelain_mug_1": {
+    "cv_cm": null,
+    "err_cm_max": 71.84038206098516,
+    "err_cm_median": 59.8117889135963,
+    "lam": 1000.0,
+    "source_tasks": [
+     85
+    ],
+    "sources": 1,
+    "type": "porcelain_mug"
+   },
+   "34:white_yellow_mug_1": {
+    "cv_cm": null,
+    "err_cm_max": 29.105342880368752,
+    "err_cm_median": 8.47381122505022,
+    "lam": 1000.0,
+    "source_tasks": [
+     76
+    ],
+    "sources": 1,
+    "type": "white_yellow_mug"
+   },
+   "35:microwave_1": {
+    "sources": 0,
+    "type": "microwave"
+   },
+   "36:plate_1": {
+    "cv_cm": 23.618872072576476,
+    "err_cm_max": 3.191442369310477,
+    "err_cm_median": 1.7386070406517062,
+    "lam": 100000.0,
+    "source_tasks": [
+     66,
+     65,
+     37,
+     69,
+     13,
+     71
+    ],
+    "sources": 6,
+    "type": "plate"
+   },
+   "36:white_bowl_1": {
+    "cv_cm": 44.99999300086136,
+    "err_cm_max": 3.3075810718624914,
+    "err_cm_median": 1.6061639591586716,
+    "lam": 100000.0,
+    "source_tasks": [
+     37,
+     43
+    ],
+    "sources": 2,
+    "type": "white_bowl"
+   },
+   "37:plate_1": {
+    "cv_cm": 23.59248402785575,
+    "err_cm_max": 2.5433843747444307,
+    "err_cm_median": 1.4469428293959443,
+    "lam": 100000.0,
+    "source_tasks": [
+     66,
+     65,
+     36,
+     69,
+     13,
+     71
+    ],
+    "sources": 6,
+    "type": "plate"
+   },
+   "37:white_bowl_1": {
+    "cv_cm": 38.64458664050693,
+    "err_cm_max": 1.3794063140026225,
+    "err_cm_median": 1.1035990650003837,
+    "lam": 10000.0,
+    "source_tasks": [
+     36,
+     43
+    ],
+    "sources": 2,
+    "type": "white_bowl"
+   },
+   "39:flat_stove_1": {
+    "cv_cm": 0.16634253709530947,
+    "err_cm_max": 128.32220653518806,
+    "err_cm_median": 48.818375811079974,
+    "lam": 1.0,
+    "source_tasks": [
+     18,
+     21
+    ],
+    "sources": 2,
+    "type": "flat_stove"
+   },
+   "3:butter_2": {
+    "cv_cm": null,
+    "err_cm_max": 12.421820510997422,
+    "err_cm_median": 10.779894361016659,
+    "lam": 1000.0,
+    "source_tasks": [
+     4
+    ],
+    "sources": 1,
+    "type": "butter"
+   },
+   "3:wooden_cabinet_1": {
+    "cv_cm": 0.20316794217004344,
+    "err_cm_max": 0.32268607288380247,
+    "err_cm_median": 0.12957243562208992,
+    "lam": 1000.0,
+    "source_tasks": [
+     11,
+     1,
+     6,
+     5,
+     4,
+     8
+    ],
+    "sources": 6,
+    "type": "wooden_cabinet"
+   },
+   "40:chefmate_8_frypan_1": {
+    "cv_cm": 0.4129497959630359,
+    "err_cm_max": 0.36940913305392914,
+    "err_cm_median": 0.28194225586425026,
+    "lam": 1000.0,
+    "source_tasks": [
+     18,
+     42,
+     41,
+     21
+    ],
+    "sources": 4,
+    "type": "chefmate_8_frypan"
+   },
+   "40:wooden_two_layer_shelf_1": {
+    "cv_cm": 0.28656117332571107,
+    "err_cm_max": 0.5723064844922567,
+    "err_cm_median": 0.22081081023801225,
+    "lam": 10.0,
+    "source_tasks": [
+     42,
+     43,
+     41,
+     89,
+     88,
+     87,
+     86
+    ],
+    "sources": 7,
+    "type": "wooden_two_layer_shelf"
+   },
+   "41:chefmate_8_frypan_1": {
+    "cv_cm": 0.5647914166427779,
+    "err_cm_max": 0.415809437101064,
+    "err_cm_median": 0.24263673652536777,
+    "lam": 10000.0,
+    "source_tasks": [
+     18,
+     42,
+     40,
+     21
+    ],
+    "sources": 4,
+    "type": "chefmate_8_frypan"
+   },
+   "41:wooden_two_layer_shelf_1": {
+    "cv_cm": 0.2928418661876137,
+    "err_cm_max": 0.5233593853579261,
+    "err_cm_median": 0.19671015693950153,
+    "lam": 100.0,
+    "source_tasks": [
+     42,
+     43,
+     40,
+     89,
+     88,
+     87,
+     86
+    ],
+    "sources": 7,
+    "type": "wooden_two_layer_shelf"
+   },
+   "42:chefmate_8_frypan_1": {
+    "cv_cm": 0.43639602160405255,
+    "err_cm_max": 0.5215333656102361,
+    "err_cm_median": 0.29474808975576694,
+    "lam": 1000.0,
+    "source_tasks": [
+     18,
+     41,
+     40,
+     21
+    ],
+    "sources": 4,
+    "type": "chefmate_8_frypan"
+   },
+   "42:wooden_two_layer_shelf_1": {
+    "cv_cm": 0.2977402980660365,
+    "err_cm_max": 0.8556921656381402,
+    "err_cm_median": 0.2440359545605756,
+    "lam": 100.0,
+    "source_tasks": [
+     43,
+     41,
+     40,
+     89,
+     88,
+     87,
+     86
+    ],
+    "sources": 7,
+    "type": "wooden_two_layer_shelf"
+   },
+   "43:white_bowl_1": {
+    "cv_cm": 0.5093305008875969,
+    "err_cm_max": 182.8351017554696,
+    "err_cm_median": 98.50205172660876,
+    "lam": 1.0,
+    "source_tasks": [
+     36,
+     37
+    ],
+    "sources": 2,
+    "type": "white_bowl"
+   },
+   "43:wooden_two_layer_shelf_1": {
+    "cv_cm": 0.28989770401564785,
+    "err_cm_max": 0.5088414439831382,
+    "err_cm_median": 0.2524901568435467,
+    "lam": 1.0,
+    "source_tasks": [
+     42,
+     41,
+     40,
+     89,
+     88,
+     87,
+     86
+    ],
+    "sources": 7,
+    "type": "wooden_two_layer_shelf"
+   },
+   "48:basket_1": {
+    "cv_cm": 0.29711236085502096,
+    "err_cm_max": 6.223115810303313,
+    "err_cm_median": 1.721661898562353,
+    "lam": 1.0,
+    "source_tasks": [
+     52,
+     53
+    ],
+    "sources": 2,
+    "type": "basket"
+   },
+   "48:ketchup_1": {
+    "cv_cm": 48.85379238445044,
+    "err_cm_max": 11.409501727309566,
+    "err_cm_median": 9.5266523445827,
+    "lam": 100000.0,
+    "source_tasks": [
+     32,
+     58
+    ],
+    "sources": 2,
+    "type": "ketchup"
+   },
+   "4:butter_1": {
+    "cv_cm": null,
+    "err_cm_max": 12.834147161474327,
+    "err_cm_median": 11.008509357453093,
+    "lam": 1000.0,
+    "source_tasks": [
+     3
+    ],
+    "sources": 1,
+    "type": "butter"
+   },
+   "4:wooden_cabinet_1": {
+    "cv_cm": 0.1822412321676,
+    "err_cm_max": 1.8770178014733103,
+    "err_cm_median": 0.12750593817906775,
+    "lam": 1000.0,
+    "source_tasks": [
+     11,
+     1,
+     3,
+     6,
+     5,
+     8
+    ],
+    "sources": 6,
+    "type": "wooden_cabinet"
+   },
+   "52:basket_1": {
+    "cv_cm": 2.5755741420252654,
+    "err_cm_max": 1.0293637544248608,
+    "err_cm_median": 0.5660335665209686,
+    "lam": 100000.0,
+    "source_tasks": [
+     48,
+     53
+    ],
+    "sources": 2,
+    "type": "basket"
+   },
+   "52:milk_1": {
+    "sources": 0,
+    "type": "milk"
+   },
+   "53:basket_1": {
+    "cv_cm": 2.4189058332104967,
+    "err_cm_max": 0.8177127161261702,
+    "err_cm_median": 0.5148012242000538,
+    "lam": 100000.0,
+    "source_tasks": [
+     48,
+     52
+    ],
+    "sources": 2,
+    "type": "basket"
+   },
+   "53:orange_juice_1": {
+    "sources": 0,
+    "type": "orange_juice"
+   },
+   "58:ketchup_1": {
+    "cv_cm": 51.71181777265954,
+    "err_cm_max": 12.826451186799659,
+    "err_cm_median": 10.01385908038824,
+    "lam": 100000.0,
+    "source_tasks": [
+     32,
+     48
+    ],
+    "sources": 2,
+    "type": "ketchup"
+   },
+   "58:wooden_tray_1": {
+    "cv_cm": 0.24759357337383955,
+    "err_cm_max": 35.84591571444474,
+    "err_cm_median": 3.0933598254477115,
+    "lam": 1.0,
+    "source_tasks": [
+     62,
+     63
+    ],
+    "sources": 2,
+    "type": "wooden_tray"
+   },
+   "5:chocolate_pudding_1": {
+    "cv_cm": null,
+    "err_cm_max": 51.685786016942025,
+    "err_cm_median": 48.0153993878549,
+    "lam": 1000.0,
+    "source_tasks": [
+     69
+    ],
+    "sources": 1,
+    "type": "chocolate_pudding"
+   },
+   "5:wooden_cabinet_1": {
+    "cv_cm": 0.2537340519552887,
+    "err_cm_max": 1.1739756235352905,
+    "err_cm_median": 0.22260640278072746,
+    "lam": 10000.0,
+    "source_tasks": [
+     11,
+     1,
+     3,
+     6,
+     4,
+     8
+    ],
+    "sources": 6,
+    "type": "wooden_cabinet"
+   },
+   "62:new_salad_dressing_1": {
+    "sources": 0,
+    "type": "new_salad_dressing"
+   },
+   "62:wooden_tray_1": {
+    "cv_cm": 1.8030275712267396,
+    "err_cm_max": 0.8692560655550414,
+    "err_cm_median": 0.6209580698475204,
+    "lam": 100000.0,
+    "source_tasks": [
+     63,
+     58
+    ],
+    "sources": 2,
+    "type": "wooden_tray"
+   },
+   "63:wooden_tray_1": {
+    "cv_cm": 1.971407929688112,
+    "err_cm_max": 0.7828379513370577,
+    "err_cm_median": 0.5035306743532758,
+    "lam": 100000.0,
+    "source_tasks": [
+     62,
+     58
+    ],
+    "sources": 2,
+    "type": "wooden_tray"
+   },
+   "65:plate_1": {
+    "cv_cm": 10.559752330759983,
+    "err_cm_max": 61.08386577146059,
+    "err_cm_median": 58.65368595248996,
+    "lam": 100000.0,
+    "source_tasks": [
+     66,
+     36,
+     37,
+     69,
+     13,
+     71
+    ],
+    "sources": 6,
+    "type": "plate"
+   },
+   "65:red_coffee_mug_1": {
+    "cv_cm": 27.200125030154528,
+    "err_cm_max": 2.6149968685413567,
+    "err_cm_median": 2.0360159812672736,
+    "lam": 100000.0,
+    "source_tasks": [
+     66,
+     71,
+     84
+    ],
+    "sources": 3,
+    "type": "red_coffee_mug"
+   },
+   "66:plate_2": {
+    "cv_cm": 8.42528821838105,
+    "err_cm_max": 61.90030816346136,
+    "err_cm_median": 57.373795468202054,
+    "lam": 100000.0,
+    "source_tasks": [
+     65,
+     36,
+     37,
+     69,
+     13,
+     71
+    ],
+    "sources": 6,
+    "type": "plate"
+   },
+   "66:red_coffee_mug_1": {
+    "cv_cm": 56.54960073077273,
+    "err_cm_max": 2.352015983973403,
+    "err_cm_median": 1.7139036183655185,
+    "lam": 100000.0,
+    "source_tasks": [
+     65,
+     71,
+     84
+    ],
+    "sources": 3,
+    "type": "red_coffee_mug"
+   },
+   "69:chocolate_pudding_1": {
+    "cv_cm": null,
+    "err_cm_max": 87.6521614048046,
+    "err_cm_median": 73.68075642401513,
+    "lam": 1000.0,
+    "source_tasks": [
+     5
+    ],
+    "sources": 1,
+    "type": "chocolate_pudding"
+   },
+   "69:plate_1": {
+    "cv_cm": 29.399024856729945,
+    "err_cm_max": 8.421116019267277,
+    "err_cm_median": 3.1201767192051815,
+    "lam": 100000.0,
+    "source_tasks": [
+     66,
+     65,
+     36,
+     37,
+     13,
+     71
+    ],
+    "sources": 6,
+    "type": "plate"
+   },
+   "6:wooden_cabinet_1": {
+    "cv_cm": 0.226492475656103,
+    "err_cm_max": 0.399306320828646,
+    "err_cm_median": 0.14238683925112539,
+    "lam": 1000.0,
+    "source_tasks": [
+     11,
+     1,
+     3,
+     5,
+     4,
+     8
+    ],
+    "sources": 6,
+    "type": "wooden_cabinet"
+   },
+   "71:plate_1": {
+    "cv_cm": 29.64388102659144,
+    "err_cm_max": 6.141803708278227,
+    "err_cm_median": 2.026064781716693,
+    "lam": 100000.0,
+    "source_tasks": [
+     66,
+     65,
+     36,
+     37,
+     69,
+     13
+    ],
+    "sources": 6,
+    "type": "plate"
+   },
+   "71:red_coffee_mug_1": {
+    "cv_cm": 27.072316788141816,
+    "err_cm_max": 203.89614926317793,
+    "err_cm_median": 94.67823672848793,
+    "lam": 100000.0,
+    "source_tasks": [
+     66,
+     65,
+     84
+    ],
+    "sources": 3,
+    "type": "red_coffee_mug"
+   },
+   "73:black_book_1": {
+    "cv_cm": 2.140455742734277,
+    "err_cm_max": 1.4637394637289023,
+    "err_cm_median": 0.45700754419504214,
+    "lam": 10000.0,
+    "source_tasks": [
+     78,
+     86,
+     80,
+     75,
+     74,
+     81,
+     83
+    ],
+    "sources": 7,
+    "type": "black_book"
+   },
+   "73:desk_caddy_1": {
+    "cv_cm": 0.16457691990138618,
+    "err_cm_max": 0.24151756148132905,
+    "err_cm_median": 0.1502053700254426,
+    "lam": 1000.0,
+    "source_tasks": [
+     78,
+     84,
+     85,
+     80,
+     75,
+     74,
+     81,
+     76,
+     83
+    ],
+    "sources": 9,
+    "type": "desk_caddy"
+   },
+   "74:black_book_1": {
+    "cv_cm": 2.1377255388905265,
+    "err_cm_max": 1.68379006715523,
+    "err_cm_median": 0.5717491622020505,
+    "lam": 10000.0,
+    "source_tasks": [
+     78,
+     73,
+     86,
+     80,
+     75,
+     81,
+     83
+    ],
+    "sources": 7,
+    "type": "black_book"
+   },
+   "74:desk_caddy_1": {
+    "cv_cm": 0.15827546976456705,
+    "err_cm_max": 0.271583978638381,
+    "err_cm_median": 0.15757951755047886,
+    "lam": 1000.0,
+    "source_tasks": [
+     78,
+     73,
+     84,
+     85,
+     80,
+     75,
+     81,
+     76,
+     83
+    ],
+    "sources": 9,
+    "type": "desk_caddy"
+   },
+   "75:black_book_1": {
+    "cv_cm": 2.310505703075718,
+    "err_cm_max": 1.2540687647360553,
+    "err_cm_median": 0.7104660318775757,
+    "lam": 10000.0,
+    "source_tasks": [
+     78,
+     73,
+     86,
+     80,
+     74,
+     81,
+     83
+    ],
+    "sources": 7,
+    "type": "black_book"
+   },
+   "75:desk_caddy_1": {
+    "cv_cm": 0.15994782561909698,
+    "err_cm_max": 0.20767352784151297,
+    "err_cm_median": 0.07200484575545493,
+    "lam": 1000.0,
+    "source_tasks": [
+     78,
+     73,
+     84,
+     85,
+     80,
+     74,
+     81,
+     76,
+     83
+    ],
+    "sources": 9,
+    "type": "desk_caddy"
+   },
+   "76:desk_caddy_1": {
+    "cv_cm": 0.16391630218010517,
+    "err_cm_max": 0.20659321615380077,
+    "err_cm_median": 0.09691291559898839,
+    "lam": 1000.0,
+    "source_tasks": [
+     78,
+     73,
+     84,
+     85,
+     80,
+     75,
+     74,
+     81,
+     83
+    ],
+    "sources": 9,
+    "type": "desk_caddy"
+   },
+   "76:white_yellow_mug_1": {
+    "cv_cm": null,
+    "err_cm_max": 27.23580606232268,
+    "err_cm_median": 16.38329039120576,
+    "lam": 1000.0,
+    "source_tasks": [
+     34
+    ],
+    "sources": 1,
+    "type": "white_yellow_mug"
+   },
+   "78:black_book_1": {
+    "cv_cm": 2.8586329520417264,
+    "err_cm_max": 1.4859686389680067,
+    "err_cm_median": 0.8109471127136254,
+    "lam": 10000.0,
+    "source_tasks": [
+     73,
+     86,
+     80,
+     75,
+     74,
+     81,
+     83
+    ],
+    "sources": 7,
+    "type": "black_book"
+   },
+   "78:desk_caddy_1": {
+    "cv_cm": 0.17705774392080725,
+    "err_cm_max": 0.228961546499457,
+    "err_cm_median": 0.18658405946205245,
+    "lam": 1000.0,
+    "source_tasks": [
+     73,
+     84,
+     85,
+     80,
+     75,
+     74,
+     81,
+     76,
+     83
+    ],
+    "sources": 9,
+    "type": "desk_caddy"
+   },
+   "80:black_book_1": {
+    "cv_cm": 4.260104698052907,
+    "err_cm_max": 2.217580315366711,
+    "err_cm_median": 1.2170693800161105,
+    "lam": 100000.0,
+    "source_tasks": [
+     78,
+     73,
+     86,
+     75,
+     74,
+     81,
+     83
+    ],
+    "sources": 7,
+    "type": "black_book"
+   },
+   "80:desk_caddy_1": {
+    "cv_cm": 0.17933466906593112,
+    "err_cm_max": 1.6589019464509054,
+    "err_cm_median": 0.09576611629142807,
+    "lam": 1000.0,
+    "source_tasks": [
+     78,
+     73,
+     84,
+     85,
+     75,
+     74,
+     81,
+     76,
+     83
+    ],
+    "sources": 9,
+    "type": "desk_caddy"
+   },
+   "81:black_book_1": {
+    "cv_cm": 3.677090636075696,
+    "err_cm_max": 0.9391551282776298,
+    "err_cm_median": 0.7752935129556291,
+    "lam": 10000.0,
+    "source_tasks": [
+     78,
+     73,
+     86,
+     80,
+     75,
+     74,
+     83
+    ],
+    "sources": 7,
+    "type": "black_book"
+   },
+   "81:desk_caddy_1": {
+    "cv_cm": 0.1618495042247493,
+    "err_cm_max": 0.35280713117987045,
+    "err_cm_median": 0.16013352316034635,
+    "lam": 1000.0,
+    "source_tasks": [
+     78,
+     73,
+     84,
+     85,
+     80,
+     75,
+     74,
+     76,
+     83
+    ],
+    "sources": 9,
+    "type": "desk_caddy"
+   },
+   "83:black_book_1": {
+    "cv_cm": 3.8871293575951156,
+    "err_cm_max": 1.299914225209411,
+    "err_cm_median": 0.6947044277920293,
+    "lam": 10000.0,
+    "source_tasks": [
+     78,
+     73,
+     86,
+     80,
+     75,
+     74,
+     81
+    ],
+    "sources": 7,
+    "type": "black_book"
+   },
+   "83:desk_caddy_1": {
+    "cv_cm": 0.15360297791102345,
+    "err_cm_max": 0.3125810852268898,
+    "err_cm_median": 0.14623906496187594,
+    "lam": 100.0,
+    "source_tasks": [
+     78,
+     73,
+     84,
+     85,
+     80,
+     75,
+     74,
+     81,
+     76
+    ],
+    "sources": 9,
+    "type": "desk_caddy"
+   },
+   "84:desk_caddy_1": {
+    "cv_cm": 0.16340476046256364,
+    "err_cm_max": 0.4274733874453192,
+    "err_cm_median": 0.11515341354925056,
+    "lam": 1000.0,
+    "source_tasks": [
+     78,
+     73,
+     85,
+     80,
+     75,
+     74,
+     81,
+     76,
+     83
+    ],
+    "sources": 9,
+    "type": "desk_caddy"
+   },
+   "84:red_coffee_mug_1": {
+    "cv_cm": 13.794807446842508,
+    "err_cm_max": 424.93015995077286,
+    "err_cm_median": 241.49215215301902,
+    "lam": 1000.0,
+    "source_tasks": [
+     66,
+     65,
+     71
+    ],
+    "sources": 3,
+    "type": "red_coffee_mug"
+   },
+   "85:desk_caddy_1": {
+    "cv_cm": 0.15776737768606128,
+    "err_cm_max": 0.6270603868673811,
+    "err_cm_median": 0.19399723883143694,
+    "lam": 1000.0,
+    "source_tasks": [
+     78,
+     73,
+     84,
+     80,
+     75,
+     74,
+     81,
+     76,
+     83
+    ],
+    "sources": 9,
+    "type": "desk_caddy"
+   },
+   "85:porcelain_mug_1": {
+    "cv_cm": null,
+    "err_cm_max": 21.764360840970834,
+    "err_cm_median": 12.436516110314026,
+    "lam": 1000.0,
+    "source_tasks": [
+     34
+    ],
+    "sources": 1,
+    "type": "porcelain_mug"
+   },
+   "86:black_book_1": {
+    "cv_cm": 0.6041200346744178,
+    "err_cm_max": 18.089180660406313,
+    "err_cm_median": 10.901714279690932,
+    "lam": 1000.0,
+    "source_tasks": [
+     78,
+     73,
+     80,
+     75,
+     74,
+     81,
+     83
+    ],
+    "sources": 7,
+    "type": "black_book"
+   },
+   "86:wooden_two_layer_shelf_1": {
+    "cv_cm": 0.29431393002179385,
+    "err_cm_max": 0.4614701619506224,
+    "err_cm_median": 0.2651890265509096,
+    "lam": 100.0,
+    "source_tasks": [
+     42,
+     43,
+     41,
+     40,
+     89,
+     88,
+     87
+    ],
+    "sources": 7,
+    "type": "wooden_two_layer_shelf"
+   },
+   "87:wooden_two_layer_shelf_1": {
+    "cv_cm": 0.3125566592964621,
+    "err_cm_max": 0.4697795899494291,
+    "err_cm_median": 0.2122008512247013,
+    "lam": 100.0,
+    "source_tasks": [
+     42,
+     43,
+     41,
+     40,
+     89,
+     88,
+     86
+    ],
+    "sources": 7,
+    "type": "wooden_two_layer_shelf"
+   },
+   "87:yellow_book_2": {
+    "cv_cm": 0.4436315421997865,
+    "err_cm_max": 27.655902376193175,
+    "err_cm_median": 25.4914527800749,
+    "lam": 1.0,
+    "source_tasks": [
+     89,
+     88
+    ],
+    "sources": 2,
+    "type": "yellow_book"
+   },
+   "88:wooden_two_layer_shelf_1": {
+    "cv_cm": 0.293643611224597,
+    "err_cm_max": 0.3589240961129448,
+    "err_cm_median": 0.24112660814054016,
+    "lam": 100.0,
+    "source_tasks": [
+     42,
+     43,
+     41,
+     40,
+     89,
+     87,
+     86
+    ],
+    "sources": 7,
+    "type": "wooden_two_layer_shelf"
+   },
+   "88:yellow_book_1": {
+    "cv_cm": 25.556281187179668,
+    "err_cm_max": 19.586099887845236,
+    "err_cm_median": 14.771872125614546,
+    "lam": 100000.0,
+    "source_tasks": [
+     89,
+     87
+    ],
+    "sources": 2,
+    "type": "yellow_book"
+   },
+   "89:wooden_two_layer_shelf_1": {
+    "cv_cm": 0.3067893627598546,
+    "err_cm_max": 8.788563382868864,
+    "err_cm_median": 0.28401889741857417,
+    "lam": 10.0,
+    "source_tasks": [
+     42,
+     43,
+     41,
+     40,
+     88,
+     87,
+     86
+    ],
+    "sources": 7,
+    "type": "wooden_two_layer_shelf"
+   },
+   "89:yellow_book_1": {
+    "cv_cm": 25.525552061701905,
+    "err_cm_max": 19.077226796363266,
+    "err_cm_median": 11.222475013993062,
+    "lam": 100000.0,
+    "source_tasks": [
+     88,
+     87
+    ],
+    "sources": 2,
+    "type": "yellow_book"
+   },
+   "8:akita_black_bowl_1": {
+    "cv_cm": 17.89509654529389,
+    "err_cm_max": 9.37842725753827,
+    "err_cm_median": 8.786319983194216,
+    "lam": 100000.0,
+    "source_tasks": [
+     13,
+     1,
+     25
+    ],
+    "sources": 3,
+    "type": "akita_black_bowl"
+   },
+   "8:wooden_cabinet_1": {
+    "cv_cm": 0.25015872442265036,
+    "err_cm_max": 0.3473644985422834,
+    "err_cm_median": 0.15874701096245925,
+    "lam": 10000.0,
+    "source_tasks": [
+     11,
+     1,
+     3,
+     6,
+     5,
+     4
+    ],
+    "sources": 6,
+    "type": "wooden_cabinet"
+   }
+  },
+  "per_task_scenes": 150,
+  "reading": "NEGATIVE for movable objects: a linear reader per object type trained on other scenes localizes fixtures (they sit at nearly fixed places) but not movable objects, whose appearance and layout differ across scenes; perception stays per task",
+  "unseen_types": [
+   "microwave",
+   "milk",
+   "new_salad_dressing",
+   "orange_juice",
+   "wine_rack"
+  ]
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "p6_reader__libero_90__type_transfer__s0__7128b2b7",
+ "schema": 1,
+ "script": "experiments/p6_type_reader.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-29T18:48:22+00:00",
+ "stream": null,
+ "tag": "type_transfer"
+}

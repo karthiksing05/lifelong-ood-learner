@@ -1,0 +1,125 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/c1_grammar.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "experiments/c1_grammar.py --device cpu --record",
+ "config": {
+  "device": "cpu",
+  "record": true,
+  "window": 5
+ },
+ "env": {
+  "device": "cpu",
+  "host": "asimo.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": "3983859",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "c1_grammar",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "7128b2b74d25ddadf86d88a3fc7344112b258993",
+  "short": "7128b2b7"
+ },
+ "keys": {},
+ "metrics": {
+  "levels": {
+   "0.05": {
+    "change_points_per_demo": 64.04,
+    "holds": false,
+    "precision": 0.16402228140902128,
+    "prototypes": 9883,
+    "random_precision": 0.1148636993739425,
+    "random_recall": 0.9965217391304347,
+    "recall": 1.0,
+    "u": 0.05
+   },
+   "0.1": {
+    "change_points_per_demo": 65.5,
+    "holds": false,
+    "precision": 0.16596074999223853,
+    "prototypes": 9109,
+    "random_precision": 0.1149315149833394,
+    "random_recall": 0.9964130434782609,
+    "recall": 1.0,
+    "u": 0.1
+   },
+   "0.2": {
+    "change_points_per_demo": 55.26,
+    "holds": false,
+    "precision": 0.18451905182690417,
+    "prototypes": 6098,
+    "random_precision": 0.11508707409692702,
+    "random_recall": 0.9894565217391305,
+    "recall": 1.0,
+    "u": 0.2
+   },
+   "0.3": {
+    "change_points_per_demo": 32.48,
+    "holds": false,
+    "precision": 0.28212219219730256,
+    "prototypes": 1936,
+    "random_precision": 0.11311020919818777,
+    "random_recall": 0.9165217391304348,
+    "recall": 1.0,
+    "u": 0.3
+   },
+   "0.4": {
+    "change_points_per_demo": 15.9,
+    "holds": false,
+    "precision": 0.3171080412703825,
+    "prototypes": 242,
+    "random_precision": 0.11784279958202419,
+    "random_recall": 0.7059782608695652,
+    "recall": 1.0,
+    "u": 0.4
+   },
+   "0.55": {
+    "change_points_per_demo": 2.9,
+    "holds": true,
+    "precision": 0.6782608695652175,
+    "prototypes": 3,
+    "random_precision": 0.12429347826086956,
+    "random_recall": 0.2008695652173913,
+    "recall": 0.9891304347826086,
+    "u": 0.55
+   },
+   "0.7": {
+    "change_points_per_demo": 1.84,
+    "holds": false,
+    "precision": 0.7663043478260869,
+    "prototypes": 2,
+    "random_precision": 0.13429347826086957,
+    "random_recall": 0.14141304347826086,
+    "recall": 0.8152173913043478,
+    "u": 0.7
+   }
+  },
+  "n_demos": 50,
+  "n_events": 80,
+  "window": 5
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "c1_grammar__libero_90__read__s0__7128b2b7",
+ "schema": 1,
+ "script": "experiments/c1_grammar.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-29T18:20:18+00:00",
+ "stream": null,
+ "tag": "read"
+}

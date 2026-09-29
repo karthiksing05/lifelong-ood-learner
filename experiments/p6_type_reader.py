@@ -92,6 +92,17 @@ def main():
     res["median_cm"] = float(np.median(got))
     res["n_objects"] = len(got)
     res["unseen_types"] = sorted({v["type"] for v in res["per_object"].values() if not v.get("sources")})
+    mov, fix = [], []                                   # movable objects vs fixtures (results/robot/p0_demo/<t>.npz flags)
+    for k, v in res["per_object"].items():
+        if v.get("sources"):
+            t, n = k.split(":")
+            d = np.load(os.path.join(R, "p0_demo", f"{t}.npz"), allow_pickle=True)
+            (mov if dict(zip([str(x) for x in d["names"]], d["movable"]))[n] else fix).append(v["err_cm_median"])
+    res.update(movable_median_cm=float(np.median(mov)), fixture_median_cm=float(np.median(fix)), n_movable=len(mov), n_fixture=len(fix),
+               movable_within_1cm=float(np.mean(np.array(mov) < 1.0)),
+               reading=("NEGATIVE for movable objects: a linear reader per object type trained on other scenes localizes fixtures "
+                        "(nearly fixed places) but not movable objects, whose appearance and layout differ across scenes; perception stays per task"))
+    print(f"[type] movable: median {res['movable_median_cm']:.2f} cm over {len(mov)}; fixtures: median {res['fixture_median_cm']:.2f} cm over {len(fix)}")
     print(f"[type] median over {len(got)} objects with sources: {res['median_cm']:.2f} cm; types with no other task: {res['unseen_types']}")
     json.dump(res, open(f"{R}/p6_type_reader.json", "w"), indent=1)
     if a.record:

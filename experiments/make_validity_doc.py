@@ -138,6 +138,41 @@ def transfer_probes(w):
             w(f"| {t} | {r['c']} | {r['own']} | {r['sib']} | {pcr['per_task'][t]['cr'] if pcr else '-'} | "
               f"{pcr2['per_task'][t]['crp'] if pcr2 else '-'} | {r['nft']} |")
         w("")
+    c1 = _row("c1_grammar", "read")
+    if c1:
+        w(f"**C1: the grammar from the prototype hierarchy (pre-registered: ledger m3_prereg tag c1_grammar; ledger c1_grammar).** "
+          f"{c1['n_demos']} stream-pool demos, every frame's chunk labelled per level (r19's basin rule); the label sequence's change points "
+          f"vs the v2 cut's {c1['n_events']} phase events, within +-{c1['window']} frames; C1 holds at a level if recall >= 0.9 and precision >= "
+          "0.5 and both exceed random change points.")
+        w("")
+        w("| level t | prototypes | change points per demo | recall (random) | precision (random) | C1 |")
+        w("|---|---|---|---|---|---|")
+        for u, d in c1["levels"].items():
+            w(f"| {float(u):.2f} | {d['prototypes']} | {d['change_points_per_demo']:.1f} | {d['recall']:.2f} ({d['random_recall']:.2f}) | "
+              f"{d['precision']:.2f} ({d['random_precision']:.2f}) | {'holds' if d['holds'] else 'fails'} |")
+        w("")
+    p5 = _row("p5_stream", "read")
+    if p5:
+        w("**P5: the continual-learning stream (pre-registered: ledger m3_prereg tags p5_stream, p5_stream_amend1; ledger p5_stream).** "
+          "50 prior-fail tasks in two mirrored orders; a task is composed from the table's validated bindings when both its keys are "
+          "known, else it requests its demo; no simulator state at test (rendered-scene readers, predicted carry).")
+        for o, v in p5["orders"].items():
+            w(f"- order {o}: {v['demos']} demos for 50 tasks (composed {v['composed_first_half']} in the first half, {v['composed_second_half']} "
+              f"in the second); stream {v['stream']}/{v['n']} against {v['all_demo']}/{v['n']} when every task gets its own demo.")
+        s1 = p5["S1"]
+        w(f"- S1 (structural): composed only when arriving late {s1['only_late']}, only when early {s1['only_early']} (both {s1['composed_both']}); "
+          f"sign p {s1['sign_p']:.2g}.")
+        w(f"- S2, composed arrivals vs the same tasks' own demos: {_cmp(p5['S2'])}: {'NON-INFERIOR' if p5['S2']['non_inferior'] else 'not non-inferior'} at -0.10.")
+        for o, v in p5.get("ungated", {}).items():
+            w(f"- ungated order {o} (descriptive): stream {v['stream']} with {v['demos']} demos; the compositions the gate removes score "
+              + ", ".join(f"{k} {x}/20" for k, x in v["poisoned"].items()) + ".")
+        w("")
+    ty = _row("p6_reader", "type_transfer")
+    if ty:
+        w(f"**Perception across tasks by object type (ledger p6_reader tag type_transfer).** A reader per object type trained on the other "
+          f"tasks' rendered scenes, tested on a held-out task's first frames of states 20-29: median {ty['median_cm']:.2f} cm over "
+          f"{ty['n_objects']} objects; types seen in no other task: {', '.join(ty['unseen_types']) or 'none'}.")
+        w("")
     al = _row("p1_bindings", "alloc_v2")
     if al:
         w("**The practice allocator (pre-registered: ledger m3_prereg tag alloc_v2).** Per task, 10 practice episodes (init states 0-9) of "

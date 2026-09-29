@@ -538,6 +538,20 @@ Object poses come from the simulator (an ORACLE the client sends) unless a row s
 | 48 | 20 | 20 | 2 | 20 | 20 | 18 |
 | 58 | 19 | 20 | 0 | 17 | 17 | 16 |
 
+**C1: the grammar from the prototype hierarchy (pre-registered: ledger m3_prereg tag c1_grammar; ledger c1_grammar).** 50 stream-pool demos, every frame's chunk labelled per level (r19's basin rule); the label sequence's change points vs the v2 cut's 80 phase events, within +-5 frames; C1 holds at a level if recall >= 0.9 and precision >= 0.5 and both exceed random change points.
+
+| level t | prototypes | change points per demo | recall (random) | precision (random) | C1 |
+|---|---|---|---|---|---|
+| 0.05 | 9883 | 64.0 | 1.00 (1.00) | 0.16 (0.11) | fails |
+| 0.10 | 9109 | 65.5 | 1.00 (1.00) | 0.17 (0.11) | fails |
+| 0.20 | 6098 | 55.3 | 1.00 (0.99) | 0.18 (0.12) | fails |
+| 0.30 | 1936 | 32.5 | 1.00 (0.92) | 0.28 (0.11) | fails |
+| 0.40 | 242 | 15.9 | 1.00 (0.71) | 0.32 (0.12) | fails |
+| 0.55 | 3 | 2.9 | 0.99 (0.20) | 0.68 (0.12) | holds |
+| 0.70 | 2 | 1.8 | 0.82 (0.14) | 0.77 (0.13) | fails |
+
+**Perception across tasks by object type (ledger p6_reader tag type_transfer).** A reader per object type trained on the other tasks' rendered scenes, tested on a held-out task's first frames of states 20-29: median 0.81 cm over 85 objects; types seen in no other task: microwave, milk, new_salad_dressing, orange_juice, wine_rack.
+
 **The practice allocator (pre-registered: ledger m3_prereg tag alloc_v2).** Per task, 10 practice episodes (init states 0-9) of A = the v2 phases with the rendered-scene reader, B = prototype borrowing + fold, C = the LoRA on v2-generated demos; the most practice successes wins (ties A, B, C); scored by the chosen arm's existing episodes on states 30-49.
 - AL1, allocator vs A: 391/420 vs 376/420, +0.036 [-0.007, +0.102], one-sided 95% bound -0.005, discordant 18/3, sign p 0.0015: PASSES; vs LoRA + failure negatives: 391/420 vs 302/420, +0.212 [+0.119, +0.312], one-sided 95% bound +0.133, discordant 105/16, sign p 3.2e-17. Bytes for 21 tasks: 45.6 MB (A alone 9.3 MB).
 - switches (practice A / B / C -> choice; scored A -> chosen): 39: 3/6/5 -> dimfold_s1_last2; 6 -> 17; 40: 4/4/5 -> lora_r27gen; 7 -> 12; 5: 8/7/10 -> lora_r27gen; 19 -> 19; 53: 9/10/10 -> dimfold_s1_last2; 20 -> 19.
