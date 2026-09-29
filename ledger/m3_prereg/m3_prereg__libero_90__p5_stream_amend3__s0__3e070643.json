@@ -1,0 +1,48 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "P5 amendment 3 (exploratory): several validated sources per key",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky2.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "3e070643a82abc56622a78132bd425767ace3559",
+  "short": "3e070643"
+ },
+ "keys": {},
+ "metrics": {
+  "amends": "m3_prereg tag p5_stream_amend2 (exploratory)",
+  "status": "exploratory, like amendment 2; fixed before the g29 validation data were complete",
+  "variant": "VALIDATED COMPOSITION WITH SEVERAL SOURCES: the table keeps every validated demo per key (in arrival order) and an arriving task takes the first (grasp source, place source) pair whose composed program passes the same no-policy check; else it requests its demo (experiments/p5_validated.py plan --multi)",
+  "written_before": "g29 finished (56 of 192 compositions validated at the time)"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_90__p5_stream_amend3__s0__3e070643",
+ "schema": 1,
+ "script": "(inline, session 2026-09-29)",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-29T21:58:07+00:00",
+ "stream": null,
+ "tag": "p5_stream_amend3"
+}

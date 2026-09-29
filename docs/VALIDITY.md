@@ -558,6 +558,10 @@ Object poses come from the simulator (an ORACLE the client sends) unless a row s
 - ungated order A (descriptive): stream 696 with 33 demos; the compositions the gate removes score 40<-21+86 0/20, 75<-83+83 11/20, 78<-83+73 17/20, 80<-83+83 3/20, 81<-83+73 15/20, 88<-87+86 0/20.
 - ungated order B (descriptive): stream 728 with 33 demos; the compositions the gate removes score .
 
+- validated composition, first sources (m3_prereg p5_stream_amend2, EXPLORATORY): order A stream 855/1000 with 43 demos (8 compositions rejected); order B stream 832/1000 with 42 demos (9 compositions rejected); composed arrivals 201/300 vs their own demos 262/300 (-0.203, lower bound -0.347).
+- validated composition, every validated source per key (m3_prereg p5_stream_amend3, EXPLORATORY): order A stream 817/1000 with 40 demos (5 compositions rejected); order B stream 820/1000 with 37 demos (4 compositions rejected); composed arrivals 285/460 vs their own demos 396/460 (-0.241, lower bound -0.378).
+- carry fixes on the practice states (ledger p5_stream tag dev_fixes): as registered 123, carry warped 82, generic transport 6 of 320.
+
 **Perception across tasks by object type (ledger p6_reader tag type_transfer).** A reader per object type trained on the other tasks' rendered scenes, tested on a held-out task's first frames of states 20-29: median 0.81 cm over 85 objects; types seen in no other task: microwave, milk, new_salad_dressing, orange_juice, wine_rack.
 
 **The practice allocator (pre-registered: ledger m3_prereg tag alloc_v2).** Per task, 10 practice episodes (init states 0-9) of A = the v2 phases with the rendered-scene reader, B = prototype borrowing + fold, C = the LoRA on v2-generated demos; the most practice successes wins (ties A, B, C); scored by the chosen arm's existing episodes on states 30-49.

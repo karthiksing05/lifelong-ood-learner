@@ -167,6 +167,19 @@ def transfer_probes(w):
             w(f"- ungated order {o} (descriptive): stream {v['stream']} with {v['demos']} demos; the compositions the gate removes score "
               + ", ".join(f"{k} {x}/20" for k, x in v["poisoned"].items()) + ".")
         w("")
+    for tag, lab in (("validated", "validated composition, first sources (m3_prereg p5_stream_amend2, EXPLORATORY)"),
+                     ("validated_multi", "validated composition, every validated source per key (m3_prereg p5_stream_amend3, EXPLORATORY)")):
+        vv = _row("p5_stream", tag)
+        if vv:
+            c = vv["composed_vs_own"]
+            w(f"- {lab}: " + "; ".join(f"order {o} stream {v['stream']}/{v['n']} with {v['demos']} demos ({v['rejected']} compositions rejected)"
+                                       for o, v in vv["orders"].items())
+              + f"; composed arrivals {c['x']}/{c['n']} vs their own demos {c['control']}/{c['n']} ({c['diff']['diff']:+.3f}, lower bound {c['diff']['lo90']:+.3f}).")
+    dv = _row("p5_stream", "dev_fixes")
+    if dv:
+        w(f"- carry fixes on the practice states (ledger p5_stream tag dev_fixes): as registered {dv['totals']['streamc']}, carry warped "
+          f"{dv['totals']['streamw']}, generic transport {dv['totals']['streamt']} of {dv['n']}.")
+    w("")
     ty = _row("p6_reader", "type_transfer")
     if ty:
         w(f"**Perception across tasks by object type (ledger p6_reader tag type_transfer).** A reader per object type trained on the other "

@@ -5,7 +5,8 @@ placements in simulation with no policy (experiments/p38_generate.py --combos: r
 its demo, whose keys enter the table when its own program passes the same check (amendment 1).  Scored from the existing runs on init
 states 30-49 (composed: streamc_<g>_<p>; demo: phasebind2_rjpred).
 
-    python experiments/p5_validated.py plan          # -> results/robot/p5_stream_plan_validated.json; lists compositions not yet run
+    python experiments/p5_validated.py plan [--multi]  # -> results/robot/p5_stream_plan_validated[_multi].json; lists compositions not yet run
+    (--multi: the table keeps every validated source per key, and an arriving task takes the first source pair whose composition passes)
     ~/flash/miniconda3/envs/chunks/bin/python experiments/p5_validated.py read [--record]
 """
 import json
@@ -22,7 +23,7 @@ def load(f):
     return json.load(open(os.path.join(R, f)))
 
 
-def plan():
+def plan(multi=False):
     pool = load("p5_pool.json")
     demo_ok = {int(t): v["k"] / v["n"] >= 0.5 for f in ("g27_generate.json", "g28_generate.json") for t, v in load(f).items()}
     comp_ok = {tuple(map(int, k.split("_"))): v["k"] / v["n"] >= 0.5 for k, v in load("g29_generate.json").items() if k.count("_") == 2}
@@ -30,20 +31,23 @@ def plan():
     random.Random(0).shuffle(a)
     out = {}
     for name, order in {"A": a, "B": a[::-1]}.items():
-        grasp, place, steps = {}, {}, []
+        grasp, place, steps = {}, {}, []                      # key -> the validated sources, in arrival order
         for t in order:
             info = pool[str(t)]
             if info["composable"] and info["object_type"] in grasp and info["goal_key"] in place:
-                g, p = grasp[info["object_type"]], place[info["goal_key"]]
-                if comp_ok.get((t, g, p), False):
-                    steps.append(dict(task=t, action="compose", g=g, p=p))
+                pairs = [(g, p) for g in grasp[info["object_type"]] for p in place[info["goal_key"]]]
+                if not multi:
+                    pairs = pairs[:1]                         # the first sources only (the registered table)
+                hit = next(((g, p) for g, p in pairs if comp_ok.get((t, g, p), False)), None)
+                if hit:
+                    steps.append(dict(task=t, action="compose", g=hit[0], p=hit[1], tried=len(pairs)))
                     continue
-                steps.append(dict(task=t, action="demo", rejected=[g, p]))
+                steps.append(dict(task=t, action="demo", rejected=[list(x) for x in pairs]))
             else:
                 steps.append(dict(task=t, action="demo"))
             if info["composable"] and demo_ok.get(t, False):
-                grasp.setdefault(info["object_type"], t)
-                place.setdefault(info["goal_key"], t)
+                grasp.setdefault(info["object_type"], []).append(t)
+                place.setdefault(info["goal_key"], []).append(t)
         demos = sum(s["action"] == "demo" for s in steps)
         half = len(order) // 2
         out[name] = dict(order=order, steps=steps, demos=demos, composed=len(order) - demos,
@@ -52,21 +56,21 @@ def plan():
                          composed_second_half=sum(s["action"] == "compose" for s in steps[half:]))
         print(f"order {name}: {demos} demos ({out[name]['rejected']} compositions rejected by the check); composed "
               f"{out[name]['composed_first_half']} + {out[name]['composed_second_half']}")
-    json.dump(out, open(os.path.join(R, "p5_stream_plan_validated.json"), "w"), indent=1)
+    json.dump(out, open(os.path.join(R, "p5_stream_plan_validated_multi.json" if multi else "p5_stream_plan_validated.json"), "w"), indent=1)
     need = sorted({(s["task"], s["g"], s["p"]) for o in out.values() for s in o["steps"] if s["action"] == "compose"
                    and not os.path.exists(os.path.join(R, f"m3_final_{s['task']}_streamc_{s['g']}_{s['p']}.json"))})
     print("compositions to run before the read:", need)
     return out
 
 
-def read(record=False):
+def read(record=False, multi=False):
     import importlib.util
     from lifelong_ood import ledger, stats
     spec = importlib.util.spec_from_file_location("m3s", os.path.join(ROOT, "experiments", "m3_stats.py"))
     m3s = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(m3s)
     fin, _ = m3s.episodes("m3_final")
-    P = load("p5_stream_plan_validated.json")
+    P = load("p5_stream_plan_validated_multi.json" if multi else "p5_stream_plan_validated.json")
     own = lambda t: fin[(str(t), "phasebind2_rjpred")]
     res, tab = {"orders": {}}, {}
     for o, pl in P.items():
@@ -91,7 +95,7 @@ def read(record=False):
     print(f"composed arrivals vs their own demos: {kc} vs {ko} of {nn}, diff {d['diff']:+.3f}, lower bound {d['lo90']:+.3f}, "
           f"sign p {v['sign_p']:.3g} -> non-inferior {v['non_inferior']}")
     if record:
-        print(ledger.record("p5_stream", bench="libero_90", tag="validated", seed=0, metrics=res,
+        print(ledger.record("p5_stream", bench="libero_90", tag="validated_multi" if multi else "validated", seed=0, metrics=res,
                             bytes=dict(experts=0, tree=0, codes=0, samples=0, teacher_copies=0, total=0), config={},
                             script="experiments/p5_validated.py", command=" ".join(sys.argv)))
     return res
@@ -99,6 +103,6 @@ def read(record=False):
 
 if __name__ == "__main__":
     if sys.argv[1] == "plan":
-        plan()
+        plan("--multi" in sys.argv)
     else:
-        read("--record" in sys.argv)
+        read("--record" in sys.argv, "--multi" in sys.argv)
