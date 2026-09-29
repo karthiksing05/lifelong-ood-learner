@@ -1,0 +1,85 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/p3_seed_47_zeroshot.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "roll.sh MODE=ours SUITE=libero_90 TASKS=47 TRIALS=10 (job 3978808)",
+ "config": {
+  "client": {
+   "branches": "",
+   "first_trial": 0,
+   "host": "127.0.0.1",
+   "max_steps": 0,
+   "no_meta": false,
+   "out": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/p3_seed_47_zeroshot.json",
+   "port": 9026,
+   "record": true,
+   "replan": 5,
+   "resize": 224,
+   "seed": 7,
+   "suite": "libero_90",
+   "tasks": "47",
+   "trials": 10,
+   "videos": 2,
+   "wait": 10
+  },
+  "job": "3978808",
+  "mode": "ours"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "cyborg.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3978808",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "p3_seed",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "12a75c88e5339d4e7958a8e53f46cfcf6eb5209a",
+  "short": "12a75c88"
+ },
+ "keys": {
+  "first_trial": 0,
+  "mode": "ours",
+  "tasks": "47",
+  "trials": 10
+ },
+ "metrics": {
+  "complete": true,
+  "n_episodes": 10,
+  "secs": 326.3277266025543,
+  "success_rate": 1.0,
+  "tasks": {
+   "47": {
+    "errors": 0,
+    "language": "pick up the cream cheese box and put it in the basket",
+    "mean_steps": 242.6,
+    "n": 10,
+    "success_rate": 1.0
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "p3_seed__libero_90__zeroshot__first_trial-0__mode-ours__tasks-47__trials-10__s7__12a75c88",
+ "schema": 1,
+ "script": "experiments/libero_client.py",
+ "seconds": null,
+ "seed": 7,
+ "source_commit": null,
+ "started": "2026-09-29T01:59:34+00:00",
+ "stream": null,
+ "tag": "zeroshot"
+}

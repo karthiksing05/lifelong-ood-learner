@@ -1,0 +1,82 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration of P3b (confirmatory cross-task composition)",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky2.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "12a75c88e5339d4e7958a8e53f46cfcf6eb5209a",
+  "short": "12a75c88"
+ },
+ "keys": {},
+ "metrics": {
+  "arms": {
+   "cross": "grasp part of the object's source + place part of the receptacle's source",
+   "mismatch": "the grasp part of a DIFFERENT-shape object's source applied to the target's object",
+   "prior": "the zero-shot prior on the same init states (m3_final zeroshot for 5 and 36; p3_final zeroshot for 49 and 59)"
+  },
+  "executor": "experiments/p3_compose_sim.py --phases object_carry as committed in 12a75c8 (object-state phases; approach in the object's frame; object-centric carry relative to the receptacle, or the world for fixtures; release phase); no policy",
+  "hypotheses": {
+   "Z1": "PRIMARY: cross > the zero-shot prior over the 80 paired placements (exact two-sided sign test p < 0.05) and the pooled cross rate >= 0.5",
+   "Z2": "cross > mismatch over the 80 paired placements: exact two-sided sign test p < 0.05 and a difference >= 0.15",
+   "reading": "Z1 and Z2: a task the prior fails is executed by composing object-relative bindings drawn from other tasks, including the prior's own successes -- composition transfers skills across tasks and scenes; Z1 only: transfer without object specificity; neither: the exploratory P3a'' result does not replicate"
+  },
+  "placements": "init states 30-49 of each target (80 in all)",
+  "plan": "docs/PLAN_TRANSFER.md P3 (cross-task binding transfer), CONFIRMATORY on targets untouched by P3a/P3a'/P3a''",
+  "sources": "the first successful episode in trial order among the recorded practice (m5_practice, m6_round1, m6_round2) and the PRIOR's recorded zero-shot rollouts on solved tasks (p3_seed: states 0-9), all replayed bit-exactly with object state (p0_replay)",
+  "targets": {
+   "36 white bowl -> plate (KS7; prior 0/20 at states 30-49)": {
+    "grasp": 43,
+    "mismatch": 48,
+    "place": 67
+   },
+   "49 tomato sauce -> basket (LR1; prior 0.0 in the survey)": {
+    "grasp": 54,
+    "mismatch": 4,
+    "place": 47
+   },
+   "5 chocolate pudding -> top drawer, close (KS10; prior 0/20 at states 30-49)": {
+    "grasp": 61,
+    "mismatch": 32,
+    "place": 4
+   },
+   "59 tomato sauce -> tray (LR3; prior 0.2)": {
+    "grasp": 54,
+    "mismatch": 4,
+    "place": 57
+   }
+  },
+  "unavailable": "if a source task has no success among its recordings, that target is reported as not composable and excluded from the pooled reads",
+  "written_before": "any P3b composition run (the p3_seed recordings and the p3_final zero-shot controls are running; neither depends on the executor)"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_90__p3b__s0__12a75c88",
+ "schema": 1,
+ "script": "(inline, session 2026-09-28)",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-29T01:52:45+00:00",
+ "stream": null,
+ "tag": "p3b"
+}

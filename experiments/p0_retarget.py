@@ -71,7 +71,7 @@ def slerp_path(R0, R1, n):
 
 
 def source_episode(task):
-    for e in ("m5_practice", "m6_round1", "m6_round2"):
+    for e in ("m5_practice", "m6_round1", "m6_round2", "p3_seed"):         # p3_seed: the prior's recorded successes (P3b)
         fs = sorted(glob.glob(os.path.join(R, "p0_replay", f"{e}_{task}_trial*.npz")), key=lambda f: int(f.rsplit("trial", 1)[1][:-4]))
         for f in fs:
             z = dict(np.load(f, allow_pickle=True))

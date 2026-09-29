@@ -1,0 +1,94 @@
+{
+ "artifacts": [
+  "results/robot/p3b_compose_sim.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "p3_compose_sim.py --set p3b --targets 49+59+5+36 --arms cross+mismatch --phases object_carry",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky2.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "p3_compose",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "12a75c88e5339d4e7958a8e53f46cfcf6eb5209a",
+  "short": "12a75c88"
+ },
+ "keys": {},
+ "metrics": {
+  "Z1": {
+   "discordant_vs_prior": [
+    10,
+    6
+   ],
+   "passes": false,
+   "rate_ok": false,
+   "sign_p": 0.454498291015625
+  },
+  "Z2": {
+   "diff": 0.1375,
+   "discordant_vs_mismatch": [
+    11,
+    0
+   ],
+   "passes": false,
+   "sign_p": 0.0009765625
+  },
+  "cross": 11,
+  "cross_rate": 0.1375,
+  "n": 80,
+  "per_task": {
+   "36": {
+    "cross": 0,
+    "mismatch": 0,
+    "n": 20,
+    "prior": 0
+   },
+   "49": {
+    "cross": 0,
+    "mismatch": 0,
+    "n": 20,
+    "prior": 0
+   },
+   "5": {
+    "cross": 7,
+    "mismatch": 0,
+    "n": 20,
+    "prior": 0
+   },
+   "59": {
+    "cross": 4,
+    "mismatch": 0,
+    "n": 20,
+    "prior": 7
+   }
+  },
+  "reading": "NEGATIVE: the exploratory P3a'' result (cross 95 vs own 92 of 100 on the targets the executor was corrected on) does not replicate on new targets"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "p3_compose__libero_90__p3b__s0__12a75c88",
+ "schema": 1,
+ "script": "experiments/p3_compose_sim.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-29T02:07:18+00:00",
+ "stream": null,
+ "tag": "p3b"
+}

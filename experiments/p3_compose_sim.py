@@ -37,6 +37,13 @@ TARGETS = {
     3: dict(obj="butter", rec=None, own=3, grasp=4, place=4, mismatch=32),
     4: dict(obj="butter", rec=None, own=4, grasp=3, place=3, mismatch=32),
 }
+# P3b (ledger m3_prereg tag p3b): confirmatory targets, none used in P3a / P3a' / P3a''
+TARGETS_B = {
+    49: dict(obj="tomato_sauce", rec="basket", own=None, grasp=54, place=47, mismatch=4),
+    59: dict(obj="tomato_sauce", rec="wooden_tray", own=None, grasp=54, place=57, mismatch=4),
+    5: dict(obj="chocolate_pudding", rec=None, own=None, grasp=61, place=4, mismatch=32),
+    36: dict(obj="white_bowl", rec="plate", own=None, grasp=43, place=67, mismatch=48),
+}
 
 
 def category(name):
@@ -117,10 +124,11 @@ def phases(z, part):
 def run(job):
     target, arm = job[0], job[1]
     mode = job[2] if len(job) > 2 else "switch"
+    table = TARGETS_B if (len(job) > 3 and job[3] == "p3b") else TARGETS
     carry_mode = mode == "object_carry"
     from libero.libero import benchmark, get_libero_path
     from libero.libero.envs import OffScreenRenderEnv
-    T = TARGETS[target]
+    T = table[target]
     src_g = T["own"] if arm == "own" else (T["grasp"] if arm == "cross" else T["mismatch"])
     src_p = T["own"] if arm == "own" else T["place"]
     fg, zg = P0.source_episode(src_g)
@@ -215,6 +223,7 @@ def run(job):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--targets", default="58+48+43+3+4")
+    ap.add_argument("--set", default="p3a", choices=["p3a", "p3b"])
     ap.add_argument("--arms", default="own+cross+mismatch")
     ap.add_argument("--workers", type=int, default=15)
     ap.add_argument("--out", default=os.path.join(R, "p3_compose_sim.json"))
@@ -222,7 +231,7 @@ def main():
                     help="switch: the pre-registered P3a segmentation; object: P3a' phases from object state; object_carry: + the "
                          "object-centric carry and the release phase")
     a = ap.parse_args()
-    jobs = [(int(t), arm, a.phases) for t in a.targets.replace("+", ",").split(",") for arm in a.arms.replace("+", ",").split(",")]
+    jobs = [(int(t), arm, a.phases, a.set) for t in a.targets.replace("+", ",").split(",") for arm in a.arms.replace("+", ",").split(",")]
     res, t0 = {}, time.time()
     with Pool(a.workers) as pool:
         for target, arm, out, src in pool.imap_unordered(run, jobs):
