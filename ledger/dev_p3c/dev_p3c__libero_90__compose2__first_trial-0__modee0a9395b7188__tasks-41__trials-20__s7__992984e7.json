@@ -1,0 +1,86 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/dev_p3c_41_compose2.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "roll.sh MODE=phasebind:41?fold=0&rules=2&g=40&p=43&obj=chefmate_8_frypan&var=0.001 SUITE=libero_90 TASKS=41 TRIALS=20 (job 3982628)",
+ "config": {
+  "client": {
+   "branches": "",
+   "first_trial": 0,
+   "host": "127.0.0.1",
+   "max_steps": 0,
+   "no_meta": false,
+   "objects": true,
+   "out": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/dev_p3c_41_compose2.json",
+   "port": 9176,
+   "record": false,
+   "replan": 5,
+   "resize": 224,
+   "seed": 7,
+   "suite": "libero_90",
+   "tasks": "41",
+   "trials": 20,
+   "videos": 2,
+   "wait": 10
+  },
+  "job": "3982628",
+  "mode": "phasebind:41?fold=0&rules=2&g=40&p=43&obj=chefmate_8_frypan&var=0.001"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "dendrite.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3982628",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "dev_p3c",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "992984e720a6d8e385c16ca08bf9a7d2a808f43d",
+  "short": "992984e7"
+ },
+ "keys": {
+  "first_trial": 0,
+  "mode": "phasebind:41?fold=0&rules=2&g=40&p=43&obj=chefmate_8_frypan&var=0.001",
+  "tasks": "41",
+  "trials": 20
+ },
+ "metrics": {
+  "complete": true,
+  "n_episodes": 20,
+  "secs": 567.3377060890198,
+  "success_rate": 0.7,
+  "tasks": {
+   "41": {
+    "errors": 0,
+    "language": "put the frying pan on top of the cabinet",
+    "mean_steps": 257.1,
+    "n": 20,
+    "success_rate": 0.7
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "dev_p3c__libero_90__compose2__first_trial-0__modee0a9395b7188__tasks-41__trials-20__s7__992984e7",
+ "schema": 1,
+ "script": "experiments/libero_client.py",
+ "seconds": null,
+ "seed": 7,
+ "source_commit": null,
+ "started": "2026-09-29T15:22:12+00:00",
+ "stream": null,
+ "tag": "compose2"
+}

@@ -21,7 +21,7 @@ p3c, p3c_amend1, p3c_reader); the full reads are in [docs/VALIDITY.md](VALIDITY.
 | P3a, P3b cross-task bindings, v1 and no policy | P3a 39 vs 91 of 100; P3b 11 of 80 | failed; REVERSED by P3c |
 | **rules v2** (a defect: the living-room demos' first frames catch the object still falling, up to 12.2 cm above rest) | generator dev check 386 vs 331 of 420 on the practice placements; through the prior, 21 tasks: **385 of 420** vs v1 314 and LoRA + failure negatives 302 (both p below 0.001), 54.9 KB for all 21 tasks; LoRA on v2-generated demos 327 vs 293 (p 0.003) | PASSES (V1, V2, V4) |
 | **P6 again: readers** | first-frame reader on 30 placements: 362 (lower bound -0.121, fails); + 400 simulator-rendered placements per task (labels at training only): **376 of 420**, -0.021 vs the simulator's poses, lower bound -0.050, 9.3 MB for 21 tasks | **PASSES (V5): the headline condition holds** |
-| **P3c: tasks composed from other tasks' phases** (grasp source by object type, place source by BDDL goal relation) | 6 targets: **114 of 120** vs 117 with their own demo (lower bound -0.067); sibling's whole demo 42 (p below 0.001); with a reader trained on rendered scenes only 92 (0 of 20 on the white bowl, whose carry comes from a pan held by the handle) | **PASSES (C1, C2): C3 holds under v2**; the reader arm fails R1 (in-hand pose) |
+| **P3c: tasks composed from other tasks' phases** (grasp source by object type, place source by BDDL goal relation) | 6 targets: **114 of 120** vs 117 with their own demo (lower bound -0.067); sibling's whole demo 42 (p below 0.001); with a reader trained on rendered scenes only 92 (0 of 20 on the white bowl, whose carry comes from a pan held by the handle); with the in-hand pose predicted from the grasp binding **112** (lower bound -0.058) | **PASSES (C1, C2, R2): C3 holds under v2, with no demo, no practice and no simulator state at test**; R1 failed |
 | stove (task 39) | 6 of 20 in every v2 arm: the knob starts anywhere from 0.53 to 2.09 rad; the demo's twist leaves most init states on | a joint-state binding, not built |
 | P5 minimal stream | not run yet | its precondition (P3) now holds |
 
@@ -31,8 +31,9 @@ v2 on the six tasks that have sources: a task with no demo is composed from the 
 place of a task with the same goal relation, and scores as its own demo does; the grasp binding carries (another type's grasp: 42 of
 120). The v1 negatives (P3a, P3b, and "bindings transfer across instances, not tasks") came from the falling-object defect and the
 no-policy executor. C1 (grammar) was not tested separately: the phase cut from object events is the grammar. C5: the fold hurts once
-bindings act. C4 (continual learning with falling cost) is the next step: P5's precondition now holds. Open: the in-hand pose of a
-composed carry without sensing (P3c R1), and joint-state bindings (the stove).
+bindings act. C4 (continual learning with falling cost) is the next step: P5's precondition now holds. Open: joint-state bindings (the
+stove); a stream large enough to show demos per task falling with the binding vocabulary (the 21-task pool composes only 3-4 tasks
+in either order: experiments/p5_stream.py plan).
 
 ## 1. Context: what the evidence says, and the reframe
 

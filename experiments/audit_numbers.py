@@ -304,6 +304,8 @@ TRANSFER = [   # docs/PLAN_TRANSFER.md probes (pre-registered: ledger m3_prereg 
     ("P3c: lower bound (quoted negated)", neg(emb("p3_compose", "metrics.C1.diff.lo90", tag="p3c")), "0.067"),
     ("P3c: sibling's whole demo", emb("p3_compose", "metrics.C2.control", tag="p3c"), "42"),
     ("P3c: composed with the rendered-scene reader", emb("p3_compose", "metrics.R1.x", tag="p3c_reader"), "92"),
+    ("P3c: composed, reader, predicted carry", emb("p3_compose", "metrics.R2.x", tag="p3c_reader2"), "112"),
+    ("P3c: predicted carry lower bound (quoted negated)", neg(emb("p3_compose", "metrics.R2.diff.lo90", tag="p3c_reader2")), "0.058"),
 ]
 
 CHECKS = EMBODIED + TRANSFER + [

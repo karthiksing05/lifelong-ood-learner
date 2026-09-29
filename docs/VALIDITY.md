@@ -527,15 +527,16 @@ Object poses come from the simulator (an ORACLE the client sends) unless a row s
 - C1, composed vs the task's own demo (v2, simulator poses): 114/120 vs 117/120, -0.025 [-0.075, +0.000], one-sided 95% bound -0.067, discordant 0/3, sign p 0.25: NON-INFERIOR at -0.10.
 - C2, composed vs the sibling's whole demo (another object type's grasp): 114/120 vs 42/120, +0.600 [+0.267, +0.925], one-sided 95% bound +0.300, discordant 72/0, sign p 4.2e-22: PASSES.
 - R1, composed with a pose reader trained only on rendered scenes vs composed with the simulator's poses: 92/120 vs 114/120, -0.183 [-0.517, +0.000], one-sided 95% bound -0.500, discordant 1/23, sign p 3e-06: NOT non-inferior at -0.10.
+- R2 (m3_prereg p3c_reader2), the same with the in-hand pose predicted from the grasp binding (dev check on states 0-19: `ledger/p3_compose` tag p3c_dev_carry): 112/120 vs 114/120, -0.017 [-0.075, +0.008], one-sided 95% bound -0.058, discordant 1/3, sign p 0.62: NON-INFERIOR at -0.10.
 
-| task | composed | own demo | sibling | composed, rendered-scene reader | LoRA + failure negatives |
-|---|---|---|---|---|---|
-| 3 | 20 | 20 | 20 | 20 | 18 |
-| 4 | 20 | 20 | 20 | 20 | 11 |
-| 41 | 15 | 17 | 0 | 15 | 18 |
-| 43 | 20 | 20 | 0 | 0 | 20 |
-| 48 | 20 | 20 | 2 | 20 | 18 |
-| 58 | 19 | 20 | 0 | 17 | 16 |
+| task | composed | own demo | sibling | composed, reader | composed, reader, predicted carry | LoRA + failure negatives |
+|---|---|---|---|---|---|---|
+| 3 | 20 | 20 | 20 | 20 | 20 | 18 |
+| 4 | 20 | 20 | 20 | 20 | 20 | 11 |
+| 41 | 15 | 17 | 0 | 15 | 15 | 18 |
+| 43 | 20 | 20 | 0 | 0 | 20 | 20 |
+| 48 | 20 | 20 | 2 | 20 | 20 | 18 |
+| 58 | 19 | 20 | 0 | 17 | 17 | 16 |
 
 Pose-reader variants, offline on the first frames of init states 20-29 (`ledger/p6_reader`):
 - re-reading the grasped object when the hand is within 10 cm of its grasp point: median 0.94 cm against 0.79 cm for the first frame (the same episodes).

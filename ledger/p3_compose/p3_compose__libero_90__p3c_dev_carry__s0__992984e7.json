@@ -1,0 +1,84 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "dev check of the predicted carry, P3c targets, states 0-19",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky2.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "p3_compose",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "992984e720a6d8e385c16ca08bf9a7d2a808f43d",
+  "short": "992984e7"
+ },
+ "keys": {},
+ "metrics": {
+  "n": 120,
+  "per_task": {
+   "3": {
+    "compose2": 20,
+    "compose2_reader": 19,
+    "compose2_reader_pred": 19
+   },
+   "4": {
+    "compose2": 20,
+    "compose2_reader": 19,
+    "compose2_reader_pred": 19
+   },
+   "41": {
+    "compose2": 14,
+    "compose2_reader": 14,
+    "compose2_reader_pred": 14
+   },
+   "43": {
+    "compose2": 20,
+    "compose2_reader": 0,
+    "compose2_reader_pred": 20
+   },
+   "48": {
+    "compose2": 20,
+    "compose2_reader": 20,
+    "compose2_reader_pred": 20
+   },
+   "58": {
+    "compose2": 20,
+    "compose2_reader": 18,
+    "compose2_reader_pred": 18
+   }
+  },
+  "reading": "the in-hand pose predicted from the grasp binding (hooks carry='predicted') fixes the white bowl (0 -> 20 of 20) and changes nothing else",
+  "states": "practice init states 0-19 (experiment dev_p3c); the scoring states untouched",
+  "totals": {
+   "compose2": 114,
+   "compose2_reader": 90,
+   "compose2_reader_pred": 110
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "p3_compose__libero_90__p3c_dev_carry__s0__992984e7",
+ "schema": 1,
+ "script": "experiments/launch_pack.py --experiment dev_p3c",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-29T15:33:51+00:00",
+ "stream": null,
+ "tag": "p3c_dev_carry"
+}

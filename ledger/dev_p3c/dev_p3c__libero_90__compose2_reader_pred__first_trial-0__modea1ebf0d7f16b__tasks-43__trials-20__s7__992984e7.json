@@ -1,0 +1,86 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/dev_p3c_43_compose2_reader_pred.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "roll.sh MODE=phasebind:43?fold=0&rules=2&g=36&p=41&obj=white_bowl&reader=spatial4_synthonly_rj&carry=pred&var=0.001 SUITE=libero_90 TASKS=43 TRIALS=20 (job 3982629)",
+ "config": {
+  "client": {
+   "branches": "",
+   "first_trial": 0,
+   "host": "127.0.0.1",
+   "max_steps": 0,
+   "no_meta": false,
+   "objects": false,
+   "out": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/dev_p3c_43_compose2_reader_pred.json",
+   "port": 9177,
+   "record": false,
+   "replan": 5,
+   "resize": 224,
+   "seed": 7,
+   "suite": "libero_90",
+   "tasks": "43",
+   "trials": 20,
+   "videos": 2,
+   "wait": 10
+  },
+  "job": "3982629",
+  "mode": "phasebind:43?fold=0&rules=2&g=36&p=41&obj=white_bowl&reader=spatial4_synthonly_rj&carry=pred&var=0.001"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "perseverance.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3982629",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "dev_p3c",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "992984e720a6d8e385c16ca08bf9a7d2a808f43d",
+  "short": "992984e7"
+ },
+ "keys": {
+  "first_trial": 0,
+  "mode": "phasebind:43?fold=0&rules=2&g=36&p=41&obj=white_bowl&reader=spatial4_synthonly_rj&carry=pred&var=0.001",
+  "tasks": "43",
+  "trials": 20
+ },
+ "metrics": {
+  "complete": true,
+  "n_episodes": 20,
+  "secs": 511.2867546081543,
+  "success_rate": 1.0,
+  "tasks": {
+   "43": {
+    "errors": 0,
+    "language": "put the white bowl on top of the cabinet",
+    "mean_steps": 216.45,
+    "n": 20,
+    "success_rate": 1.0
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "dev_p3c__libero_90__compose2_reader_pred__first_trial-0__modea1ebf0d7f16b__tasks-43__trials-20__s7__992984e7",
+ "schema": 1,
+ "script": "experiments/libero_client.py",
+ "seconds": null,
+ "seed": 7,
+ "source_commit": null,
+ "started": "2026-09-29T15:20:43+00:00",
+ "stream": null,
+ "tag": "compose2_reader_pred"
+}

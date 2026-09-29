@@ -1,0 +1,55 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration of the P3c reader arm with the predicted carry",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky2.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "992984e720a6d8e385c16ca08bf9a7d2a808f43d",
+  "short": "992984e7"
+ },
+ "keys": {},
+ "metrics": {
+  "after": "m3_prereg p3c_reader (R1 failed: 92/120; the white bowl 0/20)",
+  "arm": "compose2_reader_pred = compose2_reader + carry=pred (same readers: rendered scenes only, arm at init-state poses)",
+  "dev_evidence": "ledger p3_compose tag p3c_dev_carry: states 0-19: predicted 110, identity 90, simulator poses 114 of 120",
+  "diagnosis": "reader mode set the carry's in-hand correction to identity (no live held pose); the white bowl's carry comes from a frying pan held by its handle (predicted correction 11.9 cm, 102 deg; identity for a task's own demo)",
+  "fix": "PhaseBindHooks carry='predicted': the in-hand pose the approach's SOURCE had after its close (the grasp binding) stands in for the live held pose; no sensing",
+  "hypotheses": {
+   "R2": "PRIMARY: compose2_reader_pred non-inferior to compose2 at -0.10 on the 6 targets, states 30-49 (120 paired; one-sided 95% lower bound, two-level bootstrap)",
+   "descriptive": "vs compose2_reader (R1's arm) and vs the own demo; per target"
+  },
+  "note": "the same scoring states as R1; R1 stays recorded as failed",
+  "written_before": "any compose2_reader_pred rollout at states 30-49"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_90__p3c_reader2__s0__992984e7",
+ "schema": 1,
+ "script": "(inline, session 2026-09-29)",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-29T15:33:51+00:00",
+ "stream": null,
+ "tag": "p3c_reader2"
+}

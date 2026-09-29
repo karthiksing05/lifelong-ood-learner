@@ -1,0 +1,58 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration of the practice allocator over v2 phases, prototype borrowing and the v2-generated LoRA",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky2.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "992984e720a6d8e385c16ca08bf9a7d2a808f43d",
+  "short": "992984e7"
+ },
+ "keys": {},
+ "metrics": {
+  "candidates": {
+   "A": "phasebind2_reader_spatial4_synth (the demo's v2 phases through the prior, rendered-scene reader; no weights)",
+   "B": "dimbest: prototype borrowing (dimcode, K = 8) + the 258 KB fold where the demo grasps, borrowing alone elsewhere",
+   "C": "lora_r27gen (LoRA rank 16 on the demo + the v2 generator's demonstrations; 18.7 MB)"
+  },
+  "hypotheses": {
+   "AL1": "alloc > A: exact two-sided sign test p < 0.05 (expected underpowered: few tasks switch)",
+   "descriptive": "which tasks switch and why; alloc vs LoRA + failure negatives (302); bytes"
+  },
+  "plan": "docs/PLAN_TRANSFER.md 3.6 (residual rungs; the allocator): practice decides per task which stored form to use",
+  "practice": "10 episodes of each candidate on init states 0-9 (experiment alloc_practice); A's reader saw these states' first frames in training (a selection signal only)",
+  "rule": "per task the candidate with the most practice successes; ties -> A, then B, then C",
+  "scoring": "the chosen candidate's existing m3_final episodes on init states 30-49 (V5, m3_final dimfold_s1_last2 / dimcode_s1, V4): 420 paired, no new scoring rollouts",
+  "written_before": "any alloc_practice episode"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_90__alloc_v2__s0__992984e7",
+ "schema": 1,
+ "script": "(inline, session 2026-09-29)",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-29T15:35:21+00:00",
+ "stream": null,
+ "tag": "alloc_v2"
+}

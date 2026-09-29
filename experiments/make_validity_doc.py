@@ -116,7 +116,7 @@ def transfer_probes(w):
         for t, r in sorted(v2["per_task"].items(), key=lambda x: int(x[0])):
             w(f"| {t} | {r['v2']} | {r['v2r']} | {r['v1']} | {r['nft']} | {r['g27']} | {r['ctrl']} |")
         w("")
-    pc, pcr = _row("p3_compose", "p3c"), _row("p3_compose", "p3c_reader")
+    pc, pcr, pcr2 = _row("p3_compose", "p3c"), _row("p3_compose", "p3c_reader"), _row("p3_compose", "p3c_reader2")
     if pc:
         w("**P3c: tasks composed from other tasks' phases (pre-registered: ledger m3_prereg tags p3c, p3c_amend1, p3c_reader).** "
           "The approach of a task that manipulates the target's object type + the carry and the rest of a task with the target's goal "
@@ -128,11 +128,15 @@ def transfer_probes(w):
         if pcr:
             w(f"- R1, composed with a pose reader trained only on rendered scenes vs composed with the simulator's poses: {_cmp(pcr['R1'])}: "
               f"{'non-inferior' if pcr['R1']['non_inferior'] else 'NOT non-inferior'} at -0.10.")
+        if pcr2:
+            w(f"- R2 (m3_prereg p3c_reader2), the same with the in-hand pose predicted from the grasp binding (dev check on states 0-19: "
+              f"`ledger/p3_compose` tag p3c_dev_carry): {_cmp(pcr2['R2'])}: {'NON-INFERIOR' if pcr2['R2']['non_inferior'] else 'not non-inferior'} at -0.10.")
         w("")
-        w("| task | composed | own demo | sibling | composed, rendered-scene reader | LoRA + failure negatives |")
-        w("|---|---|---|---|---|---|")
+        w("| task | composed | own demo | sibling | composed, reader | composed, reader, predicted carry | LoRA + failure negatives |")
+        w("|---|---|---|---|---|---|---|")
         for t, r in sorted(pc["per_task"].items(), key=lambda x: int(x[0])):
-            w(f"| {t} | {r['c']} | {r['own']} | {r['sib']} | {pcr['per_task'][t]['cr'] if pcr else '-'} | {r['nft']} |")
+            w(f"| {t} | {r['c']} | {r['own']} | {r['sib']} | {pcr['per_task'][t]['cr'] if pcr else '-'} | "
+              f"{pcr2['per_task'][t]['crp'] if pcr2 else '-'} | {r['nft']} |")
         w("")
     rd = [(tag, _row("p6_reader", tag)) for tag in ("near_offline", "offline_spatial4", "offline_synth", "offline_spatial4_synth",
                                                      "offline_spatial4_synthonly_p3c", "offline_spatial4_synthonly_rj_p3c")]

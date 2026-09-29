@@ -10,7 +10,7 @@ nothing), paired on init states 30-49 of m3_final.
     v2         rules v2 (ledger m3_prereg tag v2) on the 21 tasks: V1 v2 > v1, V2 v2 > LoRA + failure negatives, V4 the v2 generator's
                LoRA > 3.8's (sign tests, Holm over the three); V3 the learned reader non-inferior to the simulator's poses at -0.10
 
-    ~/flash/miniconda3/envs/chunks/bin/python experiments/p1_read.py primary|secondary|p6|v2|v2_synth|p3c|p3c_reader [--record]
+    ~/flash/miniconda3/envs/chunks/bin/python experiments/p1_read.py primary|secondary|p6|v2|v2_synth|p3c|p3c_reader|p3c_reader2 [--record]
 """
 import argparse
 import importlib.util
@@ -177,6 +177,24 @@ def p3c_reader():
     return res
 
 
+def p3c_reader2():
+    """ledger m3_prereg tag p3c_reader2: R2 composed + rendered-scene reader + predicted carry non-inferior to composed with the
+    simulator's poses at -0.10."""
+    import json
+    tasks = sorted(int(t) for t in json.load(open(os.path.join(ROOT, "results", "robot", "p3c_table.json")))["table"])
+    arms = {"crp": "compose2_reader_pred", "cr": "compose2_reader", "c": "compose2", "own": "phasebind2_nofold", "nft": "lora_r17bal"}
+    tab = table(tasks, arms)
+    res = {"tasks": tasks, "per_task": {t: {k: int(sum(v[k].values())) for k in v} for t, v in tab.items()}}
+    res["R2"] = dict(x_arm=arms["crp"], y_arm=arms["c"], **compare(tab, "crp", "c"))
+    res["R2"]["non_inferior"] = bool(res["R2"]["diff"]["lo90"] >= -0.10)
+    for k, y in (("vs_identity_carry", "cr"), ("vs_own", "own"), ("vs_nft", "nft")):
+        res[k] = dict(x_arm=arms["crp"], y_arm=arms[y], **compare(tab, "crp", y))
+    for k in ("R2", "vs_identity_carry", "vs_own", "vs_nft"):
+        v = res[k]
+        print(f"{k} {v['x_arm']} vs {v['y_arm']}: {_fmt(v)}" + (f" -> non-inferior {v['non_inferior']}" if "non_inferior" in v else ""))
+    return res
+
+
 def _fmt(v):
     return (f"{v['x']} vs {v['control']} of {v['n']}, diff {v['diff']['diff']:+.3f} [{v['diff']['lo']:+.3f},{v['diff']['hi']:+.3f}] lo90 "
             f"{v['diff']['lo90']:+.3f}, discordant {v['discordant']}, sign p {v['sign_p']:.3g}")
@@ -184,11 +202,14 @@ def _fmt(v):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("read", choices=("primary", "secondary", "p6", "v2", "v2_synth", "p3c", "p3c_reader"))
+    ap.add_argument("read", choices=("primary", "secondary", "p6", "v2", "v2_synth", "p3c", "p3c_reader", "p3c_reader2"))
     ap.add_argument("--record", action="store_true")
     a = ap.parse_args()
     os.chdir(ROOT)
-    if a.read == "p3c_reader":
+    if a.read == "p3c_reader2":
+        res = p3c_reader2()
+        exp, tag, what = "p3_compose", "p3c_reader2", "P3c reader arm with the in-hand pose predicted from the grasp binding"
+    elif a.read == "p3c_reader":
         res = p3c_reader()
         exp, tag, what = "p3_compose", "p3c_reader", "P3c reader arm: composed programs with a reader trained only on rendered scenes"
     elif a.read == "p3c":
