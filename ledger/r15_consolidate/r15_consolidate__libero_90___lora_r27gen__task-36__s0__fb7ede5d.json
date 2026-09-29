@@ -1,0 +1,107 @@
+{
+ "artifacts": [
+  "results/robot/r27gen_36_lora.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 18710528,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 18710528,
+  "tree": 0
+ },
+ "command": "experiments/r15_consolidate.py --task 36 --lora --practice g27 --name r27gen",
+ "config": {
+  "fold_stride": 2,
+  "library": "results/robot/r2b_libero_40.npz",
+  "lora": true,
+  "lora_rank": 16,
+  "lora_scope": "expert",
+  "lora_stride": 5,
+  "max_fold_frames": 700,
+  "max_lora_frames": 1000,
+  "n_anchor": 384,
+  "name": "r27gen",
+  "practice": "g27",
+  "seed": 0,
+  "steps": 1000,
+  "task": 36
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "qt-1.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3981771",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r15_consolidate",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "fb7ede5dcf20f76de13ba3ea552c8b070a5b8970",
+  "short": "fb7ede5d"
+ },
+ "keys": {
+  "task": 36
+ },
+ "metrics": {
+  "curve": {
+   "anchor": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "loss": [
+    0.07505357265472412,
+    0.014285633340477943,
+    0.00986695010215044,
+    0.011627230793237686,
+    0.007638388779014349,
+    0.00429594237357378,
+    0.0037646950222551823,
+    0.0031660243403166533,
+    0.004022514447569847,
+    0.008373689837753773,
+    0.0047272988595068455
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "frames": 1000,
+  "successes": 20,
+  "task": 36
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r15_consolidate__libero_90___lora_r27gen__task-36__s0__fb7ede5d",
+ "schema": 1,
+ "script": "experiments/r15_consolidate.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-29T12:25:44+00:00",
+ "stream": null,
+ "tag": "_lora_r27gen"
+}

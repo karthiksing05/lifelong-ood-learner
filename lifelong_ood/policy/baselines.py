@@ -75,6 +75,23 @@ class VinnPolicy:
             parts.append(self.torch.cat([self._feat(images[i:i + block]), self._feat(wrist[i:i + block])], 1))
         return self.torch.cat(parts)
 
+    def _spatial(self, imgs, pool):
+        """The last feature map (512 x 7 x 7), average-pooled to pool x pool: WHERE things are, which the global pool discards."""
+        torch, n = self.torch, self.net
+        x = torch.as_tensor(np.asarray(imgs), device=self.device).permute(0, 3, 1, 2).float() / 255.0
+        x = torch.nn.functional.interpolate(x, size=(224, 224), mode="bilinear", align_corners=False)
+        with torch.no_grad():
+            h = n.maxpool(n.relu(n.bn1(n.conv1((x - self.mean) / self.std))))
+            h = n.layer4(n.layer3(n.layer2(n.layer1(h))))
+            return torch.nn.functional.adaptive_avg_pool2d(h, pool).flatten(1)
+
+    def _embed_spatial(self, images, wrist, pool=4, block=64):
+        """Both cameras' pooled feature maps (2 x 512 x pool^2): the pose reader's features (experiments/p6_reader.py --features spatial)."""
+        parts = []
+        for i in range(0, len(images), block):
+            parts.append(self.torch.cat([self._spatial(images[i:i + block], pool), self._spatial(wrist[i:i + block], pool)], 1))
+        return self.torch.cat(parts)
+
     def infer(self, obs, *, noise=None):
         q = self._embed(np.asarray(obs["observation/image"])[None], np.asarray(obs["observation/wrist_image"])[None])
         f = int((self.bank @ q[0]).argmax())

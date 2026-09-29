@@ -47,7 +47,9 @@ METHODS = {"zeroshot": None, "practice_replay": ("raw_replay", None), "practice_
            "rec_bal": ("lora_r18rec", None), "fam_pool": ("lora_r20fam", None), "rnd_pool": ("lora_r20rnd", None),
            "fam_2stage": ("lora_r21fam", None), "rnd_2stage": ("lora_r21rnd", None), "nft_phase": ("lora_r24phase", None),
            "ours_grow": ("growleaf", None), "gen_lora": ("lora_r25gen", None), "ours_phasebind": ("phasebind", None),
-           "ours_phasebind_nofold": ("phasebind_nofold", None), "ours_phasebind_reader": ("phasebind_reader", None)}
+           "ours_phasebind_nofold": ("phasebind_nofold", None), "ours_phasebind_reader": ("phasebind_reader", None),
+           "ours_phasebind2": ("phasebind2_nofold", None), "ours_phasebind2_reader": ("phasebind2_reader", None),
+           "gen_lora_v2": ("lora_r27gen", None), "ours_phasebind2_synth": ("phasebind2_reader_spatial4_synth", None)}
 NAMES = {"zeroshot": "zero-shot", "practice_replay": "demo replay", "practice_lora": "few-shot LoRA (rank 16)",
          "ours_dim": "borrowing, every 5th frame", "ours_dim1": "borrowing, every frame",
          "ours_dim1_last2": "borrowing + 258 KB fold", "ours_codes_full": "PoE codes + 4.7 MB fold",
@@ -70,7 +72,11 @@ NAMES = {"zeroshot": "zero-shot", "practice_replay": "demo replay", "practice_lo
          "nft_phase": "LoRA + failure negatives at the failed phase", "ours_grow": "leaf borrowing over the grown library + fold",
          "gen_lora": "LoRA on the demo + generated demonstrations (no practice)", "ours_phasebind": "phase bindings through the prior + fold (sim poses)",
          "ours_phasebind_nofold": "phase bindings through the prior (sim poses)",
-         "ours_phasebind_reader": "phase bindings through the prior (learned pose reader)"}
+         "ours_phasebind_reader": "phase bindings through the prior (learned pose reader)",
+         "ours_phasebind2": "phase bindings v2 through the prior (sim poses)",
+         "ours_phasebind2_reader": "phase bindings v2 through the prior (learned pose reader)",
+         "gen_lora_v2": "LoRA on the demo + v2-generated demonstrations (no practice)",
+         "ours_phasebind2_synth": "phase bindings v2 through the prior (reader trained with rendered scenes)"}
 COMPARE = [("ours_dim1_last2", "practice_lora"), ("ours_dim1_last2", "practice_replay"), ("ours_dim1_last2", "zeroshot"),
            ("ours_dim", "practice_lora"), ("ours_dim", "practice_replay"), ("ours_dim1", "practice_replay"),
            ("practice_lora", "practice_replay"), ("ours_leaf1_last2", "practice_lora"), ("ours_leaf1_last2", "practice_replay"),
@@ -93,7 +99,12 @@ COMPARE = [("ours_dim1_last2", "practice_lora"), ("ours_dim1_last2", "practice_r
            ("nft_phase", "nft_bal"), ("nft_phase", "loop_L2"), ("ours_grow", "ours_leaf1_last2"),
            ("gen_lora", "practice_lora"), ("gen_lora", "base_lora_learn"), ("ours_phasebind", "ours_dim1_last2"),
            ("ours_phasebind_nofold", "ours_dim1_last2"), ("ours_phasebind_nofold", "nft_bal"),
-           ("ours_phasebind_reader", "ours_phasebind_nofold"), ("ours_phasebind_reader", "ours_dim1_last2")]
+           ("ours_phasebind_reader", "ours_phasebind_nofold"), ("ours_phasebind_reader", "ours_dim1_last2"),
+           ("ours_phasebind2", "ours_phasebind_nofold"), ("ours_phasebind2", "ours_dim1_last2"), ("ours_phasebind2", "nft_bal"),
+           ("ours_phasebind2_reader", "ours_phasebind2"), ("ours_phasebind2_reader", "ours_dim1_last2"),
+           ("ours_phasebind2_reader", "nft_bal"), ("gen_lora_v2", "gen_lora"), ("gen_lora_v2", "nft_bal"),
+           ("ours_phasebind2_synth", "ours_phasebind2"), ("ours_phasebind2_synth", "nft_bal"),
+           ("ours_phasebind2_synth", "ours_phasebind2_reader")]
 
 
 def episodes(experiment):

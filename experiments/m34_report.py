@@ -46,7 +46,7 @@ def arm_bytes(t, arm):
     from lifelong_ood.policy.compose import DemoProgram
     if arm == "zeroshot":
         return 0
-    if arm.startswith(("lora_r16", "lora_r17", "lora_r18", "lora_r20", "lora_r21", "lora_r24", "lora_r25")):  # loop learners, experiments, family tests, P2
+    if arm.startswith(("lora_r16", "lora_r17", "lora_r18", "lora_r20", "lora_r21", "lora_r24", "lora_r25", "lora_r27")):  # loop learners, experiments, family tests, P2
         return adapter_bytes(t, arm[5:])
     if arm == "lora":
         r = [x for x in ledger.load("r3_fewshot") if str(x["metrics"]["task"]) == str(t) and not x.get("tag")]
@@ -86,17 +86,21 @@ def arm_bytes(t, arm):
                 "phasebind": lambda: phasebind_bytes(t),
                 "phasebind_nofold": lambda: phasebind_bytes(t, fold=False),
                 "phasebind_reader": lambda: phasebind_bytes(t, fold=False) + reader_bytes(t),
+                "phasebind2_nofold": lambda: phasebind_bytes(t, fold=False, rules="v2"),
+                "phasebind2_reader": lambda: phasebind_bytes(t, fold=False, rules="v2") + reader_bytes(t),
+                "phasebind2_reader_spatial4_synth": lambda: phasebind_bytes(t, fold=False, rules="v2") + reader_bytes(t, "spatial4_synth"),
                 **{f"{g}_d1": (lambda g=g: demo_arm_bytes(t, g, 1)) for g in ("raw_replay", "dimcode_s1", "dimfold_s1_last2", "lora", "seg_s5")}}[arm]())
 
 
-def reader_bytes(t):
-    """P6's learned pose reader of task t (experiments/p6_reader.py): the ridge weights and the two means, fp32."""
+def reader_bytes(t, variant=""):
+    """P6's learned pose reader of task t (experiments/p6_reader.py; variant e.g. spatial4_synth): the ridge weights and the two
+    means, fp32."""
     import numpy as np
-    z = np.load(f"{R}/p6_reader_{t}.npz", allow_pickle=True)
+    z = np.load(f"{R}/p6_reader{'_' + variant if variant else ''}_{t}.npz", allow_pickle=True)
     return 4 * int(z["W"].size + z["mx"].size + z["my"].size)
 
 
-def phasebind_bytes(t, fold=True):
+def phasebind_bytes(t, fold=True, rules="v1"):
     import importlib.util
     import numpy as np
     m = np.load(f"{R}/p0_demo/{t}_match.npz", allow_pickle=True)
@@ -107,8 +111,12 @@ def phasebind_bytes(t, fold=True):
     d = np.load(f"{R}/p0_demo/{t}.npz", allow_pickle=True)
     src = dict(names=d["names"], movable=d["movable"], obj_pos=d["demo_obj_pos"], obj_quat=d["demo_obj_quat"],
                eef_pos=d["demo_eef_pos"], eef_quat=d["demo_eef_quat"], action=np.asarray(m["actions"], np.float32))
-    g, p = P3.phases(src, "grasp"), P3.phases(src, "place")
-    n_phases = len(g) + len(p) if (g and p) else 1
+    if rules == "v2":
+        from lifelong_ood.policy import phase as PH
+        n_phases = len(PH.cut(PH.at_rest(src)))
+    else:
+        g, p = P3.phases(src, "grasp"), P3.phases(src, "place")
+        n_phases = len(g) + len(p) if (g and p) else 1
     fold = fold_bytes(t, "_approach_last2") if fold and os.path.exists(f"{R}/r4_{t}_approach_last2_expert.pt") else 0
     return 2 * 8 * T + 28 * n_phases + fold
 

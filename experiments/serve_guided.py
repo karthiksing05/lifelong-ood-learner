@@ -182,12 +182,25 @@ def main():
         m = np.load(os.path.join(R, "p0_demo", f"{t}_match.npz"), allow_pickle=True)
         src = dict(names=d["names"], movable=d["movable"], obj_pos=d["demo_obj_pos"], obj_quat=d["demo_obj_quat"],
                    eef_pos=d["demo_eef_pos"], eef_quat=d["demo_eef_quat"], action=np.asarray(m["actions"], np.float32))
-        g, p_ = P3.phases(src, "grasp"), P3.phases(src, "place")
-        if g and p_:
-            parts = g + p_
+        if kv.get("rules") == "2" and kv.get("g"):       # P3c: composed from OTHER tasks' demos (phase.py compose); t's own demo unused
+            from lifelong_ood.policy import phase as PH
+            tn = [str(x) for x in d["names"]]              # the target scene's objects of interest (the task definition)
+            parts = PH.compose(tn, PH.at_rest(PH.load_demo(R, int(kv["g"]))), PH.at_rest(PH.load_demo(R, int(kv["p"]))))
+            src = dict(names=np.array(tn), obj_quat=np.tile([0.0, 0.0, 0.0, 1.0], (1, len(tn), 1)), action=parts[0][0]["action"])
+            assert not kv.get("reader"), "composed programs take the simulator's poses (reader orientations need the target's demo)"
+            g = p_ = True
+        elif kv.get("rules") == "2":                      # rules v2 (lifelong_ood/policy/phase.py at_rest + cut)
+            from lifelong_ood.policy import phase as PH
+            src = PH.at_rest(PH.load_demo(R, t))
+            parts = PH.cut(src)
+            g = p_ = True
         else:
-            GP, GQ = P3.P0.goals(src)
-            parts = [(src, GP, GQ, 0, len(src["action"]), None, None, None)]
+            g, p_ = P3.phases(src, "grasp"), P3.phases(src, "place")
+            if g and p_:
+                parts = g + p_
+            else:
+                GP, GQ = P3.P0.goals(src)
+                parts = [(src, GP, GQ, 0, len(src["action"]), None, None, None)]
         state, key, fold = None, None, None
         if kv.get("expert") and os.path.exists(kv["expert"]) and kv.get("fold", "1") != "0":
             state, key, _ = adapt.load(bk, kv["expert"])
@@ -195,14 +208,19 @@ def main():
             fold = DemoProgram.load(kv["foldprog"]).fold
             assert len(fold) == len(src["action"]), (len(fold), len(src["action"]))
         reader = None
-        if kv.get("reader") == "1":                       # P6: the learned pose reader in place of the client's simulator poses
+        if kv.get("reader"):                              # P6: a learned pose reader in place of the client's simulator poses
             from lifelong_ood.policy.baselines import VinnPolicy
-            rz = np.load(os.path.join(R, f"p6_reader_{t}.npz"), allow_pickle=True)
+            sfx = "" if kv["reader"] == "1" else "_" + kv["reader"]          # reader=1: p6_reader_<t>.npz; reader=synth: p6_reader_synth_<t>.npz
+            rz = np.load(os.path.join(R, f"p6_reader{sfx}_{t}.npz"), allow_pickle=True)
             enc = VinnPolicy(np.zeros((1, 7), np.float32), np.zeros((1, 224, 224, 3), np.uint8), np.zeros((1, 224, 224, 3), np.uint8), device="cuda")
-            reader = dict(W=rz["W"], mx=rz["mx"], my=rz["my"], names=[str(x) for x in rz["names"]], enc=enc)
+            reader = dict(W=rz["W"], mx=rz["mx"], my=rz["my"], names=[str(x) for x in rz["names"]], enc=enc,
+                          features=str(rz["features"]) if "features" in rz.files else "pooled", pool=int(rz["pool"]) if "pool" in rz.files else 4)
+            logging.info(f"phasebind: reader p6_reader{sfx}_{t}.npz ({reader['features']})")
         hooks = PhaseBindHooks(src, parts, D.Norm.load(), fold=fold, state=state, key=key, var=float(kv.get("var", 1e-3)), H=bk.H,
                                reader=reader)
-        logging.info(f"phasebind: task {t}, {len(parts)} phases ({'object phases' if g and p_ else 'world frame'}), fold {key}")
+        logging.info(f"phasebind: task {t}, {len(parts)} phases ({'object phases' if g and p_ else 'world frame'}; anchors "
+                     f"{[None if q[6] is None else str(q[0]['names'][q[6]]) for q in parts]}), rules {kv.get('rules', '1')}, "
+                     f"sources g={kv.get('g', t)} p={kv.get('p', t)}, fold {key}")
     elif a.mode.startswith("lora:"):
         # lora:<expert.pt> -- the few-shot baseline: a flat adapter on the action expert, always on
         from lifelong_ood.policy import adapt

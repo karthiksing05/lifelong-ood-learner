@@ -1,0 +1,181 @@
+{
+ "artifacts": [
+  "results/robot/g27_generate.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "p38_generate.py --rules v2 --tag g27 --workers 14 (job 3981744)",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky2.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "g38_generate",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "fb7ede5dcf20f76de13ba3ea552c8b070a5b8970",
+  "short": "fb7ede5d"
+ },
+ "keys": {},
+ "metrics": {
+  "attempts": 420,
+  "generated_successes": 386,
+  "per_task": {
+   "1": {
+    "how": "v2:obj+rec+rec",
+    "k": 18,
+    "n": 20,
+    "v1": 18
+   },
+   "3": {
+    "how": "v2:obj+rec+rec",
+    "k": 20,
+    "n": 20,
+    "v1": 20
+   },
+   "32": {
+    "how": "v2:obj+rec+rec",
+    "k": 20,
+    "n": 20,
+    "v1": 20
+   },
+   "34": {
+    "how": "v2:obj+rec",
+    "k": 20,
+    "n": 20,
+    "v1": 20
+   },
+   "35": {
+    "how": "v2:fix",
+    "k": 20,
+    "n": 20,
+    "v1": 20
+   },
+   "36": {
+    "how": "v2:obj+rec+rec",
+    "k": 20,
+    "n": 20,
+    "v1": 20
+   },
+   "37": {
+    "how": "v2:obj+rec",
+    "k": 20,
+    "n": 20,
+    "v1": 20
+   },
+   "39": {
+    "how": "v2:fix",
+    "k": 2,
+    "n": 20,
+    "v1": 2
+   },
+   "4": {
+    "how": "v2:obj+rec+rec",
+    "k": 20,
+    "n": 20,
+    "v1": 20
+   },
+   "40": {
+    "how": "v2:obj+rec",
+    "k": 17,
+    "n": 20,
+    "v1": 17
+   },
+   "41": {
+    "how": "v2:obj+rec+rec",
+    "k": 20,
+    "n": 20,
+    "v1": 20
+   },
+   "42": {
+    "how": "v2:obj+rec",
+    "k": 20,
+    "n": 20,
+    "v1": 9
+   },
+   "43": {
+    "how": "v2:obj+rec+rec",
+    "k": 15,
+    "n": 20,
+    "v1": 15
+   },
+   "48": {
+    "how": "v2:obj+rec+rec",
+    "k": 20,
+    "n": 20,
+    "v1": 0
+   },
+   "5": {
+    "how": "v2:obj+rec+rec",
+    "k": 15,
+    "n": 20,
+    "v1": 15
+   },
+   "52": {
+    "how": "v2:obj+rec+rec",
+    "k": 20,
+    "n": 20,
+    "v1": 12
+   },
+   "53": {
+    "how": "v2:obj+rec+rec",
+    "k": 19,
+    "n": 20,
+    "v1": 19
+   },
+   "58": {
+    "how": "v2:obj+rec+rec",
+    "k": 20,
+    "n": 20,
+    "v1": 4
+   },
+   "6": {
+    "how": "v2:fix",
+    "k": 20,
+    "n": 20,
+    "v1": 20
+   },
+   "62": {
+    "how": "v2:obj+rec",
+    "k": 20,
+    "n": 20,
+    "v1": 20
+   },
+   "63": {
+    "how": "v2:obj+rec+rec",
+    "k": 20,
+    "n": 20,
+    "v1": 20
+   }
+  },
+  "placements": "init states 0-19 (the practice instances)",
+  "policy_rollouts": 0,
+  "rate": 0.919047619047619,
+  "rules": "v2 (lifelong_ood/policy/phase.py at_rest + cut)",
+  "v1_generated_successes": 331
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "g38_generate__libero_90__demo_retarget_v2__s0__fb7ede5d",
+ "schema": 1,
+ "script": "experiments/p38_generate.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-29T12:19:54+00:00",
+ "stream": null,
+ "tag": "demo_retarget_v2"
+}

@@ -1,0 +1,146 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/p6_near_reader.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "experiments/p6_near_reader.py --record",
+ "config": {
+  "device": "cuda",
+  "near": 0.1,
+  "record": true,
+  "tasks": "42+32+1+35+40+36+52+62+41"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "voltron.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3981758",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "p6_reader",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "fb7ede5dcf20f76de13ba3ea552c8b070a5b8970",
+  "short": "fb7ede5d"
+ },
+ "keys": {},
+ "metrics": {
+  "median_first_cm": 0.7935082865334779,
+  "median_near_cm": 0.9372555173185695,
+  "near_m": 0.1,
+  "per_task": {
+   "1": {
+    "first_err_cm_max": 1.956494146826333,
+    "first_err_cm_median": 1.0808728312488185,
+    "lam": 100.0,
+    "near_err_cm_max": 1.836659367710833,
+    "near_err_cm_median": 0.9372555173185695,
+    "object": "akita_black_bowl_1",
+    "test_episodes": 10,
+    "train_frames": 3157
+   },
+   "32": {
+    "first_err_cm_max": 1.8775131909103977,
+    "first_err_cm_median": 0.7935082865334779,
+    "lam": 100.0,
+    "near_err_cm_max": 2.0516003926501343,
+    "near_err_cm_median": 1.5479675396057506,
+    "object": "ketchup_1",
+    "test_episodes": 10,
+    "train_frames": 5583
+   },
+   "35": {
+    "first_err_cm_max": 0.44726719301464635,
+    "first_err_cm_median": 0.282732650292726,
+    "lam": 1000.0,
+    "near_err_cm_max": 32.67536237091944,
+    "near_err_cm_median": 8.991028685566894,
+    "object": "microwave_1",
+    "test_episodes": 10,
+    "train_frames": 8714
+   },
+   "36": {
+    "first_err_cm_max": 1.9804648188984963,
+    "first_err_cm_median": 0.9105686699691978,
+    "lam": 100.0,
+    "near_err_cm_max": 1.2257310781107988,
+    "near_err_cm_median": 0.8910623254647247,
+    "object": "white_bowl_1",
+    "test_episodes": 10,
+    "train_frames": 2837
+   },
+   "40": {
+    "first_err_cm_max": 0.8590767122071503,
+    "first_err_cm_median": 0.6318265827159206,
+    "lam": 100.0,
+    "near_err_cm_max": 1.8369585651894167,
+    "near_err_cm_median": 0.7781527899761365,
+    "object": "chefmate_8_frypan_1",
+    "test_episodes": 10,
+    "train_frames": 1681
+   },
+   "41": {
+    "first_err_cm_max": 0.7607607295888009,
+    "first_err_cm_median": 0.4305759658859346,
+    "lam": 100.0,
+    "near_err_cm_max": 1.8522648946955704,
+    "near_err_cm_median": 0.6030059311435272,
+    "object": "chefmate_8_frypan_1",
+    "test_episodes": 10,
+    "train_frames": 1897
+   },
+   "42": {
+    "first_err_cm_max": 1.0721490703697913,
+    "first_err_cm_median": 0.5415897345203604,
+    "lam": 100.0,
+    "near_err_cm_max": 1.6871740262338972,
+    "near_err_cm_median": 0.6823618422981379,
+    "object": "chefmate_8_frypan_1",
+    "test_episodes": 10,
+    "train_frames": 1672
+   },
+   "52": {
+    "first_err_cm_max": 2.561568230580285,
+    "first_err_cm_median": 1.3226123486407495,
+    "lam": 100.0,
+    "near_err_cm_max": 3.0230778451682863,
+    "near_err_cm_median": 1.3199020904752206,
+    "object": "milk_1",
+    "test_episodes": 10,
+    "train_frames": 2000
+   },
+   "62": {
+    "first_err_cm_max": 2.5949110671240794,
+    "first_err_cm_median": 1.816437214782162,
+    "lam": 1000.0,
+    "near_err_cm_max": 2.8762711697478194,
+    "near_err_cm_median": 1.7092665951179316,
+    "object": "new_salad_dressing_1",
+    "test_episodes": 10,
+    "train_frames": 1382
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "p6_reader__libero_90__near_offline__s0__fb7ede5d",
+ "schema": 1,
+ "script": "experiments/p6_near_reader.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-29T12:25:03+00:00",
+ "stream": null,
+ "tag": "near_offline"
+}

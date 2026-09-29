@@ -1,0 +1,64 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration of the v2 read",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky2.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "fb7ede5dcf20f76de13ba3ea552c8b070a5b8970",
+  "short": "fb7ede5d"
+ },
+ "keys": {},
+ "metrics": {
+  "arms": {
+   "lora_r27gen": "3.8's recipe (r15_consolidate --lora, rank 16, 1000 steps, seed 0) on the demo + the v2 generator's successes (g27, states 0-19); the policy acts from images",
+   "phasebind2_nofold": "rules v2, bindings alone through the frozen prior, simulator object poses (oracle)",
+   "phasebind2_reader": "rules v2 with the first-frame learned pose reader (experiments/p6_reader.py; readers of all 21 tasks, trained on states 0-29); no simulator state reaches the server"
+  },
+  "defect": "the living-room demos' first kept steps catch the object still FALLING after the scene spawned (ketchup 12.2 cm, milk and orange juice 8.4 cm above rest); v1 anchored the approach on that pose, so the retargeted grasp aimed under the object (48 and 58: 0 of 40 through the prior)",
+  "dev_evidence": "no-policy generator on the practice init states 0-19 (ledger g38_generate tag demo_retarget_v2): v2 386/420 vs v1 331/420, gains only on 42, 48, 52, 58, no task lower; the scoring states 30-49 were not used",
+  "hypotheses": {
+   "V1": "PRIMARY: phasebind2_nofold > phasebind_nofold (v1, 314/420): exact two-sided sign test",
+   "V2": "phasebind2_nofold > nft_bal (LoRA + failure negatives, 302/420; 0 weights vs 18.7 MB per task): exact two-sided sign test",
+   "V3": "phasebind2_reader non-inferior to phasebind2_nofold at -0.10: one-sided 95% lower bound of the paired difference (two-level bootstrap) >= -0.10",
+   "V4": "lora_r27gen > lora_r25gen (293/420): exact two-sided sign test",
+   "descriptive": "per task; phasebind2_reader and lora_r27gen vs nft_bal; bytes",
+   "holm": "Holm over V1, V2, V4 at 0.05"
+  },
+  "later": "a near-object re-read of the pose (experiments/p6_near_reader.py) gets its own pre-registration before any rollout",
+  "plan": "docs/PLAN_TRANSFER.md section 0: iterate on the binding route; v2 fixes a defect found after the P1/P6/3.8 reads",
+  "rules_v2": "lifelong_ood/policy/phase.py at_rest + cut: (1) the demo's objects read at rest (the evaluation placements' convention); (2) the manipulated object = the first movable object DISPLACED > 1.5 cm while the gripper commands close (lifted or pushed); (3) the carry and the rest anchored on the other object of interest, movable OR fixture; (4) a demo that moves no object is anchored on its object of interest (a fixture) instead of the world",
+  "tasks": "the 21 held-out tasks where the prior fails its practice; init states 30-49; 420 paired episodes per arm (m3_final)",
+  "written_before": "any rollout of these arms at init states 30-49"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_90__v2__s0__fb7ede5d",
+ "schema": 1,
+ "script": "experiments/prereg/v2.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-29T12:19:57+00:00",
+ "stream": null,
+ "tag": "v2"
+}

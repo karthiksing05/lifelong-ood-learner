@@ -91,6 +91,46 @@ def transfer_probes(w):
           "Median error per object (cm): " + "; ".join(
               f"{t} " + ", ".join(f"{k.rsplit('_', 1)[0]} {e:.2f}" for k, e in v["err_cm_median"].items())
               for t, v in p6n["per_task"].items()) + ".")
+    gv2, v2 = _row("g38_generate", "demo_retarget_v2"), _row("p1_bindings", "v2")
+    if gv2 and v2:
+        w("")
+        w("**Rules v2 (pre-registered: ledger m3_prereg tag v2).** A defect found after the reads above: the living-room demos' first "
+          "kept steps catch the object still falling after the scene spawned (ketchup 12 cm above rest), and v1 anchored the approach "
+          "on that pose, so its grasp aimed under the object. v2 (lifelong_ood/policy/phase.py `at_rest`, `cut`) reads the demo's "
+          "objects at rest, finds the manipulated object by displacement (lifted or pushed), and anchors carries and fixture tasks on "
+          f"fixtures too. Development check on the practice states 0-19 with no policy (`ledger/g38_generate` tag demo_retarget_v2): "
+          f"{gv2['generated_successes']}/{gv2['attempts']} generated successes against {gv2['v1_generated_successes']} for v1, gains only "
+          "on 42, 48, 52, 58.")
+        for k, lab in (("V1", "V1, v2 vs v1 (simulator poses)"), ("V2", "V2, v2 vs LoRA + failure negatives"),
+                       ("V4", "V4, LoRA on the v2 generator's demonstrations vs 3.8's")):
+            v = v2[k]
+            w(f"- {lab} (`ledger/p1_bindings` tag v2): {_cmp(v)}, Holm p {v['holm_p']:.2g}: {'PASSES' if v['passes'] else 'fails'}.")
+        v = v2["V3"]
+        w(f"- V3, the learned first-frame reader vs the simulator's poses under v2: {_cmp(v)}: "
+          f"{'non-inferior' if v['non_inferior'] else 'NOT non-inferior'} at -0.10.")
+        for k, lab in (("reader_vs_nft", "the learned reader vs LoRA + failure negatives"), ("g27_vs_nft", "the v2 generator's LoRA vs LoRA + failure negatives")):
+            w(f"- descriptive, {lab}: {_cmp(v2[k])}.")
+        w("")
+        w("| task | v2 | v2, learned reader | v1 | LoRA + failure negatives | LoRA on v2 demonstrations | control |")
+        w("|---|---|---|---|---|---|---|")
+        for t, r in sorted(v2["per_task"].items(), key=lambda x: int(x[0])):
+            w(f"| {t} | {r['v2']} | {r['v2r']} | {r['v1']} | {r['nft']} | {r['g27']} | {r['ctrl']} |")
+        w("")
+    rd = [(tag, _row("p6_reader", tag)) for tag in ("near_offline", "offline_spatial4", "offline_synth", "offline_spatial4_synth")]
+    lab = {"near_offline": "re-reading the grasped object when the hand is within 10 cm of its grasp point",
+           "offline_spatial4": "the last feature map pooled to 4 x 4 instead of the global pool",
+           "offline_synth": "400 simulator-rendered placements per task added to the training frames (labels from simulator state, training only)",
+           "offline_spatial4_synth": "both"}
+    got = [(t, r) for t, r in rd if r]
+    if got:
+        w("Pose-reader variants, offline on the first frames of init states 20-29 (`ledger/p6_reader`):")
+        for t, r in got:
+            if t == "near_offline":
+                w(f"- {lab[t]}: median {r['median_near_cm']:.2f} cm against {r['median_first_cm']:.2f} cm for the first frame (the same episodes).")
+            else:
+                w(f"- {lab[t]}: median {r['median_of_medians_cm']:.2f} cm; per object: " + "; ".join(
+                    f"{tk} " + ", ".join(f"{k.rsplit('_', 1)[0]} {e:.1f}" for k, e in v["err_cm_median"].items()) for tk, v in r["per_task"].items()) + ".")
+        w("")
     p2 = _row("p2_negatives", "read")
     if p2:
         v = p2["all_21"]

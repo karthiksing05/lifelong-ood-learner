@@ -7,8 +7,10 @@ nothing), paired on init states 30-49 of m3_final.
     secondary  the same over all 21 held-out tasks (420 paired)
     p6         the learned pose reader (phasebind_reader) on the 9 tasks: non-inferior to the oracle arm B at -0.10 (one-sided
                95% lower bound), and above the control (diff >= +0.11, exact sign test p < 0.05)
+    v2         rules v2 (ledger m3_prereg tag v2) on the 21 tasks: V1 v2 > v1, V2 v2 > LoRA + failure negatives, V4 the v2 generator's
+               LoRA > 3.8's (sign tests, Holm over the three); V3 the learned reader non-inferior to the simulator's poses at -0.10
 
-    ~/flash/miniconda3/envs/chunks/bin/python experiments/p1_read.py primary|secondary|p6 [--record]
+    ~/flash/miniconda3/envs/chunks/bin/python experiments/p1_read.py primary|secondary|p6|v2|v2_synth|p3c [--record]
 """
 import argparse
 import importlib.util
@@ -90,13 +92,95 @@ def p6():
     return res
 
 
+def v2():
+    """The v2 read (ledger m3_prereg tag v2): V1 v2 > v1, V2 v2 > LoRA + failure negatives, V4 r27gen > r25gen (sign tests, Holm);
+    V3 the learned reader non-inferior to the simulator's poses at -0.10."""
+    arms = {"v2": "phasebind2_nofold", "v2r": "phasebind2_reader", "v1": "phasebind_nofold", "nft": "lora_r17bal",
+            "g27": "lora_r27gen", "g25": "lora_r25gen", "ctrl": "dimfold_s1_last2", "ctrl_nofold": "dimcode_s1"}
+    tab = table(HELD, arms)
+    res = {"per_task": {t: {k: int(sum(v[k].values())) for k in v} for t, v in tab.items()}}
+    for h, (x, y) in {"V1": ("v2", "v1"), "V2": ("v2", "nft"), "V4": ("g27", "g25")}.items():
+        res[h] = dict(x_arm=arms[x], y_arm=arms[y], **compare(tab, x, y))
+    ps = sorted((res[h]["sign_p"], h) for h in ("V1", "V2", "V4"))
+    run = 0
+    for r, (p, h) in enumerate(ps):
+        run = max(run, min(1, (3 - r) * p))
+        res[h]["holm_p"] = run
+    for h in ("V1", "V2", "V4"):
+        v = res[h]
+        v["passes"] = bool(v["holm_p"] < 0.05 and v["x"] > v["control"])
+    res["V3"] = dict(x_arm=arms["v2r"], y_arm=arms["v2"], **compare(tab, "v2r", "v2"))
+    res["V3"]["non_inferior"] = bool(res["V3"]["diff"]["lo90"] >= -0.10)
+    for k, (x, y) in {"reader_vs_nft": ("v2r", "nft"), "g27_vs_nft": ("g27", "nft"), "v2_vs_ctrl": ("v2", "ctrl"),
+                      "reader_vs_ctrl": ("v2r", "ctrl")}.items():
+        res[k] = dict(x_arm=arms[x], y_arm=arms[y], **compare(tab, x, y))
+    for k in ("V1", "V2", "V4", "V3", "reader_vs_nft", "g27_vs_nft", "v2_vs_ctrl", "reader_vs_ctrl"):
+        v = res[k]
+        print(f"{k} {v['x_arm']} vs {v['y_arm']}: {_fmt(v)}" + (f", Holm {v['holm_p']:.3g} -> passes {v['passes']}" if "holm_p" in v else "")
+              + (f" -> non-inferior {v['non_inferior']}" if "non_inferior" in v else ""))
+    return res
+
+
+def v2_synth():
+    """ledger m3_prereg tag v2_synth: V5 the rendered-scene reader non-inferior to the simulator's poses at -0.10; V6 > LoRA + negatives."""
+    arms = {"s": "phasebind2_reader_spatial4_synth", "v2": "phasebind2_nofold", "v2r": "phasebind2_reader", "nft": "lora_r17bal",
+            "ctrl": "dimfold_s1_last2", "ctrl_nofold": "dimcode_s1"}
+    tab = table(HELD, arms)
+    res = {"per_task": {t: {k: int(sum(v[k].values())) for k in v} for t, v in tab.items()}}
+    res["V5"] = dict(x_arm=arms["s"], y_arm=arms["v2"], **compare(tab, "s", "v2"))
+    res["V5"]["non_inferior"] = bool(res["V5"]["diff"]["lo90"] >= -0.10)
+    res["V6"] = dict(x_arm=arms["s"], y_arm=arms["nft"], **compare(tab, "s", "nft"))
+    res["V6"]["passes"] = bool(res["V6"]["sign_p"] < 0.05 and res["V6"]["x"] > res["V6"]["control"])
+    res["vs_30_placement_reader"] = dict(x_arm=arms["s"], y_arm=arms["v2r"], **compare(tab, "s", "v2r"))
+    for k in ("V5", "V6", "vs_30_placement_reader"):
+        v = res[k]
+        print(f"{k} {v['x_arm']} vs {v['y_arm']}: {_fmt(v)}" + (f" -> non-inferior {v['non_inferior']}" if "non_inferior" in v else "")
+              + (f" -> passes {v['passes']}" if "passes" in v else ""))
+    return res
+
+
+def p3c():
+    """ledger m3_prereg tag p3c: C1 composed-from-other-tasks non-inferior to the own demo at -0.10; C2 composed > sibling's whole demo."""
+    import json
+    tasks = sorted(int(t) for t in json.load(open(os.path.join(ROOT, "results", "robot", "p3c_table.json")))["table"])
+    arms = {"c": "compose2", "sib": "sibling2", "own": "phasebind2_nofold", "nft": "lora_r17bal", "ctrl": "dimfold_s1_last2",
+            "ctrl_nofold": "dimcode_s1"}
+    tab = table(tasks, arms)
+    res = {"tasks": tasks, "per_task": {t: {k: int(sum(v[k].values())) for k in v} for t, v in tab.items()}}
+    res["C1"] = dict(x_arm=arms["c"], y_arm=arms["own"], **compare(tab, "c", "own"))
+    res["C1"]["non_inferior"] = bool(res["C1"]["diff"]["lo90"] >= -0.10)
+    res["C2"] = dict(x_arm=arms["c"], y_arm=arms["sib"], **compare(tab, "c", "sib"))
+    res["C2"]["passes"] = bool(res["C2"]["sign_p"] < 0.05 and res["C2"]["x"] > res["C2"]["control"])
+    for k, y in (("vs_ctrl", "ctrl"), ("vs_nft", "nft")):
+        res[k] = dict(x_arm=arms["c"], y_arm=arms[y], **compare(tab, "c", y))
+    for k in ("C1", "C2", "vs_ctrl", "vs_nft"):
+        v = res[k]
+        print(f"{k} {v['x_arm']} vs {v['y_arm']}: {_fmt(v)}" + (f" -> non-inferior {v['non_inferior']}" if "non_inferior" in v else "")
+              + (f" -> passes {v['passes']}" if "passes" in v else ""))
+    return res
+
+
+def _fmt(v):
+    return (f"{v['x']} vs {v['control']} of {v['n']}, diff {v['diff']['diff']:+.3f} [{v['diff']['lo']:+.3f},{v['diff']['hi']:+.3f}] lo90 "
+            f"{v['diff']['lo90']:+.3f}, discordant {v['discordant']}, sign p {v['sign_p']:.3g}")
+
+
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("read", choices=("primary", "secondary", "p6"))
+    ap.add_argument("read", choices=("primary", "secondary", "p6", "v2", "v2_synth", "p3c"))
     ap.add_argument("--record", action="store_true")
     a = ap.parse_args()
     os.chdir(ROOT)
-    if a.read == "p6":
+    if a.read == "p3c":
+        res = p3c()
+        exp, tag, what = "p3_compose", "p3c", "P3c: tasks composed from other tasks' phases (rules v2, through the prior) vs own demo and sibling"
+    elif a.read == "v2_synth":
+        res = v2_synth()
+        exp, tag, what = "p1_bindings", "v2_synth", "v2 with the rendered-scene reader vs the simulator's poses and vs LoRA + negatives, 21 tasks"
+    elif a.read == "v2":
+        res = v2()
+        exp, tag, what = "p1_bindings", "v2", "v2 read: rules v2 (sim poses, learned reader) and the v2 generator's LoRA on 21 tasks, states 30-49"
+    elif a.read == "p6":
         res = p6()
         exp, tag, what = "p6_reader", "read", "P6 read: phasebind_reader vs phasebind_nofold (oracle) and vs dimfold_s1_last2 on 9 tasks, states 30-49"
     else:

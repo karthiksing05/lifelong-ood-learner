@@ -18,7 +18,8 @@ import numpy as np
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT)
 R = os.path.join(ROOT, "results", "robot")
-TAG, EXP = "phasebind_reader", "m3_final"
+EXP = "m3_final"
+TAG = "phasebind_reader"
 
 
 def logs():
@@ -42,7 +43,11 @@ def logs():
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--record", action="store_true")
+    ap.add_argument("--arm", default="phasebind_reader", help="the reader arm's tag in m3_final")
+    ap.add_argument("--ledger-tag", default="online")
     a = ap.parse_args()
+    global TAG
+    TAG = a.arm
     res = dict(per_task={})
     all_err, all_succ = [], []
     for t, paths in sorted(logs().items()):
@@ -71,12 +76,14 @@ def main():
     res["success_by_worst_error"][">=2 cm"] = dict(n=int((w >= 2).sum()), k=int(s[w >= 2].sum()))
     print(f"[p6-online] median {res['median_cm']:.2f} cm, 90th percentile {res['p90_cm']:.2f} cm; success by the episode's worst error: "
           f"{res['success_by_worst_error']}")
-    json.dump(res, open(os.path.join(R, "p6_online_error.json"), "w"), indent=1)
+    out = os.path.join(R, "p6_online_error.json" if a.arm == "phasebind_reader" else f"p6_online_error_{a.arm}.json")
+    res["arm"] = a.arm
+    json.dump(res, open(out, "w"), indent=1)
     if a.record:
         from lifelong_ood import ledger
-        ledger.record("p6_reader", bench="libero_90", tag="online", seed=0, metrics=res,
+        ledger.record("p6_reader", bench="libero_90", tag=a.ledger_tag, seed=0, metrics=res,
                       bytes=dict(experts=0, tree=0, codes=0, samples=0, teacher_copies=0, total=0), config=vars(a),
-                      script="experiments/p6_online_error.py", command=" ".join(sys.argv), artifacts=[os.path.join(R, "p6_online_error.json")])
+                      script="experiments/p6_online_error.py", command=" ".join(sys.argv), artifacts=[out])
 
 
 if __name__ == "__main__":

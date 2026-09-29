@@ -97,6 +97,18 @@ def arm_spec(tid, arm, fold, demo=0):
         return (f"phasebind:{tid}?fold=0&var=0.001", "0", False)
     if arm == "phasebind_reader":                                        # P6: arm B with the learned pose reader (no simulator poses)
         return (f"phasebind:{tid}?fold=0&reader=1&var=0.001", "0", False)
+    if arm == "phasebind2_nofold":                                       # rules v2 (phase.py at_rest + cut), simulator poses
+        return (f"phasebind:{tid}?fold=0&rules=2&var=0.001", "0", False)
+    if arm == "phasebind2_reader":                                       # rules v2 with the learned pose reader
+        return (f"phasebind:{tid}?fold=0&rules=2&reader=1&var=0.001", "0", False)
+    if arm in ("compose2", "sibling2"):                                  # P3c: composed from other tasks' phases (p3c_table.py)
+        tab = json.load(open(os.path.join(R, "p3c_table.json")))["table"]
+        if str(tid) not in tab:
+            return None
+        g = tab[str(tid)]["g" if arm == "compose2" else "sibling"]
+        return (f"phasebind:{tid}?fold=0&rules=2&g={g}&p={tab[str(tid)]['p']}&var=0.001", "0", False)
+    if arm.startswith("phasebind2_reader_"):                             # rules v2 with reader variant <v> (p6_reader_<v>_<t>.npz)
+        return (f"phasebind:{tid}?fold=0&rules=2&reader={arm[len('phasebind2_reader_'):]}&var=0.001", "0", False)
     if arm == "growleaf":                                                # P4: leaf borrowing over the success-grown library + the fold
         prog = P(f"r26_grow_{tid}_s1.npz")
         return ((f"hybrid:{prog}?expert={EX}&foldprog={F0}&{C}&window=20", f"prog:{prog}@{F0}", False) if fold
@@ -163,7 +175,7 @@ def main():
                 continue
             spec = dict(MODE=s[0], SUITE="libero_90", TASKS=tid, TRIALS=trials, FIRST=first, EXPERIMENT=a.experiment, TAG=tag,
                         PROGRAM_BYTES=s[1], OUT=out, **({"RECORD": "1"} if a.record else {}), **({"SERVE_SEED": str(a.seed)} if a.seed else {}),
-                        **({"OBJECTS": "1"} if arm in ("phasebind", "phasebind_nofold") else {}))
+                        **({"OBJECTS": "1"} if arm in ("phasebind", "phasebind_nofold", "phasebind2_nofold", "compose2", "sibling2") else {}))
             (specs_dep if s[2] else specs_free).append(spec)
         dep = None
         if specs_dep and not os.path.exists(os.path.join(R, f"r3_lora_{tid}{dsfx}.pt")):

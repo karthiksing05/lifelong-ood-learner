@@ -1,0 +1,434 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "experiments/p1_read.py v2 --record  # v2 read: rules v2 (sim poses, learned reader) and the v2 generator's LoRA on 21 tasks, states 30-49",
+ "config": {
+  "read": "v2",
+  "record": true
+ },
+ "env": {
+  "device": "cpu",
+  "host": "sky2.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "p1_bindings",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "fb7ede5dcf20f76de13ba3ea552c8b070a5b8970",
+  "short": "fb7ede5d"
+ },
+ "keys": {},
+ "metrics": {
+  "V1": {
+   "control": 314,
+   "diff": {
+    "diff": 0.16904761904761906,
+    "hi": 0.33095238095238094,
+    "hi90": 0.30238095238095236,
+    "lo": 0.03333333333333333,
+    "lo90": 0.047619047619047616,
+    "n_pairs": 420,
+    "n_tasks": 21
+   },
+   "discordant": [
+    75,
+    4
+   ],
+   "holm_p": 1.5730404373414772e-17,
+   "n": 420,
+   "passes": true,
+   "sign_p": 5.2434681244715905e-18,
+   "x": 385,
+   "x_arm": "phasebind2_nofold",
+   "y_arm": "phasebind_nofold"
+  },
+  "V2": {
+   "control": 302,
+   "diff": {
+    "diff": 0.1976190476190476,
+    "hi": 0.30952380952380953,
+    "hi90": 0.29285714285714287,
+    "lo": 0.08095238095238096,
+    "lo90": 0.1,
+    "n_pairs": 420,
+    "n_tasks": 21
+   },
+   "discordant": [
+    100,
+    17
+   ],
+   "holm_p": 3.4525265153999086e-15,
+   "n": 420,
+   "passes": true,
+   "sign_p": 1.7262632576999543e-15,
+   "x": 385,
+   "x_arm": "phasebind2_nofold",
+   "y_arm": "lora_r17bal"
+  },
+  "V3": {
+   "control": 385,
+   "diff": {
+    "diff": -0.05476190476190476,
+    "hi": 0.016666666666666666,
+    "hi90": 0.004761904761904762,
+    "lo": -0.13333333333333333,
+    "lo90": -0.12142857142857143,
+    "n_pairs": 420,
+    "n_tasks": 21
+   },
+   "discordant": [
+    9,
+    32
+   ],
+   "n": 420,
+   "non_inferior": false,
+   "sign_p": 0.000430857042374555,
+   "x": 362,
+   "x_arm": "phasebind2_reader",
+   "y_arm": "phasebind2_nofold"
+  },
+  "V4": {
+   "control": 293,
+   "diff": {
+    "diff": 0.08095238095238096,
+    "hi": 0.21666666666666667,
+    "hi90": 0.19523809523809524,
+    "lo": -0.04285714285714286,
+    "lo90": -0.02392857142857132,
+    "n_pairs": 420,
+    "n_tasks": 21
+   },
+   "discordant": [
+    80,
+    46
+   ],
+   "holm_p": 0.003125611066274834,
+   "n": 420,
+   "passes": true,
+   "sign_p": 0.003125611066274834,
+   "x": 327,
+   "x_arm": "lora_r27gen",
+   "y_arm": "lora_r25gen"
+  },
+  "g27_vs_nft": {
+   "control": 302,
+   "diff": {
+    "diff": 0.05952380952380952,
+    "hi": 0.16428571428571428,
+    "hi90": 0.14761904761904762,
+    "lo": -0.04523809523809524,
+    "lo90": -0.02857142857142857,
+    "n_pairs": 420,
+    "n_tasks": 21
+   },
+   "discordant": [
+    78,
+    53
+   ],
+   "n": 420,
+   "sign_p": 0.03559998587055826,
+   "x": 327,
+   "x_arm": "lora_r27gen",
+   "y_arm": "lora_r17bal"
+  },
+  "per_task": {
+   "1": {
+    "ctrl": 8,
+    "ctrl_nofold": 5,
+    "g25": 13,
+    "g27": 15,
+    "nft": 9,
+    "v1": 20,
+    "v2": 20,
+    "v2r": 20
+   },
+   "3": {
+    "ctrl": 19,
+    "ctrl_nofold": 14,
+    "g25": 18,
+    "g27": 14,
+    "nft": 18,
+    "v1": 20,
+    "v2": 20,
+    "v2r": 20
+   },
+   "32": {
+    "ctrl": 9,
+    "ctrl_nofold": 6,
+    "g25": 9,
+    "g27": 9,
+    "nft": 10,
+    "v1": 20,
+    "v2": 20,
+    "v2r": 20
+   },
+   "34": {
+    "ctrl": 19,
+    "ctrl_nofold": 9,
+    "g25": 18,
+    "g27": 19,
+    "nft": 17,
+    "v1": 20,
+    "v2": 20,
+    "v2r": 20
+   },
+   "35": {
+    "ctrl": 9,
+    "ctrl_nofold": 9,
+    "g25": 17,
+    "g27": 18,
+    "nft": 7,
+    "v1": 20,
+    "v2": 20,
+    "v2r": 20
+   },
+   "36": {
+    "ctrl": 6,
+    "ctrl_nofold": 3,
+    "g25": 20,
+    "g27": 20,
+    "nft": 17,
+    "v1": 20,
+    "v2": 20,
+    "v2r": 20
+   },
+   "37": {
+    "ctrl": 15,
+    "ctrl_nofold": 6,
+    "g25": 19,
+    "g27": 19,
+    "nft": 17,
+    "v1": 19,
+    "v2": 19,
+    "v2r": 19
+   },
+   "39": {
+    "ctrl": 17,
+    "ctrl_nofold": 17,
+    "g25": 16,
+    "g27": 14,
+    "nft": 16,
+    "v1": 6,
+    "v2": 6,
+    "v2r": 6
+   },
+   "4": {
+    "ctrl": 8,
+    "ctrl_nofold": 8,
+    "g25": 14,
+    "g27": 14,
+    "nft": 11,
+    "v1": 20,
+    "v2": 20,
+    "v2r": 20
+   },
+   "40": {
+    "ctrl": 4,
+    "ctrl_nofold": 6,
+    "g25": 7,
+    "g27": 12,
+    "nft": 4,
+    "v1": 6,
+    "v2": 5,
+    "v2r": 12
+   },
+   "41": {
+    "ctrl": 13,
+    "ctrl_nofold": 14,
+    "g25": 16,
+    "g27": 18,
+    "nft": 18,
+    "v1": 17,
+    "v2": 17,
+    "v2r": 18
+   },
+   "42": {
+    "ctrl": 2,
+    "ctrl_nofold": 0,
+    "g25": 19,
+    "g27": 10,
+    "nft": 9,
+    "v1": 3,
+    "v2": 20,
+    "v2r": 19
+   },
+   "43": {
+    "ctrl": 20,
+    "ctrl_nofold": 10,
+    "g25": 18,
+    "g27": 16,
+    "nft": 20,
+    "v1": 20,
+    "v2": 20,
+    "v2r": 19
+   },
+   "48": {
+    "ctrl": 18,
+    "ctrl_nofold": 7,
+    "g25": 15,
+    "g27": 9,
+    "nft": 18,
+    "v1": 0,
+    "v2": 20,
+    "v2r": 18
+   },
+   "5": {
+    "ctrl": 17,
+    "ctrl_nofold": 3,
+    "g25": 18,
+    "g27": 19,
+    "nft": 16,
+    "v1": 19,
+    "v2": 19,
+    "v2r": 18
+   },
+   "52": {
+    "ctrl": 8,
+    "ctrl_nofold": 5,
+    "g25": 6,
+    "g27": 18,
+    "nft": 14,
+    "v1": 17,
+    "v2": 20,
+    "v2r": 13
+   },
+   "53": {
+    "ctrl": 19,
+    "ctrl_nofold": 12,
+    "g25": 6,
+    "g27": 20,
+    "nft": 20,
+    "v1": 7,
+    "v2": 20,
+    "v2r": 12
+   },
+   "58": {
+    "ctrl": 12,
+    "ctrl_nofold": 4,
+    "g25": 0,
+    "g27": 15,
+    "nft": 16,
+    "v1": 0,
+    "v2": 20,
+    "v2r": 18
+   },
+   "6": {
+    "ctrl": 16,
+    "ctrl_nofold": 16,
+    "g25": 20,
+    "g27": 19,
+    "nft": 18,
+    "v1": 20,
+    "v2": 20,
+    "v2r": 20
+   },
+   "62": {
+    "ctrl": 7,
+    "ctrl_nofold": 9,
+    "g25": 7,
+    "g27": 11,
+    "nft": 14,
+    "v1": 20,
+    "v2": 19,
+    "v2r": 10
+   },
+   "63": {
+    "ctrl": 7,
+    "ctrl_nofold": 5,
+    "g25": 17,
+    "g27": 18,
+    "nft": 13,
+    "v1": 20,
+    "v2": 20,
+    "v2r": 20
+   }
+  },
+  "reader_vs_ctrl": {
+   "control": 253,
+   "diff": {
+    "diff": 0.25952380952380955,
+    "hi": 0.40714285714285714,
+    "hi90": 0.38333333333333336,
+    "lo": 0.10238095238095238,
+    "lo90": 0.12857142857142856,
+    "n_pairs": 420,
+    "n_tasks": 21
+   },
+   "discordant": [
+    140,
+    31
+   ],
+   "n": 420,
+   "sign_p": 9.573452512776572e-18,
+   "x": 362,
+   "x_arm": "phasebind2_reader",
+   "y_arm": "dimfold_s1_last2"
+  },
+  "reader_vs_nft": {
+   "control": 302,
+   "diff": {
+    "diff": 0.14285714285714285,
+    "hi": 0.27380952380952384,
+    "hi90": 0.25476190476190474,
+    "lo": 0.007142857142857143,
+    "lo90": 0.02857142857142857,
+    "n_pairs": 420,
+    "n_tasks": 21
+   },
+   "discordant": [
+    97,
+    37
+   ],
+   "n": 420,
+   "sign_p": 2.1932825010029352e-07,
+   "x": 362,
+   "x_arm": "phasebind2_reader",
+   "y_arm": "lora_r17bal"
+  },
+  "v2_vs_ctrl": {
+   "control": 253,
+   "diff": {
+    "diff": 0.3142857142857143,
+    "hi": 0.45476190476190476,
+    "hi90": 0.430952380952381,
+    "lo": 0.16428571428571428,
+    "lo90": 0.1880952380952381,
+    "n_pairs": 420,
+    "n_tasks": 21
+   },
+   "discordant": [
+    149,
+    17
+   ],
+   "n": 420,
+   "sign_p": 1.6009876779183357e-27,
+   "x": 385,
+   "x_arm": "phasebind2_nofold",
+   "y_arm": "dimfold_s1_last2"
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "p1_bindings__libero_90__v2__s0__fb7ede5d",
+ "schema": 1,
+ "script": "experiments/p1_read.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-29T13:41:46+00:00",
+ "stream": null,
+ "tag": "v2"
+}

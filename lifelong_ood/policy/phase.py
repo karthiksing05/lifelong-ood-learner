@@ -13,6 +13,7 @@ the gated fold expert acts instead (HybridHooks' rule).  After the last phase th
 from __future__ import annotations
 
 import math
+import re
 
 import numpy as np
 
@@ -62,6 +63,105 @@ def track(p, R_, p_t, R_t, g):
     return a
 
 
+# ── the demo as a phase program, rules v2 (docs/PLAN_TRANSFER.md; v1 = experiments/p3_compose_sim.py `phases`) ─────────
+MOVE, CLOSE_TAIL, OPEN_TAIL = 0.015, 8, 5
+
+
+def load_demo(results_dir, t):
+    """Task t's ONE demo with its objects' poses at every kept step (experiments/p0_demo_init.py)."""
+    d = np.load(f"{results_dir}/p0_demo/{t}.npz", allow_pickle=True)
+    m = np.load(f"{results_dir}/p0_demo/{t}_match.npz", allow_pickle=True)
+    return dict(names=d["names"], movable=d["movable"], obj_pos=d["demo_obj_pos"], obj_quat=d["demo_obj_quat"],
+                eef_pos=d["demo_eef_pos"], eef_quat=d["demo_eef_quat"], action=np.asarray(m["actions"], np.float32))
+
+
+def at_rest(z, window=20, tol=1e-3):
+    """The demo's objects read AT REST: an object still falling after the scene spawned (the first kept steps of the living-room
+    demos catch it up to 12 cm above the table) takes its rest pose over those frames -- the convention of the evaluation
+    placements, which the client reads after its settle steps.  Rest = the first frame within `window` whose next step moves it
+    less than `tol`; nothing changes for an object already at rest."""
+    pos, quat = np.array(z["obj_pos"], np.float64), np.array(z["obj_quat"], np.float64)
+    for j in range(pos.shape[1]):
+        step = np.linalg.norm(np.diff(pos[:window + 1, j], axis=0), axis=-1)
+        r = next((i for i, s in enumerate(step) if s < tol), None)
+        if r is not None and r > 0:
+            pos[:r, j], quat[:r, j] = pos[r, j], quat[r, j]
+    return dict(z, obj_pos=pos, obj_quat=quat)
+
+
+def controller_goals(z):
+    """The demo's CONTROLLER goals per step (OSC delta mode: p* = p + 0.05 a, R* = R(0.5 a_rot) R; as experiments/p0_retarget.py
+    `goals`): tracking them reproduces the demo's actions on its own path.  -> (positions [T,3], rotations [T,3,3])."""
+    P, Q = [], []
+    for i, a in enumerate(np.clip(np.asarray(z["action"], np.float64), -1, 1)):
+        P.append(np.asarray(z["eef_pos"][i], np.float64) + 0.05 * a[:3])
+        Q.append(aa2m(0.5 * a[3:6]) @ q2m(z["eef_quat"][i]))
+    return np.asarray(P), np.asarray(Q)
+
+
+def cut(z):
+    """Rules v2 -> phases [(z, GP, GQ, s0, s1, role, ref, held)]:
+    - the manipulated object = the first MOVABLE object displaced > MOVE (lifted or pushed) while the gripper commands close;
+    - approach [0, c + CLOSE_TAIL) in its frame (c = the last close before that displacement);
+    - carry, to the first release after it (+ OPEN_TAIL), holding it, in the frame of the other object of interest, movable or
+      FIXTURE (the world when there is none); the rest in the same frame;
+    - no manipulated object (a fixture task: a knob, a door): the whole demo in the frame of the first object of interest."""
+    GP, GQ = controller_goals(z)
+    cmd = np.asarray(z["action"])[:, 6] > 0
+    T, n = len(cmd), len(z["names"])
+    moved = []
+    for j in range(n):
+        if bool(z["movable"][j]):
+            disp = np.linalg.norm(np.asarray(z["obj_pos"])[:, j] - np.asarray(z["obj_pos"])[0, j], axis=-1)
+            up = np.where((disp > MOVE) & cmd)[0]
+            if len(up):
+                moved.append((int(up[0]), j))
+    if not moved:
+        ref = 0 if n else None
+        return [(z, GP, GQ, 0, T, "fix" if ref is not None else None, ref, None)]
+    L, obj = min(moved)
+    closes = [t for t in range(1, L + 1) if cmd[t] and not cmd[t - 1]]
+    c = closes[-1] if closes else 0
+    rel = [t for t in range(L + 1, T) if not cmd[t] and cmd[t - 1]]
+    others = [j for j in range(n) if j != obj]
+    rec = next((j for j in others if bool(z["movable"][j])), others[0] if others else None)
+    a_end = min(T, c + CLOSE_TAIL)
+    c_end = min(T, rel[0] + OPEN_TAIL) if rel else T
+    role = "rec" if rec is not None else None
+    out = [(z, GP, GQ, 0, a_end, "obj", obj, None), (z, GP, GQ, a_end, c_end, role, rec, obj)]
+    if c_end < T:
+        out.append((z, GP, GQ, c_end, T, role, rec, None))
+    return [p for p in out if p[4] > p[3]]
+
+
+def type_of(name):
+    """An object's TYPE: its name without the instance suffix (ketchup_1 -> ketchup)."""
+    return re.sub(r"_\d+$", "", str(name))
+
+
+def compose(target_names, grasp_src, place_src):
+    """Cross-task composition (rules v2): the approach of `grasp_src` (a demo that manipulates an object of the target's object type)
+    followed by the carry and the rest of `place_src` (a demo with the target's goal relation), each relabelled onto the target
+    scene's objects: the grasp source's manipulated object -> the target object of its type; the place source's manipulated
+    object -> that target object, its receptacle -> the target object of the receptacle's type.  Other source objects are renamed
+    so nothing anchors on them.  -> phases."""
+    tn = [str(n) for n in target_names]
+    g, p = cut(grasp_src), cut(place_src)
+    if g[0][5] != "obj" or len(p) < 2 or p[1][5] != "rec":
+        raise ValueError("a source has no approach or no carry relative to a receptacle")
+    gn, pn = [str(n) for n in grasp_src["names"]], [str(n) for n in place_src["names"]]
+    obj_t = next(n for n in tn if type_of(n) == type_of(gn[g[0][6]]))
+    rec_t = next(n for n in tn if type_of(n) == type_of(pn[p[1][6]]))
+
+    def relabel(z, names, mapping):
+        new = [mapping.get(i, "src:" + n) for i, n in enumerate(names)]
+        return dict(z, names=np.array(new))
+
+    zg = relabel(grasp_src, gn, {g[0][6]: obj_t})
+    zp = relabel(place_src, pn, {p[1][7]: obj_t, p[1][6]: rec_t})
+    return [(zg,) + g[0][1:]] + [(zp,) + q[1:] for q in p[1:]]
+
+
 class PhaseBindHooks:
     """Per-episode state: a queue of (goal position, goal rotation, gripper, source frame) targets, refilled phase by phase."""
 
@@ -104,7 +204,8 @@ class PhaseBindHooks:
             self._read(meta or {})
         elif not self._objs:
             rd = self.reader
-            f = rd["enc"]._embed(np.asarray(obs["observation/image"])[None], np.asarray(obs["observation/wrist_image"])[None])
+            im, wr = np.asarray(obs["observation/image"])[None], np.asarray(obs["observation/wrist_image"])[None]
+            f = rd["enc"]._embed(im, wr) if rd.get("features", "pooled") == "pooled" else rd["enc"]._embed_spatial(im, wr, pool=rd["pool"])
             f = f.float().cpu().numpy().astype(np.float64)
             pos = ((f - rd["mx"]) @ rd["W"] + rd["my"]).reshape(-1, 3)
             quat = {str(n): self.z["obj_quat"][0, j] for j, n in enumerate(self.names)}
@@ -115,14 +216,15 @@ class PhaseBindHooks:
     # ── planning ────────────────────────────────────────────────────────────
     def _start(self, k, p_now, R_now, g_now):
         z, GP, GQ, s0, s1, role, ref, held = self.parts[k]
-        if ref is not None and self.names[ref] in self._objs:
-            pn, Rn = self._objs[self.names[ref]]
+        names = [str(x) for x in z["names"]]                 # the part's own source (a composed program mixes sources)
+        if ref is not None and names[ref] in self._objs:
+            pn, Rn = self._objs[names[ref]]
             ps, Rs = z["obj_pos"][s0, ref].astype(np.float64), q2m(z["obj_quat"][s0, ref])
             M = pose(pn - Rn @ Rs.T @ ps, Rn @ Rs.T)
         else:
             M = np.eye(4)
-        if held is not None and self.names[held] in self._objs and self.reader is None:
-            ho, Ho = self._objs[self.names[held]]
+        if held is not None and names[held] in self._objs and self.reader is None:
+            ho, Ho = self._objs[names[held]]
             Gs = np.linalg.inv(pose(z["obj_pos"][s0, held], q2m(z["obj_quat"][s0, held]))) @ pose(z["eef_pos"][s0], q2m(z["eef_quat"][s0]))
             Gt = np.linalg.inv(pose(ho, Ho)) @ pose(p_now, R_now)
             C = np.linalg.inv(Gs) @ Gt

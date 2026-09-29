@@ -9,6 +9,10 @@ experiments/r15_consolidate.py --lora --practice g25 learns from the verified su
 here, to generate; the learned policy acts from images.
 
     PYTHONPATH=.../third_party/libero .venv/bin/python experiments/p38_generate.py --tasks 42+52 --workers 2
+
+--rules v2 cuts the demo by lifelong_ood/policy/phase.py (`at_rest`, `cut`: the demo's objects read at rest, the manipulated
+object by displacement, receptacles and fixture tasks anchored on fixtures too); --tag names the record directory
+(results/robot/<tag>_<t>_gen_rec) and the output json.
 """
 import argparse
 import importlib.util
@@ -45,19 +49,29 @@ def pose(p, R_):
     return X
 
 
+def program(t, rules="v1"):
+    """-> (the demo, its phases, a label)."""
+    if rules == "v2":
+        import sys
+        sys.path.insert(0, REPO)
+        from lifelong_ood.policy import phase as PH
+        z = PH.at_rest(PH.load_demo(R, t))
+        parts = PH.cut(z)
+        return z, parts, "v2:" + "+".join(str(q[5]) for q in parts)
+    z = demo_source(t)
+    g, p = P3.phases(z, "grasp"), P3.phases(z, "place")
+    if g and p:
+        return z, g + p, "phases"
+    GP, GQ = P0.goals(z)                                   # no lifted object: track the whole demo in the world frame
+    return z, [(z, GP, GQ, 0, len(z["action"]), None, None, None)], "world"
+
+
 def generate(job):
-    t, first, n = job
+    t, first, n, rules, tag = job
     from libero.libero import benchmark, get_libero_path
     from libero.libero.envs import OffScreenRenderEnv
     from openpi_client import image_tools
-    z = demo_source(t)
-    parts = None
-    g, p = P3.phases(z, "grasp"), P3.phases(z, "place")
-    if g and p:
-        parts = g + p
-    else:                                                  # no lifted object: track the whole demo in the world frame
-        GP, GQ = P0.goals(z)
-        parts = [(z, GP, GQ, 0, len(z["action"]), None, None, None)]
+    z, parts, how = program(t, rules)
     names_src = [str(x) for x in z["names"]]
     suite = benchmark.get_benchmark_dict()["libero_90"]()
     task = suite.get_task(t)
@@ -67,7 +81,7 @@ def generate(job):
     env = OffScreenRenderEnv(bddl_file_name=str(bddl), camera_heights=256, camera_widths=256)
     env.seed(P0.SEED)
     inner = env.env
-    rec_dir = os.path.join(R, f"g25_{t}_gen_rec")
+    rec_dir = os.path.join(R, f"{tag}_{t}_gen_rec")
     os.makedirs(rec_dir, exist_ok=True)
     out = {}
     for k in range(first, first + n):
@@ -139,7 +153,7 @@ def generate(job):
         np.savez_compressed(os.path.join(rec_dir, f"task{t}_trial{k}.npz"), state=np.stack(rec["state"]), action=np.stack(rec["action"]),
                             image=np.stack(rec["image"]), wrist=np.stack(rec["wrist"]), success=bool(done), trial=k, task=t)
     env.close()
-    return t, out, "phases" if (g and p) else "world"
+    return t, out, how
 
 
 def quat2axisangle(q):
@@ -155,9 +169,12 @@ def main():
     ap.add_argument("--first", type=int, default=0)
     ap.add_argument("--n", type=int, default=20)
     ap.add_argument("--workers", type=int, default=12)
-    ap.add_argument("--out", default=os.path.join(R, "g25_generate.json"))
+    ap.add_argument("--rules", default="v1", choices=("v1", "v2"))
+    ap.add_argument("--tag", default="g25")
+    ap.add_argument("--out", default=None)
     a = ap.parse_args()
-    jobs = [(int(t), a.first, a.n) for t in a.tasks.replace("+", ",").split(",")]
+    a.out = a.out or os.path.join(R, f"{a.tag}_generate.json")
+    jobs = [(int(t), a.first, a.n, a.rules, a.tag) for t in a.tasks.replace("+", ",").split(",")]
     res, t0 = {}, time.time()
     with Pool(a.workers) as pool:
         for t, out, how in pool.imap_unordered(generate, jobs):
