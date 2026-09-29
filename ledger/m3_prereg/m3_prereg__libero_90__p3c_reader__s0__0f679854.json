@@ -1,0 +1,53 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration of the P3c reader arm",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky2.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "0f6798541d31fb155a0f86a0ae4027f047392787",
+  "short": "0f679854"
+ },
+ "keys": {},
+ "metrics": {
+  "arm": "compose2_reader: compose2 (m3_prereg p3c, p3c_amend1) with the object positions from a reader trained ONLY on simulator-rendered scenes of the target task (experiments/p6_synth.py --robot-init: fresh placements, the arm's joints from a random practice init state 0-29; p6_reader.py --synth-only --synth-dir p6_synth_rj; spatial features; 400 scenes) and the objects' orientations from the rendered scenes (chordal mean; yaw is fixed per placement region, 0.0 deg median spread); no practice recordings, no demo of the target, no simulator state at test",
+  "hypotheses": {
+   "R1": "PRIMARY: compose2_reader non-inferior to compose2 at -0.10 (one-sided 95% lower bound, two-level bootstrap)",
+   "descriptive": "vs the target's own demo (phasebind2_nofold) and vs LoRA + failure negatives; per target"
+  },
+  "offline": "ledger p6_reader tag offline_spatial4_synthonly_rj_p3c: 0.13 cm median on the real first frames of states 20-29",
+  "plan": "docs/PLAN_TRANSFER.md P6 for P3c: a task composed from other tasks' phases with no demo, no practice and no simulator state at test",
+  "tasks": "the P3c targets 3, 4, 41, 43, 48, 58; init states 30-49; 120 paired episodes",
+  "written_before": "any compose2_reader rollout"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_90__p3c_reader__s0__0f679854",
+ "schema": 1,
+ "script": "(inline, session 2026-09-29)",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-29T14:52:26+00:00",
+ "stream": null,
+ "tag": "p3c_reader"
+}

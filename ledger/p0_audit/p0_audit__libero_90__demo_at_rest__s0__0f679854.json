@@ -1,0 +1,144 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "rest shift of each demo's objects at its first kept step",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky2.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "p0_audit",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "0f6798541d31fb155a0f86a0ae4027f047392787",
+  "short": "0f679854"
+ },
+ "keys": {},
+ "metrics": {
+  "falling": {
+   "48": {
+    "ketchup_1": 12.219601887949107
+   },
+   "52": {
+    "milk_1": 8.353000879417875
+   },
+   "53": {
+    "orange_juice_1": 8.353185657814265
+   },
+   "58": {
+    "ketchup_1": 12.219601887949107
+   }
+  },
+  "max_cm": 12.219601887949107,
+  "per_task_cm": {
+   "1": {
+    "akita_black_bowl_1": 0.0,
+    "wooden_cabinet_1": 0.0
+   },
+   "3": {
+    "butter_2": 0.0,
+    "wooden_cabinet_1": 0.0
+   },
+   "32": {
+    "ketchup_1": 0.0,
+    "white_cabinet_1": 0.0
+   },
+   "34": {
+    "porcelain_mug_1": 0.0,
+    "white_yellow_mug_1": 0.0
+   },
+   "35": {
+    "microwave_1": 0.0
+   },
+   "36": {
+    "plate_1": 0.0,
+    "white_bowl_1": 0.0
+   },
+   "37": {
+    "plate_1": 0.0,
+    "white_bowl_1": 0.0
+   },
+   "39": {
+    "flat_stove_1": 0.0
+   },
+   "4": {
+    "butter_1": 0.0,
+    "wooden_cabinet_1": 0.0
+   },
+   "40": {
+    "chefmate_8_frypan_1": 0.0,
+    "wooden_two_layer_shelf_1": 0.0
+   },
+   "41": {
+    "chefmate_8_frypan_1": 0.0,
+    "wooden_two_layer_shelf_1": 0.0
+   },
+   "42": {
+    "chefmate_8_frypan_1": 0.0,
+    "wooden_two_layer_shelf_1": 0.0
+   },
+   "43": {
+    "white_bowl_1": 0.0,
+    "wooden_two_layer_shelf_1": 0.0
+   },
+   "48": {
+    "basket_1": 0.0,
+    "ketchup_1": 12.219601887949107
+   },
+   "5": {
+    "chocolate_pudding_1": 0.0,
+    "wooden_cabinet_1": 0.0
+   },
+   "52": {
+    "basket_1": 0.0,
+    "milk_1": 8.353000879417875
+   },
+   "53": {
+    "basket_1": 0.0,
+    "orange_juice_1": 8.353185657814265
+   },
+   "58": {
+    "ketchup_1": 12.219601887949107,
+    "wooden_tray_1": 0.0
+   },
+   "6": {
+    "wooden_cabinet_1": 0.0
+   },
+   "62": {
+    "new_salad_dressing_1": 0.0,
+    "wooden_tray_1": 0.0
+   },
+   "63": {
+    "akita_black_bowl_1": 0.0,
+    "akita_black_bowl_2": 0.0,
+    "wooden_tray_1": 0.0
+   }
+  },
+  "reading": "the demo's first kept step vs its rest pose (lifelong_ood/policy/phase.py at_rest): objects still falling after the scene spawned"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "p0_audit__libero_90__demo_at_rest__s0__0f679854",
+ "schema": 1,
+ "script": "(inline, session 2026-09-29; phase.at_rest)",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-29T15:11:14+00:00",
+ "stream": null,
+ "tag": "demo_at_rest"
+}

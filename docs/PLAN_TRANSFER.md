@@ -6,30 +6,33 @@ poses from the simulator are used as an ORACLE first, then replaced by a learned
 continual-learning stream starts MINIMAL (about 14 tasks, two mirrored orders) and grows only if it shows falling marginal cost.
 The history (M0-M3, every retraction) stays in [docs/PLAN_2026-09.md](PLAN_2026-09.md); every number below is in `ledger/` and audited.
 
-## 0. Status (2026-09-29): the ladder is run
+## 0. Status (2026-09-29, midday): the ladder is run, then iterated (rules v2)
 
-Every probe ran under its pre-registration (`ledger/m3_prereg` tags p0, p1, p1_amend1, p2, p3a, p3b, p4, g38, p6); the full
-reads are in [docs/VALIDITY.md](VALIDITY.md) ("Transfer plan probes") and the README's ladder.
+Every probe ran under its pre-registration (`ledger/m3_prereg` tags p0, p1, p1_amend1, p2, p3a, p3b, p4, g38, p6, then v2, v2_synth,
+p3c, p3c_amend1, p3c_reader); the full reads are in [docs/VALIDITY.md](VALIDITY.md) ("Transfer plan probes") and the README's ladder.
 
 | probe | read | verdict |
 |---|---|---|
 | P0a-c audits (`ledger/p0_audit`) | every held-out demo matched to its raw recording; 0.83 of 106 persistent movable-object failures are aim failures; the retargeted demo with no policy succeeds 58 of 180 | C2 survives; 3.8 viable |
-| P1 bindings through the prior (`ledger/p1_bindings`) | 9 tasks: bindings alone 143 of 180, with the fold 97, control 66; all 21 tasks: bindings alone 314 of 420 at 54.9 KB (the best learned arm, a LoRA with failure negatives: 302 at 392.9 MB), with the fold 264, control 253 | PASSES for bindings alone; the fold arm meets its kill rule over 21 tasks |
-| P6 learned pose reader (`ledger/p6_reader`) | 0.54 cm median error offline, 0.67 cm on the scored episodes; 126 of 180 against 143 for the simulator's poses (-0.094, lower bound -0.256) and 66 for the control | above the control; NOT shown non-inferior to the oracle (the milk and salad-dressing bottles lose) |
-| 3.8 data generator (`ledger/g38_generate`) | 331 of 420 generated successes; LoRA on them 293 of 420, no practice, against the one-demo LoRA 252 (p 0.0014) and the practice LoRA 274 | PASSES (G1 and G2) |
-| P2 phase-localized negatives (`ledger/p2_negatives`) | 284 against 302 of 420 | fails |
-| P3 cross-task bindings (`ledger/p3_compose`) | P3a 39 against 91 of 100 (95 against 92 after executor fixes, exploratory); P3b on new targets 11 of 80, no better than the prior | fails: C3 is rejected |
-| P4 growth (`ledger/p4_growth`) | 70 against 74 of 120 | killed: growth stays bookkeeping |
-| P5 minimal stream | not run | off by the rule of section 4 (needs P3) |
+| P1 bindings through the prior, rules v1 (`ledger/p1_bindings`) | 9 tasks: bindings alone 143 of 180, with the fold 97, control 66; all 21 tasks: bindings alone 314 of 420, with the fold 264, control 253 | PASSES for bindings alone; the fold arm meets its kill rule |
+| P6 learned pose reader, v1 | 126 of 180 against 143 for the simulator's poses (lower bound -0.256) | above the control; not non-inferior |
+| 3.8 data generator | 331 of 420 generated; LoRA on them 293 of 420 with no practice (one-demo LoRA 252, p 0.0014) | PASSES |
+| P2, P4 | phase-localized negatives 284 vs 302; grown library 70 vs 74 of 120 | fail / killed |
+| P3a, P3b cross-task bindings, v1 and no policy | P3a 39 vs 91 of 100; P3b 11 of 80 | failed; REVERSED by P3c |
+| **rules v2** (a defect: the living-room demos' first frames catch the object still falling, up to 12.2 cm above rest) | generator dev check 386 vs 331 of 420 on the practice placements; through the prior, 21 tasks: **385 of 420** vs v1 314 and LoRA + failure negatives 302 (both p below 0.001), 54.9 KB for all 21 tasks; LoRA on v2-generated demos 327 vs 293 (p 0.003) | PASSES (V1, V2, V4) |
+| **P6 again: readers** | first-frame reader on 30 placements: 362 (lower bound -0.121, fails); + 400 simulator-rendered placements per task (labels at training only): **376 of 420**, -0.021 vs the simulator's poses, lower bound -0.050, 9.3 MB for 21 tasks | **PASSES (V5): the headline condition holds** |
+| **P3c: tasks composed from other tasks' phases** (grasp source by object type, place source by BDDL goal relation) | 6 targets: **114 of 120** vs 117 with their own demo (lower bound -0.067); sibling's whole demo 42 (p below 0.001); with a reader trained on rendered scenes only 92 (0 of 20 on the white bowl, whose carry comes from a pan held by the handle) | **PASSES (C1, C2): C3 holds under v2**; the reader arm fails R1 (in-hand pose) |
+| stove (task 39) | 6 of 20 in every v2 arm: the knob starts anywhere from 0.53 to 2.09 rad; the demo's twist leaves most init states on | a joint-state binding, not built |
+| P5 minimal stream | not run yet | its precondition (P3) now holds |
 
-What this means for the claims (section 2): C1 (grammar) was not tested separately; the phase cut from object events serves as the
-grammar, and it works within a task. C2 (binding) holds: re-anchoring the demo's phases on the objects' poses turns the persistent
-failures into successes through the frozen prior, with no weights. C3 (composition = transfer across tasks) fails: bindings
-transfer across instances of one task, not across tasks, which matches the four negative weight-sharing tests. C4 (continual
-learning with falling cost) was not reached. C5 (residual): the 258 KB fold hurts once bindings act (264 against 314 of 420).
-The defensible result is section 7's "partial" outcome: per task, one demo + object-relative bindings (the demo's phases
-re-anchored) either guide the frozen prior directly (no weights, a few KB) or generate demonstrations for a LoRA (no practice);
-the open problem is the pose reader's centimetre on thin objects (P6).
+What this means for the claims (section 2): C2 (binding) holds: the demo's phases re-anchored on the objects' poses guide the frozen
+prior to 385 of 420 with no weights (376 with a learned reader, no simulator state at test). C3 (composition = transfer) holds under
+v2 on the six tasks that have sources: a task with no demo is composed from the grasp of a task with the same object type and the
+place of a task with the same goal relation, and scores as its own demo does; the grasp binding carries (another type's grasp: 42 of
+120). The v1 negatives (P3a, P3b, and "bindings transfer across instances, not tasks") came from the falling-object defect and the
+no-policy executor. C1 (grammar) was not tested separately: the phase cut from object events is the grammar. C5: the fold hurts once
+bindings act. C4 (continual learning with falling cost) is the next step: P5's precondition now holds. Open: the in-hand pose of a
+composed carry without sensing (P3c R1), and joint-state bindings (the stove).
 
 ## 1. Context: what the evidence says, and the reframe
 

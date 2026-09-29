@@ -116,11 +116,32 @@ def transfer_probes(w):
         for t, r in sorted(v2["per_task"].items(), key=lambda x: int(x[0])):
             w(f"| {t} | {r['v2']} | {r['v2r']} | {r['v1']} | {r['nft']} | {r['g27']} | {r['ctrl']} |")
         w("")
-    rd = [(tag, _row("p6_reader", tag)) for tag in ("near_offline", "offline_spatial4", "offline_synth", "offline_spatial4_synth")]
+    pc, pcr = _row("p3_compose", "p3c"), _row("p3_compose", "p3c_reader")
+    if pc:
+        w("**P3c: tasks composed from other tasks' phases (pre-registered: ledger m3_prereg tags p3c, p3c_amend1, p3c_reader).** "
+          "The approach of a task that manipulates the target's object type + the carry and the rest of a task with the target's goal "
+          "relation (experiments/p3c_table.py), relabelled onto the target scene and followed by the frozen prior; the target's own "
+          "demo is not used. Amendment 1: the sibling control crashed at server start before any episode (type-based relabelling); "
+          "fixed by role-based relabelling.")
+        w(f"- C1, composed vs the task's own demo (v2, simulator poses): {_cmp(pc['C1'])}: {'NON-INFERIOR' if pc['C1']['non_inferior'] else 'not non-inferior'} at -0.10.")
+        w(f"- C2, composed vs the sibling's whole demo (another object type's grasp): {_cmp(pc['C2'])}: {'PASSES' if pc['C2']['passes'] else 'fails'}.")
+        if pcr:
+            w(f"- R1, composed with a pose reader trained only on rendered scenes vs composed with the simulator's poses: {_cmp(pcr['R1'])}: "
+              f"{'non-inferior' if pcr['R1']['non_inferior'] else 'NOT non-inferior'} at -0.10.")
+        w("")
+        w("| task | composed | own demo | sibling | composed, rendered-scene reader | LoRA + failure negatives |")
+        w("|---|---|---|---|---|---|")
+        for t, r in sorted(pc["per_task"].items(), key=lambda x: int(x[0])):
+            w(f"| {t} | {r['c']} | {r['own']} | {r['sib']} | {pcr['per_task'][t]['cr'] if pcr else '-'} | {r['nft']} |")
+        w("")
+    rd = [(tag, _row("p6_reader", tag)) for tag in ("near_offline", "offline_spatial4", "offline_synth", "offline_spatial4_synth",
+                                                     "offline_spatial4_synthonly_p3c", "offline_spatial4_synthonly_rj_p3c")]
     lab = {"near_offline": "re-reading the grasped object when the hand is within 10 cm of its grasp point",
            "offline_spatial4": "the last feature map pooled to 4 x 4 instead of the global pool",
            "offline_synth": "400 simulator-rendered placements per task added to the training frames (labels from simulator state, training only)",
-           "offline_spatial4_synth": "both"}
+           "offline_spatial4_synth": "both",
+           "offline_spatial4_synthonly_p3c": "the P3c targets, rendered scenes ONLY (the arm at reset()'s fixed pose): a domain gap",
+           "offline_spatial4_synthonly_rj_p3c": "the P3c targets, rendered scenes only with the arm's joints from a practice init state"}
     got = [(t, r) for t, r in rd if r]
     if got:
         w("Pose-reader variants, offline on the first frames of init states 20-29 (`ledger/p6_reader`):")

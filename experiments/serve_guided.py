@@ -185,9 +185,13 @@ def main():
         if kv.get("rules") == "2" and kv.get("g"):       # P3c: composed from OTHER tasks' demos (phase.py compose); t's own demo unused
             from lifelong_ood.policy import phase as PH
             tn = [str(x) for x in d["names"]]              # the target scene's objects of interest (the task definition)
-            parts = PH.compose(tn, PH.at_rest(PH.load_demo(R, int(kv["g"]))), PH.at_rest(PH.load_demo(R, int(kv["p"]))))
-            src = dict(names=np.array(tn), obj_quat=np.tile([0.0, 0.0, 0.0, 1.0], (1, len(tn), 1)), action=parts[0][0]["action"])
-            assert not kv.get("reader"), "composed programs take the simulator's poses (reader orientations need the target's demo)"
+            parts = PH.compose(tn, PH.at_rest(PH.load_demo(R, int(kv["g"]))), PH.at_rest(PH.load_demo(R, int(kv["p"]))), obj_type=kv.get("obj"))
+            quat = np.tile([0.0, 0.0, 0.0, 1.0], (1, len(tn), 1))
+            if kv.get("reader"):                           # orientations: the chordal mean over the target's rendered scenes (fixed yaw)
+                rz = np.load(os.path.join(R, "p6_synth", f"{t}_rot.npz"), allow_pickle=True)
+                rn = [str(x) for x in rz["names"]]
+                quat = np.stack([PH.m2q(PH.mean_rotation(rz["obj_rot"][:, rn.index(n)])) for n in tn])[None]
+            src = dict(names=np.array(tn), obj_quat=quat, action=parts[0][0]["action"])
             g = p_ = True
         elif kv.get("rules") == "2":                      # rules v2 (lifelong_ood/policy/phase.py at_rest + cut)
             from lifelong_ood.policy import phase as PH
@@ -217,7 +221,7 @@ def main():
                           features=str(rz["features"]) if "features" in rz.files else "pooled", pool=int(rz["pool"]) if "pool" in rz.files else 4)
             logging.info(f"phasebind: reader p6_reader{sfx}_{t}.npz ({reader['features']})")
         hooks = PhaseBindHooks(src, parts, D.Norm.load(), fold=fold, state=state, key=key, var=float(kv.get("var", 1e-3)), H=bk.H,
-                               reader=reader)
+                               reader=reader, carry="predicted" if kv.get("carry") == "pred" else "live")
         logging.info(f"phasebind: task {t}, {len(parts)} phases ({'object phases' if g and p_ else 'world frame'}; anchors "
                      f"{[None if q[6] is None else str(q[0]['names'][q[6]]) for q in parts]}), rules {kv.get('rules', '1')}, "
                      f"sources g={kv.get('g', t)} p={kv.get('p', t)}, fold {key}")

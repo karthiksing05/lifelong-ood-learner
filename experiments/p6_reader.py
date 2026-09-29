@@ -61,13 +61,13 @@ def embed(enc, images, wrist, kind="pooled", pool=4):
     return F.float().cpu().numpy().astype(np.float64 if kind == "pooled" else np.float32)
 
 
-def synth_features(t, enc, names, kind="pooled", pool=4):
+def synth_features(t, enc, names, kind="pooled", pool=4, sdir="p6_synth"):
     """The simulator-rendered first frames of task t (experiments/p6_synth.py) and their objects' positions, in `names` order."""
-    cache = f"{R}/p6_feats/synth_{t}_{kind}{pool}.npz"
+    cache = f"{R}/p6_feats/synth_{t}_{kind}{pool}.npz" if sdir == "p6_synth" else f"{R}/p6_feats/{sdir}_{t}_{kind}{pool}.npz"
     if os.path.exists(cache):
         c = np.load(cache)
         return c["X"].astype(np.float64), c["Y"]
-    z = np.load(f"{R}/p6_synth/{t}.npz", allow_pickle=True)
+    z = np.load(f"{R}/{sdir}/{t}.npz", allow_pickle=True)
     order = [[str(n) for n in z["names"]].index(n) for n in names]
     X = np.concatenate([embed(enc, z["image"][i:i + 200], z["wrist"][i:i + 200], kind, pool) for i in range(0, len(z["image"]), 200)])
     Y = z["obj_pos"][:, order].reshape(len(X), -1).astype(np.float64)
@@ -114,27 +114,33 @@ def main():
     ap.add_argument("--features", default="pooled", choices=("pooled", "spatial"))
     ap.add_argument("--pool", type=int, default=4)
     ap.add_argument("--synth", action="store_true", help="also train on the simulator-rendered scenes (experiments/p6_synth.py)")
+    ap.add_argument("--synth-dir", default="p6_synth", help="p6_synth_rj: scenes rendered with --robot-init")
+    ap.add_argument("--synth-only", action="store_true", help="train on the rendered scenes ONLY (no practice recordings: a task "
+                    "composed from other tasks' demos has none of its own); the practice first frames of states 20-29 stay the test set")
     a = ap.parse_args()
+    a.synth = a.synth or a.synth_only
     from lifelong_ood.policy.baselines import VinnPolicy
     enc = VinnPolicy(np.zeros((1, 7), np.float32), np.zeros((1, 224, 224, 3), np.uint8), np.zeros((1, 224, 224, 3), np.uint8), device=a.device)
-    res = dict(steps=a.steps, lams=list(LAMS), features=a.features, pool=a.pool, synth=a.synth, per_task={})
+    res = dict(steps=a.steps, lams=list(LAMS), features=a.features, pool=a.pool, synth=a.synth, synth_only=a.synth_only, per_task={})
     for t in ([int(x) for x in a.tasks.split("+")] if a.tasks else TASKS):
         X, Y, trial, step, names = features(t, enc, a.steps, a.features, a.pool)
         X = X.astype(np.float64)
         if a.synth:                                    # rendered scenes: groups 1000+, step 0; never tested on
-            Xs, Ys = synth_features(t, enc, names, a.features, a.pool)
+            Xs, Ys = synth_features(t, enc, names, a.features, a.pool, a.synth_dir)
             X, Y = np.concatenate([X, Xs]), np.concatenate([Y, Ys])
             trial = np.concatenate([trial, 1000 + np.arange(len(Xs))])
             step = np.concatenate([step, np.zeros(len(Xs), int)])
-        tr, first = (trial < 20) | (trial >= 1000), step == 0
+        tr, first = ((trial >= 1000) if a.synth_only else ((trial < 20) | (trial >= 1000))), step == 0
         lam, cverr = cv_lam(X[tr], Y[tr], trial[tr])
         W, mx, my = ridge(X[tr], Y[tr], lam)
         sel = (trial >= 20) & (trial < 1000) & first
         pred = (X[sel] - mx) @ W + my
         err = np.linalg.norm((pred - Y[sel]).reshape(len(pred), -1, 3), axis=-1) * 100            # cm per object
         base = np.linalg.norm((Y[tr].mean(0) - Y[sel]).reshape(len(pred), -1, 3), axis=-1) * 100   # the mean placement
-        W2, mx2, my2 = ridge(X, Y, lam)
-        sfx = ("" if a.features == "pooled" else f"_{a.features}{a.pool}") + ("_synth" if a.synth else "")
+        fin = (trial >= 1000) if a.synth_only else np.ones(len(X), bool)
+        W2, mx2, my2 = ridge(X[fin], Y[fin], lam)
+        sfx = (("" if a.features == "pooled" else f"_{a.features}{a.pool}") + ("_synthonly" if a.synth_only else "_synth" if a.synth else "")
+               + ("" if a.synth_dir == "p6_synth" else "_rj"))
         np.savez_compressed(f"{R}/p6_reader{sfx}_{t}.npz", W=W2, mx=mx2, my=my2, names=np.array(names), features=a.features, pool=a.pool)
         res["per_task"][str(t)] = dict(names=names, lam=lam, cv_err_m={str(k): v for k, v in cverr.items()}, test_frames=int(sel.sum()),
                                        train_frames=int(tr.sum()),

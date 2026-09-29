@@ -101,12 +101,14 @@ def arm_spec(tid, arm, fold, demo=0):
         return (f"phasebind:{tid}?fold=0&rules=2&var=0.001", "0", False)
     if arm == "phasebind2_reader":                                       # rules v2 with the learned pose reader
         return (f"phasebind:{tid}?fold=0&rules=2&reader=1&var=0.001", "0", False)
-    if arm in ("compose2", "sibling2"):                                  # P3c: composed from other tasks' phases (p3c_table.py)
+    if arm in ("compose2", "sibling2", "compose2_reader", "compose2_reader_pred"):   # P3c: composed from other tasks' phases (p3c_table.py)
         tab = json.load(open(os.path.join(R, "p3c_table.json")))["table"]
         if str(tid) not in tab:
             return None
-        g = tab[str(tid)]["g" if arm == "compose2" else "sibling"]
-        return (f"phasebind:{tid}?fold=0&rules=2&g={g}&p={tab[str(tid)]['p']}&var=0.001", "0", False)
+        g = tab[str(tid)]["g" if arm != "sibling2" else "sibling"]
+        rd = "&reader=spatial4_synthonly_rj" if arm.startswith("compose2_reader") else ""   # the reader trained on rendered scenes only
+        rd += "&carry=pred" if arm == "compose2_reader_pred" else ""                        # the in-hand pose predicted from the grasp binding
+        return (f"phasebind:{tid}?fold=0&rules=2&g={g}&p={tab[str(tid)]['p']}&obj={tab[str(tid)]['object']}{rd}&var=0.001", "0", False)
     if arm.startswith("phasebind2_reader_"):                             # rules v2 with reader variant <v> (p6_reader_<v>_<t>.npz)
         return (f"phasebind:{tid}?fold=0&rules=2&reader={arm[len('phasebind2_reader_'):]}&var=0.001", "0", False)
     if arm == "growleaf":                                                # P4: leaf borrowing over the success-grown library + the fold

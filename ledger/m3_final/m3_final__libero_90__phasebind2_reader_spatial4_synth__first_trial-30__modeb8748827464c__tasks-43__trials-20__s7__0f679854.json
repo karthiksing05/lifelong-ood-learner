@@ -1,0 +1,86 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/m3_final_43_phasebind2_reader_spatial4_synth.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "roll.sh MODE=phasebind:43?fold=0&rules=2&reader=spatial4_synth&var=0.001 SUITE=libero_90 TASKS=43 TRIALS=20 (job 3981972)",
+ "config": {
+  "client": {
+   "branches": "",
+   "first_trial": 30,
+   "host": "127.0.0.1",
+   "max_steps": 0,
+   "no_meta": false,
+   "objects": false,
+   "out": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/m3_final_43_phasebind2_reader_spatial4_synth.json",
+   "port": 9818,
+   "record": false,
+   "replan": 5,
+   "resize": 224,
+   "seed": 7,
+   "suite": "libero_90",
+   "tasks": "43",
+   "trials": 20,
+   "videos": 2,
+   "wait": 10
+  },
+  "job": "3981972",
+  "mode": "phasebind:43?fold=0&rules=2&reader=spatial4_synth&var=0.001"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "cyborg.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3981972",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_final",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "0f6798541d31fb155a0f86a0ae4027f047392787",
+  "short": "0f679854"
+ },
+ "keys": {
+  "first_trial": 30,
+  "mode": "phasebind:43?fold=0&rules=2&reader=spatial4_synth&var=0.001",
+  "tasks": "43",
+  "trials": 20
+ },
+ "metrics": {
+  "complete": true,
+  "n_episodes": 20,
+  "secs": 355.8147714138031,
+  "success_rate": 1.0,
+  "tasks": {
+   "43": {
+    "errors": 0,
+    "language": "put the white bowl on top of the cabinet",
+    "mean_steps": 134.35,
+    "n": 20,
+    "success_rate": 1.0
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_final__libero_90__phasebind2_reader_spatial4_synth__first_trial-30__modeb8748827464c__tasks-43__trials-20__s7__0f679854",
+ "schema": 1,
+ "script": "experiments/libero_client.py",
+ "seconds": null,
+ "seed": 7,
+ "source_commit": null,
+ "started": "2026-09-29T14:11:08+00:00",
+ "stream": null,
+ "tag": "phasebind2_reader_spatial4_synth"
+}

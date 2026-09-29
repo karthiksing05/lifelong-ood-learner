@@ -27,6 +27,29 @@ def q2m(q):
                      [2 * (x * z - y * w), 2 * (y * z + x * w), 1 - 2 * (x * x + y * y)]])
 
 
+def m2q(Rm):
+    """Rotation matrix -> quaternion (x, y, z, w), the convention of q2m."""
+    Rm = np.asarray(Rm, np.float64)
+    w = math.sqrt(max(0.0, 1 + Rm[0, 0] + Rm[1, 1] + Rm[2, 2])) / 2
+    x = math.sqrt(max(0.0, 1 + Rm[0, 0] - Rm[1, 1] - Rm[2, 2])) / 2
+    y = math.sqrt(max(0.0, 1 - Rm[0, 0] + Rm[1, 1] - Rm[2, 2])) / 2
+    z = math.sqrt(max(0.0, 1 - Rm[0, 0] - Rm[1, 1] + Rm[2, 2])) / 2
+    x = math.copysign(x, Rm[2, 1] - Rm[1, 2])
+    y = math.copysign(y, Rm[0, 2] - Rm[2, 0])
+    z = math.copysign(z, Rm[1, 0] - Rm[0, 1])
+    return np.array([x, y, z, w])
+
+
+def mean_rotation(Rs):
+    """The chordal mean of rotation matrices [n, 3, 3] (the SVD projection of their average)."""
+    U, _, Vt = np.linalg.svd(np.mean(np.asarray(Rs, np.float64), 0))
+    M = U @ Vt
+    if np.linalg.det(M) < 0:
+        U[:, -1] *= -1
+        M = U @ Vt
+    return M
+
+
 def aa2m(aa):
     aa = np.asarray(aa, np.float64)
     th = np.linalg.norm(aa)
@@ -139,18 +162,19 @@ def type_of(name):
     return re.sub(r"_\d+$", "", str(name))
 
 
-def compose(target_names, grasp_src, place_src):
+def compose(target_names, grasp_src, place_src, obj_type=None):
     """Cross-task composition (rules v2): the approach of `grasp_src` (a demo that manipulates an object of the target's object type)
     followed by the carry and the rest of `place_src` (a demo with the target's goal relation), each relabelled onto the target
     scene's objects: the grasp source's manipulated object -> the target object of its type; the place source's manipulated
     object -> that target object, its receptacle -> the target object of the receptacle's type.  Other source objects are renamed
-    so nothing anchors on them.  -> phases."""
+    so nothing anchors on them.  obj_type: the target's object type when the grasp source manipulates another type (the sibling
+    control: the grasp source's object -> the target's object by ROLE).  -> phases."""
     tn = [str(n) for n in target_names]
     g, p = cut(grasp_src), cut(place_src)
     if g[0][5] != "obj" or len(p) < 2 or p[1][5] != "rec":
         raise ValueError("a source has no approach or no carry relative to a receptacle")
     gn, pn = [str(n) for n in grasp_src["names"]], [str(n) for n in place_src["names"]]
-    obj_t = next(n for n in tn if type_of(n) == type_of(gn[g[0][6]]))
+    obj_t = next(n for n in tn if type_of(n) == (obj_type or type_of(gn[g[0][6]])))
     rec_t = next(n for n in tn if type_of(n) == type_of(pn[p[1][6]]))
 
     def relabel(z, names, mapping):
@@ -168,12 +192,16 @@ class PhaseBindHooks:
     agree = None
     needs_prior = False
 
-    def __init__(self, source, parts, norm, fold=None, state=None, key=None, var=1e-3, H=10, replan=5, reader=None):
+    def __init__(self, source, parts, norm, fold=None, state=None, key=None, var=1e-3, H=10, replan=5, reader=None, carry="live"):
         """reader = dict(W, mx, my, names, enc): a LEARNED pose reader (experiments/p6_reader.py) in place of the client's
         simulator poses -- the objects' positions are predicted from the first frame's images, their orientations are the
         demo's (fixed yaw), and the carry assumes the planned grasp (no live held-object pose)."""
         self.z, self.parts, self.norm = source, parts, norm
         self.reader = reader
+        # carry: "live" = the held object's current pose (simulator; identity with a reader); "predicted" = the in-hand pose the
+        # approach's source had after its close (the grasp binding), no sensing: identity for a task's own demo, the correction a
+        # composed program needs when the place source carried another object type
+        self.carry = carry
         self.names = [str(x) for x in source["names"]]
         self.fold = None if fold is None else np.asarray(fold, bool)
         self.var, self.H, self.replan = float(var), int(H), int(replan)
@@ -188,6 +216,7 @@ class PhaseBindHooks:
         self.queue = []             # [(p*, R*, g, source frame or -1)]
         self.done_phases = False
         self._objs = {}
+        self._inhand = {}
         self.log = []
 
     # ── objects from the client ─────────────────────────────────────────────
@@ -223,9 +252,17 @@ class PhaseBindHooks:
             M = pose(pn - Rn @ Rs.T @ ps, Rn @ Rs.T)
         else:
             M = np.eye(4)
-        if held is not None and names[held] in self._objs and self.reader is None:
-            ho, Ho = self._objs[names[held]]
+        if role == "obj" and ref is not None:              # the grasp binding: the source's object -> hand after its close
+            e = s1 - 1
+            self._inhand[names[ref]] = np.linalg.inv(pose(z["obj_pos"][e, ref], q2m(z["obj_quat"][e, ref]))) @ \
+                pose(z["eef_pos"][e], q2m(z["eef_quat"][e]))
+        Gs = None
+        if held is not None:
             Gs = np.linalg.inv(pose(z["obj_pos"][s0, held], q2m(z["obj_quat"][s0, held]))) @ pose(z["eef_pos"][s0], q2m(z["eef_quat"][s0]))
+        if Gs is not None and self.carry == "predicted" and names[held] in self._inhand:
+            C = np.linalg.inv(Gs) @ self._inhand[names[held]]
+        elif Gs is not None and names[held] in self._objs and self.reader is None:
+            ho, Ho = self._objs[names[held]]
             Gt = np.linalg.inv(pose(ho, Ho)) @ pose(p_now, R_now)
             C = np.linalg.inv(Gs) @ Gt
         else:

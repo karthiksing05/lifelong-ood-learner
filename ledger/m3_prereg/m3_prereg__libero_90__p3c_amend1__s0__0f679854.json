@@ -1,0 +1,49 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "P3c amendment 1: sibling control relabelling fix",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky2.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "0f6798541d31fb155a0f86a0ae4027f047392787",
+  "short": "0f679854"
+ },
+ "keys": {},
+ "metrics": {
+  "amends": "m3_prereg tag p3c",
+  "defect": "the sibling2 control crashed at server start on all six targets (no episode ran; no m3_final row): phase.compose found the target object by the grasp source's object TYPE, which the sibling's grasp source (another object type by design) lacks",
+  "fix": "compose(..., obj_type=<the target's object type from p3c_table.json>): the grasp source's manipulated object maps to the target's object by ROLE; compose2's programs are unchanged (its grasp source has the target's type)",
+  "unchanged": "arms, targets, sources, hypotheses C1 and C2, init states 30-49",
+  "written_before": "any sibling2 episode ran; compose2's 120 episodes had finished (its result files exist, unread)"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_90__p3c_amend1__s0__0f679854",
+ "schema": 1,
+ "script": "(inline, session 2026-09-29)",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-29T14:43:03+00:00",
+ "stream": null,
+ "tag": "p3c_amend1"
+}

@@ -1,0 +1,157 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "experiments/p1_read.py p3c_reader --record  # P3c reader arm: composed programs with a reader trained only on rendered scenes",
+ "config": {
+  "read": "p3c_reader",
+  "record": true
+ },
+ "env": {
+  "device": "cpu",
+  "host": "sky2.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "p3_compose",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "0f6798541d31fb155a0f86a0ae4027f047392787",
+  "short": "0f679854"
+ },
+ "keys": {},
+ "metrics": {
+  "R1": {
+   "control": 114,
+   "diff": {
+    "diff": -0.18333333333333332,
+    "hi": 0.0,
+    "hi90": 0.0,
+    "lo": -0.5166666666666667,
+    "lo90": -0.5,
+    "n_pairs": 120,
+    "n_tasks": 6
+   },
+   "discordant": [
+    1,
+    23
+   ],
+   "n": 120,
+   "non_inferior": false,
+   "sign_p": 2.9802322387695312e-06,
+   "x": 92,
+   "x_arm": "compose2_reader",
+   "y_arm": "compose2"
+  },
+  "per_task": {
+   "3": {
+    "c": 20,
+    "cr": 20,
+    "nft": 18,
+    "own": 20
+   },
+   "4": {
+    "c": 20,
+    "cr": 20,
+    "nft": 11,
+    "own": 20
+   },
+   "41": {
+    "c": 15,
+    "cr": 15,
+    "nft": 18,
+    "own": 17
+   },
+   "43": {
+    "c": 20,
+    "cr": 0,
+    "nft": 20,
+    "own": 20
+   },
+   "48": {
+    "c": 20,
+    "cr": 20,
+    "nft": 18,
+    "own": 20
+   },
+   "58": {
+    "c": 19,
+    "cr": 17,
+    "nft": 16,
+    "own": 20
+   }
+  },
+  "tasks": [
+   3,
+   4,
+   41,
+   43,
+   48,
+   58
+  ],
+  "vs_nft": {
+   "control": 101,
+   "diff": {
+    "diff": -0.075,
+    "hi": 0.24166666666666667,
+    "hi90": 0.20833333333333334,
+    "lo": -0.475,
+    "lo90": -0.4083333333333333,
+    "n_pairs": 120,
+    "n_tasks": 6
+   },
+   "discordant": [
+    19,
+    28
+   ],
+   "n": 120,
+   "sign_p": 0.24296021728332562,
+   "x": 92,
+   "x_arm": "compose2_reader",
+   "y_arm": "lora_r17bal"
+  },
+  "vs_own": {
+   "control": 117,
+   "diff": {
+    "diff": -0.20833333333333334,
+    "hi": -0.008333333333333333,
+    "hi90": -0.016666666666666666,
+    "lo": -0.5333333333333333,
+    "lo90": -0.5,
+    "n_pairs": 120,
+    "n_tasks": 6
+   },
+   "discordant": [
+    0,
+    25
+   ],
+   "n": 120,
+   "sign_p": 5.960464477539063e-08,
+   "x": 92,
+   "x_arm": "compose2_reader",
+   "y_arm": "phasebind2_nofold"
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "p3_compose__libero_90__p3c_reader__s0__0f679854",
+ "schema": 1,
+ "script": "experiments/p1_read.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-29T15:09:16+00:00",
+ "stream": null,
+ "tag": "p3c_reader"
+}

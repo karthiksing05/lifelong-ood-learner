@@ -1,0 +1,282 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "experiments/p1_read.py v2_synth --record  # v2 with the rendered-scene reader vs the simulator's poses and vs LoRA + negatives, 21 tasks",
+ "config": {
+  "read": "v2_synth",
+  "record": true
+ },
+ "env": {
+  "device": "cpu",
+  "host": "sky2.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "p1_bindings",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "0f6798541d31fb155a0f86a0ae4027f047392787",
+  "short": "0f679854"
+ },
+ "keys": {},
+ "metrics": {
+  "V5": {
+   "control": 385,
+   "diff": {
+    "diff": -0.02142857142857143,
+    "hi": 0.007142857142857143,
+    "hi90": 0.002380952380952381,
+    "lo": -0.05714285714285714,
+    "lo90": -0.05,
+    "n_pairs": 420,
+    "n_tasks": 21
+   },
+   "discordant": [
+    4,
+    13
+   ],
+   "n": 420,
+   "non_inferior": true,
+   "sign_p": 0.049041748046875,
+   "x": 376,
+   "x_arm": "phasebind2_reader_spatial4_synth",
+   "y_arm": "phasebind2_nofold"
+  },
+  "V6": {
+   "control": 302,
+   "diff": {
+    "diff": 0.1761904761904762,
+    "hi": 0.2857142857142857,
+    "hi90": 0.26904761904761904,
+    "lo": 0.06190476190476191,
+    "lo90": 0.08095238095238096,
+    "n_pairs": 420,
+    "n_tasks": 21
+   },
+   "discordant": [
+    98,
+    24
+   ],
+   "n": 420,
+   "passes": true,
+   "sign_p": 8.341401161083556e-12,
+   "x": 376,
+   "x_arm": "phasebind2_reader_spatial4_synth",
+   "y_arm": "lora_r17bal"
+  },
+  "per_task": {
+   "1": {
+    "ctrl": 8,
+    "ctrl_nofold": 5,
+    "nft": 9,
+    "s": 19,
+    "v2": 20,
+    "v2r": 20
+   },
+   "3": {
+    "ctrl": 19,
+    "ctrl_nofold": 14,
+    "nft": 18,
+    "s": 20,
+    "v2": 20,
+    "v2r": 20
+   },
+   "32": {
+    "ctrl": 9,
+    "ctrl_nofold": 6,
+    "nft": 10,
+    "s": 19,
+    "v2": 20,
+    "v2r": 20
+   },
+   "34": {
+    "ctrl": 19,
+    "ctrl_nofold": 9,
+    "nft": 17,
+    "s": 20,
+    "v2": 20,
+    "v2r": 20
+   },
+   "35": {
+    "ctrl": 9,
+    "ctrl_nofold": 9,
+    "nft": 7,
+    "s": 20,
+    "v2": 20,
+    "v2r": 20
+   },
+   "36": {
+    "ctrl": 6,
+    "ctrl_nofold": 3,
+    "nft": 17,
+    "s": 20,
+    "v2": 20,
+    "v2r": 20
+   },
+   "37": {
+    "ctrl": 15,
+    "ctrl_nofold": 6,
+    "nft": 17,
+    "s": 19,
+    "v2": 19,
+    "v2r": 19
+   },
+   "39": {
+    "ctrl": 17,
+    "ctrl_nofold": 17,
+    "nft": 16,
+    "s": 6,
+    "v2": 6,
+    "v2r": 6
+   },
+   "4": {
+    "ctrl": 8,
+    "ctrl_nofold": 8,
+    "nft": 11,
+    "s": 20,
+    "v2": 20,
+    "v2r": 20
+   },
+   "40": {
+    "ctrl": 4,
+    "ctrl_nofold": 6,
+    "nft": 4,
+    "s": 7,
+    "v2": 5,
+    "v2r": 12
+   },
+   "41": {
+    "ctrl": 13,
+    "ctrl_nofold": 14,
+    "nft": 18,
+    "s": 17,
+    "v2": 17,
+    "v2r": 18
+   },
+   "42": {
+    "ctrl": 2,
+    "ctrl_nofold": 0,
+    "nft": 9,
+    "s": 19,
+    "v2": 20,
+    "v2r": 19
+   },
+   "43": {
+    "ctrl": 20,
+    "ctrl_nofold": 10,
+    "nft": 20,
+    "s": 20,
+    "v2": 20,
+    "v2r": 19
+   },
+   "48": {
+    "ctrl": 18,
+    "ctrl_nofold": 7,
+    "nft": 18,
+    "s": 19,
+    "v2": 20,
+    "v2r": 18
+   },
+   "5": {
+    "ctrl": 17,
+    "ctrl_nofold": 3,
+    "nft": 16,
+    "s": 19,
+    "v2": 19,
+    "v2r": 18
+   },
+   "52": {
+    "ctrl": 8,
+    "ctrl_nofold": 5,
+    "nft": 14,
+    "s": 18,
+    "v2": 20,
+    "v2r": 13
+   },
+   "53": {
+    "ctrl": 19,
+    "ctrl_nofold": 12,
+    "nft": 20,
+    "s": 20,
+    "v2": 20,
+    "v2r": 12
+   },
+   "58": {
+    "ctrl": 12,
+    "ctrl_nofold": 4,
+    "nft": 16,
+    "s": 20,
+    "v2": 20,
+    "v2r": 18
+   },
+   "6": {
+    "ctrl": 16,
+    "ctrl_nofold": 16,
+    "nft": 18,
+    "s": 20,
+    "v2": 20,
+    "v2r": 20
+   },
+   "62": {
+    "ctrl": 7,
+    "ctrl_nofold": 9,
+    "nft": 14,
+    "s": 14,
+    "v2": 19,
+    "v2r": 10
+   },
+   "63": {
+    "ctrl": 7,
+    "ctrl_nofold": 5,
+    "nft": 13,
+    "s": 20,
+    "v2": 20,
+    "v2r": 20
+   }
+  },
+  "vs_30_placement_reader": {
+   "control": 362,
+   "diff": {
+    "diff": 0.03333333333333333,
+    "hi": 0.09761904761904762,
+    "hi90": 0.08571428571428572,
+    "lo": -0.023809523809523808,
+    "lo90": -0.014285714285714285,
+    "n_pairs": 420,
+    "n_tasks": 21
+   },
+   "discordant": [
+    27,
+    13
+   ],
+   "n": 420,
+   "sign_p": 0.03847730828420026,
+   "x": 376,
+   "x_arm": "phasebind2_reader_spatial4_synth",
+   "y_arm": "phasebind2_reader"
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "p1_bindings__libero_90__v2_synth__s0__0f679854",
+ "schema": 1,
+ "script": "experiments/p1_read.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-29T14:14:20+00:00",
+ "stream": null,
+ "tag": "v2_synth"
+}

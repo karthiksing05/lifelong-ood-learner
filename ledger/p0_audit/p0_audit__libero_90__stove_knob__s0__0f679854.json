@@ -1,0 +1,54 @@
+{
+ "artifacts": [
+  "slurm/3981856.out"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "p0_stove_knob.py (job 3981856, run from results/robot/.scratch/diag_stove.py)",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky2.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "p0_audit",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "0f6798541d31fb155a0f86a0ae4027f047392787",
+  "short": "0f679854"
+ },
+ "keys": {},
+ "metrics": {
+  "demo_end_rad": -0.00539795206052322,
+  "demo_start_rad": 0.6143812202857379,
+  "init_max_rad": 2.09179021,
+  "init_min_rad": 0.53106071,
+  "init_std_rad": 0.47048572,
+  "joint": "flat_stove_1_button",
+  "reading": "turn off the stove is a JOINT-state binding: the knob starts anywhere in [min, max] across the 50 init states, the demo turns it from its start to about 0 (off), and re-playing the demo's twist relative to the stove turns the knob by the demo's amount, so most init states stay on; object-pose bindings cannot express it",
+  "task": 39
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "p0_audit__libero_90__stove_knob__s0__0f679854",
+ "schema": 1,
+ "script": "experiments/p0_stove_knob.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-29T15:02:53+00:00",
+ "stream": null,
+ "tag": "stove_knob"
+}

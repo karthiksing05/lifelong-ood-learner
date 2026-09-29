@@ -1,0 +1,262 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/p6_reader_offline_spatial4_synthonly_rj_p3c.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "experiments/p6_reader.py --device cuda --features spatial --pool 4 --synth-only --synth-dir p6_synth_rj --tasks 3+4+41+43+48+58 --tag offline_spatial4_synthonly_rj_p3c --record",
+ "config": {
+  "device": "cuda",
+  "features": "spatial",
+  "pool": 4,
+  "record": true,
+  "steps": 20,
+  "synth": true,
+  "synth_dir": "p6_synth_rj",
+  "synth_only": true,
+  "tag": "offline_spatial4_synthonly_rj_p3c",
+  "tasks": "3+4+41+43+48+58"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "cyborg.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3982308",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "p6_reader",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "0f6798541d31fb155a0f86a0ae4027f047392787",
+  "short": "0f679854"
+ },
+ "keys": {},
+ "metrics": {
+  "features": "spatial",
+  "lams": [
+   0.1,
+   1.0,
+   10.0,
+   100.0,
+   1000.0,
+   10000.0,
+   100000.0,
+   1000000.0
+  ],
+  "mean_placement_median_of_medians_cm": 1.277684719776636,
+  "median_of_medians_cm": 0.1305491414579883,
+  "per_task": {
+   "3": {
+    "cv_err_m": {
+     "0.1": 0.0037441936068667836,
+     "1.0": 0.0037442690895031243,
+     "10.0": 0.003745025142130008,
+     "100.0": 0.003752699155651596,
+     "1000.0": 0.003832141975075158,
+     "10000.0": 0.004450770491696203,
+     "100000.0": 0.008009283051413374,
+     "1000000.0": 0.011808519567293629
+    },
+    "err_cm_max": {
+     "butter_2": 1.1698809394818468,
+     "wooden_cabinet_1": 0.23644230648515813
+    },
+    "err_cm_median": {
+     "butter_2": 0.4089521095519614,
+     "wooden_cabinet_1": 0.0754826557573576
+    },
+    "lam": 0.1,
+    "mean_placement_err_cm_median": {
+     "butter_2": 2.2264371271369736,
+     "wooden_cabinet_1": 0.8603889632958388
+    },
+    "names": [
+     "butter_2",
+     "wooden_cabinet_1"
+    ],
+    "test_frames": 20,
+    "train_frames": 400
+   },
+   "4": {
+    "cv_err_m": {
+     "0.1": 0.0038710766386276852,
+     "1.0": 0.0038709454062137924,
+     "10.0": 0.0038696455856811023,
+     "100.0": 0.0038578229491751893,
+     "1000.0": 0.003812546962876113,
+     "10000.0": 0.004507266930068756,
+     "100000.0": 0.008645902324150483,
+     "1000000.0": 0.01255848667938235
+    },
+    "err_cm_max": {
+     "butter_1": 1.101853909432584,
+     "wooden_cabinet_1": 0.2450247267982443
+    },
+    "err_cm_median": {
+     "butter_1": 0.3412845279420551,
+     "wooden_cabinet_1": 0.1285026820684064
+    },
+    "lam": 1000.0,
+    "mean_placement_err_cm_median": {
+     "butter_1": 1.8321207787848715,
+     "wooden_cabinet_1": 0.8611806079348623
+    },
+    "names": [
+     "butter_1",
+     "wooden_cabinet_1"
+    ],
+    "test_frames": 20,
+    "train_frames": 400
+   },
+   "41": {
+    "cv_err_m": {
+     "0.1": 0.001372043970438531,
+     "1.0": 0.0013720539212238574,
+     "10.0": 0.0013721575469521614,
+     "100.0": 0.0013735700074641696,
+     "1000.0": 0.0014088593484777579,
+     "10000.0": 0.0018850315303160115,
+     "100000.0": 0.004770764405636775,
+     "1000000.0": 0.010859730826809045
+    },
+    "err_cm_max": {
+     "chefmate_8_frypan_1": 0.2141244128245673,
+     "wooden_two_layer_shelf_1": 0.13099014252596863
+    },
+    "err_cm_median": {
+     "chefmate_8_frypan_1": 0.13259560084757016,
+     "wooden_two_layer_shelf_1": 0.0626886755027791
+    },
+    "lam": 0.1,
+    "mean_placement_err_cm_median": {
+     "chefmate_8_frypan_1": 2.1415492733069104,
+     "wooden_two_layer_shelf_1": 0.7921010381593963
+    },
+    "names": [
+     "chefmate_8_frypan_1",
+     "wooden_two_layer_shelf_1"
+    ],
+    "test_frames": 20,
+    "train_frames": 400
+   },
+   "43": {
+    "cv_err_m": {
+     "0.1": 0.0020292789644813574,
+     "1.0": 0.0020292861776166965,
+     "10.0": 0.00202936572371764,
+     "100.0": 0.0020308863422650765,
+     "1000.0": 0.0020812519101900727,
+     "10000.0": 0.0028474144915399562,
+     "100000.0": 0.007056829741164968,
+     "1000000.0": 0.012036550370129387
+    },
+    "err_cm_max": {
+     "white_bowl_1": 0.7544111224042636,
+     "wooden_two_layer_shelf_1": 0.16713130874607798
+    },
+    "err_cm_median": {
+     "white_bowl_1": 0.16675630679796097,
+     "wooden_two_layer_shelf_1": 0.061932737865433574
+    },
+    "lam": 0.1,
+    "mean_placement_err_cm_median": {
+     "white_bowl_1": 1.6941888316184097,
+     "wooden_two_layer_shelf_1": 0.7784763222857316
+    },
+    "names": [
+     "white_bowl_1",
+     "wooden_two_layer_shelf_1"
+    ],
+    "test_frames": 20,
+    "train_frames": 400
+   },
+   "48": {
+    "cv_err_m": {
+     "0.1": 0.003594095371313939,
+     "1.0": 0.00359408498087434,
+     "10.0": 0.003593989660179964,
+     "100.0": 0.003593828861577543,
+     "1000.0": 0.0036369992688088577,
+     "10000.0": 0.004428784011032296,
+     "100000.0": 0.00817650240688161,
+     "1000000.0": 0.0124566758061786
+    },
+    "err_cm_max": {
+     "basket_1": 0.19411474437915133,
+     "ketchup_1": 1.6339250937148517
+    },
+    "err_cm_median": {
+     "basket_1": 0.08738052250294256,
+     "ketchup_1": 0.48308963804116867
+    },
+    "lam": 100.0,
+    "mean_placement_err_cm_median": {
+     "basket_1": 0.7413061492451611,
+     "ketchup_1": 2.285196000550794
+    },
+    "names": [
+     "ketchup_1",
+     "basket_1"
+    ],
+    "test_frames": 20,
+    "train_frames": 400
+   },
+   "58": {
+    "cv_err_m": {
+     "0.1": 0.004593906833178974,
+     "1.0": 0.004593886312889572,
+     "10.0": 0.004593691914704553,
+     "100.0": 0.004592857138126889,
+     "1000.0": 0.004658015598825267,
+     "10000.0": 0.005881585768717343,
+     "100000.0": 0.009632392297879447,
+     "1000000.0": 0.012563654921197528
+    },
+    "err_cm_max": {
+     "ketchup_1": 1.485976795619651,
+     "wooden_tray_1": 0.19505491684495613
+    },
+    "err_cm_median": {
+     "ketchup_1": 0.46257050111347087,
+     "wooden_tray_1": 0.11776070186217133
+    },
+    "lam": 100.0,
+    "mean_placement_err_cm_median": {
+     "ketchup_1": 2.210562291197328,
+     "wooden_tray_1": 0.8373049274785755
+    },
+    "names": [
+     "ketchup_1",
+     "wooden_tray_1"
+    ],
+    "test_frames": 20,
+    "train_frames": 400
+   }
+  },
+  "pool": 4,
+  "steps": 20,
+  "synth": true,
+  "synth_only": true
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "p6_reader__libero_90__offline_spatial4_synthonly_rj_p3c__s0__0f679854",
+ "schema": 1,
+ "script": "experiments/p6_reader.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-29T14:51:56+00:00",
+ "stream": null,
+ "tag": "offline_spatial4_synthonly_rj_p3c"
+}

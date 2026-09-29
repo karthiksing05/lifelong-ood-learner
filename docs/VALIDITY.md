@@ -61,6 +61,10 @@ Tasks where the prior's practice fails: 21 of 23; kept prior on 19, 67.
 | phase bindings through the prior + fold (sim poses) | 264/420 | 0.629 (0.58-0.67) | 0.47-0.78 | 21 | 5.2 MB |
 | phase bindings through the prior (sim poses) | 314/420 | 0.748 (0.70-0.79) | 0.58-0.90 | 21 | 54.9 KB |
 | phase bindings through the prior (learned pose reader) (not every task) | 126/180 | 0.700 (0.63-0.76) | 0.47-0.91 | 9 | 270.7 KB |
+| phase bindings v2 through the prior (sim poses) | 385/420 | 0.917 (0.89-0.94) | 0.81-0.99 | 21 | 54.9 KB |
+| phase bindings v2 through the prior (learned pose reader) | 362/420 | 0.862 (0.83-0.89) | 0.76-0.94 | 21 | 632.9 KB |
+| LoRA on the demo + v2-generated demonstrations (no practice) | 327/420 | 0.779 (0.74-0.82) | 0.69-0.86 | 21 | 392.9 MB |
+| phase bindings v2 through the prior (reader trained with rendered scenes) | 376/420 | 0.895 (0.86-0.92) | 0.80-0.97 | 21 | 9.3 MB |
 
 | comparison | pooled difference | 95% interval | one-sided lower | non-inferior at the margin | discordant | sign test p | pairs, tasks |
 |---|---|---|---|---|---|---|---|
@@ -130,6 +134,17 @@ Tasks where the prior's practice fails: 21 of 23; kept prior on 19, 67.
 | phase bindings through the prior (sim poses) vs LoRA + failure negatives (balanced) | +0.029 | -0.162 to +0.205 | -0.129 | not shown | 86 vs 74 | 0.385 | 420, 21 |
 | phase bindings through the prior (learned pose reader) vs phase bindings through the prior (sim poses) | -0.094 | -0.294 to +0.072 | -0.256 | not shown | 8 vs 25 | 0.005 | 180, 9 |
 | phase bindings through the prior (learned pose reader) vs borrowing + 258 KB fold | +0.333 | +0.128 to +0.528 | +0.161 | yes | 75 vs 15 | 0.000 | 180, 9 |
+| phase bindings v2 through the prior (sim poses) vs phase bindings through the prior (sim poses) | +0.169 | +0.033 to +0.329 | +0.048 | yes | 75 vs 4 | 0.000 | 420, 21 |
+| phase bindings v2 through the prior (sim poses) vs borrowing + 258 KB fold | +0.314 | +0.164 to +0.457 | +0.188 | yes | 149 vs 17 | 0.000 | 420, 21 |
+| phase bindings v2 through the prior (sim poses) vs LoRA + failure negatives (balanced) | +0.198 | +0.083 to +0.310 | +0.102 | yes | 100 vs 17 | 0.000 | 420, 21 |
+| phase bindings v2 through the prior (learned pose reader) vs phase bindings v2 through the prior (sim poses) | -0.055 | -0.133 to +0.017 | -0.121 | not shown | 9 vs 32 | 0.000 | 420, 21 |
+| phase bindings v2 through the prior (learned pose reader) vs borrowing + 258 KB fold | +0.260 | +0.102 to +0.407 | +0.129 | yes | 140 vs 31 | 0.000 | 420, 21 |
+| phase bindings v2 through the prior (learned pose reader) vs LoRA + failure negatives (balanced) | +0.143 | +0.010 to +0.276 | +0.029 | yes | 97 vs 37 | 0.000 | 420, 21 |
+| LoRA on the demo + v2-generated demonstrations (no practice) vs LoRA on the demo + generated demonstrations (no practice) | +0.081 | -0.045 to +0.217 | -0.026 | yes | 80 vs 46 | 0.003 | 420, 21 |
+| LoRA on the demo + v2-generated demonstrations (no practice) vs LoRA + failure negatives (balanced) | +0.060 | -0.048 to +0.164 | -0.029 | yes | 78 vs 53 | 0.036 | 420, 21 |
+| phase bindings v2 through the prior (reader trained with rendered scenes) vs phase bindings v2 through the prior (sim poses) | -0.021 | -0.057 to +0.007 | -0.050 | yes | 4 vs 13 | 0.049 | 420, 21 |
+| phase bindings v2 through the prior (reader trained with rendered scenes) vs LoRA + failure negatives (balanced) | +0.176 | +0.062 to +0.286 | +0.081 | yes | 98 vs 24 | 0.000 | 420, 21 |
+| phase bindings v2 through the prior (reader trained with rendered scenes) vs phase bindings v2 through the prior (learned pose reader) | +0.033 | -0.024 to +0.098 | -0.014 | yes | 27 vs 13 | 0.038 | 420, 21 |
 
 ## Pooled success, all tasks
 
@@ -181,6 +196,10 @@ Tasks where the prior's practice fails: 21 of 23; kept prior on 19, 67.
 | phase bindings through the prior + fold (sim poses) | 304/460 | 0.661 (0.62-0.70) | 0.51-0.80 | 23 | 5.2 MB |
 | phase bindings through the prior (sim poses) | 354/460 | 0.770 (0.73-0.81) | 0.62-0.91 | 23 | 54.9 KB |
 | phase bindings through the prior (learned pose reader) (not every task) | 166/220 | 0.755 (0.69-0.81) | 0.55-0.93 | 11 | 270.7 KB |
+| phase bindings v2 through the prior (sim poses) | 425/460 | 0.924 (0.90-0.94) | 0.83-0.99 | 23 | 54.9 KB |
+| phase bindings v2 through the prior (learned pose reader) | 402/460 | 0.874 (0.84-0.90) | 0.78-0.95 | 23 | 632.9 KB |
+| LoRA on the demo + v2-generated demonstrations (no practice) | 367/460 | 0.798 (0.76-0.83) | 0.72-0.88 | 23 | 392.9 MB |
+| phase bindings v2 through the prior (reader trained with rendered scenes) | 416/460 | 0.904 (0.87-0.93) | 0.81-0.97 | 23 | 9.3 MB |
 
 | comparison | pooled difference | 95% interval | one-sided lower | non-inferior at the margin | discordant | sign test p | pairs, tasks |
 |---|---|---|---|---|---|---|---|
@@ -250,6 +269,17 @@ Tasks where the prior's practice fails: 21 of 23; kept prior on 19, 67.
 | phase bindings through the prior (sim poses) vs LoRA + failure negatives (balanced) | +0.026 | -0.150 to +0.187 | -0.117 | not shown | 86 vs 74 | 0.385 | 460, 23 |
 | phase bindings through the prior (learned pose reader) vs phase bindings through the prior (sim poses) | -0.077 | -0.245 to +0.059 | -0.214 | not shown | 8 vs 25 | 0.005 | 220, 11 |
 | phase bindings through the prior (learned pose reader) vs borrowing + 258 KB fold | +0.273 | +0.086 to +0.455 | +0.123 | yes | 75 vs 15 | 0.000 | 220, 11 |
+| phase bindings v2 through the prior (sim poses) vs phase bindings through the prior (sim poses) | +0.154 | +0.033 to +0.307 | +0.043 | yes | 75 vs 4 | 0.000 | 460, 23 |
+| phase bindings v2 through the prior (sim poses) vs borrowing + 258 KB fold | +0.287 | +0.148 to +0.426 | +0.170 | yes | 149 vs 17 | 0.000 | 460, 23 |
+| phase bindings v2 through the prior (sim poses) vs LoRA + failure negatives (balanced) | +0.180 | +0.072 to +0.289 | +0.089 | yes | 100 vs 17 | 0.000 | 460, 23 |
+| phase bindings v2 through the prior (learned pose reader) vs phase bindings v2 through the prior (sim poses) | -0.050 | -0.124 to +0.017 | -0.111 | not shown | 9 vs 32 | 0.000 | 460, 23 |
+| phase bindings v2 through the prior (learned pose reader) vs borrowing + 258 KB fold | +0.237 | +0.091 to +0.380 | +0.117 | yes | 140 vs 31 | 0.000 | 460, 23 |
+| phase bindings v2 through the prior (learned pose reader) vs LoRA + failure negatives (balanced) | +0.130 | +0.004 to +0.254 | +0.026 | yes | 97 vs 37 | 0.000 | 460, 23 |
+| LoRA on the demo + v2-generated demonstrations (no practice) vs LoRA on the demo + generated demonstrations (no practice) | +0.074 | -0.039 to +0.200 | -0.022 | yes | 80 vs 46 | 0.003 | 460, 23 |
+| LoRA on the demo + v2-generated demonstrations (no practice) vs LoRA + failure negatives (balanced) | +0.054 | -0.039 to +0.152 | -0.026 | yes | 78 vs 53 | 0.036 | 460, 23 |
+| phase bindings v2 through the prior (reader trained with rendered scenes) vs phase bindings v2 through the prior (sim poses) | -0.020 | -0.052 to +0.007 | -0.046 | yes | 4 vs 13 | 0.049 | 460, 23 |
+| phase bindings v2 through the prior (reader trained with rendered scenes) vs LoRA + failure negatives (balanced) | +0.161 | +0.054 to +0.265 | +0.072 | yes | 98 vs 24 | 0.000 | 460, 23 |
+| phase bindings v2 through the prior (reader trained with rendered scenes) vs phase bindings v2 through the prior (learned pose reader) | +0.030 | -0.022 to +0.089 | -0.013 | yes | 27 vs 13 | 0.038 | 460, 23 |
 
 ## Reliability
 
@@ -460,6 +490,61 @@ Object poses come from the simulator (an ORACLE the client sends) unless a row s
 - P6 reader offline (`ledger/p6_reader` tag offline): median position error 0.54 cm on the first frame of init states 20-29 (the mean placement: 1.81 cm).
 - P6 read, 9 tasks (`ledger/p6_reader` tag read): learned reader vs oracle 126/180 vs 143/180, -0.094 [-0.289, +0.072], one-sided 95% bound -0.256, discordant 8/25, sign p 0.0046: not non-inferior at -0.10; vs the control 126/180 vs 66/180, +0.333 [+0.122, +0.528], one-sided 95% bound +0.156, discordant 75/15, sign p 9.2e-11: passes.  Per task (reader / oracle / control): 1 20/20/8; 32 20/20/9; 35 20/20/9; 36 20/20/6; 40 12/6/4; 41 17/17/13; 42 3/3/2; 52 4/17/8; 62 10/20/7.
 - P6 reader on the scored episodes (`ledger/p6_reader` tag online, experiments/p6_online_error.py): median position error 0.67 cm, 90th percentile 1.48 cm; episodes whose worst object is read within 1 cm succeed 67/88, within 2 cm 122/171, beyond 2 cm 4/9.  Median error per object (cm): 1 akita_black_bowl 0.73, wooden_cabinet 0.72; 32 ketchup 0.78, white_cabinet 0.91; 35 microwave 1.11; 36 plate 0.48, white_bowl 0.68; 40 chefmate_8_frypan 0.37, wooden_two_layer_shelf 0.90; 41 chefmate_8_frypan 0.41, wooden_two_layer_shelf 0.95; 42 chefmate_8_frypan 0.28, wooden_two_layer_shelf 0.90; 52 basket 0.38, milk 1.25; 62 new_salad_dressing 1.07, wooden_tray 0.42.
+
+**Rules v2 (pre-registered: ledger m3_prereg tag v2).** A defect found after the reads above: the living-room demos' first kept steps catch the object still falling after the scene spawned (ketchup 12 cm above rest), and v1 anchored the approach on that pose, so its grasp aimed under the object. v2 (lifelong_ood/policy/phase.py `at_rest`, `cut`) reads the demo's objects at rest, finds the manipulated object by displacement (lifted or pushed), and anchors carries and fixture tasks on fixtures too. Development check on the practice states 0-19 with no policy (`ledger/g38_generate` tag demo_retarget_v2): 386/420 generated successes against 331 for v1, gains only on 42, 48, 52, 58.
+- V1, v2 vs v1 (simulator poses) (`ledger/p1_bindings` tag v2): 385/420 vs 314/420, +0.169 [+0.033, +0.331], one-sided 95% bound +0.048, discordant 75/4, sign p 5.2e-18, Holm p 1.6e-17: PASSES.
+- V2, v2 vs LoRA + failure negatives (`ledger/p1_bindings` tag v2): 385/420 vs 302/420, +0.198 [+0.081, +0.310], one-sided 95% bound +0.100, discordant 100/17, sign p 1.7e-15, Holm p 3.5e-15: PASSES.
+- V4, LoRA on the v2 generator's demonstrations vs 3.8's (`ledger/p1_bindings` tag v2): 327/420 vs 293/420, +0.081 [-0.043, +0.217], one-sided 95% bound -0.024, discordant 80/46, sign p 0.0031, Holm p 0.0031: PASSES.
+- V3, the learned first-frame reader vs the simulator's poses under v2: 362/420 vs 385/420, -0.055 [-0.133, +0.017], one-sided 95% bound -0.121, discordant 9/32, sign p 0.00043: NOT non-inferior at -0.10.
+- descriptive, the learned reader vs LoRA + failure negatives: 362/420 vs 302/420, +0.143 [+0.007, +0.274], one-sided 95% bound +0.029, discordant 97/37, sign p 2.2e-07.
+- descriptive, the v2 generator's LoRA vs LoRA + failure negatives: 327/420 vs 302/420, +0.060 [-0.045, +0.164], one-sided 95% bound -0.029, discordant 78/53, sign p 0.036.
+
+| task | v2 | v2, learned reader | v1 | LoRA + failure negatives | LoRA on v2 demonstrations | control |
+|---|---|---|---|---|---|---|
+| 1 | 20 | 20 | 20 | 9 | 15 | 8 |
+| 3 | 20 | 20 | 20 | 18 | 14 | 19 |
+| 4 | 20 | 20 | 20 | 11 | 14 | 8 |
+| 5 | 19 | 18 | 19 | 16 | 19 | 17 |
+| 6 | 20 | 20 | 20 | 18 | 19 | 16 |
+| 32 | 20 | 20 | 20 | 10 | 9 | 9 |
+| 34 | 20 | 20 | 20 | 17 | 19 | 19 |
+| 35 | 20 | 20 | 20 | 7 | 18 | 9 |
+| 36 | 20 | 20 | 20 | 17 | 20 | 6 |
+| 37 | 19 | 19 | 19 | 17 | 19 | 15 |
+| 39 | 6 | 6 | 6 | 16 | 14 | 17 |
+| 40 | 5 | 12 | 6 | 4 | 12 | 4 |
+| 41 | 17 | 18 | 17 | 18 | 18 | 13 |
+| 42 | 20 | 19 | 3 | 9 | 10 | 2 |
+| 43 | 20 | 19 | 20 | 20 | 16 | 20 |
+| 48 | 20 | 18 | 0 | 18 | 9 | 18 |
+| 52 | 20 | 13 | 17 | 14 | 18 | 8 |
+| 53 | 20 | 12 | 7 | 20 | 20 | 19 |
+| 58 | 20 | 18 | 0 | 16 | 15 | 12 |
+| 62 | 19 | 10 | 20 | 14 | 11 | 7 |
+| 63 | 20 | 20 | 20 | 13 | 18 | 7 |
+
+**P3c: tasks composed from other tasks' phases (pre-registered: ledger m3_prereg tags p3c, p3c_amend1, p3c_reader).** The approach of a task that manipulates the target's object type + the carry and the rest of a task with the target's goal relation (experiments/p3c_table.py), relabelled onto the target scene and followed by the frozen prior; the target's own demo is not used. Amendment 1: the sibling control crashed at server start before any episode (type-based relabelling); fixed by role-based relabelling.
+- C1, composed vs the task's own demo (v2, simulator poses): 114/120 vs 117/120, -0.025 [-0.075, +0.000], one-sided 95% bound -0.067, discordant 0/3, sign p 0.25: NON-INFERIOR at -0.10.
+- C2, composed vs the sibling's whole demo (another object type's grasp): 114/120 vs 42/120, +0.600 [+0.267, +0.925], one-sided 95% bound +0.300, discordant 72/0, sign p 4.2e-22: PASSES.
+- R1, composed with a pose reader trained only on rendered scenes vs composed with the simulator's poses: 92/120 vs 114/120, -0.183 [-0.517, +0.000], one-sided 95% bound -0.500, discordant 1/23, sign p 3e-06: NOT non-inferior at -0.10.
+
+| task | composed | own demo | sibling | composed, rendered-scene reader | LoRA + failure negatives |
+|---|---|---|---|---|---|
+| 3 | 20 | 20 | 20 | 20 | 18 |
+| 4 | 20 | 20 | 20 | 20 | 11 |
+| 41 | 15 | 17 | 0 | 15 | 18 |
+| 43 | 20 | 20 | 0 | 0 | 20 |
+| 48 | 20 | 20 | 2 | 20 | 18 |
+| 58 | 19 | 20 | 0 | 17 | 16 |
+
+Pose-reader variants, offline on the first frames of init states 20-29 (`ledger/p6_reader`):
+- re-reading the grasped object when the hand is within 10 cm of its grasp point: median 0.94 cm against 0.79 cm for the first frame (the same episodes).
+- the last feature map pooled to 4 x 4 instead of the global pool: median 0.58 cm; per object: 1 akita_black_bowl 1.1, wooden_cabinet 0.4; 3 butter 1.6, wooden_cabinet 0.6; 32 ketchup 1.0, white_cabinet 0.4; 34 porcelain_mug 1.1, white_yellow_mug 0.8; 35 microwave 0.3; 36 plate 0.6, white_bowl 1.0; 37 plate 0.4, white_bowl 0.7; 39 flat_stove 0.4; 4 butter 1.3, wooden_cabinet 0.3; 40 chefmate_8_frypan 0.4, wooden_two_layer_shelf 0.3; 41 chefmate_8_frypan 0.5, wooden_two_layer_shelf 0.4; 42 chefmate_8_frypan 0.4, wooden_two_layer_shelf 0.3; 43 white_bowl 1.3, wooden_two_layer_shelf 0.3; 48 basket 0.4, ketchup 2.2; 5 chocolate_pudding 1.0, wooden_cabinet 0.3; 52 basket 0.6, milk 1.7; 53 basket 0.6, orange_juice 1.4; 58 ketchup 1.9, wooden_tray 0.6; 6 wooden_cabinet 0.4; 62 new_salad_dressing 1.7, wooden_tray 0.3; 63 akita_black_bowl 1.1, akita_black_bowl 1.2, wooden_tray 0.3.
+- 400 simulator-rendered placements per task added to the training frames (labels from simulator state, training only): median 0.25 cm; per object: 1 akita_black_bowl 1.0, wooden_cabinet 0.4; 3 butter 0.5, wooden_cabinet 0.2; 32 ketchup 0.3, white_cabinet 0.2; 34 porcelain_mug 0.3, white_yellow_mug 0.4; 35 microwave 0.1; 36 plate 0.2, white_bowl 0.3; 37 plate 0.3, white_bowl 0.2; 39 flat_stove 0.2; 4 butter 0.4, wooden_cabinet 0.2; 40 chefmate_8_frypan 0.2, wooden_two_layer_shelf 0.2; 41 chefmate_8_frypan 0.1, wooden_two_layer_shelf 0.1; 42 chefmate_8_frypan 0.3, wooden_two_layer_shelf 0.1; 43 white_bowl 0.4, wooden_two_layer_shelf 0.1; 48 basket 0.2, ketchup 0.9; 5 chocolate_pudding 0.9, wooden_cabinet 0.2; 52 basket 0.2, milk 0.5; 53 basket 0.3, orange_juice 1.2; 58 ketchup 0.7, wooden_tray 0.2; 6 wooden_cabinet 0.2; 62 new_salad_dressing 0.9, wooden_tray 0.2; 63 akita_black_bowl 0.3, akita_black_bowl 0.4, wooden_tray 0.2.
+- both: median 0.18 cm; per object: 1 akita_black_bowl 1.3, wooden_cabinet 0.1; 3 butter 0.7, wooden_cabinet 0.2; 32 ketchup 0.3, white_cabinet 0.2; 34 porcelain_mug 0.3, white_yellow_mug 0.3; 35 microwave 0.1; 36 plate 0.2, white_bowl 0.2; 37 plate 0.2, white_bowl 0.3; 39 flat_stove 0.1; 4 butter 0.5, wooden_cabinet 0.2; 40 chefmate_8_frypan 0.2, wooden_two_layer_shelf 0.1; 41 chefmate_8_frypan 0.1, wooden_two_layer_shelf 0.1; 42 chefmate_8_frypan 0.2, wooden_two_layer_shelf 0.1; 43 white_bowl 0.4, wooden_two_layer_shelf 0.1; 48 basket 0.1, ketchup 0.6; 5 chocolate_pudding 0.4, wooden_cabinet 0.1; 52 basket 0.2, milk 0.5; 53 basket 0.2, orange_juice 0.6; 58 ketchup 0.6, wooden_tray 0.2; 6 wooden_cabinet 0.2; 62 new_salad_dressing 0.5, wooden_tray 0.1; 63 akita_black_bowl 0.2, akita_black_bowl 0.4, wooden_tray 0.2.
+- the P3c targets, rendered scenes ONLY (the arm at reset()'s fixed pose): a domain gap: median 1.05 cm; per object: 3 butter 1.8, wooden_cabinet 0.9; 4 butter 1.2, wooden_cabinet 0.4; 41 chefmate_8_frypan 1.0, wooden_two_layer_shelf 0.4; 43 white_bowl 1.5, wooden_two_layer_shelf 0.6; 48 basket 2.8, ketchup 4.5; 58 ketchup 4.6, wooden_tray 0.3.
+- the P3c targets, rendered scenes only with the arm's joints from a practice init state: median 0.13 cm; per object: 3 butter 0.4, wooden_cabinet 0.1; 4 butter 0.3, wooden_cabinet 0.1; 41 chefmate_8_frypan 0.1, wooden_two_layer_shelf 0.1; 43 white_bowl 0.2, wooden_two_layer_shelf 0.1; 48 basket 0.1, ketchup 0.5; 58 ketchup 0.5, wooden_tray 0.1.
+
 - P2 (`ledger/p2_negatives` tag read): phase-localized negatives 284/420 vs pointer-localized 302/420, discordant 47/65, sign p 0.11: fails.
 - P3a (`ledger/p3_compose` tag p3a): bindings looked up from other tasks 39/100 vs own 91/100: X1 fails.  P3b, confirmatory on new targets (tag p3b): 11/80; NEGATIVE.  The minimal stream (P5) is off by the plan's rule.
 - P4 (`ledger/p4_growth` tag rollouts): the success-grown library 70/120 vs the base 74/120: killed (growth stays bookkeeping).

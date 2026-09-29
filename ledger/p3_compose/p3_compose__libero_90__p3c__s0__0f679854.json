@@ -1,0 +1,191 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "experiments/p1_read.py p3c --record  # P3c: tasks composed from other tasks' phases (rules v2, through the prior) vs own demo and sibling",
+ "config": {
+  "read": "p3c",
+  "record": true
+ },
+ "env": {
+  "device": "cpu",
+  "host": "sky2.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "p3_compose",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "0f6798541d31fb155a0f86a0ae4027f047392787",
+  "short": "0f679854"
+ },
+ "keys": {},
+ "metrics": {
+  "C1": {
+   "control": 117,
+   "diff": {
+    "diff": -0.025,
+    "hi": 0.0,
+    "hi90": 0.0,
+    "lo": -0.075,
+    "lo90": -0.06666666666666667,
+    "n_pairs": 120,
+    "n_tasks": 6
+   },
+   "discordant": [
+    0,
+    3
+   ],
+   "n": 120,
+   "non_inferior": true,
+   "sign_p": 0.25,
+   "x": 114,
+   "x_arm": "compose2",
+   "y_arm": "phasebind2_nofold"
+  },
+  "C2": {
+   "control": 42,
+   "diff": {
+    "diff": 0.6,
+    "hi": 0.925,
+    "hi90": 0.8916666666666667,
+    "lo": 0.26666666666666666,
+    "lo90": 0.3,
+    "n_pairs": 120,
+    "n_tasks": 6
+   },
+   "discordant": [
+    72,
+    0
+   ],
+   "n": 120,
+   "passes": true,
+   "sign_p": 4.235164736271502e-22,
+   "x": 114,
+   "x_arm": "compose2",
+   "y_arm": "sibling2"
+  },
+  "per_task": {
+   "3": {
+    "c": 20,
+    "ctrl": 19,
+    "ctrl_nofold": 14,
+    "nft": 18,
+    "own": 20,
+    "sib": 20
+   },
+   "4": {
+    "c": 20,
+    "ctrl": 8,
+    "ctrl_nofold": 8,
+    "nft": 11,
+    "own": 20,
+    "sib": 20
+   },
+   "41": {
+    "c": 15,
+    "ctrl": 13,
+    "ctrl_nofold": 14,
+    "nft": 18,
+    "own": 17,
+    "sib": 0
+   },
+   "43": {
+    "c": 20,
+    "ctrl": 20,
+    "ctrl_nofold": 10,
+    "nft": 20,
+    "own": 20,
+    "sib": 0
+   },
+   "48": {
+    "c": 20,
+    "ctrl": 18,
+    "ctrl_nofold": 7,
+    "nft": 18,
+    "own": 20,
+    "sib": 2
+   },
+   "58": {
+    "c": 19,
+    "ctrl": 12,
+    "ctrl_nofold": 4,
+    "nft": 16,
+    "own": 20,
+    "sib": 0
+   }
+  },
+  "tasks": [
+   3,
+   4,
+   41,
+   43,
+   48,
+   58
+  ],
+  "vs_ctrl": {
+   "control": 90,
+   "diff": {
+    "diff": 0.2,
+    "hi": 0.4,
+    "hi90": 0.36666666666666664,
+    "lo": 0.03333333333333333,
+    "lo90": 0.058333333333333334,
+    "n_pairs": 120,
+    "n_tasks": 6
+   },
+   "discordant": [
+    28,
+    4
+   ],
+   "n": 120,
+   "sign_p": 1.9301194697618484e-05,
+   "x": 114,
+   "x_arm": "compose2",
+   "y_arm": "dimfold_s1_last2"
+  },
+  "vs_nft": {
+   "control": 101,
+   "diff": {
+    "diff": 0.10833333333333334,
+    "hi": 0.275,
+    "hi90": 0.25,
+    "lo": -0.05,
+    "lo90": -0.025,
+    "n_pairs": 120,
+    "n_tasks": 6
+   },
+   "discordant": [
+    19,
+    6
+   ],
+   "n": 120,
+   "sign_p": 0.01463329792022705,
+   "x": 114,
+   "x_arm": "compose2",
+   "y_arm": "lora_r17bal"
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "p3_compose__libero_90__p3c__s0__0f679854",
+ "schema": 1,
+ "script": "experiments/p1_read.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-29T15:02:11+00:00",
+ "stream": null,
+ "tag": "p3c"
+}
