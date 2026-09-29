@@ -306,6 +306,12 @@ TRANSFER = [   # docs/PLAN_TRANSFER.md probes (pre-registered: ledger m3_prereg 
     ("P3c: composed with the rendered-scene reader", emb("p3_compose", "metrics.R1.x", tag="p3c_reader"), "92"),
     ("P3c: composed, reader, predicted carry", emb("p3_compose", "metrics.R2.x", tag="p3c_reader2"), "112"),
     ("P3c: predicted carry lower bound (quoted negated)", neg(emb("p3_compose", "metrics.R2.diff.lo90", tag="p3c_reader2")), "0.058"),
+    ("allocator: successes", emb("p1_bindings", "metrics.AL1.x", tag="alloc_v2"), "391"),
+    ("allocator: phases alone", emb("p1_bindings", "metrics.AL1.control", tag="alloc_v2"), "376"),
+    ("allocator: sign p", emb("p1_bindings", "metrics.AL1.sign_p", tag="alloc_v2"), "0.0015"),
+    ("allocator: MB for 21 tasks", lambda: tuple([L.mean("p1_bindings", "metrics.bytes_total", tag="alloc_v2")[0] / 1e6] + list(L.mean("p1_bindings", "metrics.bytes_total", tag="alloc_v2")[1:])), "45.6"),
+    ("allocator: the stove, borrowing", emb("p1_bindings", "metrics.per_task.39.alloc", tag="alloc_v2"), "17"),
+    ("allocator: the stove, phases", emb("p1_bindings", "metrics.per_task.39.A", tag="alloc_v2"), "6"),
 ]
 
 CHECKS = EMBODIED + TRANSFER + [

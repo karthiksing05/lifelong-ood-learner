@@ -1,0 +1,415 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "experiments/p1_read.py alloc --record  # practice allocator over v2 phases (reader), prototype borrowing and the v2-generated LoRA",
+ "config": {
+  "read": "alloc",
+  "record": true
+ },
+ "env": {
+  "device": "cpu",
+  "host": "sky2.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "p1_bindings",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "0bc0e385f6a3b237297ef51c0609e53e3305591b",
+  "short": "0bc0e385"
+ },
+ "keys": {},
+ "metrics": {
+  "AL1": {
+   "control": 376,
+   "diff": {
+    "diff": 0.03571428571428571,
+    "hi": 0.10238095238095238,
+    "hi90": 0.09047619047619047,
+    "lo": -0.007142857142857143,
+    "lo90": -0.004761904761904762,
+    "n_pairs": 420,
+    "n_tasks": 21
+   },
+   "discordant": [
+    18,
+    3
+   ],
+   "n": 420,
+   "passes": true,
+   "sign_p": 0.0014896392822265625,
+   "x": 391,
+   "x_arm": "alloc",
+   "y_arm": "phasebind2_reader_spatial4_synth"
+  },
+  "bytes": {
+   "1": 462012,
+   "3": 461788,
+   "32": 462060,
+   "34": 461136,
+   "35": 264280,
+   "36": 462348,
+   "37": 460752,
+   "39": 284623,
+   "4": 461628,
+   "40": 18710528,
+   "41": 461980,
+   "42": 461584,
+   "43": 461164,
+   "48": 461628,
+   "5": 18710528,
+   "52": 460524,
+   "53": 263247,
+   "58": 461148,
+   "6": 264168,
+   "62": 460656,
+   "63": 658600
+  },
+  "bytes_A_total": 9295936,
+  "bytes_total": 45616382,
+  "choice": {
+   "1": {
+    "arm": "phasebind2_reader_spatial4_synth",
+    "choice": "A"
+   },
+   "3": {
+    "arm": "phasebind2_reader_spatial4_synth",
+    "choice": "A"
+   },
+   "32": {
+    "arm": "phasebind2_reader_spatial4_synth",
+    "choice": "A"
+   },
+   "34": {
+    "arm": "phasebind2_reader_spatial4_synth",
+    "choice": "A"
+   },
+   "35": {
+    "arm": "phasebind2_reader_spatial4_synth",
+    "choice": "A"
+   },
+   "36": {
+    "arm": "phasebind2_reader_spatial4_synth",
+    "choice": "A"
+   },
+   "37": {
+    "arm": "phasebind2_reader_spatial4_synth",
+    "choice": "A"
+   },
+   "39": {
+    "arm": "dimfold_s1_last2",
+    "choice": "B"
+   },
+   "4": {
+    "arm": "phasebind2_reader_spatial4_synth",
+    "choice": "A"
+   },
+   "40": {
+    "arm": "lora_r27gen",
+    "choice": "C"
+   },
+   "41": {
+    "arm": "phasebind2_reader_spatial4_synth",
+    "choice": "A"
+   },
+   "42": {
+    "arm": "phasebind2_reader_spatial4_synth",
+    "choice": "A"
+   },
+   "43": {
+    "arm": "phasebind2_reader_spatial4_synth",
+    "choice": "A"
+   },
+   "48": {
+    "arm": "phasebind2_reader_spatial4_synth",
+    "choice": "A"
+   },
+   "5": {
+    "arm": "lora_r27gen",
+    "choice": "C"
+   },
+   "52": {
+    "arm": "phasebind2_reader_spatial4_synth",
+    "choice": "A"
+   },
+   "53": {
+    "arm": "dimfold_s1_last2",
+    "choice": "B"
+   },
+   "58": {
+    "arm": "phasebind2_reader_spatial4_synth",
+    "choice": "A"
+   },
+   "6": {
+    "arm": "phasebind2_reader_spatial4_synth",
+    "choice": "A"
+   },
+   "62": {
+    "arm": "phasebind2_reader_spatial4_synth",
+    "choice": "A"
+   },
+   "63": {
+    "arm": "phasebind2_reader_spatial4_synth",
+    "choice": "A"
+   }
+  },
+  "per_task": {
+   "1": {
+    "A": 19,
+    "alloc": 19,
+    "nft": 9
+   },
+   "3": {
+    "A": 20,
+    "alloc": 20,
+    "nft": 18
+   },
+   "32": {
+    "A": 19,
+    "alloc": 19,
+    "nft": 10
+   },
+   "34": {
+    "A": 20,
+    "alloc": 20,
+    "nft": 17
+   },
+   "35": {
+    "A": 20,
+    "alloc": 20,
+    "nft": 7
+   },
+   "36": {
+    "A": 20,
+    "alloc": 20,
+    "nft": 17
+   },
+   "37": {
+    "A": 19,
+    "alloc": 19,
+    "nft": 17
+   },
+   "39": {
+    "A": 6,
+    "alloc": 17,
+    "nft": 16
+   },
+   "4": {
+    "A": 20,
+    "alloc": 20,
+    "nft": 11
+   },
+   "40": {
+    "A": 7,
+    "alloc": 12,
+    "nft": 4
+   },
+   "41": {
+    "A": 17,
+    "alloc": 17,
+    "nft": 18
+   },
+   "42": {
+    "A": 19,
+    "alloc": 19,
+    "nft": 9
+   },
+   "43": {
+    "A": 20,
+    "alloc": 20,
+    "nft": 20
+   },
+   "48": {
+    "A": 19,
+    "alloc": 19,
+    "nft": 18
+   },
+   "5": {
+    "A": 19,
+    "alloc": 19,
+    "nft": 16
+   },
+   "52": {
+    "A": 18,
+    "alloc": 18,
+    "nft": 14
+   },
+   "53": {
+    "A": 20,
+    "alloc": 19,
+    "nft": 20
+   },
+   "58": {
+    "A": 20,
+    "alloc": 20,
+    "nft": 16
+   },
+   "6": {
+    "A": 20,
+    "alloc": 20,
+    "nft": 18
+   },
+   "62": {
+    "A": 14,
+    "alloc": 14,
+    "nft": 14
+   },
+   "63": {
+    "A": 20,
+    "alloc": 20,
+    "nft": 13
+   }
+  },
+  "practice": {
+   "1": {
+    "A": 10,
+    "B": 5,
+    "C": 7
+   },
+   "3": {
+    "A": 10,
+    "B": 9,
+    "C": 9
+   },
+   "32": {
+    "A": 10,
+    "B": 1,
+    "C": 3
+   },
+   "34": {
+    "A": 10,
+    "B": 10,
+    "C": 9
+   },
+   "35": {
+    "A": 10,
+    "B": 5,
+    "C": 10
+   },
+   "36": {
+    "A": 10,
+    "B": 3,
+    "C": 9
+   },
+   "37": {
+    "A": 10,
+    "B": 8,
+    "C": 9
+   },
+   "39": {
+    "A": 3,
+    "B": 6,
+    "C": 5
+   },
+   "4": {
+    "A": 10,
+    "B": 6,
+    "C": 8
+   },
+   "40": {
+    "A": 4,
+    "B": 4,
+    "C": 5
+   },
+   "41": {
+    "A": 8,
+    "B": 6,
+    "C": 7
+   },
+   "42": {
+    "A": 10,
+    "B": 1,
+    "C": 7
+   },
+   "43": {
+    "A": 10,
+    "B": 10,
+    "C": 8
+   },
+   "48": {
+    "A": 10,
+    "B": 9,
+    "C": 4
+   },
+   "5": {
+    "A": 8,
+    "B": 7,
+    "C": 10
+   },
+   "52": {
+    "A": 10,
+    "B": 4,
+    "C": 8
+   },
+   "53": {
+    "A": 9,
+    "B": 10,
+    "C": 10
+   },
+   "58": {
+    "A": 10,
+    "B": 5,
+    "C": 10
+   },
+   "6": {
+    "A": 10,
+    "B": 7,
+    "C": 10
+   },
+   "62": {
+    "A": 10,
+    "B": 7,
+    "C": 7
+   },
+   "63": {
+    "A": 10,
+    "B": 8,
+    "C": 10
+   }
+  },
+  "vs_nft": {
+   "control": 302,
+   "diff": {
+    "diff": 0.2119047619047619,
+    "hi": 0.3119047619047619,
+    "hi90": 0.29285714285714287,
+    "lo": 0.11904761904761904,
+    "lo90": 0.1332142857142858,
+    "n_pairs": 420,
+    "n_tasks": 21
+   },
+   "discordant": [
+    105,
+    16
+   ],
+   "n": 420,
+   "sign_p": 3.1629462798282884e-17,
+   "x": 391,
+   "x_arm": "alloc",
+   "y_arm": "lora_r17bal"
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "p1_bindings__libero_90__alloc_v2__s0__0bc0e385",
+ "schema": 1,
+ "script": "experiments/p1_read.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-29T16:40:52+00:00",
+ "stream": null,
+ "tag": "alloc_v2"
+}

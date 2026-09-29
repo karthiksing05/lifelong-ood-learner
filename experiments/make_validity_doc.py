@@ -138,6 +138,17 @@ def transfer_probes(w):
             w(f"| {t} | {r['c']} | {r['own']} | {r['sib']} | {pcr['per_task'][t]['cr'] if pcr else '-'} | "
               f"{pcr2['per_task'][t]['crp'] if pcr2 else '-'} | {r['nft']} |")
         w("")
+    al = _row("p1_bindings", "alloc_v2")
+    if al:
+        w("**The practice allocator (pre-registered: ledger m3_prereg tag alloc_v2).** Per task, 10 practice episodes (init states 0-9) of "
+          "A = the v2 phases with the rendered-scene reader, B = prototype borrowing + fold, C = the LoRA on v2-generated demos; the most "
+          "practice successes wins (ties A, B, C); scored by the chosen arm's existing episodes on states 30-49.")
+        w(f"- AL1, allocator vs A: {_cmp(al['AL1'])}: {'PASSES' if al['AL1']['passes'] else 'fails'}; vs LoRA + failure negatives: "
+          f"{_cmp(al['vs_nft'])}. Bytes for 21 tasks: {al['bytes_total'] / 1e6:.1f} MB (A alone {al['bytes_A_total'] / 1e6:.1f} MB).")
+        w("- switches (practice A / B / C -> choice; scored A -> chosen): " + "; ".join(
+            f"{t}: {al['practice'][t]['A']}/{al['practice'][t]['B']}/{al['practice'][t]['C']} -> {c['arm']}; {al['per_task'][t]['A']} -> {al['per_task'][t]['alloc']}"
+            for t, c in al["choice"].items() if c["choice"] != "A") + ".")
+        w("")
     rd = [(tag, _row("p6_reader", tag)) for tag in ("near_offline", "offline_spatial4", "offline_synth", "offline_spatial4_synth",
                                                      "offline_spatial4_synthonly_p3c", "offline_spatial4_synthonly_rj_p3c")]
     lab = {"near_offline": "re-reading the grasped object when the hand is within 10 cm of its grasp point",

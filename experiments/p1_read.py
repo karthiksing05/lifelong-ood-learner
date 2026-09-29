@@ -10,7 +10,7 @@ nothing), paired on init states 30-49 of m3_final.
     v2         rules v2 (ledger m3_prereg tag v2) on the 21 tasks: V1 v2 > v1, V2 v2 > LoRA + failure negatives, V4 the v2 generator's
                LoRA > 3.8's (sign tests, Holm over the three); V3 the learned reader non-inferior to the simulator's poses at -0.10
 
-    ~/flash/miniconda3/envs/chunks/bin/python experiments/p1_read.py primary|secondary|p6|v2|v2_synth|p3c|p3c_reader|p3c_reader2 [--record]
+    ~/flash/miniconda3/envs/chunks/bin/python experiments/p1_read.py primary|secondary|p6|v2|v2_synth|p3c|p3c_reader|p3c_reader2|alloc [--record]
 """
 import argparse
 import importlib.util
@@ -195,6 +195,45 @@ def p3c_reader2():
     return res
 
 
+def alloc():
+    """ledger m3_prereg tag alloc_v2: per task, the candidate with the most practice successes on init states 0-9 (ties A, B, C),
+    scored by its existing m3_final episodes on states 30-49."""
+    spec = importlib.util.spec_from_file_location("m3s", os.path.join(ROOT, "experiments", "m3_stats.py"))
+    m3s = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(m3s)
+    prac, _ = m3s.episodes("alloc_practice")
+    cand = {"A": ["phasebind2_reader_spatial4_synth"], "B": ["dimfold_s1_last2", "dimcode_s1"], "C": ["lora_r27gen"]}
+    arms = {"A": "phasebind2_reader_spatial4_synth", "Bf": "dimfold_s1_last2", "Bc": "dimcode_s1", "C": "lora_r27gen", "nft": "lora_r17bal"}
+    fin, _ = m3s.episodes("m3_final")
+    tab, choice, practice = {}, {}, {}
+    for t in HELD:
+        pk = {}
+        for c, tags in cand.items():
+            tag = next(g for g in tags if (str(t), g) in prac)
+            pk[c] = (int(sum(prac[(str(t), tag)].values())), tag)
+        best = max(pk, key=lambda c: (pk[c][0], -"ABC".index(c)))
+        choice[str(t)] = dict(choice=best, arm=pk[best][1])
+        practice[str(t)] = {c: v[0] for c, v in pk.items()}
+        row = {"A": fin[(str(t), arms["A"])], "nft": fin[(str(t), arms["nft"])], "alloc": fin[(str(t), pk[best][1])]}
+        tab[str(t)] = row
+    res = {"choice": choice, "practice": practice, "per_task": {t: {k: int(sum(v[k].values())) for k in v} for t, v in tab.items()}}
+    spec = importlib.util.spec_from_file_location("m34", os.path.join(ROOT, "experiments", "m34_report.py"))
+    m34 = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(m34)
+    res["bytes"] = {t: int(m34.arm_bytes(int(t), c["arm"])) for t, c in choice.items()}
+    res["bytes_total"] = int(sum(res["bytes"].values()))
+    res["bytes_A_total"] = int(sum(m34.arm_bytes(t, arms["A"]) for t in HELD))
+    print(f"bytes: alloc {res['bytes_total'] / 1e6:.1f} MB, A alone {res['bytes_A_total'] / 1e6:.1f} MB")
+    res["AL1"] = dict(x_arm="alloc", y_arm=arms["A"], **compare(tab, "alloc", "A"))
+    res["AL1"]["passes"] = bool(res["AL1"]["sign_p"] < 0.05 and res["AL1"]["x"] > res["AL1"]["control"])
+    res["vs_nft"] = dict(x_arm="alloc", y_arm=arms["nft"], **compare(tab, "alloc", "nft"))
+    for k in ("AL1", "vs_nft"):
+        v = res[k]
+        print(f"{k} {v['x_arm']} vs {v['y_arm']}: {_fmt(v)}" + (f" -> passes {v['passes']}" if "passes" in v else ""))
+    print("switched from A:", {t: (c["arm"], res["practice"][t]) for t, c in choice.items() if c["choice"] != "A"})
+    return res
+
+
 def _fmt(v):
     return (f"{v['x']} vs {v['control']} of {v['n']}, diff {v['diff']['diff']:+.3f} [{v['diff']['lo']:+.3f},{v['diff']['hi']:+.3f}] lo90 "
             f"{v['diff']['lo90']:+.3f}, discordant {v['discordant']}, sign p {v['sign_p']:.3g}")
@@ -202,11 +241,14 @@ def _fmt(v):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("read", choices=("primary", "secondary", "p6", "v2", "v2_synth", "p3c", "p3c_reader", "p3c_reader2"))
+    ap.add_argument("read", choices=("primary", "secondary", "p6", "v2", "v2_synth", "p3c", "p3c_reader", "p3c_reader2", "alloc"))
     ap.add_argument("--record", action="store_true")
     a = ap.parse_args()
     os.chdir(ROOT)
-    if a.read == "p3c_reader2":
+    if a.read == "alloc":
+        res = alloc()
+        exp, tag, what = "p1_bindings", "alloc_v2", "practice allocator over v2 phases (reader), prototype borrowing and the v2-generated LoRA"
+    elif a.read == "p3c_reader2":
         res = p3c_reader2()
         exp, tag, what = "p3_compose", "p3c_reader2", "P3c reader arm with the in-hand pose predicted from the grasp binding"
     elif a.read == "p3c_reader":
