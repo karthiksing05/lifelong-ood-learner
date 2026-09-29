@@ -1,0 +1,112 @@
+{
+ "artifacts": [
+  "results/robot/p0_retarget_goals.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "p0_retarget.py --goals --arms track+retarget; --selfcheck (both trackers)",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky2.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "p0_audit",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "78f5675d7df2e19964db9a5fc407225b0e8b4d47",
+  "short": "78f5675d"
+ },
+ "keys": {},
+ "metrics": {
+  "exploratory": true,
+  "n": 180,
+  "per_task": {
+   "1": {
+    "replay": 0,
+    "retarget_goal": 1,
+    "track_goal": 4
+   },
+   "32": {
+    "replay": 1,
+    "retarget_goal": 20,
+    "track_goal": 8
+   },
+   "35": {
+    "replay": 4,
+    "retarget_goal": 12,
+    "track_goal": 12
+   },
+   "36": {
+    "replay": 0,
+    "retarget_goal": 0,
+    "track_goal": 1
+   },
+   "40": {
+    "replay": 2,
+    "retarget_goal": 5,
+    "track_goal": 5
+   },
+   "41": {
+    "replay": 7,
+    "retarget_goal": 16,
+    "track_goal": 16
+   },
+   "42": {
+    "replay": 9,
+    "retarget_goal": 8,
+    "track_goal": 8
+   },
+   "52": {
+    "replay": 3,
+    "retarget_goal": 11,
+    "track_goal": 6
+   },
+   "62": {
+    "replay": 5,
+    "retarget_goal": 1,
+    "track_goal": 1
+   }
+  },
+  "rates": {
+   "replay": 0.17222222222222222,
+   "retarget_goal": 0.4111111111111111,
+   "track_goal": 0.3388888888888889
+  },
+  "reason": "P0c's tracker followed the source's ACHIEVED poses and under-commanded (the OSC controller lags its goal): at the source's own placement it reproduced the success on 3 of 9 tasks; tracking the source's controller goals (p + 0.05 a) reproduces 9 of 9",
+  "selfcheck": {
+   "achieved_pose_tracker": 3,
+   "goal_tracker": 9,
+   "n": 9,
+   "replay": 9
+  },
+  "totals": {
+   "replay": 31,
+   "retarget_goal": 74,
+   "track_goal": 61
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "p0_audit__libero_90__retarget_goals__s0__78f5675d",
+ "schema": 1,
+ "script": "experiments/p0_retarget.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-29T01:16:41+00:00",
+ "stream": null,
+ "tag": "retarget_goals"
+}

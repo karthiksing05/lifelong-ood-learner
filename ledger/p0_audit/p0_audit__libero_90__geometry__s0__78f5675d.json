@@ -1,0 +1,768 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/p0_geometry.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "experiments/p0_geometry.py --record",
+ "config": {
+  "record": true
+ },
+ "env": {
+  "device": "cpu",
+  "host": "jill.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": "3978414",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "p0_audit",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "78f5675d7df2e19964db9a5fc407225b0e8b4d47",
+  "short": "78f5675d"
+ },
+ "keys": {},
+ "metrics": {
+  "all_failures": {
+   "aim_or_grasp_miss_share": 0.8090128755364807,
+   "aim_share": 0.7253218884120172,
+   "aim_ungrasped_share": 0.5128755364806867,
+   "by_task": {
+    "1": {
+     "aim": 30,
+     "other": 22
+    },
+    "3": {
+     "aim": 1,
+     "carry": 3,
+     "other": 2
+    },
+    "32": {
+     "aim": 63
+    },
+    "34": {
+     "aim": 3,
+     "carry": 2,
+     "other": 3
+    },
+    "35": {
+     "fixture": 51
+    },
+    "36": {
+     "aim": 15,
+     "closure": 10,
+     "other": 2
+    },
+    "37": {
+     "aim": 12,
+     "carry": 1,
+     "other": 2
+    },
+    "39": {
+     "fixture": 13
+    },
+    "4": {
+     "aim": 15,
+     "carry": 1,
+     "other": 6
+    },
+    "40": {
+     "aim": 13,
+     "carry": 14,
+     "closure": 19,
+     "other": 3
+    },
+    "41": {
+     "aim": 24
+    },
+    "42": {
+     "aim": 66
+    },
+    "43": {
+     "aim": 1,
+     "closure": 1
+    },
+    "48": {
+     "aim": 2,
+     "carry": 1,
+     "closure": 4
+    },
+    "5": {
+     "aim": 4,
+     "carry": 1,
+     "other": 2
+    },
+    "52": {
+     "aim": 34,
+     "carry": 1,
+     "closure": 1,
+     "other": 1
+    },
+    "53": {
+     "aim": 1
+    },
+    "58": {
+     "aim": 23,
+     "closure": 2
+    },
+    "6": {
+     "fixture": 27
+    },
+    "62": {
+     "aim": 25,
+     "carry": 2,
+     "closure": 2
+    },
+    "63": {
+     "aim": 6,
+     "carry": 14,
+     "other": 6
+    }
+   },
+   "classes": {
+    "aim": 338,
+    "carry": 40,
+    "closure": 39,
+    "other": 49
+   },
+   "fixture": 91,
+   "n": 466,
+   "why": {
+    "close off the reference": 271,
+    "never closes": 47,
+    "release off the reference": 20
+   }
+  },
+  "decision_C2": "survives",
+  "gate": {
+   "exact": 1680,
+   "replayed": 1680
+  },
+  "primary": {
+   "aim_or_grasp_miss_share": 0.8867924528301887,
+   "aim_share": 0.8301886792452831,
+   "aim_ungrasped_share": 0.660377358490566,
+   "by_task": {
+    "1": {
+     "aim": 7,
+     "other": 5
+    },
+    "32": {
+     "aim": 16
+    },
+    "35": {
+     "fixture": 12
+    },
+    "36": {
+     "aim": 7,
+     "closure": 2,
+     "other": 1
+    },
+    "37": {
+     "aim": 2
+    },
+    "39": {
+     "fixture": 2
+    },
+    "4": {
+     "aim": 2,
+     "other": 2
+    },
+    "40": {
+     "aim": 4,
+     "carry": 2,
+     "closure": 3,
+     "other": 2
+    },
+    "41": {
+     "aim": 8
+    },
+    "42": {
+     "aim": 18
+    },
+    "48": {
+     "closure": 1
+    },
+    "5": {
+     "aim": 1
+    },
+    "52": {
+     "aim": 9
+    },
+    "58": {
+     "aim": 3
+    },
+    "6": {
+     "fixture": 3
+    },
+    "62": {
+     "aim": 9
+    },
+    "63": {
+     "aim": 2
+    }
+   },
+   "classes": {
+    "aim": 88,
+    "carry": 2,
+    "closure": 6,
+    "other": 10
+   },
+   "fixture": 17,
+   "n": 106,
+   "why": {
+    "close off the reference": 74,
+    "never closes": 10,
+    "release off the reference": 4
+   }
+  },
+  "tasks": {
+   "1": {
+    "episodes": 80,
+    "grasp_counts": {
+     "akita_black_bowl_1": 27
+    },
+    "kind": "movable",
+    "movable": [
+     false,
+     true
+    ],
+    "names": [
+     "wooden_cabinet_1",
+     "akita_black_bowl_1"
+    ],
+    "object": "akita_black_bowl_1",
+    "receptacle": null,
+    "ref_close": [
+     0.02636943943798542,
+     0.009344459511339664,
+     0.042991433292627335
+    ],
+    "ref_release": null,
+    "success_close_spread_cm": 2.0377933979034424,
+    "successes": 28
+   },
+   "3": {
+    "episodes": 80,
+    "grasp_counts": {
+     "butter_2": 74
+    },
+    "kind": "movable",
+    "movable": [
+     true,
+     false
+    ],
+    "names": [
+     "butter_2",
+     "wooden_cabinet_1"
+    ],
+    "object": "butter_2",
+    "receptacle": null,
+    "ref_close": [
+     0.004206401761621237,
+     0.002931605326011777,
+     0.0022797719575464725
+    ],
+    "ref_release": null,
+    "success_close_spread_cm": 0.9118402600288391,
+    "successes": 74
+   },
+   "32": {
+    "episodes": 80,
+    "grasp_counts": {
+     "ketchup_1": 17
+    },
+    "kind": "movable",
+    "movable": [
+     true,
+     false
+    ],
+    "names": [
+     "ketchup_1",
+     "white_cabinet_1"
+    ],
+    "object": "ketchup_1",
+    "receptacle": null,
+    "ref_close": [
+     -0.004686515778303146,
+     0.005038340110331774,
+     -0.002591078169643879
+    ],
+    "ref_release": null,
+    "success_close_spread_cm": 2.66540265083313,
+    "successes": 17
+   },
+   "34": {
+    "episodes": 80,
+    "grasp_counts": {
+     "white_yellow_mug_1": 71
+    },
+    "kind": "movable",
+    "movable": [
+     true,
+     true
+    ],
+    "names": [
+     "porcelain_mug_1",
+     "white_yellow_mug_1"
+    ],
+    "object": "white_yellow_mug_1",
+    "receptacle": "porcelain_mug_1",
+    "ref_close": [
+     -0.07131852954626083,
+     -0.013920686207711697,
+     0.07207515835762024
+    ],
+    "ref_release": [
+     -0.14481031894683838,
+     0.12455716729164124,
+     0.07671309262514114
+    ],
+    "success_close_spread_cm": 0.9001971483230591,
+    "successes": 72
+   },
+   "35": {
+    "episodes": 80,
+    "grasp_counts": {},
+    "kind": "fixture",
+    "movable": [
+     false
+    ],
+    "names": [
+     "microwave_1"
+    ],
+    "successes": 29
+   },
+   "36": {
+    "episodes": 80,
+    "grasp_counts": {
+     "white_bowl_1": 38
+    },
+    "kind": "movable",
+    "movable": [
+     true,
+     true
+    ],
+    "names": [
+     "white_bowl_1",
+     "plate_1"
+    ],
+    "object": "white_bowl_1",
+    "receptacle": "plate_1",
+    "ref_close": [
+     0.03623952716588974,
+     -0.005330320913344622,
+     0.010645232163369656
+    ],
+    "ref_release": [
+     0.01691150851547718,
+     -0.028263939544558525,
+     0.05510803312063217
+    ],
+    "success_close_spread_cm": 1.115103840827942,
+    "successes": 53
+   },
+   "37": {
+    "episodes": 80,
+    "grasp_counts": {
+     "white_bowl_1": 65
+    },
+    "kind": "movable",
+    "movable": [
+     true,
+     true
+    ],
+    "names": [
+     "white_bowl_1",
+     "plate_1"
+    ],
+    "object": "white_bowl_1",
+    "receptacle": "plate_1",
+    "ref_close": [
+     0.03748604655265808,
+     0.01863790675997734,
+     0.015676619485020638
+    ],
+    "ref_release": [
+     0.08152532577514648,
+     -0.008182891644537449,
+     0.07175809144973755
+    ],
+    "success_close_spread_cm": 0.7757103443145752,
+    "successes": 65
+   },
+   "39": {
+    "episodes": 80,
+    "grasp_counts": {},
+    "kind": "fixture",
+    "movable": [
+     false
+    ],
+    "names": [
+     "flat_stove_1"
+    ],
+    "successes": 67
+   },
+   "4": {
+    "episodes": 80,
+    "grasp_counts": {
+     "butter_1": 58
+    },
+    "kind": "movable",
+    "movable": [
+     true,
+     false
+    ],
+    "names": [
+     "butter_1",
+     "wooden_cabinet_1"
+    ],
+    "object": "butter_1",
+    "receptacle": null,
+    "ref_close": [
+     0.01020891685038805,
+     -0.008573276922106743,
+     0.0045088971965014935
+    ],
+    "ref_release": null,
+    "success_close_spread_cm": 1.9456579685211182,
+    "successes": 58
+   },
+   "40": {
+    "episodes": 80,
+    "grasp_counts": {
+     "chefmate_8_frypan_1": 23
+    },
+    "kind": "movable",
+    "movable": [
+     true,
+     false
+    ],
+    "names": [
+     "chefmate_8_frypan_1",
+     "wooden_two_layer_shelf_1"
+    ],
+    "object": "chefmate_8_frypan_1",
+    "receptacle": null,
+    "ref_close": [
+     0.12823303043842316,
+     -0.01069831382483244,
+     0.019015422090888023
+    ],
+    "ref_release": null,
+    "success_close_spread_cm": 1.1385945081710815,
+    "successes": 31
+   },
+   "41": {
+    "episodes": 80,
+    "grasp_counts": {
+     "chefmate_8_frypan_1": 7
+    },
+    "kind": "movable",
+    "movable": [
+     true,
+     false
+    ],
+    "names": [
+     "chefmate_8_frypan_1",
+     "wooden_two_layer_shelf_1"
+    ],
+    "object": "chefmate_8_frypan_1",
+    "receptacle": null,
+    "ref_close": [
+     0.1378491073846817,
+     -0.002072615083307028,
+     0.03304567560553551
+    ],
+    "ref_release": null,
+    "success_close_spread_cm": 2.757310390472412,
+    "successes": 56
+   },
+   "42": {
+    "episodes": 80,
+    "grasp_counts": {
+     "chefmate_8_frypan_1": 2
+    },
+    "kind": "movable",
+    "movable": [
+     true,
+     false
+    ],
+    "names": [
+     "chefmate_8_frypan_1",
+     "wooden_two_layer_shelf_1"
+    ],
+    "object": "chefmate_8_frypan_1",
+    "receptacle": null,
+    "ref_close": [
+     0.16935841739177704,
+     0.021865693852305412,
+     0.023383578285574913
+    ],
+    "ref_release": null,
+    "success_close_spread_cm": 1.062394142150879,
+    "successes": 14
+   },
+   "43": {
+    "episodes": 80,
+    "grasp_counts": {
+     "white_bowl_1": 50
+    },
+    "kind": "movable",
+    "movable": [
+     true,
+     false
+    ],
+    "names": [
+     "white_bowl_1",
+     "wooden_two_layer_shelf_1"
+    ],
+    "object": "white_bowl_1",
+    "receptacle": null,
+    "ref_close": [
+     0.023558633401989937,
+     0.0035090569872409105,
+     0.012555865570902824
+    ],
+    "ref_release": null,
+    "success_close_spread_cm": 1.3270622491836548,
+    "successes": 78
+   },
+   "48": {
+    "episodes": 80,
+    "grasp_counts": {
+     "ketchup_1": 73
+    },
+    "kind": "movable",
+    "movable": [
+     true,
+     true
+    ],
+    "names": [
+     "ketchup_1",
+     "basket_1"
+    ],
+    "object": "ketchup_1",
+    "receptacle": "basket_1",
+    "ref_close": [
+     -0.003347664140164852,
+     0.042463820427656174,
+     -0.013520058244466782
+    ],
+    "ref_release": [
+     -0.009216846898198128,
+     0.022311817854642868,
+     0.19329003989696503
+    ],
+    "success_close_spread_cm": 0.9855750203132629,
+    "successes": 73
+   },
+   "5": {
+    "episodes": 80,
+    "grasp_counts": {
+     "chocolate_pudding_1": 73
+    },
+    "kind": "movable",
+    "movable": [
+     true,
+     false
+    ],
+    "names": [
+     "chocolate_pudding_1",
+     "wooden_cabinet_1"
+    ],
+    "object": "chocolate_pudding_1",
+    "receptacle": null,
+    "ref_close": [
+     0.007179108448326588,
+     -0.016128605231642723,
+     0.010147565975785255
+    ],
+    "ref_release": null,
+    "success_close_spread_cm": 1.546087622642517,
+    "successes": 73
+   },
+   "52": {
+    "episodes": 80,
+    "grasp_counts": {
+     "milk_1": 43
+    },
+    "kind": "movable",
+    "movable": [
+     true,
+     true
+    ],
+    "names": [
+     "milk_1",
+     "basket_1"
+    ],
+    "object": "milk_1",
+    "receptacle": "basket_1",
+    "ref_close": [
+     -0.0032019244972616434,
+     0.040700286626815796,
+     0.0019201083341613412
+    ],
+    "ref_release": [
+     -0.004213134758174419,
+     0.03680440038442612,
+     0.15157268941402435
+    ],
+    "success_close_spread_cm": 1.627608060836792,
+    "successes": 43
+   },
+   "53": {
+    "episodes": 80,
+    "grasp_counts": {
+     "orange_juice_1": 79
+    },
+    "kind": "movable",
+    "movable": [
+     true,
+     true
+    ],
+    "names": [
+     "orange_juice_1",
+     "basket_1"
+    ],
+    "object": "orange_juice_1",
+    "receptacle": "basket_1",
+    "ref_close": [
+     0.0004173101333435625,
+     0.024814775213599205,
+     -0.0011966171441599727
+    ],
+    "ref_release": [
+     0.008329254575073719,
+     0.01719662919640541,
+     0.1801966279745102
+    ],
+    "success_close_spread_cm": 0.760125994682312,
+    "successes": 79
+   },
+   "58": {
+    "episodes": 80,
+    "grasp_counts": {
+     "ketchup_1": 55
+    },
+    "kind": "movable",
+    "movable": [
+     true,
+     true
+    ],
+    "names": [
+     "ketchup_1",
+     "wooden_tray_1"
+    ],
+    "object": "ketchup_1",
+    "receptacle": "wooden_tray_1",
+    "ref_close": [
+     -0.006497473455965519,
+     0.03151114284992218,
+     0.0018085166811943054
+    ],
+    "ref_release": [
+     0.029963884502649307,
+     -0.024200262501835823,
+     0.13153792917728424
+    ],
+    "success_close_spread_cm": 2.6519999504089355,
+    "successes": 55
+   },
+   "6": {
+    "episodes": 80,
+    "grasp_counts": {},
+    "kind": "fixture",
+    "movable": [
+     false
+    ],
+    "names": [
+     "wooden_cabinet_1"
+    ],
+    "successes": 53
+   },
+   "62": {
+    "episodes": 80,
+    "grasp_counts": {
+     "new_salad_dressing_1": 50
+    },
+    "kind": "movable",
+    "movable": [
+     true,
+     true
+    ],
+    "names": [
+     "new_salad_dressing_1",
+     "wooden_tray_1"
+    ],
+    "object": "new_salad_dressing_1",
+    "receptacle": "wooden_tray_1",
+    "ref_close": [
+     -0.007923747412860394,
+     0.09218120574951172,
+     -0.00693948520347476
+    ],
+    "ref_release": [
+     0.08633316308259964,
+     -0.019535988569259644,
+     0.17834961414337158
+    ],
+    "success_close_spread_cm": 1.146342158317566,
+    "successes": 51
+   },
+   "63": {
+    "episodes": 80,
+    "grasp_counts": {
+     "akita_black_bowl_1": 54
+    },
+    "kind": "movable",
+    "movable": [
+     true,
+     true,
+     true
+    ],
+    "names": [
+     "akita_black_bowl_1",
+     "akita_black_bowl_2",
+     "wooden_tray_1"
+    ],
+    "object": "akita_black_bowl_1",
+    "receptacle": "akita_black_bowl_2",
+    "ref_close": [
+     -0.055769339203834534,
+     -0.003362424438819289,
+     0.02629195898771286
+    ],
+    "ref_release": [
+     -0.04031530022621155,
+     -0.0033318253699690104,
+     0.06426018476486206
+    ],
+    "success_close_spread_cm": 0.964267909526825,
+    "successes": 54
+   }
+  },
+  "tol_m": 0.02
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "p0_audit__libero_90__geometry__s0__78f5675d",
+ "schema": 1,
+ "script": "experiments/p0_geometry.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-29T00:50:53+00:00",
+ "stream": null,
+ "tag": "geometry"
+}

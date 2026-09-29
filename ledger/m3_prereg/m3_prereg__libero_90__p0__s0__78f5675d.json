@@ -1,0 +1,69 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration of the P0 audits (plan_transfer)",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky2.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "78f5675d7df2e19964db9a5fc407225b0e8b4d47",
+  "short": "78f5675d"
+ },
+ "keys": {},
+ "metrics": {
+  "P0a": {
+   "data": "LIBERO's raw hdf5 demos (full sim states) matched to IPEC episode 0 by the action sequence; if the raw files cannot be fetched, bindings come from practice and the prior's successes only",
+   "question": "can the demo's own object poses be recovered (bindings from the demo before any practice)?"
+  },
+  "P0b": {
+   "classes": {
+    "aim": "no close event while the object is never grasped, or close-event offset > 2 cm from the success reference, or grasped and released > 2 cm from the release reference",
+    "carry": "grasped, grasp lost while the gripper still commands close",
+    "closure": "closed within 2 cm of the reference and no grasp within 20 steps",
+    "other": "everything else (released within 2 cm of the reference, goal false; timeouts after a correct place)"
+   },
+   "data": "the recorded practice episodes of the 21 held-out tasks (m5_practice: the first composition, states 0-19; m6_round1, m6_round2: states 0-29) replayed bit-exactly (fresh env, seed 7, as many resets as the trial index; experiments/p0_replay.py) with the objects of interest's poses, the eef pose, robosuite _check_grasp per object and the gripper command logged; an episode whose replayed 8-d states differ from the recording at any step is excluded and counted",
+   "decision": "C2 (binding) survives iff >= 50% of the primary set's failures are AIM failures; the plan's broader rule (aim or grasp-miss) is reported beside it; a closure-dominated result sends the plan to grip/closure bindings and the data-generator fallback (3.8)",
+   "manipulated_object": "per task, the movable object of interest grasped (_check_grasp) in the most successful episodes; tasks with none are FIXTURE tasks, reported separately",
+   "primary_set": "the 123 instances that the first composition and both fresh-noise retries failed (r18), movable-object tasks only (the m5_practice episode of each)",
+   "question": "are the persistent practice failures BINDING (aim) failures?",
+   "reference": "per task, the mean over successful episodes (all three recordings) of the eef position in the manipulated object's frame at the close event (first switch of the gripper command to close) and, where a movable receptacle is an object of interest, of the eef position in the receptacle's frame at the release event"
+  },
+  "P0c": {
+   "data": "for the 9 concentrated tasks (42, 32, 1, 35, 40, 36, 52, 62, 41): source = a successful recorded practice episode (the first in trial order), targets = benchmark init states 30-49 (the evaluation placements); the source's eef path is split at its gripper events, each segment re-expressed in the frame of the object it acts on (T_new = T_obj,new T_obj,src^-1 T_ee,src), executed by delta-pose tracking of the transformed poses with the source's gripper commands; fixture segments are kept in the world frame",
+   "decision": "generation success over the 180 (task, placement) pairs < 30%: retargeting as a guide is dropped; >= 30%: the data-generator route (plan 3.8) is viable; the untransformed source replay on the same placements is the control",
+   "question": "the ceiling of object-relative retargeting (MimicGen transform, no policy)"
+  },
+  "plan": "docs/PLAN_TRANSFER.md, section 4, probes P0a-c (CPU audits before any mechanism is built)",
+  "written_before": "any replay or retargeting run"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_90__p0__s0__78f5675d",
+ "schema": 1,
+ "script": "(inline, session 2026-09-28)",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-29T00:06:25+00:00",
+ "stream": null,
+ "tag": "p0"
+}

@@ -1,0 +1,117 @@
+{
+ "artifacts": [
+  "results/robot/p0_retarget.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "p0_retarget.py --workers 14 (job 3978417)",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky2.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "p0_audit",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "78f5675d7df2e19964db9a5fc407225b0e8b4d47",
+  "short": "78f5675d"
+ },
+ "keys": {},
+ "metrics": {
+  "decision": "data-generator route viable (>= 30%)",
+  "n": 180,
+  "note": "the untransformed tracker scores 0 on 5 of 9 tasks (35, 40, 1, 36, 62), below open-loop replay on 35, 40, 62: a tracker limitation, examined next (exploratory)",
+  "per_task": {
+   "1": {
+    "replay": 0,
+    "retarget": 0,
+    "track": 0
+   },
+   "32": {
+    "replay": 1,
+    "retarget": 20,
+    "track": 8
+   },
+   "35": {
+    "replay": 4,
+    "retarget": 0,
+    "track": 0
+   },
+   "36": {
+    "replay": 0,
+    "retarget": 0,
+    "track": 0
+   },
+   "40": {
+    "replay": 2,
+    "retarget": 0,
+    "track": 0
+   },
+   "41": {
+    "replay": 7,
+    "retarget": 16,
+    "track": 16
+   },
+   "42": {
+    "replay": 9,
+    "retarget": 6,
+    "track": 6
+   },
+   "52": {
+    "replay": 3,
+    "retarget": 16,
+    "track": 2
+   },
+   "62": {
+    "replay": 5,
+    "retarget": 0,
+    "track": 0
+   }
+  },
+  "rates": {
+   "replay": 0.17222222222222222,
+   "retarget": 0.32222222222222224,
+   "track": 0.17777777777777778
+  },
+  "sources": {
+   "1": "m5_practice_1_trial1.npz",
+   "32": "m5_practice_32_trial9.npz",
+   "35": "m5_practice_35_trial1.npz",
+   "36": "m5_practice_36_trial2.npz",
+   "40": "m5_practice_40_trial1.npz",
+   "41": "m5_practice_41_trial0.npz",
+   "42": "m5_practice_42_trial4.npz",
+   "52": "m5_practice_52_trial0.npz",
+   "62": "m5_practice_62_trial0.npz"
+  },
+  "totals": {
+   "replay": 31,
+   "retarget": 58,
+   "track": 32
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "p0_audit__libero_90__retarget__s0__78f5675d",
+ "schema": 1,
+ "script": "experiments/p0_retarget.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-29T00:58:29+00:00",
+ "stream": null,
+ "tag": "retarget"
+}

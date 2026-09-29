@@ -1,0 +1,272 @@
+{
+ "artifacts": [
+  "results/robot/p0_demo"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "p0_demo_init.py match; p0_demo_init.py poses (settled)",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky2.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "p0_audit",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "78f5675d7df2e19964db9a5fc407225b0e8b4d47",
+  "short": "78f5675d"
+ },
+ "keys": {},
+ "metrics": {
+  "correction": "eval placements are read AFTER the client's 10 settle steps; the first version of this row read them right after set_init_state, before the objects dropped onto the table, and overstated the displacements by the ~13 cm drop (e.g. white bowl 13.9 -> 3.9 cm)",
+  "decision": "bindings can be read from the demo itself (21/21 held-out tasks matched exactly)",
+  "eval_vs_demo_median_cm": {
+   "1": {
+    "akita_black_bowl_1": 1.6370916366577148,
+    "wooden_cabinet_1": 1.3784795999526978
+   },
+   "3": {
+    "butter_2": 3.601968288421631,
+    "wooden_cabinet_1": 1.3784795999526978
+   },
+   "32": {
+    "ketchup_1": 2.239002227783203,
+    "white_cabinet_1": 1.3646032810211182
+   },
+   "34": {
+    "porcelain_mug_1": 2.5076904296875,
+    "white_yellow_mug_1": 2.6592345237731934
+   },
+   "35": {
+    "microwave_1": 1.1730363368988037
+   },
+   "36": {
+    "plate_1": 3.555021047592163,
+    "white_bowl_1": 3.9288175106048584
+   },
+   "37": {
+    "plate_1": 3.4754440784454346,
+    "white_bowl_1": 4.765997886657715
+   },
+   "39": {
+    "flat_stove_1": 1.1730363368988037
+   },
+   "4": {
+    "butter_1": 3.3167691230773926,
+    "wooden_cabinet_1": 1.3784795999526978
+   },
+   "40": {
+    "chefmate_8_frypan_1": 2.85386061668396,
+    "wooden_two_layer_shelf_1": 1.206817626953125
+   },
+   "41": {
+    "chefmate_8_frypan_1": 2.5651631355285645,
+    "wooden_two_layer_shelf_1": 1.206817626953125
+   },
+   "42": {
+    "chefmate_8_frypan_1": 2.317692995071411,
+    "wooden_two_layer_shelf_1": 1.206817626953125
+   },
+   "43": {
+    "white_bowl_1": 3.6367878913879395,
+    "wooden_two_layer_shelf_1": 1.206817626953125
+   },
+   "46": {
+    "alphabet_soup_1": 2.650146961212158,
+    "basket_1": 0.9496882557868958
+   },
+   "47": {
+    "basket_1": 1.0542020797729492,
+    "cream_cheese_1": 2.8743529319763184
+   },
+   "48": {
+    "basket_1": 0.7302838563919067,
+    "ketchup_1": 12.556411743164062
+   },
+   "5": {
+    "chocolate_pudding_1": 2.671210289001465,
+    "wooden_cabinet_1": 1.3784795999526978
+   },
+   "52": {
+    "basket_1": 0.8487300872802734,
+    "milk_1": 8.670705795288086
+   },
+   "53": {
+    "basket_1": 0.984607458114624,
+    "orange_juice_1": 8.692052841186523
+   },
+   "58": {
+    "ketchup_1": 12.540629386901855,
+    "wooden_tray_1": 1.4077303409576416
+   },
+   "59": {
+    "tomato_sauce_1": 2.0651023387908936,
+    "wooden_tray_1": 0.8403306007385254
+   },
+   "6": {
+    "wooden_cabinet_1": 0.7587025761604309
+   },
+   "62": {
+    "new_salad_dressing_1": 2.1146457195281982,
+    "wooden_tray_1": 0.818625807762146
+   },
+   "63": {
+    "akita_black_bowl_1": 1.8833461999893188,
+    "akita_black_bowl_2": 4.071715354919434,
+    "wooden_tray_1": 1.005505084991455
+   }
+  },
+  "matched": {
+   "1": {
+    "kept": 197,
+    "max_action_err": 2.895082740206334e-08,
+    "raw_key": "demo_0"
+   },
+   "3": {
+    "kept": 183,
+    "max_action_err": 2.8950827513085642e-08,
+    "raw_key": "demo_0"
+   },
+   "32": {
+    "kept": 200,
+    "max_action_err": 2.7247837652843998e-08,
+    "raw_key": "demo_1"
+   },
+   "34": {
+    "kept": 144,
+    "max_action_err": 2.8950827513085642e-08,
+    "raw_key": "demo_0"
+   },
+   "35": {
+    "kept": 131,
+    "max_action_err": 2.895082740206334e-08,
+    "raw_key": "demo_0"
+   },
+   "36": {
+    "kept": 218,
+    "max_action_err": 2.895082740206334e-08,
+    "raw_key": "demo_0"
+   },
+   "37": {
+    "kept": 120,
+    "max_action_err": 2.8950827513085642e-08,
+    "raw_key": "demo_0"
+   },
+   "39": {
+    "kept": 116,
+    "max_action_err": 2.7247837652843998e-08,
+    "raw_key": "demo_1"
+   },
+   "4": {
+    "kept": 173,
+    "max_action_err": 2.8950827513085642e-08,
+    "raw_key": "demo_0"
+   },
+   "40": {
+    "kept": 177,
+    "max_action_err": 2.8950827513085642e-08,
+    "raw_key": "demo_0"
+   },
+   "41": {
+    "kept": 195,
+    "max_action_err": 2.8950827513085642e-08,
+    "raw_key": "demo_1"
+   },
+   "42": {
+    "kept": 172,
+    "max_action_err": 2.8950827513085642e-08,
+    "raw_key": "demo_0"
+   },
+   "43": {
+    "kept": 144,
+    "max_action_err": 2.8950827513085642e-08,
+    "raw_key": "demo_0"
+   },
+   "46": {
+    "kept": 154,
+    "max_action_err": 2.8950827513085642e-08,
+    "raw_key": "demo_0"
+   },
+   "47": {
+    "kept": 158,
+    "max_action_err": 2.8950827513085642e-08,
+    "raw_key": "demo_0"
+   },
+   "48": {
+    "kept": 173,
+    "max_action_err": 2.8950827513085642e-08,
+    "raw_key": "demo_0"
+   },
+   "5": {
+    "kept": 168,
+    "max_action_err": 2.8950827513085642e-08,
+    "raw_key": "demo_0"
+   },
+   "52": {
+    "kept": 104,
+    "max_action_err": 2.8950827513085642e-08,
+    "raw_key": "demo_0"
+   },
+   "53": {
+    "kept": 148,
+    "max_action_err": 2.8950827513085642e-08,
+    "raw_key": "demo_0"
+   },
+   "58": {
+    "kept": 143,
+    "max_action_err": 2.8950827513085642e-08,
+    "raw_key": "demo_0"
+   },
+   "59": {
+    "kept": 128,
+    "max_action_err": 2.8950827513085642e-08,
+    "raw_key": "demo_0"
+   },
+   "6": {
+    "kept": 124,
+    "max_action_err": 2.895082740206334e-08,
+    "raw_key": "demo_0"
+   },
+   "62": {
+    "kept": 114,
+    "max_action_err": 2.8950827513085642e-08,
+    "raw_key": "demo_0"
+   },
+   "63": {
+    "kept": 195,
+    "max_action_err": 2.8950827513085642e-08,
+    "raw_key": "demo_10"
+   }
+  },
+  "n_matched": 24,
+  "unmatched": [
+   49,
+   50,
+   51
+  ]
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "p0_audit__libero_90__demo_init__s0__78f5675d",
+ "schema": 1,
+ "script": "experiments/p0_demo_init.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-29T01:16:22+00:00",
+ "stream": null,
+ "tag": "demo_init"
+}
