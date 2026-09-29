@@ -560,6 +560,7 @@ Object poses come from the simulator (an ORACLE the client sends) unless a row s
 
 - validated composition, first sources (m3_prereg p5_stream_amend2, EXPLORATORY): order A stream 855/1000 with 43 demos (8 compositions rejected); order B stream 832/1000 with 42 demos (9 compositions rejected); composed arrivals 201/300 vs their own demos 262/300 (-0.203, lower bound -0.347).
 - validated composition, every validated source per key (m3_prereg p5_stream_amend3, EXPLORATORY): order A stream 817/1000 with 40 demos (5 compositions rejected); order B stream 820/1000 with 37 demos (4 compositions rejected); composed arrivals 285/460 vs their own demos 396/460 (-0.241, lower bound -0.378).
+- practice-validated composition, >= 8 of 10 practice successes (m3_prereg p5_stream_amend4, EXPLORATORY): order A stream 875/1000 with 46 demos (11 compositions rejected); order B stream 870/1000 with 44 demos (11 compositions rejected); composed arrivals 186/200 vs their own demos 189/200 (-0.015, lower bound -0.085).
 - carry fixes on the practice states (ledger p5_stream tag dev_fixes): as registered 123, carry warped 82, generic transport 6 of 320.
 
 **Perception across tasks by object type (ledger p6_reader tag type_transfer).** A reader per object type trained on the other tasks' rendered scenes, tested on a held-out task's first frames of states 20-29: median 0.81 cm over 85 objects; types seen in no other task: microwave, milk, new_salad_dressing, orange_juice, wine_rack.

@@ -1,0 +1,49 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "P5 amendment 4 (exploratory): practice-validated composition",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky2.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "d21fd5015aa99e4c5a3fd0ab961aa8d5153d20b5",
+  "short": "d21fd501"
+ },
+ "keys": {},
+ "metrics": {
+  "amends": "m3_prereg tags p5_stream, p5_stream_amend1 (validated bindings); EXPLORATORY like amend2/3",
+  "data": "practice episodes: experiment dev_p5 (streamc, states 0-9; the 32 compositions of the gated plan already run), plus any new candidate the replanned stream reaches (run before the read); scoring: the existing states-30-49 runs, plus new compositions",
+  "rule": "PRACTICE-VALIDATED COMPOSITION (the plan's loop, section 3.6: compose -> practise -> keep what works): an arriving task whose keys are known practises its composed program (the table's first sources; 10 episodes, init states 0-9, the stream method: rendered-scene reader, predicted carry); it is composed if >= 8 of 10 succeed (the plan's stop threshold 0.80), else it requests its demo (whose validated keys enter the table)",
+  "status": "exploratory: S2's outcomes and the dev_p5 practice outcomes were seen before this rule; the threshold is the plan's 0.80",
+  "written_before": "the replanned stream was computed"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_90__p5_stream_amend4__s0__d21fd501",
+ "schema": 1,
+ "script": "(inline, session 2026-09-29)",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-29T23:06:16+00:00",
+ "stream": null,
+ "tag": "p5_stream_amend4"
+}

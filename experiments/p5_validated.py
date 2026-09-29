@@ -23,10 +23,34 @@ def load(f):
     return json.load(open(os.path.join(R, f)))
 
 
-def plan(multi=False):
+def practice_ok(thr=0.8):
+    """{(task, g, p): passes} from the practice runs of composed programs on init states 0-9 (experiment dev_p5, streamc)."""
+    import glob
+    import re
+    out = {}
+    for f in glob.glob(os.path.join(R, "dev_p5_*_streamc_*_*.json")):
+        t, g, p = map(int, re.match(r".*dev_p5_(\d+)_streamc_(\d+)_(\d+)\.json", f).groups())
+        e = json.load(open(f))["tasks"][str(t)]["episodes"]
+        out[(t, g, p)] = sum(x["success"] for x in e) / len(e) >= thr
+    return out
+
+
+def plan(multi=False, practice=False):
     pool = load("p5_pool.json")
     demo_ok = {int(t): v["k"] / v["n"] >= 0.5 for f in ("g27_generate.json", "g28_generate.json") for t, v in load(f).items()}
     comp_ok = {tuple(map(int, k.split("_"))): v["k"] / v["n"] >= 0.5 for k, v in load("g29_generate.json").items() if k.count("_") == 2}
+    unpractised = set()
+    if practice:                                              # amendment 4: the gate is practice through the stream method
+        prac = practice_ok()
+        comp_ok = {}
+
+        class Gate(dict):
+            def get(self, k, default=False):
+                if k not in prac:
+                    unpractised.add(k)
+                    return False
+                return prac[k]
+        comp_ok = Gate()
     a = sorted(int(t) for t in pool)
     random.Random(0).shuffle(a)
     out = {}
@@ -56,21 +80,25 @@ def plan(multi=False):
                          composed_second_half=sum(s["action"] == "compose" for s in steps[half:]))
         print(f"order {name}: {demos} demos ({out[name]['rejected']} compositions rejected by the check); composed "
               f"{out[name]['composed_first_half']} + {out[name]['composed_second_half']}")
-    json.dump(out, open(os.path.join(R, "p5_stream_plan_validated_multi.json" if multi else "p5_stream_plan_validated.json"), "w"), indent=1)
+    name = "p5_stream_plan_practice.json" if practice else ("p5_stream_plan_validated_multi.json" if multi else "p5_stream_plan_validated.json")
+    json.dump(out, open(os.path.join(R, name), "w"), indent=1)
+    if practice:
+        print("candidates without practice yet (run them on states 0-9, then replan):", sorted(unpractised))
+        json.dump(sorted(unpractised), open(os.path.join(R, "p5_practice_todo.json"), "w"))
     need = sorted({(s["task"], s["g"], s["p"]) for o in out.values() for s in o["steps"] if s["action"] == "compose"
                    and not os.path.exists(os.path.join(R, f"m3_final_{s['task']}_streamc_{s['g']}_{s['p']}.json"))})
     print("compositions to run before the read:", need)
     return out
 
 
-def read(record=False, multi=False):
+def read(record=False, multi=False, practice=False):
     import importlib.util
     from lifelong_ood import ledger, stats
     spec = importlib.util.spec_from_file_location("m3s", os.path.join(ROOT, "experiments", "m3_stats.py"))
     m3s = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(m3s)
     fin, _ = m3s.episodes("m3_final")
-    P = load("p5_stream_plan_validated_multi.json" if multi else "p5_stream_plan_validated.json")
+    P = load("p5_stream_plan_practice.json" if practice else ("p5_stream_plan_validated_multi.json" if multi else "p5_stream_plan_validated.json"))
     own = lambda t: fin[(str(t), "phasebind2_rjpred")]
     res, tab = {"orders": {}}, {}
     for o, pl in P.items():
@@ -95,7 +123,7 @@ def read(record=False, multi=False):
     print(f"composed arrivals vs their own demos: {kc} vs {ko} of {nn}, diff {d['diff']:+.3f}, lower bound {d['lo90']:+.3f}, "
           f"sign p {v['sign_p']:.3g} -> non-inferior {v['non_inferior']}")
     if record:
-        print(ledger.record("p5_stream", bench="libero_90", tag="validated_multi" if multi else "validated", seed=0, metrics=res,
+        print(ledger.record("p5_stream", bench="libero_90", tag="practice" if practice else ("validated_multi" if multi else "validated"), seed=0, metrics=res,
                             bytes=dict(experts=0, tree=0, codes=0, samples=0, teacher_copies=0, total=0), config={},
                             script="experiments/p5_validated.py", command=" ".join(sys.argv)))
     return res
@@ -103,6 +131,6 @@ def read(record=False, multi=False):
 
 if __name__ == "__main__":
     if sys.argv[1] == "plan":
-        plan("--multi" in sys.argv)
+        plan("--multi" in sys.argv, "--practice" in sys.argv)
     else:
-        read("--record" in sys.argv, "--multi" in sys.argv)
+        read("--record" in sys.argv, "--multi" in sys.argv, "--practice" in sys.argv)
