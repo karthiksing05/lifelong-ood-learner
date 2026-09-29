@@ -1,0 +1,54 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration of P2 (phase-localized negatives)",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky2.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "d1711fed8e3ba254c997883be3374220fc831d9f",
+  "short": "d1711fed"
+ },
+ "keys": {},
+ "metrics": {
+  "arm": "r24phase: experiment 1's learner r17bal with ONLY the negatives' location changed",
+  "hypotheses": {
+   "P2": "r24phase > r17bal (302/420) over the 420 paired episodes: exact two-sided sign test p < 0.05; the plan's bar (>= 331/420 = 302 + the 7-point MDE) reported beside it",
+   "secondary": "the same on the movable-object tasks only (the negatives differ only there)"
+  },
+  "negatives": "per failed episode, from its bit-exact replay with object state (p0_replay): the manipulated object = the object of interest that is LIFTED (> 1.5 cm while the gripper commands close) in the task's successes; if the failed episode never lifts it: the event is its first close command (or, if it never closes, the step of the eef's closest approach to the object); if it lifts it: the first release after the lift, else the step where the object falls back (< 1.5 cm) while still commanded closed, else the episode's last step. Negatives = the executed chunks at the event's query and the one before. Tasks without a lifted movable object (fixture tasks 35, 6, 39) keep r17bal's pointer-stall negatives",
+  "plan": "docs/PLAN_TRANSFER.md P2: phase-localized failure negatives (after P0b: 0.83 of the persistent failures are aim failures, where the hand pointer's stall mostly sits at the demo's last frames)",
+  "scoring": "init states 30-49 of the 21 tasks, 20 episodes each (m3_final tag lora_r24phase)",
+  "unchanged": "data (m5_practice + m6_round1 recordings), positives (demo every frame + every 5th frame of the successes, capped at 1000), window W = 2 queries, loss (DiffusionNFT beta 1), rank 16 on the action expert, 8 negatives per batch of 32, 1000 steps, lr 1e-4, seed 0 (experiments/r17_nft.py --negatives phase)",
+  "written_before": "any r24 training or rollout"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_90__p2__s0__d1711fed",
+ "schema": 1,
+ "script": "(inline, session 2026-09-28)",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-29T02:09:51+00:00",
+ "stream": null,
+ "tag": "p2"
+}

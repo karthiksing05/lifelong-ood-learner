@@ -54,6 +54,38 @@ def stall_queries(prog, states, W, every=5):
     return [every * k for k in range(max(0, q - W + 1), q + 1)], trace
 
 
+LIFT = 0.015
+
+
+def lifted_object(z):
+    """Index of the movable object of interest that rises > LIFT while the gripper commands close (None if none)."""
+    cmd = z["action"][:, 6] > 0
+    for j in range(len(z["movable"])):
+        if z["movable"][j] and np.any((z["obj_pos"][:, j, 2] - z["obj_pos"][0, j, 2] > LIFT) & cmd):
+            return j
+    return None
+
+
+def phase_event(z, obj):
+    """The failed phase's decisive step (ledger m3_prereg tag p2): never lifted -> the first close command (else the eef's closest
+    approach); lifted -> the first release after the lift, else the step where the object falls back while held, else the end."""
+    cmd = z["action"][:, 6] > 0
+    T = len(cmd)
+    h = z["obj_pos"][:, obj, 2] - z["obj_pos"][0, obj, 2]
+    up = np.where((h > LIFT) & cmd)[0]
+    if not len(up):
+        closes = [t for t in range(T) if cmd[t] and (t == 0 or not cmd[t - 1])]
+        if closes:
+            return closes[0]
+        return int(np.argmin(np.linalg.norm(z["eef_pos"] - z["obj_pos"][:, obj], axis=1)))
+    L = int(up[0])
+    rel = [t for t in range(L + 1, T) if not cmd[t] and cmd[t - 1]]
+    if rel:
+        return rel[0]
+    drop = [t for t in range(L + 1, T) if h[t] < LIFT and cmd[t]]
+    return drop[0] if drop else T - 1
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--task", type=int, required=True)
@@ -72,6 +104,8 @@ def main():
                     "RESCUED stall-point branch as positives (<= --max-rec per task, after the cap) + the last W queries up to the "
                     "own stall of each FAILED post-branch segment as negatives (prefix-gated branches of r18_branch_stats.json)")
     ap.add_argument("--max-rec", type=int, default=300)
+    ap.add_argument("--negatives", default="stall", choices=["stall", "phase"],
+                    help="phase (ledger m3_prereg tag p2): negatives at the failed phase's event from the bit-exact replay with object state")
     ap.add_argument("--bank-device", default=None, help="cpu: keep the cached prefixes in host memory (same values; for banks "
                     "larger than the GPU, e.g. with the recovery data)")
     a = ap.parse_args()
@@ -94,7 +128,20 @@ def main():
     for i in range(0, T0):
         pos_obs.append(d90.observation(ep, int(i))); pos_rows.append(demo_rows[i])
     neg_obs, neg_rows, stalls = [], [], []
-    for e in eps:
+    replay = {}
+    obj = None
+    if a.negatives == "phase":
+        for f in recs:
+            exp = os.path.basename(os.path.dirname(f)).split(f"_{t}_")[0]
+            k = int(os.path.basename(f).split("trial")[1][:-4])
+            rp = f"{R}/p0_replay/{exp}_{t}_trial{k}.npz"
+            if os.path.exists(rp):
+                replay[f] = dict(np.load(rp, allow_pickle=True))
+        votes = [lifted_object(z) for f, z in replay.items() if bool(z["rec_success"]) and bool(z["exact"])]
+        votes = [v for v in votes if v is not None]
+        obj = max(set(votes), key=votes.count) if votes else None
+        log(f"[r17] phase negatives: {len(replay)} replays, manipulated object {None if obj is None else replay[next(iter(replay))]['names'][obj]}")
+    for f, e in zip(recs, eps):
         acts, sts = e["action"], e["state"]
         T = len(acts)
         rows = D.to_rows(acts[D.chunk_indices(T, 10)[0]], norm)
@@ -104,9 +151,15 @@ def main():
             for i in range(0, T, a.lora_stride):
                 pos_obs.append(mk(int(i))); pos_rows.append(rows[i])
         else:
-            steps, trace = stall_queries(demo_prog, sts, a.window)
-            stalls.append(dict(trial=int(e["trial"]), stall_frame=int(trace.max()), demo_frames=len(demo_prog.mu),
-                               stall_query=int(steps[-1] // 5), queries=len(trace)))
+            if obj is not None and f in replay and bool(replay[f]["exact"]):
+                ev = phase_event(replay[f], obj)
+                q = ev // 5
+                steps = [5 * k for k in range(max(0, q - a.window + 1), q + 1)]
+                stalls.append(dict(trial=int(e["trial"]), phase_event=int(ev), phase_query=int(q), T=int(T)))
+            else:
+                steps, trace = stall_queries(demo_prog, sts, a.window)
+                stalls.append(dict(trial=int(e["trial"]), stall_frame=int(trace.max()), demo_frames=len(demo_prog.mu),
+                                   stall_query=int(steps[-1] // 5), queries=len(trace)))
             for i in steps:
                 if i < T:
                     neg_obs.append(mk(int(i))); neg_rows.append(rows[i])
@@ -144,7 +197,7 @@ def main():
         log(f"[r17] recovery data: {len(brs)} branches, {rec_pos} positive frames from rescued segments, {rec_neg} negatives")
     n_fail = sum(1 for e in eps if not bool(e["success"]))
     log(f"[r17] task {t} '{text}': {len(eps)} rollouts ({n_fail} failed); {len(pos_obs)} positive frames, {len(neg_obs)} negative "
-        f"frames (W = {a.window}); stall at a median {np.median([s['stall_frame'] / s['demo_frames'] for s in stalls]) if stalls else float('nan'):.2f} "
+        f"frames (W = {a.window}); stall at a median {np.median([s['stall_frame'] / s['demo_frames'] for s in stalls if 'stall_frame' in s]) if any('stall_frame' in s for s in stalls) else float('nan'):.2f} "
         f"of the demo")
     from lifelong_ood.policy.backbone import PolicyBackbone
     bk = PolicyBackbone("pi05_libero", device="cuda")

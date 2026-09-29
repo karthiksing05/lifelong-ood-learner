@@ -1,0 +1,55 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "amendment of the P1 pre-registration",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky2.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "d1711fed8e3ba254c997883be3374220fc831d9f",
+  "short": "d1711fed"
+ },
+ "keys": {},
+ "metrics": {
+  "amends": "m3_prereg tag p1",
+  "change": {
+   "arms": {
+    "A": "phasebind (as registered: bindings + the 258 KB fold on the demo's contact frames)",
+    "B": "phasebind_nofold: the bindings alone through the prior (no fold)"
+   },
+   "hypotheses": "P1 holds for an arm if its difference to dimfold_s1_last2 is >= +0.11 with an exact two-sided sign test p < 0.05 after Holm over the two arms; the kill rule (one-sided 95% lower bound < -0.05) applies per arm; A vs B reported descriptively"
+  },
+  "reason": "smoke tests before any read (task 52, experiment smoke, excluded): (1) the planner predicted that each commanded goal is reached, but the OSC controller lags its goal, so within a 5-action chunk the gripper closed before the hand arrived: with no policy the planner scored 0/10 on tasks 52, 32, 41 where step-wise tracking works; it now predicts the source's ACHIEVED (lagged) path after the first action (feedback at every query) and scores 6/10, 10/10, 10/10 without the policy (init states 30-39); (2) the fold's contact windows start 30 demo frames before each gripper event, so the fold (trained at the demo's placement) replaces the retargeted plan over the final approach, which is where the binding acts",
+  "unchanged": "tasks (42, 32, 1, 35, 40, 36, 52, 62, 41), init states 30-49, the control arm, the oracle object poses, P6 after a pass",
+  "written_before": "any P1 rollout of the read"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_90__p1_amend1__s0__d1711fed",
+ "schema": 1,
+ "script": "(inline, session 2026-09-28)",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-29T03:37:29+00:00",
+ "stream": null,
+ "tag": "p1_amend1"
+}

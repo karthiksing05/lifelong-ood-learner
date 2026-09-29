@@ -1,0 +1,111 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/p4_growth.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "experiments/p4_growth.py --record",
+ "config": {
+  "K": 8,
+  "record": true
+ },
+ "env": {
+  "device": "cpu",
+  "host": "jill.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": "3978949",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "p4_growth",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "d1711fed8e3ba254c997883be3374220fc831d9f",
+  "short": "d1711fed"
+ },
+ "keys": {},
+ "metrics": {
+  "K": 8,
+  "base_leaves": 10249,
+  "gate": "growth changes the executed teacher: run the rollouts",
+  "median_teacher_rms_diff": 0.01616110047325492,
+  "per_task": {
+   "36": {
+    "base_matches_r9": 0.0,
+    "new_leaves": 35302,
+    "rms_to_demo_base": 0.013653327710926533,
+    "rms_to_demo_grown": 0.0122830206528306,
+    "share_from_new": 0.374180865006553,
+    "teacher_rms_diff": 0.012534303590655327
+   },
+   "48": {
+    "base_matches_r9": 0.0,
+    "new_leaves": 35417,
+    "rms_to_demo_base": 0.014915942214429379,
+    "rms_to_demo_grown": 0.013674716465175152,
+    "share_from_new": 0.4203137902559867,
+    "teacher_rms_diff": 0.013640412129461765
+   },
+   "52": {
+    "base_matches_r9": 0.0,
+    "new_leaves": 36744,
+    "rms_to_demo_base": 0.02827322855591774,
+    "rms_to_demo_grown": 0.025320425629615784,
+    "share_from_new": 0.43956043956043955,
+    "teacher_rms_diff": 0.021760467439889908
+   },
+   "53": {
+    "base_matches_r9": 0.0,
+    "new_leaves": 35670,
+    "rms_to_demo_base": 0.015105980448424816,
+    "rms_to_demo_grown": 0.013631612062454224,
+    "share_from_new": 0.37258687258687256,
+    "teacher_rms_diff": 0.013299822807312012
+   },
+   "58": {
+    "base_matches_r9": 0.0,
+    "new_leaves": 36108,
+    "rms_to_demo_base": 0.020345021039247513,
+    "rms_to_demo_grown": 0.018613308668136597,
+    "share_from_new": 0.4025974025974025,
+    "teacher_rms_diff": 0.018681788817048073
+   },
+   "62": {
+    "base_matches_r9": 0.0,
+    "new_leaves": 36671,
+    "rms_to_demo_base": 0.025712406262755394,
+    "rms_to_demo_grown": 0.022149162366986275,
+    "share_from_new": 0.4473684210526316,
+    "teacher_rms_diff": 0.023409957066178322
+   }
+  },
+  "targets": [
+   36,
+   48,
+   52,
+   53,
+   58,
+   62
+  ]
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "p4_growth__libero_90__gate__s0__d1711fed",
+ "schema": 1,
+ "script": "experiments/p4_growth.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-29T02:45:34+00:00",
+ "stream": null,
+ "tag": "gate"
+}

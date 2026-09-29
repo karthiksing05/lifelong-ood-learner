@@ -75,17 +75,17 @@ def match(tasks):
                         continue
                     err = float(np.abs(A - ipec).max())
                     if err < 1e-5 and (best is None or err < best[0]):
-                        best = (err, key, np.where(keep)[0], np.asarray(f["data"][key]["states"]))
+                        best = (err, key, np.where(keep)[0], np.asarray(f["data"][key]["states"]), acts[keep])
                 if best is not None:
                     used = (i, ep)
                     break
         if best is None:
             print(f"[p0a] task {t}: no raw demo matches the text's IPEC episodes", flush=True)
             continue
-        err, key, kept, states = best
+        err, key, kept, states, kept_actions = best
         i, ep = used
         np.savez_compressed(os.path.join(OUT, f"{t}_match.npz"), raw_key=key, kept=kept, states=states[kept], max_err=err,
-                            ipec_state=np.asarray(ep["state"], np.float32), ipec_rank=i)
+                            ipec_state=np.asarray(ep["state"], np.float32), ipec_rank=i, actions=np.asarray(kept_actions, np.float32))
         print(f"[p0a] task {t}: IPEC episode {i} of the text = raw {key} ({len(kept)} kept steps), max |action diff| {err:.2e}", flush=True)
 
 

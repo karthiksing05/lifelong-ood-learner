@@ -91,6 +91,14 @@ def arm_spec(tid, arm, fold, demo=0):
         ch = json.load(open(os.path.join(R, "r14_retrieval.json")))[str(tid)]
         return ((f"prompt:{ch['prompt_task']}", "0", False) if arm == "promptret"
                 else (f"lora:{os.path.join(R, 'r3_lora_' + str(ch['adapter_task']) + '.pt')}", "0", False))
+    if arm == "phasebind":                                               # P1: the demo's phases re-anchored on the objects + the fold
+        return (f"phasebind:{tid}?expert={EX if fold else ''}&foldprog={F0 if fold else ''}&var=0.001", "0", False)
+    if arm == "phasebind_nofold":                                        # P1 arm B: the bindings alone through the prior
+        return (f"phasebind:{tid}?fold=0&var=0.001", "0", False)
+    if arm == "growleaf":                                                # P4: leaf borrowing over the success-grown library + the fold
+        prog = P(f"r26_grow_{tid}_s1.npz")
+        return ((f"hybrid:{prog}?expert={EX}&foldprog={F0}&{C}&window=20", f"prog:{prog}@{F0}", False) if fold
+                else (f"program:{prog}?{C}&window=20", f"prog:{prog}", False))
     if arm == "leafbest":                                                # leaf borrowing + the fold where the demo grasps
         return table["leaffold_s1_last2"] if fold else table["leaf_s1"]
     if arm == "dimbest":                                                 # borrowing + the fold where the demo grasps
@@ -151,7 +159,8 @@ def main():
             if os.path.exists(out) or os.path.basename(out) in running:
                 continue
             spec = dict(MODE=s[0], SUITE="libero_90", TASKS=tid, TRIALS=trials, FIRST=first, EXPERIMENT=a.experiment, TAG=tag,
-                        PROGRAM_BYTES=s[1], OUT=out, **({"RECORD": "1"} if a.record else {}), **({"SERVE_SEED": str(a.seed)} if a.seed else {}))
+                        PROGRAM_BYTES=s[1], OUT=out, **({"RECORD": "1"} if a.record else {}), **({"SERVE_SEED": str(a.seed)} if a.seed else {}),
+                        **({"OBJECTS": "1"} if arm.startswith("phasebind") else {}))
             (specs_dep if s[2] else specs_free).append(spec)
         dep = None
         if specs_dep and not os.path.exists(os.path.join(R, f"r3_lora_{tid}{dsfx}.pt")):

@@ -1,0 +1,54 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration of 3.8 (generated demonstrations -> LoRA)",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky2.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "d1711fed8e3ba254c997883be3374220fc831d9f",
+  "short": "d1711fed"
+ },
+ "keys": {},
+ "metrics": {
+  "generator": "experiments/p38_generate.py: the task's ONE demo (IPEC episode 0 = raw LIBERO demo, P0a: object poses and actions of every kept step) executed at init states 0-19 (the instances the first composition practised on; one env per task, states in order) by P3's executor as committed (object-state phases: approach in the object's frame, object-centric carry relative to the receptacle or the world, release phase; controller-goal tracking). Tasks whose demo lifts no movable object (35, 6, 39) are tracked in the world frame. Successes are verified by the simulator and recorded in the practice format (224-px images, 8-d state, executed actions)",
+  "hypotheses": {
+   "G1": "PRIMARY: r25gen > the one-demo LoRA (practice_lora, 252/420): exact two-sided sign test p < 0.05 over 420 paired episodes",
+   "G2": "r25gen non-inferior to base_lora_learn (274/420) at -0.10: one-sided 95% lower bound of the paired difference (two-level bootstrap)",
+   "descriptive": "generation success per task; policy rollouts spent on practice: 0 (the generator runs no policy)"
+  },
+  "learner": "r25gen: experiments/r15_consolidate.py --lora --practice g25 (LoRA rank 16 on the action expert; the demo every frame + every 5th frame of the generated successes, capped at 1000; 1000 steps; seed 0): the recipe of base_lora_learn (lora_learn, 274/420) with the composition's practice successes replaced by the generator's",
+  "plan": "docs/PLAN_TRANSFER.md 3.8: object-relative retargeting as a DATA GENERATOR (privileged sim state used only to generate; the learned policy acts from images)",
+  "scoring": "init states 30-49 of the 21 tasks, 20 episodes each (m3_final tag lora_r25gen)",
+  "written_before": "any generation run"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_90__g38__s0__d1711fed",
+ "schema": 1,
+ "script": "(inline, session 2026-09-28)",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-29T02:18:11+00:00",
+ "stream": null,
+ "tag": "g38"
+}

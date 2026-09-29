@@ -162,6 +162,40 @@ def main():
                             var=float(rest[2]) if len(rest) > 2 and rest[2] else None,
                             stall=int(rest[3]) if len(rest) > 3 and rest[3] else 0)
         logging.info(f"hybrid: program {prog_path} ({int(prog.fold.sum()) if prog.fold is not None else 0} fold frames of {len(prog.mu)}), expert {key}")
+    elif a.mode.startswith("phasebind:"):
+        # phasebind:<task>?expert=<fold expert.pt>&foldprog=<fold program.npz>&var=0.001 -- P1 (docs/PLAN_TRANSFER.md): the task's ONE demo
+        # as phases re-anchored on the objects' current poses (the client's --objects), guided through the prior; the fold on the demo's
+        # contact frames
+        import importlib.util
+        import numpy as np
+        from lifelong_ood.policy import adapt
+        from lifelong_ood.policy import data as D
+        from lifelong_ood.policy.phase import PhaseBindHooks
+        body, q = (a.mode[len("phasebind:"):].split("?", 1) + [""])[:2]
+        kv = dict(x.split("=", 1) for x in q.split("&") if x)
+        t = int(body)
+        R = os.path.join(ROOT, "results", "robot")
+        spec = importlib.util.spec_from_file_location("p3", os.path.join(ROOT, "experiments", "p3_compose_sim.py"))
+        P3 = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(P3)
+        d = np.load(os.path.join(R, "p0_demo", f"{t}.npz"), allow_pickle=True)
+        m = np.load(os.path.join(R, "p0_demo", f"{t}_match.npz"), allow_pickle=True)
+        src = dict(names=d["names"], movable=d["movable"], obj_pos=d["demo_obj_pos"], obj_quat=d["demo_obj_quat"],
+                   eef_pos=d["demo_eef_pos"], eef_quat=d["demo_eef_quat"], action=np.asarray(m["actions"], np.float32))
+        g, p_ = P3.phases(src, "grasp"), P3.phases(src, "place")
+        if g and p_:
+            parts = g + p_
+        else:
+            GP, GQ = P3.P0.goals(src)
+            parts = [(src, GP, GQ, 0, len(src["action"]), None, None, None)]
+        state, key, fold = None, None, None
+        if kv.get("expert") and os.path.exists(kv["expert"]) and kv.get("fold", "1") != "0":
+            state, key, _ = adapt.load(bk, kv["expert"])
+            from lifelong_ood.policy.compose import DemoProgram
+            fold = DemoProgram.load(kv["foldprog"]).fold
+            assert len(fold) == len(src["action"]), (len(fold), len(src["action"]))
+        hooks = PhaseBindHooks(src, parts, D.Norm.load(), fold=fold, state=state, key=key, var=float(kv.get("var", 1e-3)), H=bk.H)
+        logging.info(f"phasebind: task {t}, {len(parts)} phases ({'object phases' if g and p_ else 'world frame'}), fold {key}")
     elif a.mode.startswith("lora:"):
         # lora:<expert.pt> -- the few-shot baseline: a flat adapter on the action expert, always on
         from lifelong_ood.policy import adapt

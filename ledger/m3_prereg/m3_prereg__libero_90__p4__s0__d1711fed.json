@@ -1,0 +1,51 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration of P4 (library growth)",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky2.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "d1711fed8e3ba254c997883be3374220fc831d9f",
+  "short": "d1711fed"
+ },
+ "keys": {},
+ "metrics": {
+  "base": "the leaf library (the prior's chunk means at the 40 training tasks' frames, results/robot/r2b_libero_40.npz mu) and the target's leaf program (dimcode K = 8 over it, r9_leaf_<t>_s1)",
+  "gate": "OFFLINE: per target, the rms difference between the grown and the base programs' executed teachers (decoded chunk means) and the share of borrowed (frame, dimension) pairs that come from the new leaves; if the median rms difference over the 6 targets is < 0.01, growth is bookkeeping (it does not change what is executed) and the rollout read is skipped",
+  "grown": "the base leaves + every 5th executed 10-step chunk of every SUCCESSFUL recorded practice episode (m5_practice, m6_round1, m6_round2) of the 20 OTHER held-out tasks (never the target's own); the target's demo re-encoded with dimcode K = 8 over it (experiments/p4_growth.py)",
+  "plan": "docs/PLAN_TRANSFER.md P4: does library growth at the success level change what a composition executes, and its success?",
+  "rollouts": "if the gate passes: leaf borrowing + the 258 KB fold where the demo grasps (the leafbest arm) with the grown vs the base program, 6 tasks x init states 30-49 (120 paired); kill (the plan's) < 5 points",
+  "targets": "6 pick-and-place tasks with leaf-borrowing programs: 36, 48, 52, 53, 58, 62",
+  "written_before": "any P4 computation"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_90__p4__s0__d1711fed",
+ "schema": 1,
+ "script": "(inline, session 2026-09-28)",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-29T02:42:12+00:00",
+ "stream": null,
+ "tag": "p4"
+}

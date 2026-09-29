@@ -55,6 +55,8 @@ def main():
     ap.add_argument("--no-meta", action="store_true")
     ap.add_argument("--record", action="store_true", help="save every episode's policy-input frames, states, executed actions "
                     "and outcome to <out without .json>_rec/task<t>_trial<k>.npz (learning from practice)")
+    ap.add_argument("--objects", action="store_true", help="send (and record) the poses of the objects of interest: meta/obj_names, "
+                    "meta/obj_pos, meta/obj_quat (xyzw); privileged simulator state for the phase-binding server (docs/PLAN_TRANSFER.md P1)")
     ap.add_argument("--branches", default="", help="a JSON list of stall-point branches of ONE task (experiments/r18_branch.py): "
                     "{id, trial, seed_base, at, variant}; each replays a recorded episode's noise up to query `at`, then the "
                     "server changes one knob; replaces --first-trial / --trials.  The prefix (queries < at) executes the recorded "
@@ -97,7 +99,19 @@ def main():
             obs = env.set_init_state(init_states[k % len(init_states)])
             plan = collections.deque()
             t, calls, done, frames, t0 = 0, 0, False, [], time.time()
-            rec = dict(state=[], action=[], image=[], wrist=[]) if a.record else None
+            rec = dict(state=[], action=[], image=[], wrist=[], obj_pos=[], obj_quat=[]) if a.record else None
+
+            def objects(obs):
+                names = list(env.obj_of_interest)
+                P, Q = [], []
+                for n in names:
+                    if f"{n}_pos" in obs:
+                        P.append(np.asarray(obs[f"{n}_pos"], np.float64)); Q.append(np.asarray(obs[f"{n}_quat"], np.float64))
+                    else:
+                        bid = env.env.obj_body_id[n]
+                        w, x, y, zq = env.env.sim.data.body_xquat[bid]
+                        P.append(np.array(env.env.sim.data.body_xpos[bid])); Q.append(np.array([x, y, zq, w]))
+                return names, np.asarray(P), np.asarray(Q)
             err = None
             while t < max_steps + a.wait:
                 try:
@@ -121,6 +135,9 @@ def main():
                             if br is not None:
                                 el.update({"meta/seed_base": int(br["seed_base"]), "meta/branch_at": int(br["at"]),
                                            "meta/variant": str(br["variant"])})
+                        if a.objects:
+                            on_, op_, oq_ = objects(obs)
+                            el.update({"meta/obj_names": on_, "meta/obj_pos": op_.reshape(-1).tolist(), "meta/obj_quat": oq_.reshape(-1).tolist()})
                         ff = prefix is not None and calls < int(br["at"]) and a.replan * (calls + 1) <= len(prefix)
                         if ff:
                             el["meta/ff"] = True
@@ -133,6 +150,9 @@ def main():
                     if rec is not None:
                         rec["state"].append(np.asarray(st8, np.float32)); rec["action"].append(act)
                         rec["image"].append(img); rec["wrist"].append(wimg)
+                        if a.objects:
+                            _, op_, oq_ = objects(obs)
+                            rec["obj_pos"].append(op_.astype(np.float32)); rec["obj_quat"].append(oq_.astype(np.float32))
                     obs, _, done, _ = env.step(act.tolist())
                     if done:
                         break
@@ -146,8 +166,10 @@ def main():
             if rec is not None and rec["action"]:
                 rec_dir = pathlib.Path(a.out).with_suffix("").parent / (pathlib.Path(a.out).stem + "_rec")
                 rec_dir.mkdir(parents=True, exist_ok=True)
+                extra = dict(obj_pos=np.stack(rec["obj_pos"]), obj_quat=np.stack(rec["obj_quat"]), obj_names=np.array(list(env.obj_of_interest))) \
+                    if (a.objects and rec["obj_pos"]) else {}
                 np.savez_compressed(str(rec_dir / (f"task{tid}_trial{k}" + ("" if br is None else f"_{br['id']}") + ".npz")), state=np.stack(rec["state"]), action=np.stack(rec["action"]),
-                                    image=np.stack(rec["image"]), wrist=np.stack(rec["wrist"]), success=bool(done), trial=k, task=tid)
+                                    image=np.stack(rec["image"]), wrist=np.stack(rec["wrist"]), success=bool(done), trial=k, task=tid, **extra)
             if frames:
                 import imageio
                 imageio.mimwrite(str(vid_dir / f"task{tid}_trial{k}_{'success' if done else 'failure'}.mp4"), frames, fps=10)

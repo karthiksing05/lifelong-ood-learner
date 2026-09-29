@@ -1,0 +1,159 @@
+{
+ "artifacts": [
+  "results/robot/g25_generate.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "p38_generate.py --workers 14 (job 3978969)",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky2.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "g38_generate",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "d1711fed8e3ba254c997883be3374220fc831d9f",
+  "short": "d1711fed"
+ },
+ "keys": {},
+ "metrics": {
+  "attempts": 420,
+  "generated_successes": 331,
+  "per_task": {
+   "1": {
+    "how": "phases",
+    "k": 18,
+    "n": 20
+   },
+   "3": {
+    "how": "phases",
+    "k": 20,
+    "n": 20
+   },
+   "32": {
+    "how": "phases",
+    "k": 20,
+    "n": 20
+   },
+   "34": {
+    "how": "phases",
+    "k": 20,
+    "n": 20
+   },
+   "35": {
+    "how": "world",
+    "k": 20,
+    "n": 20
+   },
+   "36": {
+    "how": "phases",
+    "k": 20,
+    "n": 20
+   },
+   "37": {
+    "how": "phases",
+    "k": 20,
+    "n": 20
+   },
+   "39": {
+    "how": "world",
+    "k": 2,
+    "n": 20
+   },
+   "4": {
+    "how": "phases",
+    "k": 20,
+    "n": 20
+   },
+   "40": {
+    "how": "phases",
+    "k": 17,
+    "n": 20
+   },
+   "41": {
+    "how": "phases",
+    "k": 20,
+    "n": 20
+   },
+   "42": {
+    "how": "world",
+    "k": 9,
+    "n": 20
+   },
+   "43": {
+    "how": "phases",
+    "k": 15,
+    "n": 20
+   },
+   "48": {
+    "how": "phases",
+    "k": 0,
+    "n": 20
+   },
+   "5": {
+    "how": "phases",
+    "k": 15,
+    "n": 20
+   },
+   "52": {
+    "how": "phases",
+    "k": 12,
+    "n": 20
+   },
+   "53": {
+    "how": "phases",
+    "k": 19,
+    "n": 20
+   },
+   "58": {
+    "how": "phases",
+    "k": 4,
+    "n": 20
+   },
+   "6": {
+    "how": "world",
+    "k": 20,
+    "n": 20
+   },
+   "62": {
+    "how": "phases",
+    "k": 20,
+    "n": 20
+   },
+   "63": {
+    "how": "phases",
+    "k": 20,
+    "n": 20
+   }
+  },
+  "placements": "init states 0-19 (the first composition's practice instances)",
+  "policy_rollouts": 0,
+  "rate": 0.7880952380952381,
+  "reference": "the first composition's practice on the same instances: 256/420 (m5_learn_stats)"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "g38_generate__libero_90__demo_retarget__s0__d1711fed",
+ "schema": 1,
+ "script": "experiments/p38_generate.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-29T03:05:53+00:00",
+ "stream": null,
+ "tag": "demo_retarget"
+}

@@ -46,7 +46,7 @@ def arm_bytes(t, arm):
     from lifelong_ood.policy.compose import DemoProgram
     if arm == "zeroshot":
         return 0
-    if arm.startswith(("lora_r16", "lora_r17", "lora_r18", "lora_r20", "lora_r21")):  # loop learners, experiments 1-2, family tests
+    if arm.startswith(("lora_r16", "lora_r17", "lora_r18", "lora_r20", "lora_r21", "lora_r24", "lora_r25")):  # loop learners, experiments, family tests, P2
         return adapter_bytes(t, arm[5:])
     if arm == "lora":
         r = [x for x in ledger.load("r3_fewshot") if str(x["metrics"]["task"]) == str(t) and not x.get("tag")]
@@ -79,7 +79,29 @@ def arm_bytes(t, arm):
                 "learned_mem0": lambda: learned_bytes(t, memory=False, fold="refit"),
                 "learned_origfold": lambda: learned_bytes(t, memory=True, fold="orig"),
                 "lora_learn": lambda: r15_row(t, "_lora")["bytes"]["experts"] if r15_row(t, "_lora") else 0,
+                # P4: the program over the grown leaf library + the fold (the library's added leaves are shared, charged separately)
+                "growleaf": lambda: with_fold(f"{R}/r26_grow_{t}_s1.npz", t, "_approach_last2").bytes() + fold_bytes(t, "_approach_last2"),
+                # P1: the demo's goal sequence (position 3 + rotation quaternion 4 + gripper 1, fp16 per frame) + two 14 B anchors per
+                # phase + the fold where the demo grasps
+                "phasebind": lambda: phasebind_bytes(t),
                 **{f"{g}_d1": (lambda g=g: demo_arm_bytes(t, g, 1)) for g in ("raw_replay", "dimcode_s1", "dimfold_s1_last2", "lora", "seg_s5")}}[arm]())
+
+
+def phasebind_bytes(t):
+    import importlib.util
+    import numpy as np
+    m = np.load(f"{R}/p0_demo/{t}_match.npz", allow_pickle=True)
+    T = len(m["actions"])
+    spec = importlib.util.spec_from_file_location("p3", os.path.join(os.path.dirname(os.path.abspath(__file__)), "p3_compose_sim.py"))
+    P3 = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(P3)
+    d = np.load(f"{R}/p0_demo/{t}.npz", allow_pickle=True)
+    src = dict(names=d["names"], movable=d["movable"], obj_pos=d["demo_obj_pos"], obj_quat=d["demo_obj_quat"],
+               eef_pos=d["demo_eef_pos"], eef_quat=d["demo_eef_quat"], action=np.asarray(m["actions"], np.float32))
+    g, p = P3.phases(src, "grasp"), P3.phases(src, "place")
+    n_phases = len(g) + len(p) if (g and p) else 1
+    fold = fold_bytes(t, "_approach_last2") if os.path.exists(f"{R}/r4_{t}_approach_last2_expert.pt") else 0
+    return 2 * 8 * T + 28 * n_phases + fold
 
 
 XFIT_A = {36, 39, 42, 1, 34, 37, 40, 52, 53, 62}                        # grasping tasks of group A (their fold: xfit_B)

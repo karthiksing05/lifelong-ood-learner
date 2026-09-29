@@ -1,0 +1,54 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration of P1 (phase bindings through the policy)",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky2.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "d1711fed8e3ba254c997883be3374220fc831d9f",
+  "short": "d1711fed"
+ },
+ "keys": {},
+ "metrics": {
+  "arm": "phasebind (lifelong_ood/policy/phase.py PhaseBindHooks; experiments/serve_guided.py phasebind:<t>): the task's ONE demo cut into phases from object state (P3's rule: approach in the grasped object's frame, object-centric carry relative to the receptacle, release; a demo that lifts nothing is tracked in the world frame), re-anchored at each phase start on the objects' CURRENT poses sent by the client (--objects: privileged simulator state, an oracle), bridged and tracked by controller goals; each query plans the next 10 actions and samples the frozen policy through them as the COMPOSE guide (constant weight 1, variance 1e-3); on the demo's contact frames the task's 258 KB fold acts instead (HybridHooks' rule, the same fold files as dimfold_s1_last2)",
+  "control": "dimfold_s1_last2 (borrowing + the 258 KB fold, the current program; m3_final)",
+  "hypotheses": {
+   "P1": "phasebind - dimfold_s1_last2 >= +0.11 over the 180 pairs with an exact two-sided sign test p < 0.05",
+   "kill": "the one-sided 95% lower bound of the paired difference (two-level bootstrap) < -0.05",
+   "secondary": "the same over all 21 held-out tasks if P1 passes (420 paired); P6 (a learned pose reader in place of the oracle) follows a pass"
+  },
+  "plan": "docs/PLAN_TRANSFER.md P1: do object-relative bindings rescue the persistent failures when executed through the frozen policy?",
+  "tasks": "the 9 concentrated-failure tasks 42, 32, 1, 35, 40, 36, 52, 62, 41; init states 30-49 (180 paired episodes)",
+  "written_before": "any phasebind rollout of the read (a 3-episode smoke test on task 52, experiment smoke, is excluded)"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_90__p1__s0__d1711fed",
+ "schema": 1,
+ "script": "(inline, session 2026-09-28)",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-29T02:55:19+00:00",
+ "stream": null,
+ "tag": "p1"
+}
