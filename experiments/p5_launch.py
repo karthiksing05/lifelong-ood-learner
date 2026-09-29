@@ -31,13 +31,13 @@ def main():
     want = [(int(t), "phasebind2_rjpred") for t in pool] if "own" in kinds else []
     for f in a.plans.split(","):
         for o in json.load(open(os.path.join(R, f))).values():
-            for k in ("streamc", "streamw"):
+            for k in ("streamc", "streamw", "streamt"):
                 if k in kinds:
                     want += [(s["task"], f"{k}@{s['g']}-{s['p']}") for s in o["steps"] if s["action"] == "compose"]
     running = set(subprocess.run(["bash", "-c", "cat results/robot/.packs/p_*.tsv"], capture_output=True, text=True, cwd=ROOT).stdout.split())
     specs = []
     for t, arm in dict.fromkeys(want):
-        tag = arm.replace("streamc@", "streamc_").replace("streamw@", "streamw_").replace("-", "_")
+        tag = arm.replace("streamc@", "streamc_").replace("streamw@", "streamw_").replace("streamt@", "streamt_").replace("-", "_")
         out = os.path.join(R, f"{a.experiment}_{t}_{tag}.json")
         if os.path.exists(out) or f"OUT={out}" in running:
             continue

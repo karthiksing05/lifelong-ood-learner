@@ -162,7 +162,7 @@ def type_of(name):
     return re.sub(r"_\d+$", "", str(name))
 
 
-def compose(target_names, grasp_src, place_src, obj_type=None, obj_name=None, rec_name=None):
+def compose(target_names, grasp_src, place_src, obj_type=None, obj_name=None, rec_name=None, transport=False):
     """Cross-task composition (rules v2): the approach of `grasp_src` (a demo that manipulates an object of the target's object type)
     followed by the carry and the rest of `place_src` (a demo with the target's goal relation), each relabelled onto the target
     scene's objects: the grasp source's manipulated object -> the target object of its type; the place source's manipulated
@@ -184,7 +184,15 @@ def compose(target_names, grasp_src, place_src, obj_type=None, obj_name=None, re
 
     zg = relabel(grasp_src, gn, {g[0][6]: obj_t})
     zp = relabel(place_src, pn, {p[1][7]: obj_t, p[1][6]: rec_t})
-    return [(zg,) + g[0][1:]] + [(zp,) + q[1:] for q in p[1:]]
+    rest = [(zp,) + q[1:] for q in p[1:]]
+    if transport:
+        # keep only the PLACE binding of the source's carry: its descent onto the receptacle (from the held object's last frame at the
+        # carry's height); the route there is the source layout's and is replaced by a generic lift-move transport (role "place")
+        z_, GP, GQ, s0, s1, role, ref, held = rest[0]
+        hz = np.asarray(z_["obj_pos"])[s0:s1, held, 2]
+        d0 = s0 + int(np.where(hz >= hz.max() - 0.01)[0][-1])
+        rest[0] = (z_, GP, GQ, d0, s1, "place", ref, held)
+    return [(zg,) + g[0][1:]] + rest
 
 
 class PhaseBindHooks:
@@ -245,6 +253,16 @@ class PhaseBindHooks:
             pos = ((f - rd["mx"]) @ rd["W"] + rd["my"]).reshape(-1, 3)
             quat = {str(n): self.z["obj_quat"][0, j] for j, n in enumerate(self.names)}
             self._objs = {str(n): (pos[i], q2m(quat.get(str(n), np.array([0, 0, 0, 1.0])))) for i, n in enumerate(rd["names"])}
+            yr = rd.get("yaw")
+            if yr is not None and "W" in yr:                   # objects whose yaw varies (books): read it (experiments/p6_yaw_reader.py)
+                P = ((f - yr["mx"]) @ yr["W"] + yr["my"]).reshape(-1)
+                vn = [str(n) for n, v in zip(yr["names"], yr["vary"]) if v]
+                k = len(vn)
+                for j, n in enumerate(vn):
+                    if n in self._objs:
+                        p_, R_ref = self._objs[n]
+                        th = math.atan2(P[k + j], P[j]) - math.atan2(R_ref[1, 0], R_ref[0, 0])
+                        self._objs[n] = (p_, aa2m([0.0, 0.0, th]) @ R_ref)
             print(f"[phasebind] reader episode {(meta or {}).get('episode')}: {pos.round(5).tolist()}", flush=True)
         return obs
 
@@ -286,12 +304,24 @@ class PhaseBindHooks:
                 Rc = aa2m(Da * wgt)
                 goals[i] = pose(goals[i][:3, 3] + wgt * Dp, Rc @ goals[i][:3, :3])
                 achieved[i] = pose(achieved[i][:3, 3] + wgt * Dp, Rc @ achieved[i][:3, :3])
-        n = max(5, int(math.ceil(np.linalg.norm(goals[0][:3, 3] - p_now) / 0.01)))
         rel = m2aa(goals[0][:3, :3] @ R_now.T)
         g_hold = float(z["action"][s0 - 1, 6]) if s0 > 0 else g_now
+        # the bridge: straight to the part's first goal; for a composed place (role "place") a generic transport -- lift to the
+        # descent's height, then across -- in 1 cm steps
+        way = [p_now]
+        if role == "place" and goals[0][2, 3] > p_now[2]:
+            way.append(np.array([p_now[0], p_now[1], goals[0][2, 3]]))
+        way.append(goals[0][:3, 3])
+        pts = []
+        for a_, b_ in zip(way[:-1], way[1:]):
+            k = max(1, int(math.ceil(np.linalg.norm(b_ - a_) / 0.01)))
+            pts += [a_ + (b_ - a_) * j / k for j in range(1, k + 1)]
+        n = max(5, len(pts))
+        if len(pts) < n:
+            pts = [p_now + (goals[0][:3, 3] - p_now) * j / n for j in range(1, n + 1)]
         prev = (p_now, R_now)
-        for j in range(1, n + 1):
-            pt, Rt = p_now + (goals[0][:3, 3] - p_now) * j / n, aa2m(rel * j / n) @ R_now
+        for j, pt in enumerate(pts, 1):
+            Rt = aa2m(rel * j / n) @ R_now
             self.queue.append((pt, Rt, g_hold, -1, prev[0], prev[1]))
             prev = (pt, Rt)
         for i, X, A in zip(range(s0, s1), goals, achieved):

@@ -1,0 +1,86 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/m3_final_81_phasebind2_rjpred_yaw.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "roll.sh MODE=phasebind:81?fold=0&rules=2&reader=spatial4_synthonly_rj&carry=pred&yaw=1&var=0.001 SUITE=libero_90 TASKS=81 TRIALS=20 (job 3985517)",
+ "config": {
+  "client": {
+   "branches": "",
+   "first_trial": 30,
+   "host": "127.0.0.1",
+   "max_steps": 0,
+   "no_meta": false,
+   "objects": false,
+   "out": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/m3_final_81_phasebind2_rjpred_yaw.json",
+   "port": 9143,
+   "record": false,
+   "replan": 5,
+   "resize": 224,
+   "seed": 7,
+   "suite": "libero_90",
+   "tasks": "81",
+   "trials": 20,
+   "videos": 2,
+   "wait": 10
+  },
+  "job": "3985517",
+  "mode": "phasebind:81?fold=0&rules=2&reader=spatial4_synthonly_rj&carry=pred&yaw=1&var=0.001"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "heistotron.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3985517",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_final",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "9c422135b799fb3bd0815ed29036f2c0c1438a3d",
+  "short": "9c422135"
+ },
+ "keys": {
+  "first_trial": 30,
+  "mode": "phasebind:81?fold=0&rules=2&reader=spatial4_synthonly_rj&carry=pred&yaw=1&var=0.001",
+  "tasks": "81",
+  "trials": 20
+ },
+ "metrics": {
+  "complete": true,
+  "n_episodes": 20,
+  "secs": 660.1146950721741,
+  "success_rate": 0.45,
+  "tasks": {
+   "81": {
+    "errors": 0,
+    "language": "pick up the book and place it in the front compartment of the caddy",
+    "mean_steps": 293.45,
+    "n": 20,
+    "success_rate": 0.45
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_final__libero_90__phasebind2_rjpred_yaw__first_trial-30__mode05dc79a9b05b__tasks-81__trials-20__s7__9c422135",
+ "schema": 1,
+ "script": "experiments/libero_client.py",
+ "seconds": null,
+ "seed": 7,
+ "source_commit": null,
+ "started": "2026-09-29T21:42:21+00:00",
+ "stream": null,
+ "tag": "phasebind2_rjpred_yaw"
+}

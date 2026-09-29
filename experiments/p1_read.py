@@ -10,7 +10,7 @@ nothing), paired on init states 30-49 of m3_final.
     v2         rules v2 (ledger m3_prereg tag v2) on the 21 tasks: V1 v2 > v1, V2 v2 > LoRA + failure negatives, V4 the v2 generator's
                LoRA > 3.8's (sign tests, Holm over the three); V3 the learned reader non-inferior to the simulator's poses at -0.10
 
-    ~/flash/miniconda3/envs/chunks/bin/python experiments/p1_read.py primary|secondary|p6|v2|v2_synth|p3c|p3c_reader|p3c_reader2|alloc|p5 [--record]
+    ~/flash/miniconda3/envs/chunks/bin/python experiments/p1_read.py primary|secondary|p6|v2|v2_synth|p3c|p3c_reader|p3c_reader2|alloc|p5|yaw [--record]
 """
 import argparse
 import importlib.util
@@ -289,6 +289,18 @@ def p5():
     return res
 
 
+def yaw():
+    """ledger m3_prereg tag yaw: Y1 the own-demo program reading the books' yaw > the same with a fixed yaw (sign test), 11 book tasks."""
+    tasks = [73, 74, 75, 78, 80, 81, 83, 86, 87, 88, 89]
+    tab = table(tasks, {"y": "phasebind2_rjpred_yaw", "n": "phasebind2_rjpred"})
+    res = {"per_task": {t: {k: int(sum(v[k].values())) for k in v} for t, v in tab.items()}}
+    res["Y1"] = dict(x_arm="phasebind2_rjpred_yaw", y_arm="phasebind2_rjpred", **compare(tab, "y", "n"))
+    res["Y1"]["passes"] = bool(res["Y1"]["sign_p"] < 0.05 and res["Y1"]["x"] > res["Y1"]["control"])
+    v = res["Y1"]
+    print(f"Y1 {v['x_arm']} vs {v['y_arm']}: {_fmt(v)} -> passes {v['passes']}")
+    return res
+
+
 def _fmt(v):
     return (f"{v['x']} vs {v['control']} of {v['n']}, diff {v['diff']['diff']:+.3f} [{v['diff']['lo']:+.3f},{v['diff']['hi']:+.3f}] lo90 "
             f"{v['diff']['lo90']:+.3f}, discordant {v['discordant']}, sign p {v['sign_p']:.3g}")
@@ -296,11 +308,14 @@ def _fmt(v):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("read", choices=("primary", "secondary", "p6", "v2", "v2_synth", "p3c", "p3c_reader", "p3c_reader2", "alloc", "p5"))
+    ap.add_argument("read", choices=("primary", "secondary", "p6", "v2", "v2_synth", "p3c", "p3c_reader", "p3c_reader2", "alloc", "p5", "yaw"))
     ap.add_argument("--record", action="store_true")
     a = ap.parse_args()
     os.chdir(ROOT)
-    if a.read == "p5":
+    if a.read == "yaw":
+        res = yaw()
+        exp, tag, what = "p6_reader", "yaw_read", "own-demo programs reading the books' yaw vs a fixed yaw, 11 book tasks"
+    elif a.read == "p5":
         res = p5()
         exp, tag, what = "p5_stream", "read", "P5 stream: 50 tasks, two mirrored orders, binding table, no simulator state at test"
     elif a.read == "alloc":

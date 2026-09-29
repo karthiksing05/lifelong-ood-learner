@@ -1,0 +1,350 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/p6_yaw_reader.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "experiments/p6_yaw_reader.py --record",
+ "config": {
+  "device": "cuda",
+  "min_std": 3.0,
+  "record": true,
+  "tasks": null
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "major.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3985515",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "p6_reader",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "9c422135b799fb3bd0815ed29036f2c0c1438a3d",
+  "short": "9c422135"
+ },
+ "keys": {},
+ "metrics": {
+  "fixed_median_deg": 10.166148017626295,
+  "median_deg": 0.7706999239086012,
+  "min_std_deg": 3.0,
+  "per_task": {
+   "1": {
+    "err_deg_median": {
+     "akita_black_bowl_1": 0.1513318789386775
+    },
+    "fixed_deg_median": {
+     "akita_black_bowl_1": 0.18136225149678173
+    },
+    "lam": 1000000.0,
+    "varying": [
+     "akita_black_bowl_1"
+    ]
+   },
+   "11": {
+    "varying": []
+   },
+   "13": {
+    "varying": []
+   },
+   "16": {
+    "varying": []
+   },
+   "17": {
+    "varying": []
+   },
+   "18": {
+    "varying": []
+   },
+   "21": {
+    "varying": []
+   },
+   "23": {
+    "varying": []
+   },
+   "25": {
+    "varying": []
+   },
+   "26": {
+    "err_deg_median": {
+     "wine_bottle_1": 0.4323842977668731
+    },
+    "fixed_deg_median": {
+     "wine_bottle_1": 0.36375393994368466
+    },
+    "lam": 1000000.0,
+    "varying": [
+     "wine_bottle_1"
+    ]
+   },
+   "27": {
+    "err_deg_median": {
+     "wine_bottle_1": 0.23054721088161317
+    },
+    "fixed_deg_median": {
+     "wine_bottle_1": 0.3168433029549484
+    },
+    "lam": 1000000.0,
+    "varying": [
+     "wine_bottle_1"
+    ]
+   },
+   "3": {
+    "varying": []
+   },
+   "32": {
+    "varying": []
+   },
+   "34": {
+    "varying": []
+   },
+   "35": {
+    "varying": []
+   },
+   "36": {
+    "varying": []
+   },
+   "37": {
+    "varying": []
+   },
+   "39": {
+    "varying": []
+   },
+   "4": {
+    "varying": []
+   },
+   "40": {
+    "varying": []
+   },
+   "41": {
+    "varying": []
+   },
+   "42": {
+    "varying": []
+   },
+   "43": {
+    "varying": []
+   },
+   "48": {
+    "varying": []
+   },
+   "5": {
+    "varying": []
+   },
+   "52": {
+    "varying": []
+   },
+   "53": {
+    "varying": []
+   },
+   "58": {
+    "varying": []
+   },
+   "6": {
+    "varying": []
+   },
+   "62": {
+    "varying": []
+   },
+   "63": {
+    "varying": []
+   },
+   "65": {
+    "varying": []
+   },
+   "66": {
+    "varying": []
+   },
+   "69": {
+    "err_deg_median": {
+     "plate_1": 0.4341240420661195
+    },
+    "fixed_deg_median": {
+     "plate_1": 0.5148949448204723
+    },
+    "lam": 100000.0,
+    "varying": [
+     "plate_1"
+    ]
+   },
+   "71": {
+    "err_deg_median": {
+     "plate_1": 0.44445825043284104
+    },
+    "fixed_deg_median": {
+     "plate_1": 0.6977462972726683
+    },
+    "lam": 100000.0,
+    "varying": [
+     "plate_1"
+    ]
+   },
+   "73": {
+    "err_deg_median": {
+     "black_book_1": 1.0597733047372804
+    },
+    "fixed_deg_median": {
+     "black_book_1": 8.683548002108736
+    },
+    "lam": 1000.0,
+    "varying": [
+     "black_book_1"
+    ]
+   },
+   "74": {
+    "err_deg_median": {
+     "black_book_1": 0.792140957679063
+    },
+    "fixed_deg_median": {
+     "black_book_1": 13.161115268307409
+    },
+    "lam": 100.0,
+    "varying": [
+     "black_book_1"
+    ]
+   },
+   "75": {
+    "err_deg_median": {
+     "black_book_1": 0.8930704605076816
+    },
+    "fixed_deg_median": {
+     "black_book_1": 11.371795784210244
+    },
+    "lam": 1000.0,
+    "varying": [
+     "black_book_1"
+    ]
+   },
+   "76": {
+    "varying": []
+   },
+   "78": {
+    "err_deg_median": {
+     "black_book_1": 1.1818819213462077
+    },
+    "fixed_deg_median": {
+     "black_book_1": 11.154678541698292
+    },
+    "lam": 1000.0,
+    "varying": [
+     "black_book_1"
+    ]
+   },
+   "8": {
+    "varying": []
+   },
+   "80": {
+    "err_deg_median": {
+     "black_book_1": 1.849997239266456
+    },
+    "fixed_deg_median": {
+     "black_book_1": 13.768806474615545
+    },
+    "lam": 1000.0,
+    "varying": [
+     "black_book_1"
+    ]
+   },
+   "81": {
+    "err_deg_median": {
+     "black_book_1": 1.0291856457587567
+    },
+    "fixed_deg_median": {
+     "black_book_1": 10.029331384865003
+    },
+    "lam": 1000.0,
+    "varying": [
+     "black_book_1"
+    ]
+   },
+   "83": {
+    "err_deg_median": {
+     "black_book_1": 1.0850147059499955
+    },
+    "fixed_deg_median": {
+     "black_book_1": 8.509501959570844
+    },
+    "lam": 1000.0,
+    "varying": [
+     "black_book_1"
+    ]
+   },
+   "84": {
+    "varying": []
+   },
+   "85": {
+    "varying": []
+   },
+   "86": {
+    "err_deg_median": {
+     "black_book_1": 0.6553901698387067
+    },
+    "fixed_deg_median": {
+     "black_book_1": 12.739006866340276
+    },
+    "lam": 100.0,
+    "varying": [
+     "black_book_1"
+    ]
+   },
+   "87": {
+    "err_deg_median": {
+     "yellow_book_2": 1.7685199392826942
+    },
+    "fixed_deg_median": {
+     "yellow_book_2": 15.794340421541126
+    },
+    "lam": 1000.0,
+    "varying": [
+     "yellow_book_2"
+    ]
+   },
+   "88": {
+    "err_deg_median": {
+     "yellow_book_1": 0.7492588901381394
+    },
+    "fixed_deg_median": {
+     "yellow_book_1": 10.302964650387585
+    },
+    "lam": 1000.0,
+    "varying": [
+     "yellow_book_1"
+    ]
+   },
+   "89": {
+    "err_deg_median": {
+     "yellow_book_1": 0.634896325523246
+    },
+    "fixed_deg_median": {
+     "yellow_book_1": 14.616114635891348
+    },
+    "lam": 1000.0,
+    "varying": [
+     "yellow_book_1"
+    ]
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "p6_reader__libero_90__yaw__s0__9c422135",
+ "schema": 1,
+ "script": "experiments/p6_yaw_reader.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-29T21:28:36+00:00",
+ "stream": null,
+ "tag": "yaw"
+}

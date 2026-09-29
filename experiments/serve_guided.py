@@ -186,7 +186,7 @@ def main():
             from lifelong_ood.policy import phase as PH
             tn = [str(x) for x in d["names"]]              # the target scene's objects of interest (the task definition)
             parts = PH.compose(tn, PH.at_rest(PH.load_demo(R, int(kv["g"]))), PH.at_rest(PH.load_demo(R, int(kv["p"]))), obj_type=kv.get("obj"),
-                               obj_name=kv.get("objn"), rec_name=kv.get("recn"))
+                               obj_name=kv.get("objn"), rec_name=kv.get("recn"), transport=kv.get("transport") == "1")
             quat = np.tile([0.0, 0.0, 0.0, 1.0], (1, len(tn), 1))
             if kv.get("reader"):                           # orientations: the chordal mean over the target's rendered scenes (fixed yaw)
                 rp = os.path.join(R, "p6_synth_rj", f"{t}.npz")
@@ -221,7 +221,10 @@ def main():
             enc = VinnPolicy(np.zeros((1, 7), np.float32), np.zeros((1, 224, 224, 3), np.uint8), np.zeros((1, 224, 224, 3), np.uint8), device="cuda")
             reader = dict(W=rz["W"], mx=rz["mx"], my=rz["my"], names=[str(x) for x in rz["names"]], enc=enc,
                           features=str(rz["features"]) if "features" in rz.files else "pooled", pool=int(rz["pool"]) if "pool" in rz.files else 4)
-            logging.info(f"phasebind: reader p6_reader{sfx}_{t}.npz ({reader['features']})")
+            if kv.get("yaw") == "1":                     # the objects' yaw where it varies (experiments/p6_yaw_reader.py)
+                yz = np.load(os.path.join(R, f"p6_yaw_{t}.npz"), allow_pickle=True)
+                reader["yaw"] = {k: yz[k] for k in yz.files}
+            logging.info(f"phasebind: reader p6_reader{sfx}_{t}.npz ({reader['features']}){' + yaw' if kv.get('yaw') == '1' else ''}")
         hooks = PhaseBindHooks(src, parts, D.Norm.load(), fold=fold, state=state, key=key, var=float(kv.get("var", 1e-3)), H=bk.H,
                                reader=reader, carry="predicted" if kv.get("carry") == "pred" else "live", warp=kv.get("warp") == "1")
         logging.info(f"phasebind: task {t}, {len(parts)} phases ({'object phases' if g and p_ else 'world frame'}; anchors "

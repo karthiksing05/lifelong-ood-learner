@@ -1,0 +1,86 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/dev_p5_84_streamt_66_76.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "roll.sh MODE=phasebind:84?fold=0&rules=2&g=66&p=76&objn=red_coffee_mug_1&recn=desk_caddy_1&reader=spatial4_synthonly_rj&carry=pred&transport=1&var=0.001 SUITE=libero_90 TASKS=84 TRIALS=10 (job 3985348)",
+ "config": {
+  "client": {
+   "branches": "",
+   "first_trial": 0,
+   "host": "127.0.0.1",
+   "max_steps": 0,
+   "no_meta": false,
+   "objects": false,
+   "out": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/dev_p5_84_streamt_66_76.json",
+   "port": 9505,
+   "record": false,
+   "replan": 5,
+   "resize": 224,
+   "seed": 7,
+   "suite": "libero_90",
+   "tasks": "84",
+   "trials": 10,
+   "videos": 2,
+   "wait": 10
+  },
+  "job": "3985348",
+  "mode": "phasebind:84?fold=0&rules=2&g=66&p=76&objn=red_coffee_mug_1&recn=desk_caddy_1&reader=spatial4_synthonly_rj&carry=pred&transport=1&var=0.001"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "randotron.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3985348",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "dev_p5",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "9c422135b799fb3bd0815ed29036f2c0c1438a3d",
+  "short": "9c422135"
+ },
+ "keys": {
+  "first_trial": 0,
+  "mode": "phasebind:84?fold=0&rules=2&g=66&p=76&objn=red_coffee_mug_1&recn=desk_caddy_1&reader=spatial4_synthonly_rj&carry=pred&transport=1&var=0.001",
+  "tasks": "84",
+  "trials": 10
+ },
+ "metrics": {
+  "complete": true,
+  "n_episodes": 10,
+  "secs": 509.9912087917328,
+  "success_rate": 0.0,
+  "tasks": {
+   "84": {
+    "errors": 0,
+    "language": "pick up the red mug and place it to the right of the caddy",
+    "mean_steps": 400.0,
+    "n": 10,
+    "success_rate": 0.0
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "dev_p5__libero_90__streamt_66_76__first_trial-0__mode15cb2c874fde__tasks-84__trials-10__s7__9c422135",
+ "schema": 1,
+ "script": "experiments/libero_client.py",
+ "seconds": null,
+ "seed": 7,
+ "source_commit": null,
+ "started": "2026-09-29T21:01:58+00:00",
+ "stream": null,
+ "tag": "streamt_66_76"
+}

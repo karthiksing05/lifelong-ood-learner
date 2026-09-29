@@ -1,0 +1,52 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration of the yaw read",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky2.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "9c422135b799fb3bd0815ed29036f2c0c1438a3d",
+  "short": "9c422135"
+ },
+ "keys": {},
+ "metrics": {
+  "arm": "phasebind2_rjpred_yaw = phasebind2_rjpred + the objects' yaw read where it varies across the task's rendered placements (std > 3 deg)",
+  "hypotheses": {
+   "Y1": "phasebind2_rjpred_yaw > phasebind2_rjpred: exact two-sided sign test p < 0.05",
+   "descriptive": "per task"
+  },
+  "tasks": "the 11 book tasks of the stream pool (73, 74, 75, 78, 80, 81, 83, 86, 87, 88, 89); init states 30-49; 220 paired episodes",
+  "why": "books lie at a random yaw (about 13 deg across placements); the readers assumed a fixed yaw (the demo's or the rendered mean), 10.2 deg off at the median; experiments/p6_yaw_reader.py reads it at 0.8 deg (ledger p6_reader tag yaw)",
+  "written_before": "any phasebind2_rjpred_yaw rollout"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_90__yaw__s0__9c422135",
+ "schema": 1,
+ "script": "(inline, session 2026-09-29)",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-29T21:28:58+00:00",
+ "stream": null,
+ "tag": "yaw"
+}

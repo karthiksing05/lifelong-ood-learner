@@ -1,0 +1,219 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "dev check of carry fixes, states 0-9",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky2.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "p5_stream",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "9c422135b799fb3bd0815ed29036f2c0c1438a3d",
+  "short": "9c422135"
+ },
+ "keys": {},
+ "metrics": {
+  "arms": {
+   "streamc": "composed as registered",
+   "streamt": "generic lift-move transport + the place source's descent only (phase.compose transport)",
+   "streamw": "carry warped from the hand to the receptacle-relative path (phase.py warp)"
+  },
+  "n": 320,
+  "per_composition": {
+   "13<-63+65": {
+    "streamc": 0,
+    "streamt": 0,
+    "streamw": 0
+   },
+   "16<-1+17": {
+    "streamc": 0,
+    "streamt": 0,
+    "streamw": 0
+   },
+   "17<-63+16": {
+    "streamc": 6,
+    "streamt": 0,
+    "streamw": 0
+   },
+   "36<-37+13": {
+    "streamc": 0,
+    "streamt": 0,
+    "streamw": 0
+   },
+   "36<-43+65": {
+    "streamc": 0,
+    "streamt": 0,
+    "streamw": 0
+   },
+   "3<-4+4": {
+    "streamc": 10,
+    "streamt": 0,
+    "streamw": 10
+   },
+   "40<-42+88": {
+    "streamc": 0,
+    "streamt": 3,
+    "streamw": 0
+   },
+   "41<-21+87": {
+    "streamc": 3,
+    "streamt": 0,
+    "streamw": 1
+   },
+   "41<-42+43": {
+    "streamc": 10,
+    "streamt": 0,
+    "streamw": 10
+   },
+   "42<-21+89": {
+    "streamc": 0,
+    "streamt": 0,
+    "streamw": 0
+   },
+   "43<-37+87": {
+    "streamc": 10,
+    "streamt": 1,
+    "streamw": 8
+   },
+   "48<-58+53": {
+    "streamc": 10,
+    "streamt": 0,
+    "streamw": 10
+   },
+   "4<-3+3": {
+    "streamc": 9,
+    "streamt": 0,
+    "streamw": 9
+   },
+   "58<-48+62": {
+    "streamc": 9,
+    "streamt": 0,
+    "streamw": 9
+   },
+   "5<-69+3": {
+    "streamc": 5,
+    "streamt": 0,
+    "streamw": 5
+   },
+   "65<-66+13": {
+    "streamc": 0,
+    "streamt": 0,
+    "streamw": 0
+   },
+   "66<-65+65": {
+    "streamc": 0,
+    "streamt": 1,
+    "streamw": 0
+   },
+   "71<-65+65": {
+    "streamc": 10,
+    "streamt": 0,
+    "streamw": 0
+   },
+   "71<-66+13": {
+    "streamc": 0,
+    "streamt": 0,
+    "streamw": 0
+   },
+   "73<-74+81": {
+    "streamc": 0,
+    "streamt": 0,
+    "streamw": 0
+   },
+   "75<-74+80": {
+    "streamc": 9,
+    "streamt": 0,
+    "streamw": 3
+   },
+   "76<-34+84": {
+    "streamc": 2,
+    "streamt": 0,
+    "streamw": 7
+   },
+   "78<-73+73": {
+    "streamc": 7,
+    "streamt": 0,
+    "streamw": 1
+   },
+   "78<-74+81": {
+    "streamc": 6,
+    "streamt": 1,
+    "streamw": 8
+   },
+   "80<-73+75": {
+    "streamc": 8,
+    "streamt": 0,
+    "streamw": 0
+   },
+   "81<-73+73": {
+    "streamc": 1,
+    "streamt": 0,
+    "streamw": 0
+   },
+   "83<-74+80": {
+    "streamc": 0,
+    "streamt": 0,
+    "streamw": 0
+   },
+   "84<-66+76": {
+    "streamc": 0,
+    "streamt": 0,
+    "streamw": 0
+   },
+   "86<-74+88": {
+    "streamc": 8,
+    "streamt": 0,
+    "streamw": 1
+   },
+   "87<-88+43": {
+    "streamc": 0,
+    "streamt": 0,
+    "streamw": 0
+   },
+   "88<-87+40": {
+    "streamc": 0,
+    "streamt": 0,
+    "streamw": 0
+   },
+   "89<-88+42": {
+    "streamc": 0,
+    "streamt": 0,
+    "streamw": 0
+   }
+  },
+  "reading": "NEGATIVE: both fixes lower success; the source's route into a drawer or onto a shelf is part of the place skill, and a warped route breaks compositions that worked",
+  "states": "practice init states 0-9 (experiment dev_p5)",
+  "totals": {
+   "streamc": 123,
+   "streamt": 6,
+   "streamw": 82
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "p5_stream__libero_90__dev_fixes__s0__9c422135",
+ "schema": 1,
+ "script": "experiments/p5_launch.py --experiment dev_p5",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-29T21:56:36+00:00",
+ "stream": null,
+ "tag": "dev_fixes"
+}

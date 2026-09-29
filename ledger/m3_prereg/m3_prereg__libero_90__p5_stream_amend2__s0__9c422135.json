@@ -1,0 +1,51 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "P5 amendment 2 (exploratory): validated composition",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky2.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "9c422135b799fb3bd0815ed29036f2c0c1438a3d",
+  "short": "9c422135"
+ },
+ "keys": {},
+ "metrics": {
+  "also_recorded": "dev negatives before this rule (states 0-9, experiment dev_p5): warping the carry 82 and a generic lift-move transport 6 against 123 of 320 unchanged",
+  "amends": "m3_prereg tags p5_stream, p5_stream_amend1",
+  "read": "per order: demos requested, and stream success from the existing states-30-49 runs (composed: streamc runs; demo: own-demo runs); compositions newly planned under the rule are run before the read",
+  "rule": "VALIDATED COMPOSITION: an arriving task is composed only if its composed program succeeds on >= 0.5 of the practice placements (init states 0-19) executed in simulation with no policy (experiments/p38_generate.py --combos, the check amendment 1 applies to stored demos); otherwise it requests its demo (whose keys enter the table if its own check passes)",
+  "status": "EXPLORATORY: S2 failed (ledger p5_stream read: composed arrivals 252 vs 561/640) and its outcomes were seen before this rule was proposed; the rule and its threshold are fixed here, before its validation data exist",
+  "validation_data": "all 192 compositions the pool allows (results/robot/p5_all_combos.json), tag g29",
+  "written_before": "the g29 validation run"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_90__p5_stream_amend2__s0__9c422135",
+ "schema": 1,
+ "script": "(inline, session 2026-09-29)",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-29T21:27:40+00:00",
+ "stream": null,
+ "tag": "p5_stream_amend2"
+}

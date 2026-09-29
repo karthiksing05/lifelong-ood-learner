@@ -550,6 +550,14 @@ Object poses come from the simulator (an ORACLE the client sends) unless a row s
 | 0.55 | 3 | 2.9 | 0.99 (0.20) | 0.68 (0.12) | holds |
 | 0.70 | 2 | 1.8 | 0.82 (0.14) | 0.77 (0.13) | fails |
 
+**P5: the continual-learning stream (pre-registered: ledger m3_prereg tags p5_stream, p5_stream_amend1; ledger p5_stream).** 50 prior-fail tasks in two mirrored orders; a task is composed from the table's validated bindings when both its keys are known, else it requests its demo; no simulator state at test (rendered-scene readers, predicted carry).
+- order A: 35 demos for 50 tasks (composed 3 in the first half, 12 in the second); stream 711/1000 against 874/1000 when every task gets its own demo.
+- order B: 33 demos for 50 tasks (composed 5 in the first half, 12 in the second); stream 728/1000 against 874/1000 when every task gets its own demo.
+- S1 (structural): composed only when arriving late 20, only when early 4 (both 4); sign p 0.0015.
+- S2, composed arrivals vs the same tasks' own demos: 252/640 vs 561/640, -0.483 [-0.636, -0.331], one-sided 95% bound -0.611, discordant 14/323, sign p 1.6e-77: not non-inferior at -0.10.
+- ungated order A (descriptive): stream 696 with 33 demos; the compositions the gate removes score 40<-21+86 0/20, 75<-83+83 11/20, 78<-83+73 17/20, 80<-83+83 3/20, 81<-83+73 15/20, 88<-87+86 0/20.
+- ungated order B (descriptive): stream 728 with 33 demos; the compositions the gate removes score .
+
 **Perception across tasks by object type (ledger p6_reader tag type_transfer).** A reader per object type trained on the other tasks' rendered scenes, tested on a held-out task's first frames of states 20-29: median 0.81 cm over 85 objects; types seen in no other task: microwave, milk, new_salad_dressing, orange_juice, wine_rack.
 
 **The practice allocator (pre-registered: ledger m3_prereg tag alloc_v2).** Per task, 10 practice episodes (init states 0-9) of A = the v2 phases with the rendered-scene reader, B = prototype borrowing + fold, C = the LoRA on v2-generated demos; the most practice successes wins (ties A, B, C); scored by the chosen arm's existing episodes on states 30-49.

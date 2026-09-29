@@ -49,8 +49,19 @@ def pose(p, R_):
     return X
 
 
-def program(t, rules="v1"):
-    """-> (the demo, its phases, a label)."""
+def program(t, rules="v1", g=None, p=None):
+    """-> (the demo, its phases, a label).  g, p: a program COMPOSED from other tasks' demos (lifelong_ood/policy/phase.py compose;
+    the target's object and receptacle by name from results/robot/p5_pool.json)."""
+    if g is not None:
+        import json
+        import sys
+        sys.path.insert(0, REPO)
+        from lifelong_ood.policy import phase as PH
+        info = json.load(open(os.path.join(R, "p5_pool.json")))[str(t)]
+        names = np.load(os.path.join(R, "p0_demo", f"{t}.npz"), allow_pickle=True)["names"]
+        parts = PH.compose(names, PH.at_rest(PH.load_demo(R, g)), PH.at_rest(PH.load_demo(R, p)), obj_name=info["object"],
+                           rec_name=info["receptacle"])
+        return parts[0][0], parts, f"composed {g}+{p}"
     if rules == "v2":
         import sys
         sys.path.insert(0, REPO)
@@ -67,12 +78,12 @@ def program(t, rules="v1"):
 
 
 def generate(job):
-    t, first, n, rules, tag = job
+    t, first, n, rules, tag = job[:5]
+    g_src, p_src = (job[5], job[6]) if len(job) > 5 else (None, None)
     from libero.libero import benchmark, get_libero_path
     from libero.libero.envs import OffScreenRenderEnv
     from openpi_client import image_tools
-    z, parts, how = program(t, rules)
-    names_src = [str(x) for x in z["names"]]
+    z, parts, how = program(t, rules, g_src, p_src)
     suite = benchmark.get_benchmark_dict()["libero_90"]()
     task = suite.get_task(t)
     init = suite.get_task_init_states(t)
@@ -81,7 +92,7 @@ def generate(job):
     env = OffScreenRenderEnv(bddl_file_name=str(bddl), camera_heights=256, camera_widths=256)
     env.seed(P0.SEED)
     inner = env.env
-    rec_dir = os.path.join(R, f"{tag}_{t}_gen_rec")
+    rec_dir = os.path.join(R, f"{tag}_{t}_gen_rec" if g_src is None else f"{tag}_{t}_{g_src}_{p_src}_gen_rec")
     os.makedirs(rec_dir, exist_ok=True)
     out = {}
     for k in range(first, first + n):
@@ -111,7 +122,8 @@ def generate(job):
         for (zz, GP, GQ, s0, s1, role, ref, held) in parts:
             if stop:
                 break
-            tgt = names_src[ref] if (role is not None and ref is not None) else None
+            pnames = [str(x) for x in zz["names"]]            # the part's own source (a composed program mixes sources)
+            tgt = pnames[ref] if (role is not None and ref is not None) else None
             if tgt is not None:
                 pn, Rn = P0.ref_pose(obs, inner, tgt, tgt in movable)
                 ps, Rs = zz["obj_pos"][s0, ref].astype(np.float64), P0.q2m(zz["obj_quat"][s0, ref])
@@ -119,7 +131,7 @@ def generate(job):
             else:
                 M_R, M_p = np.eye(3), np.zeros(3)
             if held is not None:
-                hname = names_src[held]
+                hname = pnames[held]
                 Gs = np.linalg.inv(pose(zz["obj_pos"][s0, held], P0.q2m(zz["obj_quat"][s0, held]))) @ \
                     pose(zz["eef_pos"][s0], P0.q2m(zz["eef_quat"][s0]))
                 Gt = np.linalg.inv(pose(obs[f"{hname}_pos"], P0.q2m(obs[f"{hname}_quat"]))) @ \
@@ -170,15 +182,27 @@ def main():
     ap.add_argument("--n", type=int, default=20)
     ap.add_argument("--workers", type=int, default=12)
     ap.add_argument("--rules", default="v1", choices=("v1", "v2"))
+    ap.add_argument("--combos", default=None, help="a JSON list of [task, grasp source, place source] (results/robot/<file>)")
+    ap.add_argument("--composed-plans", default=None, help="+-separated stream plans (results/robot/*.json): run every distinct "
+                    "composed (task, grasp source, place source) instead of --tasks")
     ap.add_argument("--tag", default="g25")
     ap.add_argument("--out", default=None)
     a = ap.parse_args()
     a.out = a.out or os.path.join(R, f"{a.tag}_generate.json")
     jobs = [(int(t), a.first, a.n, a.rules, a.tag) for t in a.tasks.replace("+", ",").split(",")]
+    if a.composed_plans:
+        seen = set()
+        for f in a.composed_plans.split("+"):
+            for o in json.load(open(os.path.join(R, f))).values():
+                seen |= {(s["task"], s["g"], s["p"]) for s in o["steps"] if s["action"] == "compose"}
+        jobs = [(t, a.first, a.n, "v2", a.tag, g, p) for t, g, p in sorted(seen)]
+    if a.combos:
+        jobs = [(int(t), a.first, a.n, "v2", a.tag, int(g), int(p)) for t, g, p in json.load(open(os.path.join(R, a.combos)))]
     res, t0 = {}, time.time()
     with Pool(a.workers) as pool:
         for t, out, how in pool.imap_unordered(generate, jobs):
-            res[str(t)] = dict(success=out, k=int(sum(out.values())), n=len(out), how=how)
+            key = str(t) if not how.startswith("composed") else f"{t}_{how.split()[1].replace('+', '_')}"
+            res[key] = dict(success=out, k=int(sum(out.values())), n=len(out), how=how)
             print(f"[g25] task {t}: {sum(out.values())}/{len(out)} generated successes ({how}) [{time.time() - t0:.0f}s]", flush=True)
     prev = json.load(open(a.out)) if os.path.exists(a.out) else {}
     prev.update(res)
