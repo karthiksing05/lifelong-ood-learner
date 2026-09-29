@@ -95,6 +95,8 @@ def arm_spec(tid, arm, fold, demo=0):
         return (f"phasebind:{tid}?expert={EX if fold else ''}&foldprog={F0 if fold else ''}&var=0.001", "0", False)
     if arm == "phasebind_nofold":                                        # P1 arm B: the bindings alone through the prior
         return (f"phasebind:{tid}?fold=0&var=0.001", "0", False)
+    if arm == "phasebind_reader":                                        # P6: arm B with the learned pose reader (no simulator poses)
+        return (f"phasebind:{tid}?fold=0&reader=1&var=0.001", "0", False)
     if arm == "growleaf":                                                # P4: leaf borrowing over the success-grown library + the fold
         prog = P(f"r26_grow_{tid}_s1.npz")
         return ((f"hybrid:{prog}?expert={EX}&foldprog={F0}&{C}&window=20", f"prog:{prog}@{F0}", False) if fold
@@ -129,6 +131,7 @@ def main():
     ap.add_argument("--record", action="store_true", help="the client saves every episode (frames, states, actions, outcome)")
     ap.add_argument("--task-after", default="", help="TASK:JOB[:JOB...],... jobs a task's packs wait for (e.g. its consolidation)")
     ap.add_argument("--after", default="", help="job ids every pack of this run waits for (e.g. the shared-fold trainings)")
+    ap.add_argument("--partition", default="", help="overcap: the packs run on the preemptible overcap partition (requeued)")
     ap.add_argument("--dry", action="store_true")
     a = ap.parse_args()
     os.chdir(ROOT)
@@ -160,7 +163,7 @@ def main():
                 continue
             spec = dict(MODE=s[0], SUITE="libero_90", TASKS=tid, TRIALS=trials, FIRST=first, EXPERIMENT=a.experiment, TAG=tag,
                         PROGRAM_BYTES=s[1], OUT=out, **({"RECORD": "1"} if a.record else {}), **({"SERVE_SEED": str(a.seed)} if a.seed else {}),
-                        **({"OBJECTS": "1"} if arm.startswith("phasebind") else {}))
+                        **({"OBJECTS": "1"} if arm in ("phasebind", "phasebind_nofold") else {}))
             (specs_dep if s[2] else specs_free).append(spec)
         dep = None
         if specs_dep and not os.path.exists(os.path.join(R, f"r3_lora_{tid}{dsfx}.pt")):
@@ -182,7 +185,8 @@ def main():
             for sp, _ in grp:
                 f.write("\t".join(f"{k}={v}" for k, v in sp.items()) + "\n")
         deps = sorted({x for _, d in grp if d for x in d.split(":")} | {x for x in a.after.split(",") if x})
-        args = ([f"--dependency=afterok:{':'.join(deps)}"] if deps else []) + [f"--export=ALL,SPECS={path}", "experiments/roll_pack.sbatch"]
+        args = ([f"--dependency=afterok:{':'.join(deps)}"] if deps else []) + ([f"--partition={a.partition}", f"--account={a.partition}"] if a.partition else []) \
+            + [f"--export=ALL,SPECS={path}", "experiments/roll_pack.sbatch"]
         j = sbatch(args, a.dry)
         print(f"pack {os.path.basename(path)} [{', '.join(str(sp['TASKS']) + ':' + sp['TAG'] + ('/practice' if sp['EXPERIMENT'] == 'm3_compose' else '') for sp, _ in grp)}]"
               f"{' after ' + ','.join(deps) if deps else ''} -> job {j}")

@@ -55,6 +55,12 @@ Tasks where the prior's practice fails: 21 of 23; kept prior on 19, 67.
 | one demo + random tasks' data (not every task) | 137/240 | 0.571 (0.51-0.63) | 0.38-0.75 | 12 | 224.5 MB |
 | family pretraining, then the one demo (not every task) | 148/240 | 0.617 (0.55-0.68) | 0.46-0.76 | 12 | 224.5 MB |
 | random-task pretraining, then the one demo (not every task) | 144/240 | 0.600 (0.54-0.66) | 0.40-0.79 | 12 | 224.5 MB |
+| LoRA + failure negatives at the failed phase | 284/420 | 0.676 (0.63-0.72) | 0.57-0.78 | 21 | 392.9 MB |
+| leaf borrowing over the grown library + fold (not every task) | 70/120 | 0.583 (0.49-0.67) | 0.33-0.84 | 6 | 1.6 MB |
+| LoRA on the demo + generated demonstrations (no practice) | 293/420 | 0.698 (0.65-0.74) | 0.57-0.82 | 21 | 392.9 MB |
+| phase bindings through the prior + fold (sim poses) | 264/420 | 0.629 (0.58-0.67) | 0.47-0.78 | 21 | 5.2 MB |
+| phase bindings through the prior (sim poses) | 314/420 | 0.748 (0.70-0.79) | 0.58-0.90 | 21 | 54.9 KB |
+| phase bindings through the prior (learned pose reader) (not every task) | 126/180 | 0.700 (0.63-0.76) | 0.47-0.91 | 9 | 270.7 KB |
 
 | comparison | pooled difference | 95% interval | one-sided lower | non-inferior at the margin | discordant | sign test p | pairs, tasks |
 |---|---|---|---|---|---|---|---|
@@ -114,6 +120,16 @@ Tasks where the prior's practice fails: 21 of 23; kept prior on 19, 67.
 | family pretraining, then the one demo vs few-shot LoRA (rank 16) | -0.021 | -0.138 to +0.096 | -0.117 | not shown | 30 vs 35 | 0.620 | 240, 12 |
 | family pretraining, then the one demo vs random-task pretraining, then the one demo | +0.017 | -0.092 to +0.133 | -0.075 | yes | 32 vs 28 | 0.699 | 240, 12 |
 | random-task pretraining, then the one demo vs few-shot LoRA (rank 16) | -0.037 | -0.138 to +0.058 | -0.121 | not shown | 18 vs 27 | 0.233 | 240, 12 |
+| LoRA + failure negatives at the failed phase vs LoRA + failure negatives (balanced) | -0.043 | -0.126 to +0.038 | -0.112 | not shown | 47 vs 65 | 0.108 | 420, 21 |
+| LoRA + failure negatives at the failed phase vs LoRA, round 2 (success-only) | +0.007 | -0.086 to +0.100 | -0.071 | yes | 57 vs 54 | 0.850 | 420, 21 |
+| leaf borrowing over the grown library + fold vs leaf borrowing + 258 KB fold | -0.033 | -0.142 to +0.067 | -0.125 | not shown | 12 vs 16 | 0.572 | 120, 6 |
+| LoRA on the demo + generated demonstrations (no practice) vs few-shot LoRA (rank 16) | +0.098 | -0.060 to +0.252 | -0.033 | yes | 100 vs 59 | 0.001 | 420, 21 |
+| LoRA on the demo + generated demonstrations (no practice) vs LoRA on the demo + practice successes | +0.045 | -0.105 to +0.190 | -0.079 | yes | 85 vs 66 | 0.143 | 420, 21 |
+| phase bindings through the prior + fold (sim poses) vs borrowing + 258 KB fold | +0.026 | -0.126 to +0.179 | -0.102 | not shown | 84 vs 73 | 0.425 | 420, 21 |
+| phase bindings through the prior (sim poses) vs borrowing + 258 KB fold | +0.145 | -0.060 to +0.336 | -0.026 | yes | 123 vs 62 | 0.000 | 420, 21 |
+| phase bindings through the prior (sim poses) vs LoRA + failure negatives (balanced) | +0.029 | -0.162 to +0.205 | -0.129 | not shown | 86 vs 74 | 0.385 | 420, 21 |
+| phase bindings through the prior (learned pose reader) vs phase bindings through the prior (sim poses) | -0.094 | -0.294 to +0.072 | -0.256 | not shown | 8 vs 25 | 0.005 | 180, 9 |
+| phase bindings through the prior (learned pose reader) vs borrowing + 258 KB fold | +0.333 | +0.128 to +0.528 | +0.161 | yes | 75 vs 15 | 0.000 | 180, 9 |
 
 ## Pooled success, all tasks
 
@@ -159,6 +175,12 @@ Tasks where the prior's practice fails: 21 of 23; kept prior on 19, 67.
 | one demo + random tasks' data (not every task) | 177/280 | 0.632 (0.57-0.69) | 0.45-0.80 | 14 | 224.5 MB |
 | family pretraining, then the one demo (not every task) | 188/280 | 0.671 (0.61-0.72) | 0.52-0.81 | 14 | 224.5 MB |
 | random-task pretraining, then the one demo (not every task) | 184/280 | 0.657 (0.60-0.71) | 0.47-0.82 | 14 | 224.5 MB |
+| LoRA + failure negatives at the failed phase | 324/460 | 0.704 (0.66-0.74) | 0.60-0.81 | 23 | 392.9 MB |
+| leaf borrowing over the grown library + fold (not every task) | 110/160 | 0.688 (0.61-0.75) | 0.45-0.91 | 8 | 1.6 MB |
+| LoRA on the demo + generated demonstrations (no practice) | 333/460 | 0.724 (0.68-0.76) | 0.60-0.83 | 23 | 392.9 MB |
+| phase bindings through the prior + fold (sim poses) | 304/460 | 0.661 (0.62-0.70) | 0.51-0.80 | 23 | 5.2 MB |
+| phase bindings through the prior (sim poses) | 354/460 | 0.770 (0.73-0.81) | 0.62-0.91 | 23 | 54.9 KB |
+| phase bindings through the prior (learned pose reader) (not every task) | 166/220 | 0.755 (0.69-0.81) | 0.55-0.93 | 11 | 270.7 KB |
 
 | comparison | pooled difference | 95% interval | one-sided lower | non-inferior at the margin | discordant | sign test p | pairs, tasks |
 |---|---|---|---|---|---|---|---|
@@ -218,6 +240,16 @@ Tasks where the prior's practice fails: 21 of 23; kept prior on 19, 67.
 | family pretraining, then the one demo vs few-shot LoRA (rank 16) | -0.018 | -0.118 to +0.082 | -0.104 | not shown | 30 vs 35 | 0.620 | 280, 14 |
 | family pretraining, then the one demo vs random-task pretraining, then the one demo | +0.014 | -0.079 to +0.114 | -0.064 | yes | 32 vs 28 | 0.699 | 280, 14 |
 | random-task pretraining, then the one demo vs few-shot LoRA (rank 16) | -0.032 | -0.121 to +0.050 | -0.107 | not shown | 18 vs 27 | 0.233 | 280, 14 |
+| LoRA + failure negatives at the failed phase vs LoRA + failure negatives (balanced) | -0.039 | -0.117 to +0.035 | -0.104 | not shown | 47 vs 65 | 0.108 | 460, 23 |
+| LoRA + failure negatives at the failed phase vs LoRA, round 2 (success-only) | +0.007 | -0.080 to +0.089 | -0.065 | yes | 57 vs 54 | 0.850 | 460, 23 |
+| leaf borrowing over the grown library + fold vs leaf borrowing + 258 KB fold | -0.025 | -0.113 to +0.050 | -0.094 | yes | 12 vs 16 | 0.572 | 160, 8 |
+| LoRA on the demo + generated demonstrations (no practice) vs few-shot LoRA (rank 16) | +0.089 | -0.052 to +0.230 | -0.030 | yes | 100 vs 59 | 0.001 | 460, 23 |
+| LoRA on the demo + generated demonstrations (no practice) vs LoRA on the demo + practice successes | +0.041 | -0.093 to +0.174 | -0.070 | yes | 85 vs 66 | 0.143 | 460, 23 |
+| phase bindings through the prior + fold (sim poses) vs borrowing + 258 KB fold | +0.024 | -0.115 to +0.165 | -0.093 | yes | 84 vs 73 | 0.425 | 460, 23 |
+| phase bindings through the prior (sim poses) vs borrowing + 258 KB fold | +0.133 | -0.057 to +0.311 | -0.024 | yes | 123 vs 62 | 0.000 | 460, 23 |
+| phase bindings through the prior (sim poses) vs LoRA + failure negatives (balanced) | +0.026 | -0.150 to +0.187 | -0.117 | not shown | 86 vs 74 | 0.385 | 460, 23 |
+| phase bindings through the prior (learned pose reader) vs phase bindings through the prior (sim poses) | -0.077 | -0.245 to +0.059 | -0.214 | not shown | 8 vs 25 | 0.005 | 220, 11 |
+| phase bindings through the prior (learned pose reader) vs borrowing + 258 KB fold | +0.273 | +0.086 to +0.455 | +0.123 | yes | 75 vs 15 | 0.000 | 220, 11 |
 
 ## Reliability
 
@@ -389,6 +421,49 @@ Stage 1: LoRA on the family's (fam) or the random tasks' (rnd) pool alone; stage
 | pick-and-place family | 79/140 | 70/140 | 77/140 | +0.014 (0.880, 0.880) | +0.064 (0.188, 0.375) |
 
 Both fail: the second stage restores the target's binding, and the family's pretraining adds nothing to it.
+
+## Transfer plan probes (docs/PLAN_TRANSFER.md; pre-registered: ledger m3_prereg tags p0, p1, p1_amend1, p2, p3a, p3b, p4, g38, p6)
+
+Object poses come from the simulator (an ORACLE the client sends) unless a row says learned reader.  Init states 30-49, paired by episode; bounds from the two-level bootstrap; sign tests exact and two-sided.
+
+- P0b (`ledger/p0_audit` tag geometry): of the 106 persistent movable-object failures replayed bit for bit (1680/1680 replays exact), 0.83 are aim failures (the hand closes off the object): C2 survives.
+- P0c (`ledger/p0_audit` tag retarget): the demo retargeted to new placements with no policy succeeds 58/180 (open-loop replay 31/180): data-generator route viable (>= 30%).
+- P1 arm A (bindings + the 258 KB fold), 9 concentrated-failure tasks (`ledger/p1_bindings` tag read): 97/180 vs 66/180, +0.172 [-0.050, +0.389], one-sided 95% bound -0.017, discordant 56/25, sign p 0.00075, Holm p 0.00075: PASSES.
+- P1 arm B (bindings alone), 9 concentrated-failure tasks (`ledger/p1_bindings` tag read): 143/180 vs 66/180, +0.428 [+0.250, +0.589], one-sided 95% bound +0.278, discordant 85/8, sign p 2.3e-17, Holm p 4.5e-17: PASSES.
+- P1 secondary, arm A, all 21 tasks (`ledger/p1_bindings` tag secondary): 264/420 vs 253/420, +0.026 [-0.126, +0.174], one-sided 95% bound -0.102, discordant 84/73, sign p 0.42, Holm p 0.42: fails; the kill rule is met.
+- P1 secondary, arm B, all 21 tasks (`ledger/p1_bindings` tag secondary): 314/420 vs 253/420, +0.145 [-0.069, +0.336], one-sided 95% bound -0.033, discordant 123/62, sign p 8.6e-06, Holm p 1.7e-05: passes.
+
+| task | A: bindings + fold | B: bindings | control (borrowing + fold) |
+|---|---|---|---|
+| 1 | 19 | 20 | 8 |
+| 3 | 20 | 20 | 19 |
+| 4 | 18 | 20 | 8 |
+| 5 | 13 | 19 | 17 |
+| 6 | 20 | 20 | 16 |
+| 32 | 19 | 20 | 9 |
+| 34 | 20 | 20 | 19 |
+| 35 | 20 | 20 | 9 |
+| 36 | 5 | 20 | 6 |
+| 37 | 18 | 19 | 15 |
+| 39 | 6 | 6 | 17 |
+| 40 | 9 | 6 | 4 |
+| 41 | 8 | 17 | 13 |
+| 42 | 2 | 3 | 2 |
+| 43 | 20 | 20 | 20 |
+| 48 | 9 | 0 | 18 |
+| 52 | 2 | 17 | 8 |
+| 53 | 20 | 7 | 19 |
+| 58 | 0 | 0 | 12 |
+| 62 | 13 | 20 | 7 |
+| 63 | 3 | 20 | 7 |
+
+- P6 reader offline (`ledger/p6_reader` tag offline): median position error 0.54 cm on the first frame of init states 20-29 (the mean placement: 1.81 cm).
+- P6 read, 9 tasks (`ledger/p6_reader` tag read): learned reader vs oracle 126/180 vs 143/180, -0.094 [-0.289, +0.072], one-sided 95% bound -0.256, discordant 8/25, sign p 0.0046: not non-inferior at -0.10; vs the control 126/180 vs 66/180, +0.333 [+0.122, +0.528], one-sided 95% bound +0.156, discordant 75/15, sign p 9.2e-11: passes.  Per task (reader / oracle / control): 1 20/20/8; 32 20/20/9; 35 20/20/9; 36 20/20/6; 40 12/6/4; 41 17/17/13; 42 3/3/2; 52 4/17/8; 62 10/20/7.
+- P6 reader on the scored episodes (`ledger/p6_reader` tag online, experiments/p6_online_error.py): median position error 0.67 cm, 90th percentile 1.48 cm; episodes whose worst object is read within 1 cm succeed 67/88, within 2 cm 122/171, beyond 2 cm 4/9.  Median error per object (cm): 1 akita_black_bowl 0.73, wooden_cabinet 0.72; 32 ketchup 0.78, white_cabinet 0.91; 35 microwave 1.11; 36 plate 0.48, white_bowl 0.68; 40 chefmate_8_frypan 0.37, wooden_two_layer_shelf 0.90; 41 chefmate_8_frypan 0.41, wooden_two_layer_shelf 0.95; 42 chefmate_8_frypan 0.28, wooden_two_layer_shelf 0.90; 52 basket 0.38, milk 1.25; 62 new_salad_dressing 1.07, wooden_tray 0.42.
+- P2 (`ledger/p2_negatives` tag read): phase-localized negatives 284/420 vs pointer-localized 302/420, discordant 47/65, sign p 0.11: fails.
+- P3a (`ledger/p3_compose` tag p3a): bindings looked up from other tasks 39/100 vs own 91/100: X1 fails.  P3b, confirmatory on new targets (tag p3b): 11/80; NEGATIVE.  The minimal stream (P5) is off by the plan's rule.
+- P4 (`ledger/p4_growth` tag rollouts): the success-grown library 70/120 vs the base 74/120: killed (growth stays bookkeeping).
+- 3.8 (`ledger/g38_generate` tag read): a LoRA on the demo + demonstrations generated by retargeting it (no practice rollouts) 293/420 vs the one-demo LoRA 252/420 (sign p 0.0014; G1 passes) and vs the practice LoRA 274/420 (G2 passes (non-inferior at -0.10)).
 
 ## What composition borrows
 

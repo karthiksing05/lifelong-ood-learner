@@ -8412,7 +8412,10 @@
   ]
  },
  "notes": "derived from the per-episode result files of ledger/m3_final (states 30-49) and ledger/m3_compose zero-shot (states 0-9, the practice); bootstrap = tasks, then init states, paired across methods",
- "retired": null,
+ "retired": {
+  "reason": "superseded 2026-09-29 by the row at 25c960cc, which adds the transfer-plan arms (nft_phase, ours_grow, gen_lora, ours_phasebind, ours_phasebind_nofold, ours_phasebind_reader); all 5,399 shared values identical",
+  "when": "2026-09-29T06:06:17+00:00"
+ },
  "run_id": "m3_stats__libero_90__final_23tasks__s0__db20dee4",
  "schema": 1,
  "script": "experiments/m3_stats.py",

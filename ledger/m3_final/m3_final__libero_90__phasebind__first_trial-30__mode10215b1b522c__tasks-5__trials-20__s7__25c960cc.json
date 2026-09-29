@@ -1,0 +1,86 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/m3_final_5_phasebind.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "roll.sh MODE=phasebind:5?expert=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r4_5_approach_last2_expert.pt&foldprog=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r4_5_approach_last2_program.npz&var=0.001 SUITE=libero_90 TASKS=5 TRIALS=20 (job 3980032)",
+ "config": {
+  "client": {
+   "branches": "",
+   "first_trial": 30,
+   "host": "127.0.0.1",
+   "max_steps": 0,
+   "no_meta": false,
+   "objects": true,
+   "out": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/m3_final_5_phasebind.json",
+   "port": 9216,
+   "record": false,
+   "replan": 5,
+   "resize": 224,
+   "seed": 7,
+   "suite": "libero_90",
+   "tasks": "5",
+   "trials": 20,
+   "videos": 2,
+   "wait": 10
+  },
+  "job": "3980032",
+  "mode": "phasebind:5?expert=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r4_5_approach_last2_expert.pt&foldprog=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r4_5_approach_last2_program.npz&var=0.001"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "cyborg.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3980032",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_final",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "25c960cc45c7bd6045cd061a952b56d703b85dfc",
+  "short": "25c960cc"
+ },
+ "keys": {
+  "first_trial": 30,
+  "mode": "phasebind:5?expert=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r4_5_approach_last2_expert.pt&foldprog=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/r4_5_approach_last2_program.npz&var=0.001",
+  "tasks": "5",
+  "trials": 20
+ },
+ "metrics": {
+  "complete": true,
+  "n_episodes": 20,
+  "secs": 596.1781649589539,
+  "success_rate": 0.65,
+  "tasks": {
+   "5": {
+    "errors": 0,
+    "language": "put the chocolate pudding in the top drawer of the cabinet and close it",
+    "mean_steps": 251.45,
+    "n": 20,
+    "success_rate": 0.65
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_final__libero_90__phasebind__first_trial-30__mode10215b1b522c__tasks-5__trials-20__s7__25c960cc",
+ "schema": 1,
+ "script": "experiments/libero_client.py",
+ "seconds": null,
+ "seed": 7,
+ "source_commit": null,
+ "started": "2026-09-29T05:16:30+00:00",
+ "stream": null,
+ "tag": "phasebind"
+}

@@ -1,0 +1,221 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "experiments/p1_read.py secondary --record  # P1 secondary read: phasebind / phasebind_nofold vs dimfold_s1_last2 on 21 tasks, states 30-49",
+ "config": {
+  "read": "secondary",
+  "record": true
+ },
+ "env": {
+  "device": "cpu",
+  "host": "sky2.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "p1_bindings",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "25c960cc45c7bd6045cd061a952b56d703b85dfc",
+  "short": "25c960cc"
+ },
+ "keys": {},
+ "metrics": {
+  "A": {
+   "arm": "phasebind",
+   "control": 253,
+   "diff": {
+    "diff": 0.02619047619047619,
+    "hi": 0.1738095238095238,
+    "hi90": 0.15,
+    "lo": -0.1261904761904762,
+    "lo90": -0.10238095238095238,
+    "n_pairs": 420,
+    "n_tasks": 21
+   },
+   "discordant": [
+    84,
+    73
+   ],
+   "holm_p": 0.4249115601338554,
+   "killed": true,
+   "n": 420,
+   "passes": false,
+   "sign_p": 0.4249115601338554,
+   "x": 264
+  },
+  "B": {
+   "arm": "phasebind_nofold",
+   "control": 253,
+   "diff": {
+    "diff": 0.14523809523809525,
+    "hi": 0.3357142857142857,
+    "hi90": 0.3047619047619048,
+    "lo": -0.06910714285714281,
+    "lo90": -0.03333333333333333,
+    "n_pairs": 420,
+    "n_tasks": 21
+   },
+   "discordant": [
+    123,
+    62
+   ],
+   "holm_p": 1.721880711204323e-05,
+   "killed": false,
+   "n": 420,
+   "passes": true,
+   "sign_p": 8.609403556021614e-06,
+   "x": 314
+  },
+  "per_task": {
+   "1": {
+    "A": 19,
+    "B": 20,
+    "ctrl": 8,
+    "ctrl_nofold": 5
+   },
+   "3": {
+    "A": 20,
+    "B": 20,
+    "ctrl": 19,
+    "ctrl_nofold": 14
+   },
+   "32": {
+    "A": 19,
+    "B": 20,
+    "ctrl": 9,
+    "ctrl_nofold": 6
+   },
+   "34": {
+    "A": 20,
+    "B": 20,
+    "ctrl": 19,
+    "ctrl_nofold": 9
+   },
+   "35": {
+    "A": 20,
+    "B": 20,
+    "ctrl": 9,
+    "ctrl_nofold": 9
+   },
+   "36": {
+    "A": 5,
+    "B": 20,
+    "ctrl": 6,
+    "ctrl_nofold": 3
+   },
+   "37": {
+    "A": 18,
+    "B": 19,
+    "ctrl": 15,
+    "ctrl_nofold": 6
+   },
+   "39": {
+    "A": 6,
+    "B": 6,
+    "ctrl": 17,
+    "ctrl_nofold": 17
+   },
+   "4": {
+    "A": 18,
+    "B": 20,
+    "ctrl": 8,
+    "ctrl_nofold": 8
+   },
+   "40": {
+    "A": 9,
+    "B": 6,
+    "ctrl": 4,
+    "ctrl_nofold": 6
+   },
+   "41": {
+    "A": 8,
+    "B": 17,
+    "ctrl": 13,
+    "ctrl_nofold": 14
+   },
+   "42": {
+    "A": 2,
+    "B": 3,
+    "ctrl": 2,
+    "ctrl_nofold": 0
+   },
+   "43": {
+    "A": 20,
+    "B": 20,
+    "ctrl": 20,
+    "ctrl_nofold": 10
+   },
+   "48": {
+    "A": 9,
+    "B": 0,
+    "ctrl": 18,
+    "ctrl_nofold": 7
+   },
+   "5": {
+    "A": 13,
+    "B": 19,
+    "ctrl": 17,
+    "ctrl_nofold": 3
+   },
+   "52": {
+    "A": 2,
+    "B": 17,
+    "ctrl": 8,
+    "ctrl_nofold": 5
+   },
+   "53": {
+    "A": 20,
+    "B": 7,
+    "ctrl": 19,
+    "ctrl_nofold": 12
+   },
+   "58": {
+    "A": 0,
+    "B": 0,
+    "ctrl": 12,
+    "ctrl_nofold": 4
+   },
+   "6": {
+    "A": 20,
+    "B": 20,
+    "ctrl": 16,
+    "ctrl_nofold": 16
+   },
+   "62": {
+    "A": 13,
+    "B": 20,
+    "ctrl": 7,
+    "ctrl_nofold": 9
+   },
+   "63": {
+    "A": 3,
+    "B": 20,
+    "ctrl": 7,
+    "ctrl_nofold": 5
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "p1_bindings__libero_90__secondary__s0__25c960cc",
+ "schema": 1,
+ "script": "experiments/p1_read.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-29T05:42:48+00:00",
+ "stream": null,
+ "tag": "secondary"
+}

@@ -1,0 +1,143 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "experiments/p1_read.py p6 --record  # P6 read: phasebind_reader vs phasebind_nofold (oracle) and vs dimfold_s1_last2 on 9 tasks, states 30-49",
+ "config": {
+  "read": "p6",
+  "record": true
+ },
+ "env": {
+  "device": "cpu",
+  "host": "sky2.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "p6_reader",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "25c960cc45c7bd6045cd061a952b56d703b85dfc",
+  "short": "25c960cc"
+ },
+ "keys": {},
+ "metrics": {
+  "per_task": {
+   "1": {
+    "B": 20,
+    "R": 20,
+    "ctrl": 8,
+    "ctrl_nofold": 5
+   },
+   "32": {
+    "B": 20,
+    "R": 20,
+    "ctrl": 9,
+    "ctrl_nofold": 6
+   },
+   "35": {
+    "B": 20,
+    "R": 20,
+    "ctrl": 9,
+    "ctrl_nofold": 9
+   },
+   "36": {
+    "B": 20,
+    "R": 20,
+    "ctrl": 6,
+    "ctrl_nofold": 3
+   },
+   "40": {
+    "B": 6,
+    "R": 12,
+    "ctrl": 4,
+    "ctrl_nofold": 6
+   },
+   "41": {
+    "B": 17,
+    "R": 17,
+    "ctrl": 13,
+    "ctrl_nofold": 14
+   },
+   "42": {
+    "B": 3,
+    "R": 3,
+    "ctrl": 2,
+    "ctrl_nofold": 0
+   },
+   "52": {
+    "B": 17,
+    "R": 4,
+    "ctrl": 8,
+    "ctrl_nofold": 5
+   },
+   "62": {
+    "B": 20,
+    "R": 10,
+    "ctrl": 7,
+    "ctrl_nofold": 9
+   }
+  },
+  "reader_vs_control": {
+   "control": 66,
+   "diff": {
+    "diff": 0.3333333333333333,
+    "hi": 0.5277777777777778,
+    "hi90": 0.5,
+    "lo": 0.12222222222222222,
+    "lo90": 0.15555555555555556,
+    "n_pairs": 180,
+    "n_tasks": 9
+   },
+   "discordant": [
+    75,
+    15
+   ],
+   "n": 180,
+   "passes": true,
+   "sign_p": 9.176485495714726e-11,
+   "x": 126
+  },
+  "reader_vs_oracle": {
+   "control": 143,
+   "diff": {
+    "diff": -0.09444444444444444,
+    "hi": 0.07222222222222222,
+    "hi90": 0.05555555555555555,
+    "lo": -0.28888888888888886,
+    "lo90": -0.25555555555555554,
+    "n_pairs": 180,
+    "n_tasks": 9
+   },
+   "discordant": [
+    8,
+    25
+   ],
+   "n": 180,
+   "non_inferior": false,
+   "sign_p": 0.004551384132355452,
+   "x": 126
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "p6_reader__libero_90__read__s0__25c960cc",
+ "schema": 1,
+ "script": "experiments/p1_read.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-29T05:59:02+00:00",
+ "stream": null,
+ "tag": "read"
+}

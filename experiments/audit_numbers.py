@@ -55,6 +55,11 @@ def emb(experiment, metric, **f):
     return lambda: L.mean(experiment, metric, **f)
 
 
+def neg(fn):
+    """A check quoted without its minus sign ("-0.094" in the text matches the quoted "0.094")."""
+    return lambda: (-fn()[0],) + tuple(fn()[1:])
+
+
 def kb(metric):
     return lambda: tuple([L.mean("m3_summary", metric, tag="final")[0] / 1e3] + list(L.mean("m3_summary", metric, tag="final")[1:]))
 
@@ -243,7 +248,44 @@ EMBODIED = [
     ("fold size, last two layers, KB", lambda: tuple([L.mean("r4_fold", "bytes.experts", tag="_approach_last2")[0] / 1e3] + list(L.mean("r4_fold", "bytes.experts", tag="_approach_last2")[1:])), "258"),
 ]
 
-CHECKS = EMBODIED + [
+TRANSFER = [   # docs/PLAN_TRANSFER.md probes (pre-registered: ledger m3_prereg tags p0, p1, p1_amend1, p2, p3a, p3b, p4, g38, p6)
+    ("P0b: persistent movable-object failures", emb("p0_audit", "metrics.primary.n", tag="geometry"), "106"),
+    ("P0b: aim-failure share", emb("p0_audit", "metrics.primary.aim_share", tag="geometry"), "0.83"),
+    ("P0c: retargeted demo successes with no policy", emb("p0_audit", "metrics.totals.retarget", tag="retarget"), "58"),
+    ("P1: bindings alone, 9 tasks", emb("p1_bindings", "metrics.B.x", tag="read"), "143"),
+    ("P1: bindings + fold, 9 tasks", emb("p1_bindings", "metrics.A.x", tag="read"), "97"),
+    ("P1: control, 9 tasks", emb("p1_bindings", "metrics.B.control", tag="read"), "66"),
+    ("P1: bindings alone, difference", emb("p1_bindings", "metrics.B.diff.diff", tag="read"), "0.428"),
+    ("P1: bindings + fold, difference", emb("p1_bindings", "metrics.A.diff.diff", tag="read"), "0.172"),
+    ("P1 secondary: bindings alone, 21 tasks", emb("p1_bindings", "metrics.B.x", tag="secondary"), "314"),
+    ("P1 secondary: bindings + fold, 21 tasks", emb("p1_bindings", "metrics.A.x", tag="secondary"), "264"),
+    ("P1 secondary: control, 21 tasks", emb("p1_bindings", "metrics.B.control", tag="secondary"), "253"),
+    ("P1 secondary: bindings alone, difference", emb("p1_bindings", "metrics.B.diff.diff", tag="secondary"), "0.145"),
+    ("3.8: generated successes", emb("g38_generate", "metrics.generated_successes", tag="demo_retarget"), "331"),
+    ("3.8: LoRA on the generated demonstrations", emb("g38_generate", "metrics.gen-onedemo.x", tag="read"), "293"),
+    ("3.8: sign p against the one-demo LoRA", emb("g38_generate", "metrics.gen-onedemo.sign_p", tag="read"), "0.0014"),
+    ("P3a: bindings looked up from other tasks", emb("p3_compose", "metrics.cross", tag="p3a"), "39"),
+    ("P3a: own bindings", emb("p3_compose", "metrics.own", tag="p3a"), "91"),
+    ("P3a: episodes per arm", emb("p3_compose", "metrics.n", tag="p3a"), "100"),
+    ("P3a corrected executor (exploratory): looked up", emb("p3_compose", "metrics.totals.cross", tag="p3a_carry"), "95"),
+    ("P3a corrected executor (exploratory): own", emb("p3_compose", "metrics.totals.own", tag="p3a_carry"), "92"),
+    ("P3b: looked-up bindings on new targets", emb("p3_compose", "metrics.cross", tag="p3b"), "11"),
+    ("P2: phase-localized negatives", emb("p2_negatives", "metrics.all_21.phase", tag="read"), "284"),
+    ("P4: grown library", emb("p4_growth", "metrics.grown", tag="rollouts"), "70"),
+    ("P4: base library", emb("p4_growth", "metrics.base", tag="rollouts"), "74"),
+    ("P6: reader offline median error, cm", emb("p6_reader", "metrics.median_of_medians_cm", tag="offline"), "0.54"),
+    ("P6: mean-placement error, cm", emb("p6_reader", "metrics.mean_placement_median_of_medians_cm", tag="offline"), "1.81"),
+    ("P6: learned reader, 9 tasks", emb("p6_reader", "metrics.reader_vs_oracle.x", tag="read"), "126"),
+    ("P6: reader - oracle (quoted negated)", neg(emb("p6_reader", "metrics.reader_vs_oracle.diff.diff", tag="read")), "0.094"),
+    ("P6: reader - oracle lower bound (quoted negated)", neg(emb("p6_reader", "metrics.reader_vs_oracle.diff.lo90", tag="read")), "0.256"),
+    ("P6: reader - control", emb("p6_reader", "metrics.reader_vs_control.diff.diff", tag="read"), "0.333"),
+    ("P6: milk task, oracle", emb("p6_reader", "metrics.per_task.52.B", tag="read"), "17"),
+    ("P6: salad dressing task, oracle", emb("p6_reader", "metrics.per_task.62.B", tag="read"), "20"),
+    ("transfer: bindings alone, bytes for 21 tasks, KB", st("metrics.methods.ours_phasebind_nofold.prior_fails.bytes", 1e3), "54.9"),
+    ("transfer: LoRA + failure negatives, MB", st("metrics.methods.nft_bal.prior_fails.bytes", 1e6), "392.9"),
+]
+
+CHECKS = EMBODIED + TRANSFER + [
     ("p1 tree (phase 0): best background purity, level 1", p1("metrics.levels.1.purity_bg"), "0.84"),
     ("p1 tree (phase 0): best digit purity, level 0", p1("metrics.levels.0.purity_digit"), "0.25"),
     ("p3 smoke: label-gated reference taught joint, task 0", p3s("metrics.taught_joint", "lora-all-c1@gate=label", 0), "0.778"),

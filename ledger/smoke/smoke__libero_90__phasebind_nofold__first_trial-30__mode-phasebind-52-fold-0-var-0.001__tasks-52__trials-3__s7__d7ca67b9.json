@@ -1,0 +1,86 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/smoke_52_phasebind_nofold.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "roll.sh MODE=phasebind:52?fold=0&var=0.001 SUITE=libero_90 TASKS=52 TRIALS=3 (job 3979274)",
+ "config": {
+  "client": {
+   "branches": "",
+   "first_trial": 30,
+   "host": "127.0.0.1",
+   "max_steps": 0,
+   "no_meta": false,
+   "objects": true,
+   "out": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/smoke_52_phasebind_nofold.json",
+   "port": 9552,
+   "record": false,
+   "replan": 5,
+   "resize": 224,
+   "seed": 7,
+   "suite": "libero_90",
+   "tasks": "52",
+   "trials": 3,
+   "videos": 2,
+   "wait": 10
+  },
+  "job": "3979274",
+  "mode": "phasebind:52?fold=0&var=0.001"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "voltron.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3979274",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "smoke",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "d7ca67b9d25cd358436dcda72617a917bd547f0f",
+  "short": "d7ca67b9"
+ },
+ "keys": {
+  "first_trial": 30,
+  "mode": "phasebind:52?fold=0&var=0.001",
+  "tasks": "52",
+  "trials": 3
+ },
+ "metrics": {
+  "complete": true,
+  "n_episodes": 3,
+  "secs": 74.04920721054077,
+  "success_rate": 0.3333333333333333,
+  "tasks": {
+   "52": {
+    "errors": 0,
+    "language": "pick up the milk and put it in the basket",
+    "mean_steps": 306.6666666666667,
+    "n": 3,
+    "success_rate": 0.3333333333333333
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "smoke__libero_90__phasebind_nofold__first_trial-30__mode-phasebind-52-fold-0-var-0.001__tasks-52__trials-3__s7__d7ca67b9",
+ "schema": 1,
+ "script": "experiments/libero_client.py",
+ "seconds": null,
+ "seed": 7,
+ "source_commit": null,
+ "started": "2026-09-29T03:52:25+00:00",
+ "stream": null,
+ "tag": "phasebind_nofold"
+}

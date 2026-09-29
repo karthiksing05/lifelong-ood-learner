@@ -30,6 +30,90 @@ def kb(b):
     return f"{b / 1e6:.1f} MB" if b >= 1e6 else f"{b / 1e3:.1f} KB"
 
 
+def _row(exp, tag):
+    rows = [r for r in ledger.load(exp, tag=tag) if not r.get("retired")]
+    return rows[-1]["metrics"] if rows else None
+
+
+def _cmp(v):
+    d = v["diff"]
+    return (f"{v['x']}/{v['n']} vs {v['control']}/{v['n']}, {d['diff']:+.3f} [{d['lo']:+.3f}, {d['hi']:+.3f}], one-sided 95% bound "
+            f"{d['lo90']:+.3f}, discordant {v['discordant'][0]}/{v['discordant'][1]}, sign p {v['sign_p']:.2g}")
+
+
+def transfer_probes(w):
+    """The probe ladder of docs/PLAN_TRANSFER.md, each read from its ledger row (pre-registered: ledger m3_prereg tags p0, p1,
+    p1_amend1, p2, p3a, p3b, p4, g38, p6)."""
+    geo, ret, p1, p1s = _row("p0_audit", "geometry"), _row("p0_audit", "retarget"), _row("p1_bindings", "read"), _row("p1_bindings", "secondary")
+    if not (geo and p1):
+        return
+    w("## Transfer plan probes (docs/PLAN_TRANSFER.md; pre-registered: ledger m3_prereg tags p0, p1, p1_amend1, p2, p3a, p3b, p4, g38, p6)\n")
+    w("Object poses come from the simulator (an ORACLE the client sends) unless a row says learned reader.  Init states 30-49, "
+      "paired by episode; bounds from the two-level bootstrap; sign tests exact and two-sided.\n")
+    pr = geo["primary"]
+    w(f"- P0b (`ledger/p0_audit` tag geometry): of the {pr['n']} persistent movable-object failures replayed bit for bit "
+      f"({geo['gate']['exact']}/{geo['gate']['replayed']} replays exact), {pr['aim_share']:.2f} are aim failures (the hand closes "
+      f"off the object): C2 {geo['decision_C2']}.")
+    if ret:
+        w(f"- P0c (`ledger/p0_audit` tag retarget): the demo retargeted to new placements with no policy succeeds "
+          f"{ret['totals']['retarget']}/{ret['n']} (open-loop replay {ret['totals']['replay']}/{ret['n']}): {ret['decision']}.")
+    for lab, key in (("A (bindings + the 258 KB fold)", "A"), ("B (bindings alone)", "B")):
+        v = p1[key]
+        w(f"- P1 arm {lab}, 9 concentrated-failure tasks (`ledger/p1_bindings` tag read): {_cmp(v)}, Holm p {v['holm_p']:.2g}: "
+          f"{'PASSES' if v['passes'] else 'fails'}{'; killed' if v['killed'] else ''}.")
+    if p1s:
+        for lab, key in (("A", "A"), ("B", "B")):
+            v = p1s[key]
+            w(f"- P1 secondary, arm {lab}, all 21 tasks (`ledger/p1_bindings` tag secondary): {_cmp(v)}, Holm p {v['holm_p']:.2g}: "
+              f"{'passes' if v['passes'] else 'fails'}{'; the kill rule is met' if v['killed'] else ''}.")
+        w("")
+        w("| task | A: bindings + fold | B: bindings | control (borrowing + fold) |")
+        w("|---|---|---|---|")
+        for t, v in sorted(p1s["per_task"].items(), key=lambda x: int(x[0])):
+            w(f"| {t} | {v['A']} | {v['B']} | {v['ctrl']} |")
+        w("")
+    p6o, p6r = _row("p6_reader", "offline"), _row("p6_reader", "read")
+    if p6o:
+        w(f"- P6 reader offline (`ledger/p6_reader` tag offline): median position error {p6o['median_of_medians_cm']:.2f} cm on the first frame "
+          f"of init states 20-29 (the mean placement: {p6o['mean_placement_median_of_medians_cm']:.2f} cm).")
+    if p6r:
+        a, b = p6r["reader_vs_oracle"], p6r["reader_vs_control"]
+        w(f"- P6 read, 9 tasks (`ledger/p6_reader` tag read): learned reader vs oracle {_cmp(a)}: "
+          f"{'NON-INFERIOR' if a['non_inferior'] else 'not non-inferior'} at -0.10; vs the control {_cmp(b)}: "
+          f"{'passes' if b['passes'] else 'fails'}.  Per task (reader / oracle / control): " +
+          "; ".join(f"{t} {v['R']}/{v['B']}/{v['ctrl']}" for t, v in p6r["per_task"].items()) + ".")
+    p6n = _row("p6_reader", "online")
+    if p6n:
+        sb = p6n["success_by_worst_error"]
+        w(f"- P6 reader on the scored episodes (`ledger/p6_reader` tag online, experiments/p6_online_error.py): median position error "
+          f"{p6n['median_cm']:.2f} cm, 90th percentile {p6n['p90_cm']:.2f} cm; episodes whose worst object is read within 1 cm succeed "
+          f"{sb['<1 cm']['k']}/{sb['<1 cm']['n']}, within 2 cm {sb['<2 cm']['k']}/{sb['<2 cm']['n']}, beyond 2 cm {sb['>=2 cm']['k']}/{sb['>=2 cm']['n']}.  "
+          "Median error per object (cm): " + "; ".join(
+              f"{t} " + ", ".join(f"{k.rsplit('_', 1)[0]} {e:.2f}" for k, e in v["err_cm_median"].items())
+              for t, v in p6n["per_task"].items()) + ".")
+    p2 = _row("p2_negatives", "read")
+    if p2:
+        v = p2["all_21"]
+        w(f"- P2 (`ledger/p2_negatives` tag read): phase-localized negatives {v['phase']}/{v['n']} vs pointer-localized {v['stall']}/{v['n']}, "
+          f"discordant {v['discordant'][0]}/{v['discordant'][1]}, sign p {v['sign_p']:.2g}: {p2['P2']}.")
+    p3a, p3b = _row("p3_compose", "p3a"), _row("p3_compose", "p3b")
+    if p3a and p3b:
+        w(f"- P3a (`ledger/p3_compose` tag p3a): bindings looked up from other tasks {p3a['cross']}/{p3a['n']} vs own {p3a['own']}/{p3a['n']}: "
+          f"X1 {p3a['X1'].split(' (')[0].lower()}.  P3b, confirmatory on new targets (tag p3b): {p3b['cross']}/{p3b['n']}; "
+          f"{p3b['reading'].split(':')[0]}.  The minimal stream (P5) is off by the plan's rule.")
+    p4 = _row("p4_growth", "rollouts")
+    if p4:
+        w(f"- P4 (`ledger/p4_growth` tag rollouts): the success-grown library {p4['grown']}/{p4['diff']['n_pairs']} vs the base "
+          f"{p4['base']}/{p4['diff']['n_pairs']}: killed (growth stays bookkeeping).")
+    g = _row("g38_generate", "read")
+    if g:
+        v1, v2 = g["gen-onedemo"], g["gen-learn"]
+        w(f"- 3.8 (`ledger/g38_generate` tag read): a LoRA on the demo + demonstrations generated by retargeting it (no practice "
+          f"rollouts) {v1['x']}/{v1['n']} vs the one-demo LoRA {v1['y']}/{v1['n']} (sign p {v1['sign_p']:.2g}; G1 {g['G1']}) and vs the "
+          f"practice LoRA {v2['y']}/{v2['n']} (G2 {g['G2']}).")
+    w("")
+
+
 def main():
     S = json.load(open(os.path.join(R, "m3_stats.json")))
     L = []
@@ -244,6 +328,7 @@ def main():
               f"{d1['diff']:+.3f} ({d1['sign_p']:.3f}, {d1['holm_p']:.3f}) | {d2['diff']:+.3f} ({d2['sign_p']:.3f}, {d2['holm_p']:.3f}) |")
         w("")
         w("Both fail: the second stage restores the target's binding, and the family's pretraining adds nothing to it.\n")
+    transfer_probes(w)
     w("## What composition borrows\n")
     for src, name in (("", "tree prototypes (band t = 0.2-0.4)"), ("_leaf", "leaves (the policy's chunk means)"), ("_seg", "segments of leaves")):
         p = os.path.join(R, f"r8_provenance{src}.json")

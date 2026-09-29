@@ -84,10 +84,19 @@ def arm_bytes(t, arm):
                 # P1: the demo's goal sequence (position 3 + rotation quaternion 4 + gripper 1, fp16 per frame) + two 14 B anchors per
                 # phase + the fold where the demo grasps
                 "phasebind": lambda: phasebind_bytes(t),
+                "phasebind_nofold": lambda: phasebind_bytes(t, fold=False),
+                "phasebind_reader": lambda: phasebind_bytes(t, fold=False) + reader_bytes(t),
                 **{f"{g}_d1": (lambda g=g: demo_arm_bytes(t, g, 1)) for g in ("raw_replay", "dimcode_s1", "dimfold_s1_last2", "lora", "seg_s5")}}[arm]())
 
 
-def phasebind_bytes(t):
+def reader_bytes(t):
+    """P6's learned pose reader of task t (experiments/p6_reader.py): the ridge weights and the two means, fp32."""
+    import numpy as np
+    z = np.load(f"{R}/p6_reader_{t}.npz", allow_pickle=True)
+    return 4 * int(z["W"].size + z["mx"].size + z["my"].size)
+
+
+def phasebind_bytes(t, fold=True):
     import importlib.util
     import numpy as np
     m = np.load(f"{R}/p0_demo/{t}_match.npz", allow_pickle=True)
@@ -100,7 +109,7 @@ def phasebind_bytes(t):
                eef_pos=d["demo_eef_pos"], eef_quat=d["demo_eef_quat"], action=np.asarray(m["actions"], np.float32))
     g, p = P3.phases(src, "grasp"), P3.phases(src, "place")
     n_phases = len(g) + len(p) if (g and p) else 1
-    fold = fold_bytes(t, "_approach_last2") if os.path.exists(f"{R}/r4_{t}_approach_last2_expert.pt") else 0
+    fold = fold_bytes(t, "_approach_last2") if fold and os.path.exists(f"{R}/r4_{t}_approach_last2_expert.pt") else 0
     return 2 * 8 * T + 28 * n_phases + fold
 
 

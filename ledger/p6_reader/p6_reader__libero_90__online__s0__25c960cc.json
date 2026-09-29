@@ -1,0 +1,172 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/p6_online_error.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "experiments/p6_online_error.py --record",
+ "config": {
+  "record": true
+ },
+ "env": {
+  "device": "cpu",
+  "host": "sky2.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "p6_reader",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "25c960cc45c7bd6045cd061a952b56d703b85dfc",
+  "short": "25c960cc"
+ },
+ "keys": {},
+ "metrics": {
+  "median_cm": 0.6677841812627299,
+  "p90_cm": 1.475960663799891,
+  "per_task": {
+   "1": {
+    "episodes": 20,
+    "err_cm_max": {
+     "akita_black_bowl_1": 1.4010322512539113,
+     "wooden_cabinet_1": 1.920803786668025
+    },
+    "err_cm_median": {
+     "akita_black_bowl_1": 0.7276732398764565,
+     "wooden_cabinet_1": 0.7232063784134969
+    },
+    "successes": 20
+   },
+   "32": {
+    "episodes": 20,
+    "err_cm_max": {
+     "ketchup_1": 1.9323866665380436,
+     "white_cabinet_1": 2.1641513335464353
+    },
+    "err_cm_median": {
+     "ketchup_1": 0.7812895270561813,
+     "white_cabinet_1": 0.905202842511317
+    },
+    "successes": 20
+   },
+   "35": {
+    "episodes": 20,
+    "err_cm_max": {
+     "microwave_1": 1.8987172921655113
+    },
+    "err_cm_median": {
+     "microwave_1": 1.108372027824497
+    },
+    "successes": 20
+   },
+   "36": {
+    "episodes": 20,
+    "err_cm_max": {
+     "plate_1": 0.9393311950937344,
+     "white_bowl_1": 7.020805051048779
+    },
+    "err_cm_median": {
+     "plate_1": 0.4822154930636534,
+     "white_bowl_1": 0.6781353076041021
+    },
+    "successes": 20
+   },
+   "40": {
+    "episodes": 20,
+    "err_cm_max": {
+     "chefmate_8_frypan_1": 1.1689614463363596,
+     "wooden_two_layer_shelf_1": 2.0213565580950315
+    },
+    "err_cm_median": {
+     "chefmate_8_frypan_1": 0.36709552877391394,
+     "wooden_two_layer_shelf_1": 0.8987436534353026
+    },
+    "successes": 12
+   },
+   "41": {
+    "episodes": 20,
+    "err_cm_max": {
+     "chefmate_8_frypan_1": 0.8497756931839783,
+     "wooden_two_layer_shelf_1": 1.6525489711788486
+    },
+    "err_cm_median": {
+     "chefmate_8_frypan_1": 0.40973465616122934,
+     "wooden_two_layer_shelf_1": 0.9528353070079814
+    },
+    "successes": 17
+   },
+   "42": {
+    "episodes": 20,
+    "err_cm_max": {
+     "chefmate_8_frypan_1": 0.9579991201696801,
+     "wooden_two_layer_shelf_1": 1.6461600668576406
+    },
+    "err_cm_median": {
+     "chefmate_8_frypan_1": 0.282846481765618,
+     "wooden_two_layer_shelf_1": 0.9001336349476153
+    },
+    "successes": 3
+   },
+   "52": {
+    "episodes": 20,
+    "err_cm_max": {
+     "basket_1": 1.2273867926548765,
+     "milk_1": 2.3088615727773343
+    },
+    "err_cm_median": {
+     "basket_1": 0.38175160495208244,
+     "milk_1": 1.249817197842294
+    },
+    "successes": 4
+   },
+   "62": {
+    "episodes": 20,
+    "err_cm_max": {
+     "new_salad_dressing_1": 2.7428344734827657,
+     "wooden_tray_1": 1.236260756525742
+    },
+    "err_cm_median": {
+     "new_salad_dressing_1": 1.0684675201037048,
+     "wooden_tray_1": 0.4241783931360676
+    },
+    "successes": 10
+   }
+  },
+  "success_by_worst_error": {
+   "<1 cm": {
+    "k": 67,
+    "n": 88
+   },
+   "<2 cm": {
+    "k": 122,
+    "n": 171
+   },
+   ">=2 cm": {
+    "k": 4,
+    "n": 9
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "p6_reader__libero_90__online__s0__25c960cc",
+ "schema": 1,
+ "script": "experiments/p6_online_error.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-29T05:59:07+00:00",
+ "stream": null,
+ "tag": "online"
+}

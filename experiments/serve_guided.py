@@ -194,7 +194,14 @@ def main():
             from lifelong_ood.policy.compose import DemoProgram
             fold = DemoProgram.load(kv["foldprog"]).fold
             assert len(fold) == len(src["action"]), (len(fold), len(src["action"]))
-        hooks = PhaseBindHooks(src, parts, D.Norm.load(), fold=fold, state=state, key=key, var=float(kv.get("var", 1e-3)), H=bk.H)
+        reader = None
+        if kv.get("reader") == "1":                       # P6: the learned pose reader in place of the client's simulator poses
+            from lifelong_ood.policy.baselines import VinnPolicy
+            rz = np.load(os.path.join(R, f"p6_reader_{t}.npz"), allow_pickle=True)
+            enc = VinnPolicy(np.zeros((1, 7), np.float32), np.zeros((1, 224, 224, 3), np.uint8), np.zeros((1, 224, 224, 3), np.uint8), device="cuda")
+            reader = dict(W=rz["W"], mx=rz["mx"], my=rz["my"], names=[str(x) for x in rz["names"]], enc=enc)
+        hooks = PhaseBindHooks(src, parts, D.Norm.load(), fold=fold, state=state, key=key, var=float(kv.get("var", 1e-3)), H=bk.H,
+                               reader=reader)
         logging.info(f"phasebind: task {t}, {len(parts)} phases ({'object phases' if g and p_ else 'world frame'}), fold {key}")
     elif a.mode.startswith("lora:"):
         # lora:<expert.pt> -- the few-shot baseline: a flat adapter on the action expert, always on

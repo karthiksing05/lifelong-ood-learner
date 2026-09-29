@@ -1,0 +1,55 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration of P6 (the learned pose reader in place of the oracle)",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky2.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "25c960cc45c7bd6045cd061a952b56d703b85dfc",
+  "short": "25c960cc"
+ },
+ "keys": {},
+ "metrics": {
+  "arm": "phasebind_reader: P1's arm B (phasebind_nofold: the demo's phases with object-relative bindings through the frozen prior, no fold) with the object poses from a LEARNED reader in place of the client's simulator state (the client sends no object state). Reader (experiments/p6_reader.py): per task, a standardized ridge regression from the frozen ImageNet ResNet-18 features of both cameras (VinnPolicy._embed) of the episode's FIRST frame to the 3-D positions of the task's objects of interest; trained on the first 20 frames of the recorded practice episodes of init states 0-29 (positions from their bit-exact replays), the penalty chosen by cross-validation grouped by init state; the orientations are the demo's (every recorded init state has the demo's object orientations: 0 degrees median); the carry uses no live held-object pose (C = I)",
+  "hypotheses": {
+   "A": "phasebind_reader - dimfold_s1_last2 (dimcode_s1 where the demo grasps nothing) >= +0.11 with an exact two-sided sign test p < 0.05 (P1's criterion without privileged state)",
+   "N": "PRIMARY (the plan's headline condition): phasebind_reader non-inferior to the oracle arm phasebind_nofold at -0.10: one-sided 95% lower bound of the paired difference (two-level bootstrap) >= -0.10",
+   "descriptive": "per-task gap to the oracle and the reader's offline error per object"
+  },
+  "offline": "ledger p6_reader tag offline: trained on states 0-19, tested on the first frame of states 20-29",
+  "plan": "docs/PLAN_TRANSFER.md P6: does P1's result survive without the simulator oracle?",
+  "read": "experiments/p1_read.py p6",
+  "tasks": "P1's 9 tasks 42, 32, 1, 35, 40, 36, 52, 62, 41; init states 30-49 (never used to train the reader); 180 paired",
+  "written_before": "any phasebind_reader rollout of the read (a smoke test on task 52, experiment smoke, is excluded)"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_90__p6__s0__25c960cc",
+ "schema": 1,
+ "script": "(inline, session 2026-09-29)",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-29T05:42:20+00:00",
+ "stream": null,
+ "tag": "p6"
+}

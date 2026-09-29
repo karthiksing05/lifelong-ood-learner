@@ -68,8 +68,12 @@ class PhaseBindHooks:
     agree = None
     needs_prior = False
 
-    def __init__(self, source, parts, norm, fold=None, state=None, key=None, var=1e-3, H=10, replan=5):
+    def __init__(self, source, parts, norm, fold=None, state=None, key=None, var=1e-3, H=10, replan=5, reader=None):
+        """reader = dict(W, mx, my, names, enc): a LEARNED pose reader (experiments/p6_reader.py) in place of the client's
+        simulator poses -- the objects' positions are predicted from the first frame's images, their orientations are the
+        demo's (fixed yaw), and the carry assumes the planned grasp (no live held-object pose)."""
         self.z, self.parts, self.norm = source, parts, norm
+        self.reader = reader
         self.names = [str(x) for x in source["names"]]
         self.fold = None if fold is None else np.asarray(fold, bool)
         self.var, self.H, self.replan = float(var), int(H), int(replan)
@@ -96,7 +100,16 @@ class PhaseBindHooks:
         self._objs = {str(n): (pos[i], q2m(quat[i])) for i, n in enumerate(names)}
 
     def rewrite(self, obs, meta=None):
-        self._read(meta or {})
+        if self.reader is None:
+            self._read(meta or {})
+        elif not self._objs:
+            rd = self.reader
+            f = rd["enc"]._embed(np.asarray(obs["observation/image"])[None], np.asarray(obs["observation/wrist_image"])[None])
+            f = f.float().cpu().numpy().astype(np.float64)
+            pos = ((f - rd["mx"]) @ rd["W"] + rd["my"]).reshape(-1, 3)
+            quat = {str(n): self.z["obj_quat"][0, j] for j, n in enumerate(self.names)}
+            self._objs = {str(n): (pos[i], q2m(quat.get(str(n), np.array([0, 0, 0, 1.0])))) for i, n in enumerate(rd["names"])}
+            print(f"[phasebind] reader episode {(meta or {}).get('episode')}: {pos.round(5).tolist()}", flush=True)
         return obs
 
     # ── planning ────────────────────────────────────────────────────────────
@@ -108,7 +121,7 @@ class PhaseBindHooks:
             M = pose(pn - Rn @ Rs.T @ ps, Rn @ Rs.T)
         else:
             M = np.eye(4)
-        if held is not None and self.names[held] in self._objs:
+        if held is not None and self.names[held] in self._objs and self.reader is None:
             ho, Ho = self._objs[self.names[held]]
             Gs = np.linalg.inv(pose(z["obj_pos"][s0, held], q2m(z["obj_quat"][s0, held]))) @ pose(z["eef_pos"][s0], q2m(z["eef_quat"][s0]))
             Gt = np.linalg.inv(pose(ho, Ho)) @ pose(p_now, R_now)
