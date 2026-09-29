@@ -1,0 +1,134 @@
+{
+ "artifacts": [
+  "results/robot/r24phase_34_lora.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 18710528,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 18710528,
+  "tree": 0
+ },
+ "command": "experiments/r17_nft.py --task 34 --name r24phase --negatives phase",
+ "config": {
+  "bank_device": null,
+  "lora_stride": 5,
+  "max_pos": 1000,
+  "max_rec": 300,
+  "name": "r24phase",
+  "neg_batch": 8,
+  "negatives": "phase",
+  "pooled": false,
+  "practice": "m5_practice+m6_round1",
+  "rank": 16,
+  "recovery": false,
+  "scope": "expert",
+  "seed": 0,
+  "steps": 1000,
+  "task": 34,
+  "window": 2
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "qt-1.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3978890",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r17_nft",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "d1711fed8e3ba254c997883be3374220fc831d9f",
+  "short": "d1711fed"
+ },
+ "keys": {
+  "task": 34
+ },
+ "metrics": {
+  "curve": {
+   "loss": [
+    0.15018528699874878,
+    0.04888971149921417,
+    0.015050902962684631,
+    0.010252182371914387,
+    0.019436998292803764,
+    0.009700097143650055,
+    0.005747830495238304,
+    0.006712519563734531,
+    0.007282877340912819,
+    0.015290770679712296,
+    0.012288299389183521
+   ],
+   "neg": [
+    0.16084663569927216,
+    0.059139758348464966,
+    0.0392976813018322,
+    0.024743279442191124,
+    0.02218840830028057,
+    0.005353900603950024,
+    0.03092353045940399,
+    0.016713248565793037,
+    0.013753995299339294,
+    0.0083837378770113,
+    0.02188473381102085
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "failed": 3,
+  "negatives": 6,
+  "positives": 1000,
+  "recovery_negatives": 0,
+  "recovery_positives": 0,
+  "rollouts": 50,
+  "stalls": [
+   {
+    "T": 400,
+    "phase_event": 135,
+    "phase_query": 27,
+    "trial": 25
+   },
+   {
+    "T": 400,
+    "phase_event": 240,
+    "phase_query": 48,
+    "trial": 3
+   },
+   {
+    "T": 400,
+    "phase_event": 124,
+    "phase_query": 24,
+    "trial": 5
+   }
+  ],
+  "task": 34,
+  "text": "put the yellow and white mug to the front of the white mug"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r17_nft__libero_90__r24phase__task-34__s0__d1711fed",
+ "schema": 1,
+ "script": "experiments/r17_nft.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-29T02:28:58+00:00",
+ "stream": null,
+ "tag": "r24phase"
+}

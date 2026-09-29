@@ -1,0 +1,107 @@
+{
+ "artifacts": [
+  "results/robot/r25gen_4_lora.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 18710528,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 18710528,
+  "tree": 0
+ },
+ "command": "experiments/r15_consolidate.py --task 4 --lora --practice g25 --name r25gen",
+ "config": {
+  "fold_stride": 2,
+  "library": "results/robot/r2b_libero_40.npz",
+  "lora": true,
+  "lora_rank": 16,
+  "lora_scope": "expert",
+  "lora_stride": 5,
+  "max_fold_frames": 700,
+  "max_lora_frames": 1000,
+  "n_anchor": 384,
+  "name": "r25gen",
+  "practice": "g25",
+  "seed": 0,
+  "steps": 1000,
+  "task": 4
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "ig-88.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3979086",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r15_consolidate",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "d7ca67b9d25cd358436dcda72617a917bd547f0f",
+  "short": "d7ca67b9"
+ },
+ "keys": {
+  "task": 4
+ },
+ "metrics": {
+  "curve": {
+   "anchor": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "loss": [
+    0.11183004826307297,
+    0.027135921642184258,
+    0.015033277682960033,
+    0.00862104445695877,
+    0.015411791391670704,
+    0.007027298212051392,
+    0.00492970971390605,
+    0.004704763181507587,
+    0.0056470283307135105,
+    0.011589511297643185,
+    0.007695585023611784
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "frames": 893,
+  "successes": 20,
+  "task": 4
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r15_consolidate__libero_90___lora_r25gen__task-4__s0__d7ca67b9",
+ "schema": 1,
+ "script": "experiments/r15_consolidate.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-29T03:45:39+00:00",
+ "stream": null,
+ "tag": "_lora_r25gen"
+}

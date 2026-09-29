@@ -1,0 +1,230 @@
+{
+ "artifacts": [
+  "results/robot/r24phase_36_lora.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 18710528,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 18710528,
+  "tree": 0
+ },
+ "command": "experiments/r17_nft.py --task 36 --name r24phase --negatives phase",
+ "config": {
+  "bank_device": null,
+  "lora_stride": 5,
+  "max_pos": 1000,
+  "max_rec": 300,
+  "name": "r24phase",
+  "neg_batch": 8,
+  "negatives": "phase",
+  "pooled": false,
+  "practice": "m5_practice+m6_round1",
+  "rank": 16,
+  "recovery": false,
+  "scope": "expert",
+  "seed": 0,
+  "steps": 1000,
+  "task": 36,
+  "window": 2
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "xaea-12.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3978885",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r17_nft",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "d1711fed8e3ba254c997883be3374220fc831d9f",
+  "short": "d1711fed"
+ },
+ "keys": {
+  "task": 36
+ },
+ "metrics": {
+  "curve": {
+   "loss": [
+    0.06229346990585327,
+    0.04046700522303581,
+    0.031585078686475754,
+    0.021789146587252617,
+    0.022917335852980614,
+    0.011142835021018982,
+    0.012910042889416218,
+    0.015617755241692066,
+    0.010923015885055065,
+    0.012782390229403973,
+    0.010319342836737633
+   ],
+   "neg": [
+    0.06855259090662003,
+    0.0579950325191021,
+    0.05645618587732315,
+    0.06208771467208862,
+    0.031424280256032944,
+    0.024077821522951126,
+    0.021178973838686943,
+    0.02582542411983013,
+    0.020382726565003395,
+    0.017155935987830162,
+    0.02671470120549202
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "failed": 19,
+  "negatives": 38,
+  "positives": 1000,
+  "recovery_negatives": 0,
+  "recovery_positives": 0,
+  "rollouts": 50,
+  "stalls": [
+   {
+    "T": 400,
+    "phase_event": 183,
+    "phase_query": 36,
+    "trial": 0
+   },
+   {
+    "T": 400,
+    "phase_event": 215,
+    "phase_query": 43,
+    "trial": 1
+   },
+   {
+    "T": 400,
+    "phase_event": 104,
+    "phase_query": 20,
+    "trial": 15
+   },
+   {
+    "T": 400,
+    "phase_event": 114,
+    "phase_query": 22,
+    "trial": 17
+   },
+   {
+    "T": 400,
+    "phase_event": 160,
+    "phase_query": 32,
+    "trial": 19
+   },
+   {
+    "T": 400,
+    "phase_event": 225,
+    "phase_query": 45,
+    "trial": 3
+   },
+   {
+    "T": 400,
+    "phase_event": 271,
+    "phase_query": 54,
+    "trial": 4
+   },
+   {
+    "T": 400,
+    "phase_event": 175,
+    "phase_query": 35,
+    "trial": 5
+   },
+   {
+    "T": 400,
+    "phase_event": 147,
+    "phase_query": 29,
+    "trial": 7
+   },
+   {
+    "T": 400,
+    "phase_event": 196,
+    "phase_query": 39,
+    "trial": 8
+   },
+   {
+    "T": 400,
+    "phase_event": 218,
+    "phase_query": 43,
+    "trial": 11
+   },
+   {
+    "T": 400,
+    "phase_event": 185,
+    "phase_query": 37,
+    "trial": 13
+   },
+   {
+    "T": 400,
+    "phase_event": 84,
+    "phase_query": 16,
+    "trial": 14
+   },
+   {
+    "T": 400,
+    "phase_event": 280,
+    "phase_query": 56,
+    "trial": 21
+   },
+   {
+    "T": 400,
+    "phase_event": 399,
+    "phase_query": 79,
+    "trial": 24
+   },
+   {
+    "T": 400,
+    "phase_event": 94,
+    "phase_query": 18,
+    "trial": 26
+   },
+   {
+    "T": 400,
+    "phase_event": 258,
+    "phase_query": 51,
+    "trial": 4
+   },
+   {
+    "T": 400,
+    "phase_event": 286,
+    "phase_query": 57,
+    "trial": 6
+   },
+   {
+    "T": 400,
+    "phase_event": 126,
+    "phase_query": 25,
+    "trial": 8
+   }
+  ],
+  "task": 36,
+  "text": "put the white bowl on the plate"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r17_nft__libero_90__r24phase__task-36__s0__d1711fed",
+ "schema": 1,
+ "script": "experiments/r17_nft.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-29T02:22:25+00:00",
+ "stream": null,
+ "tag": "r24phase"
+}

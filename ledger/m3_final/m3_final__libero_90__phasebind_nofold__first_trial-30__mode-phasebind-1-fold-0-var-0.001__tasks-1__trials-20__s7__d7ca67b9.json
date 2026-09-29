@@ -1,0 +1,86 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/m3_final_1_phasebind_nofold.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "roll.sh MODE=phasebind:1?fold=0&var=0.001 SUITE=libero_90 TASKS=1 TRIALS=20 (job 3979295)",
+ "config": {
+  "client": {
+   "branches": "",
+   "first_trial": 30,
+   "host": "127.0.0.1",
+   "max_steps": 0,
+   "no_meta": false,
+   "objects": true,
+   "out": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/m3_final_1_phasebind_nofold.json",
+   "port": 9617,
+   "record": false,
+   "replan": 5,
+   "resize": 224,
+   "seed": 7,
+   "suite": "libero_90",
+   "tasks": "1",
+   "trials": 20,
+   "videos": 2,
+   "wait": 10
+  },
+  "job": "3979295",
+  "mode": "phasebind:1?fold=0&var=0.001"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "spot.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3979295",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_final",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "d7ca67b9d25cd358436dcda72617a917bd547f0f",
+  "short": "d7ca67b9"
+ },
+ "keys": {
+  "first_trial": 30,
+  "mode": "phasebind:1?fold=0&var=0.001",
+  "tasks": "1",
+  "trials": 20
+ },
+ "metrics": {
+  "complete": true,
+  "n_episodes": 20,
+  "secs": 491.29213762283325,
+  "success_rate": 1.0,
+  "tasks": {
+   "1": {
+    "errors": 0,
+    "language": "close the top drawer of the cabinet and put the black bowl on top of it",
+    "mean_steps": 196.65,
+    "n": 20,
+    "success_rate": 1.0
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_final__libero_90__phasebind_nofold__first_trial-30__mode-phasebind-1-fold-0-var-0.001__tasks-1__trials-20__s7__d7ca67b9",
+ "schema": 1,
+ "script": "experiments/libero_client.py",
+ "seconds": null,
+ "seed": 7,
+ "source_commit": null,
+ "started": "2026-09-29T04:03:55+00:00",
+ "stream": null,
+ "tag": "phasebind_nofold"
+}

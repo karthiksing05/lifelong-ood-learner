@@ -1,0 +1,218 @@
+{
+ "artifacts": [
+  "results/robot/r24phase_58_lora.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 18710528,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 18710528,
+  "tree": 0
+ },
+ "command": "experiments/r17_nft.py --task 58 --name r24phase --negatives phase",
+ "config": {
+  "bank_device": null,
+  "lora_stride": 5,
+  "max_pos": 1000,
+  "max_rec": 300,
+  "name": "r24phase",
+  "neg_batch": 8,
+  "negatives": "phase",
+  "pooled": false,
+  "practice": "m5_practice+m6_round1",
+  "rank": 16,
+  "recovery": false,
+  "scope": "expert",
+  "seed": 0,
+  "steps": 1000,
+  "task": 58,
+  "window": 2
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "xaea-12.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3978904",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r17_nft",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "d1711fed8e3ba254c997883be3374220fc831d9f",
+  "short": "d1711fed"
+ },
+ "keys": {
+  "task": 58
+ },
+ "metrics": {
+  "curve": {
+   "loss": [
+    0.05932966247200966,
+    0.018557561561465263,
+    0.01240464672446251,
+    0.015889041125774384,
+    0.021249383687973022,
+    0.008210930973291397,
+    0.015882566571235657,
+    0.013360942713916302,
+    0.008911767974495888,
+    0.018933307379484177,
+    0.014980479143559933
+   ],
+   "neg": [
+    0.07845466583967209,
+    0.06428181380033493,
+    0.06243876367807388,
+    0.04173031449317932,
+    0.03589257597923279,
+    0.0308134313672781,
+    0.03140538930892944,
+    0.026196403428912163,
+    0.02424752153456211,
+    0.019098607823252678,
+    0.03563084080815315
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "failed": 17,
+  "negatives": 34,
+  "positives": 1000,
+  "recovery_negatives": 0,
+  "recovery_positives": 0,
+  "rollouts": 50,
+  "stalls": [
+   {
+    "T": 400,
+    "phase_event": 100,
+    "phase_query": 20,
+    "trial": 11
+   },
+   {
+    "T": 400,
+    "phase_event": 73,
+    "phase_query": 14,
+    "trial": 13
+   },
+   {
+    "T": 400,
+    "phase_event": 76,
+    "phase_query": 15,
+    "trial": 15
+   },
+   {
+    "T": 400,
+    "phase_event": 96,
+    "phase_query": 19,
+    "trial": 3
+   },
+   {
+    "T": 400,
+    "phase_event": 380,
+    "phase_query": 76,
+    "trial": 5
+   },
+   {
+    "T": 400,
+    "phase_event": 60,
+    "phase_query": 12,
+    "trial": 7
+   },
+   {
+    "T": 400,
+    "phase_event": 73,
+    "phase_query": 14,
+    "trial": 8
+   },
+   {
+    "T": 400,
+    "phase_event": 89,
+    "phase_query": 17,
+    "trial": 9
+   },
+   {
+    "T": 400,
+    "phase_event": 75,
+    "phase_query": 15,
+    "trial": 13
+   },
+   {
+    "T": 400,
+    "phase_event": 94,
+    "phase_query": 18,
+    "trial": 14
+   },
+   {
+    "T": 400,
+    "phase_event": 140,
+    "phase_query": 28,
+    "trial": 17
+   },
+   {
+    "T": 400,
+    "phase_event": 211,
+    "phase_query": 42,
+    "trial": 20
+   },
+   {
+    "T": 400,
+    "phase_event": 131,
+    "phase_query": 26,
+    "trial": 27
+   },
+   {
+    "T": 400,
+    "phase_event": 60,
+    "phase_query": 12,
+    "trial": 28
+   },
+   {
+    "T": 400,
+    "phase_event": 130,
+    "phase_query": 26,
+    "trial": 3
+   },
+   {
+    "T": 400,
+    "phase_event": 93,
+    "phase_query": 18,
+    "trial": 4
+   },
+   {
+    "T": 400,
+    "phase_event": 128,
+    "phase_query": 25,
+    "trial": 5
+   }
+  ],
+  "task": 58,
+  "text": "pick up the ketchup and put it in the tray"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r17_nft__libero_90__r24phase__task-58__s0__d1711fed",
+ "schema": 1,
+ "script": "experiments/r17_nft.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-29T02:52:47+00:00",
+ "stream": null,
+ "tag": "r24phase"
+}

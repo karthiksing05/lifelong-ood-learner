@@ -1,0 +1,362 @@
+{
+ "artifacts": [
+  "results/robot/r24phase_32_lora.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 18710528,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 18710528,
+  "tree": 0
+ },
+ "command": "experiments/r17_nft.py --task 32 --name r24phase --negatives phase",
+ "config": {
+  "bank_device": null,
+  "lora_stride": 5,
+  "max_pos": 1000,
+  "max_rec": 300,
+  "name": "r24phase",
+  "neg_batch": 8,
+  "negatives": "phase",
+  "pooled": false,
+  "practice": "m5_practice+m6_round1",
+  "rank": 16,
+  "recovery": false,
+  "scope": "expert",
+  "seed": 0,
+  "steps": 1000,
+  "task": 32,
+  "window": 2
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "xaea-12.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3978900",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r17_nft",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "d1711fed8e3ba254c997883be3374220fc831d9f",
+  "short": "d1711fed"
+ },
+ "keys": {
+  "task": 32
+ },
+ "metrics": {
+  "curve": {
+   "loss": [
+    0.12376005947589874,
+    0.028618643060326576,
+    0.032163918018341064,
+    0.01577800139784813,
+    0.017493000254034996,
+    0.02801719680428505,
+    0.007600307464599609,
+    0.010033925995230675,
+    0.022765252739191055,
+    0.020908789709210396,
+    0.007915278896689415
+   ],
+   "neg": [
+    0.07460703700780869,
+    0.06845699995756149,
+    0.054950859397649765,
+    0.053710002452135086,
+    0.048621516674757004,
+    0.04142318293452263,
+    0.044568877667188644,
+    0.046746108680963516,
+    0.030331874266266823,
+    0.02361300401389599,
+    0.04209527000784874
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "failed": 41,
+  "negatives": 82,
+  "positives": 626,
+  "recovery_negatives": 0,
+  "recovery_positives": 0,
+  "rollouts": 50,
+  "stalls": [
+   {
+    "T": 400,
+    "phase_event": 292,
+    "phase_query": 58,
+    "trial": 0
+   },
+   {
+    "T": 400,
+    "phase_event": 285,
+    "phase_query": 57,
+    "trial": 1
+   },
+   {
+    "T": 400,
+    "phase_event": 300,
+    "phase_query": 60,
+    "trial": 10
+   },
+   {
+    "T": 400,
+    "phase_event": 137,
+    "phase_query": 27,
+    "trial": 11
+   },
+   {
+    "T": 400,
+    "phase_event": 85,
+    "phase_query": 17,
+    "trial": 12
+   },
+   {
+    "T": 400,
+    "phase_event": 168,
+    "phase_query": 33,
+    "trial": 13
+   },
+   {
+    "T": 400,
+    "phase_event": 90,
+    "phase_query": 18,
+    "trial": 14
+   },
+   {
+    "T": 400,
+    "phase_event": 101,
+    "phase_query": 20,
+    "trial": 16
+   },
+   {
+    "T": 400,
+    "phase_event": 75,
+    "phase_query": 15,
+    "trial": 17
+   },
+   {
+    "T": 400,
+    "phase_event": 119,
+    "phase_query": 23,
+    "trial": 2
+   },
+   {
+    "T": 400,
+    "phase_event": 87,
+    "phase_query": 17,
+    "trial": 3
+   },
+   {
+    "T": 400,
+    "phase_event": 81,
+    "phase_query": 16,
+    "trial": 4
+   },
+   {
+    "T": 400,
+    "phase_event": 105,
+    "phase_query": 21,
+    "trial": 5
+   },
+   {
+    "T": 400,
+    "phase_event": 174,
+    "phase_query": 34,
+    "trial": 6
+   },
+   {
+    "T": 400,
+    "phase_event": 147,
+    "phase_query": 29,
+    "trial": 7
+   },
+   {
+    "T": 400,
+    "phase_event": 336,
+    "phase_query": 67,
+    "trial": 8
+   },
+   {
+    "T": 400,
+    "phase_event": 181,
+    "phase_query": 36,
+    "trial": 0
+   },
+   {
+    "T": 400,
+    "phase_event": 203,
+    "phase_query": 40,
+    "trial": 1
+   },
+   {
+    "T": 400,
+    "phase_event": 297,
+    "phase_query": 59,
+    "trial": 10
+   },
+   {
+    "T": 400,
+    "phase_event": 145,
+    "phase_query": 29,
+    "trial": 11
+   },
+   {
+    "T": 400,
+    "phase_event": 395,
+    "phase_query": 79,
+    "trial": 12
+   },
+   {
+    "T": 400,
+    "phase_event": 174,
+    "phase_query": 34,
+    "trial": 13
+   },
+   {
+    "T": 400,
+    "phase_event": 399,
+    "phase_query": 79,
+    "trial": 14
+   },
+   {
+    "T": 400,
+    "phase_event": 320,
+    "phase_query": 64,
+    "trial": 16
+   },
+   {
+    "T": 400,
+    "phase_event": 390,
+    "phase_query": 78,
+    "trial": 17
+   },
+   {
+    "T": 400,
+    "phase_event": 272,
+    "phase_query": 54,
+    "trial": 2
+   },
+   {
+    "T": 400,
+    "phase_event": 399,
+    "phase_query": 79,
+    "trial": 20
+   },
+   {
+    "T": 400,
+    "phase_event": 399,
+    "phase_query": 79,
+    "trial": 21
+   },
+   {
+    "T": 400,
+    "phase_event": 346,
+    "phase_query": 69,
+    "trial": 23
+   },
+   {
+    "T": 400,
+    "phase_event": 355,
+    "phase_query": 71,
+    "trial": 24
+   },
+   {
+    "T": 400,
+    "phase_event": 399,
+    "phase_query": 79,
+    "trial": 25
+   },
+   {
+    "T": 400,
+    "phase_event": 399,
+    "phase_query": 79,
+    "trial": 26
+   },
+   {
+    "T": 400,
+    "phase_event": 333,
+    "phase_query": 66,
+    "trial": 27
+   },
+   {
+    "T": 400,
+    "phase_event": 172,
+    "phase_query": 34,
+    "trial": 28
+   },
+   {
+    "T": 400,
+    "phase_event": 399,
+    "phase_query": 79,
+    "trial": 29
+   },
+   {
+    "T": 400,
+    "phase_event": 313,
+    "phase_query": 62,
+    "trial": 3
+   },
+   {
+    "T": 400,
+    "phase_event": 395,
+    "phase_query": 79,
+    "trial": 4
+   },
+   {
+    "T": 400,
+    "phase_event": 185,
+    "phase_query": 37,
+    "trial": 5
+   },
+   {
+    "T": 400,
+    "phase_event": 362,
+    "phase_query": 72,
+    "trial": 7
+   },
+   {
+    "T": 400,
+    "phase_event": 228,
+    "phase_query": 45,
+    "trial": 8
+   },
+   {
+    "T": 400,
+    "phase_event": 335,
+    "phase_query": 67,
+    "trial": 9
+   }
+  ],
+  "task": 32,
+  "text": "put the ketchup in the top drawer of the cabinet"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r17_nft__libero_90__r24phase__task-32__s0__d1711fed",
+ "schema": 1,
+ "script": "experiments/r17_nft.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-29T02:45:01+00:00",
+ "stream": null,
+ "tag": "r24phase"
+}

@@ -1,0 +1,257 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "3.8 read via m3_stats.episodes: lora_r25gen vs lora / lora_learn / lora_r17bal",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky2.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "g38_generate",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "d7ca67b9d25cd358436dcda72617a917bd547f0f",
+  "short": "d7ca67b9"
+ },
+ "keys": {},
+ "metrics": {
+  "G1": "passes",
+  "G2": "passes (non-inferior at -0.10)",
+  "gen-learn": {
+   "diff": {
+    "diff": 0.04523809523809524,
+    "hi": 0.1880952380952381,
+    "hi90": 0.16428571428571428,
+    "lo": -0.10238095238095238,
+    "lo90": -0.07857142857142857,
+    "n_pairs": 420,
+    "n_tasks": 21
+   },
+   "discordant": [
+    85,
+    66
+   ],
+   "n": 420,
+   "sign_p": 0.14271807618296564,
+   "tasks": 21,
+   "x": 293,
+   "y": 274
+  },
+  "gen-nft": {
+   "diff": {
+    "diff": -0.02142857142857143,
+    "hi": 0.11666666666666667,
+    "hi90": 0.09523809523809523,
+    "lo": -0.17142857142857143,
+    "lo90": -0.14761904761904762,
+    "n_pairs": 420,
+    "n_tasks": 21
+   },
+   "discordant": [
+    68,
+    77
+   ],
+   "n": 420,
+   "sign_p": 0.5065964185708861,
+   "tasks": 21,
+   "x": 293,
+   "y": 302
+  },
+  "gen-onedemo": {
+   "diff": {
+    "diff": 0.09761904761904762,
+    "hi": 0.25,
+    "hi90": 0.2261904761904762,
+    "lo": -0.05952380952380952,
+    "lo90": -0.030952380952380953,
+    "n_pairs": 420,
+    "n_tasks": 21
+   },
+   "discordant": [
+    100,
+    59
+   ],
+   "n": 420,
+   "sign_p": 0.001434463760420402,
+   "tasks": 21,
+   "x": 293,
+   "y": 252
+  },
+  "generation": {
+   "1": 18,
+   "3": 20,
+   "32": 20,
+   "34": 20,
+   "35": 20,
+   "36": 20,
+   "37": 20,
+   "39": 2,
+   "4": 20,
+   "40": 17,
+   "41": 20,
+   "42": 9,
+   "43": 15,
+   "48": 0,
+   "5": 15,
+   "52": 12,
+   "53": 19,
+   "58": 4,
+   "6": 20,
+   "62": 20,
+   "63": 20
+  },
+  "per_task": {
+   "1": {
+    "gen": 13,
+    "learn": 7,
+    "nft": 9,
+    "onedemo": 7
+   },
+   "3": {
+    "gen": 18,
+    "learn": 18,
+    "nft": 18,
+    "onedemo": 19
+   },
+   "32": {
+    "gen": 9,
+    "learn": 6,
+    "nft": 10,
+    "onedemo": 7
+   },
+   "34": {
+    "gen": 18,
+    "learn": 17,
+    "nft": 17,
+    "onedemo": 18
+   },
+   "35": {
+    "gen": 17,
+    "learn": 6,
+    "nft": 7,
+    "onedemo": 5
+   },
+   "36": {
+    "gen": 20,
+    "learn": 9,
+    "nft": 17,
+    "onedemo": 13
+   },
+   "37": {
+    "gen": 19,
+    "learn": 17,
+    "nft": 17,
+    "onedemo": 7
+   },
+   "39": {
+    "gen": 16,
+    "learn": 17,
+    "nft": 16,
+    "onedemo": 13
+   },
+   "4": {
+    "gen": 14,
+    "learn": 15,
+    "nft": 11,
+    "onedemo": 17
+   },
+   "40": {
+    "gen": 7,
+    "learn": 7,
+    "nft": 4,
+    "onedemo": 10
+   },
+   "41": {
+    "gen": 16,
+    "learn": 13,
+    "nft": 18,
+    "onedemo": 15
+   },
+   "42": {
+    "gen": 19,
+    "learn": 7,
+    "nft": 9,
+    "onedemo": 3
+   },
+   "43": {
+    "gen": 18,
+    "learn": 20,
+    "nft": 20,
+    "onedemo": 12
+   },
+   "48": {
+    "gen": 15,
+    "learn": 14,
+    "nft": 18,
+    "onedemo": 12
+   },
+   "5": {
+    "gen": 18,
+    "learn": 20,
+    "nft": 16,
+    "onedemo": 19
+   },
+   "52": {
+    "gen": 6,
+    "learn": 13,
+    "nft": 14,
+    "onedemo": 13
+   },
+   "53": {
+    "gen": 6,
+    "learn": 20,
+    "nft": 20,
+    "onedemo": 20
+   },
+   "58": {
+    "gen": 0,
+    "learn": 11,
+    "nft": 16,
+    "onedemo": 9
+   },
+   "6": {
+    "gen": 20,
+    "learn": 12,
+    "nft": 18,
+    "onedemo": 17
+   },
+   "62": {
+    "gen": 7,
+    "learn": 6,
+    "nft": 14,
+    "onedemo": 3
+   },
+   "63": {
+    "gen": 17,
+    "learn": 19,
+    "nft": 13,
+    "onedemo": 13
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "g38_generate__libero_90__read__s0__d7ca67b9",
+ "schema": 1,
+ "script": "(inline, session 2026-09-29)",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-29T04:55:43+00:00",
+ "stream": null,
+ "tag": "read"
+}

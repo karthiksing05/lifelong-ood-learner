@@ -1,0 +1,308 @@
+{
+ "artifacts": [
+  "results/robot/r24phase_1_lora.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 18710528,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 18710528,
+  "tree": 0
+ },
+ "command": "experiments/r17_nft.py --task 1 --name r24phase --negatives phase",
+ "config": {
+  "bank_device": null,
+  "lora_stride": 5,
+  "max_pos": 1000,
+  "max_rec": 300,
+  "name": "r24phase",
+  "neg_batch": 8,
+  "negatives": "phase",
+  "pooled": false,
+  "practice": "m5_practice+m6_round1",
+  "rank": 16,
+  "recovery": false,
+  "scope": "expert",
+  "seed": 0,
+  "steps": 1000,
+  "task": 1,
+  "window": 2
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "dave.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3978888",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r17_nft",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "d1711fed8e3ba254c997883be3374220fc831d9f",
+  "short": "d1711fed"
+ },
+ "keys": {
+  "task": 1
+ },
+ "metrics": {
+  "curve": {
+   "loss": [
+    0.07431989163160324,
+    0.022214891389012337,
+    0.00988400261849165,
+    0.012812107801437378,
+    0.029623454436659813,
+    0.010245741344988346,
+    0.01274302788078785,
+    0.0081252446398139,
+    0.011540870182216167,
+    0.016052566468715668,
+    0.01983288675546646
+   ],
+   "neg": [
+    0.040404487401247025,
+    0.021416587755084038,
+    0.050652604550123215,
+    0.02765299193561077,
+    0.022075114771723747,
+    0.025702839717268944,
+    0.031700942665338516,
+    0.02651343122124672,
+    0.016150793060660362,
+    0.008392122574150562,
+    0.018384987488389015
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "failed": 32,
+  "negatives": 64,
+  "positives": 1000,
+  "recovery_negatives": 0,
+  "recovery_positives": 0,
+  "rollouts": 50,
+  "stalls": [
+   {
+    "T": 400,
+    "phase_event": 140,
+    "phase_query": 28,
+    "trial": 0
+   },
+   {
+    "T": 400,
+    "phase_event": 176,
+    "phase_query": 35,
+    "trial": 11
+   },
+   {
+    "T": 400,
+    "phase_event": 135,
+    "phase_query": 27,
+    "trial": 12
+   },
+   {
+    "T": 400,
+    "phase_event": 193,
+    "phase_query": 38,
+    "trial": 13
+   },
+   {
+    "T": 400,
+    "phase_event": 190,
+    "phase_query": 38,
+    "trial": 14
+   },
+   {
+    "T": 400,
+    "phase_event": 176,
+    "phase_query": 35,
+    "trial": 15
+   },
+   {
+    "T": 400,
+    "phase_event": 185,
+    "phase_query": 37,
+    "trial": 16
+   },
+   {
+    "T": 400,
+    "phase_event": 135,
+    "phase_query": 27,
+    "trial": 18
+   },
+   {
+    "T": 400,
+    "phase_event": 180,
+    "phase_query": 36,
+    "trial": 19
+   },
+   {
+    "T": 400,
+    "phase_event": 200,
+    "phase_query": 40,
+    "trial": 4
+   },
+   {
+    "T": 400,
+    "phase_event": 177,
+    "phase_query": 35,
+    "trial": 5
+   },
+   {
+    "T": 400,
+    "phase_event": 175,
+    "phase_query": 35,
+    "trial": 8
+   },
+   {
+    "T": 400,
+    "phase_event": 231,
+    "phase_query": 46,
+    "trial": 9
+   },
+   {
+    "T": 400,
+    "phase_event": 195,
+    "phase_query": 39,
+    "trial": 0
+   },
+   {
+    "T": 400,
+    "phase_event": 297,
+    "phase_query": 59,
+    "trial": 10
+   },
+   {
+    "T": 400,
+    "phase_event": 175,
+    "phase_query": 35,
+    "trial": 11
+   },
+   {
+    "T": 400,
+    "phase_event": 239,
+    "phase_query": 47,
+    "trial": 12
+   },
+   {
+    "T": 400,
+    "phase_event": 185,
+    "phase_query": 37,
+    "trial": 13
+   },
+   {
+    "T": 400,
+    "phase_event": 170,
+    "phase_query": 34,
+    "trial": 15
+   },
+   {
+    "T": 400,
+    "phase_event": 185,
+    "phase_query": 37,
+    "trial": 16
+   },
+   {
+    "T": 400,
+    "phase_event": 193,
+    "phase_query": 38,
+    "trial": 18
+   },
+   {
+    "T": 400,
+    "phase_event": 196,
+    "phase_query": 39,
+    "trial": 19
+   },
+   {
+    "T": 400,
+    "phase_event": 175,
+    "phase_query": 35,
+    "trial": 20
+   },
+   {
+    "T": 400,
+    "phase_event": 204,
+    "phase_query": 40,
+    "trial": 21
+   },
+   {
+    "T": 400,
+    "phase_event": 185,
+    "phase_query": 37,
+    "trial": 22
+   },
+   {
+    "T": 400,
+    "phase_event": 202,
+    "phase_query": 40,
+    "trial": 24
+   },
+   {
+    "T": 400,
+    "phase_event": 182,
+    "phase_query": 36,
+    "trial": 25
+   },
+   {
+    "T": 400,
+    "phase_event": 196,
+    "phase_query": 39,
+    "trial": 27
+   },
+   {
+    "T": 400,
+    "phase_event": 195,
+    "phase_query": 39,
+    "trial": 28
+   },
+   {
+    "T": 400,
+    "phase_event": 190,
+    "phase_query": 38,
+    "trial": 4
+   },
+   {
+    "T": 400,
+    "phase_event": 189,
+    "phase_query": 37,
+    "trial": 5
+   },
+   {
+    "T": 400,
+    "phase_event": 193,
+    "phase_query": 38,
+    "trial": 9
+   }
+  ],
+  "task": 1,
+  "text": "close the top drawer of the cabinet and put the black bowl on top of it"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r17_nft__libero_90__r24phase__task-1__s0__d1711fed",
+ "schema": 1,
+ "script": "experiments/r17_nft.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-29T02:29:34+00:00",
+ "stream": null,
+ "tag": "r24phase"
+}

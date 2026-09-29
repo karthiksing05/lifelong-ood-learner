@@ -1,0 +1,194 @@
+{
+ "artifacts": [
+  "results/robot/r24phase_4_lora.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 18710528,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 18710528,
+  "tree": 0
+ },
+ "command": "experiments/r17_nft.py --task 4 --name r24phase --negatives phase",
+ "config": {
+  "bank_device": null,
+  "lora_stride": 5,
+  "max_pos": 1000,
+  "max_rec": 300,
+  "name": "r24phase",
+  "neg_batch": 8,
+  "negatives": "phase",
+  "pooled": false,
+  "practice": "m5_practice+m6_round1",
+  "rank": 16,
+  "recovery": false,
+  "scope": "expert",
+  "seed": 0,
+  "steps": 1000,
+  "task": 4,
+  "window": 2
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "qt-1.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3978897",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r17_nft",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "d1711fed8e3ba254c997883be3374220fc831d9f",
+  "short": "d1711fed"
+ },
+ "keys": {
+  "task": 4
+ },
+ "metrics": {
+  "curve": {
+   "loss": [
+    0.08933673799037933,
+    0.058853764086961746,
+    0.031189436092972755,
+    0.01883484236896038,
+    0.024815214797854424,
+    0.014460040256381035,
+    0.014784712344408035,
+    0.00885468628257513,
+    0.013104667887091637,
+    0.018556082621216774,
+    0.01469983160495758
+   ],
+   "neg": [
+    0.08513139933347702,
+    0.08856122940778732,
+    0.06093023344874382,
+    0.049255598336458206,
+    0.05825871229171753,
+    0.02926468290388584,
+    0.022227952256798744,
+    0.016600443050265312,
+    0.01117369718849659,
+    0.012520411983132362,
+    0.04491507634520531
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "failed": 13,
+  "negatives": 26,
+  "positives": 1000,
+  "recovery_negatives": 0,
+  "recovery_positives": 0,
+  "rollouts": 50,
+  "stalls": [
+   {
+    "T": 400,
+    "phase_event": 130,
+    "phase_query": 26,
+    "trial": 0
+   },
+   {
+    "T": 400,
+    "phase_event": 179,
+    "phase_query": 35,
+    "trial": 14
+   },
+   {
+    "T": 400,
+    "phase_event": 135,
+    "phase_query": 27,
+    "trial": 15
+   },
+   {
+    "T": 400,
+    "phase_event": 95,
+    "phase_query": 19,
+    "trial": 17
+   },
+   {
+    "T": 400,
+    "phase_event": 123,
+    "phase_query": 24,
+    "trial": 3
+   },
+   {
+    "T": 400,
+    "phase_event": 123,
+    "phase_query": 24,
+    "trial": 4
+   },
+   {
+    "T": 400,
+    "phase_event": 123,
+    "phase_query": 24,
+    "trial": 6
+   },
+   {
+    "T": 400,
+    "phase_event": 120,
+    "phase_query": 24,
+    "trial": 10
+   },
+   {
+    "T": 400,
+    "phase_event": 55,
+    "phase_query": 11,
+    "trial": 17
+   },
+   {
+    "T": 400,
+    "phase_event": 88,
+    "phase_query": 17,
+    "trial": 18
+   },
+   {
+    "T": 400,
+    "phase_event": 50,
+    "phase_query": 10,
+    "trial": 19
+   },
+   {
+    "T": 400,
+    "phase_event": 120,
+    "phase_query": 24,
+    "trial": 22
+   },
+   {
+    "T": 400,
+    "phase_event": 220,
+    "phase_query": 44,
+    "trial": 27
+   }
+  ],
+  "task": 4,
+  "text": "put the butter at the front in the top drawer of the cabinet and close it"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r17_nft__libero_90__r24phase__task-4__s0__d1711fed",
+ "schema": 1,
+ "script": "experiments/r17_nft.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-29T02:43:37+00:00",
+ "stream": null,
+ "tag": "r24phase"
+}

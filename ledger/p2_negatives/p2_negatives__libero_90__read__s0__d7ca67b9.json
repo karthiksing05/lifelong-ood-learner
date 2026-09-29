@@ -1,0 +1,170 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "P2 read: lora_r24phase vs lora_r17bal, states 30-49",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky2.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "p2_negatives",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "d7ca67b9d25cd358436dcda72617a917bd547f0f",
+  "short": "d7ca67b9"
+ },
+ "keys": {},
+ "metrics": {
+  "P2": "fails",
+  "all_21": {
+   "diff": {
+    "diff": -0.04285714285714286,
+    "hi": 0.03571428571428571,
+    "hi90": 0.023809523809523808,
+    "lo": -0.1261904761904762,
+    "lo90": -0.11190476190476191,
+    "n_pairs": 420,
+    "n_tasks": 21
+   },
+   "discordant": [
+    47,
+    65
+   ],
+   "n": 420,
+   "phase": 284,
+   "sign_p": 0.10778227965475412,
+   "stall": 302
+  },
+  "movable_18": {
+   "diff": {
+    "diff": -0.05277777777777778,
+    "hi": 0.041666666666666664,
+    "hi90": 0.025,
+    "lo": -0.14444444444444443,
+    "lo90": -0.13055555555555556,
+    "n_pairs": 360,
+    "n_tasks": 18
+   },
+   "discordant": [
+    43,
+    62
+   ],
+   "n": 360,
+   "phase": 242,
+   "sign_p": 0.07848502733901777,
+   "stall": 261
+  },
+  "per_task": {
+   "1": {
+    "phase": 9,
+    "stall": 9
+   },
+   "3": {
+    "phase": 16,
+    "stall": 18
+   },
+   "32": {
+    "phase": 8,
+    "stall": 10
+   },
+   "34": {
+    "phase": 11,
+    "stall": 17
+   },
+   "35": {
+    "phase": 7,
+    "stall": 7
+   },
+   "36": {
+    "phase": 14,
+    "stall": 17
+   },
+   "37": {
+    "phase": 18,
+    "stall": 17
+   },
+   "39": {
+    "phase": 18,
+    "stall": 16
+   },
+   "4": {
+    "phase": 14,
+    "stall": 11
+   },
+   "40": {
+    "phase": 7,
+    "stall": 4
+   },
+   "41": {
+    "phase": 17,
+    "stall": 18
+   },
+   "42": {
+    "phase": 13,
+    "stall": 9
+   },
+   "43": {
+    "phase": 19,
+    "stall": 20
+   },
+   "48": {
+    "phase": 19,
+    "stall": 18
+   },
+   "5": {
+    "phase": 19,
+    "stall": 16
+   },
+   "52": {
+    "phase": 9,
+    "stall": 14
+   },
+   "53": {
+    "phase": 20,
+    "stall": 20
+   },
+   "58": {
+    "phase": 10,
+    "stall": 16
+   },
+   "6": {
+    "phase": 17,
+    "stall": 18
+   },
+   "62": {
+    "phase": 14,
+    "stall": 14
+   },
+   "63": {
+    "phase": 5,
+    "stall": 13
+   }
+  },
+  "plan_bar_331": false
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "p2_negatives__libero_90__read__s0__d7ca67b9",
+ "schema": 1,
+ "script": "(inline, session 2026-09-28)",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-29T03:42:24+00:00",
+ "stream": null,
+ "tag": "read"
+}

@@ -1,0 +1,320 @@
+{
+ "artifacts": [
+  "results/robot/r24phase_40_lora.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 18710528,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 18710528,
+  "tree": 0
+ },
+ "command": "experiments/r17_nft.py --task 40 --name r24phase --negatives phase",
+ "config": {
+  "bank_device": null,
+  "lora_stride": 5,
+  "max_pos": 1000,
+  "max_rec": 300,
+  "name": "r24phase",
+  "neg_batch": 8,
+  "negatives": "phase",
+  "pooled": false,
+  "practice": "m5_practice+m6_round1",
+  "rank": 16,
+  "recovery": false,
+  "scope": "expert",
+  "seed": 0,
+  "steps": 1000,
+  "task": 40,
+  "window": 2
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "cyborg.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3978892",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r17_nft",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "d1711fed8e3ba254c997883be3374220fc831d9f",
+  "short": "d1711fed"
+ },
+ "keys": {
+  "task": 40
+ },
+ "metrics": {
+  "curve": {
+   "loss": [
+    0.08175662904977798,
+    0.028852002695202827,
+    0.012498771771788597,
+    0.013075487688183784,
+    0.020243661478161812,
+    0.010299615561962128,
+    0.008604655973613262,
+    0.009372114203870296,
+    0.008993355557322502,
+    0.014485517516732216,
+    0.010380017571151257
+   ],
+   "neg": [
+    0.06963071972131729,
+    0.06385146826505661,
+    0.04261816665530205,
+    0.06724955886602402,
+    0.05578099563717842,
+    0.028925329446792603,
+    0.04258086159825325,
+    0.03765843063592911,
+    0.023740245029330254,
+    0.02631915546953678,
+    0.03067743591964245
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "failed": 34,
+  "negatives": 68,
+  "positives": 842,
+  "recovery_negatives": 0,
+  "recovery_positives": 0,
+  "rollouts": 50,
+  "stalls": [
+   {
+    "T": 400,
+    "phase_event": 99,
+    "phase_query": 19,
+    "trial": 0
+   },
+   {
+    "T": 400,
+    "phase_event": 101,
+    "phase_query": 20,
+    "trial": 10
+   },
+   {
+    "T": 400,
+    "phase_event": 297,
+    "phase_query": 59,
+    "trial": 11
+   },
+   {
+    "T": 400,
+    "phase_event": 250,
+    "phase_query": 50,
+    "trial": 12
+   },
+   {
+    "T": 400,
+    "phase_event": 318,
+    "phase_query": 63,
+    "trial": 13
+   },
+   {
+    "T": 400,
+    "phase_event": 346,
+    "phase_query": 69,
+    "trial": 14
+   },
+   {
+    "T": 400,
+    "phase_event": 379,
+    "phase_query": 75,
+    "trial": 15
+   },
+   {
+    "T": 400,
+    "phase_event": 377,
+    "phase_query": 75,
+    "trial": 16
+   },
+   {
+    "T": 400,
+    "phase_event": 110,
+    "phase_query": 22,
+    "trial": 18
+   },
+   {
+    "T": 400,
+    "phase_event": 384,
+    "phase_query": 76,
+    "trial": 19
+   },
+   {
+    "T": 400,
+    "phase_event": 332,
+    "phase_query": 66,
+    "trial": 2
+   },
+   {
+    "T": 400,
+    "phase_event": 241,
+    "phase_query": 48,
+    "trial": 4
+   },
+   {
+    "T": 400,
+    "phase_event": 294,
+    "phase_query": 58,
+    "trial": 5
+   },
+   {
+    "T": 400,
+    "phase_event": 270,
+    "phase_query": 54,
+    "trial": 6
+   },
+   {
+    "T": 400,
+    "phase_event": 175,
+    "phase_query": 35,
+    "trial": 7
+   },
+   {
+    "T": 400,
+    "phase_event": 242,
+    "phase_query": 48,
+    "trial": 0
+   },
+   {
+    "T": 400,
+    "phase_event": 337,
+    "phase_query": 67,
+    "trial": 1
+   },
+   {
+    "T": 400,
+    "phase_event": 347,
+    "phase_query": 69,
+    "trial": 10
+   },
+   {
+    "T": 400,
+    "phase_event": 399,
+    "phase_query": 79,
+    "trial": 11
+   },
+   {
+    "T": 400,
+    "phase_event": 355,
+    "phase_query": 71,
+    "trial": 12
+   },
+   {
+    "T": 400,
+    "phase_event": 399,
+    "phase_query": 79,
+    "trial": 13
+   },
+   {
+    "T": 400,
+    "phase_event": 229,
+    "phase_query": 45,
+    "trial": 14
+   },
+   {
+    "T": 400,
+    "phase_event": 91,
+    "phase_query": 18,
+    "trial": 15
+   },
+   {
+    "T": 400,
+    "phase_event": 93,
+    "phase_query": 18,
+    "trial": 18
+   },
+   {
+    "T": 400,
+    "phase_event": 220,
+    "phase_query": 44,
+    "trial": 20
+   },
+   {
+    "T": 400,
+    "phase_event": 220,
+    "phase_query": 44,
+    "trial": 21
+   },
+   {
+    "T": 400,
+    "phase_event": 399,
+    "phase_query": 79,
+    "trial": 22
+   },
+   {
+    "T": 400,
+    "phase_event": 300,
+    "phase_query": 60,
+    "trial": 24
+   },
+   {
+    "T": 400,
+    "phase_event": 399,
+    "phase_query": 79,
+    "trial": 25
+   },
+   {
+    "T": 400,
+    "phase_event": 399,
+    "phase_query": 79,
+    "trial": 27
+   },
+   {
+    "T": 400,
+    "phase_event": 373,
+    "phase_query": 74,
+    "trial": 29
+   },
+   {
+    "T": 400,
+    "phase_event": 385,
+    "phase_query": 77,
+    "trial": 3
+   },
+   {
+    "T": 400,
+    "phase_event": 395,
+    "phase_query": 79,
+    "trial": 6
+   },
+   {
+    "T": 400,
+    "phase_event": 249,
+    "phase_query": 49,
+    "trial": 9
+   }
+  ],
+  "task": 40,
+  "text": "put the frying pan on the cabinet shelf"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r17_nft__libero_90__r24phase__task-40__s0__d1711fed",
+ "schema": 1,
+ "script": "experiments/r17_nft.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-29T02:35:45+00:00",
+ "stream": null,
+ "tag": "r24phase"
+}

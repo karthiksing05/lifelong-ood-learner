@@ -1,0 +1,242 @@
+{
+ "artifacts": [
+  "results/robot/r24phase_62_lora.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 18710528,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 18710528,
+  "tree": 0
+ },
+ "command": "experiments/r17_nft.py --task 62 --name r24phase --negatives phase",
+ "config": {
+  "bank_device": null,
+  "lora_stride": 5,
+  "max_pos": 1000,
+  "max_rec": 300,
+  "name": "r24phase",
+  "neg_batch": 8,
+  "negatives": "phase",
+  "pooled": false,
+  "practice": "m5_practice+m6_round1",
+  "rank": 16,
+  "recovery": false,
+  "scope": "expert",
+  "seed": 0,
+  "steps": 1000,
+  "task": 62,
+  "window": 2
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "xaea-12.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3978895",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r17_nft",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "d1711fed8e3ba254c997883be3374220fc831d9f",
+  "short": "d1711fed"
+ },
+ "keys": {
+  "task": 62
+ },
+ "metrics": {
+  "curve": {
+   "loss": [
+    0.06909261643886566,
+    0.013137529604136944,
+    0.01879480853676796,
+    0.008135135285556316,
+    0.016771014779806137,
+    0.005739489570260048,
+    0.005428406875580549,
+    0.0121864452958107,
+    0.008215873502194881,
+    0.02254955843091011,
+    0.007994737476110458
+   ],
+   "neg": [
+    0.04366010054945946,
+    0.050103068351745605,
+    0.0405103862285614,
+    0.04839558154344559,
+    0.0499769002199173,
+    0.032403238117694855,
+    0.027166053652763367,
+    0.015542288310825825,
+    0.01053777989000082,
+    0.018100982531905174,
+    0.031176501885056496
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "failed": 21,
+  "negatives": 42,
+  "positives": 796,
+  "recovery_negatives": 0,
+  "recovery_positives": 0,
+  "rollouts": 50,
+  "stalls": [
+   {
+    "T": 400,
+    "phase_event": 56,
+    "phase_query": 11,
+    "trial": 1
+   },
+   {
+    "T": 400,
+    "phase_event": 31,
+    "phase_query": 6,
+    "trial": 11
+   },
+   {
+    "T": 400,
+    "phase_event": 37,
+    "phase_query": 7,
+    "trial": 12
+   },
+   {
+    "T": 400,
+    "phase_event": 43,
+    "phase_query": 8,
+    "trial": 14
+   },
+   {
+    "T": 400,
+    "phase_event": 62,
+    "phase_query": 12,
+    "trial": 16
+   },
+   {
+    "T": 400,
+    "phase_event": 43,
+    "phase_query": 8,
+    "trial": 18
+   },
+   {
+    "T": 400,
+    "phase_event": 195,
+    "phase_query": 39,
+    "trial": 19
+   },
+   {
+    "T": 400,
+    "phase_event": 48,
+    "phase_query": 9,
+    "trial": 6
+   },
+   {
+    "T": 400,
+    "phase_event": 43,
+    "phase_query": 8,
+    "trial": 8
+   },
+   {
+    "T": 400,
+    "phase_event": 66,
+    "phase_query": 13,
+    "trial": 1
+   },
+   {
+    "T": 400,
+    "phase_event": 392,
+    "phase_query": 78,
+    "trial": 11
+   },
+   {
+    "T": 400,
+    "phase_event": 40,
+    "phase_query": 8,
+    "trial": 14
+   },
+   {
+    "T": 400,
+    "phase_event": 66,
+    "phase_query": 13,
+    "trial": 16
+   },
+   {
+    "T": 400,
+    "phase_event": 65,
+    "phase_query": 13,
+    "trial": 17
+   },
+   {
+    "T": 400,
+    "phase_event": 140,
+    "phase_query": 28,
+    "trial": 19
+   },
+   {
+    "T": 400,
+    "phase_event": 34,
+    "phase_query": 6,
+    "trial": 21
+   },
+   {
+    "T": 400,
+    "phase_event": 166,
+    "phase_query": 33,
+    "trial": 29
+   },
+   {
+    "T": 400,
+    "phase_event": 70,
+    "phase_query": 14,
+    "trial": 3
+   },
+   {
+    "T": 400,
+    "phase_event": 44,
+    "phase_query": 8,
+    "trial": 6
+   },
+   {
+    "T": 400,
+    "phase_event": 36,
+    "phase_query": 7,
+    "trial": 7
+   },
+   {
+    "T": 400,
+    "phase_event": 93,
+    "phase_query": 18,
+    "trial": 8
+   }
+  ],
+  "task": 62,
+  "text": "pick up the salad dressing and put it in the tray"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r17_nft__libero_90__r24phase__task-62__s0__d1711fed",
+ "schema": 1,
+ "script": "experiments/r17_nft.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-29T02:37:29+00:00",
+ "stream": null,
+ "tag": "r24phase"
+}

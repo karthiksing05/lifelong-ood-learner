@@ -1,0 +1,146 @@
+{
+ "artifacts": [
+  "results/robot/r24phase_5_lora.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 18710528,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 18710528,
+  "tree": 0
+ },
+ "command": "experiments/r17_nft.py --task 5 --name r24phase --negatives phase",
+ "config": {
+  "bank_device": null,
+  "lora_stride": 5,
+  "max_pos": 1000,
+  "max_rec": 300,
+  "name": "r24phase",
+  "neg_batch": 8,
+  "negatives": "phase",
+  "pooled": false,
+  "practice": "m5_practice+m6_round1",
+  "rank": 16,
+  "recovery": false,
+  "scope": "expert",
+  "seed": 0,
+  "steps": 1000,
+  "task": 5,
+  "window": 2
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "dave.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3978899",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r17_nft",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "d1711fed8e3ba254c997883be3374220fc831d9f",
+  "short": "d1711fed"
+ },
+ "keys": {
+  "task": 5
+ },
+ "metrics": {
+  "curve": {
+   "loss": [
+    0.05380477011203766,
+    0.028000833466649055,
+    0.01834997348487377,
+    0.014544972218573093,
+    0.022505611181259155,
+    0.019024813547730446,
+    0.017954666167497635,
+    0.014517238363623619,
+    0.017357775941491127,
+    0.01811429299414158,
+    0.015004097484052181
+   ],
+   "neg": [
+    0.09997668117284775,
+    0.07208506762981415,
+    0.04084746912121773,
+    0.026564886793494225,
+    0.029267435893416405,
+    0.01672098971903324,
+    0.01575775444507599,
+    0.010562540963292122,
+    0.009954395703971386,
+    0.0158468559384346,
+    0.024358052760362625
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "failed": 5,
+  "negatives": 10,
+  "positives": 1000,
+  "recovery_negatives": 0,
+  "recovery_positives": 0,
+  "rollouts": 50,
+  "stalls": [
+   {
+    "T": 400,
+    "phase_event": 56,
+    "phase_query": 11,
+    "trial": 0
+   },
+   {
+    "T": 400,
+    "phase_event": 130,
+    "phase_query": 26,
+    "trial": 1
+   },
+   {
+    "T": 400,
+    "phase_event": 53,
+    "phase_query": 10,
+    "trial": 11
+   },
+   {
+    "T": 400,
+    "phase_event": 375,
+    "phase_query": 75,
+    "trial": 6
+   },
+   {
+    "T": 400,
+    "phase_event": 399,
+    "phase_query": 79,
+    "trial": 1
+   }
+  ],
+  "task": 5,
+  "text": "put the chocolate pudding in the top drawer of the cabinet and close it"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r17_nft__libero_90__r24phase__task-5__s0__d1711fed",
+ "schema": 1,
+ "script": "experiments/r17_nft.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-29T02:44:26+00:00",
+ "stream": null,
+ "tag": "r24phase"
+}

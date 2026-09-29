@@ -1,0 +1,122 @@
+{
+ "artifacts": [
+  "results/robot/r24phase_53_lora.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 18710528,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 18710528,
+  "tree": 0
+ },
+ "command": "experiments/r17_nft.py --task 53 --name r24phase --negatives phase",
+ "config": {
+  "bank_device": null,
+  "lora_stride": 5,
+  "max_pos": 1000,
+  "max_rec": 300,
+  "name": "r24phase",
+  "neg_batch": 8,
+  "negatives": "phase",
+  "pooled": false,
+  "practice": "m5_practice+m6_round1",
+  "rank": 16,
+  "recovery": false,
+  "scope": "expert",
+  "seed": 0,
+  "steps": 1000,
+  "task": 53,
+  "window": 2
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "dave.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3978894",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r17_nft",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "d1711fed8e3ba254c997883be3374220fc831d9f",
+  "short": "d1711fed"
+ },
+ "keys": {
+  "task": 53
+ },
+ "metrics": {
+  "curve": {
+   "loss": [
+    0.02836761437356472,
+    0.010120130144059658,
+    0.006022836081683636,
+    0.006834586150944233,
+    0.011472467333078384,
+    0.005035765003412962,
+    0.0036136468406766653,
+    0.004253418650478125,
+    0.00431955186650157,
+    0.013787487521767616,
+    0.003930109553039074
+   ],
+   "neg": [
+    0.07094255089759827,
+    0.022706294432282448,
+    0.01876739226281643,
+    0.020057855173945427,
+    0.008126932196319103,
+    0.00426929397508502,
+    0.005298457574099302,
+    0.0011800670763477683,
+    0.0013572236057370901,
+    0.0024365168064832687,
+    0.00843704491853714
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "failed": 1,
+  "negatives": 2,
+  "positives": 1000,
+  "recovery_negatives": 0,
+  "recovery_positives": 0,
+  "rollouts": 50,
+  "stalls": [
+   {
+    "T": 400,
+    "phase_event": 69,
+    "phase_query": 13,
+    "trial": 19
+   }
+  ],
+  "task": 53,
+  "text": "pick up the orange juice and put it in the basket"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r17_nft__libero_90__r24phase__task-53__s0__d1711fed",
+ "schema": 1,
+ "script": "experiments/r17_nft.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-29T02:37:01+00:00",
+ "stream": null,
+ "tag": "r24phase"
+}

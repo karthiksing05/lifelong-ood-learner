@@ -1,0 +1,236 @@
+{
+ "artifacts": [
+  "results/robot/r24phase_41_lora.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 18710528,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 18710528,
+  "tree": 0
+ },
+ "command": "experiments/r17_nft.py --task 41 --name r24phase --negatives phase",
+ "config": {
+  "bank_device": null,
+  "lora_stride": 5,
+  "max_pos": 1000,
+  "max_rec": 300,
+  "name": "r24phase",
+  "neg_batch": 8,
+  "negatives": "phase",
+  "pooled": false,
+  "practice": "m5_practice+m6_round1",
+  "rank": 16,
+  "recovery": false,
+  "scope": "expert",
+  "seed": 0,
+  "steps": 1000,
+  "task": 41,
+  "window": 2
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "cyborg.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3978901",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r17_nft",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "d1711fed8e3ba254c997883be3374220fc831d9f",
+  "short": "d1711fed"
+ },
+ "keys": {
+  "task": 41
+ },
+ "metrics": {
+  "curve": {
+   "loss": [
+    0.1070898026227951,
+    0.034787368029356,
+    0.061099354177713394,
+    0.027070362120866776,
+    0.021476376801729202,
+    0.02558734081685543,
+    0.041801050305366516,
+    0.011984298937022686,
+    0.02819960191845894,
+    0.03358425945043564,
+    0.02438199706375599
+   ],
+   "neg": [
+    0.1083783432841301,
+    0.10572276264429092,
+    0.11989708989858627,
+    0.11327411234378815,
+    0.05293646454811096,
+    0.07382708042860031,
+    0.040941424667835236,
+    0.02809131145477295,
+    0.0191604383289814,
+    0.033936046063899994,
+    0.03537406027317047
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "failed": 20,
+  "negatives": 40,
+  "positives": 1000,
+  "recovery_negatives": 0,
+  "recovery_positives": 0,
+  "rollouts": 50,
+  "stalls": [
+   {
+    "T": 400,
+    "phase_event": 317,
+    "phase_query": 63,
+    "trial": 12
+   },
+   {
+    "T": 400,
+    "phase_event": 99,
+    "phase_query": 19,
+    "trial": 13
+   },
+   {
+    "T": 400,
+    "phase_event": 84,
+    "phase_query": 16,
+    "trial": 14
+   },
+   {
+    "T": 400,
+    "phase_event": 205,
+    "phase_query": 41,
+    "trial": 17
+   },
+   {
+    "T": 400,
+    "phase_event": 200,
+    "phase_query": 40,
+    "trial": 18
+   },
+   {
+    "T": 400,
+    "phase_event": 118,
+    "phase_query": 23,
+    "trial": 19
+   },
+   {
+    "T": 400,
+    "phase_event": 254,
+    "phase_query": 50,
+    "trial": 2
+   },
+   {
+    "T": 400,
+    "phase_event": 165,
+    "phase_query": 33,
+    "trial": 3
+   },
+   {
+    "T": 400,
+    "phase_event": 121,
+    "phase_query": 24,
+    "trial": 6
+   },
+   {
+    "T": 400,
+    "phase_event": 243,
+    "phase_query": 48,
+    "trial": 7
+   },
+   {
+    "T": 400,
+    "phase_event": 108,
+    "phase_query": 21,
+    "trial": 0
+   },
+   {
+    "T": 400,
+    "phase_event": 175,
+    "phase_query": 35,
+    "trial": 1
+   },
+   {
+    "T": 400,
+    "phase_event": 370,
+    "phase_query": 74,
+    "trial": 12
+   },
+   {
+    "T": 400,
+    "phase_event": 114,
+    "phase_query": 22,
+    "trial": 14
+   },
+   {
+    "T": 400,
+    "phase_event": 95,
+    "phase_query": 19,
+    "trial": 17
+   },
+   {
+    "T": 400,
+    "phase_event": 99,
+    "phase_query": 19,
+    "trial": 18
+   },
+   {
+    "T": 400,
+    "phase_event": 214,
+    "phase_query": 42,
+    "trial": 22
+   },
+   {
+    "T": 400,
+    "phase_event": 97,
+    "phase_query": 19,
+    "trial": 29
+   },
+   {
+    "T": 400,
+    "phase_event": 155,
+    "phase_query": 31,
+    "trial": 3
+   },
+   {
+    "T": 400,
+    "phase_event": 96,
+    "phase_query": 19,
+    "trial": 7
+   }
+  ],
+  "task": 41,
+  "text": "put the frying pan on top of the cabinet"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r17_nft__libero_90__r24phase__task-41__s0__d1711fed",
+ "schema": 1,
+ "script": "experiments/r17_nft.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-29T02:50:33+00:00",
+ "stream": null,
+ "tag": "r24phase"
+}

@@ -1,0 +1,146 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "P1 read: phasebind / phasebind_nofold vs dimfold_s1_last2 on 9 tasks, states 30-49",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky2.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "p1_bindings",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "d7ca67b9d25cd358436dcda72617a917bd547f0f",
+  "short": "d7ca67b9"
+ },
+ "keys": {},
+ "metrics": {
+  "A": {
+   "arm": "phasebind",
+   "control": 66,
+   "diff": {
+    "diff": 0.17222222222222222,
+    "hi": 0.3888888888888889,
+    "hi90": 0.35555555555555557,
+    "lo": -0.05,
+    "lo90": -0.016666666666666666,
+    "n_pairs": 180,
+    "n_tasks": 9
+   },
+   "discordant": [
+    56,
+    25
+   ],
+   "holm_p": 0.0007521260646340775,
+   "killed": false,
+   "n": 180,
+   "passes": true,
+   "sign_p": 0.0007521260646340775,
+   "x": 97
+  },
+  "B": {
+   "arm": "phasebind_nofold",
+   "control": 66,
+   "diff": {
+    "diff": 0.42777777777777776,
+    "hi": 0.5888888888888889,
+    "hi90": 0.5666666666666667,
+    "lo": 0.25,
+    "lo90": 0.2777777777777778,
+    "n_pairs": 180,
+    "n_tasks": 9
+   },
+   "discordant": [
+    85,
+    8
+   ],
+   "holm_p": 4.528988917012899e-17,
+   "killed": false,
+   "n": 180,
+   "passes": true,
+   "sign_p": 2.2644944585064495e-17,
+   "x": 143
+  },
+  "per_task": {
+   "1": {
+    "A": 19,
+    "B": 20,
+    "ctrl": 8,
+    "ctrl_nofold": 5
+   },
+   "32": {
+    "A": 19,
+    "B": 20,
+    "ctrl": 9,
+    "ctrl_nofold": 6
+   },
+   "35": {
+    "A": 20,
+    "B": 20,
+    "ctrl": 9,
+    "ctrl_nofold": 9
+   },
+   "36": {
+    "A": 5,
+    "B": 20,
+    "ctrl": 6,
+    "ctrl_nofold": 3
+   },
+   "40": {
+    "A": 9,
+    "B": 6,
+    "ctrl": 4,
+    "ctrl_nofold": 6
+   },
+   "41": {
+    "A": 8,
+    "B": 17,
+    "ctrl": 13,
+    "ctrl_nofold": 14
+   },
+   "42": {
+    "A": 2,
+    "B": 3,
+    "ctrl": 2,
+    "ctrl_nofold": 0
+   },
+   "52": {
+    "A": 2,
+    "B": 17,
+    "ctrl": 8,
+    "ctrl_nofold": 5
+   },
+   "62": {
+    "A": 13,
+    "B": 20,
+    "ctrl": 7,
+    "ctrl_nofold": 9
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "p1_bindings__libero_90__read__s0__d7ca67b9",
+ "schema": 1,
+ "script": "(inline, session 2026-09-29)",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-29T04:56:13+00:00",
+ "stream": null,
+ "tag": "read"
+}

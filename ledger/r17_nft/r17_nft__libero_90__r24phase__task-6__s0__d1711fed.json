@@ -1,0 +1,221 @@
+{
+ "artifacts": [
+  "results/robot/r24phase_6_lora.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 18710528,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 18710528,
+  "tree": 0
+ },
+ "command": "experiments/r17_nft.py --task 6 --name r24phase --negatives phase",
+ "config": {
+  "bank_device": null,
+  "lora_stride": 5,
+  "max_pos": 1000,
+  "max_rec": 300,
+  "name": "r24phase",
+  "neg_batch": 8,
+  "negatives": "phase",
+  "pooled": false,
+  "practice": "m5_practice+m6_round1",
+  "rank": 16,
+  "recovery": false,
+  "scope": "expert",
+  "seed": 0,
+  "steps": 1000,
+  "task": 6,
+  "window": 2
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "cyborg.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3978889",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r17_nft",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "d1711fed8e3ba254c997883be3374220fc831d9f",
+  "short": "d1711fed"
+ },
+ "keys": {
+  "task": 6
+ },
+ "metrics": {
+  "curve": {
+   "loss": [
+    0.05718487873673439,
+    0.01790166087448597,
+    0.036645855754613876,
+    0.023210056126117706,
+    0.01598147302865982,
+    0.019380059093236923,
+    0.011471777223050594,
+    0.008546140976250172,
+    0.010114154778420925,
+    0.015904784202575684,
+    0.012147371657192707
+   ],
+   "neg": [
+    0.057557471096515656,
+    0.041176456958055496,
+    0.037070710211992264,
+    0.052997887134552,
+    0.025308281183242798,
+    0.006597638130187988,
+    0.006528729107230902,
+    0.004369230475276709,
+    0.007093104999512434,
+    0.006142533849924803,
+    0.0131574347615242
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "failed": 15,
+  "negatives": 30,
+  "positives": 1000,
+  "recovery_negatives": 0,
+  "recovery_positives": 0,
+  "rollouts": 50,
+  "stalls": [
+   {
+    "demo_frames": 124,
+    "queries": 80,
+    "stall_frame": 123,
+    "stall_query": 27,
+    "trial": 0
+   },
+   {
+    "demo_frames": 124,
+    "queries": 80,
+    "stall_frame": 123,
+    "stall_query": 25,
+    "trial": 11
+   },
+   {
+    "demo_frames": 124,
+    "queries": 80,
+    "stall_frame": 123,
+    "stall_query": 25,
+    "trial": 17
+   },
+   {
+    "demo_frames": 124,
+    "queries": 80,
+    "stall_frame": 123,
+    "stall_query": 27,
+    "trial": 3
+   },
+   {
+    "demo_frames": 124,
+    "queries": 80,
+    "stall_frame": 123,
+    "stall_query": 27,
+    "trial": 5
+   },
+   {
+    "demo_frames": 124,
+    "queries": 80,
+    "stall_frame": 85,
+    "stall_query": 21,
+    "trial": 0
+   },
+   {
+    "demo_frames": 124,
+    "queries": 80,
+    "stall_frame": 123,
+    "stall_query": 36,
+    "trial": 17
+   },
+   {
+    "demo_frames": 124,
+    "queries": 80,
+    "stall_frame": 123,
+    "stall_query": 24,
+    "trial": 19
+   },
+   {
+    "demo_frames": 124,
+    "queries": 80,
+    "stall_frame": 123,
+    "stall_query": 27,
+    "trial": 20
+   },
+   {
+    "demo_frames": 124,
+    "queries": 80,
+    "stall_frame": 123,
+    "stall_query": 24,
+    "trial": 21
+   },
+   {
+    "demo_frames": 124,
+    "queries": 80,
+    "stall_frame": 85,
+    "stall_query": 19,
+    "trial": 22
+   },
+   {
+    "demo_frames": 124,
+    "queries": 80,
+    "stall_frame": 123,
+    "stall_query": 43,
+    "trial": 25
+   },
+   {
+    "demo_frames": 124,
+    "queries": 80,
+    "stall_frame": 123,
+    "stall_query": 53,
+    "trial": 3
+   },
+   {
+    "demo_frames": 124,
+    "queries": 80,
+    "stall_frame": 123,
+    "stall_query": 53,
+    "trial": 6
+   },
+   {
+    "demo_frames": 124,
+    "queries": 80,
+    "stall_frame": 123,
+    "stall_query": 25,
+    "trial": 7
+   }
+  ],
+  "task": 6,
+  "text": "open the bottom drawer of the cabinet"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r17_nft__libero_90__r24phase__task-6__s0__d1711fed",
+ "schema": 1,
+ "script": "experiments/r17_nft.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-29T02:28:17+00:00",
+ "stream": null,
+ "tag": "r24phase"
+}

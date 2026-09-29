@@ -1,0 +1,266 @@
+{
+ "artifacts": [
+  "results/robot/r24phase_52_lora.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 18710528,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 18710528,
+  "tree": 0
+ },
+ "command": "experiments/r17_nft.py --task 52 --name r24phase --negatives phase",
+ "config": {
+  "bank_device": null,
+  "lora_stride": 5,
+  "max_pos": 1000,
+  "max_rec": 300,
+  "name": "r24phase",
+  "neg_batch": 8,
+  "negatives": "phase",
+  "pooled": false,
+  "practice": "m5_practice+m6_round1",
+  "rank": 16,
+  "recovery": false,
+  "scope": "expert",
+  "seed": 0,
+  "steps": 1000,
+  "task": 52,
+  "window": 2
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "qt-1.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3978893",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r17_nft",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "d1711fed8e3ba254c997883be3374220fc831d9f",
+  "short": "d1711fed"
+ },
+ "keys": {
+  "task": 52
+ },
+ "metrics": {
+  "curve": {
+   "loss": [
+    0.051359400153160095,
+    0.023597663268446922,
+    0.020611030980944633,
+    0.012227335013449192,
+    0.028375890105962753,
+    0.01300944946706295,
+    0.014248387888073921,
+    0.010225287638604641,
+    0.00873398408293724,
+    0.0205881018191576,
+    0.010290021076798439
+   ],
+   "neg": [
+    0.06912370771169662,
+    0.07420526444911957,
+    0.05962095782160759,
+    0.099225714802742,
+    0.02890080213546753,
+    0.017142679542303085,
+    0.020747728645801544,
+    0.013599042780697346,
+    0.01995065249502659,
+    0.012999537400901318,
+    0.029453089460730553
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "failed": 25,
+  "negatives": 50,
+  "positives": 764,
+  "recovery_negatives": 0,
+  "recovery_positives": 0,
+  "rollouts": 50,
+  "stalls": [
+   {
+    "T": 400,
+    "phase_event": 46,
+    "phase_query": 9,
+    "trial": 10
+   },
+   {
+    "T": 400,
+    "phase_event": 38,
+    "phase_query": 7,
+    "trial": 11
+   },
+   {
+    "T": 400,
+    "phase_event": 38,
+    "phase_query": 7,
+    "trial": 12
+   },
+   {
+    "T": 400,
+    "phase_event": 52,
+    "phase_query": 10,
+    "trial": 13
+   },
+   {
+    "T": 400,
+    "phase_event": 48,
+    "phase_query": 9,
+    "trial": 14
+   },
+   {
+    "T": 400,
+    "phase_event": 40,
+    "phase_query": 8,
+    "trial": 15
+   },
+   {
+    "T": 400,
+    "phase_event": 48,
+    "phase_query": 9,
+    "trial": 16
+   },
+   {
+    "T": 400,
+    "phase_event": 117,
+    "phase_query": 23,
+    "trial": 17
+   },
+   {
+    "T": 400,
+    "phase_event": 54,
+    "phase_query": 10,
+    "trial": 18
+   },
+   {
+    "T": 400,
+    "phase_event": 31,
+    "phase_query": 6,
+    "trial": 2
+   },
+   {
+    "T": 400,
+    "phase_event": 49,
+    "phase_query": 9,
+    "trial": 3
+   },
+   {
+    "T": 400,
+    "phase_event": 40,
+    "phase_query": 8,
+    "trial": 4
+   },
+   {
+    "T": 400,
+    "phase_event": 32,
+    "phase_query": 6,
+    "trial": 5
+   },
+   {
+    "T": 400,
+    "phase_event": 48,
+    "phase_query": 9,
+    "trial": 6
+   },
+   {
+    "T": 400,
+    "phase_event": 54,
+    "phase_query": 10,
+    "trial": 8
+   },
+   {
+    "T": 400,
+    "phase_event": 179,
+    "phase_query": 35,
+    "trial": 1
+   },
+   {
+    "T": 400,
+    "phase_event": 228,
+    "phase_query": 45,
+    "trial": 12
+   },
+   {
+    "T": 400,
+    "phase_event": 66,
+    "phase_query": 13,
+    "trial": 18
+   },
+   {
+    "T": 400,
+    "phase_event": 44,
+    "phase_query": 8,
+    "trial": 20
+   },
+   {
+    "T": 400,
+    "phase_event": 44,
+    "phase_query": 8,
+    "trial": 21
+   },
+   {
+    "T": 400,
+    "phase_event": 42,
+    "phase_query": 8,
+    "trial": 23
+   },
+   {
+    "T": 400,
+    "phase_event": 144,
+    "phase_query": 28,
+    "trial": 25
+   },
+   {
+    "T": 400,
+    "phase_event": 52,
+    "phase_query": 10,
+    "trial": 28
+   },
+   {
+    "T": 400,
+    "phase_event": 94,
+    "phase_query": 18,
+    "trial": 7
+   },
+   {
+    "T": 400,
+    "phase_event": 53,
+    "phase_query": 10,
+    "trial": 8
+   }
+  ],
+  "task": 52,
+  "text": "pick up the milk and put it in the basket"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r17_nft__libero_90__r24phase__task-52__s0__d1711fed",
+ "schema": 1,
+ "script": "experiments/r17_nft.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-29T02:36:17+00:00",
+ "stream": null,
+ "tag": "r24phase"
+}

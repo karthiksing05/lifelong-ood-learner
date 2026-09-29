@@ -1,0 +1,96 @@
+{
+ "artifacts": [
+  "results/robot/m3_final_36_growleaf.json",
+  "results/robot/m3_final_48_growleaf.json",
+  "results/robot/m3_final_52_growleaf.json",
+  "results/robot/m3_final_53_growleaf.json",
+  "results/robot/m3_final_58_growleaf.json",
+  "results/robot/m3_final_62_growleaf.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "P4 read: growleaf vs leaffold_s1_last2 on 6 tasks",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky2.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "p4_growth",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "d7ca67b9d25cd358436dcda72617a917bd547f0f",
+  "short": "d7ca67b9"
+ },
+ "keys": {},
+ "metrics": {
+  "base": 74,
+  "diff": {
+   "diff": -0.03333333333333333,
+   "hi": 0.06666666666666667,
+   "hi90": 0.05,
+   "lo": -0.14166666666666666,
+   "lo90": -0.125,
+   "n_pairs": 120,
+   "n_tasks": 6
+  },
+  "discordant": [
+   12,
+   16
+  ],
+  "grown": 70,
+  "kill": true,
+  "n": 120,
+  "per_task": {
+   "36": {
+    "base": 9,
+    "grown": 8
+   },
+   "48": {
+    "base": 20,
+    "grown": 20
+   },
+   "52": {
+    "base": 8,
+    "grown": 8
+   },
+   "53": {
+    "base": 19,
+    "grown": 20
+   },
+   "58": {
+    "base": 10,
+    "grown": 10
+   },
+   "62": {
+    "base": 8,
+    "grown": 4
+   }
+  },
+  "reading": "growth changes what is executed; success changes by -0.033 (kill < +0.05)",
+  "sign_p": 0.5715881884098053
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "p4_growth__libero_90__rollouts__s0__d7ca67b9",
+ "schema": 1,
+ "script": "(inline, session 2026-09-28)",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-29T03:37:58+00:00",
+ "stream": null,
+ "tag": "rollouts"
+}

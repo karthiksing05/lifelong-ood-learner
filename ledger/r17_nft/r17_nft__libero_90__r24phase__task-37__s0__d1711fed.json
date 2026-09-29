@@ -1,0 +1,188 @@
+{
+ "artifacts": [
+  "results/robot/r24phase_37_lora.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 18710528,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 18710528,
+  "tree": 0
+ },
+ "command": "experiments/r17_nft.py --task 37 --name r24phase --negatives phase",
+ "config": {
+  "bank_device": null,
+  "lora_stride": 5,
+  "max_pos": 1000,
+  "max_rec": 300,
+  "name": "r24phase",
+  "neg_batch": 8,
+  "negatives": "phase",
+  "pooled": false,
+  "practice": "m5_practice+m6_round1",
+  "rank": 16,
+  "recovery": false,
+  "scope": "expert",
+  "seed": 0,
+  "steps": 1000,
+  "task": 37,
+  "window": 2
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "xaea-12.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3978891",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r17_nft",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "d1711fed8e3ba254c997883be3374220fc831d9f",
+  "short": "d1711fed"
+ },
+ "keys": {
+  "task": 37
+ },
+ "metrics": {
+  "curve": {
+   "loss": [
+    0.13568812608718872,
+    0.030565690249204636,
+    0.02068350464105606,
+    0.016883937641978264,
+    0.034801971167325974,
+    0.01535930298268795,
+    0.007982319220900536,
+    0.008610274642705917,
+    0.022315144538879395,
+    0.02824527956545353,
+    0.0049313646741211414
+   ],
+   "neg": [
+    0.1561163365840912,
+    0.0843515545129776,
+    0.045401908457279205,
+    0.09760627895593643,
+    0.05020056292414665,
+    0.027991050854325294,
+    0.041680801659822464,
+    0.025484053418040276,
+    0.01970120146870613,
+    0.016739943996071815,
+    0.04596518725156784
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "failed": 12,
+  "negatives": 24,
+  "positives": 1000,
+  "recovery_negatives": 0,
+  "recovery_positives": 0,
+  "rollouts": 50,
+  "stalls": [
+   {
+    "T": 400,
+    "phase_event": 130,
+    "phase_query": 26,
+    "trial": 1
+   },
+   {
+    "T": 400,
+    "phase_event": 139,
+    "phase_query": 27,
+    "trial": 15
+   },
+   {
+    "T": 400,
+    "phase_event": 118,
+    "phase_query": 23,
+    "trial": 7
+   },
+   {
+    "T": 400,
+    "phase_event": 120,
+    "phase_query": 24,
+    "trial": 1
+   },
+   {
+    "T": 400,
+    "phase_event": 120,
+    "phase_query": 24,
+    "trial": 15
+   },
+   {
+    "T": 400,
+    "phase_event": 56,
+    "phase_query": 11,
+    "trial": 17
+   },
+   {
+    "T": 400,
+    "phase_event": 120,
+    "phase_query": 24,
+    "trial": 23
+   },
+   {
+    "T": 400,
+    "phase_event": 123,
+    "phase_query": 24,
+    "trial": 24
+   },
+   {
+    "T": 400,
+    "phase_event": 121,
+    "phase_query": 24,
+    "trial": 26
+   },
+   {
+    "T": 400,
+    "phase_event": 127,
+    "phase_query": 25,
+    "trial": 27
+   },
+   {
+    "T": 400,
+    "phase_event": 113,
+    "phase_query": 22,
+    "trial": 4
+   },
+   {
+    "T": 400,
+    "phase_event": 130,
+    "phase_query": 26,
+    "trial": 5
+   }
+  ],
+  "task": 37,
+  "text": "put the white bowl to the right of the plate"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r17_nft__libero_90__r24phase__task-37__s0__d1711fed",
+ "schema": 1,
+ "script": "experiments/r17_nft.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-29T02:30:01+00:00",
+ "stream": null,
+ "tag": "r24phase"
+}
