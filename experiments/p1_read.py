@@ -10,7 +10,7 @@ nothing), paired on init states 30-49 of m3_final.
     v2         rules v2 (ledger m3_prereg tag v2) on the 21 tasks: V1 v2 > v1, V2 v2 > LoRA + failure negatives, V4 the v2 generator's
                LoRA > 3.8's (sign tests, Holm over the three); V3 the learned reader non-inferior to the simulator's poses at -0.10
 
-    ~/flash/miniconda3/envs/chunks/bin/python experiments/p1_read.py primary|secondary|p6|v2|v2_synth|p3c|p3c_reader|p3c_reader2|alloc [--record]
+    ~/flash/miniconda3/envs/chunks/bin/python experiments/p1_read.py primary|secondary|p6|v2|v2_synth|p3c|p3c_reader|p3c_reader2|alloc|p5 [--record]
 """
 import argparse
 import importlib.util
@@ -234,6 +234,61 @@ def alloc():
     return res
 
 
+def p5():
+    """ledger m3_prereg tag p5_stream: S1 structural (from the plan), S2 composed arrivals non-inferior to the same tasks' own demos at
+    -0.10, S3 each order's stream success vs the all-demo stream."""
+    import json
+    spec = importlib.util.spec_from_file_location("m3s", os.path.join(ROOT, "experiments", "m3_stats.py"))
+    m3s = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(m3s)
+    fin, _ = m3s.episodes("m3_final")
+    P = json.load(open(os.path.join(ROOT, "results", "robot", "p5_stream_plan_gated.json")))       # amendment 1: validated bindings
+    U = json.load(open(os.path.join(ROOT, "results", "robot", "p5_stream_plan.json")))             # the ungated plan (descriptive)
+    own = lambda t: fin[(str(t), "phasebind2_rjpred")]
+    comp = lambda s: fin[(str(s["task"]), f"streamc_{s['g']}_{s['p']}")]
+    tab, res = {}, {"orders": {}}
+    for o, pl in P.items():
+        k_stream = k_all = n = 0
+        rows = []
+        for i, s in enumerate(pl["steps"]):
+            e_own = own(s["task"])
+            e = comp(s) if s["action"] == "compose" else e_own
+            k_stream += sum(e.values()); k_all += sum(e_own.values()); n += len(e)
+            rows.append(dict(pos=i, task=s["task"], action=s["action"], k=int(sum(e.values())), own=int(sum(e_own.values()))))
+            if s["action"] == "compose":
+                tab[f"{o}:{s['task']}"] = {"c": e, "own": e_own}
+        res["orders"][o] = dict(stream=int(k_stream), all_demo=int(k_all), n=int(n), demos=pl["demos"], arrivals=rows,
+                                composed_first_half=pl["composed_first_half"], composed_second_half=pl["composed_second_half"])
+        print(f"order {o}: stream {k_stream}/{n} with {pl['demos']} demos; every task its own demo {k_all}/{n}")
+    ung = {}
+    for o, pl in U.items():
+        ks = [sum((comp(s) if s["action"] == "compose" else own(s["task"])).values()) for s in pl["steps"]]
+        ung[o] = dict(stream=int(sum(ks)), demos=pl["demos"],
+                      poisoned={f"{s['task']}<-{s['g']}+{s['p']}": int(sum(comp(s).values())) for s in pl["steps"]
+                                if s["action"] == "compose" and (s["task"], s["g"], s["p"]) not in
+                                {(x["task"], x.get("g"), x.get("p")) for x in P[o]["steps"]}})
+        print(f"ungated order {o}: stream {ung[o]['stream']} with {pl['demos']} demos; compositions the gate removes: {ung[o]['poisoned']}")
+    res["ungated"] = ung
+    res["S2"] = dict(x_arm="composed arrivals", y_arm="phasebind2_rjpred (own demo)", **compare(tab, "c", "own"))
+    res["S2"]["non_inferior"] = bool(res["S2"]["diff"]["lo90"] >= -0.10)
+    late = early = both = 0
+    pos = {o: {s["task"]: i for i, s in enumerate(P[o]["steps"])} for o in P}
+    cmp_ = {o: {s["task"] for s in P[o]["steps"] if s["action"] == "compose"} for o in P}
+    half = len(P["A"]["steps"]) // 2
+    for t in pos["A"]:
+        a, b = t in cmp_["A"], t in cmp_["B"]
+        if a and b:
+            both += 1
+        elif a or b:
+            late += int(pos["A" if a else "B"][t] >= half)
+            early += int(pos["A" if a else "B"][t] < half)
+    res["S1"] = dict(composed_both=both, only_late=late, only_early=early, sign_p=stats.sign_test(late, early))
+    print(f"S1: composed only when late {late}, only when early {early}, both {both}: sign p {res['S1']['sign_p']:.3g}")
+    v = res["S2"]
+    print(f"S2 {v['x_arm']} vs {v['y_arm']}: {_fmt(v)} -> non-inferior {v['non_inferior']}")
+    return res
+
+
 def _fmt(v):
     return (f"{v['x']} vs {v['control']} of {v['n']}, diff {v['diff']['diff']:+.3f} [{v['diff']['lo']:+.3f},{v['diff']['hi']:+.3f}] lo90 "
             f"{v['diff']['lo90']:+.3f}, discordant {v['discordant']}, sign p {v['sign_p']:.3g}")
@@ -241,11 +296,14 @@ def _fmt(v):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("read", choices=("primary", "secondary", "p6", "v2", "v2_synth", "p3c", "p3c_reader", "p3c_reader2", "alloc"))
+    ap.add_argument("read", choices=("primary", "secondary", "p6", "v2", "v2_synth", "p3c", "p3c_reader", "p3c_reader2", "alloc", "p5"))
     ap.add_argument("--record", action="store_true")
     a = ap.parse_args()
     os.chdir(ROOT)
-    if a.read == "alloc":
+    if a.read == "p5":
+        res = p5()
+        exp, tag, what = "p5_stream", "read", "P5 stream: 50 tasks, two mirrored orders, binding table, no simulator state at test"
+    elif a.read == "alloc":
         res = alloc()
         exp, tag, what = "p1_bindings", "alloc_v2", "practice allocator over v2 phases (reader), prototype borrowing and the v2-generated LoRA"
     elif a.read == "p3c_reader2":

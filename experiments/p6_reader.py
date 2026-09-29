@@ -83,6 +83,17 @@ def features(t, enc, steps, kind="pooled", pool=4):
         return c["X"], c["Y"], c["trial"], c["step"], [str(n) for n in c["names"]]
     X, Y, trial, step = [], [], [], []
     names = None
+    init = f"{R}/p6_synth_rj/{t}_init.npz"
+    if not glob.glob(f"{R}/m*_{t}_*_rec/task{t}_trial*.npz") and os.path.exists(init):
+        # a task never practised: the first frames of init states 0-29 rendered exactly as the client sends them (p6_synth.py
+        # --init-states), step 0 only
+        z = np.load(init, allow_pickle=True)
+        X = embed(enc, z["image"], z["wrist"], kind, pool)
+        Y = z["obj_pos"].reshape(len(X), -1).astype(np.float64)
+        trial, step, names = np.asarray(z["trial"]), np.zeros(len(X), int), [str(n) for n in z["names"]]
+        os.makedirs(os.path.dirname(cache), exist_ok=True)
+        np.savez_compressed(cache, X=X, Y=Y, trial=trial, step=step, names=np.array(names))
+        return X, Y, trial, step, names
     for e in EXPS:
         for f in sorted(glob.glob(f"{R}/{e}_{t}_*_rec/task{t}_trial*.npz")):
             k = int(f.rsplit("trial", 1)[1][:-4])

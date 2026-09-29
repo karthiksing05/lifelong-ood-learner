@@ -27,7 +27,8 @@ spec.loader.exec_module(P0)
 
 
 def render(job):
-    t, n, seed, rot_only, robot_init, outdir = job
+    t, n, seed, rot_only, robot_init, outdir = job[:6]
+    init_states = job[6] if len(job) > 6 else False
     from libero.libero import benchmark, get_libero_path
     from libero.libero.envs import OffScreenRenderEnv
     from openpi_client import image_tools
@@ -44,9 +45,14 @@ def render(job):
     idx = list(robot._ref_joint_pos_indexes) + list(robot._ref_gripper_joint_pos_indexes)
     rng = np.random.default_rng(seed + t)
     img, wr, pos, rot = [], [], [], []
-    for k in range(n):
-        obs = env.reset()
-        if robot_init:                     # the arm as in a random PRACTICE init state (0-29): reset() leaves it at one fixed pose
+    ks = list(range(30)) if init_states else range(n)
+    for k in ks:
+        if init_states:                    # the benchmark's own practice init states 0-29, exactly as the client's first frame
+            env.reset()
+            obs = env.set_init_state(init[k])
+        else:
+            obs = env.reset()
+        if robot_init and not init_states:                     # the arm as in a random PRACTICE init state (0-29): reset() leaves it at one fixed pose
             src = init[int(rng.integers(0, 30))]
             inner.sim.data.qpos[idx] = src[1:][idx]
             inner.sim.forward()
@@ -61,9 +67,9 @@ def render(job):
         rot.append(np.stack([q[1] for q in poses]))
     env.close()
     pos = np.asarray(pos)
-    out = os.path.join(R, outdir, f"{t}.npz") if not rot_only else os.path.join(R, outdir, f"{t}_rot.npz")
+    out = os.path.join(R, outdir, f"{t}_init.npz" if init_states else f"{t}.npz") if not rot_only else os.path.join(R, outdir, f"{t}_rot.npz")
     extra = {} if rot_only else dict(image=np.stack(img), wrist=np.stack(wr))
-    np.savez_compressed(out, obj_pos=pos, obj_rot=np.asarray(rot), names=np.array(names), **extra)
+    np.savez_compressed(out, obj_pos=pos, obj_rot=np.asarray(rot), names=np.array(names), trial=np.asarray(list(ks)), **extra)
     spread = np.linalg.norm(pos - pos.mean(0), axis=-1).mean(0) * 100
     return t, n, {nm: round(float(s), 2) for nm, s in zip(names, spread)}
 
@@ -77,9 +83,10 @@ def main():
     ap.add_argument("--rot-only", action="store_true", help="save poses only (positions and rotations) to <outdir>/<t>_rot.npz")
     ap.add_argument("--robot-init", action="store_true", help="the arm's joints from a random practice init state (0-29)")
     ap.add_argument("--outdir", default="p6_synth")
+    ap.add_argument("--init-states", action="store_true", help="render the first frames of init states 0-29 (<outdir>/<t>_init.npz)")
     a = ap.parse_args()
     os.makedirs(os.path.join(R, a.outdir), exist_ok=True)
-    jobs = [(int(t), a.n, a.seed, a.rot_only, a.robot_init, a.outdir) for t in a.tasks.replace("+", ",").split(",")]
+    jobs = [(int(t), a.n, a.seed, a.rot_only, a.robot_init, a.outdir, a.init_states) for t in a.tasks.replace("+", ",").split(",")]
     t0 = time.time()
     with Pool(a.workers) as pool:
         for t, n, spread in pool.imap_unordered(render, jobs):

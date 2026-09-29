@@ -1,0 +1,142 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/zeroshot_libero90_rest_8_89.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "roll.sh MODE=openpi SUITE=libero_90 TASKS=8,14,20,26,65,71,77,83,89 TRIALS=5 (job 3983317)",
+ "config": {
+  "client": {
+   "branches": "",
+   "first_trial": 0,
+   "host": "127.0.0.1",
+   "max_steps": 0,
+   "no_meta": false,
+   "objects": false,
+   "out": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/zeroshot_libero90_rest_8_89.json",
+   "port": 9501,
+   "record": false,
+   "replan": 5,
+   "resize": 224,
+   "seed": 7,
+   "suite": "libero_90",
+   "tasks": "8,14,20,26,65,71,77,83,89",
+   "trials": 5,
+   "videos": 2,
+   "wait": 10
+  },
+  "job": "3983317",
+  "mode": "openpi"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "dave.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3983317",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "zeroshot90",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "a2df2c6538b1a1cf8c4a3f5c4cf417504f63e0df",
+  "short": "a2df2c65"
+ },
+ "keys": {
+  "first_trial": 0,
+  "mode": "openpi",
+  "tasks": "8,14,20,26,65,71,77,83,89",
+  "trials": 5
+ },
+ "metrics": {
+  "complete": true,
+  "n_episodes": 45,
+  "secs": 1797.0301826000214,
+  "success_rate": 0.13333333333333333,
+  "tasks": {
+   "14": {
+    "errors": 0,
+    "language": "put the middle black bowl on the plate",
+    "mean_steps": 340.4,
+    "n": 5,
+    "success_rate": 0.2
+   },
+   "20": {
+    "errors": 0,
+    "language": "turn on the stove",
+    "mean_steps": 142.0,
+    "n": 5,
+    "success_rate": 0.8
+   },
+   "26": {
+    "errors": 0,
+    "language": "put the wine bottle in the bottom drawer of the cabinet",
+    "mean_steps": 400.0,
+    "n": 5,
+    "success_rate": 0.0
+   },
+   "65": {
+    "errors": 0,
+    "language": "put the red mug on the left plate",
+    "mean_steps": 400.0,
+    "n": 5,
+    "success_rate": 0.0
+   },
+   "71": {
+    "errors": 0,
+    "language": "put the red mug on the plate",
+    "mean_steps": 400.0,
+    "n": 5,
+    "success_rate": 0.0
+   },
+   "77": {
+    "errors": 0,
+    "language": "pick up the book and place it in the back compartment of the caddy",
+    "mean_steps": 346.0,
+    "n": 5,
+    "success_rate": 0.2
+   },
+   "8": {
+    "errors": 0,
+    "language": "open the top drawer of the cabinet and put the bowl in it",
+    "mean_steps": 400.0,
+    "n": 5,
+    "success_rate": 0.0
+   },
+   "83": {
+    "errors": 0,
+    "language": "pick up the book and place it in the right compartment of the caddy",
+    "mean_steps": 400.0,
+    "n": 5,
+    "success_rate": 0.0
+   },
+   "89": {
+    "errors": 0,
+    "language": "pick up the book on the right and place it under the cabinet shelf",
+    "mean_steps": 400.0,
+    "n": 5,
+    "success_rate": 0.0
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "zeroshot90__libero_90__openpi__first_trial-0__mode-openpi__tasks-8-14-20-26-65-71-77-83-89__trials-5__s7__a2df2c65",
+ "schema": 1,
+ "script": "experiments/libero_client.py",
+ "seconds": null,
+ "seed": 7,
+ "source_commit": null,
+ "started": "2026-09-29T17:13:14+00:00",
+ "stream": null,
+ "tag": "openpi"
+}

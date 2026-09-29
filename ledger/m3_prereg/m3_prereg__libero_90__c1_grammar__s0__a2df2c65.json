@@ -1,0 +1,49 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration of the C1 grammar test",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky2.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "a2df2c6538b1a1cf8c4a3f5c4cf417504f63e0df",
+  "short": "a2df2c65"
+ },
+ "keys": {},
+ "metrics": {
+  "criterion": "C1 holds at a level if recall >= 0.9 (events within +-5 frames of a label change) AND precision >= 0.5 (label changes within +-5 frames of an event) AND both exceed random change points of the same count per demo (100 draws)",
+  "plan": "docs/PLAN_TRANSFER.md C1: the coarse prototype levels give a task's phase grammar (never tested separately)",
+  "reading": "the grammar = the coarse phases; the binding (WHICH object, where) comes from the scene, not from prototypes",
+  "test": "offline on the 50 stream-pool demos: every frame's chunk labelled at each coarse level of the 40-task tree (r19's basin rule); the label sequence's change points vs the v2 cut's events (the close before the manipulated object moves; the first release after; gripper events for demos that move no object)",
+  "written_before": "experiments/c1_grammar.py was run"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_90__c1_grammar__s0__a2df2c65",
+ "schema": 1,
+ "script": "experiments/c1_grammar.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-29T17:55:59+00:00",
+ "stream": null,
+ "tag": "c1_grammar"
+}

@@ -162,20 +162,21 @@ def type_of(name):
     return re.sub(r"_\d+$", "", str(name))
 
 
-def compose(target_names, grasp_src, place_src, obj_type=None):
+def compose(target_names, grasp_src, place_src, obj_type=None, obj_name=None, rec_name=None):
     """Cross-task composition (rules v2): the approach of `grasp_src` (a demo that manipulates an object of the target's object type)
     followed by the carry and the rest of `place_src` (a demo with the target's goal relation), each relabelled onto the target
     scene's objects: the grasp source's manipulated object -> the target object of its type; the place source's manipulated
     object -> that target object, its receptacle -> the target object of the receptacle's type.  Other source objects are renamed
     so nothing anchors on them.  obj_type: the target's object type when the grasp source manipulates another type (the sibling
-    control: the grasp source's object -> the target's object by ROLE).  -> phases."""
+    control: the grasp source's object -> the target's object by ROLE).  obj_name / rec_name: the target's object and receptacle
+    by NAME (from its goal), needed when the scene holds several objects of one type.  -> phases."""
     tn = [str(n) for n in target_names]
     g, p = cut(grasp_src), cut(place_src)
     if g[0][5] != "obj" or len(p) < 2 or p[1][5] != "rec":
         raise ValueError("a source has no approach or no carry relative to a receptacle")
     gn, pn = [str(n) for n in grasp_src["names"]], [str(n) for n in place_src["names"]]
-    obj_t = next(n for n in tn if type_of(n) == (obj_type or type_of(gn[g[0][6]])))
-    rec_t = next(n for n in tn if type_of(n) == type_of(pn[p[1][6]]))
+    obj_t = obj_name or next(n for n in tn if type_of(n) == (obj_type or type_of(gn[g[0][6]])))
+    rec_t = rec_name or next(n for n in tn if type_of(n) == type_of(pn[p[1][6]]) and n != obj_t)
 
     def relabel(z, names, mapping):
         new = [mapping.get(i, "src:" + n) for i, n in enumerate(names)]

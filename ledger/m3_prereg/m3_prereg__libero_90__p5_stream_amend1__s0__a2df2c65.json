@@ -1,0 +1,93 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "P5 amendment 1: validated bindings",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky2.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "a2df2c6538b1a1cf8c4a3f5c4cf417504f63e0df",
+  "short": "a2df2c65"
+ },
+ "keys": {},
+ "metrics": {
+  "amends": "m3_prereg tag p5_stream",
+  "change": "the table stores only VALIDATED bindings: a demo's keys enter only if its v2 program succeeds on >= 0.5 of its practice placements executed in simulation with no policy (g27/g28; privileged state used to check, as the reader's rendered labels are); experiments/p5_stream.py plan_gated -> results/robot/p5_stream_plan_gated.json",
+  "descriptive": "the ungated plan's six compositions that the gate removes (40<-21+86, 75<-83+83, 78<-83+73, 80<-83+83, 81<-83+73, 88<-87+86) are also run and reported: the cost of storing an unvalidated demo",
+  "gated_plan": {
+   "A": {
+    "composed_first_half": 3,
+    "composed_second_half": 12,
+    "demos": 35
+   },
+   "B": {
+    "composed_first_half": 5,
+    "composed_second_half": 12,
+    "demos": 33
+   }
+  },
+  "generator_new_tasks": {
+   "11": 20,
+   "13": 20,
+   "16": 20,
+   "17": 19,
+   "18": 14,
+   "21": 19,
+   "23": 20,
+   "25": 20,
+   "26": 20,
+   "27": 20,
+   "65": 20,
+   "66": 20,
+   "69": 20,
+   "71": 20,
+   "73": 20,
+   "74": 20,
+   "75": 19,
+   "76": 20,
+   "78": 20,
+   "8": 10,
+   "80": 20,
+   "81": 10,
+   "83": 0,
+   "84": 20,
+   "85": 20,
+   "86": 7,
+   "87": 20,
+   "88": 20,
+   "89": 20
+  },
+  "primary": "S1-S3 as registered, read on the GATED plan",
+  "why": "dev evidence before any stream result: the no-policy generator on the new tasks' practice placements (states 0-19; g28_generate.json) fails task 83 (0/20) and 86 (7/20); in order A 83 is the first source of four composed arrivals, so an unusable demo would propagate to every task composed from it",
+  "written_before": "any stream rollout result was read (21-task own-demo and composed runs launched, none read)"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_90__p5_stream_amend1__s0__a2df2c65",
+ "schema": 1,
+ "script": "experiments/p5_stream.py plan_gated",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-29T17:42:25+00:00",
+ "stream": null,
+ "tag": "p5_stream_amend1"
+}

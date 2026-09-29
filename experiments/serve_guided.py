@@ -185,10 +185,12 @@ def main():
         if kv.get("rules") == "2" and kv.get("g"):       # P3c: composed from OTHER tasks' demos (phase.py compose); t's own demo unused
             from lifelong_ood.policy import phase as PH
             tn = [str(x) for x in d["names"]]              # the target scene's objects of interest (the task definition)
-            parts = PH.compose(tn, PH.at_rest(PH.load_demo(R, int(kv["g"]))), PH.at_rest(PH.load_demo(R, int(kv["p"]))), obj_type=kv.get("obj"))
+            parts = PH.compose(tn, PH.at_rest(PH.load_demo(R, int(kv["g"]))), PH.at_rest(PH.load_demo(R, int(kv["p"]))), obj_type=kv.get("obj"),
+                               obj_name=kv.get("objn"), rec_name=kv.get("recn"))
             quat = np.tile([0.0, 0.0, 0.0, 1.0], (1, len(tn), 1))
             if kv.get("reader"):                           # orientations: the chordal mean over the target's rendered scenes (fixed yaw)
-                rz = np.load(os.path.join(R, "p6_synth", f"{t}_rot.npz"), allow_pickle=True)
+                rp = os.path.join(R, "p6_synth_rj", f"{t}.npz")
+                rz = np.load(rp if os.path.exists(rp) else os.path.join(R, "p6_synth", f"{t}_rot.npz"), allow_pickle=True)
                 rn = [str(x) for x in rz["names"]]
                 quat = np.stack([PH.m2q(PH.mean_rotation(rz["obj_rot"][:, rn.index(n)])) for n in tn])[None]
             src = dict(names=np.array(tn), obj_quat=quat, action=parts[0][0]["action"])

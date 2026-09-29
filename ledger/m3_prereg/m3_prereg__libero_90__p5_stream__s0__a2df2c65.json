@@ -1,0 +1,67 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration of the P5 stream (50 tasks, two mirrored orders)",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky2.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "a2df2c6538b1a1cf8c4a3f5c4cf417504f63e0df",
+  "short": "a2df2c65"
+ },
+ "keys": {},
+ "metrics": {
+  "hypotheses": {
+   "S1": "structural, fixed before any rollout: within task across the mirrored orders, tasks composed only when late vs only when early (exact sign test); the composed share of the second half vs the first",
+   "S2": "PRIMARY: composed arrivals (pooled over both orders) non-inferior to the same tasks' own-demo programs at -0.10: one-sided 95% lower bound of the paired difference (two-level bootstrap over arrivals, then episodes)",
+   "S3": "descriptive: each order's stream success (arrivals as run) vs the all-demo stream (every task its own demo); per-arrival table; bytes"
+  },
+  "method": "every arrival runs with NO simulator state at test: a pose reader trained only on simulator-rendered scenes of the task (p6_reader.py --synth-only --synth-dir p6_synth_rj) and the in-hand pose predicted from the grasp binding (carry=pred); demo arrivals: phasebind2_rjpred (own demo); composed arrivals: streamc@<g>-<p>",
+  "plan": "docs/PLAN_TRANSFER.md P5 / C4 under rules v2: a continual-learning stream whose store is a binding table",
+  "pool": "50 LIBERO-90 tasks the prior fails zero-shot (0/5; ledger zeroshot90): the 21 held-out tasks + 29 found by screening the 49 unscreened tasks; keys by experiments/p5_pool.py (grasp = the goal object's type; place = the whole goal with the object abstracted; a task supplies keys only when its demo's v2 cut matches its goal)",
+  "protocol": "orders A = random.Random(0) shuffle, B = A reversed (experiments/p5_stream.py plan); on arrival a task is COMPOSED from the first sources of its keys (no demo), else it requests its ONE demo; keys are never overwritten, so stored programs never change (no forgetting by construction)",
+  "scoring": "init states 30-49, 20 episodes per run (m3_final); own-demo runs for all 50 tasks; one run per distinct (task, g, p)",
+  "structural": {
+   "A": {
+    "composed_first_half": 4,
+    "composed_second_half": 13,
+    "demos": 33
+   },
+   "B": {
+    "composed_first_half": 5,
+    "composed_second_half": 12,
+    "demos": 33
+   }
+  },
+  "written_before": "any phasebind2_rjpred or streamc rollout (smoke tests excluded)"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_90__p5_stream__s0__a2df2c65",
+ "schema": 1,
+ "script": "experiments/p5_stream.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-29T17:34:48+00:00",
+ "stream": null,
+ "tag": "p5_stream"
+}
