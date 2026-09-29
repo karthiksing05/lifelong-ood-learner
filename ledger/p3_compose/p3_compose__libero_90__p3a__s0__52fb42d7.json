@@ -1,0 +1,89 @@
+{
+ "artifacts": [
+  "results/robot/p3_compose_sim.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "p3_compose_sim.py --workers 15 (job 3978693)",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky2.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "p3_compose",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "52fb42d70f6d0dbceebd0a82dccdb1e7529faa23",
+  "short": "52fb42d7"
+ },
+ "keys": {},
+ "metrics": {
+  "X1": "FAILS (cross 39 vs own 91 of 100)",
+  "X2": "passes (cross vs mismatch discordant 39/0; mismatch undefined for 43)",
+  "cross": 39,
+  "cross_vs_mismatch_discordant": [
+   39,
+   0
+  ],
+  "diagnosis": "executor defects found after the read: (1) robosuite _check_grasp never fires on the salad dressing (62) or the frying pan (41) even in successes, so their place parts were empty and silently dropped (58 cross, 43 cross/mismatch executed a grasp only); (2) a source that succeeds before releasing (52) left its carry segment in the grasped object's frame, so reused for another object it aimed at the wrong place (48 cross). The within-scene transfers (3 <- 4, 4 <- 3) were unaffected. A corrected executor (phases from object state) is rerun as exploratory P3a'; a confirmatory test needs new targets",
+  "mismatch": {
+   "3": 0,
+   "4": 0,
+   "48": 0,
+   "58": 0
+  },
+  "n": 100,
+  "own": 91,
+  "per_task": {
+   "3": {
+    "cross": 19,
+    "mismatch": 0,
+    "own": 20
+   },
+   "4": {
+    "cross": 20,
+    "mismatch": 0,
+    "own": 17
+   },
+   "43": {
+    "cross": 0,
+    "mismatch": null,
+    "own": 14
+   },
+   "48": {
+    "cross": 0,
+    "mismatch": 0,
+    "own": 20
+   },
+   "58": {
+    "cross": 0,
+    "mismatch": 0,
+    "own": 20
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "p3_compose__libero_90__p3a__s0__52fb42d7",
+ "schema": 1,
+ "script": "experiments/p3_compose_sim.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-29T01:39:06+00:00",
+ "stream": null,
+ "tag": "p3a"
+}

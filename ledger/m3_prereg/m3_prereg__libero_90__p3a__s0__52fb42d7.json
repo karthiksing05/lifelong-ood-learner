@@ -1,0 +1,91 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration of P3a (cross-task binding composition, sim executor)",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky2.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "52fb42d70f6d0dbceebd0a82dccdb1e7529faa23",
+  "short": "52fb42d7"
+ },
+ "keys": {},
+ "metrics": {
+  "arms": {
+   "cross": "grasp part from the object's task + place part from the receptacle's task",
+   "mismatch": "the cross arm with the grasp part of a DIFFERENT object's task applied to the target's object",
+   "own": "the target's own success, retargeted (P0c' arm)"
+  },
+  "executor": "experiments/p3_compose_sim.py: segments cut at gripper-command switches (P0c's rule); a grasp part = every segment up to and including the one whose close grasps the object; a place part = every segment after the source's grasp segment; each segment re-expressed in the frame of its reference object (the grasped object for approach segments, the receptacle for carry segments, the world for fixtures) and retargeted to the target's objects of the same CATEGORY (name without the instance suffix); segments joined by straight interpolation; tracked by the source's controller goals (P0c' tracker); the target's init states 30-49, one env per (target, arm), states in order",
+  "hypotheses": {
+   "X1": "cross non-inferior to own at -0.10 over the 100 paired placements (one-sided 95% lower bound of the paired difference, two-level bootstrap over targets and placements)",
+   "X2": "cross > mismatch: exact two-sided sign test p < 0.05 and a difference >= 0.15",
+   "reading": "X1 and X2: bindings compose across tasks and are object-specific -- the executor is a generator of demonstrations for new combinations; X1 only: motions transfer regardless of the object; neither: bindings do not compose"
+  },
+  "plan": "docs/PLAN_TRANSFER.md P3 (cross-task binding transfer), first in the policy-free executor of P0c (goal tracking of object-relative segments)",
+  "question": "do object-relative bindings COMPOSE across tasks: can a task be executed from another task's grasp of its object and a third task's placement into its receptacle?",
+  "sources": "the first successful recorded practice episode (trial order; m5_practice, m6_round1, m6_round2) of each source task, from the bit-exact replays",
+  "targets": {
+   "3 butter (back) -> top drawer, close": {
+    "grasp": 4,
+    "mismatch_grasp": 32,
+    "own": 3,
+    "place": 4
+   },
+   "4 butter (front) -> top drawer, close": {
+    "grasp": 3,
+    "mismatch_grasp": 32,
+    "own": 4,
+    "place": 3
+   },
+   "43 white bowl -> top of the cabinet": {
+    "grasp": 36,
+    "mismatch_grasp": 41,
+    "own": 43,
+    "place": 41
+   },
+   "48 ketchup -> basket": {
+    "grasp": 58,
+    "mismatch_grasp": 62,
+    "own": 48,
+    "place": 52
+   },
+   "58 ketchup -> tray": {
+    "grasp": 48,
+    "mismatch_grasp": 52,
+    "own": 58,
+    "place": 62
+   }
+  },
+  "written_before": "any P3a rollout"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_90__p3a__s0__52fb42d7",
+ "schema": 1,
+ "script": "(inline, session 2026-09-28)",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-29T01:17:28+00:00",
+ "stream": null,
+ "tag": "p3a"
+}

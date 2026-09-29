@@ -1,0 +1,82 @@
+{
+ "artifacts": [
+  "results/robot/p3_compose_sim_object.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "p3_compose_sim.py --phases object",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky2.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "p3_compose",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "52fb42d70f6d0dbceebd0a82dccdb1e7529faa23",
+  "short": "52fb42d7"
+ },
+ "keys": {},
+ "metrics": {
+  "executor": "phases from object state (lift-detected grasp; carry in the receptacle frame)",
+  "exploratory": true,
+  "n_per_arm": 100,
+  "note": "exploratory: the executor was corrected after the pre-registered P3a read (p3_compose tag p3a); a confirmatory test on new targets follows",
+  "per_task": {
+   "3": {
+    "cross": 19,
+    "mismatch": 0,
+    "own": 20
+   },
+   "4": {
+    "cross": 20,
+    "mismatch": 0,
+    "own": 17
+   },
+   "43": {
+    "cross": 0,
+    "mismatch": 0,
+    "own": 18
+   },
+   "48": {
+    "cross": 20,
+    "mismatch": 0,
+    "own": 19
+   },
+   "58": {
+    "cross": 1,
+    "mismatch": 0,
+    "own": 20
+   }
+  },
+  "totals": {
+   "cross": 60,
+   "mismatch": 0,
+   "own": 94
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "p3_compose__libero_90__p3a_object__s0__52fb42d7",
+ "schema": 1,
+ "script": "experiments/p3_compose_sim.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-29T01:51:21+00:00",
+ "stream": null,
+ "tag": "p3a_object"
+}
