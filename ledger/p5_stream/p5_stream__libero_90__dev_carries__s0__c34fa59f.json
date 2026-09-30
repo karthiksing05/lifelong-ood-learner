@@ -1,0 +1,622 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "experiments/carry_read.py --record  # EXPLORATORY, states 0-9",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky1.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "p5_stream",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "c34fa59f3bf3060bda6de0c023d345cf4ff52267",
+  "short": "c34fa59f"
+ },
+ "keys": {},
+ "metrics": {
+  "best_of_all": 384,
+  "carries_complete": [
+   "streamc",
+   "streamh",
+   "streamte",
+   "streamhe",
+   "streamtle"
+  ],
+  "carry_set": [
+   "streamtle",
+   "streamc",
+   "streamh"
+  ],
+  "carry_set_first_rule": [
+   "streamc",
+   "streamtle"
+  ],
+  "compositions": 54,
+  "groups": {
+   "mismatch 10-30": {
+    "compositions": 30,
+    "streamc": 151,
+    "streamh": 116,
+    "streamhe": 115,
+    "streamte": 214,
+    "streamtle": 216
+   },
+   "mismatch <10": {
+    "compositions": 10,
+    "streamc": 35,
+    "streamh": 20,
+    "streamhe": 32,
+    "streamte": 49,
+    "streamtle": 36
+   },
+   "mismatch >30": {
+    "compositions": 14,
+    "streamc": 11,
+    "streamh": 52,
+    "streamhe": 53,
+    "streamte": 44,
+    "streamtle": 64
+   },
+   "place source of another type": {
+    "compositions": 33,
+    "streamc": 93,
+    "streamh": 125,
+    "streamhe": 118,
+    "streamte": 125,
+    "streamtle": 138
+   },
+   "place source of the same type": {
+    "compositions": 21,
+    "streamc": 104,
+    "streamh": 63,
+    "streamhe": 82,
+    "streamte": 182,
+    "streamtle": 178
+   }
+  },
+  "n": 540,
+  "passes": {
+   "streamc": 16,
+   "streamh": 11,
+   "streamhe": 12,
+   "streamte": 26,
+   "streamtle": 28
+  },
+  "passes_union_all": 35,
+  "passes_union_set": 34,
+  "per_composition": {
+   "13_17_65": {
+    "streamc": 0,
+    "streamh": 10,
+    "streamhe": 10,
+    "streamte": 0,
+    "streamtle": 0
+   },
+   "13_63_65": {
+    "streamc": 0,
+    "streamh": 5,
+    "streamhe": 4,
+    "streamte": 2,
+    "streamtle": 1
+   },
+   "16_17_17": {
+    "streamc": 8,
+    "streamh": 0,
+    "streamhe": 3,
+    "streamte": 9,
+    "streamtle": 8
+   },
+   "16_1_17": {
+    "streamc": 0,
+    "streamh": 0,
+    "streamhe": 1,
+    "streamte": 9,
+    "streamtle": 9
+   },
+   "17_16_16": {
+    "streamc": 10,
+    "streamh": 4,
+    "streamhe": 5,
+    "streamte": 10,
+    "streamtle": 10
+   },
+   "17_63_16": {
+    "streamc": 6,
+    "streamh": 4,
+    "streamhe": 3,
+    "streamte": 9,
+    "streamtle": 9
+   },
+   "36_37_13": {
+    "streamc": 0,
+    "streamh": 8,
+    "streamhe": 6,
+    "streamte": 0,
+    "streamtle": 10
+   },
+   "36_43_13": {
+    "streamc": 0,
+    "streamh": 0,
+    "streamhe": 2,
+    "streamte": 0,
+    "streamtle": 10
+   },
+   "36_43_65": {
+    "streamc": 0,
+    "streamh": 1,
+    "streamhe": 0,
+    "streamte": 1,
+    "streamtle": 4
+   },
+   "3_4_4": {
+    "streamc": 10,
+    "streamh": 10,
+    "streamhe": 10,
+    "streamte": 10,
+    "streamtle": 10
+   },
+   "40_21_88": {
+    "streamc": 4,
+    "streamh": 0,
+    "streamhe": 0,
+    "streamte": 3,
+    "streamtle": 0
+   },
+   "40_42_88": {
+    "streamc": 0,
+    "streamh": 1,
+    "streamhe": 2,
+    "streamte": 10,
+    "streamtle": 0
+   },
+   "41_21_87": {
+    "streamc": 3,
+    "streamh": 0,
+    "streamhe": 2,
+    "streamte": 1,
+    "streamtle": 0
+   },
+   "41_42_43": {
+    "streamc": 10,
+    "streamh": 6,
+    "streamhe": 3,
+    "streamte": 9,
+    "streamtle": 9
+   },
+   "42_21_89": {
+    "streamc": 0,
+    "streamh": 0,
+    "streamhe": 0,
+    "streamte": 0,
+    "streamtle": 0
+   },
+   "43_36_87": {
+    "streamc": 8,
+    "streamh": 10,
+    "streamhe": 5,
+    "streamte": 7,
+    "streamtle": 7
+   },
+   "43_37_87": {
+    "streamc": 10,
+    "streamh": 9,
+    "streamhe": 0,
+    "streamte": 7,
+    "streamtle": 7
+   },
+   "48_32_53": {
+    "streamc": 10,
+    "streamh": 9,
+    "streamhe": 9,
+    "streamte": 10,
+    "streamtle": 10
+   },
+   "48_58_53": {
+    "streamc": 10,
+    "streamh": 3,
+    "streamhe": 4,
+    "streamte": 10,
+    "streamtle": 10
+   },
+   "4_3_3": {
+    "streamc": 9,
+    "streamh": 10,
+    "streamhe": 8,
+    "streamte": 9,
+    "streamtle": 9
+   },
+   "58_32_62": {
+    "streamc": 9,
+    "streamh": 9,
+    "streamhe": 9,
+    "streamte": 9,
+    "streamtle": 9
+   },
+   "58_48_62": {
+    "streamc": 9,
+    "streamh": 9,
+    "streamhe": 9,
+    "streamte": 8,
+    "streamtle": 8
+   },
+   "5_69_3": {
+    "streamc": 5,
+    "streamh": 7,
+    "streamhe": 6,
+    "streamte": 6,
+    "streamtle": 6
+   },
+   "5_69_4": {
+    "streamc": 5,
+    "streamh": 6,
+    "streamhe": 4,
+    "streamte": 5,
+    "streamtle": 5
+   },
+   "65_66_13": {
+    "streamc": 0,
+    "streamh": 1,
+    "streamhe": 0,
+    "streamte": 0,
+    "streamtle": 0
+   },
+   "65_84_13": {
+    "streamc": 0,
+    "streamh": 0,
+    "streamhe": 0,
+    "streamte": 0,
+    "streamtle": 1
+   },
+   "66_65_65": {
+    "streamc": 0,
+    "streamh": 7,
+    "streamhe": 7,
+    "streamte": 10,
+    "streamtle": 10
+   },
+   "66_84_13": {
+    "streamc": 0,
+    "streamh": 0,
+    "streamhe": 0,
+    "streamte": 0,
+    "streamtle": 0
+   },
+   "71_65_65": {
+    "streamc": 10,
+    "streamh": 10,
+    "streamhe": 9,
+    "streamte": 10,
+    "streamtle": 10
+   },
+   "71_66_13": {
+    "streamc": 0,
+    "streamh": 10,
+    "streamhe": 9,
+    "streamte": 0,
+    "streamtle": 0
+   },
+   "71_84_13": {
+    "streamc": 0,
+    "streamh": 0,
+    "streamhe": 1,
+    "streamte": 1,
+    "streamtle": 1
+   },
+   "73_74_81": {
+    "streamc": 0,
+    "streamh": 7,
+    "streamhe": 8,
+    "streamte": 10,
+    "streamtle": 9
+   },
+   "73_75_81": {
+    "streamc": 0,
+    "streamh": 6,
+    "streamhe": 6,
+    "streamte": 8,
+    "streamtle": 8
+   },
+   "75_73_80": {
+    "streamc": 3,
+    "streamh": 0,
+    "streamhe": 0,
+    "streamte": 4,
+    "streamtle": 5
+   },
+   "75_74_80": {
+    "streamc": 9,
+    "streamh": 1,
+    "streamhe": 0,
+    "streamte": 9,
+    "streamtle": 9
+   },
+   "76_34_84": {
+    "streamc": 2,
+    "streamh": 3,
+    "streamhe": 0,
+    "streamte": 7,
+    "streamtle": 10
+   },
+   "78_73_73": {
+    "streamc": 7,
+    "streamh": 0,
+    "streamhe": 5,
+    "streamte": 6,
+    "streamtle": 7
+   },
+   "78_74_81": {
+    "streamc": 6,
+    "streamh": 0,
+    "streamhe": 7,
+    "streamte": 10,
+    "streamtle": 10
+   },
+   "78_75_81": {
+    "streamc": 7,
+    "streamh": 1,
+    "streamhe": 5,
+    "streamte": 9,
+    "streamtle": 9
+   },
+   "80_73_75": {
+    "streamc": 8,
+    "streamh": 0,
+    "streamhe": 0,
+    "streamte": 6,
+    "streamtle": 6
+   },
+   "80_75_75": {
+    "streamc": 1,
+    "streamh": 0,
+    "streamhe": 0,
+    "streamte": 10,
+    "streamtle": 8
+   },
+   "81_73_73": {
+    "streamc": 1,
+    "streamh": 0,
+    "streamhe": 5,
+    "streamte": 10,
+    "streamtle": 8
+   },
+   "83_73_80": {
+    "streamc": 9,
+    "streamh": 1,
+    "streamhe": 0,
+    "streamte": 6,
+    "streamtle": 6
+   },
+   "83_74_80": {
+    "streamc": 0,
+    "streamh": 2,
+    "streamhe": 0,
+    "streamte": 8,
+    "streamtle": 9
+   },
+   "83_75_75": {
+    "streamc": 0,
+    "streamh": 0,
+    "streamhe": 0,
+    "streamte": 10,
+    "streamtle": 9
+   },
+   "84_65_76": {
+    "streamc": 0,
+    "streamh": 0,
+    "streamhe": 1,
+    "streamte": 0,
+    "streamtle": 0
+   },
+   "84_66_76": {
+    "streamc": 0,
+    "streamh": 0,
+    "streamhe": 2,
+    "streamte": 0,
+    "streamtle": 0
+   },
+   "86_73_40": {
+    "streamc": 0,
+    "streamh": 0,
+    "streamhe": 0,
+    "streamte": 0,
+    "streamtle": 0
+   },
+   "86_74_88": {
+    "streamc": 8,
+    "streamh": 4,
+    "streamhe": 10,
+    "streamte": 10,
+    "streamtle": 10
+   },
+   "87_88_43": {
+    "streamc": 0,
+    "streamh": 7,
+    "streamhe": 10,
+    "streamte": 10,
+    "streamtle": 10
+   },
+   "87_89_41": {
+    "streamc": 0,
+    "streamh": 7,
+    "streamhe": 10,
+    "streamte": 9,
+    "streamtle": 10
+   },
+   "88_87_40": {
+    "streamc": 0,
+    "streamh": 0,
+    "streamhe": 0,
+    "streamte": 0,
+    "streamtle": 0
+   },
+   "88_89_40": {
+    "streamc": 0,
+    "streamh": 0,
+    "streamhe": 0,
+    "streamte": 0,
+    "streamtle": 0
+   },
+   "89_88_42": {
+    "streamc": 0,
+    "streamh": 0,
+    "streamhe": 0,
+    "streamte": 0,
+    "streamtle": 0
+   }
+  },
+  "phase_outcomes": {
+   "streamh": {
+    "episodes": 540,
+    "failed_at": {
+     "bring": 211,
+     "lift": 54,
+     "place": 29,
+     "reach": 58,
+     "success": 188
+    }
+   },
+   "streamhe": {
+    "episodes": 540,
+    "failed_at": {
+     "bring": 212,
+     "lift": 72,
+     "place": 29,
+     "reach": 27,
+     "success": 200
+    }
+   },
+   "streamte": {
+    "episodes": 540,
+    "failed_at": {
+     "bring": 104,
+     "lift": 98,
+     "place": 11,
+     "reach": 20,
+     "success": 307
+    }
+   },
+   "streamtle": {
+    "episodes": 540,
+    "failed_at": {
+     "bring": 114,
+     "lift": 72,
+     "place": 15,
+     "reach": 23,
+     "success": 316
+    }
+   }
+  },
+  "replay_identical": {
+   "streamc": [
+    0,
+    0
+   ]
+  },
+  "totals": {
+   "streamc": 197,
+   "streamh": 188,
+   "streamhe": 200,
+   "streamte": 307,
+   "streamtle": 316
+  },
+  "unique_passes": {
+   "streamc": 2,
+   "streamh": 0,
+   "streamhe": 0,
+   "streamte": 1,
+   "streamtle": 2
+  },
+  "vs_route": {
+   "streamh": {
+    "diff": {
+     "diff": -0.016666666666666666,
+     "hi": 0.10555555555555556,
+     "hi90": 0.08518518518518518,
+     "lo": -0.1388888888888889,
+     "lo90": -0.11861111111111103,
+     "n_pairs": 540,
+     "n_tasks": 54
+    },
+    "discordant": [
+     86,
+     95
+    ],
+    "sign_p": 0.5522070718494925
+   },
+   "streamhe": {
+    "diff": {
+     "diff": 0.005555555555555556,
+     "hi": 0.13333333333333333,
+     "hi90": 0.11296296296296296,
+     "lo": -0.12222222222222222,
+     "lo90": -0.1,
+     "n_pairs": 540,
+     "n_tasks": 54
+    },
+    "discordant": [
+     94,
+     91
+    ],
+    "sign_p": 0.8831496927414333
+   },
+   "streamte": {
+    "diff": {
+     "diff": 0.2037037037037037,
+     "hi": 0.3148148148148148,
+     "hi90": 0.2962962962962963,
+     "lo": 0.09814814814814815,
+     "lo90": 0.11666666666666667,
+     "n_pairs": 540,
+     "n_tasks": 54
+    },
+    "discordant": [
+     131,
+     21
+    ],
+    "sign_p": 1.2597915027892458e-20
+   },
+   "streamtle": {
+    "diff": {
+     "diff": 0.22037037037037038,
+     "hi": 0.337037037037037,
+     "hi90": 0.31666666666666665,
+     "lo": 0.11106481481481485,
+     "lo90": 0.1259259259259259,
+     "n_pairs": 540,
+     "n_tasks": 54
+    },
+    "discordant": [
+     142,
+     23
+    ],
+    "sign_p": 3.959648901635067e-22
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "p5_stream__libero_90__dev_carries__s0__c34fa59f",
+ "schema": 1,
+ "script": "experiments/carry_read.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-30T23:40:00+00:00",
+ "stream": null,
+ "tag": "dev_carries"
+}

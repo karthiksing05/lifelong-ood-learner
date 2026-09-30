@@ -1,0 +1,9278 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/grammar_readout.json",
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/grammar_labels.npz"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "experiments/grammar_readout.py read --record",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky1.cc.gatech.edu",
+  "python": "3.13.5",
+  "slurm_job": null,
+  "torch": "2.13.0+cpu"
+ },
+ "experiment": "grammar",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "c34fa59f3bf3060bda6de0c023d345cf4ff52267",
+  "short": "c34fa59f"
+ },
+ "keys": {},
+ "metrics": {
+  "families": {
+   "fixture": [
+    6,
+    11,
+    23,
+    35,
+    39
+   ],
+   "grasp carry": [
+    13,
+    34,
+    37,
+    40,
+    42,
+    62,
+    69,
+    73,
+    75,
+    76,
+    78,
+    80,
+    81,
+    84,
+    85,
+    86,
+    88,
+    89
+   ],
+   "grasp carry rest": [
+    1,
+    3,
+    4,
+    5,
+    8,
+    16,
+    17,
+    18,
+    21,
+    25,
+    26,
+    27,
+    32,
+    36,
+    41,
+    43,
+    48,
+    52,
+    53,
+    58,
+    63,
+    65,
+    66,
+    71,
+    74,
+    83,
+    87
+   ]
+  },
+  "grasp_by_type": {
+   "akita_black_bowl": [
+    {
+     "approach": "from above",
+     "hand_in_object_cm": [
+      3.4,
+      1.1,
+      4.0
+     ],
+     "task": 1
+    },
+    {
+     "approach": "from above",
+     "hand_in_object_cm": [
+      5.1,
+      0.8,
+      2.3
+     ],
+     "task": 8
+    },
+    {
+     "approach": "from above",
+     "hand_in_object_cm": [
+      3.1,
+      0.5,
+      2.7
+     ],
+     "task": 13
+    },
+    {
+     "approach": "from above",
+     "hand_in_object_cm": [
+      -5.4,
+      0.5,
+      2.0
+     ],
+     "task": 16
+    },
+    {
+     "approach": "from above",
+     "hand_in_object_cm": [
+      -3.0,
+      1.0,
+      2.7
+     ],
+     "task": 17
+    },
+    {
+     "approach": "from above",
+     "hand_in_object_cm": [
+      -1.5,
+      4.7,
+      2.2
+     ],
+     "task": 25
+    },
+    {
+     "approach": "from above",
+     "hand_in_object_cm": [
+      -6.1,
+      0.1,
+      3.8
+     ],
+     "task": 63
+    }
+   ],
+   "black_book": [
+    {
+     "approach": "from above",
+     "hand_in_object_cm": [
+      -1.2,
+      -2.2,
+      10.5
+     ],
+     "task": 73
+    },
+    {
+     "approach": "from above",
+     "hand_in_object_cm": [
+      0.0,
+      -1.5,
+      11.2
+     ],
+     "task": 74
+    },
+    {
+     "approach": "from above",
+     "hand_in_object_cm": [
+      0.3,
+      0.5,
+      10.9
+     ],
+     "task": 75
+    },
+    {
+     "approach": "from above",
+     "hand_in_object_cm": [
+      0.9,
+      -1.4,
+      10.6
+     ],
+     "task": 78
+    },
+    {
+     "approach": "from above",
+     "hand_in_object_cm": [
+      -0.4,
+      0.2,
+      10.6
+     ],
+     "task": 80
+    },
+    {
+     "approach": "from above",
+     "hand_in_object_cm": [
+      0.3,
+      -0.6,
+      10.6
+     ],
+     "task": 81
+    },
+    {
+     "approach": "from above",
+     "hand_in_object_cm": [
+      -0.1,
+      -0.4,
+      10.8
+     ],
+     "task": 83
+    },
+    {
+     "approach": "from above",
+     "hand_in_object_cm": [
+      -0.5,
+      -1.0,
+      10.4
+     ],
+     "task": 86
+    }
+   ],
+   "butter": [
+    {
+     "approach": "from above",
+     "hand_in_object_cm": [
+      -0.1,
+      -0.0,
+      0.3
+     ],
+     "task": 3
+    },
+    {
+     "approach": "from above",
+     "hand_in_object_cm": [
+      -1.6,
+      -0.1,
+      0.4
+     ],
+     "task": 4
+    }
+   ],
+   "chefmate_8_frypan": [
+    {
+     "approach": "from above",
+     "hand_in_object_cm": [
+      14.1,
+      0.3,
+      1.4
+     ],
+     "task": 18
+    },
+    {
+     "approach": "from above",
+     "hand_in_object_cm": [
+      12.5,
+      0.0,
+      3.1
+     ],
+     "task": 21
+    },
+    {
+     "approach": "from above",
+     "hand_in_object_cm": [
+      11.7,
+      0.2,
+      1.5
+     ],
+     "task": 40
+    },
+    {
+     "approach": "from above",
+     "hand_in_object_cm": [
+      14.3,
+      1.7,
+      1.6
+     ],
+     "task": 41
+    },
+    {
+     "approach": "from above",
+     "hand_in_object_cm": [
+      16.9,
+      1.0,
+      1.9
+     ],
+     "task": 42
+    }
+   ],
+   "chocolate_pudding": [
+    {
+     "approach": "from above",
+     "hand_in_object_cm": [
+      -0.1,
+      0.4,
+      -0.2
+     ],
+     "task": 5
+    },
+    {
+     "approach": "from above",
+     "hand_in_object_cm": [
+      0.9,
+      -0.0,
+      -0.4
+     ],
+     "task": 69
+    }
+   ],
+   "ketchup": [
+    {
+     "approach": "from the side (x+)",
+     "hand_in_object_cm": [
+      0.4,
+      3.2,
+      0.1
+     ],
+     "task": 32
+    },
+    {
+     "approach": "from the side (y-)",
+     "hand_in_object_cm": [
+      -0.2,
+      4.4,
+      -1.3
+     ],
+     "task": 48
+    },
+    {
+     "approach": "from the side (y-)",
+     "hand_in_object_cm": [
+      -0.0,
+      5.6,
+      -0.4
+     ],
+     "task": 58
+    }
+   ],
+   "milk": [
+    {
+     "approach": "from the side (y-)",
+     "hand_in_object_cm": [
+      -1.0,
+      2.9,
+      1.2
+     ],
+     "task": 52
+    }
+   ],
+   "new_salad_dressing": [
+    {
+     "approach": "from the side (y-)",
+     "hand_in_object_cm": [
+      -0.3,
+      9.4,
+      -1.4
+     ],
+     "task": 62
+    }
+   ],
+   "orange_juice": [
+    {
+     "approach": "from the side (y-)",
+     "hand_in_object_cm": [
+      -0.6,
+      3.0,
+      -0.8
+     ],
+     "task": 53
+    }
+   ],
+   "porcelain_mug": [
+    {
+     "approach": "from above",
+     "hand_in_object_cm": [
+      -2.9,
+      -2.6,
+      7.8
+     ],
+     "task": 85
+    }
+   ],
+   "red_coffee_mug": [
+    {
+     "approach": "from above",
+     "hand_in_object_cm": [
+      -5.8,
+      -0.5,
+      11.3
+     ],
+     "task": 65
+    },
+    {
+     "approach": "from above",
+     "hand_in_object_cm": [
+      -6.5,
+      -1.1,
+      10.4
+     ],
+     "task": 66
+    },
+    {
+     "approach": "from above",
+     "hand_in_object_cm": [
+      -5.7,
+      -1.5,
+      10.7
+     ],
+     "task": 71
+    },
+    {
+     "approach": "from above",
+     "hand_in_object_cm": [
+      -5.2,
+      1.3,
+      12.9
+     ],
+     "task": 84
+    }
+   ],
+   "white_bowl": [
+    {
+     "approach": "from above",
+     "hand_in_object_cm": [
+      2.5,
+      0.9,
+      1.1
+     ],
+     "task": 36
+    },
+    {
+     "approach": "from above",
+     "hand_in_object_cm": [
+      2.7,
+      1.4,
+      1.5
+     ],
+     "task": 37
+    },
+    {
+     "approach": "from above",
+     "hand_in_object_cm": [
+      2.8,
+      0.4,
+      1.2
+     ],
+     "task": 43
+    }
+   ],
+   "white_yellow_mug": [
+    {
+     "approach": "from above",
+     "hand_in_object_cm": [
+      -6.2,
+      -2.0,
+      7.3
+     ],
+     "task": 34
+    },
+    {
+     "approach": "from above",
+     "hand_in_object_cm": [
+      -5.8,
+      -0.5,
+      7.4
+     ],
+     "task": 76
+    }
+   ],
+   "wine_bottle": [
+    {
+     "approach": "from the side (x+)",
+     "hand_in_object_cm": [
+      1.0,
+      -0.1,
+      8.2
+     ],
+     "task": 26
+    },
+    {
+     "approach": "from the side (x-)",
+     "hand_in_object_cm": [
+      -0.3,
+      -0.1,
+      12.3
+     ],
+     "task": 27
+    }
+   ],
+   "yellow_book": [
+    {
+     "approach": "from above",
+     "hand_in_object_cm": [
+      2.1,
+      -1.5,
+      9.3
+     ],
+     "task": 87
+    },
+    {
+     "approach": "from above",
+     "hand_in_object_cm": [
+      0.2,
+      -0.5,
+      9.3
+     ],
+     "task": 88
+    },
+    {
+     "approach": "from above",
+     "hand_in_object_cm": [
+      1.6,
+      -0.8,
+      8.9
+     ],
+     "task": 89
+    }
+   ]
+  },
+  "grasp_geometry_perm_p": 0.0004997501249375312,
+  "grasp_offset_cm": {
+   "across_pairs": 912,
+   "across_type_median": 9.807318859613792,
+   "within_pairs": 78,
+   "within_type_median": 2.0488258468578566
+  },
+  "programs": {
+   "1": {
+    "bytes": 3236,
+    "grammar": "grasp carry rest",
+    "language": "close the top drawer of the cabinet and put the black bowl on top of it",
+    "phases": [
+     {
+      "anchor": "akita_black_bowl_1",
+      "approach": "from above",
+      "frames": [
+       0,
+       125
+      ],
+      "hand_in_object_cm": [
+       3.4,
+       1.1,
+       4.0
+      ],
+      "kind": "grasp",
+      "prototypes": {
+       "0.4": [
+        0,
+        8,
+        25,
+        0,
+        1,
+        2,
+        3,
+        9,
+        4
+       ],
+       "0.55": [
+        0,
+        1
+       ]
+      }
+     },
+     {
+      "anchor": "wooden_cabinet_1",
+      "frames": [
+       125,
+       194
+      ],
+      "held": "akita_black_bowl_1",
+      "kind": "carry",
+      "prototypes": {
+       "0.4": [
+        4,
+        80,
+        4,
+        5,
+        12,
+        6,
+        7,
+        0
+       ],
+       "0.55": [
+        1,
+        0
+       ]
+      },
+      "release_in_receptacle_cm": [
+       2.6,
+       -0.3,
+       22.2
+      ]
+     },
+     {
+      "anchor": "wooden_cabinet_1",
+      "frames": [
+       194,
+       197
+      ],
+      "kind": "rest",
+      "prototypes": {
+       "0.4": [
+        0
+       ],
+       "0.55": [
+        0
+       ]
+      }
+     }
+    ],
+    "sentence": "GRASP akita_black_bowl_1 (from above) -> CARRY akita_black_bowl_1 TO wooden_cabinet_1 -> FINISH at wooden_cabinet_1"
+   },
+   "11": {
+    "bytes": 1052,
+    "grammar": "fixture",
+    "language": "open the top drawer of the cabinet",
+    "phases": [
+     {
+      "anchor": "wooden_cabinet_1",
+      "frames": [
+       0,
+       64
+      ],
+      "kind": "fixture",
+      "prototypes": {
+       "0.4": [
+        30,
+        0,
+        8,
+        0
+       ],
+       "0.55": [
+        0
+       ]
+      }
+     }
+    ],
+    "sentence": "OPERATE wooden_cabinet_1"
+   },
+   "13": {
+    "bytes": 2200,
+    "grammar": "grasp carry",
+    "language": "put the black bowl at the front on the plate",
+    "phases": [
+     {
+      "anchor": "akita_black_bowl_1",
+      "approach": "from above",
+      "frames": [
+       0,
+       79
+      ],
+      "hand_in_object_cm": [
+       3.1,
+       0.5,
+       2.7
+      ],
+      "kind": "grasp",
+      "prototypes": {
+       "0.4": [
+        0,
+        25,
+        0,
+        1,
+        13,
+        2,
+        3,
+        9,
+        4
+       ],
+       "0.55": [
+        0,
+        1
+       ]
+      }
+     },
+     {
+      "anchor": "plate_1",
+      "frames": [
+       79,
+       134
+      ],
+      "held": "akita_black_bowl_1",
+      "kind": "carry",
+      "prototypes": {
+       "0.4": [
+        4,
+        5,
+        12,
+        6,
+        7,
+        0
+       ],
+       "0.55": [
+        1,
+        0
+       ]
+      },
+      "release_in_receptacle_cm": [
+       -1.5,
+       1.1,
+       0.9
+      ]
+     }
+    ],
+    "sentence": "GRASP akita_black_bowl_1 (from above) -> CARRY akita_black_bowl_1 TO plate_1"
+   },
+   "16": {
+    "bytes": 1988,
+    "grammar": "grasp carry rest",
+    "language": "stack the black bowl at the front on the black bowl in the middle",
+    "phases": [
+     {
+      "anchor": "akita_black_bowl_1",
+      "approach": "from above",
+      "frames": [
+       0,
+       52
+      ],
+      "hand_in_object_cm": [
+       -5.4,
+       0.5,
+       2.0
+      ],
+      "kind": "grasp",
+      "prototypes": {
+       "0.4": [
+        25,
+        0,
+        1,
+        13,
+        2,
+        3,
+        9,
+        4
+       ],
+       "0.55": [
+        0,
+        1
+       ]
+      }
+     },
+     {
+      "anchor": "akita_black_bowl_2",
+      "frames": [
+       52,
+       108
+      ],
+      "held": "akita_black_bowl_1",
+      "kind": "carry",
+      "prototypes": {
+       "0.4": [
+        4,
+        5,
+        12,
+        6,
+        7,
+        0
+       ],
+       "0.55": [
+        1,
+        0
+       ]
+      },
+      "release_in_receptacle_cm": [
+       -0.2,
+       0.4,
+       2.9
+      ]
+     },
+     {
+      "anchor": "akita_black_bowl_2",
+      "frames": [
+       108,
+       119
+      ],
+      "kind": "rest",
+      "prototypes": {
+       "0.4": [
+        0
+       ],
+       "0.55": [
+        0
+       ]
+      }
+     }
+    ],
+    "sentence": "GRASP akita_black_bowl_1 (from above) -> CARRY akita_black_bowl_1 TO akita_black_bowl_2 -> FINISH at akita_black_bowl_2"
+   },
+   "17": {
+    "bytes": 2276,
+    "grammar": "grasp carry rest",
+    "language": "stack the middle black bowl on the back black bowl",
+    "phases": [
+     {
+      "anchor": "akita_black_bowl_2",
+      "approach": "from above",
+      "frames": [
+       0,
+       80
+      ],
+      "hand_in_object_cm": [
+       -3.0,
+       1.0,
+       2.7
+      ],
+      "kind": "grasp",
+      "prototypes": {
+       "0.4": [
+        25,
+        0,
+        1,
+        13,
+        2,
+        3,
+        9,
+        4,
+        5,
+        12,
+        6,
+        7,
+        0,
+        1,
+        13,
+        2,
+        3,
+        9,
+        4
+       ],
+       "0.55": [
+        0,
+        1,
+        0,
+        1
+       ]
+      }
+     },
+     {
+      "anchor": "akita_black_bowl_3",
+      "frames": [
+       80,
+       128
+      ],
+      "held": "akita_black_bowl_2",
+      "kind": "carry",
+      "prototypes": {
+       "0.4": [
+        4,
+        80,
+        4,
+        5,
+        12,
+        6,
+        7,
+        0
+       ],
+       "0.55": [
+        1,
+        0
+       ]
+      },
+      "release_in_receptacle_cm": [
+       -0.4,
+       -0.2,
+       2.8
+      ]
+     },
+     {
+      "anchor": "akita_black_bowl_3",
+      "frames": [
+       128,
+       137
+      ],
+      "kind": "rest",
+      "prototypes": {
+       "0.4": [
+        0
+       ],
+       "0.55": [
+        0
+       ]
+      }
+     }
+    ],
+    "sentence": "GRASP akita_black_bowl_2 (from above) -> CARRY akita_black_bowl_2 TO akita_black_bowl_3 -> FINISH at akita_black_bowl_3"
+   },
+   "18": {
+    "bytes": 3028,
+    "grammar": "grasp carry rest",
+    "language": "put the frying pan on the stove",
+    "phases": [
+     {
+      "anchor": "chefmate_8_frypan_1",
+      "approach": "from above",
+      "frames": [
+       0,
+       100
+      ],
+      "hand_in_object_cm": [
+       14.1,
+       0.3,
+       1.4
+      ],
+      "kind": "grasp",
+      "prototypes": {
+       "0.4": [
+        0,
+        30,
+        0,
+        94,
+        159,
+        0,
+        1,
+        13,
+        2,
+        3,
+        9,
+        4
+       ],
+       "0.55": [
+        0,
+        1
+       ]
+      }
+     },
+     {
+      "anchor": "flat_stove_1",
+      "frames": [
+       100,
+       159
+      ],
+      "held": "chefmate_8_frypan_1",
+      "kind": "carry",
+      "prototypes": {
+       "0.4": [
+        4,
+        10,
+        11,
+        18,
+        6,
+        31,
+        7,
+        0,
+        13,
+        2,
+        3,
+        9
+       ],
+       "0.55": [
+        1,
+        2,
+        1,
+        0,
+        1
+       ]
+      },
+      "release_in_receptacle_cm": [
+       17.7,
+       -9.3,
+       15.4
+      ]
+     },
+     {
+      "anchor": "flat_stove_1",
+      "frames": [
+       159,
+       184
+      ],
+      "kind": "rest",
+      "prototypes": {
+       "0.4": [
+        4,
+        5,
+        12,
+        6,
+        7,
+        0
+       ],
+       "0.55": [
+        1,
+        0
+       ]
+      }
+     }
+    ],
+    "sentence": "GRASP chefmate_8_frypan_1 (from above) -> CARRY chefmate_8_frypan_1 TO flat_stove_1 -> FINISH at flat_stove_1"
+   },
+   "21": {
+    "bytes": 4436,
+    "grammar": "grasp carry rest",
+    "language": "turn on the stove and put the frying pan on it",
+    "phases": [
+     {
+      "anchor": "chefmate_8_frypan_1",
+      "approach": "from above",
+      "frames": [
+       0,
+       200
+      ],
+      "hand_in_object_cm": [
+       12.5,
+       0.0,
+       3.1
+      ],
+      "kind": "grasp",
+      "prototypes": {
+       "0.4": [
+        0,
+        8,
+        0,
+        1,
+        13,
+        2,
+        3,
+        9,
+        4,
+        57,
+        53,
+        57,
+        47,
+        4,
+        54,
+        5,
+        12,
+        6,
+        7,
+        0,
+        30,
+        0,
+        22,
+        23,
+        0,
+        1,
+        13,
+        2,
+        3,
+        9,
+        4
+       ],
+       "0.55": [
+        0,
+        1,
+        0,
+        1
+       ]
+      }
+     },
+     {
+      "anchor": "flat_stove_1",
+      "frames": [
+       200,
+       267
+      ],
+      "held": "chefmate_8_frypan_1",
+      "kind": "carry",
+      "prototypes": {
+       "0.4": [
+        4,
+        10,
+        11,
+        4,
+        12,
+        6,
+        161,
+        0
+       ],
+       "0.55": [
+        1,
+        2,
+        1,
+        0
+       ]
+      },
+      "release_in_receptacle_cm": [
+       12.0,
+       -0.1,
+       2.8
+      ]
+     },
+     {
+      "anchor": "flat_stove_1",
+      "frames": [
+       267,
+       272
+      ],
+      "kind": "rest",
+      "prototypes": {
+       "0.4": [
+        0
+       ],
+       "0.55": [
+        0
+       ]
+      }
+     }
+    ],
+    "sentence": "GRASP chefmate_8_frypan_1 (from above) -> CARRY chefmate_8_frypan_1 TO flat_stove_1 -> FINISH at flat_stove_1"
+   },
+   "23": {
+    "bytes": 3100,
+    "grammar": "fixture",
+    "language": "close the bottom drawer of the cabinet and open the top drawer",
+    "phases": [
+     {
+      "anchor": "white_cabinet_1",
+      "frames": [
+       0,
+       192
+      ],
+      "kind": "fixture",
+      "prototypes": {
+       "0.4": [
+        0,
+        15,
+        0,
+        8,
+        0
+       ],
+       "0.55": [
+        0
+       ]
+      }
+     }
+    ],
+    "sentence": "OPERATE white_cabinet_1"
+   },
+   "25": {
+    "bytes": 2436,
+    "grammar": "grasp carry rest",
+    "language": "put the black bowl on top of the cabinet",
+    "phases": [
+     {
+      "anchor": "akita_black_bowl_1",
+      "approach": "from above",
+      "frames": [
+       0,
+       70
+      ],
+      "hand_in_object_cm": [
+       -1.5,
+       4.7,
+       2.2
+      ],
+      "kind": "grasp",
+      "prototypes": {
+       "0.4": [
+        15,
+        0,
+        1,
+        13,
+        2,
+        3,
+        9,
+        4
+       ],
+       "0.55": [
+        0,
+        1
+       ]
+      }
+     },
+     {
+      "anchor": "white_cabinet_1",
+      "frames": [
+       70,
+       142
+      ],
+      "held": "akita_black_bowl_1",
+      "kind": "carry",
+      "prototypes": {
+       "0.4": [
+        4,
+        10,
+        11,
+        4,
+        5,
+        12,
+        6,
+        7,
+        0
+       ],
+       "0.55": [
+        1,
+        2,
+        1,
+        0
+       ]
+      },
+      "release_in_receptacle_cm": [
+       0.1,
+       -2.6,
+       22.4
+      ]
+     },
+     {
+      "anchor": "white_cabinet_1",
+      "frames": [
+       142,
+       147
+      ],
+      "kind": "rest",
+      "prototypes": {
+       "0.4": [
+        0
+       ],
+       "0.55": [
+        0
+       ]
+      }
+     }
+    ],
+    "sentence": "GRASP akita_black_bowl_1 (from above) -> CARRY akita_black_bowl_1 TO white_cabinet_1 -> FINISH at white_cabinet_1"
+   },
+   "26": {
+    "bytes": 2788,
+    "grammar": "grasp carry rest",
+    "language": "put the wine bottle in the bottom drawer of the cabinet",
+    "phases": [
+     {
+      "anchor": "wine_bottle_1",
+      "approach": "from the side (x+)",
+      "frames": [
+       0,
+       50
+      ],
+      "hand_in_object_cm": [
+       1.0,
+       -0.1,
+       8.2
+      ],
+      "kind": "grasp",
+      "prototypes": {
+       "0.4": [
+        0,
+        119,
+        154,
+        120,
+        0,
+        1,
+        13,
+        2,
+        3,
+        9,
+        4
+       ],
+       "0.55": [
+        0,
+        1
+       ]
+      }
+     },
+     {
+      "anchor": "white_cabinet_1",
+      "frames": [
+       50,
+       103
+      ],
+      "held": "wine_bottle_1",
+      "kind": "carry",
+      "prototypes": {
+       "0.4": [
+        4,
+        10,
+        11,
+        4,
+        11,
+        186,
+        187,
+        188,
+        189,
+        208,
+        211,
+        4,
+        5,
+        12,
+        6,
+        7,
+        0
+       ],
+       "0.55": [
+        1,
+        2,
+        1,
+        0
+       ]
+      },
+      "release_in_receptacle_cm": [
+       10.0,
+       -17.6,
+       13.4
+      ]
+     },
+     {
+      "anchor": "white_cabinet_1",
+      "frames": [
+       103,
+       169
+      ],
+      "kind": "rest",
+      "prototypes": {
+       "0.4": [
+        0
+       ],
+       "0.55": [
+        0
+       ]
+      }
+     }
+    ],
+    "sentence": "GRASP wine_bottle_1 (from the side (x+)) -> CARRY wine_bottle_1 TO white_cabinet_1 -> FINISH at white_cabinet_1"
+   },
+   "27": {
+    "bytes": 5028,
+    "grammar": "grasp carry rest",
+    "language": "put the wine bottle on the wine rack",
+    "phases": [
+     {
+      "anchor": "wine_bottle_1",
+      "approach": "from the side (x-)",
+      "frames": [
+       0,
+       145
+      ],
+      "hand_in_object_cm": [
+       -0.3,
+       -0.1,
+       12.3
+      ],
+      "kind": "grasp",
+      "prototypes": {
+       "0.4": [
+        0,
+        30,
+        159,
+        93,
+        84,
+        93,
+        94,
+        0,
+        1,
+        13,
+        2,
+        3,
+        9,
+        4
+       ],
+       "0.55": [
+        0,
+        1
+       ]
+      }
+     },
+     {
+      "anchor": "wine_rack_1",
+      "frames": [
+       145,
+       237
+      ],
+      "held": "wine_bottle_1",
+      "kind": "carry",
+      "prototypes": {
+       "0.4": [
+        4,
+        100,
+        69,
+        4,
+        5,
+        12,
+        6,
+        7,
+        0
+       ],
+       "0.55": [
+        1,
+        0
+       ]
+      },
+      "release_in_receptacle_cm": [
+       -2.0,
+       -9.1,
+       23.8
+      ]
+     },
+     {
+      "anchor": "wine_rack_1",
+      "frames": [
+       237,
+       309
+      ],
+      "kind": "rest",
+      "prototypes": {
+       "0.4": [
+        0,
+        1,
+        13,
+        2,
+        3,
+        9,
+        4,
+        5,
+        12,
+        6,
+        7,
+        0
+       ],
+       "0.55": [
+        0,
+        1,
+        0
+       ]
+      }
+     }
+    ],
+    "sentence": "GRASP wine_bottle_1 (from the side (x-)) -> CARRY wine_bottle_1 TO wine_rack_1 -> FINISH at wine_rack_1"
+   },
+   "3": {
+    "bytes": 3012,
+    "grammar": "grasp carry rest",
+    "language": "put the butter at the back in the top drawer of the cabinet and close it",
+    "phases": [
+     {
+      "anchor": "butter_2",
+      "approach": "from above",
+      "frames": [
+       0,
+       61
+      ],
+      "hand_in_object_cm": [
+       -0.1,
+       -0.0,
+       0.3
+      ],
+      "kind": "grasp",
+      "prototypes": {
+       "0.4": [
+        0,
+        8,
+        25,
+        0,
+        1,
+        13,
+        2,
+        3,
+        9,
+        4
+       ],
+       "0.55": [
+        0,
+        1
+       ]
+      }
+     },
+     {
+      "anchor": "wooden_cabinet_1",
+      "frames": [
+       61,
+       122
+      ],
+      "held": "butter_2",
+      "kind": "carry",
+      "prototypes": {
+       "0.4": [
+        4,
+        80,
+        4,
+        5,
+        12,
+        6,
+        7,
+        0
+       ],
+       "0.55": [
+        1,
+        0
+       ]
+      },
+      "release_in_receptacle_cm": [
+       0.4,
+       -14.2,
+       24.6
+      ]
+     },
+     {
+      "anchor": "wooden_cabinet_1",
+      "frames": [
+       122,
+       183
+      ],
+      "kind": "rest",
+      "prototypes": {
+       "0.4": [
+        0,
+        8,
+        0
+       ],
+       "0.55": [
+        0
+       ]
+      }
+     }
+    ],
+    "sentence": "GRASP butter_2 (from above) -> CARRY butter_2 TO wooden_cabinet_1 -> FINISH at wooden_cabinet_1"
+   },
+   "32": {
+    "bytes": 3284,
+    "grammar": "grasp carry rest",
+    "language": "put the ketchup in the top drawer of the cabinet",
+    "phases": [
+     {
+      "anchor": "ketchup_1",
+      "approach": "from the side (x+)",
+      "frames": [
+       0,
+       100
+      ],
+      "hand_in_object_cm": [
+       0.4,
+       3.2,
+       0.1
+      ],
+      "kind": "grasp",
+      "prototypes": {
+       "0.4": [
+        0,
+        119,
+        15,
+        16,
+        15,
+        0,
+        1,
+        13,
+        2,
+        3,
+        9,
+        4
+       ],
+       "0.55": [
+        0,
+        1
+       ]
+      }
+     },
+     {
+      "anchor": "white_cabinet_1",
+      "frames": [
+       100,
+       185
+      ],
+      "held": "ketchup_1",
+      "kind": "carry",
+      "prototypes": {
+       "0.4": [
+        10,
+        11,
+        4,
+        5,
+        12,
+        6,
+        7,
+        0
+       ],
+       "0.55": [
+        1,
+        2,
+        1,
+        2,
+        1,
+        0
+       ]
+      },
+      "release_in_receptacle_cm": [
+       -4.6,
+       -19.0,
+       24.9
+      ]
+     },
+     {
+      "anchor": "white_cabinet_1",
+      "frames": [
+       185,
+       200
+      ],
+      "kind": "rest",
+      "prototypes": {
+       "0.4": [
+        0
+       ],
+       "0.55": [
+        0
+       ]
+      }
+     }
+    ],
+    "sentence": "GRASP ketchup_1 (from the side (x+)) -> CARRY ketchup_1 TO white_cabinet_1 -> FINISH at white_cabinet_1"
+   },
+   "34": {
+    "bytes": 2360,
+    "grammar": "grasp carry",
+    "language": "put the yellow and white mug to the front of the white mug",
+    "phases": [
+     {
+      "anchor": "white_yellow_mug_1",
+      "approach": "from above",
+      "frames": [
+       0,
+       65
+      ],
+      "hand_in_object_cm": [
+       -6.2,
+       -2.0,
+       7.3
+      ],
+      "kind": "grasp",
+      "prototypes": {
+       "0.4": [
+        0,
+        25,
+        0,
+        1,
+        13,
+        2,
+        3,
+        9,
+        4
+       ],
+       "0.55": [
+        0,
+        1
+       ]
+      }
+     },
+     {
+      "anchor": "porcelain_mug_1",
+      "frames": [
+       65,
+       144
+      ],
+      "held": "white_yellow_mug_1",
+      "kind": "carry",
+      "prototypes": {
+       "0.4": [
+        4,
+        68,
+        4,
+        240,
+        4,
+        204,
+        4
+       ],
+       "0.55": [
+        1
+       ]
+      },
+      "release_in_receptacle_cm": [
+       2.7,
+       10.2,
+       0.8
+      ]
+     }
+    ],
+    "sentence": "GRASP white_yellow_mug_1 (from above) -> CARRY white_yellow_mug_1 TO porcelain_mug_1"
+   },
+   "35": {
+    "bytes": 2124,
+    "grammar": "fixture",
+    "language": "open the microwave",
+    "phases": [
+     {
+      "anchor": "microwave_1",
+      "frames": [
+       0,
+       131
+      ],
+      "kind": "fixture",
+      "prototypes": {
+       "0.4": [
+        0,
+        30,
+        25,
+        0,
+        30,
+        25,
+        0
+       ],
+       "0.55": [
+        0
+       ]
+      }
+     }
+    ],
+    "sentence": "OPERATE microwave_1"
+   },
+   "36": {
+    "bytes": 3572,
+    "grammar": "grasp carry rest",
+    "language": "put the white bowl on the plate",
+    "phases": [
+     {
+      "anchor": "white_bowl_1",
+      "approach": "from above",
+      "frames": [
+       0,
+       95
+      ],
+      "hand_in_object_cm": [
+       2.5,
+       0.9,
+       1.1
+      ],
+      "kind": "grasp",
+      "prototypes": {
+       "0.4": [
+        0,
+        30,
+        0,
+        1,
+        13,
+        2,
+        3,
+        9,
+        4
+       ],
+       "0.55": [
+        0,
+        1
+       ]
+      }
+     },
+     {
+      "anchor": "plate_1",
+      "frames": [
+       95,
+       208
+      ],
+      "held": "white_bowl_1",
+      "kind": "carry",
+      "prototypes": {
+       "0.4": [
+        4,
+        10,
+        11,
+        4,
+        5,
+        12,
+        6,
+        7,
+        0
+       ],
+       "0.55": [
+        1,
+        2,
+        1,
+        0
+       ]
+      },
+      "release_in_receptacle_cm": [
+       -0.2,
+       -2.5,
+       3.2
+      ]
+     },
+     {
+      "anchor": "plate_1",
+      "frames": [
+       208,
+       218
+      ],
+      "kind": "rest",
+      "prototypes": {
+       "0.4": [
+        0
+       ],
+       "0.55": [
+        0
+       ]
+      }
+     }
+    ],
+    "sentence": "GRASP white_bowl_1 (from above) -> CARRY white_bowl_1 TO plate_1 -> FINISH at plate_1"
+   },
+   "37": {
+    "bytes": 1976,
+    "grammar": "grasp carry",
+    "language": "put the white bowl to the right of the plate",
+    "phases": [
+     {
+      "anchor": "white_bowl_1",
+      "approach": "from above",
+      "frames": [
+       0,
+       58
+      ],
+      "hand_in_object_cm": [
+       2.7,
+       1.4,
+       1.5
+      ],
+      "kind": "grasp",
+      "prototypes": {
+       "0.4": [
+        0,
+        30,
+        0,
+        1,
+        13,
+        2,
+        3,
+        9,
+        4
+       ],
+       "0.55": [
+        0,
+        1
+       ]
+      }
+     },
+     {
+      "anchor": "plate_1",
+      "frames": [
+       58,
+       120
+      ],
+      "held": "white_bowl_1",
+      "kind": "carry",
+      "prototypes": {
+       "0.4": [
+        4,
+        10,
+        11,
+        4,
+        5,
+        12,
+        6,
+        7,
+        0
+       ],
+       "0.55": [
+        1,
+        2,
+        1,
+        0
+       ]
+      },
+      "release_in_receptacle_cm": [
+       11.8,
+       2.3,
+       1.1
+      ]
+     }
+    ],
+    "sentence": "GRASP white_bowl_1 (from above) -> CARRY white_bowl_1 TO plate_1"
+   },
+   "39": {
+    "bytes": 1884,
+    "grammar": "fixture",
+    "language": "turn off the stove",
+    "phases": [
+     {
+      "anchor": "flat_stove_1",
+      "frames": [
+       0,
+       116
+      ],
+      "kind": "fixture",
+      "prototypes": {
+       "0.4": [
+        0,
+        152,
+        93,
+        0,
+        1,
+        13,
+        2,
+        3,
+        9,
+        4
+       ],
+       "0.55": [
+        0,
+        1
+       ]
+      }
+     }
+    ],
+    "sentence": "OPERATE flat_stove_1"
+   },
+   "4": {
+    "bytes": 2852,
+    "grammar": "grasp carry rest",
+    "language": "put the butter at the front in the top drawer of the cabinet and close it",
+    "phases": [
+     {
+      "anchor": "butter_1",
+      "approach": "from above",
+      "frames": [
+       0,
+       59
+      ],
+      "hand_in_object_cm": [
+       -1.6,
+       -0.1,
+       0.4
+      ],
+      "kind": "grasp",
+      "prototypes": {
+       "0.4": [
+        0,
+        8,
+        25,
+        0,
+        1,
+        13,
+        2,
+        3,
+        9,
+        4
+       ],
+       "0.55": [
+        0,
+        1
+       ]
+      }
+     },
+     {
+      "anchor": "wooden_cabinet_1",
+      "frames": [
+       59,
+       115
+      ],
+      "held": "butter_1",
+      "kind": "carry",
+      "prototypes": {
+       "0.4": [
+        4,
+        80,
+        4,
+        80,
+        4,
+        5,
+        12,
+        6,
+        7,
+        0
+       ],
+       "0.55": [
+        1,
+        0
+       ]
+      },
+      "release_in_receptacle_cm": [
+       -0.8,
+       -17.8,
+       26.5
+      ]
+     },
+     {
+      "anchor": "wooden_cabinet_1",
+      "frames": [
+       115,
+       173
+      ],
+      "kind": "rest",
+      "prototypes": {
+       "0.4": [
+        0,
+        8,
+        0
+       ],
+       "0.55": [
+        0
+       ]
+      }
+     }
+    ],
+    "sentence": "GRASP butter_1 (from above) -> CARRY butter_1 TO wooden_cabinet_1 -> FINISH at wooden_cabinet_1"
+   },
+   "40": {
+    "bytes": 2888,
+    "grammar": "grasp carry",
+    "language": "put the frying pan on the cabinet shelf",
+    "phases": [
+     {
+      "anchor": "chefmate_8_frypan_1",
+      "approach": "from above",
+      "frames": [
+       0,
+       109
+      ],
+      "hand_in_object_cm": [
+       11.7,
+       0.2,
+       1.5
+      ],
+      "kind": "grasp",
+      "prototypes": {
+       "0.4": [
+        0,
+        30,
+        159,
+        30,
+        0,
+        159,
+        0,
+        30,
+        0,
+        1,
+        13,
+        2,
+        3,
+        9,
+        4
+       ],
+       "0.55": [
+        0,
+        1
+       ]
+      }
+     },
+     {
+      "anchor": "wooden_two_layer_shelf_1",
+      "frames": [
+       109,
+       177
+      ],
+      "held": "chefmate_8_frypan_1",
+      "kind": "carry",
+      "prototypes": {
+       "0.4": [
+        4
+       ],
+       "0.55": [
+        1
+       ]
+      },
+      "release_in_receptacle_cm": [
+       -6.4,
+       -2.8,
+       14.8
+      ]
+     }
+    ],
+    "sentence": "GRASP chefmate_8_frypan_1 (from above) -> CARRY chefmate_8_frypan_1 TO wooden_two_layer_shelf_1"
+   },
+   "41": {
+    "bytes": 3204,
+    "grammar": "grasp carry rest",
+    "language": "put the frying pan on top of the cabinet",
+    "phases": [
+     {
+      "anchor": "chefmate_8_frypan_1",
+      "approach": "from above",
+      "frames": [
+       0,
+       132
+      ],
+      "hand_in_object_cm": [
+       14.3,
+       1.7,
+       1.6
+      ],
+      "kind": "grasp",
+      "prototypes": {
+       "0.4": [
+        0,
+        25,
+        30,
+        159,
+        30,
+        172,
+        174,
+        0,
+        94,
+        159,
+        0,
+        1,
+        13,
+        2,
+        3,
+        9,
+        4,
+        5,
+        12,
+        6,
+        7,
+        0,
+        1,
+        13,
+        2,
+        3,
+        9,
+        4
+       ],
+       "0.55": [
+        0,
+        1,
+        0,
+        1
+       ]
+      }
+     },
+     {
+      "anchor": "wooden_two_layer_shelf_1",
+      "frames": [
+       132,
+       187
+      ],
+      "held": "chefmate_8_frypan_1",
+      "kind": "carry",
+      "prototypes": {
+       "0.4": [
+        4,
+        10,
+        4,
+        80,
+        4,
+        5,
+        12,
+        6,
+        7,
+        0
+       ],
+       "0.55": [
+        1,
+        0
+       ]
+      },
+      "release_in_receptacle_cm": [
+       2.9,
+       0.4,
+       21.6
+      ]
+     },
+     {
+      "anchor": "wooden_two_layer_shelf_1",
+      "frames": [
+       187,
+       195
+      ],
+      "kind": "rest",
+      "prototypes": {
+       "0.4": [
+        0
+       ],
+       "0.55": [
+        0
+       ]
+      }
+     }
+    ],
+    "sentence": "GRASP chefmate_8_frypan_1 (from above) -> CARRY chefmate_8_frypan_1 TO wooden_two_layer_shelf_1 -> FINISH at wooden_two_layer_shelf_1"
+   },
+   "42": {
+    "bytes": 2808,
+    "grammar": "grasp carry",
+    "language": "put the frying pan under the cabinet shelf",
+    "phases": [
+     {
+      "anchor": "chefmate_8_frypan_1",
+      "approach": "from above",
+      "frames": [
+       0,
+       129
+      ],
+      "hand_in_object_cm": [
+       16.9,
+       1.0,
+       1.9
+      ],
+      "kind": "grasp",
+      "prototypes": {
+       "0.4": [
+        0,
+        25,
+        0,
+        75,
+        94,
+        75,
+        0,
+        1,
+        13,
+        2,
+        3,
+        9,
+        4
+       ],
+       "0.55": [
+        0,
+        1
+       ]
+      }
+     },
+     {
+      "anchor": "wooden_two_layer_shelf_1",
+      "frames": [
+       129,
+       172
+      ],
+      "held": "chefmate_8_frypan_1",
+      "kind": "carry",
+      "prototypes": {
+       "0.4": [
+        4
+       ],
+       "0.55": [
+        1
+       ]
+      },
+      "release_in_receptacle_cm": [
+       2.9,
+       -0.7,
+       -0.9
+      ]
+     }
+    ],
+    "sentence": "GRASP chefmate_8_frypan_1 (from above) -> CARRY chefmate_8_frypan_1 TO wooden_two_layer_shelf_1"
+   },
+   "43": {
+    "bytes": 2388,
+    "grammar": "grasp carry rest",
+    "language": "put the white bowl on top of the cabinet",
+    "phases": [
+     {
+      "anchor": "white_bowl_1",
+      "approach": "from above",
+      "frames": [
+       0,
+       59
+      ],
+      "hand_in_object_cm": [
+       2.8,
+       0.4,
+       1.2
+      ],
+      "kind": "grasp",
+      "prototypes": {
+       "0.4": [
+        0,
+        8,
+        0,
+        1,
+        13,
+        2,
+        3,
+        9,
+        4
+       ],
+       "0.55": [
+        0,
+        1
+       ]
+      }
+     },
+     {
+      "anchor": "wooden_two_layer_shelf_1",
+      "frames": [
+       59,
+       135
+      ],
+      "held": "white_bowl_1",
+      "kind": "carry",
+      "prototypes": {
+       "0.4": [
+        4,
+        10,
+        4,
+        80,
+        4,
+        80,
+        4,
+        68,
+        4,
+        5,
+        12,
+        6,
+        7,
+        0
+       ],
+       "0.55": [
+        1,
+        0
+       ]
+      },
+      "release_in_receptacle_cm": [
+       1.5,
+       -0.6,
+       21.2
+      ]
+     },
+     {
+      "anchor": "wooden_two_layer_shelf_1",
+      "frames": [
+       135,
+       144
+      ],
+      "kind": "rest",
+      "prototypes": {
+       "0.4": [
+        0
+       ],
+       "0.55": [
+        0
+       ]
+      }
+     }
+    ],
+    "sentence": "GRASP white_bowl_1 (from above) -> CARRY white_bowl_1 TO wooden_two_layer_shelf_1 -> FINISH at wooden_two_layer_shelf_1"
+   },
+   "48": {
+    "bytes": 2852,
+    "grammar": "grasp carry rest",
+    "language": "pick up the ketchup and put it in the basket",
+    "phases": [
+     {
+      "anchor": "ketchup_1",
+      "approach": "from the side (y-)",
+      "frames": [
+       0,
+       85
+      ],
+      "hand_in_object_cm": [
+       -0.2,
+       4.4,
+       -1.3
+      ],
+      "kind": "grasp",
+      "prototypes": {
+       "0.4": [
+        0,
+        1,
+        13,
+        2,
+        3,
+        9,
+        4
+       ],
+       "0.55": [
+        0,
+        1
+       ]
+      }
+     },
+     {
+      "anchor": "basket_1",
+      "frames": [
+       85,
+       169
+      ],
+      "held": "ketchup_1",
+      "kind": "carry",
+      "prototypes": {
+       "0.4": [
+        4,
+        10,
+        11,
+        4,
+        5,
+        12,
+        6,
+        7,
+        0
+       ],
+       "0.55": [
+        1,
+        2,
+        1,
+        0
+       ]
+      },
+      "release_in_receptacle_cm": [
+       0.4,
+       2.9,
+       13.4
+      ]
+     },
+     {
+      "anchor": "basket_1",
+      "frames": [
+       169,
+       173
+      ],
+      "kind": "rest",
+      "prototypes": {
+       "0.4": [
+        0
+       ],
+       "0.55": [
+        0
+       ]
+      }
+     }
+    ],
+    "sentence": "GRASP ketchup_1 (from the side (y-)) -> CARRY ketchup_1 TO basket_1 -> FINISH at basket_1"
+   },
+   "5": {
+    "bytes": 2772,
+    "grammar": "grasp carry rest",
+    "language": "put the chocolate pudding in the top drawer of the cabinet and close it",
+    "phases": [
+     {
+      "anchor": "chocolate_pudding_1",
+      "approach": "from above",
+      "frames": [
+       0,
+       52
+      ],
+      "hand_in_object_cm": [
+       -0.1,
+       0.4,
+       -0.2
+      ],
+      "kind": "grasp",
+      "prototypes": {
+       "0.4": [
+        25,
+        0,
+        1,
+        13,
+        2,
+        3,
+        9,
+        4
+       ],
+       "0.55": [
+        0,
+        1
+       ]
+      }
+     },
+     {
+      "anchor": "wooden_cabinet_1",
+      "frames": [
+       52,
+       102
+      ],
+      "held": "chocolate_pudding_1",
+      "kind": "carry",
+      "prototypes": {
+       "0.4": [
+        4,
+        10,
+        4,
+        80,
+        4,
+        105,
+        4,
+        106,
+        12,
+        6,
+        7,
+        0
+       ],
+       "0.55": [
+        1,
+        0
+       ]
+      },
+      "release_in_receptacle_cm": [
+       0.4,
+       -17.5,
+       26.7
+      ]
+     },
+     {
+      "anchor": "wooden_cabinet_1",
+      "frames": [
+       102,
+       168
+      ],
+      "kind": "rest",
+      "prototypes": {
+       "0.4": [
+        0,
+        8,
+        0
+       ],
+       "0.55": [
+        0
+       ]
+      }
+     }
+    ],
+    "sentence": "GRASP chocolate_pudding_1 (from above) -> CARRY chocolate_pudding_1 TO wooden_cabinet_1 -> FINISH at wooden_cabinet_1"
+   },
+   "52": {
+    "bytes": 1748,
+    "grammar": "grasp carry rest",
+    "language": "pick up the milk and put it in the basket",
+    "phases": [
+     {
+      "anchor": "milk_1",
+      "approach": "from the side (y-)",
+      "frames": [
+       0,
+       43
+      ],
+      "hand_in_object_cm": [
+       -1.0,
+       2.9,
+       1.2
+      ],
+      "kind": "grasp",
+      "prototypes": {
+       "0.4": [
+        0,
+        30,
+        0,
+        1,
+        13,
+        2,
+        3,
+        9,
+        4
+       ],
+       "0.55": [
+        0,
+        1
+       ]
+      }
+     },
+     {
+      "anchor": "basket_1",
+      "frames": [
+       43,
+       101
+      ],
+      "held": "milk_1",
+      "kind": "carry",
+      "prototypes": {
+       "0.4": [
+        4,
+        10,
+        11,
+        4,
+        5,
+        12,
+        6,
+        7,
+        0
+       ],
+       "0.55": [
+        1,
+        2,
+        1,
+        0
+       ]
+      },
+      "release_in_receptacle_cm": [
+       1.8,
+       0.1,
+       12.2
+      ]
+     },
+     {
+      "anchor": "basket_1",
+      "frames": [
+       101,
+       104
+      ],
+      "kind": "rest",
+      "prototypes": {
+       "0.4": [
+        0
+       ],
+       "0.55": [
+        0
+       ]
+      }
+     }
+    ],
+    "sentence": "GRASP milk_1 (from the side (y-)) -> CARRY milk_1 TO basket_1 -> FINISH at basket_1"
+   },
+   "53": {
+    "bytes": 2452,
+    "grammar": "grasp carry rest",
+    "language": "pick up the orange juice and put it in the basket",
+    "phases": [
+     {
+      "anchor": "orange_juice_1",
+      "approach": "from the side (y-)",
+      "frames": [
+       0,
+       67
+      ],
+      "hand_in_object_cm": [
+       -0.6,
+       3.0,
+       -0.8
+      ],
+      "kind": "grasp",
+      "prototypes": {
+       "0.4": [
+        0,
+        1,
+        13,
+        2,
+        3,
+        9,
+        4
+       ],
+       "0.55": [
+        0,
+        1
+       ]
+      }
+     },
+     {
+      "anchor": "basket_1",
+      "frames": [
+       67,
+       146
+      ],
+      "held": "orange_juice_1",
+      "kind": "carry",
+      "prototypes": {
+       "0.4": [
+        4,
+        10,
+        11,
+        4,
+        5,
+        12,
+        6,
+        7,
+        0
+       ],
+       "0.55": [
+        1,
+        2,
+        1,
+        0
+       ]
+      },
+      "release_in_receptacle_cm": [
+       0.9,
+       2.0,
+       11.2
+      ]
+     },
+     {
+      "anchor": "basket_1",
+      "frames": [
+       146,
+       148
+      ],
+      "kind": "rest",
+      "prototypes": {
+       "0.4": [
+        0
+       ],
+       "0.55": [
+        0
+       ]
+      }
+     }
+    ],
+    "sentence": "GRASP orange_juice_1 (from the side (y-)) -> CARRY orange_juice_1 TO basket_1 -> FINISH at basket_1"
+   },
+   "58": {
+    "bytes": 2372,
+    "grammar": "grasp carry rest",
+    "language": "pick up the ketchup and put it in the tray",
+    "phases": [
+     {
+      "anchor": "ketchup_1",
+      "approach": "from the side (y-)",
+      "frames": [
+       0,
+       69
+      ],
+      "hand_in_object_cm": [
+       -0.0,
+       5.6,
+       -0.4
+      ],
+      "kind": "grasp",
+      "prototypes": {
+       "0.4": [
+        0,
+        1,
+        2,
+        3,
+        9,
+        4
+       ],
+       "0.55": [
+        0,
+        1
+       ]
+      }
+     },
+     {
+      "anchor": "wooden_tray_1",
+      "frames": [
+       69,
+       141
+      ],
+      "held": "ketchup_1",
+      "kind": "carry",
+      "prototypes": {
+       "0.4": [
+        4,
+        10,
+        11,
+        4,
+        5,
+        12,
+        6,
+        7,
+        0
+       ],
+       "0.55": [
+        1,
+        2,
+        1,
+        0
+       ]
+      },
+      "release_in_receptacle_cm": [
+       2.5,
+       -4.5,
+       8.0
+      ]
+     },
+     {
+      "anchor": "wooden_tray_1",
+      "frames": [
+       141,
+       143
+      ],
+      "kind": "rest",
+      "prototypes": {
+       "0.4": [
+        0
+       ],
+       "0.55": [
+        0
+       ]
+      }
+     }
+    ],
+    "sentence": "GRASP ketchup_1 (from the side (y-)) -> CARRY ketchup_1 TO wooden_tray_1 -> FINISH at wooden_tray_1"
+   },
+   "6": {
+    "bytes": 2012,
+    "grammar": "fixture",
+    "language": "open the bottom drawer of the cabinet",
+    "phases": [
+     {
+      "anchor": "wooden_cabinet_1",
+      "frames": [
+       0,
+       124
+      ],
+      "kind": "fixture",
+      "prototypes": {
+       "0.4": [
+        0,
+        152,
+        93,
+        94,
+        93,
+        94,
+        30,
+        0,
+        8,
+        0
+       ],
+       "0.55": [
+        0
+       ]
+      }
+     }
+    ],
+    "sentence": "OPERATE wooden_cabinet_1"
+   },
+   "62": {
+    "bytes": 1880,
+    "grammar": "grasp carry",
+    "language": "pick up the salad dressing and put it in the tray",
+    "phases": [
+     {
+      "anchor": "new_salad_dressing_1",
+      "approach": "from the side (y-)",
+      "frames": [
+       0,
+       47
+      ],
+      "hand_in_object_cm": [
+       -0.3,
+       9.4,
+       -1.4
+      ],
+      "kind": "grasp",
+      "prototypes": {
+       "0.4": [
+        0,
+        1,
+        13,
+        2,
+        3,
+        9,
+        4
+       ],
+       "0.55": [
+        0,
+        1
+       ]
+      }
+     },
+     {
+      "anchor": "wooden_tray_1",
+      "frames": [
+       47,
+       114
+      ],
+      "held": "new_salad_dressing_1",
+      "kind": "carry",
+      "prototypes": {
+       "0.4": [
+        4,
+        10,
+        11,
+        4,
+        5,
+        12,
+        6,
+        7,
+        0
+       ],
+       "0.55": [
+        1,
+        2,
+        1,
+        0
+       ]
+      },
+      "release_in_receptacle_cm": [
+       5.0,
+       0.5,
+       4.1
+      ]
+     }
+    ],
+    "sentence": "GRASP new_salad_dressing_1 (from the side (y-)) -> CARRY new_salad_dressing_1 TO wooden_tray_1"
+   },
+   "63": {
+    "bytes": 3204,
+    "grammar": "grasp carry rest",
+    "language": "stack the left bowl on the right bowl and place them in the tray",
+    "phases": [
+     {
+      "anchor": "akita_black_bowl_1",
+      "approach": "from above",
+      "frames": [
+       0,
+       59
+      ],
+      "hand_in_object_cm": [
+       -6.1,
+       0.1,
+       3.8
+      ],
+      "kind": "grasp",
+      "prototypes": {
+       "0.4": [
+        0,
+        1,
+        13,
+        2,
+        3,
+        9,
+        4
+       ],
+       "0.55": [
+        0,
+        1
+       ]
+      }
+     },
+     {
+      "anchor": "akita_black_bowl_2",
+      "frames": [
+       59,
+       131
+      ],
+      "held": "akita_black_bowl_1",
+      "kind": "carry",
+      "prototypes": {
+       "0.4": [
+        4,
+        10,
+        11,
+        4,
+        5,
+        12,
+        6,
+        7,
+        0
+       ],
+       "0.55": [
+        1,
+        2,
+        1,
+        0
+       ]
+      },
+      "release_in_receptacle_cm": [
+       0.3,
+       0.9,
+       2.4
+      ]
+     },
+     {
+      "anchor": "akita_black_bowl_2",
+      "frames": [
+       131,
+       195
+      ],
+      "kind": "rest",
+      "prototypes": {
+       "0.4": [
+        0,
+        1,
+        13,
+        2,
+        3,
+        9,
+        4,
+        10,
+        11,
+        240,
+        4,
+        5,
+        12,
+        6,
+        7,
+        0
+       ],
+       "0.55": [
+        0,
+        1,
+        2,
+        1,
+        2,
+        1,
+        0
+       ]
+      }
+     }
+    ],
+    "sentence": "GRASP akita_black_bowl_1 (from above) -> CARRY akita_black_bowl_1 TO akita_black_bowl_2 -> FINISH at akita_black_bowl_2"
+   },
+   "65": {
+    "bytes": 2372,
+    "grammar": "grasp carry rest",
+    "language": "put the red mug on the left plate",
+    "phases": [
+     {
+      "anchor": "red_coffee_mug_1",
+      "approach": "from above",
+      "frames": [
+       0,
+       61
+      ],
+      "hand_in_object_cm": [
+       -5.8,
+       -0.5,
+       11.3
+      ],
+      "kind": "grasp",
+      "prototypes": {
+       "0.4": [
+        0,
+        1,
+        13,
+        2,
+        3,
+        9,
+        4
+       ],
+       "0.55": [
+        0,
+        1
+       ]
+      }
+     },
+     {
+      "anchor": "plate_1",
+      "frames": [
+       61,
+       141
+      ],
+      "held": "red_coffee_mug_1",
+      "kind": "carry",
+      "prototypes": {
+       "0.4": [
+        4,
+        80,
+        4,
+        5,
+        12,
+        6,
+        7,
+        0
+       ],
+       "0.55": [
+        1,
+        0
+       ]
+      },
+      "release_in_receptacle_cm": [
+       -1.6,
+       -0.1,
+       1.2
+      ]
+     },
+     {
+      "anchor": "plate_1",
+      "frames": [
+       141,
+       143
+      ],
+      "kind": "rest",
+      "prototypes": {
+       "0.4": [
+        0
+       ],
+       "0.55": [
+        0
+       ]
+      }
+     }
+    ],
+    "sentence": "GRASP red_coffee_mug_1 (from above) -> CARRY red_coffee_mug_1 TO plate_1 -> FINISH at plate_1"
+   },
+   "66": {
+    "bytes": 2964,
+    "grammar": "grasp carry rest",
+    "language": "put the red mug on the right plate",
+    "phases": [
+     {
+      "anchor": "red_coffee_mug_1",
+      "approach": "from above",
+      "frames": [
+       0,
+       63
+      ],
+      "hand_in_object_cm": [
+       -6.5,
+       -1.1,
+       10.4
+      ],
+      "kind": "grasp",
+      "prototypes": {
+       "0.4": [
+        0,
+        1,
+        13,
+        2,
+        3,
+        9,
+        4
+       ],
+       "0.55": [
+        0,
+        1
+       ]
+      }
+     },
+     {
+      "anchor": "plate_2",
+      "frames": [
+       63,
+       174
+      ],
+      "held": "red_coffee_mug_1",
+      "kind": "carry",
+      "prototypes": {
+       "0.4": [
+        4,
+        10,
+        11,
+        4,
+        5,
+        12,
+        6,
+        7,
+        0
+       ],
+       "0.55": [
+        1,
+        2,
+        1,
+        0
+       ]
+      },
+      "release_in_receptacle_cm": [
+       -1.4,
+       0.9,
+       0.9
+      ]
+     },
+     {
+      "anchor": "plate_2",
+      "frames": [
+       174,
+       180
+      ],
+      "kind": "rest",
+      "prototypes": {
+       "0.4": [
+        0
+       ],
+       "0.55": [
+        0
+       ]
+      }
+     }
+    ],
+    "sentence": "GRASP red_coffee_mug_1 (from above) -> CARRY red_coffee_mug_1 TO plate_2 -> FINISH at plate_2"
+   },
+   "69": {
+    "bytes": 1816,
+    "grammar": "grasp carry",
+    "language": "put the chocolate pudding to the left of the plate",
+    "phases": [
+     {
+      "anchor": "chocolate_pudding_1",
+      "approach": "from above",
+      "frames": [
+       0,
+       58
+      ],
+      "hand_in_object_cm": [
+       0.9,
+       -0.0,
+       -0.4
+      ],
+      "kind": "grasp",
+      "prototypes": {
+       "0.4": [
+        0,
+        1,
+        13,
+        2,
+        3,
+        9,
+        4
+       ],
+       "0.55": [
+        0,
+        1
+       ]
+      }
+     },
+     {
+      "anchor": "plate_1",
+      "frames": [
+       58,
+       110
+      ],
+      "held": "chocolate_pudding_1",
+      "kind": "carry",
+      "prototypes": {
+       "0.4": [
+        4
+       ],
+       "0.55": [
+        1
+       ]
+      },
+      "release_in_receptacle_cm": [
+       -11.3,
+       4.0,
+       1.3
+      ]
+     }
+    ],
+    "sentence": "GRASP chocolate_pudding_1 (from above) -> CARRY chocolate_pudding_1 TO plate_1"
+   },
+   "71": {
+    "bytes": 1940,
+    "grammar": "grasp carry rest",
+    "language": "put the red mug on the plate",
+    "phases": [
+     {
+      "anchor": "red_coffee_mug_1",
+      "approach": "from above",
+      "frames": [
+       0,
+       49
+      ],
+      "hand_in_object_cm": [
+       -5.7,
+       -1.5,
+       10.7
+      ],
+      "kind": "grasp",
+      "prototypes": {
+       "0.4": [
+        0,
+        1,
+        13,
+        2,
+        3,
+        9,
+        4
+       ],
+       "0.55": [
+        0,
+        1
+       ]
+      }
+     },
+     {
+      "anchor": "plate_1",
+      "frames": [
+       49,
+       113
+      ],
+      "held": "red_coffee_mug_1",
+      "kind": "carry",
+      "prototypes": {
+       "0.4": [
+        4,
+        11,
+        4,
+        5,
+        12,
+        6,
+        7,
+        0
+       ],
+       "0.55": [
+        1,
+        2,
+        1,
+        0
+       ]
+      },
+      "release_in_receptacle_cm": [
+       -1.8,
+       0.8,
+       0.9
+      ]
+     },
+     {
+      "anchor": "plate_1",
+      "frames": [
+       113,
+       116
+      ],
+      "kind": "rest",
+      "prototypes": {
+       "0.4": [
+        0
+       ],
+       "0.55": [
+        0
+       ]
+      }
+     }
+    ],
+    "sentence": "GRASP red_coffee_mug_1 (from above) -> CARRY red_coffee_mug_1 TO plate_1 -> FINISH at plate_1"
+   },
+   "73": {
+    "bytes": 2696,
+    "grammar": "grasp carry",
+    "language": "pick up the book and place it in the front compartment of the caddy",
+    "phases": [
+     {
+      "anchor": "black_book_1",
+      "approach": "from above",
+      "frames": [
+       0,
+       63
+      ],
+      "hand_in_object_cm": [
+       -1.2,
+       -2.2,
+       10.5
+      ],
+      "kind": "grasp",
+      "prototypes": {
+       "0.4": [
+        0,
+        8,
+        0,
+        1,
+        13,
+        2,
+        3,
+        9,
+        4
+       ],
+       "0.55": [
+        0,
+        1
+       ]
+      }
+     },
+     {
+      "anchor": "desk_caddy_1",
+      "frames": [
+       63,
+       165
+      ],
+      "held": "black_book_1",
+      "kind": "carry",
+      "prototypes": {
+       "0.4": [
+        4,
+        80,
+        4
+       ],
+       "0.55": [
+        1
+       ]
+      },
+      "release_in_receptacle_cm": [
+       -0.9,
+       2.2,
+       1.9
+      ]
+     }
+    ],
+    "sentence": "GRASP black_book_1 (from above) -> CARRY black_book_1 TO desk_caddy_1"
+   },
+   "74": {
+    "bytes": 2996,
+    "grammar": "grasp carry rest",
+    "language": "pick up the book and place it in the left compartment of the caddy",
+    "phases": [
+     {
+      "anchor": "black_book_1",
+      "approach": "from above",
+      "frames": [
+       0,
+       50
+      ],
+      "hand_in_object_cm": [
+       0.0,
+       -1.5,
+       11.2
+      ],
+      "kind": "grasp",
+      "prototypes": {
+       "0.4": [
+        0,
+        1,
+        13,
+        2,
+        3,
+        9,
+        4
+       ],
+       "0.55": [
+        0,
+        1
+       ]
+      }
+     },
+     {
+      "anchor": "desk_caddy_1",
+      "frames": [
+       50,
+       159
+      ],
+      "held": "black_book_1",
+      "kind": "carry",
+      "prototypes": {
+       "0.4": [
+        4,
+        80,
+        4,
+        99,
+        86,
+        4,
+        5,
+        12,
+        6,
+        4,
+        7,
+        4,
+        3,
+        9,
+        4
+       ],
+       "0.55": [
+        1
+       ]
+      },
+      "release_in_receptacle_cm": [
+       0.7,
+       18.5,
+       13.6
+      ]
+     },
+     {
+      "anchor": "desk_caddy_1",
+      "frames": [
+       159,
+       182
+      ],
+      "kind": "rest",
+      "prototypes": {
+       "0.4": [
+        4,
+        5,
+        12,
+        6,
+        7,
+        0
+       ],
+       "0.55": [
+        1,
+        0
+       ]
+      }
+     }
+    ],
+    "sentence": "GRASP black_book_1 (from above) -> CARRY black_book_1 TO desk_caddy_1 -> FINISH at desk_caddy_1"
+   },
+   "75": {
+    "bytes": 2552,
+    "grammar": "grasp carry",
+    "language": "pick up the book and place it in the right compartment of the caddy",
+    "phases": [
+     {
+      "anchor": "black_book_1",
+      "approach": "from above",
+      "frames": [
+       0,
+       70
+      ],
+      "hand_in_object_cm": [
+       0.3,
+       0.5,
+       10.9
+      ],
+      "kind": "grasp",
+      "prototypes": {
+       "0.4": [
+        0,
+        1,
+        13,
+        2,
+        3,
+        9,
+        4
+       ],
+       "0.55": [
+        0,
+        1
+       ]
+      }
+     },
+     {
+      "anchor": "desk_caddy_1",
+      "frames": [
+       70,
+       156
+      ],
+      "held": "black_book_1",
+      "kind": "carry",
+      "prototypes": {
+       "0.4": [
+        4,
+        80,
+        4,
+        5,
+        12,
+        6,
+        7,
+        0
+       ],
+       "0.55": [
+        1,
+        0
+       ]
+      },
+      "release_in_receptacle_cm": [
+       3.5,
+       -11.0,
+       8.5
+      ]
+     }
+    ],
+    "sentence": "GRASP black_book_1 (from above) -> CARRY black_book_1 TO desk_caddy_1"
+   },
+   "76": {
+    "bytes": 2120,
+    "grammar": "grasp carry",
+    "language": "pick up the yellow and white mug and place it to the right of the caddy",
+    "phases": [
+     {
+      "anchor": "white_yellow_mug_1",
+      "approach": "from above",
+      "frames": [
+       0,
+       60
+      ],
+      "hand_in_object_cm": [
+       -5.8,
+       -0.5,
+       7.4
+      ],
+      "kind": "grasp",
+      "prototypes": {
+       "0.4": [
+        0,
+        25,
+        0,
+        1,
+        13,
+        2,
+        3,
+        9,
+        4
+       ],
+       "0.55": [
+        0,
+        1
+       ]
+      }
+     },
+     {
+      "anchor": "desk_caddy_1",
+      "frames": [
+       60,
+       129
+      ],
+      "held": "white_yellow_mug_1",
+      "kind": "carry",
+      "prototypes": {
+       "0.4": [
+        4,
+        10,
+        11,
+        4
+       ],
+       "0.55": [
+        1,
+        2,
+        1
+       ]
+      },
+      "release_in_receptacle_cm": [
+       -0.7,
+       -28.4,
+       -0.0
+      ]
+     }
+    ],
+    "sentence": "GRASP white_yellow_mug_1 (from above) -> CARRY white_yellow_mug_1 TO desk_caddy_1"
+   },
+   "78": {
+    "bytes": 2184,
+    "grammar": "grasp carry",
+    "language": "pick up the book and place it in the front compartment of the caddy",
+    "phases": [
+     {
+      "anchor": "black_book_1",
+      "approach": "from above",
+      "frames": [
+       0,
+       66
+      ],
+      "hand_in_object_cm": [
+       0.9,
+       -1.4,
+       10.6
+      ],
+      "kind": "grasp",
+      "prototypes": {
+       "0.4": [
+        0,
+        15,
+        0,
+        1,
+        13,
+        2,
+        3,
+        9,
+        4
+       ],
+       "0.55": [
+        0,
+        1
+       ]
+      }
+     },
+     {
+      "anchor": "desk_caddy_1",
+      "frames": [
+       66,
+       133
+      ],
+      "held": "black_book_1",
+      "kind": "carry",
+      "prototypes": {
+       "0.4": [
+        4
+       ],
+       "0.55": [
+        1
+       ]
+      },
+      "release_in_receptacle_cm": [
+       -2.7,
+       2.4,
+       3.2
+      ]
+     }
+    ],
+    "sentence": "GRASP black_book_1 (from above) -> CARRY black_book_1 TO desk_caddy_1"
+   },
+   "8": {
+    "bytes": 3108,
+    "grammar": "grasp carry rest",
+    "language": "open the top drawer of the cabinet and put the bowl in it",
+    "phases": [
+     {
+      "anchor": "akita_black_bowl_1",
+      "approach": "from above",
+      "frames": [
+       0,
+       120
+      ],
+      "hand_in_object_cm": [
+       5.1,
+       0.8,
+       2.3
+      ],
+      "kind": "grasp",
+      "prototypes": {
+       "0.4": [
+        0,
+        25,
+        30,
+        0,
+        8,
+        0,
+        1,
+        13,
+        2,
+        3,
+        9,
+        4
+       ],
+       "0.55": [
+        0,
+        1
+       ]
+      }
+     },
+     {
+      "anchor": "wooden_cabinet_1",
+      "frames": [
+       120,
+       186
+      ],
+      "held": "akita_black_bowl_1",
+      "kind": "carry",
+      "prototypes": {
+       "0.4": [
+        4,
+        80,
+        4,
+        113,
+        114,
+        115,
+        4,
+        5,
+        12,
+        6,
+        7,
+        0
+       ],
+       "0.55": [
+        1,
+        2,
+        1,
+        0
+       ]
+      },
+      "release_in_receptacle_cm": [
+       -0.2,
+       -16.5,
+       19.2
+      ]
+     },
+     {
+      "anchor": "wooden_cabinet_1",
+      "frames": [
+       186,
+       189
+      ],
+      "kind": "rest",
+      "prototypes": {
+       "0.4": [
+        0
+       ],
+       "0.55": [
+        0
+       ]
+      }
+     }
+    ],
+    "sentence": "GRASP akita_black_bowl_1 (from above) -> CARRY akita_black_bowl_1 TO wooden_cabinet_1 -> FINISH at wooden_cabinet_1"
+   },
+   "80": {
+    "bytes": 2632,
+    "grammar": "grasp carry",
+    "language": "pick up the book and place it in the right compartment of the caddy",
+    "phases": [
+     {
+      "anchor": "black_book_1",
+      "approach": "from above",
+      "frames": [
+       0,
+       55
+      ],
+      "hand_in_object_cm": [
+       -0.4,
+       0.2,
+       10.6
+      ],
+      "kind": "grasp",
+      "prototypes": {
+       "0.4": [
+        0,
+        1,
+        13,
+        2,
+        3,
+        9,
+        4
+       ],
+       "0.55": [
+        0,
+        1
+       ]
+      }
+     },
+     {
+      "anchor": "desk_caddy_1",
+      "frames": [
+       55,
+       161
+      ],
+      "held": "black_book_1",
+      "kind": "carry",
+      "prototypes": {
+       "0.4": [
+        4,
+        10,
+        4,
+        5,
+        12,
+        6,
+        7,
+        0
+       ],
+       "0.55": [
+        1,
+        0
+       ]
+      },
+      "release_in_receptacle_cm": [
+       2.4,
+       -12.2,
+       7.5
+      ]
+     }
+    ],
+    "sentence": "GRASP black_book_1 (from above) -> CARRY black_book_1 TO desk_caddy_1"
+   },
+   "81": {
+    "bytes": 2280,
+    "grammar": "grasp carry",
+    "language": "pick up the book and place it in the front compartment of the caddy",
+    "phases": [
+     {
+      "anchor": "black_book_1",
+      "approach": "from above",
+      "frames": [
+       0,
+       66
+      ],
+      "hand_in_object_cm": [
+       0.3,
+       -0.6,
+       10.6
+      ],
+      "kind": "grasp",
+      "prototypes": {
+       "0.4": [
+        0,
+        30,
+        15,
+        0,
+        1,
+        13,
+        2,
+        3,
+        9,
+        4
+       ],
+       "0.55": [
+        0,
+        1
+       ]
+      }
+     },
+     {
+      "anchor": "desk_caddy_1",
+      "frames": [
+       66,
+       139
+      ],
+      "held": "black_book_1",
+      "kind": "carry",
+      "prototypes": {
+       "0.4": [
+        4,
+        10,
+        4
+       ],
+       "0.55": [
+        1
+       ]
+      },
+      "release_in_receptacle_cm": [
+       -1.6,
+       2.9,
+       2.2
+      ]
+     }
+    ],
+    "sentence": "GRASP black_book_1 (from above) -> CARRY black_book_1 TO desk_caddy_1"
+   },
+   "83": {
+    "bytes": 2020,
+    "grammar": "grasp carry rest",
+    "language": "pick up the book and place it in the right compartment of the caddy",
+    "phases": [
+     {
+      "anchor": "black_book_1",
+      "approach": "from above",
+      "frames": [
+       0,
+       56
+      ],
+      "hand_in_object_cm": [
+       -0.1,
+       -0.4,
+       10.8
+      ],
+      "kind": "grasp",
+      "prototypes": {
+       "0.4": [
+        0,
+        1,
+        13,
+        2,
+        3,
+        9,
+        4
+       ],
+       "0.55": [
+        0,
+        1
+       ]
+      }
+     },
+     {
+      "anchor": "desk_caddy_1",
+      "frames": [
+       56,
+       117
+      ],
+      "held": "black_book_1",
+      "kind": "carry",
+      "prototypes": {
+       "0.4": [
+        4,
+        10,
+        11,
+        4,
+        5,
+        12,
+        6,
+        7,
+        0
+       ],
+       "0.55": [
+        1,
+        2,
+        1,
+        0
+       ]
+      },
+      "release_in_receptacle_cm": [
+       0.8,
+       -10.8,
+       10.6
+      ]
+     },
+     {
+      "anchor": "desk_caddy_1",
+      "frames": [
+       117,
+       121
+      ],
+      "kind": "rest",
+      "prototypes": {
+       "0.4": [
+        0
+       ],
+       "0.55": [
+        0
+       ]
+      }
+     }
+    ],
+    "sentence": "GRASP black_book_1 (from above) -> CARRY black_book_1 TO desk_caddy_1 -> FINISH at desk_caddy_1"
+   },
+   "84": {
+    "bytes": 1960,
+    "grammar": "grasp carry",
+    "language": "pick up the red mug and place it to the right of the caddy",
+    "phases": [
+     {
+      "anchor": "red_coffee_mug_1",
+      "approach": "from above",
+      "frames": [
+       0,
+       62
+      ],
+      "hand_in_object_cm": [
+       -5.2,
+       1.3,
+       12.9
+      ],
+      "kind": "grasp",
+      "prototypes": {
+       "0.4": [
+        0,
+        25,
+        0,
+        1,
+        13,
+        2,
+        3,
+        9,
+        4
+       ],
+       "0.55": [
+        0,
+        1
+       ]
+      }
+     },
+     {
+      "anchor": "desk_caddy_1",
+      "frames": [
+       62,
+       119
+      ],
+      "held": "red_coffee_mug_1",
+      "kind": "carry",
+      "prototypes": {
+       "0.4": [
+        4,
+        5,
+        12,
+        6,
+        7,
+        0
+       ],
+       "0.55": [
+        1,
+        0
+       ]
+      },
+      "release_in_receptacle_cm": [
+       -2.8,
+       -30.4,
+       0.3
+      ]
+     }
+    ],
+    "sentence": "GRASP red_coffee_mug_1 (from above) -> CARRY red_coffee_mug_1 TO desk_caddy_1"
+   },
+   "85": {
+    "bytes": 1752,
+    "grammar": "grasp carry",
+    "language": "pick up the white mug and place it to the right of the caddy",
+    "phases": [
+     {
+      "anchor": "porcelain_mug_1",
+      "approach": "from above",
+      "frames": [
+       0,
+       42
+      ],
+      "hand_in_object_cm": [
+       -2.9,
+       -2.6,
+       7.8
+      ],
+      "kind": "grasp",
+      "prototypes": {
+       "0.4": [
+        0,
+        25,
+        0,
+        1,
+        13,
+        2,
+        3,
+        9,
+        4
+       ],
+       "0.55": [
+        0,
+        1
+       ]
+      }
+     },
+     {
+      "anchor": "desk_caddy_1",
+      "frames": [
+       42,
+       106
+      ],
+      "held": "porcelain_mug_1",
+      "kind": "carry",
+      "prototypes": {
+       "0.4": [
+        4,
+        10,
+        11,
+        4,
+        5,
+        12,
+        6,
+        7,
+        0
+       ],
+       "0.55": [
+        1,
+        2,
+        1,
+        0
+       ]
+      },
+      "release_in_receptacle_cm": [
+       -2.8,
+       -30.1,
+       0.3
+      ]
+     }
+    ],
+    "sentence": "GRASP porcelain_mug_1 (from above) -> CARRY porcelain_mug_1 TO desk_caddy_1"
+   },
+   "86": {
+    "bytes": 2728,
+    "grammar": "grasp carry",
+    "language": "pick up the book in the middle and place it on the cabinet shelf",
+    "phases": [
+     {
+      "anchor": "black_book_1",
+      "approach": "from above",
+      "frames": [
+       0,
+       59
+      ],
+      "hand_in_object_cm": [
+       -0.5,
+       -1.0,
+       10.4
+      ],
+      "kind": "grasp",
+      "prototypes": {
+       "0.4": [
+        30,
+        0,
+        1,
+        13,
+        2,
+        3,
+        9,
+        4
+       ],
+       "0.55": [
+        0,
+        1
+       ]
+      }
+     },
+     {
+      "anchor": "wooden_two_layer_shelf_1",
+      "frames": [
+       59,
+       167
+      ],
+      "held": "black_book_1",
+      "kind": "carry",
+      "prototypes": {
+       "0.4": [
+        4,
+        10,
+        11,
+        4,
+        11,
+        4,
+        11
+       ],
+       "0.55": [
+        1,
+        2,
+        1,
+        2
+       ]
+      },
+      "release_in_receptacle_cm": [
+       1.7,
+       1.0,
+       15.6
+      ]
+     }
+    ],
+    "sentence": "GRASP black_book_1 (from above) -> CARRY black_book_1 TO wooden_two_layer_shelf_1"
+   },
+   "87": {
+    "bytes": 2420,
+    "grammar": "grasp carry rest",
+    "language": "pick up the book on the left and place it on top of the shelf",
+    "phases": [
+     {
+      "anchor": "yellow_book_2",
+      "approach": "from above",
+      "frames": [
+       0,
+       61
+      ],
+      "hand_in_object_cm": [
+       2.1,
+       -1.5,
+       9.3
+      ],
+      "kind": "grasp",
+      "prototypes": {
+       "0.4": [
+        0,
+        15,
+        0,
+        1,
+        13,
+        2,
+        3,
+        9,
+        4,
+        10
+       ],
+       "0.55": [
+        0,
+        1
+       ]
+      }
+     },
+     {
+      "anchor": "wooden_two_layer_shelf_1",
+      "frames": [
+       61,
+       138
+      ],
+      "held": "yellow_book_2",
+      "kind": "carry",
+      "prototypes": {
+       "0.4": [
+        10,
+        11,
+        4,
+        145,
+        4,
+        5,
+        12,
+        6,
+        7,
+        0
+       ],
+       "0.55": [
+        1,
+        2,
+        1,
+        0
+       ]
+      },
+      "release_in_receptacle_cm": [
+       -3.5,
+       -1.8,
+       22.3
+      ]
+     },
+     {
+      "anchor": "wooden_two_layer_shelf_1",
+      "frames": [
+       138,
+       146
+      ],
+      "kind": "rest",
+      "prototypes": {
+       "0.4": [
+        0,
+        8
+       ],
+       "0.55": [
+        0
+       ]
+      }
+     }
+    ],
+    "sentence": "GRASP yellow_book_2 (from above) -> CARRY yellow_book_2 TO wooden_two_layer_shelf_1 -> FINISH at wooden_two_layer_shelf_1"
+   },
+   "88": {
+    "bytes": 1528,
+    "grammar": "grasp carry",
+    "language": "pick up the book on the right and place it on the cabinet shelf",
+    "phases": [
+     {
+      "anchor": "yellow_book_1",
+      "approach": "from above",
+      "frames": [
+       0,
+       45
+      ],
+      "hand_in_object_cm": [
+       0.2,
+       -0.5,
+       9.3
+      ],
+      "kind": "grasp",
+      "prototypes": {
+       "0.4": [
+        0,
+        25,
+        0,
+        1,
+        13,
+        2,
+        3,
+        9,
+        4
+       ],
+       "0.55": [
+        0,
+        1
+       ]
+      }
+     },
+     {
+      "anchor": "wooden_two_layer_shelf_1",
+      "frames": [
+       45,
+       92
+      ],
+      "held": "yellow_book_1",
+      "kind": "carry",
+      "prototypes": {
+       "0.4": [
+        10,
+        86,
+        4
+       ],
+       "0.55": [
+        1,
+        2
+       ]
+      },
+      "release_in_receptacle_cm": [
+       -0.4,
+       -1.5,
+       10.4
+      ]
+     }
+    ],
+    "sentence": "GRASP yellow_book_1 (from above) -> CARRY yellow_book_1 TO wooden_two_layer_shelf_1"
+   },
+   "89": {
+    "bytes": 2024,
+    "grammar": "grasp carry",
+    "language": "pick up the book on the right and place it under the cabinet shelf",
+    "phases": [
+     {
+      "anchor": "yellow_book_1",
+      "approach": "from above",
+      "frames": [
+       0,
+       47
+      ],
+      "hand_in_object_cm": [
+       1.6,
+       -0.8,
+       8.9
+      ],
+      "kind": "grasp",
+      "prototypes": {
+       "0.4": [
+        0,
+        1,
+        13,
+        2,
+        3,
+        9,
+        4
+       ],
+       "0.55": [
+        0,
+        1
+       ]
+      }
+     },
+     {
+      "anchor": "wooden_two_layer_shelf_1",
+      "frames": [
+       47,
+       123
+      ],
+      "held": "yellow_book_1",
+      "kind": "carry",
+      "prototypes": {
+       "0.4": [
+        4,
+        11,
+        86,
+        4,
+        11
+       ],
+       "0.55": [
+        1,
+        2,
+        1,
+        2
+       ]
+      },
+      "release_in_receptacle_cm": [
+       0.7,
+       -2.3,
+       0.9
+      ]
+     }
+    ],
+    "sentence": "GRASP yellow_book_1 (from above) -> CARRY yellow_book_1 TO wooden_two_layer_shelf_1"
+   }
+  },
+  "prototypes": {
+   "0.4": {
+    "0": {
+     "dz_cm_per_step": -0.1748800277709961,
+     "event_share": 0.06948968512486428,
+     "frames": 2763,
+     "gripper_closed": 0.02823018458197611,
+     "mode_grip": [
+      -0.9900000095367432,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0
+     ],
+     "mode_path_cm": [
+      [
+       -0.009999999776482582,
+       0.05999999865889549,
+       0.28999999165534973
+      ],
+      [
+       -0.009999999776482582,
+       0.10999999940395355,
+       0.5799999833106995
+      ],
+      [
+       -0.019999999552965164,
+       0.17000000178813934,
+       0.8500000238418579
+      ],
+      [
+       -0.029999999329447746,
+       0.23000000417232513,
+       1.1100000143051147
+      ],
+      [
+       -0.03999999910593033,
+       0.2800000011920929,
+       1.340000033378601
+      ],
+      [
+       -0.05000000074505806,
+       0.33000001311302185,
+       1.559999942779541
+      ],
+      [
+       -0.05999999865889549,
+       0.3700000047683716,
+       1.7599999904632568
+      ],
+      [
+       -0.07000000029802322,
+       0.4000000059604645,
+       1.9299999475479126
+      ],
+      [
+       -0.07000000029802322,
+       0.41999998688697815,
+       2.0899999141693115
+      ],
+      [
+       -0.07000000029802322,
+       0.4300000071525574,
+       2.2200000286102295
+      ]
+     ],
+     "name": "open move (approach)",
+     "phase_share": {
+      "approach": 0.6659428157799493,
+      "carry": 0.07745204487875498,
+      "fixture": 0.11617806731813246,
+      "rest": 0.14042707202316324
+     },
+     "speed_cm_per_step": 0.6007278561592102,
+     "tasks": 50
+    },
+    "1": {
+     "dz_cm_per_step": -0.6485462188720703,
+     "event_share": 0.0,
+     "frames": 51,
+     "gripper_closed": 0.0,
+     "mode_grip": [
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -0.9800000190734863,
+      -0.8100000023841858,
+      0.8399999737739563,
+      0.9700000286102295
+     ],
+     "mode_path_cm": [
+      [
+       -0.9399999976158142,
+       -0.10999999940395355,
+       -2.130000114440918
+      ],
+      [
+       -1.9299999475479126,
+       -0.2199999988079071,
+       -4.239999771118164
+      ],
+      [
+       -2.950000047683716,
+       -0.3400000035762787,
+       -6.320000171661377
+      ],
+      [
+       -3.9800000190734863,
+       -0.44999998807907104,
+       -8.34000015258789
+      ],
+      [
+       -5.0,
+       -0.5400000214576721,
+       -10.289999961853027
+      ],
+      [
+       -5.980000019073486,
+       -0.6200000047683716,
+       -12.109999656677246
+      ],
+      [
+       -6.880000114440918,
+       -0.6700000166893005,
+       -13.779999732971191
+      ],
+      [
+       -7.670000076293945,
+       -0.699999988079071,
+       -15.25
+      ],
+      [
+       -8.329999923706055,
+       -0.699999988079071,
+       -16.469999313354492
+      ],
+      [
+       -8.84000015258789,
+       -0.6800000071525574,
+       -17.399999618530273
+      ]
+     ],
+     "name": "open reach down (approach)",
+     "phase_share": {
+      "approach": 0.9411764705882353,
+      "carry": 0.0,
+      "fixture": 0.0196078431372549,
+      "rest": 0.0392156862745098
+     },
+     "speed_cm_per_step": 0.6929360032081604,
+     "tasks": 46
+    },
+    "10": {
+     "dz_cm_per_step": 0.809091329574585,
+     "event_share": 0.0,
+     "frames": 162,
+     "gripper_closed": 1.0,
+     "mode_grip": [
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0
+     ],
+     "mode_path_cm": [
+      [
+       0.4000000059604645,
+       0.20999999344348907,
+       3.1500000953674316
+      ],
+      [
+       0.8700000047683716,
+       0.5099999904632568,
+       6.710000038146973
+      ],
+      [
+       1.3899999856948853,
+       0.8999999761581421,
+       10.579999923706055
+      ],
+      [
+       1.940000057220459,
+       1.409999966621399,
+       14.699999809265137
+      ],
+      [
+       2.509999990463257,
+       2.069999933242798,
+       18.969999313354492
+      ],
+      [
+       3.0899999141693115,
+       2.880000114440918,
+       23.31999969482422
+      ],
+      [
+       3.6700000762939453,
+       3.859999895095825,
+       27.670000076293945
+      ],
+      [
+       4.230000019073486,
+       5.03000020980835,
+       31.969999313354492
+      ],
+      [
+       4.78000020980835,
+       6.389999866485596,
+       36.15999984741211
+      ],
+      [
+       5.320000171661377,
+       7.960000038146973,
+       40.189998626708984
+      ]
+     ],
+     "name": "closed lift (carry)",
+     "phase_share": {
+      "approach": 0.006172839506172839,
+      "carry": 0.9691358024691358,
+      "fixture": 0.0,
+      "rest": 0.024691358024691357
+     },
+     "speed_cm_per_step": 0.87126424908638,
+     "tasks": 25
+    },
+    "100": {
+     "dz_cm_per_step": 0.7772505283355713,
+     "event_share": 0.0,
+     "frames": 6,
+     "gripper_closed": 1.0,
+     "mode_grip": [
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0
+     ],
+     "mode_path_cm": [
+      [
+       1.659999966621399,
+       -1.7699999809265137,
+       4.150000095367432
+      ],
+      [
+       3.069999933242798,
+       -4.079999923706055,
+       8.0600004196167
+      ],
+      [
+       4.199999809265137,
+       -6.820000171661377,
+       11.760000228881836
+      ],
+      [
+       5.050000190734863,
+       -9.880000114440918,
+       15.260000228881836
+      ],
+      [
+       5.670000076293945,
+       -13.109999656677246,
+       18.639999389648438
+      ],
+      [
+       6.139999866485596,
+       -16.43000030517578,
+       21.940000534057617
+      ],
+      [
+       6.46999979019165,
+       -19.780000686645508,
+       25.15999984741211
+      ],
+      [
+       6.730000019073486,
+       -23.139999389648438,
+       28.360000610351562
+      ],
+      [
+       6.949999809265137,
+       -26.459999084472656,
+       31.530000686645508
+      ],
+      [
+       7.199999809265137,
+       -29.690000534057617,
+       34.75
+      ]
+     ],
+     "name": "closed lift (carry)",
+     "phase_share": {
+      "approach": 0.0,
+      "carry": 1.0,
+      "fixture": 0.0,
+      "rest": 0.0
+     },
+     "speed_cm_per_step": 1.0379170775413513,
+     "tasks": 1
+    },
+    "105": {
+     "dz_cm_per_step": -0.07518529891967773,
+     "event_share": 0.0,
+     "frames": 1,
+     "gripper_closed": 1.0,
+     "mode_grip": [
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0099999904632568,
+      1.0099999904632568,
+      1.0,
+      1.0,
+      -0.9800000190734863
+     ],
+     "mode_path_cm": [
+      [
+       0.38999998569488525,
+       -1.9800000190734863,
+       -2.1700000762939453
+      ],
+      [
+       0.46000000834465027,
+       -3.75,
+       -4.639999866485596
+      ],
+      [
+       0.28999999165534973,
+       -5.269999980926514,
+       -7.360000133514404
+      ],
+      [
+       -0.23999999463558197,
+       -6.579999923706055,
+       -10.279999732971191
+      ],
+      [
+       -1.090000033378601,
+       -7.75,
+       -13.34000015258789
+      ],
+      [
+       -2.1700000762939453,
+       -8.829999923706055,
+       -16.440000534057617
+      ],
+      [
+       -3.309999942779541,
+       -9.829999923706055,
+       -19.489999771118164
+      ],
+      [
+       -4.320000171661377,
+       -10.800000190734863,
+       -22.389999389648438
+      ],
+      [
+       -4.96999979019165,
+       -11.720000267028809,
+       -24.950000762939453
+      ],
+      [
+       -5.329999923706055,
+       -12.539999961853027,
+       -27.049999237060547
+      ]
+     ],
+     "name": "closed transport (carry)",
+     "phase_share": {
+      "approach": 0.0,
+      "carry": 1.0,
+      "fixture": 0.0,
+      "rest": 0.0
+     },
+     "speed_cm_per_step": 1.037928581237793,
+     "tasks": 1
+    },
+    "106": {
+     "dz_cm_per_step": -0.33326148986816406,
+     "event_share": 0.0,
+     "frames": 1,
+     "gripper_closed": 1.0,
+     "mode_grip": [
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      -0.9900000095367432,
+      -1.0,
+      -1.0
+     ],
+     "mode_path_cm": [
+      [
+       -0.10999999940395355,
+       -1.4500000476837158,
+       -2.759999990463257
+      ],
+      [
+       -0.5400000214576721,
+       -2.75,
+       -5.699999809265137
+      ],
+      [
+       -1.2899999618530273,
+       -3.9200000762939453,
+       -8.729999542236328
+      ],
+      [
+       -2.240000009536743,
+       -5.0,
+       -11.770000457763672
+      ],
+      [
+       -3.2300000190734863,
+       -6.0,
+       -14.710000038146973
+      ],
+      [
+       -4.050000190734863,
+       -6.940000057220459,
+       -17.3799991607666
+      ],
+      [
+       -4.5,
+       -7.789999961853027,
+       -19.559999465942383
+      ],
+      [
+       -4.710000038146973,
+       -8.489999771118164,
+       -21.200000762939453
+      ],
+      [
+       -4.659999847412109,
+       -8.90999984741211,
+       -21.979999542236328
+      ],
+      [
+       -4.5,
+       -9.170000076293945,
+       -22.229999542236328
+      ]
+     ],
+     "name": "closed lower (carry)",
+     "phase_share": {
+      "approach": 0.0,
+      "carry": 1.0,
+      "fixture": 0.0,
+      "rest": 0.0
+     },
+     "speed_cm_per_step": 0.9393824338912964,
+     "tasks": 1
+    },
+    "11": {
+     "dz_cm_per_step": 0.3717660903930664,
+     "event_share": 0.0,
+     "frames": 608,
+     "gripper_closed": 1.0,
+     "mode_grip": [
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0
+     ],
+     "mode_path_cm": [
+      [
+       0.4300000071525574,
+       3.880000114440918,
+       0.8299999833106995
+      ],
+      [
+       0.8700000047683716,
+       7.789999961853027,
+       1.559999942779541
+      ],
+      [
+       1.3200000524520874,
+       11.729999542236328,
+       2.190000057220459
+      ],
+      [
+       1.7799999713897705,
+       15.680000305175781,
+       2.7300000190734863
+      ],
+      [
+       2.25,
+       19.639999389648438,
+       3.190000057220459
+      ],
+      [
+       2.7300000190734863,
+       23.600000381469727,
+       3.549999952316284
+      ],
+      [
+       3.2100000381469727,
+       27.559999465942383,
+       3.819999933242798
+      ],
+      [
+       3.690000057220459,
+       31.5,
+       3.9800000190734863
+      ],
+      [
+       4.170000076293945,
+       35.40999984741211,
+       4.03000020980835
+      ],
+      [
+       4.650000095367432,
+       39.27000045776367,
+       3.940000057220459
+      ]
+     ],
+     "name": "closed lift (carry)",
+     "phase_share": {
+      "approach": 0.0,
+      "carry": 0.9786184210526315,
+      "fixture": 0.0,
+      "rest": 0.02138157894736842
+     },
+     "speed_cm_per_step": 1.1050339341163635,
+     "tasks": 21
+    },
+    "113": {
+     "dz_cm_per_step": 0.687021017074585,
+     "event_share": 0.0,
+     "frames": 2,
+     "gripper_closed": 1.0,
+     "mode_grip": [
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0
+     ],
+     "mode_path_cm": [
+      [
+       -0.17000000178813934,
+       -4.360000133514404,
+       1.5499999523162842
+      ],
+      [
+       -0.6499999761581421,
+       -8.880000114440918,
+       2.3299999237060547
+      ],
+      [
+       -1.4299999475479126,
+       -13.470000267028809,
+       2.5199999809265137
+      ],
+      [
+       -2.4800000190734863,
+       -18.09000015258789,
+       2.240000009536743
+      ],
+      [
+       -3.819999933242798,
+       -22.65999984741211,
+       1.2899999618530273
+      ],
+      [
+       -5.460000038146973,
+       -27.020000457763672,
+       -0.5099999904632568
+      ],
+      [
+       -7.409999847412109,
+       -30.790000915527344,
+       -3.140000104904175
+      ],
+      [
+       -9.600000381469727,
+       -33.56999969482422,
+       -6.510000228881836
+      ],
+      [
+       -11.930000305175781,
+       -35.369998931884766,
+       -10.390000343322754
+      ],
+      [
+       -14.359999656677246,
+       -36.380001068115234,
+       -14.550000190734863
+      ]
+     ],
+     "name": "closed lift (carry)",
+     "phase_share": {
+      "approach": 0.0,
+      "carry": 1.0,
+      "fixture": 0.0,
+      "rest": 0.0
+     },
+     "speed_cm_per_step": 1.3068029880523682,
+     "tasks": 1
+    },
+    "114": {
+     "dz_cm_per_step": 0.37714242935180664,
+     "event_share": 0.0,
+     "frames": 2,
+     "gripper_closed": 1.0,
+     "mode_grip": [
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0
+     ],
+     "mode_path_cm": [
+      [
+       -0.8100000023841858,
+       -4.639999866485596,
+       0.3799999952316284
+      ],
+      [
+       -1.850000023841858,
+       -9.319999694824219,
+       0.2800000011920929
+      ],
+      [
+       -3.180000066757202,
+       -13.970000267028809,
+       -0.4699999988079071
+      ],
+      [
+       -4.849999904632568,
+       -18.399999618530273,
+       -2.0899999141693115
+      ],
+      [
+       -6.849999904632568,
+       -22.3799991607666,
+       -4.579999923706055
+      ],
+      [
+       -9.119999885559082,
+       -25.6200008392334,
+       -7.809999942779541
+      ],
+      [
+       -11.529999732971191,
+       -27.809999465942383,
+       -11.640000343322754
+      ],
+      [
+       -13.989999771118164,
+       -28.940000534057617,
+       -15.829999923706055
+      ],
+      [
+       -16.469999313354492,
+       -29.40999984741211,
+       -20.170000076293945
+      ],
+      [
+       -18.989999771118164,
+       -29.600000381469727,
+       -24.549999237060547
+      ]
+     ],
+     "name": "closed lift (carry)",
+     "phase_share": {
+      "approach": 0.0,
+      "carry": 1.0,
+      "fixture": 0.0,
+      "rest": 0.0
+     },
+     "speed_cm_per_step": 1.177466332912445,
+     "tasks": 1
+    },
+    "115": {
+     "dz_cm_per_step": 0.2105712890625,
+     "event_share": 0.0,
+     "frames": 1,
+     "gripper_closed": 1.0,
+     "mode_grip": [
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0
+     ],
+     "mode_path_cm": [
+      [
+       -1.2799999713897705,
+       -4.590000152587891,
+       -0.9800000190734863
+      ],
+      [
+       -2.9200000762939453,
+       -8.960000038146973,
+       -2.859999895095825
+      ],
+      [
+       -4.889999866485596,
+       -12.850000381469727,
+       -5.559999942779541
+      ],
+      [
+       -7.130000114440918,
+       -15.770000457763672,
+       -9.010000228881836
+      ],
+      [
+       -9.460000038146973,
+       -17.670000076293945,
+       -12.989999771118164
+      ],
+      [
+       -11.859999656677246,
+       -18.469999313354492,
+       -17.309999465942383
+      ],
+      [
+       -14.34000015258789,
+       -18.760000228881836,
+       -21.729999542236328
+      ],
+      [
+       -16.899999618530273,
+       -18.860000610351562,
+       -26.139999389648438
+      ],
+      [
+       -19.489999771118164,
+       -18.899999618530273,
+       -30.40999984741211
+      ],
+      [
+       -21.93000030517578,
+       -18.889999389648438,
+       -34.43000030517578
+      ]
+     ],
+     "name": "closed transport (carry)",
+     "phase_share": {
+      "approach": 0.0,
+      "carry": 1.0,
+      "fixture": 0.0,
+      "rest": 0.0
+     },
+     "speed_cm_per_step": 1.1036081314086914,
+     "tasks": 1
+    },
+    "119": {
+     "dz_cm_per_step": -0.05195140838623047,
+     "event_share": 0.0,
+     "frames": 5,
+     "gripper_closed": 0.0,
+     "mode_grip": [
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0
+     ],
+     "mode_path_cm": [
+      [
+       0.7400000095367432,
+       -0.09000000357627869,
+       -0.05000000074505806
+      ],
+      [
+       1.940000057220459,
+       -0.3100000023841858,
+       -0.09000000357627869
+      ],
+      [
+       3.559999942779541,
+       -0.7300000190734863,
+       -0.1599999964237213
+      ],
+      [
+       5.539999961853027,
+       -1.399999976158142,
+       -0.25999999046325684
+      ],
+      [
+       7.710000038146973,
+       -2.319999933242798,
+       -0.38999998569488525
+      ],
+      [
+       9.960000038146973,
+       -3.440000057220459,
+       -0.6000000238418579
+      ],
+      [
+       12.229999542236328,
+       -4.730000019073486,
+       -0.8899999856948853
+      ],
+      [
+       14.460000038146973,
+       -6.199999809265137,
+       -1.309999942779541
+      ],
+      [
+       16.540000915527344,
+       -7.809999942779541,
+       -1.8899999856948853
+      ],
+      [
+       18.3799991607666,
+       -9.489999771118164,
+       -2.6700000762939453
+      ]
+     ],
+     "name": "open move (approach)",
+     "phase_share": {
+      "approach": 1.0,
+      "carry": 0.0,
+      "fixture": 0.0,
+      "rest": 0.0
+     },
+     "speed_cm_per_step": 0.2762330174446106,
+     "tasks": 2
+    },
+    "12": {
+     "dz_cm_per_step": -0.6067395210266113,
+     "event_share": 0.0,
+     "frames": 40,
+     "gripper_closed": 1.0,
+     "mode_grip": [
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      0.949999988079071,
+      0.75,
+      -0.7599999904632568,
+      -0.9800000190734863,
+      -1.0,
+      -1.0
+     ],
+     "mode_path_cm": [
+      [
+       -0.6200000047683716,
+       0.18000000715255737,
+       -2.0799999237060547
+      ],
+      [
+       -1.159999966621399,
+       0.33000001311302185,
+       -3.9200000762939453
+      ],
+      [
+       -1.590000033378601,
+       0.46000000834465027,
+       -5.46999979019165
+      ],
+      [
+       -1.909999966621399,
+       0.5600000023841858,
+       -6.659999847412109
+      ],
+      [
+       -2.0999999046325684,
+       0.6399999856948853,
+       -7.489999771118164
+      ],
+      [
+       -2.200000047683716,
+       0.7200000286102295,
+       -7.960000038146973
+      ],
+      [
+       -2.240000009536743,
+       0.7900000214576721,
+       -8.109999656677246
+      ],
+      [
+       -2.240000009536743,
+       0.8600000143051147,
+       -7.920000076293945
+      ],
+      [
+       -2.180000066757202,
+       0.9399999976158142,
+       -7.449999809265137
+      ],
+      [
+       -2.0999999046325684,
+       1.0299999713897705,
+       -6.769999980926514
+      ]
+     ],
+     "name": "closed lower (carry)",
+     "phase_share": {
+      "approach": 0.075,
+      "carry": 0.825,
+      "fixture": 0.0,
+      "rest": 0.1
+     },
+     "speed_cm_per_step": 0.7447701990604401,
+     "tasks": 34
+    },
+    "120": {
+     "dz_cm_per_step": -0.07129311561584473,
+     "event_share": 0.0,
+     "frames": 2,
+     "gripper_closed": 0.0,
+     "mode_grip": [
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0
+     ],
+     "mode_path_cm": [
+      [
+       1.7699999809265137,
+       -0.5799999833106995,
+       -0.10999999940395355
+      ],
+      [
+       3.859999895095825,
+       -1.4199999570846558,
+       -0.25
+      ],
+      [
+       6.079999923706055,
+       -2.4700000286102295,
+       -0.4699999988079071
+      ],
+      [
+       8.3100004196167,
+       -3.7100000381469727,
+       -0.8199999928474426
+      ],
+      [
+       10.460000038146973,
+       -5.110000133514404,
+       -1.350000023841858
+      ],
+      [
+       12.4399995803833,
+       -6.659999847412109,
+       -2.140000104904175
+      ],
+      [
+       14.149999618530273,
+       -8.289999961853027,
+       -3.2100000381469727
+      ],
+      [
+       15.489999771118164,
+       -9.890000343322754,
+       -4.630000114440918
+      ],
+      [
+       16.450000762939453,
+       -11.369999885559082,
+       -6.380000114440918
+      ],
+      [
+       17.059999465942383,
+       -12.619999885559082,
+       -8.4399995803833
+      ]
+     ],
+     "name": "open move (approach)",
+     "phase_share": {
+      "approach": 1.0,
+      "carry": 0.0,
+      "fixture": 0.0,
+      "rest": 0.0
+     },
+     "speed_cm_per_step": 0.6919760406017303,
+     "tasks": 1
+    },
+    "13": {
+     "dz_cm_per_step": -0.6201863288879395,
+     "event_share": 0.02,
+     "frames": 50,
+     "gripper_closed": 0.02,
+     "mode_grip": [
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -0.9700000286102295,
+      -0.6600000262260437,
+      0.8199999928474426,
+      0.9900000095367432,
+      1.0
+     ],
+     "mode_path_cm": [
+      [
+       -1.2200000286102295,
+       -0.05999999865889549,
+       -2.3299999237060547
+      ],
+      [
+       -2.4800000190734863,
+       -0.14000000059604645,
+       -4.610000133514404
+      ],
+      [
+       -3.7699999809265137,
+       -0.2199999988079071,
+       -6.820000171661377
+      ],
+      [
+       -5.059999942779541,
+       -0.3199999928474426,
+       -8.960000038146973
+      ],
+      [
+       -6.329999923706055,
+       -0.4099999964237213,
+       -11.010000228881836
+      ],
+      [
+       -7.539999961853027,
+       -0.5,
+       -12.930000305175781
+      ],
+      [
+       -8.65999984741211,
+       -0.5699999928474426,
+       -14.6899995803833
+      ],
+      [
+       -9.65999984741211,
+       -0.6200000047683716,
+       -16.239999771118164
+      ],
+      [
+       -10.489999771118164,
+       -0.6499999761581421,
+       -17.510000228881836
+      ],
+      [
+       -11.140000343322754,
+       -0.6499999761581421,
+       -18.450000762939453
+      ]
+     ],
+     "name": "open reach down (approach)",
+     "phase_share": {
+      "approach": 0.92,
+      "carry": 0.02,
+      "fixture": 0.02,
+      "rest": 0.04
+     },
+     "speed_cm_per_step": 0.6705718636512756,
+     "tasks": 44
+    },
+    "145": {
+     "dz_cm_per_step": -0.3123641014099121,
+     "event_share": 0.0,
+     "frames": 13,
+     "gripper_closed": 1.0,
+     "mode_grip": [
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0
+     ],
+     "mode_path_cm": [
+      [
+       -1.149999976158142,
+       -0.019999999552965164,
+       -2.619999885559082
+      ],
+      [
+       -2.390000104904175,
+       -0.05000000074505806,
+       -5.289999961853027
+      ],
+      [
+       -3.75,
+       -0.07999999821186066,
+       -8.020000457763672
+      ],
+      [
+       -5.239999771118164,
+       -0.11999999731779099,
+       -10.829999923706055
+      ],
+      [
+       -6.880000114440918,
+       -0.17000000178813934,
+       -13.729999542236328
+      ],
+      [
+       -8.649999618530273,
+       -0.2199999988079071,
+       -16.760000228881836
+      ],
+      [
+       -10.569999694824219,
+       -0.28999999165534973,
+       -19.899999618530273
+      ],
+      [
+       -12.609999656677246,
+       -0.3700000047683716,
+       -23.1200008392334
+      ],
+      [
+       -14.779999732971191,
+       -0.4699999988079071,
+       -26.399999618530273
+      ],
+      [
+       -17.059999465942383,
+       -0.5899999737739563,
+       -29.649999618530273
+      ]
+     ],
+     "name": "closed lower (carry)",
+     "phase_share": {
+      "approach": 0.0,
+      "carry": 1.0,
+      "fixture": 0.0,
+      "rest": 0.0
+     },
+     "speed_cm_per_step": 0.6801657676696777,
+     "tasks": 1
+    },
+    "15": {
+     "dz_cm_per_step": -0.141143798828125,
+     "event_share": 0.0,
+     "frames": 107,
+     "gripper_closed": 0.0,
+     "mode_grip": [
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0
+     ],
+     "mode_path_cm": [
+      [
+       2.2699999809265137,
+       -0.3700000047683716,
+       -0.03999999910593033
+      ],
+      [
+       4.53000020980835,
+       -0.7599999904632568,
+       -0.07999999821186066
+      ],
+      [
+       6.769999980926514,
+       -1.159999966621399,
+       -0.14000000059604645
+      ],
+      [
+       8.960000038146973,
+       -1.5700000524520874,
+       -0.20999999344348907
+      ],
+      [
+       11.119999885559082,
+       -1.9800000190734863,
+       -0.3100000023841858
+      ],
+      [
+       13.220000267028809,
+       -2.390000104904175,
+       -0.41999998688697815
+      ],
+      [
+       15.270000457763672,
+       -2.7799999713897705,
+       -0.550000011920929
+      ],
+      [
+       17.239999771118164,
+       -3.1700000762939453,
+       -0.7200000286102295
+      ],
+      [
+       19.139999389648438,
+       -3.549999952316284,
+       -0.9100000262260437
+      ],
+      [
+       20.959999084472656,
+       -3.9100000858306885,
+       -1.1299999952316284
+      ]
+     ],
+     "name": "open move (approach)",
+     "phase_share": {
+      "approach": 0.6261682242990654,
+      "carry": 0.0,
+      "fixture": 0.37383177570093457,
+      "rest": 0.0
+     },
+     "speed_cm_per_step": 0.607467532157898,
+     "tasks": 6
+    },
+    "152": {
+     "dz_cm_per_step": -0.07402896881103516,
+     "event_share": 0.0,
+     "frames": 6,
+     "gripper_closed": 0.0,
+     "mode_grip": [
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0
+     ],
+     "mode_path_cm": [
+      [
+       2.4800000190734863,
+       -0.09000000357627869,
+       -0.009999999776482582
+      ],
+      [
+       4.889999866485596,
+       -0.20000000298023224,
+       -0.019999999552965164
+      ],
+      [
+       7.230000019073486,
+       -0.3499999940395355,
+       -0.029999999329447746
+      ],
+      [
+       9.479999542236328,
+       -0.5299999713897705,
+       -0.03999999910593033
+      ],
+      [
+       11.640000343322754,
+       -0.75,
+       -0.03999999910593033
+      ],
+      [
+       13.699999809265137,
+       -1.0,
+       -0.05000000074505806
+      ],
+      [
+       15.680000305175781,
+       -1.2899999618530273,
+       -0.07999999821186066
+      ],
+      [
+       17.559999465942383,
+       -1.6200000047683716,
+       -0.11999999731779099
+      ],
+      [
+       19.350000381469727,
+       -1.9800000190734863,
+       -0.18000000715255737
+      ],
+      [
+       21.040000915527344,
+       -2.369999885559082,
+       -0.25999999046325684
+      ]
+     ],
+     "name": "open move (fixture)",
+     "phase_share": {
+      "approach": 0.0,
+      "carry": 0.0,
+      "fixture": 1.0,
+      "rest": 0.0
+     },
+     "speed_cm_per_step": 0.6521158218383789,
+     "tasks": 2
+    },
+    "154": {
+     "dz_cm_per_step": -0.0891566276550293,
+     "event_share": 0.0,
+     "frames": 9,
+     "gripper_closed": 0.0,
+     "mode_grip": [
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0
+     ],
+     "mode_path_cm": [
+      [
+       2.9000000953674316,
+       -1.2899999618530273,
+       -0.05999999865889549
+      ],
+      [
+       5.860000133514404,
+       -2.5299999713897705,
+       -0.3400000035762787
+      ],
+      [
+       8.869999885559082,
+       -3.6700000762939453,
+       -1.0299999713897705
+      ],
+      [
+       11.869999885559082,
+       -4.630000114440918,
+       -2.25
+      ],
+      [
+       14.800000190734863,
+       -5.360000133514404,
+       -3.9000000953674316
+      ],
+      [
+       17.639999389648438,
+       -5.860000133514404,
+       -5.820000171661377
+      ],
+      [
+       20.389999389648438,
+       -6.199999809265137,
+       -7.880000114440918
+      ],
+      [
+       23.040000915527344,
+       -6.429999828338623,
+       -9.9399995803833
+      ],
+      [
+       25.549999237060547,
+       -6.630000114440918,
+       -11.880000114440918
+      ],
+      [
+       27.899999618530273,
+       -6.860000133514404,
+       -13.550000190734863
+      ]
+     ],
+     "name": "open move (approach)",
+     "phase_share": {
+      "approach": 1.0,
+      "carry": 0.0,
+      "fixture": 0.0,
+      "rest": 0.0
+     },
+     "speed_cm_per_step": 0.5965211987495422,
+     "tasks": 1
+    },
+    "159": {
+     "dz_cm_per_step": -0.013315677642822266,
+     "event_share": 0.0,
+     "frames": 43,
+     "gripper_closed": 0.0,
+     "mode_grip": [
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0
+     ],
+     "mode_path_cm": [
+      [
+       2.1700000762939453,
+       -0.18000000715255737,
+       -0.07000000029802322
+      ],
+      [
+       4.460000038146973,
+       -0.3799999952316284,
+       -0.18000000715255737
+      ],
+      [
+       6.860000133514404,
+       -0.5899999737739563,
+       -0.3199999928474426
+      ],
+      [
+       9.350000381469727,
+       -0.8100000023841858,
+       -0.5099999904632568
+      ],
+      [
+       11.920000076293945,
+       -1.059999942779541,
+       -0.7400000095367432
+      ],
+      [
+       14.539999961853027,
+       -1.3200000524520874,
+       -1.0199999809265137
+      ],
+      [
+       17.190000534057617,
+       -1.6200000047683716,
+       -1.350000023841858
+      ],
+      [
+       19.850000381469727,
+       -1.940000057220459,
+       -1.75
+      ],
+      [
+       22.5,
+       -2.299999952316284,
+       -2.2100000381469727
+      ],
+      [
+       25.1200008392334,
+       -2.690000057220459,
+       -2.759999990463257
+      ]
+     ],
+     "name": "open move (approach)",
+     "phase_share": {
+      "approach": 1.0,
+      "carry": 0.0,
+      "fixture": 0.0,
+      "rest": 0.0
+     },
+     "speed_cm_per_step": 0.6259298920631409,
+     "tasks": 4
+    },
+    "16": {
+     "dz_cm_per_step": -0.1653134822845459,
+     "event_share": 0.0,
+     "frames": 24,
+     "gripper_closed": 0.0,
+     "mode_grip": [
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0
+     ],
+     "mode_path_cm": [
+      [
+       2.390000104904175,
+       -0.3700000047683716,
+       -0.1899999976158142
+      ],
+      [
+       4.710000038146973,
+       -0.7099999785423279,
+       -0.4000000059604645
+      ],
+      [
+       6.949999809265137,
+       -1.0199999809265137,
+       -0.6100000143051147
+      ],
+      [
+       9.079999923706055,
+       -1.3200000524520874,
+       -0.8399999737739563
+      ],
+      [
+       11.100000381469727,
+       -1.600000023841858,
+       -1.090000033378601
+      ],
+      [
+       12.979999542236328,
+       -1.8799999952316284,
+       -1.350000023841858
+      ],
+      [
+       14.739999771118164,
+       -2.1600000858306885,
+       -1.6200000047683716
+      ],
+      [
+       16.350000381469727,
+       -2.450000047683716,
+       -1.899999976158142
+      ],
+      [
+       17.81999969482422,
+       -2.759999990463257,
+       -2.180000066757202
+      ],
+      [
+       19.18000030517578,
+       -3.0799999237060547,
+       -2.450000047683716
+      ]
+     ],
+     "name": "open move (approach)",
+     "phase_share": {
+      "approach": 1.0,
+      "carry": 0.0,
+      "fixture": 0.0,
+      "rest": 0.0
+     },
+     "speed_cm_per_step": 0.2136802151799202,
+     "tasks": 1
+    },
+    "161": {
+     "dz_cm_per_step": -0.659400224685669,
+     "event_share": 0.0,
+     "frames": 2,
+     "gripper_closed": 1.0,
+     "mode_grip": [
+      1.0,
+      0.9900000095367432,
+      0.9900000095367432,
+      0.9300000071525574,
+      -0.9800000190734863,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0
+     ],
+     "mode_path_cm": [
+      [
+       -0.1899999976158142,
+       0.4000000059604645,
+       -1.590000033378601
+      ],
+      [
+       0.4099999964237213,
+       0.6499999761581421,
+       -2.2300000190734863
+      ],
+      [
+       1.7699999809265137,
+       0.8700000047683716,
+       -2.0999999046325684
+      ],
+      [
+       3.5,
+       1.0,
+       -1.4199999570846558
+      ],
+      [
+       5.28000020980835,
+       1.090000033378601,
+       -0.3100000023841858
+      ],
+      [
+       6.96999979019165,
+       1.1200000047683716,
+       1.1200000047683716
+      ],
+      [
+       8.430000305175781,
+       1.149999976158142,
+       2.690000057220459
+      ],
+      [
+       9.729999542236328,
+       1.1699999570846558,
+       4.320000171661377
+      ],
+      [
+       10.930000305175781,
+       1.190000057220459,
+       5.949999809265137
+      ],
+      [
+       12.069999694824219,
+       1.2100000381469727,
+       7.570000171661377
+      ]
+     ],
+     "name": "closed lower (carry)",
+     "phase_share": {
+      "approach": 0.0,
+      "carry": 1.0,
+      "fixture": 0.0,
+      "rest": 0.0
+     },
+     "speed_cm_per_step": 0.8766177296638489,
+     "tasks": 1
+    },
+    "172": {
+     "dz_cm_per_step": 0.01366734504699707,
+     "event_share": 0.0,
+     "frames": 2,
+     "gripper_closed": 0.0,
+     "mode_grip": [
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0
+     ],
+     "mode_path_cm": [
+      [
+       2.009999990463257,
+       -0.75,
+       -1.6100000143051147
+      ],
+      [
+       3.549999952316284,
+       -1.059999942779541,
+       -3.7799999713897705
+      ],
+      [
+       4.489999771118164,
+       -1.0700000524520874,
+       -6.389999866485596
+      ],
+      [
+       4.940000057220459,
+       -0.9599999785423279,
+       -9.260000228881836
+      ],
+      [
+       5.110000133514404,
+       -0.8799999952316284,
+       -12.239999771118164
+      ],
+      [
+       5.119999885559082,
+       -0.8600000143051147,
+       -15.25
+      ],
+      [
+       5.03000020980835,
+       -0.8899999856948853,
+       -18.299999237060547
+      ],
+      [
+       4.860000133514404,
+       -0.9800000190734863,
+       -21.43000030517578
+      ],
+      [
+       4.590000152587891,
+       -1.1200000047683716,
+       -24.700000762939453
+      ],
+      [
+       4.150000095367432,
+       -1.2799999713897705,
+       -28.139999389648438
+      ]
+     ],
+     "name": "open move (approach)",
+     "phase_share": {
+      "approach": 1.0,
+      "carry": 0.0,
+      "fixture": 0.0,
+      "rest": 0.0
+     },
+     "speed_cm_per_step": 0.41930657625198364,
+     "tasks": 1
+    },
+    "174": {
+     "dz_cm_per_step": 0.009548664093017578,
+     "event_share": 0.0,
+     "frames": 1,
+     "gripper_closed": 0.0,
+     "mode_grip": [
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0
+     ],
+     "mode_path_cm": [
+      [
+       -0.17000000178813934,
+       -0.2800000011920929,
+       -3.0299999713897705
+      ],
+      [
+       -0.49000000953674316,
+       -0.38999998569488525,
+       -6.159999847412109
+      ],
+      [
+       -0.9100000262260437,
+       -0.4300000071525574,
+       -9.350000381469727
+      ],
+      [
+       -1.4700000286102295,
+       -0.4399999976158142,
+       -12.579999923706055
+      ],
+      [
+       -2.2300000190734863,
+       -0.4399999976158142,
+       -15.789999961853027
+      ],
+      [
+       -3.259999990463257,
+       -0.4300000071525574,
+       -19.020000457763672
+      ],
+      [
+       -4.71999979019165,
+       -0.44999998807907104,
+       -22.329999923706055
+      ],
+      [
+       -6.71999979019165,
+       -0.49000000953674316,
+       -25.809999465942383
+      ],
+      [
+       -9.220000267028809,
+       -0.5699999928474426,
+       -29.530000686645508
+      ],
+      [
+       -12.069999694824219,
+       -0.7099999785423279,
+       -33.459999084472656
+      ]
+     ],
+     "name": "open move (approach)",
+     "phase_share": {
+      "approach": 1.0,
+      "carry": 0.0,
+      "fixture": 0.0,
+      "rest": 0.0
+     },
+     "speed_cm_per_step": 0.3887147605419159,
+     "tasks": 1
+    },
+    "18": {
+     "dz_cm_per_step": -0.2407670021057129,
+     "event_share": 0.0,
+     "frames": 1,
+     "gripper_closed": 1.0,
+     "mode_grip": [
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      0.9800000190734863,
+      0.9700000286102295,
+      0.4399999976158142,
+      -0.20999999344348907,
+      -0.9599999785423279,
+      -1.0
+     ],
+     "mode_path_cm": [
+      [
+       -0.28999999165534973,
+       3.5899999141693115,
+       -0.10000000149011612
+      ],
+      [
+       -0.6100000143051147,
+       7.230000019073486,
+       -0.5
+      ],
+      [
+       -0.9599999785423279,
+       10.899999618530273,
+       -1.2799999713897705
+      ],
+      [
+       -1.3600000143051147,
+       14.5600004196167,
+       -2.569999933242798
+      ],
+      [
+       -1.7799999713897705,
+       18.1200008392334,
+       -4.400000095367432
+      ],
+      [
+       -2.2200000286102295,
+       21.489999771118164,
+       -6.650000095367432
+      ],
+      [
+       -2.700000047683716,
+       24.6200008392334,
+       -9.270000457763672
+      ],
+      [
+       -3.2200000286102295,
+       27.459999084472656,
+       -12.130000114440918
+      ],
+      [
+       -3.75,
+       29.959999084472656,
+       -15.09000015258789
+      ],
+      [
+       -4.210000038146973,
+       31.979999542236328,
+       -17.889999389648438
+      ]
+     ],
+     "name": "closed transport (carry)",
+     "phase_share": {
+      "approach": 0.0,
+      "carry": 1.0,
+      "fixture": 0.0,
+      "rest": 0.0
+     },
+     "speed_cm_per_step": 1.0840891599655151,
+     "tasks": 1
+    },
+    "186": {
+     "dz_cm_per_step": -0.01990795135498047,
+     "event_share": 0.0,
+     "frames": 4,
+     "gripper_closed": 1.0,
+     "mode_grip": [
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0
+     ],
+     "mode_path_cm": [
+      [
+       4.25,
+       -1.0299999713897705,
+       -0.28999999165534973
+      ],
+      [
+       8.40999984741211,
+       -2.509999990463257,
+       -1.0299999713897705
+      ],
+      [
+       12.449999809265137,
+       -4.389999866485596,
+       -2.190000057220459
+      ],
+      [
+       16.309999465942383,
+       -6.519999980926514,
+       -3.6700000762939453
+      ],
+      [
+       19.899999618530273,
+       -8.760000228881836,
+       -5.340000152587891
+      ],
+      [
+       23.1299991607666,
+       -10.9399995803833,
+       -7.070000171661377
+      ],
+      [
+       25.780000686645508,
+       -12.819999694824219,
+       -8.800000190734863
+      ],
+      [
+       27.610000610351562,
+       -14.170000076293945,
+       -10.510000228881836
+      ],
+      [
+       28.5,
+       -15.010000228881836,
+       -12.260000228881836
+      ],
+      [
+       28.610000610351562,
+       -15.489999771118164,
+       -14.109999656677246
+      ]
+     ],
+     "name": "closed transport (carry)",
+     "phase_share": {
+      "approach": 0.0,
+      "carry": 1.0,
+      "fixture": 0.0,
+      "rest": 0.0
+     },
+     "speed_cm_per_step": 0.805616170167923,
+     "tasks": 1
+    },
+    "187": {
+     "dz_cm_per_step": -0.009524822235107422,
+     "event_share": 0.0,
+     "frames": 3,
+     "gripper_closed": 1.0,
+     "mode_grip": [
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0
+     ],
+     "mode_path_cm": [
+      [
+       4.010000228881836,
+       -1.7100000381469727,
+       -1.0800000429153442
+      ],
+      [
+       7.860000133514404,
+       -3.700000047683716,
+       -2.5799999237060547
+      ],
+      [
+       11.520000457763672,
+       -5.849999904632568,
+       -4.289999961853027
+      ],
+      [
+       14.899999618530273,
+       -8.039999961853027,
+       -6.130000114440918
+      ],
+      [
+       17.860000610351562,
+       -10.069999694824219,
+       -7.949999809265137
+      ],
+      [
+       20.25,
+       -11.789999961853027,
+       -9.6899995803833
+      ],
+      [
+       21.65999984741211,
+       -12.890000343322754,
+       -11.350000381469727
+      ],
+      [
+       22.229999542236328,
+       -13.470000267028809,
+       -13.020000457763672
+      ],
+      [
+       22.219999313354492,
+       -13.760000228881836,
+       -14.770000457763672
+      ],
+      [
+       21.700000762939453,
+       -13.920000076293945,
+       -16.729999542236328
+      ]
+     ],
+     "name": "closed transport (carry)",
+     "phase_share": {
+      "approach": 0.0,
+      "carry": 1.0,
+      "fixture": 0.0,
+      "rest": 0.0
+     },
+     "speed_cm_per_step": 0.8323739171028137,
+     "tasks": 1
+    },
+    "188": {
+     "dz_cm_per_step": 0.029516220092773438,
+     "event_share": 0.0,
+     "frames": 2,
+     "gripper_closed": 1.0,
+     "mode_grip": [
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0
+     ],
+     "mode_path_cm": [
+      [
+       3.490000009536743,
+       -2.0799999237060547,
+       -1.8799999952316284
+      ],
+      [
+       6.690000057220459,
+       -4.179999828338623,
+       -3.880000114440918
+      ],
+      [
+       9.569999694824219,
+       -6.110000133514404,
+       -5.860000133514404
+      ],
+      [
+       11.90999984741211,
+       -7.679999828338623,
+       -7.739999771118164
+      ],
+      [
+       13.449999809265137,
+       -8.760000228881836,
+       -9.5
+      ],
+      [
+       13.850000381469727,
+       -9.239999771118164,
+       -11.199999809265137
+      ],
+      [
+       13.619999885559082,
+       -9.460000038146973,
+       -12.989999771118164
+      ],
+      [
+       12.819999694824219,
+       -9.539999961853027,
+       -15.039999961853027
+      ],
+      [
+       11.420000076293945,
+       -9.579999923706055,
+       -17.440000534057617
+      ],
+      [
+       9.399999618530273,
+       -9.609999656677246,
+       -20.280000686645508
+      ]
+     ],
+     "name": "closed transport (carry)",
+     "phase_share": {
+      "approach": 0.0,
+      "carry": 1.0,
+      "fixture": 0.0,
+      "rest": 0.0
+     },
+     "speed_cm_per_step": 0.8596726059913635,
+     "tasks": 1
+    },
+    "189": {
+     "dz_cm_per_step": -0.05238056182861328,
+     "event_share": 0.0,
+     "frames": 3,
+     "gripper_closed": 1.0,
+     "mode_grip": [
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0
+     ],
+     "mode_path_cm": [
+      [
+       3.009999990463257,
+       -1.940000057220459,
+       -2.140000104904175
+      ],
+      [
+       5.519999980926514,
+       -3.6500000953674316,
+       -4.21999979019165
+      ],
+      [
+       7.369999885559082,
+       -4.880000114440918,
+       -6.170000076293945
+      ],
+      [
+       8.279999732971191,
+       -5.559999942779541,
+       -8.0
+      ],
+      [
+       8.539999961853027,
+       -5.929999828338623,
+       -9.800000190734863
+      ],
+      [
+       8.229999542236328,
+       -6.090000152587891,
+       -11.699999809265137
+      ],
+      [
+       7.480000019073486,
+       -6.150000095367432,
+       -13.760000228881836
+      ],
+      [
+       6.110000133514404,
+       -6.159999847412109,
+       -16.1299991607666
+      ],
+      [
+       4.050000190734863,
+       -6.150000095367432,
+       -18.920000076293945
+      ],
+      [
+       1.3799999952316284,
+       -6.139999866485596,
+       -22.149999618530273
+      ]
+     ],
+     "name": "closed transport (carry)",
+     "phase_share": {
+      "approach": 0.0,
+      "carry": 1.0,
+      "fixture": 0.0,
+      "rest": 0.0
+     },
+     "speed_cm_per_step": 0.8364072442054749,
+     "tasks": 1
+    },
+    "2": {
+     "dz_cm_per_step": -0.5562245845794678,
+     "event_share": 0.018867924528301886,
+     "frames": 106,
+     "gripper_closed": 0.0,
+     "mode_grip": [
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -0.9800000190734863,
+      -0.6899999976158142,
+      0.8199999928474426,
+      0.9800000190734863,
+      1.0,
+      1.0
+     ],
+     "mode_path_cm": [
+      [
+       -1.1399999856948853,
+       -0.10000000149011612,
+       -2.130000114440918
+      ],
+      [
+       -2.299999952316284,
+       -0.20999999344348907,
+       -4.199999809265137
+      ],
+      [
+       -3.440000057220459,
+       -0.3199999928474426,
+       -6.210000038146973
+      ],
+      [
+       -4.53000020980835,
+       -0.41999998688697815,
+       -8.109999656677246
+      ],
+      [
+       -5.519999980926514,
+       -0.5,
+       -9.869999885559082
+      ],
+      [
+       -6.389999866485596,
+       -0.550000011920929,
+       -11.449999809265137
+      ],
+      [
+       -7.110000133514404,
+       -0.5799999833106995,
+       -12.789999961853027
+      ],
+      [
+       -7.670000076293945,
+       -0.5699999928474426,
+       -13.84000015258789
+      ],
+      [
+       -8.100000381469727,
+       -0.550000011920929,
+       -14.600000381469727
+      ],
+      [
+       -8.420000076293945,
+       -0.5,
+       -15.09000015258789
+      ]
+     ],
+     "name": "open reach down (approach)",
+     "phase_share": {
+      "approach": 0.9245283018867925,
+      "carry": 0.018867924528301886,
+      "fixture": 0.018867924528301886,
+      "rest": 0.03773584905660377
+     },
+     "speed_cm_per_step": 0.6267503499984741,
+     "tasks": 46
+    },
+    "204": {
+     "dz_cm_per_step": -0.07036924362182617,
+     "event_share": 0.0,
+     "frames": 1,
+     "gripper_closed": 1.0,
+     "mode_grip": [
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0
+     ],
+     "mode_path_cm": [
+      [
+       -3.190000057220459,
+       0.11999999731779099,
+       -3.7100000381469727
+      ],
+      [
+       -6.460000038146973,
+       0.41999998688697815,
+       -7.340000152587891
+      ],
+      [
+       -9.539999961853027,
+       0.9900000095367432,
+       -10.829999923706055
+      ],
+      [
+       -12.130000114440918,
+       1.8700000047683716,
+       -14.0600004196167
+      ],
+      [
+       -13.970000267028809,
+       3.0,
+       -16.899999618530273
+      ],
+      [
+       -15.020000457763672,
+       4.239999771118164,
+       -19.260000228881836
+      ],
+      [
+       -15.510000228881836,
+       5.409999847412109,
+       -21.270000457763672
+      ],
+      [
+       -15.75,
+       6.360000133514404,
+       -23.079999923706055
+      ],
+      [
+       -15.920000076293945,
+       7.050000190734863,
+       -24.809999465942383
+      ],
+      [
+       -16.040000915527344,
+       7.510000228881836,
+       -26.459999084472656
+      ]
+     ],
+     "name": "closed transport (carry)",
+     "phase_share": {
+      "approach": 0.0,
+      "carry": 1.0,
+      "fixture": 0.0,
+      "rest": 0.0
+     },
+     "speed_cm_per_step": 0.1575302928686142,
+     "tasks": 1
+    },
+    "208": {
+     "dz_cm_per_step": -0.14628171920776367,
+     "event_share": 0.0,
+     "frames": 1,
+     "gripper_closed": 1.0,
+     "mode_grip": [
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0
+     ],
+     "mode_path_cm": [
+      [
+       0.3499999940395355,
+       -0.28999999165534973,
+       -3.309999942779541
+      ],
+      [
+       0.25,
+       -0.4099999964237213,
+       -6.539999961853027
+      ],
+      [
+       -0.2199999988079071,
+       -0.36000001430511475,
+       -9.729999542236328
+      ],
+      [
+       -1.1799999475479126,
+       -0.05999999865889549,
+       -12.829999923706055
+      ],
+      [
+       -2.809999942779541,
+       0.4000000059604645,
+       -15.869999885559082
+      ],
+      [
+       -5.110000133514404,
+       1.0800000429153442,
+       -18.84000015258789
+      ],
+      [
+       -8.119999885559082,
+       1.8700000047683716,
+       -21.770000457763672
+      ],
+      [
+       -11.640000343322754,
+       2.6600000858306885,
+       -24.739999771118164
+      ],
+      [
+       -15.399999618530273,
+       3.4000000953674316,
+       -27.770000457763672
+      ],
+      [
+       -19.229999542236328,
+       4.119999885559082,
+       -30.84000015258789
+      ]
+     ],
+     "name": "closed transport (carry)",
+     "phase_share": {
+      "approach": 0.0,
+      "carry": 1.0,
+      "fixture": 0.0,
+      "rest": 0.0
+     },
+     "speed_cm_per_step": 0.759014368057251,
+     "tasks": 1
+    },
+    "211": {
+     "dz_cm_per_step": -0.3676414489746094,
+     "event_share": 0.0,
+     "frames": 3,
+     "gripper_closed": 1.0,
+     "mode_grip": [
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0
+     ],
+     "mode_path_cm": [
+      [
+       -1.5099999904632568,
+       0.05000000074505806,
+       -3.9100000858306885
+      ],
+      [
+       -3.299999952316284,
+       0.07999999821186066,
+       -7.849999904632568
+      ],
+      [
+       -5.300000190734863,
+       0.09000000357627869,
+       -11.800000190734863
+      ],
+      [
+       -7.429999828338623,
+       0.07999999821186066,
+       -15.75
+      ],
+      [
+       -9.630000114440918,
+       0.05999999865889549,
+       -19.68000030517578
+      ],
+      [
+       -11.84000015258789,
+       0.029999999329447746,
+       -23.59000015258789
+      ],
+      [
+       -14.0,
+       -0.019999999552965164,
+       -27.440000534057617
+      ],
+      [
+       -16.049999237060547,
+       -0.07999999821186066,
+       -31.209999084472656
+      ],
+      [
+       -17.959999084472656,
+       -0.15000000596046448,
+       -34.849998474121094
+      ],
+      [
+       -19.670000076293945,
+       -0.20999999344348907,
+       -38.279998779296875
+      ]
+     ],
+     "name": "closed lower (carry)",
+     "phase_share": {
+      "approach": 0.0,
+      "carry": 1.0,
+      "fixture": 0.0,
+      "rest": 0.0
+     },
+     "speed_cm_per_step": 0.6428523659706116,
+     "tasks": 1
+    },
+    "22": {
+     "dz_cm_per_step": -0.34647583961486816,
+     "event_share": 0.0,
+     "frames": 8,
+     "gripper_closed": 0.0,
+     "mode_grip": [
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0
+     ],
+     "mode_path_cm": [
+      [
+       -2.9800000190734863,
+       -0.6100000143051147,
+       -2.7699999809265137
+      ],
+      [
+       -5.630000114440918,
+       -1.309999942779541,
+       -5.739999771118164
+      ],
+      [
+       -7.940000057220459,
+       -2.0799999237060547,
+       -8.890000343322754
+      ],
+      [
+       -9.949999809265137,
+       -2.9100000858306885,
+       -12.170000076293945
+      ],
+      [
+       -11.670000076293945,
+       -3.7799999713897705,
+       -15.539999961853027
+      ],
+      [
+       -13.09000015258789,
+       -4.659999847412109,
+       -18.979999542236328
+      ],
+      [
+       -14.220000267028809,
+       -5.510000228881836,
+       -22.43000030517578
+      ],
+      [
+       -15.079999923706055,
+       -6.340000152587891,
+       -25.850000381469727
+      ],
+      [
+       -15.710000038146973,
+       -7.119999885559082,
+       -29.190000534057617
+      ],
+      [
+       -16.139999389648438,
+       -7.849999904632568,
+       -32.380001068115234
+      ]
+     ],
+     "name": "open reach down (approach)",
+     "phase_share": {
+      "approach": 1.0,
+      "carry": 0.0,
+      "fixture": 0.0,
+      "rest": 0.0
+     },
+     "speed_cm_per_step": 0.810605376958847,
+     "tasks": 1
+    },
+    "23": {
+     "dz_cm_per_step": -0.5485653877258301,
+     "event_share": 0.0,
+     "frames": 1,
+     "gripper_closed": 0.0,
+     "mode_grip": [
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0
+     ],
+     "mode_path_cm": [
+      [
+       -0.30000001192092896,
+       -0.8899999856948853,
+       -3.4600000381469727
+      ],
+      [
+       -0.5,
+       -1.659999966621399,
+       -6.820000171661377
+      ],
+      [
+       -0.6200000047683716,
+       -2.2100000381469727,
+       -10.010000228881836
+      ],
+      [
+       -0.6600000262260437,
+       -2.5299999713897705,
+       -12.899999618530273
+      ],
+      [
+       -0.5400000214576721,
+       -2.700000047683716,
+       -15.380000114440918
+      ],
+      [
+       0.029999999329447746,
+       -2.759999990463257,
+       -17.219999313354492
+      ],
+      [
+       1.4900000095367432,
+       -2.7100000381469727,
+       -18.34000015258789
+      ],
+      [
+       4.099999904632568,
+       -2.559999942779541,
+       -18.709999084472656
+      ],
+      [
+       7.650000095367432,
+       -2.2200000286102295,
+       -18.540000915527344
+      ],
+      [
+       11.75,
+       -1.649999976158142,
+       -18.059999465942383
+      ]
+     ],
+     "name": "open reach down (approach)",
+     "phase_share": {
+      "approach": 1.0,
+      "carry": 0.0,
+      "fixture": 0.0,
+      "rest": 0.0
+     },
+     "speed_cm_per_step": 0.6099146604537964,
+     "tasks": 1
+    },
+    "240": {
+     "dz_cm_per_step": -0.3575921058654785,
+     "event_share": 0.0,
+     "frames": 7,
+     "gripper_closed": 1.0,
+     "mode_grip": [
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0
+     ],
+     "mode_path_cm": [
+      [
+       0.1899999976158142,
+       3.8499999046325684,
+       -4.170000076293945
+      ],
+      [
+       0.4099999964237213,
+       7.619999885559082,
+       -8.5600004196167
+      ],
+      [
+       0.6399999856948853,
+       11.279999732971191,
+       -13.100000381469727
+      ],
+      [
+       0.8799999952316284,
+       14.84000015258789,
+       -17.690000534057617
+      ],
+      [
+       1.1399999856948853,
+       18.350000381469727,
+       -22.309999465942383
+      ],
+      [
+       1.409999966621399,
+       21.84000015258789,
+       -26.940000534057617
+      ],
+      [
+       1.7200000286102295,
+       25.31999969482422,
+       -31.56999969482422
+      ],
+      [
+       2.109999895095825,
+       28.799999237060547,
+       -36.209999084472656
+      ],
+      [
+       2.700000047683716,
+       32.279998779296875,
+       -40.81999969482422
+      ],
+      [
+       3.5299999713897705,
+       35.72999954223633,
+       -45.349998474121094
+      ]
+     ],
+     "name": "closed lower (carry)",
+     "phase_share": {
+      "approach": 0.0,
+      "carry": 0.5714285714285714,
+      "fixture": 0.0,
+      "rest": 0.42857142857142855
+     },
+     "speed_cm_per_step": 0.7502903938293457,
+     "tasks": 2
+    },
+    "25": {
+     "dz_cm_per_step": -0.08004903793334961,
+     "event_share": 0.0,
+     "frames": 277,
+     "gripper_closed": 0.0,
+     "mode_grip": [
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0
+     ],
+     "mode_path_cm": [
+      [
+       4.190000057220459,
+       0.25999999046325684,
+       -0.25
+      ],
+      [
+       8.539999961853027,
+       0.5199999809265137,
+       -0.550000011920929
+      ],
+      [
+       13.0,
+       0.7599999904632568,
+       -0.9200000166893005
+      ],
+      [
+       17.520000457763672,
+       0.9700000286102295,
+       -1.3700000047683716
+      ],
+      [
+       22.079999923706055,
+       1.1399999856948853,
+       -1.9299999475479126
+      ],
+      [
+       26.6299991607666,
+       1.2599999904632568,
+       -2.5899999141693115
+      ],
+      [
+       31.170000076293945,
+       1.3200000524520874,
+       -3.4000000953674316
+      ],
+      [
+       35.65999984741211,
+       1.340000033378601,
+       -4.369999885559082
+      ],
+      [
+       40.08000183105469,
+       1.2899999618530273,
+       -5.53000020980835
+      ],
+      [
+       44.38999938964844,
+       1.1799999475479126,
+       -6.929999828338623
+      ]
+     ],
+     "name": "open move (approach)",
+     "phase_share": {
+      "approach": 0.8447653429602888,
+      "carry": 0.0,
+      "fixture": 0.1552346570397112,
+      "rest": 0.0
+     },
+     "speed_cm_per_step": 0.9100942611694336,
+     "tasks": 16
+    },
+    "3": {
+     "dz_cm_per_step": -0.48260241746902466,
+     "event_share": 0.02830188679245283,
+     "frames": 106,
+     "gripper_closed": 0.009433962264150943,
+     "mode_grip": [
+      -1.0,
+      -0.9900000095367432,
+      -0.8399999737739563,
+      0.699999988079071,
+      0.9800000190734863,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0
+     ],
+     "mode_path_cm": [
+      [
+       -1.1100000143051147,
+       -0.07000000029802322,
+       -2.059999942779541
+      ],
+      [
+       -2.1600000858306885,
+       -0.11999999731779099,
+       -3.990000009536743
+      ],
+      [
+       -3.119999885559082,
+       -0.15000000596046448,
+       -5.760000228881836
+      ],
+      [
+       -3.9700000286102295,
+       -0.17000000178813934,
+       -7.340000152587891
+      ],
+      [
+       -4.670000076293945,
+       -0.1599999964237213,
+       -8.619999885559082
+      ],
+      [
+       -5.210000038146973,
+       -0.12999999523162842,
+       -9.59000015258789
+      ],
+      [
+       -5.630000114440918,
+       -0.07999999821186066,
+       -10.270000457763672
+      ],
+      [
+       -5.940000057220459,
+       -0.019999999552965164,
+       -10.6899995803833
+      ],
+      [
+       -6.150000095367432,
+       0.05000000074505806,
+       -10.829999923706055
+      ],
+      [
+       -6.230000019073486,
+       0.11999999731779099,
+       -10.649999618530273
+      ]
+     ],
+     "name": "open reach down (approach)",
+     "phase_share": {
+      "approach": 0.9056603773584906,
+      "carry": 0.03773584905660377,
+      "fixture": 0.018867924528301886,
+      "rest": 0.03773584905660377
+     },
+     "speed_cm_per_step": 0.5737501084804535,
+     "tasks": 46
+    },
+    "30": {
+     "dz_cm_per_step": 0.02428889274597168,
+     "event_share": 0.0,
+     "frames": 166,
+     "gripper_closed": 0.0,
+     "mode_grip": [
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0
+     ],
+     "mode_path_cm": [
+      [
+       3.180000066757202,
+       -1.9299999475479126,
+       0.07000000029802322
+      ],
+      [
+       6.53000020980835,
+       -3.9800000190734863,
+       0.10999999940395355
+      ],
+      [
+       10.010000228881836,
+       -6.130000114440918,
+       0.11999999731779099
+      ],
+      [
+       13.59000015258789,
+       -8.329999923706055,
+       0.09000000357627869
+      ],
+      [
+       17.239999771118164,
+       -10.569999694824219,
+       0.009999999776482582
+      ],
+      [
+       20.93000030517578,
+       -12.789999961853027,
+       -0.10999999940395355
+      ],
+      [
+       24.610000610351562,
+       -14.979999542236328,
+       -0.28999999165534973
+      ],
+      [
+       28.25,
+       -17.100000381469727,
+       -0.550000011920929
+      ],
+      [
+       31.829999923706055,
+       -19.1200008392334,
+       -0.9100000262260437
+      ],
+      [
+       35.290000915527344,
+       -21.010000228881836,
+       -1.3799999952316284
+      ]
+     ],
+     "name": "open move (approach)",
+     "phase_share": {
+      "approach": 0.8072289156626506,
+      "carry": 0.0,
+      "fixture": 0.1927710843373494,
+      "rest": 0.0
+     },
+     "speed_cm_per_step": 0.8205298483371735,
+     "tasks": 14
+    },
+    "31": {
+     "dz_cm_per_step": -0.28994083404541016,
+     "event_share": 0.0,
+     "frames": 1,
+     "gripper_closed": 1.0,
+     "mode_grip": [
+      0.9900000095367432,
+      1.0,
+      1.0,
+      1.0,
+      -0.9800000190734863,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0
+     ],
+     "mode_path_cm": [
+      [
+       -0.019999999552965164,
+       3.8399999141693115,
+       -0.6700000166893005
+      ],
+      [
+       -0.05999999865889549,
+       7.610000133514404,
+       -2.130000114440918
+      ],
+      [
+       -0.12999999523162842,
+       11.220000267028809,
+       -4.400000095367432
+      ],
+      [
+       -0.20999999344348907,
+       14.529999732971191,
+       -7.289999961853027
+      ],
+      [
+       -0.3400000035762787,
+       17.540000915527344,
+       -10.550000190734863
+      ],
+      [
+       -0.5400000214576721,
+       20.280000686645508,
+       -14.199999809265137
+      ],
+      [
+       -0.8299999833106995,
+       22.739999771118164,
+       -17.979999542236328
+      ],
+      [
+       -1.1399999856948853,
+       24.850000381469727,
+       -21.65999984741211
+      ],
+      [
+       -1.3899999856948853,
+       26.3700008392334,
+       -24.979999542236328
+      ],
+      [
+       -1.5499999523162842,
+       27.290000915527344,
+       -27.639999389648438
+      ]
+     ],
+     "name": "closed lower (carry)",
+     "phase_share": {
+      "approach": 0.0,
+      "carry": 1.0,
+      "fixture": 0.0,
+      "rest": 0.0
+     },
+     "speed_cm_per_step": 1.062313437461853,
+     "tasks": 1
+    },
+    "4": {
+     "dz_cm_per_step": -0.011110305786132812,
+     "event_share": 0.08889816360601002,
+     "frames": 2396,
+     "gripper_closed": 0.9778797996661102,
+     "mode_grip": [
+      0.9800000190734863,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      0.9900000095367432
+     ],
+     "mode_path_cm": [
+      [
+       -0.4099999964237213,
+       0.03999999910593033,
+       -0.9300000071525574
+      ],
+      [
+       -0.7599999904632568,
+       0.09000000357627869,
+       -1.690000057220459
+      ],
+      [
+       -1.0700000524520874,
+       0.12999999523162842,
+       -2.2899999618530273
+      ],
+      [
+       -1.3300000429153442,
+       0.17000000178813934,
+       -2.75
+      ],
+      [
+       -1.5700000524520874,
+       0.20000000298023224,
+       -3.069999933242798
+      ],
+      [
+       -1.7599999904632568,
+       0.23000000417232513,
+       -3.25
+      ],
+      [
+       -1.9199999570846558,
+       0.25999999046325684,
+       -3.2699999809265137
+      ],
+      [
+       -2.0299999713897705,
+       0.2800000011920929,
+       -3.119999885559082
+      ],
+      [
+       -2.0799999237060547,
+       0.3100000023841858,
+       -2.759999990463257
+      ],
+      [
+       -2.059999942779541,
+       0.3499999940395355,
+       -2.180000066757202
+      ]
+     ],
+     "name": "closed transport (carry)",
+     "phase_share": {
+      "approach": 0.18530884808013356,
+      "carry": 0.7712854757929883,
+      "fixture": 0.01961602671118531,
+      "rest": 0.02378964941569282
+     },
+     "speed_cm_per_step": 0.6377388834953308,
+     "tasks": 46
+    },
+    "47": {
+     "dz_cm_per_step": 0.016009807586669922,
+     "event_share": 0.0,
+     "frames": 1,
+     "gripper_closed": 1.0,
+     "mode_grip": [
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0
+     ],
+     "mode_path_cm": [
+      [
+       -0.17000000178813934,
+       0.029999999329447746,
+       -1.4199999570846558
+      ],
+      [
+       -0.33000001311302185,
+       0.05000000074505806,
+       -2.880000114440918
+      ],
+      [
+       -0.46000000834465027,
+       0.07000000029802322,
+       -4.380000114440918
+      ],
+      [
+       -0.5799999833106995,
+       0.09000000357627869,
+       -5.909999847412109
+      ],
+      [
+       -0.6899999976158142,
+       0.10999999940395355,
+       -7.460000038146973
+      ],
+      [
+       -0.7900000214576721,
+       0.12999999523162842,
+       -9.0
+      ],
+      [
+       -0.8700000047683716,
+       0.14000000059604645,
+       -10.520000457763672
+      ],
+      [
+       -0.949999988079071,
+       0.15000000596046448,
+       -12.0
+      ],
+      [
+       -1.0099999904632568,
+       0.15000000596046448,
+       -13.420000076293945
+      ],
+      [
+       -1.0700000524520874,
+       0.14000000059604645,
+       -14.75
+      ]
+     ],
+     "name": "closed transport (approach)",
+     "phase_share": {
+      "approach": 1.0,
+      "carry": 0.0,
+      "fixture": 0.0,
+      "rest": 0.0
+     },
+     "speed_cm_per_step": 0.16448402404785156,
+     "tasks": 1
+    },
+    "5": {
+     "dz_cm_per_step": -0.609356164932251,
+     "event_share": 0.0,
+     "frames": 39,
+     "gripper_closed": 1.0,
+     "mode_grip": [
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      0.9900000095367432,
+      0.9700000286102295,
+      0.5600000023841858,
+      -0.8500000238418579,
+      -0.9800000190734863,
+      -1.0
+     ],
+     "mode_path_cm": [
+      [
+       -0.7699999809265137,
+       0.1599999964237213,
+       -1.9900000095367432
+      ],
+      [
+       -1.5,
+       0.2800000011920929,
+       -3.7899999618530273
+      ],
+      [
+       -2.140000104904175,
+       0.3700000047683716,
+       -5.320000171661377
+      ],
+      [
+       -2.6600000858306885,
+       0.4300000071525574,
+       -6.550000190734863
+      ],
+      [
+       -3.0199999809265137,
+       0.4699999988079071,
+       -7.409999847412109
+      ],
+      [
+       -3.2200000286102295,
+       0.5099999904632568,
+       -7.920000076293945
+      ],
+      [
+       -3.2899999618530273,
+       0.550000011920929,
+       -8.09000015258789
+      ],
+      [
+       -3.2799999713897705,
+       0.6100000143051147,
+       -7.909999847412109
+      ],
+      [
+       -3.200000047683716,
+       0.6800000071525574,
+       -7.420000076293945
+      ],
+      [
+       -3.109999895095825,
+       0.7400000095367432,
+       -6.699999809265137
+      ]
+     ],
+     "name": "closed lower (carry)",
+     "phase_share": {
+      "approach": 0.07692307692307693,
+      "carry": 0.8205128205128205,
+      "fixture": 0.0,
+      "rest": 0.10256410256410256
+     },
+     "speed_cm_per_step": 0.7425236701965332,
+     "tasks": 33
+    },
+    "53": {
+     "dz_cm_per_step": 0.008663535118103027,
+     "event_share": 0.0,
+     "frames": 20,
+     "gripper_closed": 1.0,
+     "mode_grip": [
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0
+     ],
+     "mode_path_cm": [
+      [
+       -0.12999999523162842,
+       -0.019999999552965164,
+       -2.140000104904175
+      ],
+      [
+       -0.2199999988079071,
+       -0.029999999329447746,
+       -4.309999942779541
+      ],
+      [
+       -0.28999999165534973,
+       -0.05000000074505806,
+       -6.489999771118164
+      ],
+      [
+       -0.3400000035762787,
+       -0.05999999865889549,
+       -8.680000305175781
+      ],
+      [
+       -0.3799999952316284,
+       -0.07999999821186066,
+       -10.869999885559082
+      ],
+      [
+       -0.4099999964237213,
+       -0.10000000149011612,
+       -13.069999694824219
+      ],
+      [
+       -0.4399999976158142,
+       -0.11999999731779099,
+       -15.260000228881836
+      ],
+      [
+       -0.47999998927116394,
+       -0.14000000059604645,
+       -17.459999084472656
+      ],
+      [
+       -0.5099999904632568,
+       -0.17000000178813934,
+       -19.639999389648438
+      ],
+      [
+       -0.550000011920929,
+       -0.1899999976158142,
+       -21.809999465942383
+      ]
+     ],
+     "name": "closed transport (approach)",
+     "phase_share": {
+      "approach": 1.0,
+      "carry": 0.0,
+      "fixture": 0.0,
+      "rest": 0.0
+     },
+     "speed_cm_per_step": 0.09472647309303284,
+     "tasks": 1
+    },
+    "54": {
+     "dz_cm_per_step": 0.015211105346679688,
+     "event_share": 0.0,
+     "frames": 1,
+     "gripper_closed": 1.0,
+     "mode_grip": [
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      0.9900000095367432,
+      -0.009999999776482582,
+      -0.9900000095367432,
+      -1.0
+     ],
+     "mode_path_cm": [
+      [
+       -0.05999999865889549,
+       0.10999999940395355,
+       -2.180000066757202
+      ],
+      [
+       -0.07999999821186066,
+       0.1899999976158142,
+       -4.010000228881836
+      ],
+      [
+       -0.09000000357627869,
+       0.25999999046325684,
+       -5.480000019073486
+      ],
+      [
+       -0.07999999821186066,
+       0.28999999165534973,
+       -6.650000095367432
+      ],
+      [
+       -0.05000000074505806,
+       0.28999999165534973,
+       -7.5
+      ],
+      [
+       0.009999999776482582,
+       0.25,
+       -8.050000190734863
+      ],
+      [
+       0.09000000357627869,
+       0.2199999988079071,
+       -8.350000381469727
+      ],
+      [
+       0.23000000417232513,
+       0.1899999976158142,
+       -8.449999809265137
+      ],
+      [
+       0.4000000059604645,
+       0.20000000298023224,
+       -8.319999694824219
+      ],
+      [
+       0.5600000023841858,
+       0.23999999463558197,
+       -7.869999885559082
+      ]
+     ],
+     "name": "closed transport (approach)",
+     "phase_share": {
+      "approach": 1.0,
+      "carry": 0.0,
+      "fixture": 0.0,
+      "rest": 0.0
+     },
+     "speed_cm_per_step": 0.1635802984237671,
+     "tasks": 1
+    },
+    "57": {
+     "dz_cm_per_step": 4.76837158203125e-05,
+     "event_share": 0.0,
+     "frames": 6,
+     "gripper_closed": 1.0,
+     "mode_grip": [
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0
+     ],
+     "mode_path_cm": [
+      [
+       -1.6399999856948853,
+       0.3499999940395355,
+       -2.450000047683716
+      ],
+      [
+       -3.240000009536743,
+       0.6899999976158142,
+       -4.949999809265137
+      ],
+      [
+       -4.800000190734863,
+       1.0199999809265137,
+       -7.489999771118164
+      ],
+      [
+       -6.309999942779541,
+       1.3700000047683716,
+       -10.0600004196167
+      ],
+      [
+       -7.78000020980835,
+       1.7300000190734863,
+       -12.640000343322754
+      ],
+      [
+       -9.180000305175781,
+       2.130000114440918,
+       -15.229999542236328
+      ],
+      [
+       -10.529999732971191,
+       2.549999952316284,
+       -17.829999923706055
+      ],
+      [
+       -11.800000190734863,
+       3.0,
+       -20.399999618530273
+      ],
+      [
+       -12.979999542236328,
+       3.440000057220459,
+       -22.920000076293945
+      ],
+      [
+       -14.0600004196167,
+       3.880000114440918,
+       -25.3799991607666
+      ]
+     ],
+     "name": "closed transport (approach)",
+     "phase_share": {
+      "approach": 1.0,
+      "carry": 0.0,
+      "fixture": 0.0,
+      "rest": 0.0
+     },
+     "speed_cm_per_step": 0.049362169578671455,
+     "tasks": 1
+    },
+    "6": {
+     "dz_cm_per_step": -0.5980610847473145,
+     "event_share": 0.0,
+     "frames": 79,
+     "gripper_closed": 1.0,
+     "mode_grip": [
+      1.0,
+      0.9900000095367432,
+      0.9800000190734863,
+      0.7400000095367432,
+      -0.6800000071525574,
+      -0.949999988079071,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0
+     ],
+     "mode_path_cm": [
+      [
+       -0.5400000214576721,
+       0.009999999776482582,
+       -1.600000023841858
+      ],
+      [
+       -0.9599999785423279,
+       -0.019999999552965164,
+       -2.9000000953674316
+      ],
+      [
+       -1.25,
+       -0.05999999865889549,
+       -3.869999885559082
+      ],
+      [
+       -1.4299999475479126,
+       -0.07999999821186066,
+       -4.460000038146973
+      ],
+      [
+       -1.5299999713897705,
+       -0.07999999821186066,
+       -4.679999828338623
+      ],
+      [
+       -1.5399999618530273,
+       -0.05000000074505806,
+       -4.539999961853027
+      ],
+      [
+       -1.5,
+       0.0,
+       -4.079999923706055
+      ],
+      [
+       -1.4299999475479126,
+       0.05999999865889549,
+       -3.3499999046325684
+      ],
+      [
+       -1.3300000429153442,
+       0.14000000059604645,
+       -2.4000000953674316
+      ],
+      [
+       -1.2000000476837158,
+       0.23000000417232513,
+       -1.2899999618530273
+      ]
+     ],
+     "name": "closed lower (carry)",
+     "phase_share": {
+      "approach": 0.0759493670886076,
+      "carry": 0.8227848101265823,
+      "fixture": 0.0,
+      "rest": 0.10126582278481013
+     },
+     "speed_cm_per_step": 0.6964964866638184,
+     "tasks": 34
+    },
+    "68": {
+     "dz_cm_per_step": 0.5666732788085938,
+     "event_share": 0.0,
+     "frames": 16,
+     "gripper_closed": 1.0,
+     "mode_grip": [
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0
+     ],
+     "mode_path_cm": [
+      [
+       0.8799999952316284,
+       -3.049999952316284,
+       0.4399999976158142
+      ],
+      [
+       1.690000057220459,
+       -6.070000171661377,
+       0.8399999737739563
+      ],
+      [
+       2.4600000381469727,
+       -9.079999923706055,
+       1.2000000476837158
+      ],
+      [
+       3.180000066757202,
+       -12.069999694824219,
+       1.5299999713897705
+      ],
+      [
+       3.859999895095825,
+       -15.029999732971191,
+       1.8200000524520874
+      ],
+      [
+       4.510000228881836,
+       -17.959999084472656,
+       2.0799999237060547
+      ],
+      [
+       5.139999866485596,
+       -20.850000381469727,
+       2.309999942779541
+      ],
+      [
+       5.739999771118164,
+       -23.709999084472656,
+       2.509999990463257
+      ],
+      [
+       6.340000152587891,
+       -26.510000228881836,
+       2.680000066757202
+      ],
+      [
+       6.909999847412109,
+       -29.25,
+       2.799999952316284
+      ]
+     ],
+     "name": "closed lift (carry)",
+     "phase_share": {
+      "approach": 0.0,
+      "carry": 1.0,
+      "fixture": 0.0,
+      "rest": 0.0
+     },
+     "speed_cm_per_step": 1.2121820449829102,
+     "tasks": 2
+    },
+    "69": {
+     "dz_cm_per_step": 0.6142735481262207,
+     "event_share": 0.0,
+     "frames": 13,
+     "gripper_closed": 1.0,
+     "mode_grip": [
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0
+     ],
+     "mode_path_cm": [
+      [
+       1.8700000047683716,
+       -2.5999999046325684,
+       1.75
+      ],
+      [
+       3.819999933242798,
+       -5.329999923706055,
+       3.3499999046325684
+      ],
+      [
+       5.829999923706055,
+       -8.180000305175781,
+       4.820000171661377
+      ],
+      [
+       7.889999866485596,
+       -11.15999984741211,
+       6.139999866485596
+      ],
+      [
+       9.989999771118164,
+       -14.239999771118164,
+       7.320000171661377
+      ],
+      [
+       12.109999656677246,
+       -17.399999618530273,
+       8.359999656677246
+      ],
+      [
+       14.229999542236328,
+       -20.6299991607666,
+       9.260000228881836
+      ],
+      [
+       16.34000015258789,
+       -23.90999984741211,
+       10.050000190734863
+      ],
+      [
+       18.43000030517578,
+       -27.219999313354492,
+       10.729999542236328
+      ],
+      [
+       20.469999313354492,
+       -30.549999237060547,
+       11.279999732971191
+      ]
+     ],
+     "name": "closed lift (carry)",
+     "phase_share": {
+      "approach": 0.0,
+      "carry": 1.0,
+      "fixture": 0.0,
+      "rest": 0.0
+     },
+     "speed_cm_per_step": 1.1309571266174316,
+     "tasks": 1
+    },
+    "7": {
+     "dz_cm_per_step": -0.4830598831176758,
+     "event_share": 0.024390243902439025,
+     "frames": 41,
+     "gripper_closed": 1.0,
+     "mode_grip": [
+      0.9900000095367432,
+      0.949999988079071,
+      0.7200000286102295,
+      -0.8100000023841858,
+      -0.9800000190734863,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0
+     ],
+     "mode_path_cm": [
+      [
+       -0.30000001192092896,
+       0.07999999821186066,
+       -0.8999999761581421
+      ],
+      [
+       -0.4399999976158142,
+       0.15000000596046448,
+       -1.4800000190734863
+      ],
+      [
+       -0.47999998927116394,
+       0.1899999976158142,
+       -1.7599999904632568
+      ],
+      [
+       -0.4699999988079071,
+       0.23000000417232513,
+       -1.7400000095367432
+      ],
+      [
+       -0.4399999976158142,
+       0.2800000011920929,
+       -1.399999976158142
+      ],
+      [
+       -0.38999998569488525,
+       0.33000001311302185,
+       -0.8199999928474426
+      ],
+      [
+       -0.3199999928474426,
+       0.4000000059604645,
+       -0.05999999865889549
+      ],
+      [
+       -0.23000000417232513,
+       0.46000000834465027,
+       0.8700000047683716
+      ],
+      [
+       -0.10999999940395355,
+       0.5299999713897705,
+       1.940000057220459
+      ],
+      [
+       0.029999999329447746,
+       0.5799999833106995,
+       3.0999999046325684
+      ]
+     ],
+     "name": "closed lower (carry)",
+     "phase_share": {
+      "approach": 0.07317073170731707,
+      "carry": 0.8292682926829268,
+      "fixture": 0.0,
+      "rest": 0.0975609756097561
+     },
+     "speed_cm_per_step": 0.5729110240936279,
+     "tasks": 34
+    },
+    "75": {
+     "dz_cm_per_step": -0.04535317420959473,
+     "event_share": 0.0,
+     "frames": 6,
+     "gripper_closed": 0.0,
+     "mode_grip": [
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0
+     ],
+     "mode_path_cm": [
+      [
+       -0.5600000023841858,
+       2.1500000953674316,
+       0.019999999552965164
+      ],
+      [
+       -1.1699999570846558,
+       4.239999771118164,
+       0.05999999865889549
+      ],
+      [
+       -1.8300000429153442,
+       6.289999961853027,
+       0.10000000149011612
+      ],
+      [
+       -2.549999952316284,
+       8.289999961853027,
+       0.15000000596046448
+      ],
+      [
+       -3.2899999618530273,
+       10.25,
+       0.20999999344348907
+      ],
+      [
+       -4.070000171661377,
+       12.199999809265137,
+       0.27000001072883606
+      ],
+      [
+       -4.860000133514404,
+       14.149999618530273,
+       0.33000001311302185
+      ],
+      [
+       -5.659999847412109,
+       16.09000015258789,
+       0.38999998569488525
+      ],
+      [
+       -6.489999771118164,
+       18.040000915527344,
+       0.44999998807907104
+      ],
+      [
+       -7.309999942779541,
+       19.979999542236328,
+       0.5199999809265137
+      ]
+     ],
+     "name": "open move (approach)",
+     "phase_share": {
+      "approach": 1.0,
+      "carry": 0.0,
+      "fixture": 0.0,
+      "rest": 0.0
+     },
+     "speed_cm_per_step": 0.05160923767834902,
+     "tasks": 1
+    },
+    "8": {
+     "dz_cm_per_step": -0.0007927417755126953,
+     "event_share": 0.0,
+     "frames": 183,
+     "gripper_closed": 0.0,
+     "mode_grip": [
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0
+     ],
+     "mode_path_cm": [
+      [
+       0.1899999976158142,
+       3.4700000286102295,
+       -0.44999998807907104
+      ],
+      [
+       0.38999998569488525,
+       7.0,
+       -0.9100000262260437
+      ],
+      [
+       0.5899999737739563,
+       10.569999694824219,
+       -1.399999976158142
+      ],
+      [
+       0.7900000214576721,
+       14.15999984741211,
+       -1.9199999570846558
+      ],
+      [
+       0.9800000190734863,
+       17.770000457763672,
+       -2.4700000286102295
+      ],
+      [
+       1.1699999570846558,
+       21.3700008392334,
+       -3.069999933242798
+      ],
+      [
+       1.340000033378601,
+       24.940000534057617,
+       -3.7200000286102295
+      ],
+      [
+       1.5,
+       28.479999542236328,
+       -4.429999828338623
+      ],
+      [
+       1.6299999952316284,
+       31.969999313354492,
+       -5.210000038146973
+      ],
+      [
+       1.7400000095367432,
+       35.400001525878906,
+       -6.070000171661377
+      ]
+     ],
+     "name": "open move (fixture)",
+     "phase_share": {
+      "approach": 0.3333333333333333,
+      "carry": 0.0,
+      "fixture": 0.40437158469945356,
+      "rest": 0.26229508196721313
+     },
+     "speed_cm_per_step": 0.6648901700973511,
+     "tasks": 12
+    },
+    "80": {
+     "dz_cm_per_step": 1.170051097869873,
+     "event_share": 0.0,
+     "frames": 114,
+     "gripper_closed": 1.0,
+     "mode_grip": [
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0
+     ],
+     "mode_path_cm": [
+      [
+       0.8600000143051147,
+       -1.4299999475479126,
+       4.099999904632568
+      ],
+      [
+       1.7200000286102295,
+       -3.009999990463257,
+       8.329999923706055
+      ],
+      [
+       2.5799999237060547,
+       -4.760000228881836,
+       12.619999885559082
+      ],
+      [
+       3.4100000858306885,
+       -6.650000095367432,
+       16.959999084472656
+      ],
+      [
+       4.210000038146973,
+       -8.6899995803833,
+       21.329999923706055
+      ],
+      [
+       4.989999771118164,
+       -10.859999656677246,
+       25.690000534057617
+      ],
+      [
+       5.739999771118164,
+       -13.15999984741211,
+       30.010000228881836
+      ],
+      [
+       6.460000038146973,
+       -15.569999694824219,
+       34.290000915527344
+      ],
+      [
+       7.150000095367432,
+       -18.079999923706055,
+       38.470001220703125
+      ],
+      [
+       7.809999942779541,
+       -20.68000030517578,
+       42.54999923706055
+      ]
+     ],
+     "name": "closed lift (carry)",
+     "phase_share": {
+      "approach": 0.0,
+      "carry": 1.0,
+      "fixture": 0.0,
+      "rest": 0.0
+     },
+     "speed_cm_per_step": 1.2974342703819275,
+     "tasks": 12
+    },
+    "84": {
+     "dz_cm_per_step": -0.07470846176147461,
+     "event_share": 0.0,
+     "frames": 2,
+     "gripper_closed": 0.0,
+     "mode_grip": [
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0
+     ],
+     "mode_path_cm": [
+      [
+       -0.029999999329447746,
+       0.36000001430511475,
+       -0.5600000023841858
+      ],
+      [
+       -0.09000000357627869,
+       0.7099999785423279,
+       -1.149999976158142
+      ],
+      [
+       -0.1599999964237213,
+       1.0499999523162842,
+       -1.7699999809265137
+      ],
+      [
+       -0.23999999463558197,
+       1.3799999952316284,
+       -2.430000066757202
+      ],
+      [
+       -0.3199999928474426,
+       1.7000000476837158,
+       -3.119999885559082
+      ],
+      [
+       -0.4000000059604645,
+       2.0199999809265137,
+       -3.8399999141693115
+      ],
+      [
+       -0.4699999988079071,
+       2.3299999237060547,
+       -4.579999923706055
+      ],
+      [
+       -0.5400000214576721,
+       2.630000114440918,
+       -5.349999904632568
+      ],
+      [
+       -0.6000000238418579,
+       2.9100000858306885,
+       -6.130000114440918
+      ],
+      [
+       -0.6399999856948853,
+       3.190000057220459,
+       -6.940000057220459
+      ]
+     ],
+     "name": "open move (approach)",
+     "phase_share": {
+      "approach": 1.0,
+      "carry": 0.0,
+      "fixture": 0.0,
+      "rest": 0.0
+     },
+     "speed_cm_per_step": 0.3916657567024231,
+     "tasks": 1
+    },
+    "86": {
+     "dz_cm_per_step": 0.45076608657836914,
+     "event_share": 0.0,
+     "frames": 32,
+     "gripper_closed": 1.0,
+     "mode_grip": [
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0
+     ],
+     "mode_path_cm": [
+      [
+       0.07000000029802322,
+       -2.2300000190734863,
+       3.630000114440918
+      ],
+      [
+       0.15000000596046448,
+       -4.440000057220459,
+       7.110000133514404
+      ],
+      [
+       0.25,
+       -6.579999923706055,
+       10.430000305175781
+      ],
+      [
+       0.3799999952316284,
+       -8.630000114440918,
+       13.600000381469727
+      ],
+      [
+       0.5199999809265137,
+       -10.550000190734863,
+       16.6200008392334
+      ],
+      [
+       0.6800000071525574,
+       -12.350000381469727,
+       19.489999771118164
+      ],
+      [
+       0.8600000143051147,
+       -14.0600004196167,
+       22.190000534057617
+      ],
+      [
+       1.059999942779541,
+       -15.699999809265137,
+       24.670000076293945
+      ],
+      [
+       1.2799999713897705,
+       -17.31999969482422,
+       26.90999984741211
+      ],
+      [
+       1.5099999904632568,
+       -18.950000762939453,
+       28.8700008392334
+      ]
+     ],
+     "name": "closed lift (carry)",
+     "phase_share": {
+      "approach": 0.0,
+      "carry": 1.0,
+      "fixture": 0.0,
+      "rest": 0.0
+     },
+     "speed_cm_per_step": 0.606039434671402,
+     "tasks": 3
+    },
+    "9": {
+     "dz_cm_per_step": -0.38434267044067383,
+     "event_share": 1.0,
+     "frames": 53,
+     "gripper_closed": 0.0,
+     "mode_grip": [
+      -0.949999988079071,
+      -0.6800000071525574,
+      0.800000011920929,
+      0.9800000190734863,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0
+     ],
+     "mode_path_cm": [
+      [
+       -0.9300000071525574,
+       -0.009999999776482582,
+       -1.7799999713897705
+      ],
+      [
+       -1.7599999904632568,
+       0.0,
+       -3.390000104904175
+      ],
+      [
+       -2.4700000286102295,
+       0.029999999329447746,
+       -4.800000190734863
+      ],
+      [
+       -3.049999952316284,
+       0.07000000029802322,
+       -5.909999847412109
+      ],
+      [
+       -3.4800000190734863,
+       0.12999999523162842,
+       -6.730000019073486
+      ],
+      [
+       -3.799999952316284,
+       0.18000000715255737,
+       -7.260000228881836
+      ],
+      [
+       -4.019999980926514,
+       0.2199999988079071,
+       -7.559999942779541
+      ],
+      [
+       -4.159999847412109,
+       0.25999999046325684,
+       -7.630000114440918
+      ],
+      [
+       -4.210000038146973,
+       0.2800000011920929,
+       -7.440000057220459
+      ],
+      [
+       -4.150000095367432,
+       0.3100000023841858,
+       -6.929999828338623
+      ]
+     ],
+     "name": "open grip change (approach)",
+     "phase_share": {
+      "approach": 0.9056603773584906,
+      "carry": 0.03773584905660377,
+      "fixture": 0.018867924528301886,
+      "rest": 0.03773584905660377
+     },
+     "speed_cm_per_step": 0.45730531215667725,
+     "tasks": 46
+    },
+    "93": {
+     "dz_cm_per_step": -0.042891502380371094,
+     "event_share": 0.0,
+     "frames": 26,
+     "gripper_closed": 0.0,
+     "mode_grip": [
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0
+     ],
+     "mode_path_cm": [
+      [
+       0.27000001072883606,
+       0.03999999910593033,
+       -0.6000000238418579
+      ],
+      [
+       0.4699999988079071,
+       0.07999999821186066,
+       -1.2300000190734863
+      ],
+      [
+       0.6299999952316284,
+       0.11999999731779099,
+       -1.8899999856948853
+      ],
+      [
+       0.7699999809265137,
+       0.15000000596046448,
+       -2.569999933242798
+      ],
+      [
+       0.9100000262260437,
+       0.18000000715255737,
+       -3.2699999809265137
+      ],
+      [
+       1.059999942779541,
+       0.18000000715255737,
+       -3.990000009536743
+      ],
+      [
+       1.2300000190734863,
+       0.17000000178813934,
+       -4.71999979019165
+      ],
+      [
+       1.4299999475479126,
+       0.12999999523162842,
+       -5.440000057220459
+      ],
+      [
+       1.659999966621399,
+       0.05999999865889549,
+       -6.170000076293945
+      ],
+      [
+       1.9299999475479126,
+       -0.03999999910593033,
+       -6.889999866485596
+      ]
+     ],
+     "name": "open move (fixture)",
+     "phase_share": {
+      "approach": 0.2692307692307692,
+      "carry": 0.0,
+      "fixture": 0.7307692307692307,
+      "rest": 0.0
+     },
+     "speed_cm_per_step": 0.4648772329092026,
+     "tasks": 3
+    },
+    "94": {
+     "dz_cm_per_step": -0.18063783645629883,
+     "event_share": 0.0,
+     "frames": 111,
+     "gripper_closed": 0.0,
+     "mode_grip": [
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0
+     ],
+     "mode_path_cm": [
+      [
+       0.5799999833106995,
+       -0.7699999809265137,
+       -0.7599999904632568
+      ],
+      [
+       1.1299999952316284,
+       -1.5499999523162842,
+       -1.4800000190734863
+      ],
+      [
+       1.6399999856948853,
+       -2.319999933242798,
+       -2.1700000762939453
+      ],
+      [
+       2.0999999046325684,
+       -3.069999933242798,
+       -2.8299999237060547
+      ],
+      [
+       2.5199999809265137,
+       -3.7799999713897705,
+       -3.450000047683716
+      ],
+      [
+       2.9100000858306885,
+       -4.46999979019165,
+       -4.019999980926514
+      ],
+      [
+       3.2799999713897705,
+       -5.139999866485596,
+       -4.550000190734863
+      ],
+      [
+       3.6500000953674316,
+       -5.809999942779541,
+       -5.039999961853027
+      ],
+      [
+       4.050000190734863,
+       -6.489999771118164,
+       -5.480000019073486
+      ],
+      [
+       4.510000228881836,
+       -7.210000038146973,
+       -5.880000114440918
+      ]
+     ],
+     "name": "open move (approach)",
+     "phase_share": {
+      "approach": 0.6576576576576577,
+      "carry": 0.0,
+      "fixture": 0.34234234234234234,
+      "rest": 0.0
+     },
+     "speed_cm_per_step": 0.20958830416202545,
+     "tasks": 5
+    },
+    "99": {
+     "dz_cm_per_step": -0.48581361770629883,
+     "event_share": 0.0,
+     "frames": 13,
+     "gripper_closed": 1.0,
+     "mode_grip": [
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0
+     ],
+     "mode_path_cm": [
+      [
+       0.12999999523162842,
+       -1.8200000524520874,
+       0.3700000047683716
+      ],
+      [
+       0.23000000417232513,
+       -3.7100000381469727,
+       0.6899999976158142
+      ],
+      [
+       0.3199999928474426,
+       -5.650000095367432,
+       0.9700000286102295
+      ],
+      [
+       0.3799999952316284,
+       -7.659999847412109,
+       1.2100000381469727
+      ],
+      [
+       0.4099999964237213,
+       -9.760000228881836,
+       1.4199999570846558
+      ],
+      [
+       0.4300000071525574,
+       -11.960000038146973,
+       1.600000023841858
+      ],
+      [
+       0.4300000071525574,
+       -14.289999961853027,
+       1.7300000190734863
+      ],
+      [
+       0.4300000071525574,
+       -16.690000534057617,
+       1.7899999618530273
+      ],
+      [
+       0.41999998688697815,
+       -19.1299991607666,
+       1.75
+      ],
+      [
+       0.4000000059604645,
+       -21.56999969482422,
+       1.5399999618530273
+      ]
+     ],
+     "name": "closed lower (carry)",
+     "phase_share": {
+      "approach": 0.0,
+      "carry": 1.0,
+      "fixture": 0.0,
+      "rest": 0.0
+     },
+     "speed_cm_per_step": 0.7359093427658081,
+     "tasks": 1
+    }
+   },
+   "0.55": {
+    "0": {
+     "dz_cm_per_step": -0.12788772583007812,
+     "event_share": 0.04815724815724816,
+     "frames": 4070,
+     "gripper_closed": 0.04914004914004914,
+     "mode_grip": [
+      -0.9800000190734863,
+      -0.9900000095367432,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -0.9900000095367432,
+      -0.9800000190734863
+     ],
+     "mode_path_cm": [
+      [
+       0.009999999776482582,
+       -0.009999999776482582,
+       -0.7300000190734863
+      ],
+      [
+       0.009999999776482582,
+       -0.019999999552965164,
+       -1.4700000286102295
+      ],
+      [
+       -0.019999999552965164,
+       -0.019999999552965164,
+       -2.2100000381469727
+      ],
+      [
+       -0.07000000029802322,
+       -0.009999999776482582,
+       -2.9700000286102295
+      ],
+      [
+       -0.14000000059604645,
+       -0.009999999776482582,
+       -3.75
+      ],
+      [
+       -0.23000000417232513,
+       -0.0,
+       -4.539999961853027
+      ],
+      [
+       -0.33000001311302185,
+       0.0,
+       -5.340000152587891
+      ],
+      [
+       -0.46000000834465027,
+       0.0,
+       -6.150000095367432
+      ],
+      [
+       -0.6000000238418579,
+       0.0,
+       -6.980000019073486
+      ],
+      [
+       -0.7599999904632568,
+       -0.0,
+       -7.809999942779541
+      ]
+     ],
+     "name": "open move (approach)",
+     "phase_share": {
+      "approach": 0.6683046683046683,
+      "carry": 0.07788697788697789,
+      "fixture": 0.14176904176904176,
+      "rest": 0.11203931203931204
+     },
+     "speed_cm_per_step": 0.6215420067310333,
+     "tasks": 50
+    },
+    "1": {
+     "dz_cm_per_step": -0.0028371810913085938,
+     "event_share": 0.08914209115281502,
+     "frames": 2984,
+     "gripper_closed": 0.9292895442359249,
+     "mode_grip": [
+      0.949999988079071,
+      0.9800000190734863,
+      0.9900000095367432,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      0.9900000095367432,
+      0.9700000286102295
+     ],
+     "mode_path_cm": [
+      [
+       -0.23000000417232513,
+       0.9100000262260437,
+       -0.5600000023841858
+      ],
+      [
+       -0.4300000071525574,
+       1.8200000524520874,
+       -1.059999942779541
+      ],
+      [
+       -0.6100000143051147,
+       2.7100000381469727,
+       -1.4900000095367432
+      ],
+      [
+       -0.7599999904632568,
+       3.5899999141693115,
+       -1.850000023841858
+      ],
+      [
+       -0.8899999856948853,
+       4.460000038146973,
+       -2.130000114440918
+      ],
+      [
+       -0.9900000095367432,
+       5.300000190734863,
+       -2.3299999237060547
+      ],
+      [
+       -1.059999942779541,
+       6.130000114440918,
+       -2.440000057220459
+      ],
+      [
+       -1.1100000143051147,
+       6.940000057220459,
+       -2.450000047683716
+      ],
+      [
+       -1.1100000143051147,
+       7.730000019073486,
+       -2.3399999141693115
+      ],
+      [
+       -1.0800000429153442,
+       8.510000228881836,
+       -2.119999885559082
+      ]
+     ],
+     "name": "closed transport (carry)",
+     "phase_share": {
+      "approach": 0.20878016085790885,
+      "carry": 0.7506702412868632,
+      "fixture": 0.01675603217158177,
+      "rest": 0.02379356568364611
+     },
+     "speed_cm_per_step": 0.670120120048523,
+     "tasks": 46
+    },
+    "2": {
+     "dz_cm_per_step": 0.4271090030670166,
+     "event_share": 0.0043541364296081275,
+     "frames": 689,
+     "gripper_closed": 1.0,
+     "mode_grip": [
+      0.9900000095367432,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      0.9900000095367432
+     ],
+     "mode_path_cm": [
+      [
+       0.30000001192092896,
+       3.1500000953674316,
+       0.8799999952316284
+      ],
+      [
+       0.6000000238418579,
+       6.349999904632568,
+       1.649999976158142
+      ],
+      [
+       0.9200000166893005,
+       9.579999923706055,
+       2.319999933242798
+      ],
+      [
+       1.2400000095367432,
+       12.829999923706055,
+       2.880000114440918
+      ],
+      [
+       1.559999942779541,
+       16.100000381469727,
+       3.3399999141693115
+      ],
+      [
+       1.8899999856948853,
+       19.360000610351562,
+       3.690000057220459
+      ],
+      [
+       2.2200000286102295,
+       22.600000381469727,
+       3.930000066757202
+      ],
+      [
+       2.5399999618530273,
+       25.809999465942383,
+       4.059999942779541
+      ],
+      [
+       2.859999895095825,
+       28.979999542236328,
+       4.070000171661377
+      ],
+      [
+       3.1700000762939453,
+       32.08000183105469,
+       3.9700000286102295
+      ]
+     ],
+     "name": "closed lift (carry)",
+     "phase_share": {
+      "approach": 0.0,
+      "carry": 0.9709724238026125,
+      "fixture": 0.0,
+      "rest": 0.02902757619738752
+     },
+     "speed_cm_per_step": 1.0922448635101318,
+     "tasks": 23
+    }
+   }
+  },
+  "string_by_key": {
+   "carry": {
+    "other_key_mean": 0.5194188798252913,
+    "other_key_median": 0.5555555555555556,
+    "other_pairs": 956,
+    "perm_p": 0.0009995002498750624,
+    "phases": 45,
+    "same_key_mean": 0.3252334267040149,
+    "same_key_median": 0.26785714285714285,
+    "same_pairs": 34
+   },
+   "grasp": {
+    "other_key_mean": 0.30293185406124934,
+    "other_key_median": 0.25,
+    "other_pairs": 912,
+    "perm_p": 0.13493253373313344,
+    "phases": 45,
+    "same_key_mean": 0.2690450982177507,
+    "same_key_median": 0.2222222222222222,
+    "same_pairs": 78
+   }
+  },
+  "tasks": [
+   1,
+   3,
+   4,
+   5,
+   6,
+   8,
+   11,
+   13,
+   16,
+   17,
+   18,
+   21,
+   23,
+   25,
+   26,
+   27,
+   32,
+   34,
+   35,
+   36,
+   37,
+   39,
+   40,
+   41,
+   42,
+   43,
+   48,
+   52,
+   53,
+   58,
+   62,
+   63,
+   65,
+   66,
+   69,
+   71,
+   73,
+   74,
+   75,
+   76,
+   78,
+   80,
+   81,
+   83,
+   84,
+   85,
+   86,
+   87,
+   88,
+   89
+  ]
+ },
+ "notes": null,
+ "run_id": "grammar__libero_90__readout__s0__c34fa59f",
+ "schema": 1,
+ "script": "experiments/grammar_readout.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-30T23:19:37+00:00",
+ "stream": null,
+ "tag": "readout"
+}

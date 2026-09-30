@@ -5737,7 +5737,7 @@
   ]
  },
  "notes": null,
- "retired": null,
+ "retired": true,
  "run_id": "grammar__libero_90__readout__s0__357746b6",
  "schema": 1,
  "script": "experiments/grammar_readout.py",
@@ -5746,5 +5746,6 @@
  "source_commit": null,
  "started": "2026-09-30T21:25:25+00:00",
  "stream": null,
- "tag": "readout"
+ "tag": "readout",
+ "retired_reason": "superseded by grammar__libero_90__readout__s0__c34fa59f (adds each program's phases with its bindings; every value of this row is unchanged there)"
 }

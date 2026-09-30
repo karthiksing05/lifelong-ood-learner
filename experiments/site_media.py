@@ -158,7 +158,8 @@ def prototype_clips(lang):
             if t not in cache:
                 cache[t] = demo_frames(t, names)
             fr = cache[t]
-            lo, hi = max(0, a - 4), min(len(fr), b + 5)
+            pad = 8 if b - a < 6 else 4                           # one- or two-frame verbs (the grip change): more context around them
+            lo, hi = max(0, a - pad), min(len(fr), b + pad + 1)
             if hi - lo > 44:                                       # long runs (transport): 4 s around their middle
                 mid = (lo + hi) // 2
                 lo, hi = mid - 22, mid + 22
@@ -182,7 +183,7 @@ def prototype_clips(lang):
             row2 = np.concatenate([cells[2], np.full((264, 6, 3), 246, np.uint8), cells[3]], axis=1) if len(cells) > 3 else np.full_like(row1, 246)
             frames.append(np.concatenate([row1, np.full((6, row1.shape[1], 3), 246, np.uint8), row2], axis=0))
         fn = "proto_" + verb.replace(" ", "_") + ".mp4"
-        size = write_mp4(frames, os.path.join(OUT, fn), fps=8, crf=24)
+        size = write_mp4(frames, os.path.join(OUT, fn), fps=6, crf=24)
         tasks_with = sorted({t for _, t, _ in runs})
         out.append(dict(verb=verb, gloss=gloss, file=fn, prototype_ids=ids, tasks=[c[0] for c in clips], n_tasks=len(tasks_with),
                         frames=len(frames)))
@@ -221,7 +222,7 @@ def stills(lang):
 def posters():
     """A poster per clip: the last frame of a comparison (it shows every panel's outcome), the middle frame of a prototype clip."""
     for f in sorted(glob.glob(os.path.join(OUT, "*.mp4"))):
-        at = ["-sseof", "-0.2"] if not os.path.basename(f).startswith("proto_") else ["-ss", "1.5"]
+        at = ["-sseof", "-0.2"] if not os.path.basename(f).startswith("proto_") else ["-ss", "1.0"]
         subprocess.run([FF, "-v", "error", "-y"] + at + ["-i", f, "-frames:v", "1", "-q:v", "4", f[:-4] + ".jpg"], check=True)
     print("posters:", len(glob.glob(os.path.join(OUT, "*.mp4"))), flush=True)
 
