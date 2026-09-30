@@ -1,0 +1,87 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/m3_final_75_phasebind2_rjpred_pca512_rj.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "roll.sh MODE=phasebind:75?fold=0&rules=2&reader=pca512_rj&carry=pred&var=0.001 SUITE=libero_90 TASKS=75 TRIALS=20 (job 3991204)",
+ "config": {
+  "client": {
+   "branches": "",
+   "first_trial": 30,
+   "host": "127.0.0.1",
+   "light": false,
+   "max_steps": 0,
+   "no_meta": false,
+   "objects": false,
+   "out": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/m3_final_75_phasebind2_rjpred_pca512_rj.json",
+   "port": 9672,
+   "record": false,
+   "replan": 5,
+   "resize": 224,
+   "seed": 7,
+   "suite": "libero_90",
+   "tasks": "75",
+   "trials": 20,
+   "videos": 2,
+   "wait": 10
+  },
+  "job": "3991204",
+  "mode": "phasebind:75?fold=0&rules=2&reader=pca512_rj&carry=pred&var=0.001"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "voltron.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3991204",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_final",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "cb25ae68a0928ef13bc6f51deccf6f5592d16894",
+  "short": "cb25ae68"
+ },
+ "keys": {
+  "first_trial": 30,
+  "mode": "phasebind:75?fold=0&rules=2&reader=pca512_rj&carry=pred&var=0.001",
+  "tasks": "75",
+  "trials": 20
+ },
+ "metrics": {
+  "complete": true,
+  "n_episodes": 20,
+  "secs": 341.4550061225891,
+  "success_rate": 0.85,
+  "tasks": {
+   "75": {
+    "errors": 0,
+    "language": "pick up the book and place it in the right compartment of the caddy",
+    "mean_steps": 191.05,
+    "n": 20,
+    "success_rate": 0.85
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_final__libero_90__phasebind2_rjpred_pca512_rj__first_trial-30__mode43359c49826d__tasks-75__trials-20__s7__cb25ae68",
+ "schema": 1,
+ "script": "experiments/libero_client.py",
+ "seconds": null,
+ "seed": 7,
+ "source_commit": null,
+ "started": "2026-09-30T20:40:03+00:00",
+ "stream": null,
+ "tag": "phasebind2_rjpred_pca512_rj"
+}

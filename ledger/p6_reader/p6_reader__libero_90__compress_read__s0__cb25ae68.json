@@ -1,0 +1,272 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "experiments/p1_read.py compress --record  # own-demo programs with the shared-basis (pca512) reader head vs the full reader, 50 tasks",
+ "config": {
+  "read": "compress",
+  "record": true
+ },
+ "env": {
+  "device": "cpu",
+  "host": "sky1.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "p6_reader",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "cb25ae68a0928ef13bc6f51deccf6f5592d16894",
+  "short": "cb25ae68"
+ },
+ "keys": {},
+ "metrics": {
+  "RC1": {
+   "control": 874,
+   "diff": {
+    "diff": -0.013,
+    "hi": 0.011,
+    "hi90": 0.007,
+    "lo": -0.038,
+    "lo90": -0.034,
+    "n_pairs": 1000,
+    "n_tasks": 50
+   },
+   "discordant": [
+    24,
+    37
+   ],
+   "n": 1000,
+   "non_inferior_005": true,
+   "non_inferior_010": true,
+   "sign_p": 0.12373144253809217,
+   "x": 861,
+   "x_arm": "phasebind2_rjpred_pca512_rj",
+   "y_arm": "phasebind2_rjpred"
+  },
+  "per_task": {
+   "1": {
+    "full": 18,
+    "pca": 20
+   },
+   "11": {
+    "full": 19,
+    "pca": 20
+   },
+   "13": {
+    "full": 20,
+    "pca": 19
+   },
+   "16": {
+    "full": 20,
+    "pca": 20
+   },
+   "17": {
+    "full": 20,
+    "pca": 20
+   },
+   "18": {
+    "full": 18,
+    "pca": 20
+   },
+   "21": {
+    "full": 14,
+    "pca": 14
+   },
+   "23": {
+    "full": 8,
+    "pca": 7
+   },
+   "25": {
+    "full": 20,
+    "pca": 20
+   },
+   "26": {
+    "full": 20,
+    "pca": 18
+   },
+   "27": {
+    "full": 11,
+    "pca": 8
+   },
+   "3": {
+    "full": 20,
+    "pca": 20
+   },
+   "32": {
+    "full": 20,
+    "pca": 20
+   },
+   "34": {
+    "full": 20,
+    "pca": 20
+   },
+   "35": {
+    "full": 20,
+    "pca": 20
+   },
+   "36": {
+    "full": 20,
+    "pca": 20
+   },
+   "37": {
+    "full": 20,
+    "pca": 18
+   },
+   "39": {
+    "full": 6,
+    "pca": 6
+   },
+   "4": {
+    "full": 20,
+    "pca": 20
+   },
+   "40": {
+    "full": 7,
+    "pca": 9
+   },
+   "41": {
+    "full": 18,
+    "pca": 18
+   },
+   "42": {
+    "full": 20,
+    "pca": 19
+   },
+   "43": {
+    "full": 20,
+    "pca": 20
+   },
+   "48": {
+    "full": 18,
+    "pca": 17
+   },
+   "5": {
+    "full": 18,
+    "pca": 17
+   },
+   "52": {
+    "full": 20,
+    "pca": 20
+   },
+   "53": {
+    "full": 20,
+    "pca": 20
+   },
+   "58": {
+    "full": 19,
+    "pca": 19
+   },
+   "6": {
+    "full": 20,
+    "pca": 20
+   },
+   "62": {
+    "full": 13,
+    "pca": 9
+   },
+   "63": {
+    "full": 20,
+    "pca": 20
+   },
+   "65": {
+    "full": 18,
+    "pca": 19
+   },
+   "66": {
+    "full": 20,
+    "pca": 19
+   },
+   "69": {
+    "full": 20,
+    "pca": 20
+   },
+   "71": {
+    "full": 20,
+    "pca": 20
+   },
+   "73": {
+    "full": 12,
+    "pca": 12
+   },
+   "74": {
+    "full": 20,
+    "pca": 20
+   },
+   "75": {
+    "full": 20,
+    "pca": 17
+   },
+   "76": {
+    "full": 18,
+    "pca": 18
+   },
+   "78": {
+    "full": 12,
+    "pca": 7
+   },
+   "8": {
+    "full": 16,
+    "pca": 16
+   },
+   "80": {
+    "full": 20,
+    "pca": 20
+   },
+   "81": {
+    "full": 13,
+    "pca": 12
+   },
+   "83": {
+    "full": 4,
+    "pca": 7
+   },
+   "84": {
+    "full": 20,
+    "pca": 20
+   },
+   "85": {
+    "full": 20,
+    "pca": 20
+   },
+   "86": {
+    "full": 14,
+    "pca": 16
+   },
+   "87": {
+    "full": 20,
+    "pca": 20
+   },
+   "88": {
+    "full": 20,
+    "pca": 20
+   },
+   "89": {
+    "full": 20,
+    "pca": 20
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "p6_reader__libero_90__compress_read__s0__cb25ae68",
+ "schema": 1,
+ "script": "experiments/p1_read.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-30T20:54:38+00:00",
+ "stream": null,
+ "tag": "compress_read"
+}

@@ -38,11 +38,21 @@ def practice_rate(kind):
     return out
 
 
-def practice_best(thr=0.8):
-    """kind best (m3_prereg p5_handoff): each composition practised with BOTH carries -- guided (streamc) and the prior's (streamh) --
-    on states 0-9; it passes if the better one reaches thr, and executes with that one (ties: streamc).  -> {(t, g, p): kind or None}"""
-    c, h = practice_rate("streamc"), practice_rate("streamh")
-    return {k: (("streamc" if c[k] >= h[k] else "streamh") if max(c[k], h[k]) >= thr else None) for k in set(c) & set(h)}
+CARRIES = ("streamc", "streamh")
+
+
+def practice_best(thr=0.8, carries=None):
+    """kind best: each composition practised on states 0-9 with every carry in `carries` (guided streamc, the prior's streamh, the
+    arrival-gated transport streamte, ...); it passes if the best reaches thr and executes with that one (ties: the earlier carry).
+    -> {(t, g, p): kind or None} for the compositions practised with every carry"""
+    carries = carries or CARRIES
+    rates = [practice_rate(k) for k in carries]
+    keys = set.intersection(*[set(r) for r in rates])
+    out = {}
+    for key in keys:
+        i = max(range(len(carries)), key=lambda j: (rates[j][key], -j))
+        out[key] = carries[i] if rates[i][key] >= thr else None
+    return out
 
 
 def practice_ok(thr=0.8, kind="streamc"):
@@ -59,7 +69,16 @@ def practice_ok(thr=0.8, kind="streamc"):
     return out
 
 
-def plan(multi=False, practice=False, order_seed=0, kind="streamc"):
+def scenes():
+    """task -> its LIBERO-90 scene (KITCHEN_SCENE10, ...), from the benchmark's task map."""
+    import re
+    src = open("/coc/flash10/ksingara3/robot/openpi/third_party/libero/libero/libero/benchmark/libero_suite_task_map.py").read()
+    block = src[src.index('"libero_90"'):]
+    names = re.findall(r'"([^"]+)"', block[block.index("[") + 1:block.index("]")])
+    return {t: re.match(r"([A-Z_]+SCENE\d+)", n).group(1) for t, n in enumerate(names)}
+
+
+def plan(multi=False, practice=False, order_seed=0, kind="streamc", rank=False):
     pool = load("p5_pool.json")
     demo_ok = {int(t): v["k"] / v["n"] >= 0.5 for f in ("g27_generate.json", "g28_generate.json") for t, v in load(f).items()}
     comp_ok = {tuple(map(int, k.split("_"))): v["k"] / v["n"] >= 0.5 for k, v in load("g29_generate.json").items() if k.count("_") == 2}
@@ -79,13 +98,18 @@ def plan(multi=False, practice=False, order_seed=0, kind="streamc"):
     a = sorted(int(t) for t in pool)
     random.Random(order_seed).shuffle(a)
     out = {}
-    names = {0: ("A", "B"), 1: ("C", "D"), 2: ("E", "F")}[order_seed]   # C, D: m3_prereg p5_confirm; E, F: p5_handoff
+    names = {0: ("A", "B"), 1: ("C", "D"), 2: ("E", "F"), 3: ("G", "H")}[order_seed]   # C, D: m3_prereg p5_confirm; E-H: fresh
     for name, order in {names[0]: a, names[1]: a[::-1]}.items():
         grasp, place, steps = {}, {}, []                      # key -> the validated sources, in arrival order
         for t in order:
             info = pool[str(t)]
             if info["composable"] and info["object_type"] in grasp and info["goal_key"] in place:
-                pairs = [(g, p) for g in grasp[info["object_type"]] for p in place[info["goal_key"]]]
+                gs, ps = grasp[info["object_type"]], place[info["goal_key"]]
+                if rank:                                      # the interpretable lookup (docs/GRAMMAR.md 3): grasp sources from the same
+                    sc = scenes()                             # scene first; place sources of the same object type, then the same scene
+                    gs = sorted(gs, key=lambda g: sc[g] != sc[t])
+                    ps = sorted(ps, key=lambda p: (pool[str(p)]["object_type"] != info["object_type"], sc[p] != sc[t]))
+                pairs = [(g, p) for g in gs for p in ps]
                 if not multi:
                     pairs = pairs[:1]                         # the first sources only (the registered table)
                 hit = next(((g, p) for g, p in pairs if comp_ok.get((t, g, p), False)), None)
@@ -112,6 +136,8 @@ def plan(multi=False, practice=False, order_seed=0, kind="streamc"):
         name = name.replace(".json", f"_orders{order_seed}.json")
     if kind != "streamc":
         name = name.replace(".json", f"_{kind}.json")
+    if rank:
+        name = name.replace(".json", "_rank.json")
     json.dump(out, open(os.path.join(R, name), "w"), indent=1)
     if practice:
         print("candidates without practice yet (run them on states 0-9, then replan):", sorted(unpractised))
@@ -167,11 +193,60 @@ def read(record=False, multi=False, practice=False, order_seed=0, score_seed=0, 
     return res
 
 
+def read_scheme(order_seeds=(2, 3), score_seed=3, record=False):
+    """The compositional scheme's confirmation (m3_prereg p5_scheme): the ranked lookup, practice choosing the carry (kind best), fresh
+    orders.  Each UNIQUE composition (task, g, p, carry) arriving in any order is one unit, scored once at `score_seed` on init states
+    30-49 and paired with the task's own demo at the same seed; units are the bootstrap's clusters."""
+    import importlib.util
+    from lifelong_ood import ledger, stats
+    spec = importlib.util.spec_from_file_location("m3s", os.path.join(ROOT, "experiments", "m3_stats.py"))
+    m3s = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(m3s)
+    fin, _ = m3s.episodes("m3_final")
+    sfx = f"_seed{score_seed}"
+    units, res = {}, {"orders": {}, "carries": list(CARRIES), "score_seed": score_seed}
+    for sd in order_seeds:
+        name = "p5_stream_plan_practice.json".replace(".json", (f"_orders{sd}" if sd else "") + "_best_rank.json")
+        for o, pl in load(name).items():
+            comp = [(x["task"], x["g"], x["p"], x["kind"]) for x in pl["steps"] if x["action"] == "compose"]
+            res["orders"][o] = dict(demos=pl["demos"], composed=len(comp), rejected=pl["rejected"], compositions=[list(u) for u in comp],
+                                    composed_first_half=pl["composed_first_half"], composed_second_half=pl["composed_second_half"])
+            units.update(dict.fromkeys(comp))
+    tab = {f"{t}_{g}_{p}_{k}": {"c": fin[(str(t), f"{k}_{g}_{p}{sfx}")], "own": fin[(str(t), f"phasebind2_rjpred{sfx}")]}
+           for (t, g, p, k) in units}
+    pairs = stats.paired(tab, "c", "own", list(tab))
+    d = stats.bootstrap_diff(pairs, B=10000)
+    d.pop("samples", None)
+    b, c = stats.discordant(pairs)
+    kc = sum(sum(v[0]) for v in pairs.values()); ko = sum(sum(v[1]) for v in pairs.values()); nn = sum(len(v[0]) for v in pairs.values())
+    res["per_unit"] = {k: dict(composed=int(sum(v["c"].values())), own=int(sum(v["own"].values()))) for k, v in tab.items()}
+    res["H1"] = dict(x=int(kc), control=int(ko), n=int(nn), units=len(tab), diff=d, discordant=[b, c], sign_p=stats.sign_test(b, c),
+                     non_inferior=bool(d["lo90"] >= -0.10))
+    for o, v in res["orders"].items():
+        print(f"order {o}: {v['demos']} demos, {v['composed']} composed ({v['composed_first_half']} + {v['composed_second_half']}), "
+              f"{v['rejected']} rejected")
+    v = res["H1"]
+    print(f"H1 unique compositions ({v['units']}) vs their own demos: {kc} vs {ko} of {nn}, diff {d['diff']:+.3f}, lower bound "
+          f"{d['lo90']:+.3f}, sign p {v['sign_p']:.3g} -> non-inferior {v['non_inferior']}")
+    if record:
+        print(ledger.record("p5_stream", bench="libero_90", tag="scheme", seed=0, metrics=res,
+                            bytes=dict(experts=0, tree=0, codes=0, samples=0, teacher_copies=0, total=0), config={},
+                            script="experiments/p5_validated.py", command=" ".join(sys.argv)))
+    return res
+
+
 if __name__ == "__main__":
     kind = sys.argv[sys.argv.index("--kind") + 1] if "--kind" in sys.argv else "streamc"
+    if "--carries" in sys.argv:                               # kind best: the carry set practice chooses from
+        CARRIES = tuple(sys.argv[sys.argv.index("--carries") + 1].split(","))
+    if sys.argv[1] == "read_scheme":
+        osd = tuple(int(x) for x in sys.argv[sys.argv.index("--order-seeds") + 1].split(",")) if "--order-seeds" in sys.argv else (2, 3)
+        sc = int(sys.argv[sys.argv.index("--score-seed") + 1]) if "--score-seed" in sys.argv else 3
+        read_scheme(osd, sc, "--record" in sys.argv)
+        sys.exit(0)
     if sys.argv[1] == "plan":
         seed = int(sys.argv[sys.argv.index("--order-seed") + 1]) if "--order-seed" in sys.argv else 0
-        plan("--multi" in sys.argv, "--practice" in sys.argv, seed, kind)
+        plan("--multi" in sys.argv, "--practice" in sys.argv, seed, kind, "--rank" in sys.argv)
     else:
         seed = int(sys.argv[sys.argv.index("--order-seed") + 1]) if "--order-seed" in sys.argv else 0
         sc = int(sys.argv[sys.argv.index("--score-seed") + 1]) if "--score-seed" in sys.argv else 0

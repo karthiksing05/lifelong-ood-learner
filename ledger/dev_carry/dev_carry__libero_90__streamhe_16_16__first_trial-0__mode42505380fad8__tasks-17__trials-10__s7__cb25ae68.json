@@ -1,0 +1,87 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/dev_carry_17_streamhe_16_16.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "roll.sh MODE=phasebind:17?fold=0&rules=2&g=16&p=16&objn=akita_black_bowl_2&recn=akita_black_bowl_3&reader=spatial4_synthonly_rj&carry=pred&handoff=1&events=1&var=0.001 SUITE=libero_90 TASKS=17 TRIALS=10 (job 3991373)",
+ "config": {
+  "client": {
+   "branches": "",
+   "first_trial": 0,
+   "host": "127.0.0.1",
+   "light": true,
+   "max_steps": 0,
+   "no_meta": false,
+   "objects": true,
+   "out": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/dev_carry_17_streamhe_16_16.json",
+   "port": 9309,
+   "record": true,
+   "replan": 5,
+   "resize": 224,
+   "seed": 7,
+   "suite": "libero_90",
+   "tasks": "17",
+   "trials": 10,
+   "videos": 2,
+   "wait": 10
+  },
+  "job": "3991373",
+  "mode": "phasebind:17?fold=0&rules=2&g=16&p=16&objn=akita_black_bowl_2&recn=akita_black_bowl_3&reader=spatial4_synthonly_rj&carry=pred&handoff=1&events=1&var=0.001"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "brainiac.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3991373",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "dev_carry",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "cb25ae68a0928ef13bc6f51deccf6f5592d16894",
+  "short": "cb25ae68"
+ },
+ "keys": {
+  "first_trial": 0,
+  "mode": "phasebind:17?fold=0&rules=2&g=16&p=16&objn=akita_black_bowl_2&recn=akita_black_bowl_3&reader=spatial4_synthonly_rj&carry=pred&handoff=1&events=1&var=0.001",
+  "tasks": "17",
+  "trials": 10
+ },
+ "metrics": {
+  "complete": true,
+  "n_episodes": 10,
+  "secs": 418.97557973861694,
+  "success_rate": 0.5,
+  "tasks": {
+   "17": {
+    "errors": 0,
+    "language": "stack the middle black bowl on the back black bowl",
+    "mean_steps": 331.6,
+    "n": 10,
+    "success_rate": 0.5
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "dev_carry__libero_90__streamhe_16_16__first_trial-0__mode42505380fad8__tasks-17__trials-10__s7__cb25ae68",
+ "schema": 1,
+ "script": "experiments/libero_client.py",
+ "seconds": null,
+ "seed": 7,
+ "source_commit": null,
+ "started": "2026-09-30T21:00:02+00:00",
+ "stream": null,
+ "tag": "streamhe_16_16"
+}
