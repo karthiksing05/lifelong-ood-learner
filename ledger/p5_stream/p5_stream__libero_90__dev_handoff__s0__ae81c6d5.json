@@ -1,0 +1,639 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "experiments/handoff_read.py --json --record  # EXPLORATORY dev read, states 0-9",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky1.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "p5_stream",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "ae81c6d561ef0422be7959fd1c45b0fbd262383d",
+  "short": "ae81c6d5"
+ },
+ "keys": {},
+ "metrics": {
+  "compositions": 54,
+  "diff": {
+   "diff": -0.016666666666666666,
+   "hi": 0.10555555555555556,
+   "hi90": 0.08518518518518518,
+   "lo": -0.1388888888888889,
+   "lo90": -0.11861111111111103,
+   "n_pairs": 540,
+   "n_tasks": 54
+  },
+  "discordant": [
+   86,
+   95
+  ],
+  "experiment": "dev_handoff",
+  "mismatch_0_10": {
+   "compositions": 10,
+   "n": 100,
+   "streamc": 35,
+   "streamh": 20
+  },
+  "mismatch_10_30": {
+   "compositions": 30,
+   "n": 300,
+   "streamc": 151,
+   "streamh": 116
+  },
+  "mismatch_30_999": {
+   "compositions": 14,
+   "n": 140,
+   "streamc": 11,
+   "streamh": 52
+  },
+  "pass_0.8": {
+   "streamc": 16,
+   "streamh": 11
+  },
+  "phase_outcomes_streamh": {
+   "bring": 211,
+   "lift": 54,
+   "place": 29,
+   "reach": 58,
+   "success": 188
+  },
+  "rows": [
+   {
+    "g": 17,
+    "key": "13_17_65",
+    "mismatch_cm": 35.26516565772371,
+    "n": 10,
+    "p": 65,
+    "streamc": 0,
+    "streamh": 10,
+    "task": 13
+   },
+   {
+    "g": 63,
+    "key": "13_63_65",
+    "mismatch_cm": 35.26516565772371,
+    "n": 10,
+    "p": 65,
+    "streamc": 0,
+    "streamh": 5,
+    "task": 13
+   },
+   {
+    "g": 17,
+    "key": "16_17_17",
+    "mismatch_cm": 18.859147767291333,
+    "n": 10,
+    "p": 17,
+    "streamc": 8,
+    "streamh": 0,
+    "task": 16
+   },
+   {
+    "g": 1,
+    "key": "16_1_17",
+    "mismatch_cm": 18.859147767291333,
+    "n": 10,
+    "p": 17,
+    "streamc": 0,
+    "streamh": 0,
+    "task": 16
+   },
+   {
+    "g": 16,
+    "key": "17_16_16",
+    "mismatch_cm": 18.192858576945113,
+    "n": 10,
+    "p": 16,
+    "streamc": 10,
+    "streamh": 4,
+    "task": 17
+   },
+   {
+    "g": 63,
+    "key": "17_63_16",
+    "mismatch_cm": 18.192858576945113,
+    "n": 10,
+    "p": 16,
+    "streamc": 6,
+    "streamh": 4,
+    "task": 17
+   },
+   {
+    "g": 37,
+    "key": "36_37_13",
+    "mismatch_cm": 37.14414345885449,
+    "n": 10,
+    "p": 13,
+    "streamc": 0,
+    "streamh": 8,
+    "task": 36
+   },
+   {
+    "g": 43,
+    "key": "36_43_13",
+    "mismatch_cm": 37.14414345885449,
+    "n": 10,
+    "p": 13,
+    "streamc": 0,
+    "streamh": 0,
+    "task": 36
+   },
+   {
+    "g": 43,
+    "key": "36_43_65",
+    "mismatch_cm": 61.4726936909595,
+    "n": 10,
+    "p": 65,
+    "streamc": 0,
+    "streamh": 1,
+    "task": 36
+   },
+   {
+    "g": 4,
+    "key": "3_4_4",
+    "mismatch_cm": 10.451169041532863,
+    "n": 10,
+    "p": 4,
+    "streamc": 10,
+    "streamh": 10,
+    "task": 3
+   },
+   {
+    "g": 21,
+    "key": "40_21_88",
+    "mismatch_cm": 6.088247609664562,
+    "n": 10,
+    "p": 88,
+    "streamc": 4,
+    "streamh": 0,
+    "task": 40
+   },
+   {
+    "g": 42,
+    "key": "40_42_88",
+    "mismatch_cm": 6.088247609664562,
+    "n": 10,
+    "p": 88,
+    "streamc": 0,
+    "streamh": 1,
+    "task": 40
+   },
+   {
+    "g": 21,
+    "key": "41_21_87",
+    "mismatch_cm": 28.6746193862845,
+    "n": 10,
+    "p": 87,
+    "streamc": 3,
+    "streamh": 0,
+    "task": 41
+   },
+   {
+    "g": 42,
+    "key": "41_42_43",
+    "mismatch_cm": 17.53567391670688,
+    "n": 10,
+    "p": 43,
+    "streamc": 10,
+    "streamh": 6,
+    "task": 41
+   },
+   {
+    "g": 21,
+    "key": "42_21_89",
+    "mismatch_cm": 6.066982153653107,
+    "n": 10,
+    "p": 89,
+    "streamc": 0,
+    "streamh": 0,
+    "task": 42
+   },
+   {
+    "g": 36,
+    "key": "43_36_87",
+    "mismatch_cm": 26.28896325679923,
+    "n": 10,
+    "p": 87,
+    "streamc": 8,
+    "streamh": 10,
+    "task": 43
+   },
+   {
+    "g": 37,
+    "key": "43_37_87",
+    "mismatch_cm": 26.28896325679923,
+    "n": 10,
+    "p": 87,
+    "streamc": 10,
+    "streamh": 9,
+    "task": 43
+   },
+   {
+    "g": 32,
+    "key": "48_32_53",
+    "mismatch_cm": 26.822251570979144,
+    "n": 10,
+    "p": 53,
+    "streamc": 10,
+    "streamh": 9,
+    "task": 48
+   },
+   {
+    "g": 58,
+    "key": "48_58_53",
+    "mismatch_cm": 26.822251570979144,
+    "n": 10,
+    "p": 53,
+    "streamc": 10,
+    "streamh": 3,
+    "task": 48
+   },
+   {
+    "g": 3,
+    "key": "4_3_3",
+    "mismatch_cm": 11.52287227695014,
+    "n": 10,
+    "p": 3,
+    "streamc": 9,
+    "streamh": 10,
+    "task": 4
+   },
+   {
+    "g": 32,
+    "key": "58_32_62",
+    "mismatch_cm": 5.828092260958616,
+    "n": 10,
+    "p": 62,
+    "streamc": 9,
+    "streamh": 9,
+    "task": 58
+   },
+   {
+    "g": 48,
+    "key": "58_48_62",
+    "mismatch_cm": 5.828092260958616,
+    "n": 10,
+    "p": 62,
+    "streamc": 9,
+    "streamh": 9,
+    "task": 58
+   },
+   {
+    "g": 69,
+    "key": "5_69_3",
+    "mismatch_cm": 22.135075582777116,
+    "n": 10,
+    "p": 3,
+    "streamc": 5,
+    "streamh": 7,
+    "task": 5
+   },
+   {
+    "g": 69,
+    "key": "5_69_4",
+    "mismatch_cm": 16.261414305240955,
+    "n": 10,
+    "p": 4,
+    "streamc": 5,
+    "streamh": 6,
+    "task": 5
+   },
+   {
+    "g": 66,
+    "key": "65_66_13",
+    "mismatch_cm": 36.18891817826457,
+    "n": 10,
+    "p": 13,
+    "streamc": 0,
+    "streamh": 1,
+    "task": 65
+   },
+   {
+    "g": 84,
+    "key": "65_84_13",
+    "mismatch_cm": 36.18891817826457,
+    "n": 10,
+    "p": 13,
+    "streamc": 0,
+    "streamh": 0,
+    "task": 65
+   },
+   {
+    "g": 65,
+    "key": "66_65_65",
+    "mismatch_cm": 65.27557082167054,
+    "n": 10,
+    "p": 65,
+    "streamc": 0,
+    "streamh": 7,
+    "task": 66
+   },
+   {
+    "g": 84,
+    "key": "66_84_13",
+    "mismatch_cm": 53.33489508230913,
+    "n": 10,
+    "p": 13,
+    "streamc": 0,
+    "streamh": 0,
+    "task": 66
+   },
+   {
+    "g": 65,
+    "key": "71_65_65",
+    "mismatch_cm": 39.921126415937664,
+    "n": 10,
+    "p": 65,
+    "streamc": 10,
+    "streamh": 10,
+    "task": 71
+   },
+   {
+    "g": 66,
+    "key": "71_66_13",
+    "mismatch_cm": 47.14255479894214,
+    "n": 10,
+    "p": 13,
+    "streamc": 0,
+    "streamh": 10,
+    "task": 71
+   },
+   {
+    "g": 84,
+    "key": "71_84_13",
+    "mismatch_cm": 47.14255479894214,
+    "n": 10,
+    "p": 13,
+    "streamc": 0,
+    "streamh": 0,
+    "task": 71
+   },
+   {
+    "g": 74,
+    "key": "73_74_81",
+    "mismatch_cm": 29.775969436140127,
+    "n": 10,
+    "p": 81,
+    "streamc": 0,
+    "streamh": 7,
+    "task": 73
+   },
+   {
+    "g": 75,
+    "key": "73_75_81",
+    "mismatch_cm": 29.775969436140127,
+    "n": 10,
+    "p": 81,
+    "streamc": 0,
+    "streamh": 6,
+    "task": 73
+   },
+   {
+    "g": 73,
+    "key": "75_73_80",
+    "mismatch_cm": 19.625871665058376,
+    "n": 10,
+    "p": 80,
+    "streamc": 3,
+    "streamh": 0,
+    "task": 75
+   },
+   {
+    "g": 74,
+    "key": "75_74_80",
+    "mismatch_cm": 19.625871665058376,
+    "n": 10,
+    "p": 80,
+    "streamc": 9,
+    "streamh": 1,
+    "task": 75
+   },
+   {
+    "g": 34,
+    "key": "76_34_84",
+    "mismatch_cm": 20.200647215233193,
+    "n": 10,
+    "p": 84,
+    "streamc": 2,
+    "streamh": 3,
+    "task": 76
+   },
+   {
+    "g": 73,
+    "key": "78_73_73",
+    "mismatch_cm": 22.054513162463284,
+    "n": 10,
+    "p": 73,
+    "streamc": 7,
+    "streamh": 0,
+    "task": 78
+   },
+   {
+    "g": 74,
+    "key": "78_74_81",
+    "mismatch_cm": 8.974726575217158,
+    "n": 10,
+    "p": 81,
+    "streamc": 6,
+    "streamh": 0,
+    "task": 78
+   },
+   {
+    "g": 75,
+    "key": "78_75_81",
+    "mismatch_cm": 8.974726575217158,
+    "n": 10,
+    "p": 81,
+    "streamc": 7,
+    "streamh": 1,
+    "task": 78
+   },
+   {
+    "g": 73,
+    "key": "80_73_75",
+    "mismatch_cm": 20.595513645285095,
+    "n": 10,
+    "p": 75,
+    "streamc": 8,
+    "streamh": 0,
+    "task": 80
+   },
+   {
+    "g": 75,
+    "key": "80_75_75",
+    "mismatch_cm": 20.595513645285095,
+    "n": 10,
+    "p": 75,
+    "streamc": 1,
+    "streamh": 0,
+    "task": 80
+   },
+   {
+    "g": 73,
+    "key": "81_73_73",
+    "mismatch_cm": 30.205617271374358,
+    "n": 10,
+    "p": 73,
+    "streamc": 1,
+    "streamh": 0,
+    "task": 81
+   },
+   {
+    "g": 73,
+    "key": "83_73_80",
+    "mismatch_cm": 10.829414197599464,
+    "n": 10,
+    "p": 80,
+    "streamc": 9,
+    "streamh": 1,
+    "task": 83
+   },
+   {
+    "g": 74,
+    "key": "83_74_80",
+    "mismatch_cm": 10.829414197599464,
+    "n": 10,
+    "p": 80,
+    "streamc": 0,
+    "streamh": 2,
+    "task": 83
+   },
+   {
+    "g": 75,
+    "key": "83_75_75",
+    "mismatch_cm": 30.4395941388841,
+    "n": 10,
+    "p": 75,
+    "streamc": 0,
+    "streamh": 0,
+    "task": 83
+   },
+   {
+    "g": 65,
+    "key": "84_65_76",
+    "mismatch_cm": 20.19857652351377,
+    "n": 10,
+    "p": 76,
+    "streamc": 0,
+    "streamh": 0,
+    "task": 84
+   },
+   {
+    "g": 66,
+    "key": "84_66_76",
+    "mismatch_cm": 20.19857652351377,
+    "n": 10,
+    "p": 76,
+    "streamc": 0,
+    "streamh": 0,
+    "task": 84
+   },
+   {
+    "g": 73,
+    "key": "86_73_40",
+    "mismatch_cm": 23.236756273646755,
+    "n": 10,
+    "p": 40,
+    "streamc": 0,
+    "streamh": 0,
+    "task": 86
+   },
+   {
+    "g": 74,
+    "key": "86_74_88",
+    "mismatch_cm": 17.125097231084876,
+    "n": 10,
+    "p": 88,
+    "streamc": 8,
+    "streamh": 4,
+    "task": 86
+   },
+   {
+    "g": 88,
+    "key": "87_88_43",
+    "mismatch_cm": 25.996118551418395,
+    "n": 10,
+    "p": 43,
+    "streamc": 0,
+    "streamh": 7,
+    "task": 87
+   },
+   {
+    "g": 89,
+    "key": "87_89_41",
+    "mismatch_cm": 28.23918447505039,
+    "n": 10,
+    "p": 41,
+    "streamc": 0,
+    "streamh": 7,
+    "task": 87
+   },
+   {
+    "g": 87,
+    "key": "88_87_40",
+    "mismatch_cm": 6.230707612690538,
+    "n": 10,
+    "p": 40,
+    "streamc": 0,
+    "streamh": 0,
+    "task": 88
+   },
+   {
+    "g": 89,
+    "key": "88_89_40",
+    "mismatch_cm": 6.230707612690538,
+    "n": 10,
+    "p": 40,
+    "streamc": 0,
+    "streamh": 0,
+    "task": 88
+   },
+   {
+    "g": 88,
+    "key": "89_88_42",
+    "mismatch_cm": 6.315636844843329,
+    "n": 10,
+    "p": 42,
+    "streamc": 0,
+    "streamh": 0,
+    "task": 89
+   }
+  ],
+  "sign_p": 0.5522070718494925,
+  "streamc": [
+   197,
+   540
+  ],
+  "streamh": [
+   188,
+   540
+  ]
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "p5_stream__libero_90__dev_handoff__s0__ae81c6d5",
+ "schema": 1,
+ "script": "experiments/handoff_read.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-30T19:42:14+00:00",
+ "stream": null,
+ "tag": "dev_handoff"
+}

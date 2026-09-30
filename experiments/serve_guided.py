@@ -186,8 +186,16 @@ def main():
         if kv.get("rules") == "2" and kv.get("g"):       # P3c: composed from OTHER tasks' demos (phase.py compose); t's own demo unused
             from lifelong_ood.policy import phase as PH
             tn = [str(x) for x in d["names"]]              # the target scene's objects of interest (the task definition)
+            gv = None
+            if kv.get("contact") == "1":                   # the grasp source's per-frame prototype verbs (experiments/grammar_readout.py)
+                import json as _json
+                GL = np.load(os.path.join(R, "grammar_labels.npz"))
+                nm = {int(k_): v_["name"].split(" (")[0] for k_, v_ in
+                      _json.load(open(os.path.join(R, "grammar_readout.json")))["prototypes"]["0.4"].items()}
+                k_ = list(GL["tasks"]).index(int(kv["g"]))
+                gv = [nm[int(x)] for x in GL["lab_0.4"][GL["cut"][k_]:GL["cut"][k_ + 1]]]
             parts = PH.compose(tn, PH.at_rest(PH.load_demo(R, int(kv["g"]))), PH.at_rest(PH.load_demo(R, int(kv["p"]))), obj_type=kv.get("obj"),
-                               obj_name=kv.get("objn"), rec_name=kv.get("recn"), transport=kv.get("transport") == "1")
+                               obj_name=kv.get("objn"), rec_name=kv.get("recn"), transport=kv.get("transport") == "1", grasp_verbs=gv)
             quat = np.tile([0.0, 0.0, 0.0, 1.0], (1, len(tn), 1))
             if kv.get("reader"):                           # orientations: the chordal mean over the target's rendered scenes (fixed yaw)
                 rp = os.path.join(R, "p6_synth_rj", f"{t}.npz")
@@ -227,7 +235,10 @@ def main():
                 reader["yaw"] = {k: yz[k] for k in yz.files}
             logging.info(f"phasebind: reader p6_reader{sfx}_{t}.npz ({reader['features']}){' + yaw' if kv.get('yaw') == '1' else ''}")
         hooks = PhaseBindHooks(src, parts, D.Norm.load(), fold=fold, state=state, key=key, var=float(kv.get("var", 1e-3)), H=bk.H,
-                               reader=reader, carry="predicted" if kv.get("carry") == "pred" else "live", warp=kv.get("warp") == "1")
+                               reader=reader, carry="predicted" if kv.get("carry") == "pred" else "live", warp=kv.get("warp") == "1",
+                               handoff=kv.get("handoff") == "1", radius=float(kv.get("hr", 0.05)), patience=float(kv.get("hp", 1.5)),
+                               events=kv.get("events") == "1", tol=float(kv.get("tol", 0.02)), max_wait=int(kv.get("mw", 8)),
+                               cross_pos=kv.get("crosspos") == "1")
         logging.info(f"phasebind: task {t}, {len(parts)} phases ({'object phases' if g and p_ else 'world frame'}; anchors "
                      f"{[None if q[6] is None else str(q[0]['names'][q[6]]) for q in parts]}), rules {kv.get('rules', '1')}, "
                      f"sources g={kv.get('g', t)} p={kv.get('p', t)}, fold {key}")

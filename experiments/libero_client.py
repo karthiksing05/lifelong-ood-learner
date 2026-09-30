@@ -55,6 +55,8 @@ def main():
     ap.add_argument("--no-meta", action="store_true")
     ap.add_argument("--record", action="store_true", help="save every episode's policy-input frames, states, executed actions "
                     "and outcome to <out without .json>_rec/task<t>_trial<k>.npz (learning from practice)")
+    ap.add_argument("--light", action="store_true", help="with --record: no images (states, actions, object poses: phase-level "
+                    "outcomes of every episode, experiments/phase_outcomes.py)")
     ap.add_argument("--objects", action="store_true", help="send (and record) the poses of the objects of interest: meta/obj_names, "
                     "meta/obj_pos, meta/obj_quat (xyzw); privileged simulator state for the phase-binding server (docs/PLAN_TRANSFER.md P1)")
     ap.add_argument("--branches", default="", help="a JSON list of stall-point branches of ONE task (experiments/r18_branch.py): "
@@ -149,7 +151,8 @@ def main():
                     act = np.asarray(plan.popleft(), np.float32)
                     if rec is not None:
                         rec["state"].append(np.asarray(st8, np.float32)); rec["action"].append(act)
-                        rec["image"].append(img); rec["wrist"].append(wimg)
+                        if not a.light:
+                            rec["image"].append(img); rec["wrist"].append(wimg)
                         if a.objects:
                             _, op_, oq_ = objects(obs)
                             rec["obj_pos"].append(op_.astype(np.float32)); rec["obj_quat"].append(oq_.astype(np.float32))
@@ -169,7 +172,8 @@ def main():
                 extra = dict(obj_pos=np.stack(rec["obj_pos"]), obj_quat=np.stack(rec["obj_quat"]), obj_names=np.array(list(env.obj_of_interest))) \
                     if (a.objects and rec["obj_pos"]) else {}
                 np.savez_compressed(str(rec_dir / (f"task{tid}_trial{k}" + ("" if br is None else f"_{br['id']}") + ".npz")), state=np.stack(rec["state"]), action=np.stack(rec["action"]),
-                                    image=np.stack(rec["image"]), wrist=np.stack(rec["wrist"]), success=bool(done), trial=k, task=tid, **extra)
+                                    **({} if a.light else dict(image=np.stack(rec["image"]), wrist=np.stack(rec["wrist"]))),
+                                    success=bool(done), trial=k, task=tid, **extra)
             if frames:
                 import imageio
                 imageio.mimwrite(str(vid_dir / f"task{tid}_trial{k}_{'success' if done else 'failure'}.mp4"), frames, fps=10)

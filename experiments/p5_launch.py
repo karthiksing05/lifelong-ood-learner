@@ -27,6 +27,7 @@ def main():
     ap.add_argument("--seed", type=int, default=0, help="the policy's noise seed (tags gain _seed<k>)")
     ap.add_argument("--own-composed-only", action="store_true", help="own-demo runs only for the tasks the plans compose")
     ap.add_argument("--combos", default=None, help="a JSON list of [task, g, p] (results/robot/<file>): composed runs of exactly these")
+    ap.add_argument("--light", action="store_true", help="record states, actions and object poses (no images) for phase outcomes")
     a = ap.parse_args()
     dry = a.dry
     kinds = a.kinds.split(",")
@@ -38,22 +39,24 @@ def main():
         want = [(t, arm) for t, arm in want if t in comp]
     for f in a.plans.split(","):
         for o in json.load(open(os.path.join(R, f))).values():
-            for k in ("streamc", "streamw", "streamt"):
+            for k in ("streamc", "streamw", "streamt", "streamh"):
                 if k in kinds:
                     want += [(s["task"], f"{k}@{s['g']}-{s['p']}") for s in o["steps"] if s["action"] == "compose"]
     if a.combos:
-        want = [(int(t), f"streamc@{g}-{p}") for t, g, p in json.load(open(os.path.join(R, a.combos)))]
+        ck = [k for k in kinds if k.startswith("stream")] or ["streamc"]
+        want = [(int(t), f"{k}@{g}-{p}") for t, g, p in json.load(open(os.path.join(R, a.combos))) for k in ck]
     running = set(subprocess.run(["bash", "-c", "cat results/robot/.packs/p_*.tsv"], capture_output=True, text=True, cwd=ROOT).stdout.split())
     specs = []
     for t, arm in dict.fromkeys(want):
-        tag = arm.replace("streamc@", "streamc_").replace("streamw@", "streamw_").replace("streamt@", "streamt_").replace("-", "_")
+        tag = arm.replace("@", "_").replace("-", "_")
         tag += f"_seed{a.seed}" if a.seed else ""
         out = os.path.join(R, f"{a.experiment}_{t}_{tag}.json")
         if os.path.exists(out) or f"OUT={out}" in running:
             continue
         mode, pb, _ = LP.arm_spec(t, arm, False)
         specs.append(dict(MODE=mode, SUITE="libero_90", TASKS=t, TRIALS=a.trials, FIRST=a.first, EXPERIMENT=a.experiment, TAG=tag,
-                          PROGRAM_BYTES=pb, OUT=out, **({"SERVE_SEED": str(a.seed)} if a.seed else {})))
+                          PROGRAM_BYTES=pb, OUT=out, **({"SERVE_SEED": str(a.seed)} if a.seed else {}),
+                          **({"RECORD": "1", "LIGHT": "1", "OBJECTS": "1"} if a.light else {})))
     n = len(os.listdir(os.path.join(R, ".packs")))
     for i in range(0, len(specs), 3):
         n += 1

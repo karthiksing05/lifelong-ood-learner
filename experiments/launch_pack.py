@@ -115,9 +115,16 @@ def arm_spec(tid, arm, fold, demo=0):
         return (f"phasebind:{tid}?fold=0&rules=2&reader=spatial4_synthonly_rj&carry=pred&var=0.001", "0", False)
     if arm == "phasebind2_rjpred_yaw":                                   # the same + the objects' yaw where it varies (p6_yaw_reader.py)
         return (f"phasebind:{tid}?fold=0&rules=2&reader=spatial4_synthonly_rj&carry=pred&yaw=1&var=0.001", "0", False)
-    if arm.startswith(("streamc@", "streamw@", "streamt@")):             # P5: composed arrival, streamc@<g>-<p> (p5_pool.json names)
-        g, p = arm[len("streamc@"):].split("-")                          # streamw: carry warped; streamt: generic transport + place binding
-        wp = {"streamw@": "&warp=1", "streamt@": "&transport=1"}.get(arm[:8], "")
+    if arm.startswith("phasebind2_rjpred@"):                             # the same with reader variant <v> (p6_reader_<v>_<t>.npz), e.g. pca512_rj
+        return (f"phasebind:{tid}?fold=0&rules=2&reader={arm.split('@', 1)[1]}&carry=pred&var=0.001", "0", False)
+    if arm == "phasebind2_rjpred_h":                                     # own demo, the prior carries between grasp and descent (handoff)
+        return (f"phasebind:{tid}?fold=0&rules=2&reader=spatial4_synthonly_rj&carry=pred&handoff=1&var=0.001", "0", False)
+    if arm.startswith("stream") and "@" in arm:                         # P5: composed arrival, streamc@<g>-<p> (p5_pool.json names)
+        kind, gp = arm.split("@")                                        # streamw: carry warped; streamt: generic transport + place binding;
+        g, p = gp.split("-")                                             # streamh: the prior carries; suffix e: events fire on arrival
+        wp = {"w": "&warp=1", "t": "&transport=1", "h": "&handoff=1",      # x: contact-local grasp (prototype verbs) + transport + events
+              "x": "&transport=1&contact=1&events=1"}.get(kind[6], "") + ("&events=1" if kind.endswith("e") else "") \
+            + ("&crosspos=1" if "p" in kind[7:] else "")                  # suffix p: cross-type places transfer position only
         pool = json.load(open(os.path.join(R, "p5_pool.json")))[str(tid)]
         return (f"phasebind:{tid}?fold=0&rules=2&g={g}&p={p}&objn={pool['object']}&recn={pool['receptacle']}"
                 f"&reader=spatial4_synthonly_rj&carry=pred{wp}&var=0.001", "0", False)
@@ -180,7 +187,7 @@ def main():
             if s is None:
                 continue
             tag = ("leaffold_s1_last2" if fold else "leaf_s1") if arm == "leafbest" else arm.replace("lora@", "lora_")
-            tag = tag.replace("streamc@", "streamc_").replace("streamw@", "streamw_").replace("streamt@", "streamt_").replace("-", "_")
+            tag = tag.replace("@", "_").replace("-", "_")
             tag = ("dimfold_s1_last2" if fold else "dimcode_s1") if arm == "dimbest" else tag
             tag += dsfx + (f"_seed{a.seed}" if a.seed else "")
             first = a.first if a.first is not None else (30 if a.experiment == "m3_final" else 0)

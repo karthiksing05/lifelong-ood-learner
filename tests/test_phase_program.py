@@ -191,3 +191,100 @@ def test_warped_carry_starts_at_the_hand_and_ends_receptacle_relative():
     assert np.linalg.norm(plans[False][0] - eef_pos[9]) > 0.3          # unwarped: starts where the source layout puts it
     assert np.allclose(plans[True][-1], plans[False][-1])               # the same end relative to the receptacle
     assert np.allclose(plans[True][15:], plans[False][15:])             # after the transport (source frame 25+) unchanged
+
+
+def test_handoff_releases_the_guide_between_grasp_and_descent():
+    """Handoff: after the approach the prior acts alone (the plan is held, not extended into the carry); the guide resumes with
+    the place source's descent once the hand is within the radius of its start, or with the whole carry after the patience."""
+    T = 30
+    names = np.array(["obj_1", "bin_1"])
+    obj_pos = np.zeros((T, 2, 3))
+    obj_pos[:, 1] = [0.3, 0.3, 0.9]
+    eef_pos = np.zeros((T, 3))
+    for i in range(T):                                                # grasp at 0-9, lift 10-14, transport 15-24, descend 25-29
+        p = ([0.0, 0.0, 0.95] if i < 10 else [0.0, 0.0, 0.95 + 0.02 * (i - 9)] if i < 15 else
+             [0.3 * (i - 14) / 10, 0.3 * (i - 14) / 10, 1.05] if i < 25 else [0.3, 0.3, 1.05 - 0.02 * (i - 24)])
+        eef_pos[i] = p
+        obj_pos[i, 0] = np.array(p) - [0, 0, 0.05]
+    action = np.zeros((T, 7), np.float32)
+    action[5:, 6] = 1.0
+    z = dict(names=names, movable=np.array([True, False]), obj_pos=obj_pos, obj_quat=np.tile([0, 0, 0, 1.0], (T, 2, 1)),
+             eef_pos=eef_pos, eef_quat=np.tile([1.0, 0, 0, 0], (T, 1)), action=action)
+    GP = eef_pos.copy()
+    GQ = np.stack([q2m(q) for q in z["eef_quat"]])
+    parts = [(z, GP, GQ, 0, 10, "obj", 0, None), (z, GP, GQ, 10, T, "rec", 1, 0)]
+    meta = {"obj_names": ["obj_1", "bin_1"], "obj_pos": [0.0, 0.0, 0.9, 0.3, 0.3, 0.9], "obj_quat": [0, 0, 0, 1.0] * 2}
+    for far_q, expect in ((3, "descent"), (100, "timeout")):
+        h = PhaseBindHooks(z, parts, norm=None, carry="predicted", handoff=True, radius=0.05, patience=1.5)
+        h.rewrite({}, meta)
+        st = np.concatenate([eef_pos[0], m2aa(q2m(z["eef_quat"][0])), [0, 0]])
+        n = 0
+        while not h._prior_carries(st):                               # the approach, then the hold until the prior takes over
+            _, src = h.plan(st)
+            assert all(i < 10 for i in src)                           # never into the carry
+            n += 1
+            assert n < 20
+        assert h.hand is not None and h.hand["d0"] == 24 and not h.queue
+        assert np.allclose(h.hand["target"], eef_pos[24])
+        far = np.concatenate([[0.0, 0.0, 1.05], st[3:]])
+        for _ in range(far_q):
+            if not h._prior_carries(far):
+                break
+        near = np.concatenate([eef_pos[24] + [0.02, 0.0, 0.0], st[3:]])
+        if expect == "descent":
+            assert not h._prior_carries(near)
+            src = [q[3] for q in h.queue if q[3] >= 0]
+            assert src[0] == 24 and src[-1] == T - 1               # from the descent's start, bridged from the hand
+        else:
+            assert h.hand["done"]                                     # patience 1.5 x 20 frames / 5 per query = 6 queries
+            src = [q[3] for q in h.queue if q[3] >= 0]
+            assert src[0] == 10                                       # the whole carry
+        assert h.k == 2
+
+
+def test_events_fire_on_arrival_not_on_the_clock():
+    """events=True: a release in the next replan window is held (gripper unchanged, queue not consumed past it) while the hand is
+    more than tol from the event's achieved pose; it fires once the hand arrives, or after max_wait queries."""
+    z, GP, GQ = demo(T=12)
+    for arrive_after, expect_fire_at in ((3, 3), (100, 4)):
+        h = PhaseBindHooks(z, [(z, GP, GQ, 0, 12, "grasp", 0, None)], norm=None, events=True, tol=0.02, max_wait=4)
+        h.rewrite({}, meta_of(z))
+        h.g_cmd = 1.0                                                   # holding
+        ev = np.array([0.3, 0.3, 1.0])
+        h.queue = [(ev + [0.0, 0.0, 0.01 * j], np.eye(3), 1.0, j, ev, np.eye(3)) for j in range(2)] + \
+                  [(ev, np.eye(3), -1.0, 2 + j, ev, np.eye(3)) for j in range(20)]
+        h.k = 1
+        far = np.concatenate([ev + [0.2, 0.0, 0.0], [0, 0, 0], [0, 0]])
+        near = np.concatenate([ev + [0.01, 0.0, 0.0], [0, 0, 0], [0, 0]])
+        fired = None
+        for q in range(8):
+            acts, src = h.plan(near if q >= arrive_after else far)
+            if h.g_cmd < 0:
+                fired = q
+                break
+            assert all(a_[6] > 0 for a_ in acts)                          # the gripper stays closed while held
+        assert fired == expect_fire_at, (arrive_after, fired)
+
+
+def test_events_bridge_corners_are_passed_on_arrival():
+    """events=True: a lift-then-across bridge (role "place") marks its corner; the plan holds at the corner until the hand is there."""
+    z, GP, GQ = demo(T=12)
+    h = PhaseBindHooks(z, [(z, GP, GQ, 0, 12, "place", 1, None)], norm=None, events=True, tol=0.02, max_wait=50)
+    h.rewrite({}, meta_of(z))
+    p0 = np.array([0.0, 0.0, 0.8])                                  # below the part's first goal: lift first, then across
+    h._start(0, p0, np.eye(3), -1.0)
+    corners = [e for e in h.queue if e[3] == -4]
+    assert len(corners) >= 1 and abs(corners[0][0][2] - h.queue[len(h.queue) - 12][0][2]) < 1e-9   # the first corner: at the goal height
+    h.k = 1
+    st = np.concatenate([p0, [0, 0, 0], [0, 0]])
+    for _ in range(40):
+        _, src = h.plan(st)
+        if -4 in src[:1]:
+            break
+    assert h.queue[0][3] == -4                                      # held at the corner while the hand stays below
+    n_before = len(h.queue)
+    h.plan(st)
+    assert len(h.queue) == n_before                                 # nothing consumed
+    arrived = np.concatenate([h.queue[0][0], [0, 0, 0], [0, 0]])
+    h.plan(arrived)
+    assert len(h.queue) < n_before                                  # passed on arrival

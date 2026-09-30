@@ -1,0 +1,87 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/dev_handoff_43_streamh_36_87.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "roll.sh MODE=phasebind:43?fold=0&rules=2&g=36&p=87&objn=white_bowl_1&recn=wooden_two_layer_shelf_1&reader=spatial4_synthonly_rj&carry=pred&handoff=1&var=0.001 SUITE=libero_90 TASKS=43 TRIALS=10 (job 3991145)",
+ "config": {
+  "client": {
+   "branches": "",
+   "first_trial": 0,
+   "host": "127.0.0.1",
+   "light": true,
+   "max_steps": 0,
+   "no_meta": false,
+   "objects": true,
+   "out": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/dev_handoff_43_streamh_36_87.json",
+   "port": 9497,
+   "record": true,
+   "replan": 5,
+   "resize": 224,
+   "seed": 7,
+   "suite": "libero_90",
+   "tasks": "43",
+   "trials": 10,
+   "videos": 2,
+   "wait": 10
+  },
+  "job": "3991145",
+  "mode": "phasebind:43?fold=0&rules=2&g=36&p=87&objn=white_bowl_1&recn=wooden_two_layer_shelf_1&reader=spatial4_synthonly_rj&carry=pred&handoff=1&var=0.001"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "nestor.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3991145",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "dev_handoff",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "ae81c6d561ef0422be7959fd1c45b0fbd262383d",
+  "short": "ae81c6d5"
+ },
+ "keys": {
+  "first_trial": 0,
+  "mode": "phasebind:43?fold=0&rules=2&g=36&p=87&objn=white_bowl_1&recn=wooden_two_layer_shelf_1&reader=spatial4_synthonly_rj&carry=pred&handoff=1&var=0.001",
+  "tasks": "43",
+  "trials": 10
+ },
+ "metrics": {
+  "complete": true,
+  "n_episodes": 10,
+  "secs": 325.87830448150635,
+  "success_rate": 1.0,
+  "tasks": {
+   "43": {
+    "errors": 0,
+    "language": "put the white bowl on top of the cabinet",
+    "mean_steps": 254.8,
+    "n": 10,
+    "success_rate": 1.0
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "dev_handoff__libero_90__streamh_36_87__first_trial-0__mode9fc474c04a7f__tasks-43__trials-10__s7__ae81c6d5",
+ "schema": 1,
+ "script": "experiments/libero_client.py",
+ "seconds": null,
+ "seed": 7,
+ "source_commit": null,
+ "started": "2026-09-30T19:08:28+00:00",
+ "stream": null,
+ "tag": "streamh_36_87"
+}
