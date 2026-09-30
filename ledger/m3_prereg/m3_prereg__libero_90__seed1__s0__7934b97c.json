@@ -1,0 +1,60 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration of the seed-1 replicate",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky2.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "7934b97cc4abd2ee2cb34f92cc2ff4c5459f1f66",
+  "short": "7934b97c"
+ },
+ "keys": {},
+ "metrics": {
+  "arms_seed1": {
+   "allocator": "the allocator's per-task choices of ledger p1_bindings alloc_v2 (unchanged) run at seed 1: the reader arm on 17 tasks, dimbest on 39 and 53, lora_r27gen on 40 and 5 (seed 0: 391)",
+   "lora_r17bal": "LoRA + failure negatives (seed 0: 302)",
+   "phasebind2_nofold": "v2 bindings, simulator poses (seed 0: 385/420)",
+   "phasebind2_reader_spatial4_synth": "v2 bindings, rendered-scene reader (seed 0: 376)"
+  },
+  "hypotheses": {
+   "R1": "seed 1: v2 simulator poses > LoRA + failure negatives, exact two-sided sign test",
+   "R2": "seed 1: the reader arm non-inferior to v2 simulator poses at -0.10 (one-sided 95% lower bound)",
+   "R3": "seed 1: allocator > LoRA + failure negatives, exact two-sided sign test",
+   "descriptive": "per arm, seed 0 vs seed 1 totals and the per-task correlation",
+   "holm": "Holm over R1, R3 at 0.05"
+  },
+  "tasks": "the 21 held-out tasks; init states 30-49; SERVE_SEED=1 (launch_pack --seed 1); 420 paired episodes per arm",
+  "why": "every headline arm ran with the policy's sampling seed 0; a second seed shows how stable the comparisons are",
+  "written_before": "any seed-1 rollout of these arms"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_90__seed1__s0__7934b97c",
+ "schema": 1,
+ "script": "(inline, session 2026-09-30)",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-30T11:26:28+00:00",
+ "stream": null,
+ "tag": "seed1"
+}

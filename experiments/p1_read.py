@@ -10,7 +10,7 @@ nothing), paired on init states 30-49 of m3_final.
     v2         rules v2 (ledger m3_prereg tag v2) on the 21 tasks: V1 v2 > v1, V2 v2 > LoRA + failure negatives, V4 the v2 generator's
                LoRA > 3.8's (sign tests, Holm over the three); V3 the learned reader non-inferior to the simulator's poses at -0.10
 
-    ~/flash/miniconda3/envs/chunks/bin/python experiments/p1_read.py primary|secondary|p6|v2|v2_synth|p3c|p3c_reader|p3c_reader2|alloc|p5|yaw [--record]
+    ~/flash/miniconda3/envs/chunks/bin/python experiments/p1_read.py primary|secondary|p6|v2|v2_synth|p3c|p3c_reader|p3c_reader2|alloc|p5|yaw|seed1|demo1 [--record]
 """
 import argparse
 import importlib.util
@@ -301,6 +301,72 @@ def yaw():
     return res
 
 
+def _pearson(tab, x, y):
+    import numpy as np
+    a = np.array([sum(v[x].values()) for v in tab.values()], float)
+    b = np.array([sum(v[y].values()) for v in tab.values()], float)
+    return float(np.corrcoef(a, b)[0, 1]) if a.std() > 0 and b.std() > 0 else None
+
+
+def seed1():
+    """ledger m3_prereg tag seed1: R1 v2 (simulator poses) > LoRA + negatives and R3 allocator > LoRA + negatives at seed 1 (Holm);
+    R2 the reader arm non-inferior to v2 at seed 1; test-retest against seed 0."""
+    import json
+    choice = [r for r in ledger.load("p1_bindings", tag="alloc_v2") if not r.get("retired")][-1]["metrics"]["choice"]
+    arms = {"v2": "phasebind2_nofold", "rd": "phasebind2_reader_spatial4_synth", "nft": "lora_r17bal"}
+    arms.update({k + "1": v + "_seed1" for k, v in list(arms.items())})
+    tab = table(HELD, arms)
+    spec = importlib.util.spec_from_file_location("m3s", os.path.join(ROOT, "experiments", "m3_stats.py"))
+    m3s = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(m3s)
+    fin, _ = m3s.episodes("m3_final")
+    for t in HELD:
+        arm = choice[str(t)]["arm"]
+        tab[str(t)]["al"] = fin[(str(t), arm)]
+        tab[str(t)]["al1"] = fin[(str(t), arm + "_seed1")]
+    res = {"per_task": {t: {k: int(sum(v[k].values())) for k in v} for t, v in tab.items()}}
+    res["R1"] = dict(x_arm="phasebind2_nofold_seed1", y_arm="lora_r17bal_seed1", **compare(tab, "v21", "nft1"))
+    res["R3"] = dict(x_arm="allocator_seed1", y_arm="lora_r17bal_seed1", **compare(tab, "al1", "nft1"))
+    ps = sorted((res[h]["sign_p"], h) for h in ("R1", "R3"))
+    run = 0
+    for r, (p, h) in enumerate(ps):
+        run = max(run, min(1, (2 - r) * p))
+        res[h]["holm_p"] = run
+    for h in ("R1", "R3"):
+        res[h]["passes"] = bool(res[h]["holm_p"] < 0.05 and res[h]["x"] > res[h]["control"])
+    res["R2"] = dict(x_arm="phasebind2_reader_spatial4_synth_seed1", y_arm="phasebind2_nofold_seed1", **compare(tab, "rd1", "v21"))
+    res["R2"]["non_inferior"] = bool(res["R2"]["diff"]["lo90"] >= -0.10)
+    res["retest"] = {k: dict(seed0=int(sum(sum(v[k].values()) for v in tab.values())), seed1=int(sum(sum(v[k + "1"].values()) for v in tab.values())),
+                             pearson_per_task=_pearson(tab, k, k + "1")) for k in ("v2", "rd", "nft", "al")}
+    for k in ("R1", "R3", "R2"):
+        v = res[k]
+        print(f"{k} {v['x_arm']} vs {v['y_arm']}: {_fmt(v)}" + (f", Holm {v['holm_p']:.3g} -> passes {v['passes']}" if "holm_p" in v else "")
+              + (f" -> non-inferior {v['non_inferior']}" if "non_inferior" in v else ""))
+    print("test-retest (seed 0 -> seed 1, per-task r):", json.dumps(res["retest"]))
+    return res
+
+
+def demo1():
+    """ledger m3_prereg tag demo1_v2: D1 v2 (demo 1) > the one-demo LoRA (demo 1); D2 the reader arm (demo 1) non-inferior to v2 (demo 1)."""
+    arms = {"v2d1": "phasebind2_nofold_d1", "rdd1": "phasebind2_reader_spatial4_synth_d1", "lorad1": "lora_d1",
+            "v2": "phasebind2_nofold", "rd": "phasebind2_reader_spatial4_synth", "lora": "lora"}
+    tab = table([t for t in HELD if t != 42], arms)                  # amendment 1: task 42's demo 1 has no raw match
+    res = {"per_task": {t: {k: int(sum(v[k].values())) for k in v} for t, v in tab.items()}}
+    res["D1"] = dict(x_arm=arms["v2d1"], y_arm=arms["lorad1"], **compare(tab, "v2d1", "lorad1"))
+    res["D1"]["passes"] = bool(res["D1"]["sign_p"] < 0.05 and res["D1"]["x"] > res["D1"]["control"])
+    res["D2"] = dict(x_arm=arms["rdd1"], y_arm=arms["v2d1"], **compare(tab, "rdd1", "v2d1"))
+    res["D2"]["non_inferior"] = bool(res["D2"]["diff"]["lo90"] >= -0.10)
+    res["demo0_vs_demo1"] = {k: dict(demo0=int(sum(sum(v[k].values()) for v in tab.values())),
+                                     demo1=int(sum(sum(v[k + "d1"].values()) for v in tab.values())),
+                                     pearson_per_task=_pearson(tab, k, k + "d1")) for k in ("v2", "rd", "lora")}
+    for k in ("D1", "D2"):
+        v = res[k]
+        print(f"{k} {v['x_arm']} vs {v['y_arm']}: {_fmt(v)}" + (f" -> passes {v['passes']}" if "passes" in v else "")
+              + (f" -> non-inferior {v['non_inferior']}" if "non_inferior" in v else ""))
+    print("demo 0 -> demo 1:", res["demo0_vs_demo1"])
+    return res
+
+
 def _fmt(v):
     return (f"{v['x']} vs {v['control']} of {v['n']}, diff {v['diff']['diff']:+.3f} [{v['diff']['lo']:+.3f},{v['diff']['hi']:+.3f}] lo90 "
             f"{v['diff']['lo90']:+.3f}, discordant {v['discordant']}, sign p {v['sign_p']:.3g}")
@@ -308,11 +374,17 @@ def _fmt(v):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("read", choices=("primary", "secondary", "p6", "v2", "v2_synth", "p3c", "p3c_reader", "p3c_reader2", "alloc", "p5", "yaw"))
+    ap.add_argument("read", choices=("primary", "secondary", "p6", "v2", "v2_synth", "p3c", "p3c_reader", "p3c_reader2", "alloc", "p5", "yaw", "seed1", "demo1"))
     ap.add_argument("--record", action="store_true")
     a = ap.parse_args()
     os.chdir(ROOT)
-    if a.read == "yaw":
+    if a.read == "seed1":
+        res = seed1()
+        exp, tag, what = "p1_bindings", "seed1", "seed-1 replicate of the headline arms and the allocator, 21 tasks"
+    elif a.read == "demo1":
+        res = demo1()
+        exp, tag, what = "p1_bindings", "demo1_v2", "rules v2 with demo 1 (IPEC episode 1) vs the demo-1 LoRA, 21 tasks"
+    elif a.read == "yaw":
         res = yaw()
         exp, tag, what = "p6_reader", "yaw_read", "own-demo programs reading the books' yaw vs a fixed yaw, 11 book tasks"
     elif a.read == "p5":

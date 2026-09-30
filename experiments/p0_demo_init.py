@@ -45,7 +45,7 @@ def noop_mask(actions):
     return np.asarray(keep)
 
 
-def match(tasks):
+def match(tasks, rank=None, suffix=""):
     import h5py
     sys.path.insert(0, ROOT)
     from lifelong_ood.policy import data as D
@@ -66,6 +66,8 @@ def match(tasks):
             raw = {key: np.asarray(f["data"][key]["actions"], np.float64) for key in f["data"].keys()}
             best, used = None, None
             for i, e in enumerate(eps):
+                if rank is not None and i != rank:          # --rank k: exactly the text's k-th IPEC episode (demo k)
+                    continue
                 ep = d90.load(e)
                 ipec = np.asarray(ep["actions"], np.float64)[:, :6]
                 for key, acts in raw.items():
@@ -84,7 +86,7 @@ def match(tasks):
             continue
         err, key, kept, states, kept_actions = best
         i, ep = used
-        np.savez_compressed(os.path.join(OUT, f"{t}_match.npz"), raw_key=key, kept=kept, states=states[kept], max_err=err,
+        np.savez_compressed(os.path.join(OUT, f"{t}{suffix}_match.npz"), raw_key=key, kept=kept, states=states[kept], max_err=err,
                             ipec_state=np.asarray(ep["state"], np.float32), ipec_rank=i, actions=np.asarray(kept_actions, np.float32))
         print(f"[p0a] task {t}: IPEC episode {i} of the text = raw {key} ({len(kept)} kept steps), max |action diff| {err:.2e}", flush=True)
 
@@ -112,12 +114,12 @@ def read(env, obs, names, movable):
         np.asarray(obs["robot0_eef_quat"], np.float32), s8.astype(np.float32)
 
 
-def poses(tasks):
+def poses(tasks, suffix=""):
     from libero.libero import benchmark, get_libero_path
     from libero.libero.envs import OffScreenRenderEnv
     suite = benchmark.get_benchmark_dict()["libero_90"]()
     for t in tasks:
-        mpath = os.path.join(OUT, f"{t}_match.npz")
+        mpath = os.path.join(OUT, f"{t}{suffix}_match.npz")
         if not os.path.exists(mpath):
             continue
         m = np.load(mpath)
@@ -147,7 +149,7 @@ def poses(tasks):
         E = {k: np.stack(v) for k, v in ev.items()}
         s_err = float(np.abs(D["state8"] - m["ipec_state"][: len(D["state8"])]).max())
         disp = np.linalg.norm(E["obj_pos"] - D["obj_pos"][0][None], axis=-1)            # [20, n_obj] m (both settled)
-        np.savez_compressed(os.path.join(OUT, f"{t}.npz"), names=np.array(names), movable=np.array([n in movable for n in names]),
+        np.savez_compressed(os.path.join(OUT, f"{t}{suffix}.npz"), names=np.array(names), movable=np.array([n in movable for n in names]),
                             demo_obj_pos=D["obj_pos"], demo_obj_quat=D["obj_quat"], demo_eef_pos=D["eef_pos"], demo_eef_quat=D["eef_quat"],
                             demo_state8=D["state8"], eval_obj_pos=E["obj_pos"], eval_obj_quat=E["obj_quat"], state8_err=s_err,
                             raw_key=m["raw_key"])
@@ -159,9 +161,14 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("cmd", choices=["match", "poses"])
     ap.add_argument("--tasks", default=TASKS)
+    ap.add_argument("--rank", type=int, default=None, help="match exactly the text's k-th IPEC episode (demo k)")
+    ap.add_argument("--suffix", default="", help="file suffix, e.g. _d1 for demo 1")
     a = ap.parse_args()
     tasks = [int(x) for x in a.tasks.replace("+", ",").split(",")]
-    (match if a.cmd == "match" else poses)(tasks)
+    if a.cmd == "match":
+        match(tasks, a.rank, a.suffix)
+    else:
+        poses(tasks, a.suffix)
 
 
 if __name__ == "__main__":

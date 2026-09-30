@@ -1,0 +1,47 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "demo1_v2 amendment 1: task 42 excluded",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky1.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "7934b97cc4abd2ee2cb34f92cc2ff4c5459f1f66",
+  "short": "7934b97c"
+ },
+ "keys": {},
+ "metrics": {
+  "amends": "m3_prereg tag demo1_v2",
+  "change": "task 42's demo 1 (IPEC episode 1 of its text) matches no raw LIBERO recording (p0_demo_init match --rank 1: 'no raw demo matches'), so its objects' poses per frame are unknown and the v2 program cannot be built; D1 and D2 are read over the other 20 tasks (400 paired episodes)",
+  "written_before": "any demo-1 v2 rollout"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_90__demo1_v2_amend1__s0__7934b97c",
+ "schema": 1,
+ "script": "(inline, session 2026-09-30)",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-30T17:08:42+00:00",
+ "stream": null,
+ "tag": "demo1_v2_amend1"
+}

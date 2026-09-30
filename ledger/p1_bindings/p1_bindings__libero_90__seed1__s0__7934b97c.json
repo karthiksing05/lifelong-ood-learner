@@ -1,0 +1,349 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "experiments/p1_read.py seed1 --record  # seed-1 replicate of the headline arms and the allocator, 21 tasks",
+ "config": {
+  "read": "seed1",
+  "record": true
+ },
+ "env": {
+  "device": "cpu",
+  "host": "sky1.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "p1_bindings",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "7934b97cc4abd2ee2cb34f92cc2ff4c5459f1f66",
+  "short": "7934b97c"
+ },
+ "keys": {},
+ "metrics": {
+  "R1": {
+   "control": 306,
+   "diff": {
+    "diff": 0.19047619047619047,
+    "hi": 0.2976190476190476,
+    "hi90": 0.28095238095238095,
+    "lo": 0.07380952380952381,
+    "lo90": 0.09285714285714286,
+    "n_pairs": 420,
+    "n_tasks": 21
+   },
+   "discordant": [
+    100,
+    20
+   ],
+   "holm_p": 5.5083908502540805e-14,
+   "n": 420,
+   "passes": true,
+   "sign_p": 5.5083908502540805e-14,
+   "x": 386,
+   "x_arm": "phasebind2_nofold_seed1",
+   "y_arm": "lora_r17bal_seed1"
+  },
+  "R2": {
+   "control": 386,
+   "diff": {
+    "diff": -0.011904761904761904,
+    "hi": 0.02857142857142857,
+    "hi90": 0.02142857142857143,
+    "lo": -0.05476190476190476,
+    "lo90": -0.047619047619047616,
+    "n_pairs": 420,
+    "n_tasks": 21
+   },
+   "discordant": [
+    8,
+    13
+   ],
+   "n": 420,
+   "non_inferior": true,
+   "sign_p": 0.38331031799316406,
+   "x": 381,
+   "x_arm": "phasebind2_reader_spatial4_synth_seed1",
+   "y_arm": "phasebind2_nofold_seed1"
+  },
+  "R3": {
+   "control": 306,
+   "diff": {
+    "diff": 0.19523809523809524,
+    "hi": 0.28095238095238095,
+    "hi90": 0.26666666666666666,
+    "lo": 0.11190476190476191,
+    "lo90": 0.12380952380952381,
+    "n_pairs": 420,
+    "n_tasks": 21
+   },
+   "discordant": [
+    100,
+    18
+   ],
+   "holm_p": 1.1450122489382563e-14,
+   "n": 420,
+   "passes": true,
+   "sign_p": 5.7250612446912814e-15,
+   "x": 388,
+   "x_arm": "allocator_seed1",
+   "y_arm": "lora_r17bal_seed1"
+  },
+  "per_task": {
+   "1": {
+    "al": 19,
+    "al1": 19,
+    "nft": 9,
+    "nft1": 10,
+    "rd": 19,
+    "rd1": 19,
+    "v2": 20,
+    "v21": 20
+   },
+   "3": {
+    "al": 20,
+    "al1": 20,
+    "nft": 18,
+    "nft1": 18,
+    "rd": 20,
+    "rd1": 20,
+    "v2": 20,
+    "v21": 20
+   },
+   "32": {
+    "al": 19,
+    "al1": 19,
+    "nft": 10,
+    "nft1": 11,
+    "rd": 19,
+    "rd1": 19,
+    "v2": 20,
+    "v21": 20
+   },
+   "34": {
+    "al": 20,
+    "al1": 20,
+    "nft": 17,
+    "nft1": 16,
+    "rd": 20,
+    "rd1": 20,
+    "v2": 20,
+    "v21": 20
+   },
+   "35": {
+    "al": 20,
+    "al1": 20,
+    "nft": 7,
+    "nft1": 9,
+    "rd": 20,
+    "rd1": 20,
+    "v2": 20,
+    "v21": 20
+   },
+   "36": {
+    "al": 20,
+    "al1": 20,
+    "nft": 17,
+    "nft1": 14,
+    "rd": 20,
+    "rd1": 20,
+    "v2": 20,
+    "v21": 20
+   },
+   "37": {
+    "al": 19,
+    "al1": 19,
+    "nft": 17,
+    "nft1": 18,
+    "rd": 19,
+    "rd1": 19,
+    "v2": 19,
+    "v21": 19
+   },
+   "39": {
+    "al": 17,
+    "al1": 17,
+    "nft": 16,
+    "nft1": 17,
+    "rd": 6,
+    "rd1": 7,
+    "v2": 6,
+    "v21": 6
+   },
+   "4": {
+    "al": 20,
+    "al1": 20,
+    "nft": 11,
+    "nft1": 13,
+    "rd": 20,
+    "rd1": 20,
+    "v2": 20,
+    "v21": 20
+   },
+   "40": {
+    "al": 12,
+    "al1": 8,
+    "nft": 4,
+    "nft1": 4,
+    "rd": 7,
+    "rd1": 10,
+    "v2": 5,
+    "v21": 5
+   },
+   "41": {
+    "al": 17,
+    "al1": 17,
+    "nft": 18,
+    "nft1": 18,
+    "rd": 17,
+    "rd1": 17,
+    "v2": 17,
+    "v21": 17
+   },
+   "42": {
+    "al": 19,
+    "al1": 20,
+    "nft": 9,
+    "nft1": 13,
+    "rd": 19,
+    "rd1": 20,
+    "v2": 20,
+    "v21": 20
+   },
+   "43": {
+    "al": 20,
+    "al1": 20,
+    "nft": 20,
+    "nft1": 20,
+    "rd": 20,
+    "rd1": 20,
+    "v2": 20,
+    "v21": 20
+   },
+   "48": {
+    "al": 19,
+    "al1": 19,
+    "nft": 18,
+    "nft1": 16,
+    "rd": 19,
+    "rd1": 19,
+    "v2": 20,
+    "v21": 20
+   },
+   "5": {
+    "al": 19,
+    "al1": 19,
+    "nft": 16,
+    "nft1": 19,
+    "rd": 19,
+    "rd1": 19,
+    "v2": 19,
+    "v21": 19
+   },
+   "52": {
+    "al": 18,
+    "al1": 18,
+    "nft": 14,
+    "nft1": 11,
+    "rd": 18,
+    "rd1": 18,
+    "v2": 20,
+    "v21": 20
+   },
+   "53": {
+    "al": 19,
+    "al1": 19,
+    "nft": 20,
+    "nft1": 20,
+    "rd": 20,
+    "rd1": 20,
+    "v2": 20,
+    "v21": 20
+   },
+   "58": {
+    "al": 20,
+    "al1": 19,
+    "nft": 16,
+    "nft1": 14,
+    "rd": 20,
+    "rd1": 19,
+    "v2": 20,
+    "v21": 20
+   },
+   "6": {
+    "al": 20,
+    "al1": 20,
+    "nft": 18,
+    "nft1": 18,
+    "rd": 20,
+    "rd1": 20,
+    "v2": 20,
+    "v21": 20
+   },
+   "62": {
+    "al": 14,
+    "al1": 15,
+    "nft": 14,
+    "nft1": 12,
+    "rd": 14,
+    "rd1": 15,
+    "v2": 19,
+    "v21": 20
+   },
+   "63": {
+    "al": 20,
+    "al1": 20,
+    "nft": 13,
+    "nft1": 15,
+    "rd": 20,
+    "rd1": 20,
+    "v2": 20,
+    "v21": 20
+   }
+  },
+  "retest": {
+   "al": {
+    "pearson_per_task": 0.9530624762530508,
+    "seed0": 391,
+    "seed1": 388
+   },
+   "nft": {
+    "pearson_per_task": 0.9059698768407993,
+    "seed0": 302,
+    "seed1": 306
+   },
+   "rd": {
+    "pearson_per_task": 0.9909645199828837,
+    "seed0": 376,
+    "seed1": 381
+   },
+   "v2": {
+    "pearson_per_task": 0.9987375122482928,
+    "seed0": 385,
+    "seed1": 386
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "p1_bindings__libero_90__seed1__s0__7934b97c",
+ "schema": 1,
+ "script": "experiments/p1_read.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-30T17:06:52+00:00",
+ "stream": null,
+ "tag": "seed1"
+}

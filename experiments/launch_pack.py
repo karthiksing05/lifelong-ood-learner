@@ -47,6 +47,8 @@ def arm_spec(tid, arm, fold, demo=0):
                                       f"prog:{P(f'r7_dim_{tid}_s1{d}.npz')}@{F0}", True) if fold else None,
                  "lora": (f"lora:{P(f'r3_lora_{tid}{d}.pt')}", "0", True),
                  "seg_s5": (f"program:{P(f'r10_seg_{tid}_s5{d}.npz')}?{C}&window=4", f"prog:{P(f'r10_seg_{tid}_s5{d}.npz')}", False)}
+        table["phasebind2_nofold"] = (f"phasebind:{tid}?fold=0&rules=2&demo={demo}&var=0.001", "0", False)
+        table["phasebind2_reader_spatial4_synth"] = (f"phasebind:{tid}?fold=0&rules=2&demo={demo}&reader=spatial4_synth&var=0.001", "0", False)
         if arm == "dimbest":
             return table["dimfold_s1_last2"] if fold else table["dimcode_s1"]
         return table[arm]

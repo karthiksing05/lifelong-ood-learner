@@ -1,0 +1,86 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/dev_p5_48_streamc_32_53.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "roll.sh MODE=phasebind:48?fold=0&rules=2&g=32&p=53&objn=ketchup_1&recn=basket_1&reader=spatial4_synthonly_rj&carry=pred&var=0.001 SUITE=libero_90 TASKS=48 TRIALS=10 (job 3990206)",
+ "config": {
+  "client": {
+   "branches": "",
+   "first_trial": 0,
+   "host": "127.0.0.1",
+   "max_steps": 0,
+   "no_meta": false,
+   "objects": false,
+   "out": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/dev_p5_48_streamc_32_53.json",
+   "port": 9289,
+   "record": false,
+   "replan": 5,
+   "resize": 224,
+   "seed": 7,
+   "suite": "libero_90",
+   "tasks": "48",
+   "trials": 10,
+   "videos": 2,
+   "wait": 10
+  },
+  "job": "3990206",
+  "mode": "phasebind:48?fold=0&rules=2&g=32&p=53&objn=ketchup_1&recn=basket_1&reader=spatial4_synthonly_rj&carry=pred&var=0.001"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "brainiac.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3990206",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "dev_p5",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "7934b97cc4abd2ee2cb34f92cc2ff4c5459f1f66",
+  "short": "7934b97c"
+ },
+ "keys": {
+  "first_trial": 0,
+  "mode": "phasebind:48?fold=0&rules=2&g=32&p=53&objn=ketchup_1&recn=basket_1&reader=spatial4_synthonly_rj&carry=pred&var=0.001",
+  "tasks": "48",
+  "trials": 10
+ },
+ "metrics": {
+  "complete": true,
+  "n_episodes": 10,
+  "secs": 283.8643741607666,
+  "success_rate": 1.0,
+  "tasks": {
+   "48": {
+    "errors": 0,
+    "language": "pick up the ketchup and put it in the basket",
+    "mean_steps": 219.7,
+    "n": 10,
+    "success_rate": 1.0
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "dev_p5__libero_90__streamc_32_53__first_trial-0__mode6e6e0d74f52e__tasks-48__trials-10__s7__7934b97c",
+ "schema": 1,
+ "script": "experiments/libero_client.py",
+ "seconds": null,
+ "seed": 7,
+ "source_commit": null,
+ "started": "2026-09-30T12:50:14+00:00",
+ "stream": null,
+ "tag": "streamc_32_53"
+}

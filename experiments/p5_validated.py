@@ -35,7 +35,7 @@ def practice_ok(thr=0.8):
     return out
 
 
-def plan(multi=False, practice=False):
+def plan(multi=False, practice=False, order_seed=0):
     pool = load("p5_pool.json")
     demo_ok = {int(t): v["k"] / v["n"] >= 0.5 for f in ("g27_generate.json", "g28_generate.json") for t, v in load(f).items()}
     comp_ok = {tuple(map(int, k.split("_"))): v["k"] / v["n"] >= 0.5 for k, v in load("g29_generate.json").items() if k.count("_") == 2}
@@ -52,9 +52,10 @@ def plan(multi=False, practice=False):
                 return prac[k]
         comp_ok = Gate()
     a = sorted(int(t) for t in pool)
-    random.Random(0).shuffle(a)
+    random.Random(order_seed).shuffle(a)
     out = {}
-    for name, order in {"A": a, "B": a[::-1]}.items():
+    names = ("A", "B") if order_seed == 0 else ("C", "D")        # confirmation (m3_prereg p5_confirm): fresh orders, seed 1
+    for name, order in {names[0]: a, names[1]: a[::-1]}.items():
         grasp, place, steps = {}, {}, []                      # key -> the validated sources, in arrival order
         for t in order:
             info = pool[str(t)]
@@ -81,6 +82,8 @@ def plan(multi=False, practice=False):
         print(f"order {name}: {demos} demos ({out[name]['rejected']} compositions rejected by the check); composed "
               f"{out[name]['composed_first_half']} + {out[name]['composed_second_half']}")
     name = "p5_stream_plan_practice.json" if practice else ("p5_stream_plan_validated_multi.json" if multi else "p5_stream_plan_validated.json")
+    if order_seed:
+        name = name.replace(".json", f"_orders{order_seed}.json")
     json.dump(out, open(os.path.join(R, name), "w"), indent=1)
     if practice:
         print("candidates without practice yet (run them on states 0-9, then replan):", sorted(unpractised))
@@ -91,21 +94,26 @@ def plan(multi=False, practice=False):
     return out
 
 
-def read(record=False, multi=False, practice=False):
+def read(record=False, multi=False, practice=False, order_seed=0, score_seed=0):
     import importlib.util
     from lifelong_ood import ledger, stats
     spec = importlib.util.spec_from_file_location("m3s", os.path.join(ROOT, "experiments", "m3_stats.py"))
     m3s = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(m3s)
     fin, _ = m3s.episodes("m3_final")
-    P = load("p5_stream_plan_practice.json" if practice else ("p5_stream_plan_validated_multi.json" if multi else "p5_stream_plan_validated.json"))
-    own = lambda t: fin[(str(t), "phasebind2_rjpred")]
+    name = "p5_stream_plan_practice.json" if practice else ("p5_stream_plan_validated_multi.json" if multi else "p5_stream_plan_validated.json")
+    if order_seed:
+        name = name.replace(".json", f"_orders{order_seed}.json")
+    P = load(name)
+    sfx = f"_seed{score_seed}" if score_seed else ""                  # the confirmation scores with a fresh seed (m3_prereg p5_confirm)
+    own0 = lambda t: fin[(str(t), "phasebind2_rjpred")]
+    own = lambda t: fin.get((str(t), "phasebind2_rjpred" + sfx), own0(t))
     res, tab = {"orders": {}}, {}
     for o, pl in P.items():
         ks = kall = n = 0
         for s in pl["steps"]:
-            e_own = own(s["task"])
-            e = fin[(str(s["task"]), f"streamc_{s['g']}_{s['p']}")] if s["action"] == "compose" else e_own
+            e_own = own(s["task"]) if s["action"] == "compose" else own0(s["task"])
+            e = fin[(str(s["task"]), f"streamc_{s['g']}_{s['p']}{sfx}")] if s["action"] == "compose" else e_own
             ks += sum(e.values()); kall += sum(e_own.values()); n += len(e)
             if s["action"] == "compose":
                 tab[f"{o}:{s['task']}"] = {"c": e, "own": e_own}
@@ -123,7 +131,7 @@ def read(record=False, multi=False, practice=False):
     print(f"composed arrivals vs their own demos: {kc} vs {ko} of {nn}, diff {d['diff']:+.3f}, lower bound {d['lo90']:+.3f}, "
           f"sign p {v['sign_p']:.3g} -> non-inferior {v['non_inferior']}")
     if record:
-        print(ledger.record("p5_stream", bench="libero_90", tag="practice" if practice else ("validated_multi" if multi else "validated"), seed=0, metrics=res,
+        print(ledger.record("p5_stream", bench="libero_90", tag=("confirm" if order_seed else ("practice" if practice else ("validated_multi" if multi else "validated"))), seed=0, metrics=res,
                             bytes=dict(experts=0, tree=0, codes=0, samples=0, teacher_copies=0, total=0), config={},
                             script="experiments/p5_validated.py", command=" ".join(sys.argv)))
     return res
@@ -131,6 +139,9 @@ def read(record=False, multi=False, practice=False):
 
 if __name__ == "__main__":
     if sys.argv[1] == "plan":
-        plan("--multi" in sys.argv, "--practice" in sys.argv)
+        seed = int(sys.argv[sys.argv.index("--order-seed") + 1]) if "--order-seed" in sys.argv else 0
+        plan("--multi" in sys.argv, "--practice" in sys.argv, seed)
     else:
-        read("--record" in sys.argv, "--multi" in sys.argv, "--practice" in sys.argv)
+        seed = int(sys.argv[sys.argv.index("--order-seed") + 1]) if "--order-seed" in sys.argv else 0
+        sc = int(sys.argv[sys.argv.index("--score-seed") + 1]) if "--score-seed" in sys.argv else 0
+        read("--record" in sys.argv, "--multi" in sys.argv, "--practice" in sys.argv, seed, sc)

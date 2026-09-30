@@ -1,0 +1,53 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration of the stream confirmation",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky2.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "7934b97cc4abd2ee2cb34f92cc2ff4c5459f1f66",
+  "short": "7934b97c"
+ },
+ "keys": {},
+ "metrics": {
+  "hypotheses": {
+   "Q1": "PRIMARY: composed arrivals (pooled over C and D) non-inferior to their own demos at -0.10: one-sided 95% lower bound of the paired difference (two-level bootstrap), both at seed 2",
+   "descriptive": "demos requested per order; composed arrivals in the first vs second half; per arrival"
+  },
+  "orders": "C = random.Random(1) shuffle of the 50-task pool, D = C reversed (experiments/p5_validated.py plan --practice --order-seed 1)",
+  "rule": "unchanged from amendment 4: validated bindings (amend1), the table's first sources, a composition is kept if its composed program succeeds in >= 8 of 10 practice episodes (init states 0-9, seed 0), else the task requests its demo; candidates without practice data are practised first and the plan recomputed until closed",
+  "scoring": "FRESH: every composed arrival of C and D and its own-demo program (phasebind2_rjpred) run with SERVE_SEED=2 (a seed never used) on init states 30-49, 20 episodes each",
+  "why": "confirm the exploratory practice-validated stream (m3_prereg p5_stream_amend4: 875/870 of 1,000 with 46/44 demos) on data not used to choose the rule",
+  "written_before": "any practice or scoring run for orders C and D"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_90__p5_confirm__s0__7934b97c",
+ "schema": 1,
+ "script": "(inline, session 2026-09-30)",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-30T11:29:03+00:00",
+ "stream": null,
+ "tag": "p5_confirm"
+}

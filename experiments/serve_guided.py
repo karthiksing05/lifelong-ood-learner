@@ -178,8 +178,9 @@ def main():
         spec = importlib.util.spec_from_file_location("p3", os.path.join(ROOT, "experiments", "p3_compose_sim.py"))
         P3 = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(P3)
-        d = np.load(os.path.join(R, "p0_demo", f"{t}.npz"), allow_pickle=True)
-        m = np.load(os.path.join(R, "p0_demo", f"{t}_match.npz"), allow_pickle=True)
+        dsfx = f"_d{kv['demo']}" if kv.get("demo") else ""        # demo k > 0: IPEC episode k (p0_demo_init --rank k --suffix _dk)
+        d = np.load(os.path.join(R, "p0_demo", f"{t}{dsfx}.npz"), allow_pickle=True)
+        m = np.load(os.path.join(R, "p0_demo", f"{t}{dsfx}_match.npz"), allow_pickle=True)
         src = dict(names=d["names"], movable=d["movable"], obj_pos=d["demo_obj_pos"], obj_quat=d["demo_obj_quat"],
                    eef_pos=d["demo_eef_pos"], eef_quat=d["demo_eef_quat"], action=np.asarray(m["actions"], np.float32))
         if kv.get("rules") == "2" and kv.get("g"):       # P3c: composed from OTHER tasks' demos (phase.py compose); t's own demo unused
@@ -197,7 +198,7 @@ def main():
             g = p_ = True
         elif kv.get("rules") == "2":                      # rules v2 (lifelong_ood/policy/phase.py at_rest + cut)
             from lifelong_ood.policy import phase as PH
-            src = PH.at_rest(PH.load_demo(R, t))
+            src = PH.at_rest(PH.load_demo(R, t, dsfx))
             parts = PH.cut(src)
             g = p_ = True
         else:

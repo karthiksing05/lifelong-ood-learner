@@ -90,10 +90,10 @@ def track(p, R_, p_t, R_t, g):
 MOVE, CLOSE_TAIL, OPEN_TAIL = 0.015, 8, 5
 
 
-def load_demo(results_dir, t):
-    """Task t's ONE demo with its objects' poses at every kept step (experiments/p0_demo_init.py)."""
-    d = np.load(f"{results_dir}/p0_demo/{t}.npz", allow_pickle=True)
-    m = np.load(f"{results_dir}/p0_demo/{t}_match.npz", allow_pickle=True)
+def load_demo(results_dir, t, suffix=""):
+    """Task t's ONE demo with its objects' poses at every kept step (experiments/p0_demo_init.py; suffix _d1: demo 1)."""
+    d = np.load(f"{results_dir}/p0_demo/{t}{suffix}.npz", allow_pickle=True)
+    m = np.load(f"{results_dir}/p0_demo/{t}{suffix}_match.npz", allow_pickle=True)
     return dict(names=d["names"], movable=d["movable"], obj_pos=d["demo_obj_pos"], obj_quat=d["demo_obj_quat"],
                 eef_pos=d["demo_eef_pos"], eef_quat=d["demo_eef_quat"], action=np.asarray(m["actions"], np.float32))
 

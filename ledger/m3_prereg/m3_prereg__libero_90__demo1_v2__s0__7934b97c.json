@@ -1,0 +1,58 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration of the second-demonstration read for rules v2",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky2.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "7934b97cc4abd2ee2cb34f92cc2ff4c5459f1f66",
+  "short": "7934b97c"
+ },
+ "keys": {},
+ "metrics": {
+  "arms": {
+   "phasebind2_nofold_d1": "v2 bindings, simulator poses, demo 1",
+   "phasebind2_reader_spatial4_synth_d1": "v2 bindings, rendered-scene reader, demo 1"
+  },
+  "controls": "lora_d1 (the one-demo LoRA on demo 1: 298/420) and dimfold_s1_last2_d1 / dimcode_s1_d1 (borrowing + fold on demo 1) in m3_final",
+  "demo": "IPEC episode 1 of each task's text (the demo the M3 second-demonstration arms used), matched to its raw recording (p0_demo_init match --rank 1 --suffix _d1) and posed; programs cut by rules v2 from it; readers unchanged (rendered scenes)",
+  "hypotheses": {
+   "D1": "PRIMARY: phasebind2_nofold_d1 > lora_d1: exact two-sided sign test p < 0.05",
+   "D2": "phasebind2_reader_spatial4_synth_d1 non-inferior to phasebind2_nofold_d1 at -0.10 (one-sided 95% lower bound)",
+   "descriptive": "demo 0 vs demo 1 per arm and per task; v2 minus the LoRA pooled over both demos"
+  },
+  "tasks": "the 21 held-out tasks; init states 30-49; seed 0; 420 paired episodes per arm",
+  "why": "demo choice sank an earlier claim (borrowing + fold's parity with the LoRA did not replicate with demo 1; m3_prereg demo1); the v2 bindings (385/420) and the rendered-scene reader (376) have only been read with demo 0",
+  "written_before": "any demo-1 v2 rollout"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_90__demo1_v2__s0__7934b97c",
+ "schema": 1,
+ "script": "(inline, session 2026-09-30)",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-30T11:28:18+00:00",
+ "stream": null,
+ "tag": "demo1_v2"
+}
