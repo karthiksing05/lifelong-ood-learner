@@ -194,6 +194,89 @@ def storage_bars():
     return "".join(g)
 
 
+def _row_or_none(exp, tag):
+    rows = [r for r in ledger.load(exp, tag=tag) if not r.get("retired")]
+    return rows[-1]["metrics"] if rows else None
+
+
+dcr = _row_or_none("p5_stream", "dev_carries")
+scheme = _row_or_none("p5_stream", "scheme")
+CARRY_NAMES = {"streamc": "the place source's route", "streamh": "the prior carries", "streamhe": "the prior carries, events on arrival",
+               "streamte": "lift-across-descend, on arrival", "streamtle": "the same, lifted by the source's own lift"}
+
+
+def phase_bars():
+    """Where each carry's practice episodes stop along the grammar (reach, lift, bring, place), stacked to 100%."""
+    po = dcr["phase_outcomes"]
+    order = [k for k in CARRY_NAMES if k in po]
+    stages = [("reach", "var(--bad)"), ("lift", "#c77b2b"), ("bring", "var(--mix)"), ("place", "#8f8f3a"), ("success", "var(--good)")]
+    W, L, Rm, T, rowh = 860, 270, 20, 26, 30
+    H = T + rowh * len(order) + 30
+    X = lambda f: L + f * (W - L - Rm)
+    g = [f'<svg viewBox="0 0 {W} {H}" role="img" aria-labelledby="f7t" class="chart">']
+    for i, (st, col) in enumerate(stages):
+        g.append(f'<rect x="{L + i * 118}" y="4" width="10" height="10" fill="{col}"/><text x="{L + i * 118 + 16}" y="13" class="tick">{"failed at " + st if st != "success" else st}</text>')
+    for j, k in enumerate(order):
+        v = po[k]
+        n = v["episodes"]
+        y = T + j * rowh
+        g.append(f'<text x="{L - 10}" y="{y + 15}" class="lab" text-anchor="end">{esc(CARRY_NAMES[k])}</text>')
+        acc = 0
+        for st, col in stages:
+            c = v["failed_at"][st]
+            if c:
+                tip = f"{CARRY_NAMES[k]}: {c} of {n} practice episodes {'failed at ' + st if st != 'success' else 'succeeded'}"
+                g.append(f'<g class="pt" tabindex="0" data-tip="{esc(tip)}"><rect x="{X(acc / n):.1f}" y="{y}" width="{X((acc + c) / n) - X(acc / n):.1f}" height="20" fill="{col}"/></g>')
+            acc += c
+    g.append('</svg>')
+    return "".join(g)
+
+
+def binding_grid():
+    """The pool as a grid of object types x goal relations; each task a cell: its keys held by no other task, or composable from
+    other tasks' bindings, marked by whether some composition of it passes practice (>= 8 of 10) with some carry."""
+    import collections
+    import glob
+    import re
+    pool = json.load(open(os.path.join(R, "p5_pool.json")))
+    comp = {t: v for t, v in pool.items() if v["composable"]}
+    types = [k for k, _ in collections.Counter(v["object_type"] for v in comp.values()).most_common()]
+    rels = [k for k, _ in collections.Counter(v["goal_key"] for v in comp.values()).most_common()]
+    passed, tried = set(), set()
+    for f in glob.glob(os.path.join(R, "dev_*_*_stream*_*_*.json")):
+        m = re.match(r".*dev_[a-z0-9]+?_(\d+)_stream[a-z]*_\d+_\d+\.json", f)
+        if not m or "smoke" in f or "tdiag" in f:
+            continue
+        t = m.group(1)
+        tried.add(t)
+        e = json.load(open(f))["tasks"][t]["episodes"]
+        if sum(x["success"] for x in e) >= 8:
+            passed.add(t)
+    both = {t for t, v in comp.items() if any(u != t and w["object_type"] == v["object_type"] for u, w in comp.items())
+            and any(u != t and w["goal_key"] == v["goal_key"] for u, w in comp.items())}
+    cw, chh, L, T = 26, 22, 170, 150
+    W, H = L + cw * len(rels) + 10, T + chh * len(types) + 10
+    g = [f'<svg viewBox="0 0 {W} {H}" role="img" aria-labelledby="f8t" class="chart" style="min-width:{W}px">']
+    short = lambda r: re.sub(r"\bOBJ\b ?", "", r).replace("_contain_region", "").replace("_region", "").replace("wooden_", "").replace("_", " ")
+    for j, r in enumerate(rels):
+        x = L + j * cw + cw / 2
+        g.append(f'<text x="{x:.1f}" y="{T - 6}" class="tick" transform="rotate(-55 {x:.1f} {T - 6})">{esc(short(r)[:26])}</text>')
+    for i, ty in enumerate(types):
+        y = T + i * chh
+        g.append(f'<text x="{L - 8}" y="{y + 15}" class="tick" text-anchor="end">{esc(ty.replace("_", " "))}</text>')
+        for j in range(len(rels)):
+            g.append(f'<rect x="{L + j * cw + 2}" y="{y + 2}" width="{cw - 4}" height="{chh - 4}" rx="2" class="gcell"/>')
+    for t, v in comp.items():
+        i, j = types.index(v["object_type"]), rels.index(v["goal_key"])
+        cls = "gpass" if t in passed else ("gfail" if t in both else "gown")
+        state = ("composed from other tasks, passes practice" if t in passed else
+                 "composable, no composition passed practice" if t in both else "its keys are held by no other task")
+        g.append(f'<g class="pt" tabindex="0" data-tip="{esc(f"task {t}: {v["language"]} ({state})")}"><rect x="{L + j * cw + 2}" y="{T + i * chh + 2}" '
+                 f'width="{cw - 4}" height="{chh - 4}" rx="2" class="{cls}"/></g>')
+    g.append('</svg>')
+    return "".join(g), len(comp), len(both), len(passed & both), len(types), len(rels)
+
+
 def verb_glyphs():
     """Each coarse prototype's mode drawn as the hand path it commands over ten steps: horizontal travel (along its own direction)
     against height, one shared scale, orange where the gripper is closed."""
@@ -360,6 +443,7 @@ section > p {{ margin: 0; color: var(--ink-2); max-width: 68ch; }}
 .chart .leader {{ stroke: var(--grid); stroke-width: 1; }}
 .chart .hit {{ fill: transparent; }}
 .chart .glyph {{ fill: none; stroke: var(--rule); }}
+.chart .gcell {{ fill: var(--grid); opacity: .5; }} .chart .gpass {{ fill: var(--good); }} .chart .gfail {{ fill: var(--mix); }} .chart .gown {{ fill: var(--ref); }}
 .chart .vpath {{ stroke-width: 3; stroke-linecap: round; }} .chart .vpath.s1 {{ stroke: var(--s1); }} .chart .vpath.s2 {{ stroke: var(--s2); }}
 .chart .pt {{ cursor: default; outline: none; }}
 .chart .pt:hover .dot, .chart .pt:focus-visible .dot {{ stroke: var(--ink); }}

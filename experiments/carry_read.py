@@ -7,8 +7,10 @@ scene neither source was recorded in.  Carries compared on the 54 practised comp
   streamte  a lift-across-descend bridge to the place source's descent, waypoints and gripper events passed on arrival (dev_carry)
   streamhe  streamh with events passed on arrival (dev_carry)
   streamtle streamte whose bridge first lifts by the place source's own lift (added after streamte dragged low-carried objects)
-The carry set is chosen by a rule stated before this read: a carry joins if it adds >= 2 compositions passing practice (>= 8 of 10)
-beyond the union of the others.
+The carry set: greedy forward selection -- start from the carry that passes practice (>= 8 of 10) most often, add the carry that adds
+the most passing compositions to the set's union, stop when the best addition adds < 2.  (First stated as "a carry joins if it adds
+>= 2 beyond the union of all the others"; changed before the full read because a near-duplicate variant, streamtle, was added after
+it, and under that rule two near-duplicates exclude each other.  Both outputs are reported.)
 
     python experiments/carry_read.py [--record]
 """
@@ -58,7 +60,16 @@ def main():
     res["best_of_all"] = int(sum(max(s.values()) for s in succ.values()))
     added = {k: len(passes[k] - set().union(*[passes[j] for j in kinds if j != k])) for k in kinds}
     res["unique_passes"] = added
-    carries = [k for k in kinds if added[k] >= 2]
+    res["carry_set_first_rule"] = [k for k in kinds if added[k] >= 2]
+    carries = [max(kinds, key=lambda k: (len(passes[k]), -kinds.index(k)))]
+    cover = set(passes[carries[0]])
+    while True:
+        gain = {k: len(passes[k] - cover) for k in kinds if k not in carries}
+        if not gain or max(gain.values()) < 2:
+            break
+        k = max(gain, key=lambda k: (gain[k], -kinds.index(k)))
+        carries.append(k)
+        cover |= passes[k]
     res["carry_set"] = carries
     res["passes_union_set"] = len(set().union(*[passes[k] for k in carries])) if carries else 0
     # by layout mismatch and by the place source's object type
@@ -100,7 +111,7 @@ def main():
           f"; best carry per composition {res['best_of_all']}")
     print("passing practice (>= 8/10): " + ", ".join(f"{k} {res['passes'][k]} (alone {added[k]})" for k in kinds) +
           f"; union {len(union_all)}")
-    print(f"carry set by the rule: {carries} -> {res['passes_union_set']} passing")
+    print(f"carry set (greedy): {carries} -> {res['passes_union_set']} passing; first rule: {res['carry_set_first_rule']}")
     for grp, b in sorted(bands.items()):
         print(f"  {grp}: {b['compositions']} compositions: " + ", ".join(f"{k} {b[k]}" for k in kinds) + f" of {10 * b['compositions']}")
     for k, v in res["phase_outcomes"].items():

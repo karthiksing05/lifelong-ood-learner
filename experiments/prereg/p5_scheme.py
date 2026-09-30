@@ -16,8 +16,9 @@ print(ledger.record(
         "changes_since_p5_confirm": [
             "the lookup (docs/GRAMMAR.md 3): grasp sources of the target's object type from the same scene first; place sources with the "
             "target's goal relation, of the same object type first, then the same scene (p5_validated.py plan --rank)",
-            "the carry is chosen by practice from a set (kind best): " + ", ".join(CARRIES) + "; the set by the rule stated before the dev "
-            "read (a carry joins if it adds >= 2 compositions passing practice beyond the others' union): " + json.dumps(dev["unique_passes"]),
+            "the carry is chosen by practice from a set (kind best): " + ", ".join(CARRIES) + "; the set by greedy forward selection on the "
+            "dev read (experiments/carry_read.py: the carry passing practice most often, then the one adding most passes, while it adds >= 2; "
+            "passes per carry " + json.dumps(dev["passes"]) + ", the set's union " + str(dev["passes_union_set"]) + ")",
             "waypoints and gripper events are passed on arrival where a carry bridges (events=1; the fix for the generic transport)",
         ],
         "unchanged": "one candidate pair per arrival; compose if the best carry succeeds in >= 8 of 10 practice episodes on init states 0-9, "
