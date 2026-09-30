@@ -47,6 +47,8 @@ pre-registered read in `ledger/`, quoted in the README and [docs/VALIDITY.md](VA
 
 - Joint-state bindings (a knob whose starting angle varies) are not expressed by object poses; practice routes such tasks to
   prototype borrowing.
+- Ten practice episodes do not always predict how a composition does later: the pre-registered confirmation of practice-checked
+  composition did not establish non-inferiority to the tasks' own demos (one checked composition scored 9 of 20 against 20).
 - A place skill that adapts its route to a new layout is missing: composed placements work where the source's route fits the scene,
   and practice decides where it does. Warping the route or replacing it with a generic transport made it worse.
 - Everything is measured in simulation (LIBERO-90); the rendered-scene reader and the validation check use the simulator at training

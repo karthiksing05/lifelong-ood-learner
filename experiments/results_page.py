@@ -42,6 +42,8 @@ p3c, p3r2 = row("p3_compose", "p3c"), row("p3_compose", "p3c_reader2")
 c1 = row("c1_grammar", "read")
 p5 = row("p5_stream", "read")
 p5v, p5m, p5p = row("p5_stream", "validated"), row("p5_stream", "validated_multi"), row("p5_stream", "practice")
+cf = row("p5_stream", "confirm")
+s1, d1 = row("p1_bindings", "seed1"), row("p1_bindings", "demo1_v2")
 dev = row("p5_stream", "dev_fixes")
 p2 = row("p2_negatives", "read")
 p4 = row("p4_growth", "rollouts")
@@ -131,7 +133,9 @@ def tradeoff():
          ("composed as registered", {o: (p5["orders"][o]["demos"], p5["orders"][o]["stream"]) for o in "AB"}),
          ("composition checked in simulation", {o: (p5v["orders"][o]["demos"], p5v["orders"][o]["stream"]) for o in "AB"}),
          ("several sources, checked in simulation", {o: (p5m["orders"][o]["demos"], p5m["orders"][o]["stream"]) for o in "AB"}),
-         ("composition checked by practice", {o: (p5p["orders"][o]["demos"], p5p["orders"][o]["stream"]) for o in "AB"})]
+         ("composition checked by practice", {o: (p5p["orders"][o]["demos"], p5p["orders"][o]["stream"]) for o in "AB"}),
+         ("checked by practice, fresh orders", {"A": (cf["orders"]["C"]["demos"], cf["orders"]["C"]["stream"]),
+                                                "B": (cf["orders"]["D"]["demos"], cf["orders"]["D"]["stream"])})]
     W, H, L, Rm, T, B = 860, 380, 64, 250, 16, 50
     x0, x1, y0, y1 = 30, 52, 680, 900
     X = lambda d: L + (d - x0) / (x1 - x0) * (W - L - Rm)
@@ -155,7 +159,8 @@ def tradeoff():
         g.append(f'<line x1="{X(da):.1f}" y1="{Y(ka):.1f}" x2="{X(db):.1f}" y2="{Y(kb):.1f}" class="pair"/>')
         for o, cls in (("A", "s1"), ("B", "s2")):
             d, k = pts[o]
-            g.append(f'<g class="pt" tabindex="0" data-tip="{esc(f"{lab}, order {o}: {k:,} of 1,000 with {d} demos")}">'
+            on = {"A": "C", "B": "D"}[o] if lab.endswith("fresh orders") else o
+            g.append(f'<g class="pt" tabindex="0" data-tip="{esc(f"{lab}, order {on}: {k:,} of 1,000 with {d} demos")}">'
                      f'<circle cx="{X(d):.1f}" cy="{Y(k):.1f}" r="14" class="hit"/><circle cx="{X(d):.1f}" cy="{Y(k):.1f}" r="5" class="dot {cls} ring"/></g>')
         ly = ly_of[i] + 4
         g.append(f'<text x="{W - Rm + 12}" y="{ly:.1f}" class="lab">{esc(lab)}</text>'
@@ -185,7 +190,8 @@ claims = [
      f"The binding vocabulary grows ({p5['S1']['only_late']} tasks compose only when late, {p5['S1']['only_early']} only when early), "
      f"but composed arrivals score {p5['S2']['x']} vs {p5['S2']['control']} of {p5['S2']['n']}; checked by practice, "
      f"{p5p['composed_vs_own']['x']} vs {p5p['composed_vs_own']['control']} of {p5p['composed_vs_own']['n']} with "
-     f"{p5p['orders']['A']['demos']} and {p5p['orders']['B']['demos']} demos."),
+     f"{p5p['orders']['A']['demos']} and {p5p['orders']['B']['demos']} demos (exploratory); the pre-registered confirmation on fresh orders "
+     f"gets {cf['composed_vs_own']['x']} vs {cf['composed_vs_own']['control']} of {cf['composed_vs_own']['n']}, not shown non-inferior."),
 ]
 
 p3lang = json.load(open(os.path.join(R, "p3c_table.json")))["table"]
@@ -329,7 +335,10 @@ footer {{ font: 12px/1.6 var(--mono); color: var(--muted); border-top: 1px solid
     <div class="chartwrap">{scatter_success_bytes()}</div>
     <p class="cap" id="f1t"><strong>Bindings through the frozen prior reach {v2['V1']['x']} of 420 at {fmt_bytes(meth('ours_phasebind2')['bytes'])} for all 21 tasks.</strong>
     A learned reader in place of the simulator's poses keeps {v2s['V5']['x']} (non-inferior, lower bound {v2s['V5']['diff']['lo90']:+.3f}); every LoRA variant stores {fmt_bytes(meth('practice_lora')['bytes'])} or more.</p>
-    <div class="source">ledger/m3_stats final_23tasks · ledger/p1_bindings v2, v2_synth, alloc_v2 · the v1 row predates the fix for objects still falling in the demos' first frames (up to {rest['max_cm']:.1f} cm)</div>
+    <p class="cap"><strong>Both replicate.</strong> With another sampling seed: v2 {s1['R1']['x']}, the reader {s1['R2']['x']}, the allocator {s1['R3']['x']},
+    the LoRA with failure negatives {s1['R1']['control']}. With a second recorded demo (20 tasks): v2 {d1['D1']['x']} of {d1['D1']['n']} against
+    {d1['D1']['control']} for the LoRA trained on that demo.</p>
+    <div class="source">ledger/m3_stats final_23tasks · ledger/p1_bindings v2, v2_synth, alloc_v2, seed1, demo1_v2 · the v1 row predates the fix for objects still falling in the demos' first frames (up to {rest['max_cm']:.1f} cm)</div>
   </div>
 </section>
 
@@ -372,8 +381,10 @@ footer {{ font: 12px/1.6 var(--mono); color: var(--muted); border-top: 1px solid
     <div class="legend"><span><i class="k1"></i>order A</span><span><i class="k2"></i>order B</span></div>
     <div class="chartwrap">{tradeoff()}</div>
     <p class="cap" id="f4t"><strong>Unchecked composition costs success: composed arrivals score {p5['S2']['x']} against {p5['S2']['control']} of {p5['S2']['n']} for their own demos.</strong>
-    A stored place path keeps its source's route, which fails in another layout. Keeping only compositions that succeed in 8 of 10 practice episodes restores the all-demo stream with fewer demos.</p>
-    <div class="source">ledger/p5_stream read, validated, validated_multi, practice · the three checked variants are exploratory (m3_prereg p5_stream_amend2-4)</div>
+    A stored place path keeps its source's route, which fails in another layout. Keeping only compositions that succeed in 8 of 10 practice episodes
+    brings the streams back near the all-demo stream with a few demos saved; on fresh orders the composed arrivals score {cf['composed_vs_own']['x']} against
+    {cf['composed_vs_own']['control']} of {cf['composed_vs_own']['n']} for their own demos, which is too few arrivals to show non-inferiority.</p>
+    <div class="source">ledger/p5_stream read, validated, validated_multi, practice, confirm · the first three checked variants are exploratory (m3_prereg p5_stream_amend2-4); fresh orders = the pre-registered confirmation (m3_prereg p5_confirm; orders C and D plotted as the first and second order)</div>
   </div>
 </section>
 

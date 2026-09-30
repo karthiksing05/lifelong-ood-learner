@@ -169,7 +169,8 @@ def transfer_probes(w):
         w("")
     for tag, lab in (("validated", "validated composition, first sources (m3_prereg p5_stream_amend2, EXPLORATORY)"),
                      ("validated_multi", "validated composition, every validated source per key (m3_prereg p5_stream_amend3, EXPLORATORY)"),
-                     ("practice", "practice-validated composition, >= 8 of 10 practice successes (m3_prereg p5_stream_amend4, EXPLORATORY)")):
+                     ("practice", "practice-validated composition, >= 8 of 10 practice successes (m3_prereg p5_stream_amend4, EXPLORATORY)"),
+                     ("confirm", "CONFIRMATION of the practice-validated rule on fresh orders and seed 2 (m3_prereg p5_confirm, pre-registered)")):
         vv = _row("p5_stream", tag)
         if vv:
             c = vv["composed_vs_own"]

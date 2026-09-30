@@ -1,0 +1,84 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "experiments/p5_validated.py read --practice --order-seed 1 --score-seed 2 --record",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky1.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "p5_stream",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "8c94a4d4ae1899c38b35a6036b61d0ec7983a161",
+  "short": "8c94a4d4"
+ },
+ "keys": {},
+ "metrics": {
+  "composed_vs_own": {
+   "control": 162,
+   "diff": {
+    "diff": -0.027777777777777776,
+    "hi": 0.15013888888888685,
+    "hi90": 0.12222222222222222,
+    "lo": -0.2,
+    "lo90": -0.16666666666666666,
+    "n_pairs": 180,
+    "n_tasks": 9
+   },
+   "discordant": [
+    14,
+    19
+   ],
+   "n": 180,
+   "non_inferior": false,
+   "sign_p": 0.48685024166479707,
+   "x": 157
+  },
+  "orders": {
+   "C": {
+    "all_demo": 874,
+    "composed_first_half": 1,
+    "composed_second_half": 3,
+    "demos": 46,
+    "n": 1000,
+    "rejected": 11,
+    "stream": 861
+   },
+   "D": {
+    "all_demo": 875,
+    "composed_first_half": 1,
+    "composed_second_half": 4,
+    "demos": 45,
+    "n": 1000,
+    "rejected": 11,
+    "stream": 883
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "p5_stream__libero_90__confirm__s0__8c94a4d4",
+ "schema": 1,
+ "script": "experiments/p5_validated.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-30T18:05:12+00:00",
+ "stream": null,
+ "tag": "confirm"
+}
