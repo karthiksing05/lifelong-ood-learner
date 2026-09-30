@@ -51,6 +51,8 @@ ty = row("p6_reader", "type_transfer")
 yw, ywr = row("p6_reader", "yaw"), row("p6_reader", "yaw_read")
 stove = row("p0_audit", "stove_knob")
 rest = row("p0_audit", "demo_at_rest")
+gram, sto = row("grammar", "readout"), row("storage", "read")
+rc, co, col = row("p6_reader", "compress_read"), row("p6_reader", "compress_offline"), row("p6_reader", "compress_offline_large")
 gplan = json.load(open(os.path.join(R, "p5_stream_plan_gated.json")))
 commit = subprocess.run(["git", "rev-parse", "--short", "HEAD"], capture_output=True, text=True, cwd=ROOT).stdout.strip()
 audit = subprocess.run([sys.executable, os.path.join(ROOT, "experiments", "audit_numbers.py")], capture_output=True, text=True,
@@ -169,6 +171,62 @@ def tradeoff():
     return "".join(g)
 
 
+def storage_bars():
+    """Bytes a task keeps (log scale), and what 50 tasks keep."""
+    med = sto["median"]
+    per = [("rank-16 LoRA", sto["lora_bytes"], "s2"), ("raw LIBERO demonstration", sto["raw_demo_bytes"], "s2"),
+           ("pose reader, full ridge", med["reader_full"], "s1"), ("pose reader, 512-direction head", med["reader_pca512"], "s1"),
+           ("phases (the bindings)", med["program"], "s1")]
+    W, L, Rm, T, rowh = 860, 250, 90, 10, 34
+    H = T + rowh * len(per) + 44
+    x0, x1 = 3.0, 8.0
+    X = lambda b: L + (math.log10(b) - x0) / (x1 - x0) * (W - L - Rm)
+    g = [f'<svg viewBox="0 0 {W} {H}" role="img" aria-labelledby="f5t" class="chart">']
+    for e, lab in ((3, "1 KB"), (4, "10 KB"), (5, "100 KB"), (6, "1 MB"), (7, "10 MB"), (8, "100 MB")):
+        g.append(f'<line x1="{X(10 ** e):.1f}" x2="{X(10 ** e):.1f}" y1="{T}" y2="{H - 34}" class="grid"/>'
+                 f'<text x="{X(10 ** e):.1f}" y="{H - 16}" class="tick" text-anchor="middle">{lab}</text>')
+    for i, (lab, b, cls) in enumerate(per):
+        y = T + i * rowh + 8
+        g.append(f'<text x="{L - 10}" y="{y + 13}" class="lab" text-anchor="end">{esc(lab)}</text>'
+                 f'<g class="pt" tabindex="0" data-tip="{esc(f"{lab}: {fmt_bytes(b)} per task")}"><rect x="{L}" y="{y}" width="{X(b) - L:.1f}" height="18" rx="3" class="{cls}"/></g>'
+                 f'<text x="{X(b) + 8:.1f}" y="{y + 13}" class="tick">{fmt_bytes(b)}</text>')
+    g.append('</svg>')
+    return "".join(g)
+
+
+def verb_glyphs():
+    """Each coarse prototype's mode drawn as the hand path it commands over ten steps: horizontal travel (along its own direction)
+    against height, one shared scale, orange where the gripper is closed."""
+    sel = [("0.55", c, v) for c, v in sorted(gram["prototypes"]["0.55"].items(), key=lambda kv: -kv[1]["frames"])]
+    sel += [("0.4", c, v) for c, v in sorted(gram["prototypes"]["0.4"].items(), key=lambda kv: -kv[1]["tasks"])[:5]]
+    pw, ph, gap, top = 130, 120, 12, 18
+    W = len(sel) * (pw + gap)
+    H = ph + top + 46
+    sc = 2.2                                               # px per commanded cm
+    g = [f'<svg viewBox="0 0 {W} {H}" role="img" aria-labelledby="f6t" class="chart" style="min-width:{min(W, 900)}px">']
+    for i, (u, c, v) in enumerate(sel):
+        x0 = i * (pw + gap)
+        P = [[0.0, 0.0, 0.0]] + v["mode_path_cm"]
+        d = [P[-1][0], P[-1][1]]
+        nd = math.hypot(*d) or 1.0
+        hz = [((p[0] * d[0] + p[1] * d[1]) / nd, p[2]) for p in P]
+        cx, cy = x0 + 20, top + ph / 2
+        g.append(f'<rect x="{x0}" y="{top}" width="{pw}" height="{ph}" rx="4" class="glyph"/>')
+        g.append(f'<line x1="{x0 + 8}" x2="{x0 + pw - 8}" y1="{cy:.1f}" y2="{cy:.1f}" class="grid"/>')
+        for j in range(1, len(hz)):
+            cls = "s2" if v["mode_grip"][j - 1] > 0 else "s1"
+            xa, ya = cx + hz[j - 1][0] * sc, cy - hz[j - 1][1] * sc
+            xb, yb = cx + hz[j][0] * sc, cy - hz[j][1] * sc
+            g.append(f'<line x1="{min(max(xa, x0 + 4), x0 + pw - 4):.1f}" y1="{ya:.1f}" x2="{min(max(xb, x0 + 4), x0 + pw - 4):.1f}" y2="{yb:.1f}" class="vpath {cls}"/>')
+        name = v["name"].split(" (")[0]
+        tip = f"t = {u}, prototype {c}: {name}; {v['tasks']} tasks, {v['frames']} frames"
+        g.append(f'<g class="pt" tabindex="0" data-tip="{esc(tip)}"><rect x="{x0}" y="{top}" width="{pw}" height="{ph}" class="hit"/></g>')
+        g.append(f'<text x="{x0 + pw / 2}" y="{top - 6}" class="tick" text-anchor="middle">t = {u} · {v["tasks"]} tasks</text>')
+        g.append(f'<text x="{x0 + pw / 2}" y="{top + ph + 18}" class="lab" text-anchor="middle">{esc(name)}</text>')
+    g.append('</svg>')
+    return "".join(g)
+
+
 def chip(state):
     icon = {"holds": "✓", "fails": "✕", "mixed": "◐"}[state]
     return f'<span class="chip {state}"><span aria-hidden="true">{icon}</span> {state}</span>'
@@ -184,6 +242,14 @@ claims = [
     ("C3 · composition transfers", "mixed",
      f"Tasks built from other tasks' phases match their own demo when layouts match ({p3c['C1']['x']} vs {p3c['C1']['control']} of 120; "
      f"no demo, no simulator state: {p3r2['R2']['x']}). Across the 50-task pool unchecked compositions fail."),
+    ("Interpretable parts", "holds",
+     f"Coarse prototypes read as verbs; the carry's prototype string groups tasks by goal relation "
+     f"({gram['string_by_key']['carry']['same_key_median']:.2f} vs {gram['string_by_key']['carry']['other_key_median']:.2f}, "
+     f"p {gram['string_by_key']['carry']['perm_p']:.3f}) and the grasp's geometry by object type "
+     f"({gram['grasp_offset_cm']['within_type_median']:.1f} vs {gram['grasp_offset_cm']['across_type_median']:.1f} cm)."),
+    ("Storage", "holds",
+     f"A task keeps {fmt_bytes(sto['median']['program'] + sto['median']['reader_pca512'])} (phases + a reader head, non-inferior: "
+     f"{rc['RC1']['x']} vs {rc['RC1']['control']} of 1,000) against {fmt_bytes(sto['lora_bytes'])} for a LoRA."),
     ("C5 · practice picks the form", "holds",
      f"Phases, prototype borrowing or a LoRA, chosen by 10 practice episodes: {al['AL1']['x']} of 420 at {fmt_bytes(al['bytes_total'])}."),
     ("C4 · continual learning", "mixed",
@@ -203,6 +269,19 @@ levels = "".join(
     f"<tr{' class=hl' if u == '0.55' else ''}><td class='n'>{float(u):.2f}</td><td class='n'>{d['prototypes']:,}</td><td class='n'>{d['change_points_per_demo']:.1f}</td>"
     f"<td class='n'>{d['recall']:.2f} <span class='dim'>({d['random_recall']:.2f})</span></td>"
     f"<td class='n'>{d['precision']:.2f} <span class='dim'>({d['random_precision']:.2f})</span></td></tr>" for u, d in c1["levels"].items())
+
+
+gp = gram["programs"]
+EX = ("48", "58", "13", "3", "39")
+prog_rows = "".join(f"<tr><td class='task'>{esc(gp[t]['language'])}</td><td>{esc(gp[t]['sentence'])}</td><td class='n'>{gp[t]['bytes']:,}</td></tr>" for t in EX if t in gp)
+p55 = sorted(gram["prototypes"]["0.55"].items(), key=lambda kv: -kv[1]["frames"])
+p4v = sorted(gram["prototypes"]["0.4"].items(), key=lambda kv: -kv[1]["tasks"])[:8]
+verb_rows = "".join(f"<tr{' class=hl' if u == '0.55' else ''}><td class='n'>{u}</td><td>{esc(v['name'])}</td><td class='n'>{v['tasks']}</td><td class='n'>{v['speed_cm_per_step']:.2f}</td><td class='n'>{v['dz_cm_per_step']:+.2f}</td></tr>"
+                    for u, lst in (("0.55", p55), ("0.4", p4v)) for c, v in lst)
+sk = gram["string_by_key"]
+key_rows = (f"<tr><td>carry: prototype string</td><td class='n'>{sk['carry']['same_key_median']:.2f}</td><td class='n'>{sk['carry']['other_key_median']:.2f}</td><td class='n'>{sk['carry']['perm_p']:.3f}</td></tr>"
+            f"<tr><td>grasp: prototype string</td><td class='n'>{sk['grasp']['same_key_median']:.2f}</td><td class='n'>{sk['grasp']['other_key_median']:.2f}</td><td class='n'>{sk['grasp']['perm_p']:.2f}</td></tr>"
+            f"<tr><td>grasp: binding geometry (cm)</td><td class='n'>{gram['grasp_offset_cm']['within_type_median']:.1f}</td><td class='n'>{gram['grasp_offset_cm']['across_type_median']:.1f}</td><td class='n'>{gram['grasp_geometry_perm_p']:.4f}</td></tr>")
 
 negatives = [
     ("Sharing weights across tasks", "one fold for all tasks, the other half's fold, family pooling and family pretraining all lose to per-task weights"),
@@ -280,6 +359,8 @@ section > p {{ margin: 0; color: var(--ink-2); max-width: 68ch; }}
 .chart .pair {{ stroke: var(--rule); stroke-width: 2; }}
 .chart .leader {{ stroke: var(--grid); stroke-width: 1; }}
 .chart .hit {{ fill: transparent; }}
+.chart .glyph {{ fill: none; stroke: var(--rule); }}
+.chart .vpath {{ stroke-width: 3; stroke-linecap: round; }} .chart .vpath.s1 {{ stroke: var(--s1); }} .chart .vpath.s2 {{ stroke: var(--s2); }}
 .chart .pt {{ cursor: default; outline: none; }}
 .chart .pt:hover .dot, .chart .pt:focus-visible .dot {{ stroke: var(--ink); }}
 .chart .hover-band {{ fill: transparent; }}
@@ -354,6 +435,37 @@ footer {{ font: 12px/1.6 var(--mono); color: var(--muted); border-top: 1px solid
     <div class="tablewrap"><table><thead><tr><th class="n">level t</th><th class="n">prototypes</th><th class="n">changes per demo</th><th class="n">events at a change (random)</th><th class="n">changes at an event (random)</th></tr></thead><tbody>{levels}</tbody></table></div>
     <p class="cap"><strong>At t = 0.55 the three coarse prototypes change almost exactly at the phase events.</strong> The hierarchy says when a phase starts and ends; the scene says which object and where.</p>
     <div class="source">ledger/c1_grammar read · pre-registered m3_prereg c1_grammar</div>
+  </div>
+  <div class="plate">
+    <div class="legend"><span><i class="l k1"></i>gripper open</span><span><i class="l k2"></i>gripper closed</span></div>
+    <div class="chartwrap">{verb_glyphs()}</div>
+    <p class="cap" id="f6t"><strong>What each coarse prototype does:</strong> the hand path its mode commands over ten steps, horizontal travel against height, on one scale.</p>
+    <div class="tablewrap"><table><thead><tr><th class="n">level t</th><th>prototype, named by its frames</th><th class="n">tasks</th><th class="n">cm per step</th><th class="n">vertical</th></tr></thead><tbody>{verb_rows}</tbody></table></div>
+    <p class="cap"><strong>The coarse prototypes are verbs shared across tasks</strong>: reaching down with the gripper open, lowering while holding, the grip change.
+    A task's program is a sentence over them, anchored on its objects:</p>
+    <div class="tablewrap"><table><thead><tr><th>instruction</th><th>program</th><th class="n">bytes</th></tr></thead><tbody>{prog_rows}</tbody></table></div>
+    <div class="source">ledger/grammar readout · docs/GRAMMAR.md · experiments/grammar_readout.py</div>
+  </div>
+  <div class="plate">
+    <div class="tablewrap"><table><thead><tr><th>distance between two tasks' phases</th><th class="n">same key</th><th class="n">other key</th><th class="n">permutation p</th></tr></thead><tbody>{key_rows}</tbody></table></div>
+    <p class="cap"><strong>The prototypes carry the verb, the bindings carry the object.</strong> Carries with the same goal relation share a prototype string;
+    grasps share a string whatever the object, and differ by the object's geometry. These are the keys of the binding table: grasps by object type, places by goal relation.</p>
+    <div class="source">ledger/grammar readout · keys: object type (grasp), goal relation (place)</div>
+  </div>
+</section>
+
+<section>
+  <h2>What a task costs to keep</h2>
+  <p>Per task, what must be stored to perform it later. The prior is never changed and each task keeps its own record, so a new task cannot alter an old one.</p>
+  <div class="plate">
+    <div class="legend"><span><i class="k1"></i>this method</span><span><i class="k2"></i>fine-tuning or replay</span></div>
+    <div class="chartwrap">{storage_bars()}</div>
+    <p class="cap" id="f5t"><strong>A task keeps {fmt_bytes(sto['median']['program'] + sto['median']['reader_pca512'])}: its phases and a reader head over a shared basis.</strong>
+    The head reads positions at {co['summary']['pca512']['median_err_cm']:.3f} cm against {co['summary']['full']['median_err_cm']:.3f} cm for the full reader, and keeps success
+    ({rc['RC1']['x']} against {rc['RC1']['control']} of 1,000 episodes; non-inferior, lower bound {rc['RC1']['diff']['lo90']:+.3f}). Over the 50 tasks:
+    {fmt_bytes(sto['streams']['A']['totals']['lora'])} of LoRAs, {fmt_bytes(sto['streams']['A']['totals']['raw'])} of raw demos, {fmt_bytes(sto['streams']['A']['totals']['own_pca'])} here
+    ({fmt_bytes(sto['basis_pca512'])} of it the basis, stored once). A seeded random projection needs no basis: {col['summary']['rand2048']['median_err_cm']:.3f} cm at {fmt_bytes(col['summary']['rand2048']['mean_bytes'])} (offline).</p>
+    <div class="source">ledger/storage read · ledger/p6_reader compress_offline, compress_offline_large, compress_read · pre-registered m3_prereg reader_compress</div>
   </div>
 </section>
 

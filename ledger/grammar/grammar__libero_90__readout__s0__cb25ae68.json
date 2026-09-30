@@ -1396,7 +1396,7 @@
   ]
  },
  "notes": null,
- "retired": null,
+ "retired": true,
  "run_id": "grammar__libero_90__readout__s0__cb25ae68",
  "schema": 1,
  "script": "experiments/grammar_readout.py",
@@ -1405,5 +1405,6 @@
  "source_commit": null,
  "started": "2026-09-30T21:06:33+00:00",
  "stream": null,
- "tag": "readout"
+ "tag": "readout",
+ "retired_reason": "superseded by grammar__libero_90__readout__s0__357746b6 (adds each prototype's decoded mode path and the grasp bindings by type; every value of this row is unchanged there)"
 }

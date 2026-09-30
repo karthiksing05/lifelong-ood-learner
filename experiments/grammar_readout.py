@@ -100,8 +100,12 @@ def read():
         for i in range(cut[k + 1] - cut[k]):
             frames.append((t, i, bool(a[i, 6] > 0), float(sp[i]), kind[i], float(dp[i, 2]), bool(ev[i])))
     res = dict(tasks=tasks, prototypes={}, programs={}, grasp_by_type={})
+    from lifelong_ood.policy import data as D
+    norm = D.Norm.load()
     for u in LEVELS:
         lab = L[f"lab_{u}"]
+        ids = list(L[f"ids_{u}"])
+        chunks = D.from_rows(L[f"modes_{u}"], norm, 10)          # each prototype's mode as 10 raw actions (OSC deltas, gripper)
         names = {}
         for c in np.unique(lab):
             idx = np.where(lab == c)[0]
@@ -114,9 +118,12 @@ def read():
             closed = cl > 0.5
             verb = ("grip change" if evs > 0.3 else ("lower" if closed else "reach down") if dz < -0.25 else
                     ("lift" if closed else "rise") if dz > 0.25 else ("transport" if closed else "move"))
+            ch = chunks[int(c)]
             names[int(c)] = dict(frames=int(len(idx)), tasks=int(len({frames[i][0] for i in idx})), gripper_closed=cl,
                                  speed_cm_per_step=spd, dz_cm_per_step=dz, event_share=evs, phase_share=kinds,
-                                 name=f"{'closed' if closed else 'open'} {verb} ({top})")
+                                 name=f"{'closed' if closed else 'open'} {verb} ({top})",
+                                 mode_path_cm=(np.cumsum(ch[:, :3], 0) * 5.0).round(2).tolist(),   # commanded: goal = p + 0.05 a (m)
+                                 mode_grip=ch[:, 6].round(2).tolist())
         res["prototypes"][str(u)] = names
     # 2. programs as sentences; 3. grasp bindings by object type
     grasps = {}
@@ -215,6 +222,7 @@ def read():
         from lifelong_ood import ledger
         keep = {k: res[k] for k in ("tasks", "prototypes", "grasp_offset_cm", "grasp_geometry_perm_p", "string_by_key", "families")}
         keep["programs"] = {t: {k: p[k] for k in ("language", "sentence", "bytes", "grammar")} for t, p in res["programs"].items()}
+        keep["grasp_by_type"] = res["grasp_by_type"]
         print(ledger.record("grammar", bench="libero_90", tag="readout", seed=0, metrics=keep,
                             bytes=dict(experts=0, tree=0, codes=0, samples=0, teacher_copies=0, total=0), config={},
                             script="experiments/grammar_readout.py", command=" ".join(sys.argv),
