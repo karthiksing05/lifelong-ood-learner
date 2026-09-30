@@ -41,19 +41,11 @@ def main():
     PO = load_mod("po", os.path.join(ROOT, "experiments", "phase_outcomes.py"))
     pool = json.load(open(os.path.join(R, "p5_pool.json")))
     combos = [tuple(x) for x in json.load(open(os.path.join(R, "dev_handoff_combos.json")))]
-    tab = {}
-    for t, g, p in combos:
-        row = {}
-        for k, ex in EXP.items():
-            f = os.path.join(R, f"{ex}_{t}_{k}_{g}_{p}.json")
-            if os.path.exists(f):
-                row[k] = HR.episodes(f)
-        if len(row) == len(EXP):
-            tab[(t, g, p)] = row
-    kinds = list(EXP)
+    kinds = [k for k, ex in EXP.items() if all(os.path.exists(os.path.join(R, f"{ex}_{t}_{k}_{g}_{p}.json")) for t, g, p in combos)]
+    tab = {(t, g, p): {k: HR.episodes(os.path.join(R, f"{EXP[k]}_{t}_{k}_{g}_{p}.json")) for k in kinds} for t, g, p in combos}
     succ = {key: {k: sum(v[k].values()) for k in kinds} for key, v in tab.items()}
     passes = {k: {key for key, s in succ.items() if s[k] >= 8} for k in kinds}
-    res = dict(compositions=len(tab), totals={k: int(sum(s[k] for s in succ.values())) for k in kinds}, n=10 * len(tab),
+    res = dict(carries_complete=kinds, compositions=len(tab), totals={k: int(sum(s[k] for s in succ.values())) for k in kinds}, n=10 * len(tab),
                passes={k: len(v) for k, v in passes.items()})
     union_all = set().union(*passes.values())
     res["passes_union_all"] = len(union_all)
@@ -106,6 +98,19 @@ def main():
                 n += 1
         if n:
             res["phase_outcomes"][k] = dict(episodes=n, failed_at=tot)
+    import sys as _s
+    _s.path.insert(0, ROOT)
+    from lifelong_ood import stats
+    res["vs_route"] = {}
+    for k in kinds:
+        if k == "streamc":
+            continue
+        tb = {f"{t}_{g}_{p}": {"x": v[k], "c": v["streamc"]} for (t, g, p), v in tab.items()}
+        pairs = stats.paired(tb, "x", "c", list(tb))
+        d = stats.bootstrap_diff(pairs)
+        d.pop("samples", None)
+        b, c = stats.discordant(pairs)
+        res["vs_route"][k] = dict(diff=d, discordant=[b, c], sign_p=stats.sign_test(b, c))
     res["per_composition"] = {f"{t}_{g}_{p}": succ[(t, g, p)] for (t, g, p) in tab}
     print(f"{len(tab)} compositions x 10 practice episodes: " + ", ".join(f"{k} {res['totals'][k]}" for k in kinds) +
           f"; best carry per composition {res['best_of_all']}")

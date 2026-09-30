@@ -221,7 +221,7 @@ def read():
     if "--record" in sys.argv:
         from lifelong_ood import ledger
         keep = {k: res[k] for k in ("tasks", "prototypes", "grasp_offset_cm", "grasp_geometry_perm_p", "string_by_key", "families")}
-        keep["programs"] = {t: {k: p[k] for k in ("language", "sentence", "bytes", "grammar")} for t, p in res["programs"].items()}
+        keep["programs"] = {t: {k: p[k] for k in ("language", "sentence", "bytes", "grammar", "phases")} for t, p in res["programs"].items()}
         keep["grasp_by_type"] = res["grasp_by_type"]
         print(ledger.record("grammar", bench="libero_90", tag="readout", seed=0, metrics=keep,
                             bytes=dict(experts=0, tree=0, codes=0, samples=0, teacher_copies=0, total=0), config={},
