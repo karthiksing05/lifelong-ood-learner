@@ -55,6 +55,26 @@ def emb(experiment, metric, **f):
     return lambda: L.mean(experiment, metric, **f)
 
 
+def gr(*path, fn=None):
+    """A value of the grammar readout row (ledger grammar, tag readout) by its key path (keys may contain dots)."""
+    def f():
+        v = L.load("grammar", tag="readout")[-1]["metrics"]
+        for k in path:
+            v = v[k]
+        return (float(fn(v) if fn else v), 0.0, 1)
+    return f
+
+
+def sto(*path, scale=1.0):
+    """A value of the storage row (ledger storage, tag read) by its key path, divided by `scale`."""
+    def f():
+        v = L.load("storage", tag="read")[-1]["metrics"]
+        for k in path:
+            v = v[k]
+        return (float(v) / scale, 0.0, 1)
+    return f
+
+
 def neg(fn):
     """A check quoted without its minus sign ("-0.094" in the text matches the quoted "0.094")."""
     return lambda: (-fn()[0],) + tuple(fn()[1:])
@@ -376,6 +396,43 @@ TRANSFER = [   # docs/PLAN_TRANSFER.md probes (pre-registered: ledger m3_prereg 
     ("allocator: MB for 21 tasks", lambda: tuple([L.mean("p1_bindings", "metrics.bytes_total", tag="alloc_v2")[0] / 1e6] + list(L.mean("p1_bindings", "metrics.bytes_total", tag="alloc_v2")[1:])), "45.6"),
     ("allocator: the stove, borrowing", emb("p1_bindings", "metrics.per_task.39.alloc", tag="alloc_v2"), "17"),
     ("allocator: the stove, phases", emb("p1_bindings", "metrics.per_task.39.A", tag="alloc_v2"), "6"),
+    ("grammar: demos", gr("tasks", fn=len), "50"),
+    ("grammar: t=0.55 open motion tasks", gr("prototypes", "0.55", "0", "tasks"), "50"),
+    ("grammar: t=0.55 closed transport tasks", gr("prototypes", "0.55", "1", "tasks"), "46"),
+    ("grammar: t=0.55 closed lift tasks", gr("prototypes", "0.55", "2", "tasks"), "23"),
+    ("grammar: t=0.4 prototypes used", gr("prototypes", "0.4", fn=len), "58"),
+    ("grammar: reach down tasks", gr("prototypes", "0.4", "2", "tasks"), "46"),
+    ("grammar: lower while holding tasks", gr("prototypes", "0.4", "6", "tasks"), "34"),
+    ("grammar: grip change tasks", gr("prototypes", "0.4", "9", "tasks"), "46"),
+    ("grammar: carry strings within relation", gr("string_by_key", "carry", "same_key_median"), "0.27"),
+    ("grammar: carry strings across relations", gr("string_by_key", "carry", "other_key_median"), "0.56"),
+    ("grammar: carry permutation p", gr("string_by_key", "carry", "perm_p"), "0.001"),
+    ("grammar: grasp strings within type", gr("string_by_key", "grasp", "same_key_median"), "0.22"),
+    ("grammar: grasp strings across types", gr("string_by_key", "grasp", "other_key_median"), "0.25"),
+    ("grammar: grasp strings permutation p", gr("string_by_key", "grasp", "perm_p"), "0.13"),
+    ("grammar: grasp geometry within type (cm)", gr("grasp_offset_cm", "within_type_median"), "2.0"),
+    ("grammar: grasp geometry across types (cm)", gr("grasp_offset_cm", "across_type_median"), "9.8"),
+    ("grammar: grasp geometry permutation p", gr("grasp_geometry_perm_p"), "0.0005"),
+    ("reader: full reader KB (median)", sto("median", "reader_full", scale=1e3), "459"),
+    ("reader: phases KB (median)", sto("median", "program", scale=1e3), "2.4"),
+    ("reader: feature dimension", lambda: (16384.0, 0.0, 1), "16,384"),
+    ("reader: head KB (median)", sto("median", "reader_pca512", scale=1e3), "7.2"),
+    ("reader: basis MB", sto("basis_pca512", scale=1e6), "16.8"),
+    ("reader: pca512 offline median cm", emb("p6_reader", "metrics.summary.pca512.median_err_cm", tag="compress_offline"), "0.214"),
+    ("reader: full offline median cm", emb("p6_reader", "metrics.summary.full.median_err_cm", tag="compress_offline"), "0.152"),
+    ("reader: pca512 online", emb("p6_reader", "metrics.RC1.x", tag="compress_read"), "861"),
+    ("reader: full online", emb("p6_reader", "metrics.RC1.control", tag="compress_read"), "874"),
+    ("reader: online episodes", emb("p6_reader", "metrics.RC1.n", tag="compress_read"), "1,000"),
+    ("reader: lower bound (quoted negated)", neg(emb("p6_reader", "metrics.RC1.diff.lo90", tag="compress_read")), "0.034"),
+    ("reader: random projection dimension", lambda: (float(max(L.load("p6_reader", tag="compress_offline_large")[-1]["metrics"]["ks"])), 0.0, 1), "2,048"),
+    ("reader: rand2048 offline cm", emb("p6_reader", "metrics.summary.rand2048.median_err_cm", tag="compress_offline_large"), "0.183"),
+    ("reader: rand2048 KB", lambda: tuple([L.mean("p6_reader", "metrics.summary.rand2048.mean_bytes", tag="compress_offline_large")[0] / 1e3] + [0.0, 1]), "27.7"),
+    ("storage: LoRA MB", sto("lora_bytes", scale=1e6), "18.7"),
+    ("storage: raw demo MB", sto("raw_demo_bytes", scale=1e6), "15.5"),
+    ("storage: phases + head KB", lambda: ((sto("median", "program")()[0] + sto("median", "reader_pca512")()[0]) / 1e3, 0.0, 1), "9.6"),
+    ("storage: 50 LoRAs MB", sto("streams", "A", "totals", "lora", scale=1e6), "936"),
+    ("storage: 50 raw demos MB", sto("streams", "A", "totals", "raw", scale=1e6), "773"),
+    ("storage: 50 tasks phases + heads MB", sto("streams", "A", "totals", "own_pca", scale=1e6), "17.3"),
 ]
 
 CHECKS = EMBODIED + TRANSFER + [
