@@ -1,0 +1,86 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/m3_final_37_phasebind2_nofold_d1.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "roll.sh MODE=phasebind:37?fold=0&rules=2&demo=1&var=0.001 SUITE=libero_90 TASKS=37 TRIALS=20 (job 3990857)",
+ "config": {
+  "client": {
+   "branches": "",
+   "first_trial": 30,
+   "host": "127.0.0.1",
+   "max_steps": 0,
+   "no_meta": false,
+   "objects": true,
+   "out": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/m3_final_37_phasebind2_nofold_d1.json",
+   "port": 9501,
+   "record": false,
+   "replan": 5,
+   "resize": 224,
+   "seed": 7,
+   "suite": "libero_90",
+   "tasks": "37",
+   "trials": 20,
+   "videos": 2,
+   "wait": 10
+  },
+  "job": "3990857",
+  "mode": "phasebind:37?fold=0&rules=2&demo=1&var=0.001"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "brainiac.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3990857",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_final",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "067129b45a8a14b4f9fcda08347822d960c36929",
+  "short": "067129b4"
+ },
+ "keys": {
+  "first_trial": 30,
+  "mode": "phasebind:37?fold=0&rules=2&demo=1&var=0.001",
+  "tasks": "37",
+  "trials": 20
+ },
+ "metrics": {
+  "complete": true,
+  "n_episodes": 20,
+  "secs": 496.2154333591461,
+  "success_rate": 0.7,
+  "tasks": {
+   "37": {
+    "errors": 0,
+    "language": "put the white bowl to the right of the plate",
+    "mean_steps": 208.3,
+    "n": 20,
+    "success_rate": 0.7
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_final__libero_90__phasebind2_nofold_d1__first_trial-30__mode-phasebind-37-fold-0-rules-2-demo-1-var-0.001__tasks-37__trials-20__s7__067129b4",
+ "schema": 1,
+ "script": "experiments/libero_client.py",
+ "seconds": null,
+ "seed": 7,
+ "source_commit": null,
+ "started": "2026-09-30T17:26:43+00:00",
+ "stream": null,
+ "tag": "phasebind2_nofold_d1"
+}

@@ -1,0 +1,270 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "experiments/p1_read.py demo1 --record  # rules v2 with demo 1 (IPEC episode 1) vs the demo-1 LoRA, 21 tasks",
+ "config": {
+  "read": "demo1",
+  "record": true
+ },
+ "env": {
+  "device": "cpu",
+  "host": "sky1.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "p1_bindings",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "067129b45a8a14b4f9fcda08347822d960c36929",
+  "short": "067129b4"
+ },
+ "keys": {},
+ "metrics": {
+  "D1": {
+   "control": 278,
+   "diff": {
+    "diff": 0.2575,
+    "hi": 0.375,
+    "hi90": 0.355,
+    "lo": 0.1525,
+    "lo90": 0.1675,
+    "n_pairs": 400,
+    "n_tasks": 20
+   },
+   "discordant": [
+    108,
+    5
+   ],
+   "n": 400,
+   "passes": true,
+   "sign_p": 2.8319615385298505e-26,
+   "x": 381,
+   "x_arm": "phasebind2_nofold_d1",
+   "y_arm": "lora_d1"
+  },
+  "D2": {
+   "control": 381,
+   "diff": {
+    "diff": -0.0275,
+    "hi": 0.0225,
+    "hi90": 0.0175,
+    "lo": -0.0975,
+    "lo90": -0.0825,
+    "n_pairs": 400,
+    "n_tasks": 20
+   },
+   "discordant": [
+    6,
+    17
+   ],
+   "n": 400,
+   "non_inferior": true,
+   "sign_p": 0.03468966484069824,
+   "x": 370,
+   "x_arm": "phasebind2_reader_spatial4_synth_d1",
+   "y_arm": "phasebind2_nofold_d1"
+  },
+  "demo0_vs_demo1": {
+   "lora": {
+    "demo0": 249,
+    "demo1": 278,
+    "pearson_per_task": 0.12269801813522757
+   },
+   "rd": {
+    "demo0": 357,
+    "demo1": 370,
+    "pearson_per_task": 0.4000076557221744
+   },
+   "v2": {
+    "demo0": 365,
+    "demo1": 381,
+    "pearson_per_task": 0.5759309219178437
+   }
+  },
+  "per_task": {
+   "1": {
+    "lora": 7,
+    "lorad1": 12,
+    "rd": 19,
+    "rdd1": 19,
+    "v2": 20,
+    "v2d1": 20
+   },
+   "3": {
+    "lora": 19,
+    "lorad1": 16,
+    "rd": 20,
+    "rdd1": 20,
+    "v2": 20,
+    "v2d1": 20
+   },
+   "32": {
+    "lora": 7,
+    "lorad1": 14,
+    "rd": 19,
+    "rdd1": 20,
+    "v2": 20,
+    "v2d1": 20
+   },
+   "34": {
+    "lora": 18,
+    "lorad1": 12,
+    "rd": 20,
+    "rdd1": 20,
+    "v2": 20,
+    "v2d1": 20
+   },
+   "35": {
+    "lora": 5,
+    "lorad1": 17,
+    "rd": 20,
+    "rdd1": 20,
+    "v2": 20,
+    "v2d1": 20
+   },
+   "36": {
+    "lora": 13,
+    "lorad1": 12,
+    "rd": 20,
+    "rdd1": 20,
+    "v2": 20,
+    "v2d1": 20
+   },
+   "37": {
+    "lora": 7,
+    "lorad1": 16,
+    "rd": 19,
+    "rdd1": 18,
+    "v2": 19,
+    "v2d1": 14
+   },
+   "39": {
+    "lora": 13,
+    "lorad1": 4,
+    "rd": 6,
+    "rdd1": 9,
+    "v2": 6,
+    "v2d1": 8
+   },
+   "4": {
+    "lora": 17,
+    "lorad1": 5,
+    "rd": 20,
+    "rdd1": 19,
+    "v2": 20,
+    "v2d1": 20
+   },
+   "40": {
+    "lora": 10,
+    "lorad1": 5,
+    "rd": 7,
+    "rdd1": 20,
+    "v2": 5,
+    "v2d1": 20
+   },
+   "41": {
+    "lora": 15,
+    "lorad1": 20,
+    "rd": 17,
+    "rdd1": 20,
+    "v2": 17,
+    "v2d1": 20
+   },
+   "43": {
+    "lora": 12,
+    "lorad1": 17,
+    "rd": 20,
+    "rdd1": 20,
+    "v2": 20,
+    "v2d1": 20
+   },
+   "48": {
+    "lora": 12,
+    "lorad1": 18,
+    "rd": 19,
+    "rdd1": 20,
+    "v2": 20,
+    "v2d1": 20
+   },
+   "5": {
+    "lora": 19,
+    "lorad1": 19,
+    "rd": 19,
+    "rdd1": 20,
+    "v2": 19,
+    "v2d1": 20
+   },
+   "52": {
+    "lora": 13,
+    "lorad1": 15,
+    "rd": 18,
+    "rdd1": 20,
+    "v2": 20,
+    "v2d1": 20
+   },
+   "53": {
+    "lora": 20,
+    "lorad1": 19,
+    "rd": 20,
+    "rdd1": 9,
+    "v2": 20,
+    "v2d1": 20
+   },
+   "58": {
+    "lora": 9,
+    "lorad1": 6,
+    "rd": 20,
+    "rdd1": 19,
+    "v2": 20,
+    "v2d1": 20
+   },
+   "6": {
+    "lora": 17,
+    "lorad1": 19,
+    "rd": 20,
+    "rdd1": 20,
+    "v2": 20,
+    "v2d1": 20
+   },
+   "62": {
+    "lora": 3,
+    "lorad1": 17,
+    "rd": 14,
+    "rdd1": 18,
+    "v2": 19,
+    "v2d1": 19
+   },
+   "63": {
+    "lora": 13,
+    "lorad1": 15,
+    "rd": 20,
+    "rdd1": 19,
+    "v2": 20,
+    "v2d1": 20
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "p1_bindings__libero_90__demo1_v2__s0__067129b4",
+ "schema": 1,
+ "script": "experiments/p1_read.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-09-30T17:50:57+00:00",
+ "stream": null,
+ "tag": "demo1_v2"
+}
