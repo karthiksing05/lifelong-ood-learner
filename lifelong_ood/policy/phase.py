@@ -220,7 +220,8 @@ class PhaseBindHooks:
     needs_prior = False
 
     def __init__(self, source, parts, norm, fold=None, state=None, key=None, var=1e-3, H=10, replan=5, reader=None, carry="live",
-                 warp=False, handoff=False, radius=0.05, patience=1.5, events=False, tol=0.02, max_wait=8, cross_pos=False):
+                 warp=False, handoff=False, radius=0.05, patience=1.5, events=False, tol=0.02, max_wait=8, cross_pos=False,
+                 src_lift=False):
         """reader = dict(W, mx, my, names, enc): a LEARNED pose reader (experiments/p6_reader.py) in place of the client's
         simulator poses -- the objects' positions are predicted from the first frame's images, their orientations are the
         demo's (fixed yaw), and the carry assumes the planned grasp (no live held-object pose)."""
@@ -247,6 +248,10 @@ class PhaseBindHooks:
         # only -- the hand keeps the source hand's orientation and the target's own grip (an object's orientation in the receptacle
         # is a property of its type: a book is not laid down like a pan)
         self.cross_pos = bool(cross_pos)
+        # src_lift: a composed place's bridge (role "place") first lifts the held object by as much as the place source lifted its own
+        # (its height at the descent's start above its resting height), then crosses, then descends -- a source that carried its
+        # object low otherwise drags this one across the table into the receptacle's rim
+        self.src_lift = bool(src_lift)
         self.names = [str(x) for x in source["names"]]
         self.fold = None if fold is None else np.asarray(fold, bool)
         self.var, self.H, self.replan = float(var), int(H), int(replan)
@@ -306,7 +311,12 @@ class PhaseBindHooks:
         z, s0, s1 = self.parts[k][0], self.parts[k][3], self.parts[k][4]
         if begin is not None:                                # the handoff's descent: the part from frame `begin`, bridged from here
             goals, achieved, s0 = goals[begin - s0:], achieved[begin - s0:], begin
-        self._queue_part(z, goals, achieved, g_hold, role, s0, s1, p_now, R_now)
+        lift = 0.0
+        if self.src_lift and role == "place":
+            held = self.parts[k][7]
+            oz = np.asarray(z["obj_pos"])[:, held, 2]
+            lift = float(max(0.0, oz[s0] - oz[:s0 + 1].min()))
+        self._queue_part(z, goals, achieved, g_hold, role, s0, s1, p_now, R_now, lift=lift)
 
     def _goals(self, k, p_now, R_now, g_now):
         """Part k's goals and achieved poses re-anchored on the scene (the receptacle / object pose, the in-hand correction)."""
@@ -359,12 +369,15 @@ class PhaseBindHooks:
         hz = np.asarray(z["obj_pos"])[s0:s1, held, 2]
         return s0 + int(np.where(hz >= hz.max() - 0.01)[0][-1])
 
-    def _queue_part(self, z, goals, achieved, g_hold, role, s0, s1, p_now, R_now):
+    def _queue_part(self, z, goals, achieved, g_hold, role, s0, s1, p_now, R_now, lift=0.0):
         rel = m2aa(goals[0][:3, :3] @ R_now.T)
         # the bridge: straight to the part's first goal; for a composed place (role "place") a generic transport -- lift to the
         # descent's height, then across -- in 1 cm steps
         way = [p_now]
-        if role == "place" and goals[0][2, 3] > p_now[2]:
+        if role == "place" and lift > 0:                     # src_lift: up by the source's lift, across, down to the descent
+            zc = max(goals[0][2, 3], p_now[2] + lift)
+            way += [np.array([p_now[0], p_now[1], zc]), np.array([goals[0][0, 3], goals[0][1, 3], zc])]
+        elif role == "place" and goals[0][2, 3] > p_now[2]:
             way.append(np.array([p_now[0], p_now[1], goals[0][2, 3]]))
         if role == "objc":                                   # contact-local grasp: across at the higher of the two heights, then down
             zc = max(p_now[2], goals[0][2, 3])

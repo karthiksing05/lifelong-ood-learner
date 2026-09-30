@@ -238,7 +238,7 @@ def main():
                                reader=reader, carry="predicted" if kv.get("carry") == "pred" else "live", warp=kv.get("warp") == "1",
                                handoff=kv.get("handoff") == "1", radius=float(kv.get("hr", 0.05)), patience=float(kv.get("hp", 1.5)),
                                events=kv.get("events") == "1", tol=float(kv.get("tol", 0.02)), max_wait=int(kv.get("mw", 8)),
-                               cross_pos=kv.get("crosspos") == "1")
+                               cross_pos=kv.get("crosspos") == "1", src_lift=kv.get("lift") == "1")
         logging.info(f"phasebind: task {t}, {len(parts)} phases ({'object phases' if g and p_ else 'world frame'}; anchors "
                      f"{[None if q[6] is None else str(q[0]['names'][q[6]]) for q in parts]}), rules {kv.get('rules', '1')}, "
                      f"sources g={kv.get('g', t)} p={kv.get('p', t)}, fold {key}")

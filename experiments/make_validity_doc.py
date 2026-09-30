@@ -181,6 +181,47 @@ def transfer_probes(w):
     if dv:
         w(f"- carry fixes on the practice states (ledger p5_stream tag dev_fixes): as registered {dv['totals']['streamc']}, carry warped "
           f"{dv['totals']['streamw']}, generic transport {dv['totals']['streamt']} of {dv['n']}.")
+    dh = _row("p5_stream", "dev_handoff")
+    if dh:
+        w(f"- the prior carries between the bindings (ledger p5_stream tag dev_handoff, EXPLORATORY, practice states): {dh['streamh'][0]} vs "
+          f"{dh['streamc'][0]} of {dh['streamc'][1]} for the source's route over {dh['compositions']} compositions; by layout mismatch "
+          + "; ".join(f"{k.split('_', 1)[1].replace('_999', '+').replace('_', '-')} cm: {v['streamh']} vs {v['streamc']} of {v['n']}" for k, v in dh.items() if k.startswith("mismatch_")) + ".")
+    dc = _row("p5_stream", "dev_carries")
+    if dc:
+        w(f"- carries compared (ledger p5_stream tag dev_carries, EXPLORATORY, {dc['compositions']} compositions x 10 practice episodes): "
+          + ", ".join(f"{k} {v}" for k, v in dc["totals"].items()) + f" of {dc['n']}; passing practice " + ", ".join(f"{k} {v}" for k, v in dc["passes"].items())
+          + f" (union {dc['passes_union_all']}); the carry set by the rule stated before the read: {', '.join(dc['carry_set'])}.")
+    sc = _row("p5_stream", "scheme")
+    if sc:
+        h = sc["H1"]
+        w(f"- the compositional scheme's CONFIRMATION (m3_prereg p5_scheme, pre-registered; ranked lookup, carry chosen by practice from "
+          f"{', '.join(sc['carries'])}, orders {', '.join(sc['orders'])}, seed {sc['score_seed']}): {h['units']} unique compositions {h['x']}/{h['n']} vs "
+          f"their own demos {h['control']}/{h['n']} ({h['diff']['diff']:+.3f}, lower bound {h['diff']['lo90']:+.3f}): "
+          f"{'NON-INFERIOR' if h['non_inferior'] else 'not non-inferior'} at -0.10; demos per order " + ", ".join(f"{o} {v['demos']}" for o, v in sc["orders"].items()) + ".")
+    w("")
+    rc = _row("p6_reader", "compress_read")
+    co = _row("p6_reader", "compress_offline")
+    if rc and co:
+        w("**A small pose reader per task (pre-registered: ledger m3_prereg tag reader_compress).** Offline (first frames of init states "
+          "20-29, 50 tasks): " + ", ".join(f"{k} {v['median_err_cm']:.3f} cm at {v['mean_bytes'] / 1e3:.1f} KB" for k, v in co["summary"].items())
+          + f". Online, the 512-direction head (basis cross-fitted on the other half of the tasks): {_cmp(rc['RC1'])}: "
+          f"{'NON-INFERIOR' if rc['RC1']['non_inferior_005'] else 'not non-inferior'} at -0.05.")
+        w("")
+    gr = _row("grammar", "readout")
+    if gr:
+        sk = gr["string_by_key"]
+        w("**The grammar read out (ledger grammar tag readout; docs/GRAMMAR.md).** Distances between two tasks' phases, same key vs other "
+          f"key (permutation p): carry prototype strings by goal relation {sk['carry']['same_key_median']:.2f} vs {sk['carry']['other_key_median']:.2f} "
+          f"(p {sk['carry']['perm_p']:.4f}); grasp prototype strings by object type {sk['grasp']['same_key_median']:.2f} vs "
+          f"{sk['grasp']['other_key_median']:.2f} (p {sk['grasp']['perm_p']:.2f}); grasp geometry by object type "
+          f"{gr['grasp_offset_cm']['within_type_median']:.1f} vs {gr['grasp_offset_cm']['across_type_median']:.1f} cm (p {gr['grasp_geometry_perm_p']:.4f}).")
+        w("")
+    stg = _row("storage", "read")
+    if stg:
+        m = stg["median"]
+        w(f"**Storage (ledger storage tag read).** Per task (median): phases {m['program'] / 1e3:.1f} KB, full reader {m['reader_full'] / 1e3:.0f} KB, "
+          f"reader head {m['reader_pca512'] / 1e3:.1f} KB (+ the {stg['basis_pca512'] / 1e6:.1f} MB basis once); LoRA {stg['lora_bytes'] / 1e6:.1f} MB; "
+          f"raw demo {stg['raw_demo_bytes'] / 1e6:.1f} MB. 50 tasks (order A): " + ", ".join(f"{k} {v / 1e6:.1f} MB" for k, v in stg["streams"]["A"]["totals"].items()) + ".")
     w("")
     ty = _row("p6_reader", "type_transfer")
     if ty:

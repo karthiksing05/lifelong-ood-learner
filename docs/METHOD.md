@@ -15,13 +15,15 @@ pre-registered read in `ledger/`, quoted in the README and [docs/VALIDITY.md](VA
    the rest in the receptacle's frame (a fixture counts), holding the object so that it follows the source object's path. The object's
    pose in the hand is predicted from the grasp binding (the source's hand-object pose after its close), so no in-hand sensing is
    needed. A task whose demo moves no object is anchored on its fixture.
-4. **Perception.** A per-task pose reader (standardized ridge on frozen ResNet-18 feature maps of both cameras) reads the objects'
-   positions from the first frame. It is trained on simulator-rendered placements of the task's own scene (the arm posed as in the
+4. **Perception.** A per-task pose reader (a ridge head over a SHARED 512-direction code of frozen ResNet-18 feature maps of both
+   cameras, the code fitted on other tasks' rendered scenes and stored once) reads the objects' positions from the first frame. It is trained on simulator-rendered placements of the task's own scene (the arm posed as in the
    task's init states); the simulator labels the training scenes only, and neither a demo nor practice is needed. Orientations come
    from the same rendered scenes (fixed yaw per placement region).
 5. **Execution.** At each query the phases are re-anchored on the read poses, the next ten actions are planned along the source's
    own lagged path (controller goals, not achieved poses), and the frozen policy is sampled through them as a constant-weight guide.
-   No weights are trained.
+   Where the plan bridges between stored segments, its waypoints and its gripper events are passed on ARRIVAL, not on the clock: the
+   controller follows a long bridge more slowly than planned, and a clock-driven plan releases early or cuts corners. No weights are
+   trained.
 6. **Transfer by composition.** Bindings are stored in a table: grasp bindings keyed by the manipulated object's TYPE, place
    bindings keyed by the whole goal relation (the task's BDDL goal with the object abstracted). A new task whose two keys are known is
    composed from other tasks' phases (`phase.compose`), relabelled onto its own objects by name, with no demo of its own. Only
@@ -36,6 +38,11 @@ pre-registered read in `ledger/`, quoted in the README and [docs/VALIDITY.md](VA
    its source's route, which fails in a different layout.
 
 ## What the hierarchy does and does not do
+
+- Its coarse prototypes are verbs shared across tasks (reach down with the gripper open, lower while holding, grip change), and a
+  task's program reads as a sentence of phases over them, anchored on objects ([GRAMMAR.md](GRAMMAR.md)). The prototypes and the
+  bindings split a task: a carry's prototype string is shared by tasks with the same goal relation, a grasp's by every task, while
+  the grasp's geometry is shared only within an object type. These are the keys of the binding table.
 
 - It gives the grammar (the coarse level's phase boundaries), task identity (the fine levels' leaf sequences), and the fallback motion
   where object bindings cannot express a skill (prototype borrowing through the prior).

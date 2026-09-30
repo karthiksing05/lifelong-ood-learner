@@ -288,3 +288,44 @@ def test_events_bridge_corners_are_passed_on_arrival():
     arrived = np.concatenate([h.queue[0][0], [0, 0, 0], [0, 0]])
     h.plan(arrived)
     assert len(h.queue) < n_before                                  # passed on arrival
+
+
+def test_contact_start_reads_the_last_free_space_verb():
+    """contact_start: the frames after the phase's last free-space prototype verb ("... move"), less the lead-in; None without one."""
+    from lifelong_ood.policy.phase import contact_start
+    verbs = ["open move"] * 10 + ["open reach down"] * 4 + ["open grip change"] * 2
+    assert contact_start(verbs, 0, 16, lead=3) == 10 - 3 + 0
+    assert contact_start(verbs, 0, 16, lead=0) == 10
+    assert contact_start(["open reach down"] * 5, 0, 5) is None
+    assert contact_start(verbs, 8, 16, lead=5) == 8                     # never before the phase's start
+
+
+def test_cross_type_place_transfers_position_only():
+    """cross_pos: with a place source of another object type the in-hand correction is a pure translation that puts the TARGET
+    object's origin where the source object's was (the hand keeps the source hand's orientation); same type: the full correction."""
+    T = 30
+    names = np.array(["obj_1", "bin_1"])
+    obj_pos = np.zeros((T, 2, 3))
+    obj_pos[:, 1] = [0.3, 0.3, 0.9]
+    eef_pos = np.array([[0.0, 0.0, 1.0 + 0.001 * i] for i in range(T)])
+    obj_pos[:, 0] = eef_pos - [0.0, 0.0, 0.05]
+    z = dict(names=names, movable=np.array([True, False]), obj_pos=obj_pos, obj_quat=np.tile([0, 0, 0, 1.0], (T, 2, 1)),
+             eef_pos=eef_pos, eef_quat=np.tile([1.0, 0, 0, 0], (T, 1)), action=np.ones((T, 7), np.float32))
+    GP = eef_pos.copy()
+    GQ = np.stack([q2m(q) for q in z["eef_quat"]])
+    meta = {"obj_names": ["obj_1", "bin_1"], "obj_pos": [0.0, 0.0, 0.95, 0.3, 0.3, 0.9], "obj_quat": [0, 0, 0, 1.0] * 2}
+    tilt = aa2m([0.4, 0.0, 0.0])                                       # the target's grip: tilted, object 8 cm below the hand
+    inhand = np.linalg.inv(pose(np.array([0.0, 0.0, 0.0]), np.eye(3))) @ pose(np.array([0.0, 0.0, 0.08]), tilt)
+    out = {}
+    for cross in (False, True):
+        zc = dict(z, cross_type=cross)
+        h = PhaseBindHooks(zc, [(zc, GP, GQ, 0, T, "rec", 1, 0)], norm=None, carry="predicted", cross_pos=True)
+        h._inhand["obj_1"] = inhand
+        h.rewrite({}, meta)
+        goals, _, _, _ = h._goals(0, eef_pos[0], np.eye(3), 1.0)
+        out[cross] = goals[0]
+    src = pose(GP[0], GQ[0])
+    assert np.allclose(out[True][:3, :3], src[:3, :3])                 # position only: the source hand's orientation
+    obj_t = out[True] @ np.linalg.inv(inhand)                         # where the target object's origin ends up
+    assert np.allclose(obj_t[:3, 3], obj_pos[0, 0], atol=1e-9)         # = the source object's origin
+    assert not np.allclose(out[False][:3, :3], src[:3, :3])           # same type: the full correction rotates the hand

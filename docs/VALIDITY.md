@@ -563,6 +563,13 @@ Object poses come from the simulator (an ORACLE the client sends) unless a row s
 - practice-validated composition, >= 8 of 10 practice successes (m3_prereg p5_stream_amend4, EXPLORATORY): order A stream 875/1000 with 46 demos (11 compositions rejected); order B stream 870/1000 with 44 demos (11 compositions rejected); composed arrivals 186/200 vs their own demos 189/200 (-0.015, lower bound -0.085).
 - CONFIRMATION of the practice-validated rule on fresh orders and seed 2 (m3_prereg p5_confirm, pre-registered): order C stream 861/1000 with 46 demos (11 compositions rejected); order D stream 883/1000 with 45 demos (11 compositions rejected); composed arrivals 157/180 vs their own demos 162/180 (-0.028, lower bound -0.167).
 - carry fixes on the practice states (ledger p5_stream tag dev_fixes): as registered 123, carry warped 82, generic transport 6 of 320.
+- the prior carries between the bindings (ledger p5_stream tag dev_handoff, EXPLORATORY, practice states): 188 vs 197 of 540 for the source's route over 54 compositions; by layout mismatch 0-10 cm: 20 vs 35 of 100; 10-30 cm: 116 vs 151 of 300; 30+ cm: 52 vs 11 of 140.
+
+**A small pose reader per task (pre-registered: ledger m3_prereg tag reader_compress).** Offline (first frames of init states 20-29, 50 tasks): full 0.152 cm at 443.0 KB, full_fp16 0.152 cm at 221.5 KB, pca128 0.359 cm at 1.7 KB, pca256 0.242 cm at 3.5 KB, pca512 0.214 cm at 6.9 KB, pca64 0.464 cm at 0.9 KB, rand128 0.413 cm at 1.7 KB, rand256 0.347 cm at 3.5 KB, rand512 0.244 cm at 6.9 KB, rand64 0.620 cm at 0.9 KB. Online, the 512-direction head (basis cross-fitted on the other half of the tasks): 861/1000 vs 874/1000, -0.013 [-0.038, +0.011], one-sided 95% bound -0.034, discordant 24/37, sign p 0.12: NON-INFERIOR at -0.05.
+
+**The grammar read out (ledger grammar tag readout; docs/GRAMMAR.md).** Distances between two tasks' phases, same key vs other key (permutation p): carry prototype strings by goal relation 0.27 vs 0.56 (p 0.0010); grasp prototype strings by object type 0.22 vs 0.25 (p 0.13); grasp geometry by object type 2.0 vs 9.8 cm (p 0.0005).
+
+**Storage (ledger storage tag read).** Per task (median): phases 2.4 KB, full reader 459 KB, reader head 7.2 KB (+ the 16.8 MB basis once); LoRA 18.7 MB; raw demo 15.5 MB. 50 tasks (order A): lora 935.5 MB, own_full 22.3 MB, own_pca 17.3 MB, raw 772.6 MB, stream_pca 17.2 MB.
 
 **Perception across tasks by object type (ledger p6_reader tag type_transfer).** A reader per object type trained on the other tasks' rendered scenes, tested on a held-out task's first frames of states 20-29: median 0.81 cm over 85 objects; types seen in no other task: microwave, milk, new_salad_dressing, orange_juice, wine_rack.
 

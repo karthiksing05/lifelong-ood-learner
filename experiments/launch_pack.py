@@ -126,7 +126,9 @@ def arm_spec(tid, arm, fold, demo=0):
         g, p = gp.split("-")                                             # streamh: the prior carries; suffix e: events fire on arrival
         wp = {"w": "&warp=1", "t": "&transport=1", "h": "&handoff=1",      # x: contact-local grasp (prototype verbs) + transport + events
               "x": "&transport=1&contact=1&events=1"}.get(kind[6], "") + ("&events=1" if kind.endswith("e") else "") \
-            + ("&crosspos=1" if "p" in kind[7:] else "")                  # suffix p: cross-type places transfer position only
+            + ("&crosspos=1" if "p" in kind[7:] else "") \
+            + ("&lift=1" if "l" in kind[7:] else "")                     # suffix p: cross-type places transfer position only;
+        #                                                                  suffix l: the transport lifts by the place source's own lift
         pool = json.load(open(os.path.join(R, "p5_pool.json")))[str(tid)]
         return (f"phasebind:{tid}?fold=0&rules=2&g={g}&p={p}&objn={pool['object']}&recn={pool['receptacle']}"
                 f"&reader=spatial4_synthonly_rj&carry=pred{wp}&var=0.001", "0", False)

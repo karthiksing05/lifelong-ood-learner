@@ -6,6 +6,7 @@ scene neither source was recorded in.  Carries compared on the 54 practised comp
   streamh   the frozen prior carries; the guide resumes at the descent (dev_handoff)
   streamte  a lift-across-descend bridge to the place source's descent, waypoints and gripper events passed on arrival (dev_carry)
   streamhe  streamh with events passed on arrival (dev_carry)
+  streamtle streamte whose bridge first lifts by the place source's own lift (added after streamte dragged low-carried objects)
 The carry set is chosen by a rule stated before this read: a carry joins if it adds >= 2 compositions passing practice (>= 8 of 10)
 beyond the union of the others.
 
@@ -23,7 +24,7 @@ import numpy as np
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT)
 R = os.path.join(ROOT, "results", "robot")
-EXP = {"streamc": "dev_p5", "streamh": "dev_handoff", "streamte": "dev_carry", "streamhe": "dev_carry"}
+EXP = {"streamc": "dev_p5", "streamh": "dev_handoff", "streamte": "dev_carry", "streamhe": "dev_carry", "streamtle": "dev_carry"}
 
 
 def load_mod(name, path):
@@ -75,8 +76,14 @@ def main():
     res["groups"] = bands
     # phase outcomes where light recordings exist
     res["phase_outcomes"] = {}
+    LIGHT = {"streamc": "dev_p5light"}          # the guided carry's light replay (seed 0 replays the same episodes, now recorded)
+    res["replay_identical"] = {}
     for k in kinds:
-        files = [os.path.join(R, f"{EXP[k]}_{t}_{k}_{g}_{p}.json") for (t, g, p) in tab]
+        ex = LIGHT.get(k, EXP[k])
+        files = [os.path.join(R, f"{ex}_{t}_{k}_{g}_{p}.json") for (t, g, p) in tab]
+        if k in LIGHT:
+            same = [HR.episodes(f) == tab[key][k] for f, key in zip(files, tab) if os.path.exists(f)]
+            res["replay_identical"][k] = [int(sum(same)), len(same)]
         tot = {s: 0 for s in PO.STAGES + ("success",)}
         n = 0
         for f in files:

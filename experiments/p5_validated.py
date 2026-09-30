@@ -23,7 +23,7 @@ def load(f):
     return json.load(open(os.path.join(R, f)))
 
 
-KIND_EXP = {"streamc": "dev_p5", "streamh": "dev_handoff", "streamte": "dev_carry", "streamhe": "dev_carry"}   # kind -> its practice runs (states 0-9)
+KIND_EXP = {"streamc": "dev_p5", "streamh": "dev_handoff", "streamte": "dev_carry", "streamhe": "dev_carry", "streamtle": "dev_carry"}   # kind -> its practice runs (states 0-9)
 
 
 def practice_rate(kind):
