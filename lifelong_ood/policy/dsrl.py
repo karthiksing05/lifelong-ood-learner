@@ -42,7 +42,7 @@ class Actor(nn.Module):
         z = torch.tanh(u)
         logp = (-0.5 * ((u - mu) / std) ** 2 - log_std - 0.5 * math.log(2 * math.pi)).sum(-1)
         logp = logp - (torch.log(self.beta * (1 - z.pow(2)) + 1e-6)).sum(-1)
-        return self.beta * z, logp / z.shape[-1]                       # per dimension: 320 dims' entropy would swamp a 0/1 reward
+        return self.beta * z, (logp / z.shape[-1] if getattr(self, "per_dim", True) else logp)   # ours: per dimension (320 dims)
 
 
 class DSRLHooks:
@@ -50,7 +50,15 @@ class DSRLHooks:
     needs_prior = False
 
     def __init__(self, feat, dim, train=True, save=None, load=None, warmup=10, utd=4, batch=256, gamma=0.99, lr=3e-4, beta=2.0,
-                 alpha=0.01, device="cuda", seed=0, log=print):
+                 alpha=0.01, device="cuda", seed=0, log=print, official=False, H=10, A=32):
+        """official=True: the authors' pi0.5 LIBERO configuration (github.com/gonora24/dsrl_pi0 examples/scripts/run_libero_pi05.sh,
+        train_utils_sim.py, jaxrl2 pixel_sac): the agent outputs ONE 7-dim noise vector, tiled over the chunk's H steps in action
+        dims 0-6 (the other dims fresh N(0, 1) each query); tanh bound 1.0; 10 critics (MLP 128 x 3) reduced by min; targets
+        without the entropy bonus; temperature auto-tuned from 1.0 toward -dim/2; 20 updates per transition; discount 0.999;
+        batch 256.  Kept from ours: frozen ResNet-18 features + state instead of a 64 x 64 CNN trained by the critic."""
+        self.official, self.H, self.A = bool(official), int(H), int(A)
+        if self.official:
+            dim, utd, gamma, beta = 7, 20, 0.999, 1.0
         self.feat, self.dim, self.train, self.save_path = feat, int(dim), bool(train), save
         self.warmup, self.utd, self.batch, self.gamma, self.beta = int(warmup), int(utd), int(batch), float(gamma), float(beta)
         self.device, self.log = device, log
@@ -69,8 +77,18 @@ class DSRLHooks:
         self.sdim = sdim
         d = self.device
         self.actor = Actor(sdim, self.dim, self.beta).to(d)
-        self.q = nn.ModuleList([mlp(sdim + self.dim, 1) for _ in range(2)]).to(d)
-        self.qt = nn.ModuleList([mlp(sdim + self.dim, 1) for _ in range(2)]).to(d)
+        if self.official:
+            self.actor.per_dim = False
+            mk = lambda: nn.Sequential(nn.Linear(sdim + self.dim, 128), nn.ReLU(), nn.Linear(128, 128), nn.ReLU(),       # noqa: E731
+                                       nn.Linear(128, 128), nn.ReLU(), nn.Linear(128, 1))
+            self.q = nn.ModuleList([mk() for _ in range(10)]).to(d)
+            self.qt = nn.ModuleList([mk() for _ in range(10)]).to(d)
+            self.log_alpha = torch.zeros(1, device=d, requires_grad=True)
+            self.opt_al = torch.optim.Adam([self.log_alpha], lr=self.lr)
+            self.target_entropy = -0.5 * self.dim
+        else:
+            self.q = nn.ModuleList([mlp(sdim + self.dim, 1) for _ in range(2)]).to(d)
+            self.qt = nn.ModuleList([mlp(sdim + self.dim, 1) for _ in range(2)]).to(d)
         self.qt.load_state_dict(self.q.state_dict())
         self.opt_a = torch.optim.Adam(self.actor.parameters(), lr=self.lr)
         self.opt_q = torch.optim.Adam(self.q.parameters(), lr=self.lr)
@@ -107,12 +125,18 @@ class DSRLHooks:
         if self.sdim is None:
             self._build(len(s))
         if self.train and self.n_eps < self.warmup:
-            z = np.clip(self.rng.standard_normal(self.dim), -self.beta, self.beta).astype(np.float32)
+            z = self.rng.standard_normal(self.dim).astype(np.float32)
+            if not self.official:
+                z = np.clip(z, -self.beta, self.beta)
         else:
             with torch.no_grad():
                 zt, _ = self.actor(torch.as_tensor(s, device=self.device)[None], deterministic=not self.train)
             z = zt[0].cpu().numpy().astype(np.float32)
         self.cur.append((s, z))
+        if self.official:                                            # tile the 7-dim latent over the chunk, dims 0-6
+            full = self.rng.standard_normal((self.H, self.A)).astype(np.float32)
+            full[:, :self.dim] = z[None, :]
+            return full.reshape(1, -1)
         return z.reshape(1, -1)
 
     def __call__(self, obs, pre, meta=None):
@@ -128,6 +152,8 @@ class DSRLHooks:
         Rw = torch.as_tensor(np.asarray(self.buf["r"], np.float32), device=self.device)
         S2 = torch.as_tensor(np.stack(self.buf["s2"]), device=self.device)
         Dn = torch.as_tensor(np.asarray(self.buf["d"], np.float32), device=self.device)
+        if self.official:
+            return self._update_official(n, S, Z, Rw, S2, Dn, B)
         for _ in range(n):
             i = torch.as_tensor(self.rng.integers(0, B, min(self.batch, B)), device=self.device)
             s, z, r, s2, d = S[i], Z[i], Rw[i], S2[i], Dn[i]
@@ -145,3 +171,25 @@ class DSRLHooks:
                 for p, pt in zip(self.q.parameters(), self.qt.parameters()):
                     pt.mul_(0.995).add_(0.005 * p)
         return dict(updates=n, buffer=B, q_loss=round(float(ql), 5), q_mean=round(float(qa.mean()), 3))
+
+    def _update_official(self, n, S, Z, Rw, S2, Dn, B):
+        for _ in range(n):
+            i = torch.as_tensor(self.rng.integers(0, B, min(self.batch, B)), device=self.device)
+            s, z, r, s2, d = S[i], Z[i].clamp(-0.999 * self.beta, 0.999 * self.beta), Rw[i], S2[i], Dn[i]
+            with torch.no_grad():                                        # critic_reduction min, no entropy backup
+                z2, _ = self.actor(s2)
+                qn = torch.stack([qt(torch.cat([s2, z2], -1)).squeeze(-1) for qt in self.qt]).min(0).values
+                y = r + self.gamma * (1 - d) * qn
+            ql = sum(F.mse_loss(q(torch.cat([s, z], -1)).squeeze(-1), y) for q in self.q)
+            self.opt_q.zero_grad(); ql.backward(); self.opt_q.step()
+            alpha = self.log_alpha.exp().detach()
+            za, lp = self.actor(s)
+            qa = torch.stack([q(torch.cat([s, za], -1)).squeeze(-1) for q in self.q]).min(0).values
+            al = (alpha * lp - qa).mean()
+            self.opt_a.zero_grad(); al.backward(); self.opt_a.step()
+            el = -(self.log_alpha * (lp.detach() + self.target_entropy)).mean()
+            self.opt_al.zero_grad(); el.backward(); self.opt_al.step()
+            with torch.no_grad():
+                for p, pt in zip(self.q.parameters(), self.qt.parameters()):
+                    pt.mul_(0.995).add_(0.005 * p)
+        return dict(updates=n, buffer=B, q_loss=round(float(ql), 5), q_mean=round(float(qa.mean()), 3), alpha=round(float(self.log_alpha.exp()), 4))

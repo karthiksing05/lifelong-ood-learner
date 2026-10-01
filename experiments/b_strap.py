@@ -105,6 +105,62 @@ def segments(eef, min_len=20):
     return [(a, b) for a, b in zip(cuts[:-1], cuts[1:])]
 
 
+def segments_official(eef, threshold=2.5e-3, min_len=20):
+    """STRAP's own rule (strap/utils/retrieval_utils.py segment_trajectory_by_derivative + merge_short_segments): cut after every step
+    whose L1 end-effector displacement is below 2.5 mm, then merge pieces shorter than min_len into the next (the last into the previous)."""
+    d = np.abs(np.diff(eef, axis=0)).sum(1)
+    stops = np.where(d < threshold)[0]
+    cuts, start = [], 0
+    for st in stops:
+        cuts.append((start, st + 1))
+        start = st + 1
+    if start < len(eef):
+        cuts.append((start, len(eef)))
+    merged, cur = [], list(cuts[0])
+    for a, b in cuts[1:]:
+        if cur[1] - cur[0] < min_len:
+            cur[1] = b
+        else:
+            merged.append(tuple(cur))
+            cur = [a, b]
+    if cur[1] - cur[0] < min_len and merged:
+        merged[-1] = (merged[-1][0], cur[1])
+    else:
+        merged.append(tuple(cur))
+    return merged
+
+
+def sdtw21(Q, P, lens):
+    """STRAP's subsequence DTW (compute_accumulated_cost_matrix_subsequence_dtw_21): steps (1, 1) and (1, 2) only -- the prior episode
+    advances one or two frames per query frame, never stalls; free start and end.  -> (cost [E], start [E], end [E])."""
+    import torch
+    dev = "cuda" if torch.cuda.is_available() else "cpu"
+    Qt = torch.as_tensor(Q, dtype=torch.float32, device=dev)
+    Pt = torch.as_tensor(P, dtype=torch.float32, device=dev)
+    E, L, _ = Pt.shape
+    m = len(Qt)
+    C = torch.cdist(Qt.unsqueeze(0).expand(E, -1, -1), Pt)
+    mask = torch.arange(L, device=dev)[None, :] >= torch.as_tensor(lens, device=dev)[:, None]
+    C = C.masked_fill(mask[:, None, :], float("inf"))
+    inf = torch.full((E, 2), float("inf"), device=dev)
+    Dm = torch.empty((E, m, L), device=dev)
+    Dm[:, 0] = C[:, 0]
+    for i in range(1, m):
+        prev = torch.cat([inf, Dm[:, i - 1]], 1)                       # prev[:, j + 2] = D[i-1, j]
+        Dm[:, i] = C[:, i] + torch.minimum(prev[:, 1:L + 1], prev[:, 0:L])   # D[i-1, j-1], D[i-1, j-2]
+    cost, end = Dm[:, m - 1].min(1)
+    Dn = Dm.cpu().numpy()
+    start = np.zeros(E, int)
+    for e in range(E):
+        j = int(end[e])
+        for i in range(m - 1, 0, -1):
+            a = Dn[e, i - 1, j - 1] if j >= 1 else np.inf
+            b = Dn[e, i - 1, j - 2] if j >= 2 else np.inf
+            j = j - 1 if a <= b else j - 2
+        start[e] = max(j, 0)
+    return cost.cpu().numpy() / m, start, end.cpu().numpy()
+
+
 def sdtw(Q, P, lens):
     """Subsequence DTW of query Q [m, d] against every prior episode P [E, L, d] (padded; lens [E]).  -> (cost [E], start [E], end [E])."""
     import torch
@@ -138,7 +194,7 @@ def sdtw(Q, P, lens):
     return cost.cpu().numpy() / m, start, end.cpu().numpy()
 
 
-def retrieve(K=100):
+def retrieve(K=100, official=False):
     Z = np.load(os.path.join(R, "strap_emb.npz"))
     tg = np.load(os.path.join(R, "strap_targets.npz"))
     ep, F = Z["ep"], Z["f"].astype(np.float32)
@@ -149,19 +205,21 @@ def retrieve(K=100):
         P[k, :lens[k]] = F[ep == e]
     for t in HELD:
         q = Z[f"t_{t}"].astype(np.float32)
-        segs = segments(tg[f"eef_{t}"])
-        per = int(np.ceil(K / len(segs)))
+        segs = segments_official(tg[f"eef_{t}"]) if official else segments(tg[f"eef_{t}"])
+        per = int(K / len(segs)) if official else int(np.ceil(K / len(segs)))
         picks = []
         for a, b in segs:
-            cost, st, en = sdtw(q[a:b], P, lens)
+            cost, st, en = (sdtw21 if official else sdtw)(q[a:b], P, lens)
             for k in np.argsort(cost)[:per]:
                 picks.append(dict(segment=[int(a), int(b)], episode=int(ids[k]), start=int(st[k]), end=int(en[k]), cost=float(cost[k])))
-        picks = sorted(picks, key=lambda x: x["cost"])[:K]
-        json.dump(dict(task=t, segments=segs, K=K, picks=picks), open(os.path.join(R, f"strap_{t}_retrieved.json"), "w"), indent=1)
+        picks = sorted(picks, key=lambda x: x["cost"]) if official else sorted(picks, key=lambda x: x["cost"])[:K]
+        name = "strap2" if official else "strap"
+        json.dump(dict(task=t, segments=[list(map(int, x)) for x in segs], K=K, picks=picks, official=official),
+                  open(os.path.join(R, f"{name}_{t}_retrieved.json"), "w"), indent=1)
         print(f"[strap] task {t}: {len(segs)} sub-trajectories, {len(picks)} retrieved, {sum(p['end'] - p['start'] + 1 for p in picks)} frames", flush=True)
 
 
-def train(t, steps=2000, rank=16, lr=1e-4, batch=32, seed=0):
+def train(t, steps=2000, rank=16, lr=1e-4, batch=32, seed=0, name="strap"):
     sys.path.insert(0, "/coc/flash10/ksingara3/robot/openpi/src")
     from lifelong_ood import ledger
     from lifelong_ood.experts.lora import add_node
@@ -177,7 +235,7 @@ def train(t, steps=2000, rank=16, lr=1e-4, batch=32, seed=0):
     idx, _ = D.chunk_indices(T, bk.H)
     obs = [d90.observation(ep, i) for i in range(T)]
     rows = [D.pad_rows(D.to_rows(ep["actions"][idx], norm), bk.H)]
-    ret = json.load(open(os.path.join(R, f"strap_{t}_retrieved.json")))
+    ret = json.load(open(os.path.join(R, f"{name}_{t}_retrieved.json")))
     for p in ret["picks"]:
         pe = dm.load(p["episode"], images=True)
         n = len(pe["actions"])
@@ -195,16 +253,16 @@ def train(t, steps=2000, rank=16, lr=1e-4, batch=32, seed=0):
     bank = adapt.PrefixBank(bk, obs, store="cpu")
     print(f"[strap] task {t}: demo {T} frames + retrieved {bank.n - T} frames", flush=True)
     state, banks = adapt.inject(bk, scope="expert")
-    key = f"strap_{t}"
+    key = f"{name}_{t}"
     params = add_node(banks, key, rank)
     t1 = time.time()
     hist = adapt.train(bk, state, key, params, bank, full, steps=steps, lr=lr, batch=batch, seed=seed)
     secs = time.time() - t1
-    path = os.path.join(R, f"strap_{t}_lora.pt")
+    path = os.path.join(R, f"{name}_{t}_lora.pt")
     nbytes = adapt.save(banks, key, path, meta=dict(task=t, rank=rank, scope="expert", retrieved=len(ret["picks"])))
     m = dict(task=t, demo_frames=int(T), retrieved_frames=int(bank.n - T), retrieved=len(ret["picks"]), segments=ret["segments"],
              final_loss=hist["loss"][-1], first_loss=hist["loss"][0], curve=hist, train_secs=secs)
-    print(ledger.record("b_baselines", bench="libero_90", tag="strap", seed=seed, keys=dict(task=t), metrics=m,
+    print(ledger.record("b_baselines", bench="libero_90", tag=name, seed=seed, keys=dict(task=t), metrics=m,
                         bytes=dict(experts=nbytes, tree=0, codes=0, samples=0, teacher_copies=0, total=nbytes),
                         config=dict(steps=steps, rank=rank, lr=lr, batch=batch, K=ret["K"]), script="experiments/b_strap.py",
                         command=" ".join(sys.argv), artifacts=[path]))
@@ -216,5 +274,7 @@ if __name__ == "__main__":
     ap.add_argument("stage", choices=("dump", "embed", "retrieve", "train"))
     ap.add_argument("--task", type=int)
     ap.add_argument("--steps", type=int, default=2000)
+    ap.add_argument("--official", action="store_true", help="STRAP's own segmentation, DTW steps and per-segment top-k (-> strap2)")
     a = ap.parse_args()
-    {"dump": dump, "embed": embed, "retrieve": retrieve}.get(a.stage, lambda: train(a.task, steps=a.steps))()
+    {"dump": dump, "embed": embed, "retrieve": lambda: retrieve(official=a.official)}.get(
+        a.stage, lambda: train(a.task, steps=a.steps, name="strap2" if a.official else "strap"))()

@@ -262,7 +262,8 @@ def main():
             return np.concatenate([f_.float().cpu().numpy()[0], np.asarray(obs["observation/state"], np.float32)])
         hooks = DSRLHooks(feat, dim=bk.H * bk.A, train=kv.get("train", "1") == "1", save=kv.get("save"), load=kv.get("load"),
                           warmup=int(kv.get("warmup", 10)), utd=int(kv.get("utd", 4)), beta=float(kv.get("beta", 2.0)),
-                          seed=int(os.environ.get("SERVE_SEED", "0") or 0), log=logging.info)
+                          seed=int(os.environ.get("SERVE_SEED", "0") or 0), log=logging.info, official=kv.get("official") == "1",
+                          H=bk.H, A=bk.A)
         logging.info(f"dsrl: task {t}, LoRA {lp} on, noise dim {bk.H * bk.A}, train {hooks.train}")
     elif a.mode.startswith("lora:"):
         # lora:<expert.pt> -- the few-shot baseline: a flat adapter on the action expert, always on
