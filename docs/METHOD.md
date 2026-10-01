@@ -7,8 +7,9 @@ pre-registered read in `ledger/`, quoted in the README and [docs/VALIDITY.md](VA
 
 1. **The prior.** pi0.5 (`pi05_libero`), frozen. It is never fine-tuned for a new task unless practice says so (step 7).
 2. **The grammar.** A task's demo is cut into phases: an approach to the manipulated object, a carry relative to the receptacle, and
-   the rest. The coarse prototype level of the 40-task hierarchy (t = 0.55) changes label at exactly these phase events (C1), so the
-   hierarchy supplies WHEN a phase starts and ends. The demo is read at rest (objects still falling after the scene spawned take their
+   the rest. The cut is computed from object events (the manipulated object's displacement while the gripper closes, the release);
+   the coarse prototype level of the 40-task hierarchy (t = 0.55) changes label at these same events (C1), so the cut follows
+   boundaries the policy's own prototypes carry, but it does not read them. The demo is read at rest (objects still falling after the scene spawned take their
    rest pose), and the manipulated object is the first movable object displaced while the gripper closes (lifted or pushed)
    (`lifelong_ood/policy/phase.py` `at_rest`, `cut`).
 3. **The bindings.** Each phase is expressed relative to an object: the approach in the manipulated object's frame, the carry and
@@ -19,8 +20,11 @@ pre-registered read in `ledger/`, quoted in the README and [docs/VALIDITY.md](VA
    cameras, the code fitted on other tasks' rendered scenes and stored once) reads the objects' positions from the first frame. It is trained on simulator-rendered placements of the task's own scene (the arm posed as in the
    task's init states); the simulator labels the training scenes only, and neither a demo nor practice is needed. Orientations come
    from the same rendered scenes (fixed yaw per placement region).
-5. **Execution.** At each query the phases are re-anchored on the read poses, the next ten actions are planned along the source's
-   own lagged path (controller goals, not achieved poses), and the frozen policy is sampled through them as a constant-weight guide.
+5. **Execution.** At each query the phases are re-anchored on the read poses and the next actions are planned along the source's
+   own lagged path (controller goals, not achieved poses). The plan is passed to the frozen policy as a guide of weight 1 and
+   variance 1e-3, which replaces the policy's noise prediction in the real action dimensions: the sampled chunk is the plan, and
+   executing the plan with no policy at all scores the same (the no-policy control). This step is the one-demo program executed by
+   the robot's controller; the policy does not shape its actions.
    Where the plan bridges between stored segments, its waypoints and its gripper events are passed on ARRIVAL, not on the clock: the
    controller follows a long bridge more slowly than planned, and a clock-driven plan releases early or cuts corners. No weights are
    trained.
@@ -54,6 +58,8 @@ pre-registered read in `ledger/`, quoted in the README and [docs/VALIDITY.md](VA
 - It gives the grammar (the coarse level's phase boundaries), task identity (the fine levels' leaf sequences), and the fallback motion
   where object bindings cannot express a skill (prototype borrowing through the prior).
 - It does not give the binding: which object, where, and how it is held come from the scene.
+- It does not produce the phase program's actions: those are the demo's own path, re-anchored. Prototypes drive actions only in the
+  fallback (prototype borrowing), and the policy acts only where the program hands it control (the carry by the prior).
 - Sharing WEIGHTS across tasks fails in every form tried (one fold for all tasks, family pooling, family pretraining); sharing
   BINDINGS across tasks works. Perception does not transfer across scenes by object type for movable objects; readers stay per task.
 
