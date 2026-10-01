@@ -1,0 +1,89 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/zc_pilot_52_cfg_4.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "roll.sh MODE=factor:52?ctrl=cfg&w=4 SUITE=libero_90 TASKS=52 TRIALS=10 (job 3995882)",
+ "config": {
+  "client": {
+   "all_objects": true,
+   "branches": "",
+   "first_trial": 0,
+   "host": "127.0.0.1",
+   "light": true,
+   "max_steps": 0,
+   "no_meta": false,
+   "objects": true,
+   "out": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/zc_pilot_52_cfg_4.json",
+   "port": 9787,
+   "record": true,
+   "replan": 5,
+   "resize": 224,
+   "seed": 7,
+   "state_mod": 0,
+   "suite": "libero_90",
+   "tasks": "52",
+   "trials": 10,
+   "videos": 2,
+   "wait": 10
+  },
+  "job": "3995882",
+  "mode": "factor:52?ctrl=cfg&w=4"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "sonny.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3995882",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "zc_pilot",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "822fac5693b97358ba88a7364c6407ec5e93512f",
+  "short": "822fac56"
+ },
+ "keys": {
+  "first_trial": 0,
+  "mode": "factor:52?ctrl=cfg&w=4",
+  "tasks": "52",
+  "trials": 10
+ },
+ "metrics": {
+  "complete": true,
+  "n_episodes": 10,
+  "secs": 704.1040699481964,
+  "success_rate": 0.0,
+  "tasks": {
+   "52": {
+    "errors": 0,
+    "language": "pick up the milk and put it in the basket",
+    "mean_steps": 400.0,
+    "n": 10,
+    "success_rate": 0.0
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "zc_pilot__libero_90__cfg_4__first_trial-0__mode-factor-52-ctrl-cfg-w-4__tasks-52__trials-10__s7__822fac56",
+ "schema": 1,
+ "script": "experiments/libero_client.py",
+ "seconds": null,
+ "seed": 7,
+ "source_commit": null,
+ "started": "2026-10-01T16:20:34+00:00",
+ "stream": null,
+ "tag": "cfg_4"
+}

@@ -1,0 +1,75 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration of the main composition read",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky1.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "822fac5693b97358ba88a7364c6407ec5e93512f",
+  "short": "822fac56"
+ },
+ "keys": {},
+ "metrics": {
+  "arms": {
+   "cfg@8": "control: 8 v(task) - 7 v(empty prompt)",
+   "fcomp@8": "the code: base = the readable sibling, + 8 [v(sibling with the task's object) - v(sibling)], gated to the approach (gripper open)",
+   "placebo@8": "control: a random training-instruction pair at weight 8",
+   "zeroshot": "pi0.5 under the task's instruction"
+  },
+  "episodes": "20 per arm and task, init states 30-49, SERVE_SEED 0, light recordings with every object's pose",
+  "hypotheses": {
+   "H1": "fcomp@8 > zeroshot: exact sign test p < 0.05 AND two-level bootstrap one-sided 95% lower bound of the paired difference > +0.05",
+   "H1b": "fcomp@8 > cfg@8 (exact sign test; Holm with H1c)",
+   "H1c": "fcomp@8 > placebo@8",
+   "descriptive": "per task success and binding accuracy (experiments/f1_binding.py); code bytes"
+  },
+  "parser_hash": "b0eb506ce1dc",
+  "pilot": "zc_pilot: fcomp@8 14 of 70 vs cfg@4 4 and placebo@4 8 on practice states (go)",
+  "task_rule": "every LIBERO-90 task pi0.5 fails zero-shot (< 0.6 in ledger/zeroshot90) whose factor_hooks.code_for has an object factor (a readable same-scene sibling with the same relation); 5 of them are among the 21 held-out tasks (48, 52, 53, 58, 62)",
+  "tasks": [
+   18,
+   26,
+   48,
+   49,
+   52,
+   53,
+   58,
+   59,
+   62,
+   65,
+   66,
+   71
+  ],
+  "written_before": "any episode of this read"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_90__zc_main__s0__822fac56",
+ "schema": 1,
+ "script": "experiments/prereg/zc_main.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-01T16:25:07+00:00",
+ "stream": null,
+ "tag": "zc_main"
+}

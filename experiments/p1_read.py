@@ -439,6 +439,31 @@ def nopolicy():
     return res
 
 
+ZC_TASKS = (18, 26, 48, 49, 52, 53, 58, 59, 62, 65, 66, 71)
+
+
+def zc_main():
+    """ledger m3_prereg tag zc_main: H1 fcomp@8 > zero-shot (sign p < 0.05 and lower bound > +0.05); H1b-c vs cfg@8 and
+    placebo@8 (Holm)."""
+    arms = {"f": "fcomp_8", "z": "zeroshot", "c": "cfg_8", "p": "placebo_8"}
+    tab = table(ZC_TASKS, arms)
+    res = {"per_task": {t: {k: int(sum(v[k].values())) for k in v} for t, v in tab.items()}}
+    res["H1"] = dict(x_arm=arms["f"], y_arm=arms["z"], **compare(tab, "f", "z"))
+    res["H1"]["passes"] = bool(res["H1"]["sign_p"] < 0.05 and res["H1"]["diff"]["lo90"] > 0.05)
+    ps = {}
+    for h, y in (("H1b", "c"), ("H1c", "p")):
+        res[h] = dict(x_arm=arms["f"], y_arm=arms[y], **compare(tab, "f", y))
+        ps[h] = res[h]["sign_p"]
+    order = sorted(ps, key=ps.get)
+    for i, h in enumerate(order):
+        res[h]["holm_p"] = min(1.0, max(ps[o] * (len(order) - j) for j, o in enumerate(order[:i + 1])))
+        res[h]["passes"] = bool(res[h]["x"] > res[h]["control"] and res[h]["holm_p"] < 0.05)
+    for h in ("H1", "H1b", "H1c"):
+        v = res[h]
+        print(f"{h} {v['x_arm']} vs {v['y_arm']}: {_fmt(v)} -> passes {v['passes']}")
+    return res
+
+
 def zc_fold():
     """ledger m3_prereg tag zc_fold: H2a token (demo 0) vs one-demo LoRA, H2b token (demo 1) vs LoRA demo 1, both
     non-inferior at -0.10; Z token vs zero-shot."""
@@ -486,13 +511,16 @@ def _fmt(v):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("read", choices=("primary", "secondary", "p6", "v2", "v2_synth", "p3c", "p3c_reader", "p3c_reader2", "alloc", "p5", "yaw", "seed1", "demo1", "compress", "sota", "sota_amend1", "pi0", "smolvla", "nopolicy", "zc_fold"))
+    ap.add_argument("read", choices=("primary", "secondary", "p6", "v2", "v2_synth", "p3c", "p3c_reader", "p3c_reader2", "alloc", "p5", "yaw", "seed1", "demo1", "compress", "sota", "sota_amend1", "pi0", "smolvla", "nopolicy", "zc_fold", "zc_main"))
     ap.add_argument("--record", action="store_true")
     a = ap.parse_args()
     os.chdir(ROOT)
     if a.read == "pi0":
         res = pi0()
         exp, tag, what = "p1_bindings", "pi0", "the unchanged method on pi0 (another flow VLA) vs pi0 zero-shot, 21 tasks"
+    elif a.read == "zc_main":
+        res = zc_main()
+        exp, tag, what = "p1_bindings", "zc_main", "factor-composed generation (the policy's own conditionals) vs zero-shot and controls"
     elif a.read == "zc_fold":
         res = zc_fold()
         exp, tag, what = "p1_bindings", "zc_fold", "factor tokens (18.4 KB, frozen policy) vs the one-demo LoRA, two demos"

@@ -29,7 +29,8 @@ from lifelong_ood.policy import token_fold as TF                       # noqa: E
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--task", type=int, required=True)
+    ap.add_argument("--task", required=True, help="a task id, or several joined by + (one token fitted on all of their demos: "
+                    "a value shared by arrivals that differ elsewhere is identifiable as a factor, docs/COBWEB_UPDATE.md P7)")
     ap.add_argument("--source", default="demo")
     ap.add_argument("--n-tokens", type=int, default=1)
     ap.add_argument("--steps", type=int, default=600)
@@ -43,7 +44,8 @@ def main():
     r3p = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(r3p)
     texts, _ = r3p.libero90_texts()
-    text = texts[a.task]
+    tids = [int(x) for x in str(a.task).split("+")]
+    text = " | ".join(texts[t] for t in tids)
     from lifelong_ood.policy.backbone import PolicyBackbone
     bk = PolicyBackbone("pi05_libero", device="cuda")
     for q in bk.model.parameters():
@@ -52,14 +54,20 @@ def main():
     if a.source != "demo":
         raise SystemExit("only source=demo is implemented so far")
     d90 = D.Demos90()
-    ep_idx = d90.episodes_of_text(text)[a.demo]
-    ep = d90.load(ep_idx)
-    T = len(ep["actions"])
-    obs = [d90.observation(ep, i) for i in range(T)]
+    obs, fulls, eps_ = [], [], []
+    for t in tids:
+        ep_idx = d90.episodes_of_text(texts[t])[a.demo]
+        ep = d90.load(ep_idx)
+        T_ = len(ep["actions"])
+        obs += [d90.observation(ep, i) for i in range(T_)]
+        idx, _ = D.chunk_indices(T_, bk.H)
+        fulls.append(D.pad_rows(D.to_rows(ep["actions"][idx], D.Norm.load()), bk.H))
+        eps_.append(int(ep_idx))
+    T = len(obs)
     bank = adapt.PrefixBank(bk, obs, store="cpu")
-    idx, _ = D.chunk_indices(T, bk.H)
-    full = D.pad_rows(D.to_rows(ep["actions"][idx], D.Norm.load()), bk.H)
-    print(f"[f4] task {a.task} '{text}': demo episode {ep_idx}, {T} frames cached in {time.time() - t0:.0f}s", flush=True)
+    full = np.concatenate(fulls)
+    ep_idx = eps_[0] if len(eps_) == 1 else eps_
+    print(f"[f4] tasks {tids} '{text}': demo episodes {eps_}, {T} frames cached in {time.time() - t0:.0f}s", flush=True)
     pre0 = bank.take([0])
     pad = pre0.pad_masks[0].cpu().numpy().astype(bool)
     L = len(pad)
@@ -72,11 +80,11 @@ def main():
           f"initialised from {len(lang)} language entries", flush=True)
     t1 = time.time()
     hist = TF.fit(bk, token, bank, full, steps=a.steps, lr=a.lr, batch=a.batch, seed=a.seed, log=lambda x: print(x, flush=True))
-    path = os.path.join(ROOT, "results", "robot", f"ftoken_{a.task}{a.tag}.pt")
-    torch.save(dict(token=token.state_dict_fp16(), task=a.task, text=text, source=a.source, demo_episode=int(ep_idx)), path)
-    m = dict(task=a.task, text=text, source=a.source, demo_episode=int(ep_idx), n_frames=int(T), n_tokens=token.n,
+    path = os.path.join(ROOT, "results", "robot", f"ftoken_{str(a.task).replace('+', '_')}{a.tag}.pt")
+    torch.save(dict(token=token.state_dict_fp16(), task=a.task, text=text, source=a.source, demo_episode=ep_idx), path)
+    m = dict(task=a.task, text=text, source=a.source, demo_episode=ep_idx, n_frames=int(T), n_tokens=token.n,
              first_loss=hist["loss"][0], final_loss=hist["loss"][-1], curve=hist, train_secs=time.time() - t1)
-    print(ledger.record("f4_fold", bench="libero_90", tag=f"token_{a.source}{a.tag}", seed=a.seed, keys=dict(task=a.task),
+    print(ledger.record("f4_fold", bench="libero_90", tag=f"token_{a.source}{a.tag}", seed=a.seed, keys=dict(task=str(a.task)),
                         metrics=m, bytes=dict(experts=token.nbytes(), tree=0, codes=0, samples=0, teacher_copies=0,
                                               total=token.nbytes()),
                         config=vars(a), script="experiments/f4_fold.py", command=" ".join(sys.argv), artifacts=[path]))
