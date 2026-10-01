@@ -135,6 +135,13 @@ def arm_spec(tid, arm, fold, demo=0):
         return (f"factor:{tid}?ctrl=cfg&w={arm.split('@', 1)[1]}", "0", False)
     if arm.startswith("placebo@"):                                       # control: a random training-instruction pair, same weight
         return (f"factor:{tid}?ctrl=placebo&lam={arm.split('@', 1)[1]}", "0", False)
+    if arm.startswith(("bind@", "bindplacebo@", "bindshift@")):          # Bind (plan 2026-10-01 evening): bind@rho0.5_all, bind@beta4_mid
+        cfg, band = (arm.split("@", 1)[1].split("_") + ["all"])[:2]
+        knob = f"rho={cfg[3:]}" if cfg.startswith("rho") else f"beta={cfg[4:]}"
+        ctrl = "placebo" if arm.startswith("bindplacebo") else "shift" if arm.startswith("bindshift") else "none"
+        return (f"bind:{tid}?suite={SUITE_OF.get('suite', 'libero_90')}&src=oracle&{knob}&band={band}&ctrl={ctrl}", "0", False)
+    if arm == "zs":                                                      # the frozen policy, same protocol (bind tracking)
+        return ("ours", "0", False)
     if arm.startswith("nopolicy_rjpred@"):                               # the same program executed with NO policy (the guide's target)
         return (f"phasebind:{tid}?fold=0&rules=2&reader={arm.split('@', 1)[1]}&carry=pred&var=0.001&nopolicy=1", "0", False)
     if arm.startswith("phasebind2_rjpred@"):                             # the same with reader variant <v> (p6_reader_<v>_<t>.npz), e.g. pca512_rj
@@ -203,6 +210,7 @@ def main():
     ap.add_argument("--suite", default="libero_90", help="the LIBERO suite (a backbone's own training suite for a decoding check)")
     ap.add_argument("--after", default="", help="job ids every pack of this run waits for (e.g. the shared-fold trainings)")
     ap.add_argument("--partition", default="", help="overcap: the packs run on the preemptible overcap partition (requeued)")
+    ap.add_argument("--bind", default="", choices=("", "track", "stop"), help="client bind tracking (first object moved; stop = end there)")
     ap.add_argument("--dry", action="store_true")
     a = ap.parse_args()
     SUITE_OF["suite"] = a.suite
@@ -242,6 +250,7 @@ def main():
                         **({"OBJECTS": "1"} if arm in ("phasebind", "phasebind_nofold", "phasebind2_nofold", "compose2", "sibling2") else {}),
                         **({"LIGHT": "1"} if a.light else {}), **({"OBJECTS": "1", "ALL_OBJECTS": "1"} if a.all_objects else {}),
                         **({"STATE_MOD": "30"} if arm in ("dsrl_train", "dsrlo_train") else {}),
+                        **({"SEG": "1"} if "src=oracle" in (s[0] or "") else {}), **({"BIND": a.bind} if a.bind else {}),
                         **({"BACKBONE_CONFIG": a.backbone, "BACKBONE_CKPT": "lerobot/smolvla_libero",
                             "SERVER_PY": "/coc/flash10/ksingara3/robot/smolvla/.venv/bin/python"} if a.backbone.startswith("smolvla") else
                            {"BACKBONE_CONFIG": a.backbone, "BACKBONE_CKPT": f"/coc/flash10/ksingara3/robot/openpi_cache/openpi-assets/checkpoints/{a.backbone}_pytorch"}

@@ -101,6 +101,8 @@ class GuidedPolicy:
             rows = self.bk.sample(1, pre, seed=sd, num_steps=self.num_steps, guide=guide, step_gate=gate, noise=nz,
                                   start=start)
         actions = self.bk.unnormalize(rows, state=observation.state[0].float().cpu().numpy())[0]
+        if hasattr(self.hooks, "observe"):
+            self.hooks.observe(actions)                      # the policy's own chunk (e.g. its gripper command sets Bind's phase)
         self.calls += 1
         self.ep_q += 1
         self.secs += time.monotonic() - t0

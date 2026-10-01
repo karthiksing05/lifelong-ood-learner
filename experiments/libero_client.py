@@ -25,6 +25,49 @@ from openpi_client import image_tools
 from openpi_client import websocket_client_policy as _wcp
 
 DUMMY = [0.0] * 6 + [-1.0]
+GEOM = 5                                    # mujoco mjOBJ_GEOM
+TOKEN_OF_PIXEL = (np.arange(256)[:, None] // 16) * 16 + (np.arange(256)[None, :] // 16)    # 16-px block -> its 14-px patch
+
+
+def seg_tables(env):
+    """-> (names, geom_root [ngeom] index into names or -1): every movable object and fixture and the geoms under it.  Rebuilt
+    after every reset (a hard reset rebuilds the simulator)."""
+    inner = env.env
+    m = inner.sim.model
+    names = list(inner.objects_dict.keys()) + list(inner.fixtures_dict.keys())
+    root_of_body = {int(inner.obj_body_id[n]): i for i, n in enumerate(names) if n in inner.obj_body_id}
+    body_root = np.full(m.nbody, -1, np.int64)
+    for b in range(m.nbody):
+        x = b
+        while True:
+            if x in root_of_body:
+                body_root[b] = root_of_body[x]
+                break
+            p = int(m.body_parentid[x])
+            if p == x or x == 0:
+                break
+            x = p
+    return names, body_root[np.asarray(m.geom_bodyid)]
+
+
+def seg_maps(env, tables, cam):
+    """ORACLE where-maps: [N, 256] coverage of each object / fixture over the 16 x 16 tokens of the client's (flipped) 224 image."""
+    names, geom_root = tables
+    s = env.env.sim.render(camera_name=cam, width=256, height=256, depth=False, segmentation=True)
+    ids = np.where(s[..., 0] == GEOM, s[..., 1], -1)[::-1, ::-1]
+    root = np.where(ids >= 0, geom_root[np.clip(ids, 0, len(geom_root) - 1)], -1)
+    ok = root >= 0
+    cnt = np.bincount(root[ok] * 256 + TOKEN_OF_PIXEL[ok], minlength=len(names) * 256)
+    return (cnt.reshape(len(names), 256) / 256.0).astype(np.float16)
+
+
+def movable_positions(env, obs):
+    names = list(env.env.objects_dict.keys())
+    P = []
+    for n in names:
+        P.append(np.asarray(obs[f"{n}_pos"], np.float64) if f"{n}_pos" in obs
+                 else np.array(env.env.sim.data.body_xpos[env.env.obj_body_id[n]]))
+    return names, np.asarray(P)
 MAX_STEPS = {"libero_spatial": 220, "libero_object": 280, "libero_goal": 300, "libero_10": 520, "libero_90": 400}
 
 
@@ -68,6 +111,10 @@ def main():
                     "server changes one knob; replaces --first-trial / --trials.  The prefix (queries < at) executes the recorded "
                     "actions of `rec` (the simulator is bit-deterministic given the actions and the session's reset count, "
                     "`resets`); the server only follows it (meta/ff)")
+    ap.add_argument("--seg", action="store_true", help="ORACLE arms only: send per-token coverage maps of every object and fixture "
+                    "from the simulator's segmentation (meta/seg_names, meta/seg_agent, meta/seg_wrist)")
+    ap.add_argument("--bind", default="", choices=("", "track", "stop"), help="track the first movable object displaced > 3 cm "
+                    "while the commanded gripper is closed (episode field 'bound'); 'stop' ends the episode there")
     a = ap.parse_args()
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(message)s")
     np.random.seed(a.seed)
@@ -82,7 +129,8 @@ def main():
         task = suite.get_task(tid)
         init_states = suite.get_task_init_states(tid)
         bddl = pathlib.Path(get_libero_path("bddl_files")) / task.problem_folder / task.bddl_file
-        env = OffScreenRenderEnv(bddl_file_name=str(bddl), camera_heights=256, camera_widths=256)
+        env = OffScreenRenderEnv(bddl_file_name=str(bddl), camera_heights=256, camera_widths=256,
+                                     **({"camera_segmentations": "element"} if a.seg else {}))
         env.seed(a.seed)
         eps = []
         todo = ([(int(b["trial"]), b) for b in json.load(open(a.branches))] if a.branches
@@ -97,7 +145,8 @@ def main():
                 # recorded session's resets
                 env.close()
                 np.random.seed(a.seed)
-                env = OffScreenRenderEnv(bddl_file_name=str(bddl), camera_heights=256, camera_widths=256)
+                env = OffScreenRenderEnv(bddl_file_name=str(bddl), camera_heights=256, camera_widths=256,
+                                     **({"camera_segmentations": "element"} if a.seg else {}))
                 env.seed(a.seed)
                 for _ in range(int(br.get("resets", 0))):
                     env.reset()
@@ -105,6 +154,8 @@ def main():
             obs = env.set_init_state(init_states[k % (a.state_mod or len(init_states))])
             plan = collections.deque()
             t, calls, done, frames, t0 = 0, 0, False, [], time.time()
+            tables = seg_tables(env) if a.seg else None
+            bound, bound_step, start_pos = None, None, None
             rec = dict(state=[], action=[], image=[], wrist=[], obj_pos=[], obj_quat=[]) if a.record else None
 
             def objects(obs):
@@ -143,6 +194,9 @@ def main():
                             if br is not None:
                                 el.update({"meta/seed_base": int(br["seed_base"]), "meta/branch_at": int(br["at"]),
                                            "meta/variant": str(br["variant"])})
+                        if a.seg:
+                            el.update({"meta/seg_names": tables[0], "meta/seg_agent": seg_maps(env, tables, "agentview"),
+                                       "meta/seg_wrist": seg_maps(env, tables, "robot0_eye_in_hand")})
                         if a.objects:
                             on_, op_, oq_ = objects(obs)
                             el.update({"meta/obj_names": on_, "meta/obj_pos": op_.reshape(-1).tolist(), "meta/obj_quat": oq_.reshape(-1).tolist()})
@@ -163,6 +217,16 @@ def main():
                             _, op_, oq_ = objects(obs)
                             rec["obj_pos"].append(op_.astype(np.float32)); rec["obj_quat"].append(oq_.astype(np.float32))
                     obs, _, done, _ = env.step(act.tolist())
+                    if a.bind and bound is None:
+                        mn, mp = movable_positions(env, obs)
+                        if start_pos is None:
+                            start_pos = mp
+                        elif act[6] > 0:
+                            disp = np.linalg.norm(mp - start_pos, axis=-1)
+                            if disp.max() > 0.03:
+                                bound, bound_step = mn[int(np.argmax(disp))], t - a.wait
+                                if a.bind == "stop":
+                                    break
                     if done:
                         break
                     t += 1
@@ -171,6 +235,7 @@ def main():
                     logging.error(f"episode error: {ex}")
                     break
             eps.append(dict(trial=k, success=bool(done), steps=t - a.wait, calls=calls, secs=time.time() - t0, error=err,
+                            **(dict(bound=bound, bound_step=bound_step) if a.bind else {}),
                             **({} if br is None else dict(branch=br["id"], variant=br["variant"], at=int(br["at"])))))
             if rec is not None and rec["action"]:
                 rec_dir = pathlib.Path(a.out).with_suffix("").parent / (pathlib.Path(a.out).stem + "_rec")

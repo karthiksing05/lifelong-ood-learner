@@ -347,6 +347,20 @@ def main():
         hooks = FH.FactorHooks(code, mode=kv.get("ctrl", "factor"), w=kv.get("w"), rng_seed=int(kv.get("seed", 0)),
                                train_prompts=[t.language for t in tasks if t.suite != "libero_90"])
         logging.info(f"factor code {_json.dumps(code)} ({FH.code_bytes(code)} B), control {kv.get('ctrl', 'factor')}")
+    elif a.mode.startswith("bind:"):
+        # bind:<task>?suite=libero_90&src=oracle&rho=0.5|beta=4&band=all|mid&cams=agent&ctrl=none|placebo|shift&phase=1 -- the
+        # policy's own chunk with its action expert's attention biased toward the current phase's referent
+        # (lifelong_ood/policy/bind_hooks.py; the Bind plan of 2026-10-01 evening)
+        from lifelong_ood.policy import bind_hooks as BH
+        from lifelong_ood.policy import factors as F
+        body, q = (a.mode[len("bind:"):].split("?", 1) + [""])[:2]
+        kv = dict(x.split("=", 1) for x in q.split("&") if x)
+        task = next(t for t in F.load() if t.suite == kv.get("suite", "libero_90") and t.index == int(body))
+        hooks = BH.BindHooks(bk, task, src=kv.get("src", "oracle"), rho=float(kv.get("rho", 0.5)),
+                             beta=(float(kv["beta"]) if "beta" in kv else None), band=kv.get("band", "all"),
+                             cams=kv.get("cams", "agent"), ctrl=kv.get("ctrl", "none"), phase=kv.get("phase", "1") == "1",
+                             seed=int(kv.get("seed", 0)))
+        logging.info(f"bind {task.suite}:{task.index} referents {hooks.ref} {hooks.cfg} src {hooks.src} ctrl {hooks.ctrl}")
     elif a.mode.startswith("prompt:"):
         # prompt:<training task index> -- the prior under a trained task's instruction (instruction retrieval)
         from lifelong_ood.policy import data as D
