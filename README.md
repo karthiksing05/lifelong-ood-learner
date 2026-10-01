@@ -14,6 +14,25 @@ the theory the mechanism rests on (the ideal denoiser's one-instance update IS C
 update, noise level = tree depth) is [docs/COBWEB_UPDATE.md](docs/COBWEB_UPDATE.md); the previous
 repository is preserved under [archive/2026-09-pre-rework/](archive/2026-09-pre-rework/README.md).
 
+## The overhaul of 2026-10-01: Read, Compose, Fold, Consolidate
+
+The one-demo program below (the bindings rows) turned out to bypass the policy: its guide fixed the sampled chunk to the plan,
+and running the plan with no policy at all scored the same (the no-policy row). The overhaul returns to the thesis in
+[docs/THE_TASK.md](docs/THE_TASK.md): the policy's OWN conditional generates; a task stores a code when its factors compose,
+and a small fold only where they do not. Method: [docs/METHOD.md](docs/METHOD.md). Motivated by Wang et al.'s concept discovery
+and the user's ICLR paper on caption coverage ("Seen but Unnamed"). Every row below is pre-registered (`ledger/m3_prereg` tags zc_probe,
+zc_bind, zc_pilot, zc_main, zc_fold) unless marked exploratory.
+
+| rung | result |
+|---|---|
+| why the policy fails new tasks (`ledger/f0_coverage`; lifelong_ood/policy/factors.py; exploratory, existing zero-shot runs) | over all 90 LIBERO-90 tasks, pi0.5 succeeds where its 40 training instructions named the task's factors in that scene family: the rule separates success 0.54 (29 tasks) from 0.14 (AUC 0.72); whether training contrasted the object with another in one scene predicts success with AUC 0.74. Every held-out failure is a task whose factors were named only elsewhere, or never |
+| does the policy read object words? (`ledger/f1_binding` tags f1_bind_libero_90 and f1_bind_libero_object; experiments/f1_binding.py) | in living room 1 the policy picks up the alphabet soup first in 10 of 10 episodes whichever object the instruction names (alphabet soup, cream cheese, ketchup or tomato sauce): it runs the scene's trained habit, and its zero-shot successes there are coincidences of that habit. In LIBERO-Object's own layouts, an instruction naming another object present is followed 0.43 of the time |
+| the first chunk as a readability probe (`ledger/f1_factor_probe`) | NOT VALID by its pre-registered gate: on LIBERO-Goal the first chunk points at the named object 0.43 of the time (gate 0.8), although the change between two prompts turns toward the newly named object (contrast cosine 0.72); the online binding read replaces it |
+| zero-shot composition of the policy's own conditionals (`ledger/zc_pilot`, `ledger/p1_bindings` tag zc_main; lifelong_ood/policy/conditionals.py) | the pilot passed its gate (14 of 70 against 4 for guidance on the instruction and 8 for a placebo pair), but the main read on the 12 tasks with an object-factor code FAILS: 22 against 9 of 240 for zero-shot (lower bound -0.004 against the pre-registered +0.05), and 19 for guidance on the instruction at the same weight. The gain sits on one task, the ketchup in living room 1 (9 of 20 against 0) |
+| fold: a factor token (`ledger/p1_bindings` tag zc_fold, `ledger/f4_fold`; lifelong_ood/policy/token_fold.py) | a learned key and value per layer appended to the prompt's cache, every policy weight frozen, 18.4 KB, fitted on the one demo (never executed): 140 of 420 against 6 for zero-shot (sign test p below 0.001), but NOT non-inferior to the one-demo LoRA (252; lower bound -0.362), nor on the second demo (113 against 298). It matches the LoRA where the failure is reading (the ketchup task 13 against 12) and falls short where the task needs new motion (the butter into the drawer and close it, 5 against 19) |
+| a token as a factor (EXPLORATORY, practice states; `ledger/f1_binding` tag f4_pilot_libero_90) | the ketchup token fitted on the living-room ketchup task carries to the ketchup-into-tray task in another living room (it picks up the ketchup 0.6 of the time); fitted on two arrivals that share the ketchup, 0.9 |
+| task prototypes (`ledger/f0_task_library`; lifelong_ood/policy/tasks.py) | 49 tasks the policy performs, each with its verb chain; every held-out task is decomposed into the task prototypes that cover its factors (e.g. ketchup into the tray = the alphabet soup into the tray in that scene, plus the ketchup task of LIBERO-Object), and the factors no prototype covers are listed (turn off, close the top drawer) |
+
 ## The three operators
 
 | Cobweb | here | cost |
