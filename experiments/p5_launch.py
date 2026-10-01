@@ -27,6 +27,8 @@ def main():
     ap.add_argument("--seed", type=int, default=0, help="the policy's noise seed (tags gain _seed<k>)")
     ap.add_argument("--own-composed-only", action="store_true", help="own-demo runs only for the tasks the plans compose")
     ap.add_argument("--combos", default=None, help="a JSON list of [task, g, p] (results/robot/<file>): composed runs of exactly these")
+    ap.add_argument("--units", default=None, help="a JSON list of [task, g, p, carry kind] (results/robot/<file>): those compositions, each with "
+                    "its own carry, plus every unit task's own demo (phasebind2_rjpred)")
     ap.add_argument("--light", action="store_true", help="record states, actions and object poses (no images) for phase outcomes")
     a = ap.parse_args()
     dry = a.dry
@@ -45,6 +47,9 @@ def main():
     if a.combos:
         ck = [k for k in kinds if k.startswith("stream")] or ["streamc"]
         want = [(int(t), f"{k}@{g}-{p}") for t, g, p in json.load(open(os.path.join(R, a.combos))) for k in ck]
+    if a.units:
+        U = json.load(open(os.path.join(R, a.units)))
+        want = [(int(t), f"{k}@{g}-{p}") for t, g, p, k in U] + [(int(t), "phasebind2_rjpred") for t in sorted({u[0] for u in U})]
     running = set(subprocess.run(["bash", "-c", "cat results/robot/.packs/p_*.tsv"], capture_output=True, text=True, cwd=ROOT).stdout.split())
     specs = []
     for t, arm in dict.fromkeys(want):
