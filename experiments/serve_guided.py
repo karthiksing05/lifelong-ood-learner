@@ -320,6 +320,21 @@ def main():
         sd = torch.load(a.mode.split(":", 1)[1], map_location="cuda")
         missing = bk.expert.load_state_dict(sd["expert"], strict=True)
         logging.info(f"fully fine-tuned action expert loaded ({missing})")
+    elif a.mode.startswith("factor:"):
+        # factor:<libero_90 task>?lam=2&phase=approach|all&ctrl=factor|cfg|placebo&w=2 -- factor-composed generation from the policy's
+        # own conditionals (lifelong_ood/policy/factor_hooks.py; the code is built by rule from the task's factors)
+        import json as _json
+        from lifelong_ood.policy import factor_hooks as FH
+        from lifelong_ood.policy import factors as F
+        body, q = (a.mode[len("factor:"):].split("?", 1) + [""])[:2]
+        kv = dict(x.split("=", 1) for x in q.split("&") if x)
+        tasks = F.load()
+        task = next(t for t in tasks if t.suite == "libero_90" and t.index == int(body))
+        zs = {int(k): v["zeroshot"] for k, v in _json.load(open(os.path.join(ROOT, "results", "robot", "f0_coverage.json")))["tasks"].items()}
+        code = FH.code_for(task, tasks, zs, lam=float(kv.get("lam", 2.0)), phase=kv.get("phase", "approach"))
+        hooks = FH.FactorHooks(code, mode=kv.get("ctrl", "factor"), w=kv.get("w"), rng_seed=int(kv.get("seed", 0)),
+                               train_prompts=[t.language for t in tasks if t.suite != "libero_90"])
+        logging.info(f"factor code {_json.dumps(code)} ({FH.code_bytes(code)} B), control {kv.get('ctrl', 'factor')}")
     elif a.mode.startswith("prompt:"):
         # prompt:<training task index> -- the prior under a trained task's instruction (instruction retrieval)
         from lifelong_ood.policy import data as D

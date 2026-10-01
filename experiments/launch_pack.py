@@ -115,6 +115,13 @@ def arm_spec(tid, arm, fold, demo=0):
         return (f"phasebind:{tid}?fold=0&rules=2&reader=spatial4_synthonly_rj&carry=pred&var=0.001", "0", False)
     if arm == "phasebind2_rjpred_yaw":                                   # the same + the objects' yaw where it varies (p6_yaw_reader.py)
         return (f"phasebind:{tid}?fold=0&rules=2&reader=spatial4_synthonly_rj&carry=pred&yaw=1&var=0.001", "0", False)
+    if arm.startswith(("fcomp@", "fcompall@")):                         # factor-composed generation at weight lam (overhaul P1)
+        lam = arm.split("@", 1)[1]
+        return (f"factor:{tid}?lam={lam}&phase={'all' if arm.startswith('fcompall') else 'approach'}", "0", False)
+    if arm.startswith("cfg@"):                                           # control: the task's instruction vs the empty prompt
+        return (f"factor:{tid}?ctrl=cfg&w={arm.split('@', 1)[1]}", "0", False)
+    if arm.startswith("placebo@"):                                       # control: a random training-instruction pair, same weight
+        return (f"factor:{tid}?ctrl=placebo&lam={arm.split('@', 1)[1]}", "0", False)
     if arm.startswith("nopolicy_rjpred@"):                               # the same program executed with NO policy (the guide's target)
         return (f"phasebind:{tid}?fold=0&rules=2&reader={arm.split('@', 1)[1]}&carry=pred&var=0.001&nopolicy=1", "0", False)
     if arm.startswith("phasebind2_rjpred@"):                             # the same with reader variant <v> (p6_reader_<v>_<t>.npz), e.g. pca512_rj

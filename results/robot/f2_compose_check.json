@@ -1,0 +1,9 @@
+{
+ "identity_K1_maxabs": 0.0,
+ "identity_K3_maxabs": 0.005005240440368652,
+ "in_the_loop_composed_rms": 0.15473191440105438,
+ "in_the_loop_own_rms": 0.21959955990314484,
+ "arithmetic_rms": 0.0337567962706089,
+ "factor_difference_rms": 0.04241561517119408,
+ "composed_vs_base_rms": 0.0736614465713501
+}
