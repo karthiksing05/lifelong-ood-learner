@@ -1,0 +1,73 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "capacity pilot read",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky1.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "f4_fold",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "0ad121887dff7e9ec38332ba0f99c3ab4d0a0d00",
+  "short": "0ad12188"
+ },
+ "keys": {},
+ "metrics": {
+  "episodes_per_arm": 50,
+  "note": "1-entry (18.4 KB) vs 8-entry (147 KB) tokens on five tasks that need new motion",
+  "per_task": {
+   "3": {
+    "ftoken_self": 3,
+    "ftoken_self_n8": 5
+   },
+   "4": {
+    "ftoken_self": 1,
+    "ftoken_self_n8": 2
+   },
+   "40": {
+    "ftoken_self": 0,
+    "ftoken_self_n8": 3
+   },
+   "41": {
+    "ftoken_self": 3,
+    "ftoken_self_n8": 5
+   },
+   "63": {
+    "ftoken_self": 3,
+    "ftoken_self_n8": 3
+   }
+  },
+  "states": "0-9 (practice), exploratory",
+  "totals": {
+   "ftoken_self": 10,
+   "ftoken_self_n8": 18
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "f4_fold__libero_90__capacity_pilot__s0__0ad12188",
+ "schema": 1,
+ "script": "(inline summary of f4_pilot runs)",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-01T17:08:32+00:00",
+ "stream": null,
+ "tag": "capacity_pilot"
+}
