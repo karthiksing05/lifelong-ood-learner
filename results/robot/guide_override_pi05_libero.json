@@ -1,0 +1,11 @@
+{
+ "backbone": "pi05_libero",
+ "H": 10,
+ "dim": 70,
+ "guided_minus_target_max": 0.024286091327667236,
+ "guided_minus_target_rms": 0.008149438537657261,
+ "guided_obs0_minus_obs1_rms": 0.00027895666426047683,
+ "own_obs0_minus_obs1_rms": 0.391826331615448,
+ "own_minus_target_rms": 0.7247617244720459,
+ "guided_real_actions_max_diff": 0.02428124625244732
+}

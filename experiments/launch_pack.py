@@ -115,6 +115,8 @@ def arm_spec(tid, arm, fold, demo=0):
         return (f"phasebind:{tid}?fold=0&rules=2&reader=spatial4_synthonly_rj&carry=pred&var=0.001", "0", False)
     if arm == "phasebind2_rjpred_yaw":                                   # the same + the objects' yaw where it varies (p6_yaw_reader.py)
         return (f"phasebind:{tid}?fold=0&rules=2&reader=spatial4_synthonly_rj&carry=pred&yaw=1&var=0.001", "0", False)
+    if arm.startswith("nopolicy_rjpred@"):                               # the same program executed with NO policy (the guide's target)
+        return (f"phasebind:{tid}?fold=0&rules=2&reader={arm.split('@', 1)[1]}&carry=pred&var=0.001&nopolicy=1", "0", False)
     if arm.startswith("phasebind2_rjpred@"):                             # the same with reader variant <v> (p6_reader_<v>_<t>.npz), e.g. pca512_rj
         return (f"phasebind:{tid}?fold=0&rules=2&reader={arm.split('@', 1)[1]}&carry=pred&var=0.001", "0", False)
     if arm == "dsrl_train":                                              # DSRL practice: 100 episodes on init states 0-29 (STATE_MOD)
@@ -213,7 +215,9 @@ def main():
                         PROGRAM_BYTES=s[1], OUT=out, **({"RECORD": "1"} if a.record else {}), **({"SERVE_SEED": str(a.seed)} if a.seed else {}),
                         **({"OBJECTS": "1"} if arm in ("phasebind", "phasebind_nofold", "phasebind2_nofold", "compose2", "sibling2") else {}),
                         **({"STATE_MOD": "30"} if arm in ("dsrl_train", "dsrlo_train") else {}),
-                        **({"BACKBONE_CONFIG": a.backbone, "BACKBONE_CKPT": f"/coc/flash10/ksingara3/robot/openpi_cache/openpi-assets/checkpoints/{a.backbone}_pytorch"}
+                        **({"BACKBONE_CONFIG": a.backbone, "BACKBONE_CKPT": "lerobot/smolvla_libero",
+                            "SERVER_PY": "/coc/flash10/ksingara3/robot/smolvla/.venv/bin/python"} if a.backbone.startswith("smolvla") else
+                           {"BACKBONE_CONFIG": a.backbone, "BACKBONE_CKPT": f"/coc/flash10/ksingara3/robot/openpi_cache/openpi-assets/checkpoints/{a.backbone}_pytorch"}
                            if a.backbone else {}))
             (specs_dep if s[2] else specs_free).append(spec)
         dep = None

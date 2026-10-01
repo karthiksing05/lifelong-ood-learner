@@ -64,7 +64,11 @@ def main():
     from lifelong_ood.policy.backbone import PolicyBackbone
     cfg = os.environ.get("BACKBONE_CONFIG") or a.config              # another flow VLA, e.g. pi0_libero (generality checks)
     ck = os.environ.get("BACKBONE_CKPT") or None
-    bk = PolicyBackbone(cfg, checkpoint_dir=ck, device="cuda")
+    if cfg.startswith("smolvla"):                                      # LeRobot's SmolVLA (its own venv: lifelong_ood/policy/backbone_smolvla.py)
+        from lifelong_ood.policy.backbone_smolvla import SmolVLABackbone
+        bk = SmolVLABackbone(ck, device="cuda")
+    else:
+        bk = PolicyBackbone(cfg, checkpoint_dir=ck, device="cuda")
     logging.info(bk.describe())
     hooks = None
     if a.mode.startswith("proto:"):
@@ -241,6 +245,7 @@ def main():
                                handoff=kv.get("handoff") == "1", radius=float(kv.get("hr", 0.05)), patience=float(kv.get("hp", 1.5)),
                                events=kv.get("events") == "1", tol=float(kv.get("tol", 0.02)), max_wait=int(kv.get("mw", 8)),
                                cross_pos=kv.get("crosspos") == "1", src_lift=kv.get("lift") == "1")
+        hooks.no_policy = kv.get("nopolicy") == "1"       # the control: execute the target, never sample the policy
         logging.info(f"phasebind: task {t}, {len(parts)} phases ({'object phases' if g and p_ else 'world frame'}; anchors "
                      f"{[None if q[6] is None else str(q[0]['names'][q[6]]) for q in parts]}), rules {kv.get('rules', '1')}, "
                      f"sources g={kv.get('g', t)} p={kv.get('p', t)}, fold {key}")

@@ -1,0 +1,56 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration of the no-policy control",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky1.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "7292fcbb5036916cc4164579af15888b0394b768",
+  "short": "7292fcbb"
+ },
+ "keys": {},
+ "metrics": {
+  "arms": {
+   "nopolicy_rjpred_pca512_rj": "the same phase program, reader head, predicted carry and events as the bindings arm; the server returns the guide's target chunk itself and never samples the policy",
+   "phasebind2_rjpred_pca512_rj": "the bindings arm through pi0.5 (372 of 420, recorded)"
+  },
+  "consequence": "if N holds, every bindings result is a result about the phase program executed by the robot's controller, and the frozen VLA is a pass-through in that arm; the README and the site say so",
+  "hypotheses": {
+   "N": "the no-policy arm is non-inferior to the bindings arm at -0.05 (two-level bootstrap, one-sided 95% lower bound of the paired difference): the policy contributes nothing measurable",
+   "descriptive": "per task; the exact sign test both ways"
+  },
+  "tasks": "the 21 held-out tasks; init states 30-49; 420 episodes",
+  "why": "the guide the bindings use (constant weight 1, variance 1e-3) replaces the policy's noise prediction in the real action dims on every Euler step but the first; experiments/guide_override_check.py measured the sampled chunk at 0.0081 rms from the guide's target (normalised units) on pi0.5 and 0.0084 on SmolVLA, and two unrelated observations' guided chunks 0.0003 apart (the policy's own: 0.39). If so, the policy contributes nothing to the bindings arm; this control executes the target with no policy at all",
+  "written_before": "any no-policy rollout"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_90__nopolicy_control__s0__7292fcbb",
+ "schema": 1,
+ "script": "experiments/prereg/nopolicy_control.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-01T13:52:16+00:00",
+ "stream": null,
+ "tag": "nopolicy_control"
+}

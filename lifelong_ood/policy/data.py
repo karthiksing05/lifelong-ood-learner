@@ -63,6 +63,9 @@ class Norm:
     @classmethod
     def for_backbone(cls, bk):
         """The action normalisation of the backbone's own checkpoint (its assets' norm stats, its config's quantile flag)."""
+        if hasattr(bk, "action_stats"):                    # LeRobot checkpoints (SmolVLA): MEAN_STD over the 7 action dims, no state block
+            st = bk.action_stats
+            return cls(st["q01"], st["q99"], st["mean"], st["std"], quantile=False, delta=0)
         import glob
         from openpi.training.config import ModelType
         quantile = bk.train_config.model.model_type != ModelType.PI0

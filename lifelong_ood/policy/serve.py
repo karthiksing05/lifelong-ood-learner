@@ -75,6 +75,8 @@ class GuidedPolicy:
             own = self.bk.sample(1, pre, seed=sd, num_steps=self.num_steps, step_gate=gate, noise=nz)
             if self.hooks.agrees(own[0]):
                 rows = own                                   # the prior already does what the program asks
+        if rows is None and guide is not None and getattr(self.hooks, "no_policy", False):
+            rows = np.asarray(self.hooks.last_rows, np.float32)[None]   # the NO-POLICY control: the guide's target, nothing sampled
         if rows is None:
             start = self.hooks.sdedit(obs, meta) if hasattr(self.hooks, "sdedit") else None
             rows = self.bk.sample(1, pre, seed=sd, num_steps=self.num_steps, guide=guide, step_gate=gate, noise=nz,
@@ -101,10 +103,17 @@ class StripMeta:
 
 def warm(policy, n=2):
     """Run n inferences on openpi's random LIBERO example so no first-call cost lands inside a client request."""
-    from openpi.policies import libero_policy
+    try:
+        from openpi.policies import libero_policy
+        example = libero_policy.make_libero_example
+    except ImportError:                                  # a venv without openpi (SmolVLA): the same random example
+        def example():
+            r = np.random.default_rng()
+            return {"observation/state": r.random(8), "observation/image": r.integers(256, size=(224, 224, 3), dtype=np.uint8),
+                    "observation/wrist_image": r.integers(256, size=(224, 224, 3), dtype=np.uint8), "prompt": "do something"}
     t0 = time.monotonic()
     for _ in range(int(n)):
-        policy.infer(libero_policy.make_libero_example())
+        policy.infer(example())
     logging.info(f"[serve] warm-up {n} calls in {time.monotonic() - t0:.1f}s")
 
 

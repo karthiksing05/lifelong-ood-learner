@@ -1,0 +1,70 @@
+{
+ "artifacts": [
+  "results/robot/guide_override_pi05_libero.json",
+  "results/robot/guide_override_smolvla_libero.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "experiments/guide_override_check.py --backbone pi05_libero|smolvla_libero",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky1.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "p0_audit",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "7292fcbb5036916cc4164579af15888b0394b768",
+  "short": "7292fcbb"
+ },
+ "keys": {},
+ "metrics": {
+  "notes": "the bindings' guide (constant weight 1, variance 1e-3) sampled through each backbone for two unrelated observations (random images, different instructions) and three noise seeds, against the policy's own unguided samples; normalised action units; jobs 3995445 (pi0.5) and 3995446 (SmolVLA)",
+  "pi05_libero": {
+   "H": 10,
+   "backbone": "pi05_libero",
+   "dim": 70,
+   "guided_minus_target_max": 0.024286091327667236,
+   "guided_minus_target_rms": 0.008149438537657261,
+   "guided_obs0_minus_obs1_rms": 0.00027895666426047683,
+   "guided_real_actions_max_diff": 0.02428124625244732,
+   "own_minus_target_rms": 0.7247617244720459,
+   "own_obs0_minus_obs1_rms": 0.391826331615448
+  },
+  "smolvla_libero": {
+   "H": 50,
+   "backbone": "smolvla_libero",
+   "dim": 350,
+   "guided_minus_target_max": 0.0318872332572937,
+   "guided_minus_target_rms": 0.008406411856412888,
+   "guided_obs0_minus_obs1_rms": 0.0006108162924647331,
+   "guided_real_actions_max_diff": 0.02567458152770996,
+   "own_minus_target_rms": 0.9585092663764954,
+   "own_obs0_minus_obs1_rms": 0.7054956555366516
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "p0_audit__libero_90__guide_override__s0__7292fcbb",
+ "schema": 1,
+ "script": "experiments/guide_override_check.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-01T13:54:40+00:00",
+ "stream": null,
+ "tag": "guide_override"
+}

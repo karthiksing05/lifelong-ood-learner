@@ -414,6 +414,18 @@ def pi0():
     return res
 
 
+def smolvla():
+    """ledger m3_prereg tag smolvla_generality: Z the bindings on SmolVLA > SmolVLA zero-shot."""
+    arms = {"b": "phasebind2_rjpred_pca512_rj_smolvla", "z": "zeroshot_smolvla", "b05": "phasebind2_rjpred_pca512_rj"}
+    tab = table(HELD, arms)
+    res = {"per_task": {t: {k: int(sum(v[k].values())) for k in v} for t, v in tab.items()}}
+    res["Z"] = dict(x_arm=arms["b"], y_arm=arms["z"], **compare(tab, "b", "z"))
+    res["Z"]["passes"] = bool(res["Z"]["sign_p"] < 0.05 and res["Z"]["x"] > res["Z"]["control"])
+    res["vs_pi05"] = compare(tab, "b", "b05")
+    print(f"Z {_fmt(res['Z'])} -> passes {res['Z']['passes']}; vs the same method on pi0.5: {_fmt(res['vs_pi05'])}")
+    return res
+
+
 def sota_amend1():
     """ledger m3_prereg tag baselines_sota_amend1: B1' ours vs STRAP (authors' retrieval), B2' ours vs DSRL (authors' config), B3 vs ER."""
     arms = {"ours": "phasebind2_rjpred_pca512_rj", "strap": "lora_strap2", "dsrl": "dsrlo", "er": "lora_er", "nft": "lora_r17bal"}
@@ -441,13 +453,16 @@ def _fmt(v):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("read", choices=("primary", "secondary", "p6", "v2", "v2_synth", "p3c", "p3c_reader", "p3c_reader2", "alloc", "p5", "yaw", "seed1", "demo1", "compress", "sota", "sota_amend1", "pi0"))
+    ap.add_argument("read", choices=("primary", "secondary", "p6", "v2", "v2_synth", "p3c", "p3c_reader", "p3c_reader2", "alloc", "p5", "yaw", "seed1", "demo1", "compress", "sota", "sota_amend1", "pi0", "smolvla"))
     ap.add_argument("--record", action="store_true")
     a = ap.parse_args()
     os.chdir(ROOT)
     if a.read == "pi0":
         res = pi0()
         exp, tag, what = "p1_bindings", "pi0", "the unchanged method on pi0 (another flow VLA) vs pi0 zero-shot, 21 tasks"
+    elif a.read == "smolvla":
+        res = smolvla()
+        exp, tag, what = "p1_bindings", "smolvla", "the unchanged method on SmolVLA (a non-pi flow VLA) vs SmolVLA zero-shot, 21 tasks"
     elif a.read == "sota_amend1":
         res = sota_amend1()
         exp, tag, what = "p1_bindings", "sota_amend1", "bindings vs STRAP and DSRL with the authors' settings, and experience replay, 21 tasks"

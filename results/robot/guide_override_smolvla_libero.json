@@ -1,0 +1,11 @@
+{
+ "backbone": "smolvla_libero",
+ "H": 50,
+ "dim": 350,
+ "guided_minus_target_max": 0.0318872332572937,
+ "guided_minus_target_rms": 0.008406411856412888,
+ "guided_obs0_minus_obs1_rms": 0.0006108162924647331,
+ "own_obs0_minus_obs1_rms": 0.7054956555366516,
+ "own_minus_target_rms": 0.9585092663764954,
+ "guided_real_actions_max_diff": 0.02567458152770996
+}
