@@ -93,6 +93,28 @@ def side_by_side(specs, out, t, k, title_hold=0):
     return dict(file=out, task=t, trial=k, outcomes=[bool(e[0][1]) for e in eps], frames=len(frames))
 
 
+def side_by_side_tasks(specs, out, k):
+    """Like side_by_side, but each panel from its own task: specs = [(run dir, task, title, sub)] at init state k."""
+    eps = [(episode(run, t, k), ti, su) for run, t, ti, su in specs]
+    if any(e[0][0] is None for e in eps):
+        print("missing", out, [run for run, _, _, _ in specs])
+        return None
+    n = max(len(e[0][0]) for e in eps)
+    frames = []
+    for i in range(n):
+        cols = []
+        for (fr, ok), ti, su in eps:
+            j = min(i, len(fr) - 1)
+            status = (f"success at step {len(fr)}" if ok else "failed: 400-step limit", GOOD if ok else BAD) if i >= len(fr) - 1 else None
+            cols.append(panel(fr[j], ti, su, status))
+            cols.append(np.full((cols[-1].shape[0], 8, 3), 246, np.uint8))
+        frames.append(np.concatenate(cols[:-1], axis=1))
+    frames += [frames[-1]] * 20
+    size = write_mp4(frames, os.path.join(OUT, out))
+    print(f"{out}: {len(frames)} frames, {size / 1e3:.0f} KB", flush=True)
+    return dict(file=out, task=specs[-1][1], trial=k, outcomes=[bool(e[0][1]) for e in eps], frames=len(frames))
+
+
 VERBS = [("open move", "move to the object, gripper open"), ("open reach down", "reach down onto it"),
          ("open grip change", "close the gripper on it"), ("closed lift", "lift it"),
          ("closed transport", "carry it"), ("closed lower", "lower it into place")]
@@ -330,6 +352,26 @@ def main():
         meta["stills"] = stills(lang)
     if "proto" in only:
         meta["prototypes"] = prototype_clips(lang)
+    if "overhaul" in only:                                   # the overhaul's figures (Read -> Compose -> Fold)
+        OV = [("ov_habit_48", 48, 0, [("f1_bind_46_zeroshot", "Asked for the alphabet soup", "pi0.5, living room 1"),
+                                      ("f1_bind_48_zeroshot", "Asked for the ketchup", "pi0.5, the same scene")], 46),
+              ("ov_48_30", 48, 30, [("m3_final_48_zeroshot", "pi0.5, zero-shot", "the instruction alone"),
+                                    ("m3_final_48_fcomp_8", "Composition", "own conditionals, weight 8"),
+                                    ("m3_final_48_ftoken_self", "Factor token", "18.4 KB, policy frozen")], None),
+              ("ov_58_0", 58, 0, [("f1_bind_58_zeroshot", "pi0.5, zero-shot", "ketchup into the tray"),
+                                  ("f4_pilot_58_ftoken_48_32", "Ketchup token", "fitted on two other tasks")], None),
+              ("ov_3_31", 3, 31, [("m3_final_3_ftoken_self", "Factor token", "18.4 KB, policy frozen"),
+                                  ("m3_final_3_lora", "LoRA", "18.7 MB, one demo")], None)]
+        meta["overhaul"] = {}
+        for name, t, k, specs, t_first in OV:
+            if t_first is not None:                       # panels from two tasks of one scene, at the same init state
+                eps = []
+                r = side_by_side_tasks([(run, tt, ti, su) for (run, ti, su), tt in zip(specs, (t_first, t))], f"{name}.mp4", k)
+            else:
+                r = side_by_side(specs, f"{name}.mp4", t, k)
+            if r:
+                r["language"] = lang.get(t)
+                meta["overhaul"][name] = r
     if "exec" in only:
         meta["proto_exec"] = proto_exec_video()
     json.dump(meta, open(os.path.join(OUT, "media.json"), "w"), indent=1)
