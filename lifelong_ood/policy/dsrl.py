@@ -3,8 +3,10 @@ policy pi0.5: the policy's weights stay frozen and a small SAC agent chooses the
 
 Latent action z in [-beta, beta]^(H x A) (tanh-squashed Gaussian; H x A = 10 x 32, the padded chunk the flow integrates from), the
 observation = frozen ResNet-18 features of both cameras + the robot's 8-D state, sparse reward 1 when the episode succeeds (on its
-last chunk) else 0, terminal at episode end.  The entropy term is per dimension (initial temperature 0.01, target -0.5 per dimension):
-summed over 320 dimensions it is ~480 nats per step and the critic diverges on a 0/1 reward (seen in the smoke run).  The replay buffer starts with `warmup` episodes of ordinary Gaussian noise (the base
+last chunk) else 0, terminal at episode end.  Stabilised for 320 bounded dimensions and a small buffer (the first version diverged:
+critic loss to 1e13, auto-tuned temperature from 0.01 to 1.6): the critic learns the discounted chance of success with targets
+clamped to [0, 1] and no entropy bonus, LayerNorm in every MLP, a fixed temperature 0.01 on the per-dimension log-probability in the
+actor's loss only, and 4 updates per chunk.  The replay buffer starts with `warmup` episodes of ordinary Gaussian noise (the base
 policy); after each later episode the agent takes utd x (that episode's chunks) gradient steps.  The client reports each episode's
 outcome at the next episode's start (meta prev_success), so the last training episode's outcome is not used.
 
@@ -22,7 +24,7 @@ import torch.nn.functional as F
 
 
 def mlp(i, o, h=256):
-    return nn.Sequential(nn.Linear(i, h), nn.ReLU(), nn.Linear(h, h), nn.ReLU(), nn.Linear(h, o))
+    return nn.Sequential(nn.Linear(i, h), nn.LayerNorm(h), nn.ReLU(), nn.Linear(h, h), nn.LayerNorm(h), nn.ReLU(), nn.Linear(h, o))
 
 
 class Actor(nn.Module):
@@ -47,8 +49,8 @@ class DSRLHooks:
     agree = None
     needs_prior = False
 
-    def __init__(self, feat, dim, train=True, save=None, load=None, warmup=10, utd=10, batch=256, gamma=0.99, lr=3e-4, beta=2.0,
-                 device="cuda", seed=0, log=print):
+    def __init__(self, feat, dim, train=True, save=None, load=None, warmup=10, utd=4, batch=256, gamma=0.99, lr=3e-4, beta=2.0,
+                 alpha=0.01, device="cuda", seed=0, log=print):
         self.feat, self.dim, self.train, self.save_path = feat, int(dim), bool(train), save
         self.warmup, self.utd, self.batch, self.gamma, self.beta = int(warmup), int(utd), int(batch), float(gamma), float(beta)
         self.device, self.log = device, log
@@ -61,6 +63,7 @@ class DSRLHooks:
         self.outcomes = []
         self.load_path = load
         self.lr = lr
+        self.alpha = float(alpha)
 
     def _build(self, sdim):
         self.sdim = sdim
@@ -69,11 +72,8 @@ class DSRLHooks:
         self.q = nn.ModuleList([mlp(sdim + self.dim, 1) for _ in range(2)]).to(d)
         self.qt = nn.ModuleList([mlp(sdim + self.dim, 1) for _ in range(2)]).to(d)
         self.qt.load_state_dict(self.q.state_dict())
-        self.log_alpha = torch.full((1,), math.log(0.01), device=d, requires_grad=True)
-        self.target_entropy = -0.5                                          # per dimension
         self.opt_a = torch.optim.Adam(self.actor.parameters(), lr=self.lr)
         self.opt_q = torch.optim.Adam(self.q.parameters(), lr=self.lr)
-        self.opt_al = torch.optim.Adam([self.log_alpha], lr=self.lr)
         if self.load_path:
             z = torch.load(self.load_path, map_location=d)
             self.actor.load_state_dict(z["actor"])
@@ -131,20 +131,17 @@ class DSRLHooks:
         for _ in range(n):
             i = torch.as_tensor(self.rng.integers(0, B, min(self.batch, B)), device=self.device)
             s, z, r, s2, d = S[i], Z[i], Rw[i], S2[i], Dn[i]
-            alpha = self.log_alpha.exp().detach()
-            with torch.no_grad():
-                z2, lp2 = self.actor(s2)
-                qn = torch.min(*[qt(torch.cat([s2, z2], -1)).squeeze(-1) for qt in self.qt]) - alpha * lp2
-                y = r + self.gamma * (1 - d) * qn
+            with torch.no_grad():                                        # Q = the discounted chance of success, in [0, 1]
+                z2, _ = self.actor(s2)
+                qn = torch.min(*[qt(torch.cat([s2, z2], -1)).squeeze(-1) for qt in self.qt])
+                y = (r + self.gamma * (1 - d) * qn).clamp(0.0, 1.0)
             ql = sum(F.mse_loss(q(torch.cat([s, z], -1)).squeeze(-1), y) for q in self.q)
             self.opt_q.zero_grad(); ql.backward(); self.opt_q.step()
             za, lp = self.actor(s)
             qa = torch.min(*[q(torch.cat([s, za], -1)).squeeze(-1) for q in self.q])
-            al = (alpha * lp - qa).mean()
+            al = (self.alpha * lp - qa).mean()                           # a fixed, small entropy regulariser on the actor only
             self.opt_a.zero_grad(); al.backward(); self.opt_a.step()
-            el = -(self.log_alpha * (lp.detach() + self.target_entropy)).mean()
-            self.opt_al.zero_grad(); el.backward(); self.opt_al.step()
             with torch.no_grad():
                 for p, pt in zip(self.q.parameters(), self.qt.parameters()):
                     pt.mul_(0.995).add_(0.005 * p)
-        return dict(updates=n, buffer=B, q_loss=round(float(ql), 4), alpha=round(float(self.log_alpha.exp()), 4))
+        return dict(updates=n, buffer=B, q_loss=round(float(ql), 5), q_mean=round(float(qa.mean()), 3))

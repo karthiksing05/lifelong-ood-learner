@@ -118,7 +118,7 @@ def arm_spec(tid, arm, fold, demo=0):
     if arm.startswith("phasebind2_rjpred@"):                             # the same with reader variant <v> (p6_reader_<v>_<t>.npz), e.g. pca512_rj
         return (f"phasebind:{tid}?fold=0&rules=2&reader={arm.split('@', 1)[1]}&carry=pred&var=0.001", "0", False)
     if arm == "dsrl_train":                                              # DSRL practice: 100 episodes on init states 0-29 (STATE_MOD)
-        return (f"dsrl:{tid}?train=1&save={os.path.join(R, f'dsrl_{tid}_actor.pt')}&warmup=10&utd=10&beta=2", "0", False)
+        return (f"dsrl:{tid}?train=1&save={os.path.join(R, f'dsrl_{tid}_actor.pt')}&warmup=10&utd=4&beta=2", "0", False)
     if arm == "dsrl":                                                    # DSRL scored: the trained actor, deterministic noise
         return (f"dsrl:{tid}?train=0&load={os.path.join(R, f'dsrl_{tid}_actor.pt')}&beta=2", "0", False)
     if arm == "phasebind2_rjpred_e":                                     # own demo, events fire on arrival (PhaseBindHooks events=1)

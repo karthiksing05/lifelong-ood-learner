@@ -261,7 +261,7 @@ def main():
             f_ = enc._embed(np.asarray(obs["observation/image"])[None], np.asarray(obs["observation/wrist_image"])[None])
             return np.concatenate([f_.float().cpu().numpy()[0], np.asarray(obs["observation/state"], np.float32)])
         hooks = DSRLHooks(feat, dim=bk.H * bk.A, train=kv.get("train", "1") == "1", save=kv.get("save"), load=kv.get("load"),
-                          warmup=int(kv.get("warmup", 10)), utd=int(kv.get("utd", 10)), beta=float(kv.get("beta", 2.0)),
+                          warmup=int(kv.get("warmup", 10)), utd=int(kv.get("utd", 4)), beta=float(kv.get("beta", 2.0)),
                           seed=int(os.environ.get("SERVE_SEED", "0") or 0), log=logging.info)
         logging.info(f"dsrl: task {t}, LoRA {lp} on, noise dim {bk.H * bk.A}, train {hooks.train}")
     elif a.mode.startswith("lora:"):
