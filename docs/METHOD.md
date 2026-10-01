@@ -1,75 +1,67 @@
-# Method: prototypes and composition for skill transfer and continual learning (frozen pi0.5, LIBERO-90)
+# Method: composing a flow policy's own prototypes (Read -> Compose -> Fold -> Consolidate)
 
-The method as it stands after the transfer plan ([docs/PLAN_TRANSFER.md](PLAN_TRANSFER.md)). Every result it rests on is a
-pre-registered read in `ledger/`, quoted in the README and [docs/VALIDITY.md](VALIDITY.md); this page carries no numbers.
+The method of the overhaul of 2026-10-01 (plan: `~/.claude/plans/i-m-interested-in-re-workshopping-quizzical-crane.md`). It
+follows the thesis in [THE_TASK.md](THE_TASK.md): decompose an arrival into the model's prototypes, store a code when they
+explain it, fold a small unit only where they do not, consolidate, charge every byte, damage nothing, and generate new
+trajectories from the model's own conditional. Every result it rests on is a read in `ledger/`, quoted in the README; this page
+carries no numbers. The previous method (a one-demo object-relative program executed by the controller, with the policy
+bypassed) is kept as a validated baseline: [archive/2026-10-program/METHOD_program.md](../archive/2026-10-program/METHOD_program.md).
 
-## The pieces
+## What the frozen policy already holds
 
-1. **The prior.** pi0.5 (`pi05_libero`), frozen. It is never fine-tuned for a new task unless practice says so (step 7).
-2. **The grammar.** A task's demo is cut into phases: an approach to the manipulated object, a carry relative to the receptacle, and
-   the rest. The cut is computed from object events (the manipulated object's displacement while the gripper closes, the release);
-   the coarse prototype level of the 40-task hierarchy (t = 0.55) changes label at these same events (C1), so the cut follows
-   boundaries the policy's own prototypes carry, but it does not read them. The demo is read at rest (objects still falling after the scene spawned take their
-   rest pose), and the manipulated object is the first movable object displaced while the gripper closes (lifted or pushed)
-   (`lifelong_ood/policy/phase.py` `at_rest`, `cut`).
-3. **The bindings.** Each phase is expressed relative to an object: the approach in the manipulated object's frame, the carry and
-   the rest in the receptacle's frame (a fixture counts), holding the object so that it follows the source object's path. The object's
-   pose in the hand is predicted from the grasp binding (the source's hand-object pose after its close), so no in-hand sensing is
-   needed. A task whose demo moves no object is anchored on its fixture.
-4. **Perception.** A per-task pose reader (a ridge head over a SHARED 512-direction code of frozen ResNet-18 feature maps of both
-   cameras, the code fitted on other tasks' rendered scenes and stored once) reads the objects' positions from the first frame. It is trained on simulator-rendered placements of the task's own scene (the arm posed as in the
-   task's init states); the simulator labels the training scenes only, and neither a demo nor practice is needed. Orientations come
-   from the same rendered scenes (fixed yaw per placement region).
-5. **Execution.** At each query the phases are re-anchored on the read poses and the next actions are planned along the source's
-   own lagged path (controller goals, not achieved poses). The plan is passed to the frozen policy as a guide of weight 1 and
-   variance 1e-3, which replaces the policy's noise prediction in the real action dimensions: the sampled chunk is the plan, and
-   executing the plan with no policy at all scores the same (the no-policy control). This step is the one-demo program executed by
-   the robot's controller; the policy does not shape its actions.
-   Where the plan bridges between stored segments, its waypoints and its gripper events are passed on ARRIVAL, not on the clock: the
-   controller follows a long bridge more slowly than planned, and a clock-driven plan releases early or cuts corners. No weights are
-   trained.
-6. **Transfer by composition.** Bindings are stored in a table: grasp bindings keyed by the manipulated object's TYPE, place
-   bindings keyed by the whole goal relation (the task's BDDL goal with the object abstracted). A new task whose two keys are known is
-   composed from other tasks' phases (`phase.compose`), relabelled onto its own objects by name, with no demo of its own. Only
-   validated bindings enter the table (a demo whose program fails its no-policy practice check is not stored). The lookup reads the
-   keys the way the grammar readout splits a task: a grasp source recorded in the same scene first, a place source of the same object
-   type first, then the same scene.
-   The object must travel from the borrowed grasp to the borrowed placement through a layout neither source was recorded in. Three
-   carries cover it: the place source's own route; the frozen policy carrying until the hand nears the borrowed descent; or a bridge
-   that lifts by as much as the place source lifted its object, crosses, and descends. Wherever the plan bridges, its waypoints and
-   gripper events are passed when the hand arrives, never on the clock.
-7. **Allocation by practice.** Ten practice episodes decide per task which stored form runs: the phases (no weights), prototype
-   borrowing from the hierarchy with a small fold (where the prior's own skills carry what bindings cannot, such as a stove knob), or a
-   LoRA trained on demonstrations generated by retargeting the demo in simulation (no practice rollouts).
-8. **Continual learning.** Tasks arrive in a stream; when a task's keys are known, its composed program is practised (ten episodes)
-   with each carry, and kept with the best carry if that one succeeds at least eight times; otherwise the task requests its one demo,
-   whose validated bindings extend the table. Stored programs
-   never change (keys are never overwritten), so nothing is forgotten by construction; compositions become possible more often as the
-   binding vocabulary fills. Unpractised composition is not enough: a place binding stored as a path relative to the receptacle keeps
-   its source's route, which fails in a different layout.
+- **Prototypes.** Mode-finding on the policy's action marginal over its training tasks' frames gives a hierarchy of
+  prototypes, noise level as depth (`experiments/r2b_marginal.py`; Wang et al.'s concept discovery, moved to the
+  observation-marginal because one observation's conditional is a single narrow bump). Its coarse prototypes are verbs (reach
+  down, close, carry, lower, release), its top split is the gripper's state, and its labels change at a task's phase events.
+- **Task prototypes.** Every task the policy performs, stored as its factors and its prototype chain: the sequence of verbs its
+  actions pass through (`lifelong_ood/policy/tasks.py`). Tasks group into families by their chains.
+- **Readable factors.** The policy reads an instruction's factor (an object, a goal relation, a qualifier) where its training
+  CONTRASTED that factor in a similar scene; elsewhere a scene keys a trained habit, whatever the instruction names. The user's
+  ICLR paper found the same in image diffusion models: a model that never read several objects from one caption fails to,
+  although it learned each object.
 
-## What the hierarchy does and does not do
+## 1 Read: decompose the arrival
 
-- Its coarse prototypes are verbs shared across tasks (reach down with the gripper open, lower while holding, grip change), and a
-  task's program reads as a sentence of phases over them, anchored on objects ([GRAMMAR.md](GRAMMAR.md)). The prototypes and the
-  bindings split a task: a carry's prototype string is shared by tasks with the same goal relation, a grasp's by every task, while
-  the grasp's geometry is shared only within an object type. These are the keys of the binding table.
+A task's factors are read by rule from its BDDL goal (`lifelong_ood/policy/factors.py`): the moved object's type, the goal
+relation (predicate, target type, region), the qualifiers of the instruction, and the scene. The arrival is then decomposed into
+TASK PROTOTYPES by a greedy cover of its factors (the selection step of Wang et al., moved from pixels to tasks): each selected
+prototype supplies the factors it shares with the task, and its chain says in which phase that factor acts.
 
-- It gives the grammar (the coarse level's phase boundaries), task identity (the fine levels' leaf sequences), and the fallback motion
-  where object bindings cannot express a skill (prototype borrowing through the prior).
-- It does not give the binding: which object, where, and how it is held come from the scene.
-- It does not produce the phase program's actions: those are the demo's own path, re-anchored. Prototypes drive actions only in the
-  fallback (prototype borrowing), and the policy acts only where the program hands it control (the carry by the prior).
-- Sharing WEIGHTS across tasks fails in every form tried (one fold for all tasks, family pooling, family pretraining); sharing
-  BINDINGS across tasks works. Perception does not transfer across scenes by object type for movable objects; readers stay per task.
+## 2 Compose: zero-shot, no demo, no weights
+
+The policy's own velocities under several prompts are combined affinely at every Euler step of its sampler
+(`lifelong_ood/policy/conditionals.py`; the user's ICLR paper restores composition by summing single-object predictions,
+Liu et al.'s rule):
+
+    v = v(o, base) + lambda * [ v(o, base with the task's object) - v(o, base) ]
+
+The base is a task prototype the policy reads in this scene with the task's relation; the bracket is a minimal pair that differs
+in the object only, so it isolates the object factor at this observation (the ICLR paper's d_j). The factor acts while the gripper
+is open (the phase read from the policy's own gripper command, the hierarchy's top split) and is released after the grasp.
+Nothing external is followed: every term is the policy's own conditional, so the policy keeps generating (a guide toward a target
+chunk replaced the policy's prediction; this does not). The CODE a task keeps is its prompt ids, weights and phases
+(`lifelong_ood/policy/factor_hooks.py`). Controls in every read: guidance on the task's instruction against the empty prompt,
+and a placebo pair of unrelated training instructions at the same weight.
+
+## 3 Fold: only where composition does not read the factor
+
+A FACTOR TOKEN is a learned key and value per layer appended to the prompt's cache that the action expert attends to
+(`lifelong_ood/policy/token_fold.py`; prefix tuning). Every policy weight stays frozen, so a task that does not address the token
+is untouched by construction. It is fitted by flow matching on (a) a successful composition's own rollouts, which makes the
+composition readable from one prompt (self-distillation, no demo), or (b) for a primitive no composition reaches, the arrival's
+one demonstration as training data (never executed). A token is a FACTOR only if it transfers: it is reused, with no new demo, by
+later tasks that share the factor. One arrival cannot tell which of its factors a token learned; two arrivals that share the
+value and differ elsewhere can (docs/COBWEB_UPDATE.md, Proposition 7), so tokens of one factor are fitted on every arrival that
+shares it. A token that cannot make the motion escalates to a keyed expert on the action expert.
+
+## 4 Consolidate
+
+Tokens of one factor are merged across arrivals; accrued tokens and experts are distilled into one shared adapter and deleted,
+trading bytes for drift on old tasks. Designed; run after the zero-shot and fold reads.
 
 ## Known limits
 
-- Joint-state bindings (a knob whose starting angle varies) are not expressed by object poses; practice routes such tasks to
-  prototype borrowing.
-- Ten practice episodes do not always predict how a composition does later: stacking the front bowl on the middle one passes its
-  practice with every carry tried and still trails its own demo when scored.
-- LIBERO-90 crosses objects and goal relations sparsely, so most of its tasks share no key with another task, and composition can
-  save only a fraction of the demos in a stream drawn from it.
-- Everything is measured in simulation (LIBERO-90); the rendered-scene reader and the validation check use the simulator at training
-  time.
+- Composition reads only what the policy reads in some context: an object word the policy never contrasted anywhere is not
+  readable by any composition, and needs a fold.
+- The base must exist: a readable task prototype with the task's relation in the task's scene.
+- Simulation only (LIBERO-90); pi0.5 so far. pi0 shares openpi's interface; SmolVLA runs through the same backbone interface for single prompts, and needs a batched observation method before composition runs on it.

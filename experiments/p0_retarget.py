@@ -1,4 +1,4 @@
-"""P0c (docs/PLAN_TRANSFER.md; ledger m3_prereg tag p0): the ceiling of object-relative retargeting, no policy.
+"""P0c (archive/2026-10-program/PLAN_TRANSFER.md; ledger m3_prereg tag p0): the ceiling of object-relative retargeting, no policy.
 
 Source = the first successful recorded practice episode of a task (trial order; m5_practice, then m6_round1, m6_round2), with its
 per-step eef and object poses from the bit-exact replay (experiments/p0_replay.py).  Its eef path is cut at the gripper-command

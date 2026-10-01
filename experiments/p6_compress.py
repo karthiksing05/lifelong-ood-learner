@@ -1,4 +1,4 @@
-"""How small can a task's pose reader be? (the storage side of docs/PLAN_TRANSFER.md P6)
+"""How small can a task's pose reader be? (the storage side of archive/2026-10-program/PLAN_TRANSFER.md P6)
 
 The deployed reader (experiments/p6_reader.py --features spatial --pool 4 --synth-only --synth-dir p6_synth_rj) is a ridge map from
 16,384 ResNet-18 map features to the objects' positions: 16,384 x 3 x (objects) weights, about 0.4 MB per task in fp32 -- the bulk

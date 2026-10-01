@@ -1,4 +1,4 @@
-"""P6 (docs/PLAN_TRANSFER.md): a LEARNED object-pose reader in place of the simulator oracle.
+"""P6 (archive/2026-10-program/PLAN_TRANSFER.md): a LEARNED object-pose reader in place of the simulator oracle.
 
 Per task, a ridge regression from frozen ImageNet ResNet-18 features of both cameras (the encoder of the VINN baseline and of the
 instance memory, lifelong_ood/policy/baselines.VinnPolicy._embed; features standardized) to the 3-D positions of the task's objects

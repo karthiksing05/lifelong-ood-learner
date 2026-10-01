@@ -1,4 +1,4 @@
-"""C1 (docs/PLAN_TRANSFER.md; ledger m3_prereg tag c1_grammar): do the coarse prototype levels give a task's phase grammar?
+"""C1 (archive/2026-10-program/PLAN_TRANSFER.md; ledger m3_prereg tag c1_grammar): do the coarse prototype levels give a task's phase grammar?
 
 Every frame's 10-step chunk of each stream-pool demo (the matched raw demo's kept actions, results/robot/p0_demo/<t>_match.npz) is
 labelled at each level of the 40-task prototype tree by r19's basin rule (experiments/r19_invariance.py `labels`).  The change points

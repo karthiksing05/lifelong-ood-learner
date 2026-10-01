@@ -169,7 +169,7 @@ def main():
                             stall=int(rest[3]) if len(rest) > 3 and rest[3] else 0)
         logging.info(f"hybrid: program {prog_path} ({int(prog.fold.sum()) if prog.fold is not None else 0} fold frames of {len(prog.mu)}), expert {key}")
     elif a.mode.startswith("phasebind:"):
-        # phasebind:<task>?expert=<fold expert.pt>&foldprog=<fold program.npz>&var=0.001 -- P1 (docs/PLAN_TRANSFER.md): the task's ONE demo
+        # phasebind:<task>?expert=<fold expert.pt>&foldprog=<fold program.npz>&var=0.001 -- P1 (archive/2026-10-program/PLAN_TRANSFER.md): the task's ONE demo
         # as phases re-anchored on the objects' current poses (the client's --objects), guided through the prior; the fold on the demo's
         # contact frames
         import importlib.util

@@ -8,7 +8,7 @@ tab = json.load(open("/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/
 print(ledger.record(
     "m3_prereg", bench="libero_90", tag="p3c", seed=0,
     metrics={
-        "plan": "docs/PLAN_TRANSFER.md C3 (composition = transfer), retested after rules v2 made each task's own phases reliable",
+        "plan": "archive/2026-10-program/PLAN_TRANSFER.md C3 (composition = transfer), retested after rules v2 made each task's own phases reliable",
         "why": ("P3a/P3b composed bindings with the no-policy executor under rules v1 and failed on new targets (11/80); v2 (ledger "
                 "p1_bindings tag v2) executes a task's own phases through the frozen prior at 385/420; P3c asks whether a task can be "
                 "composed from OTHER tasks' phases with no demo of its own"),

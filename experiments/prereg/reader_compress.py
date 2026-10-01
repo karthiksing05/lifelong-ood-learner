@@ -6,7 +6,7 @@ from lifelong_ood import ledger
 print(ledger.record(
     "m3_prereg", bench="libero_90", tag="reader_compress", seed=0,
     metrics={
-        "plan": "docs/PLAN_TRANSFER.md P6, storage: a task's bytes are dominated by its pose reader (443 KB of fp32 ridge weights over "
+        "plan": "archive/2026-10-program/PLAN_TRANSFER.md P6, storage: a task's bytes are dominated by its pose reader (443 KB of fp32 ridge weights over "
                 "16,384 ResNet-18 map features) once its phases take 2-3 KB; can each task keep only a small head over a SHARED code?",
         "offline": ("experiments/p6_compress.py (results/robot/p6_compress.json; practice first frames of states 20-29, 50 tasks): full reader "
                     "median 0.152 cm at 443 KB per task; PCA-512 head 0.214 cm at 6.9 KB; PCA-256 0.242 cm at 3.5 KB; seeded random "

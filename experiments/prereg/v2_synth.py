@@ -6,7 +6,7 @@ from lifelong_ood import ledger
 print(ledger.record(
     "m3_prereg", bench="libero_90", tag="v2_synth", seed=0,
     metrics={
-        "plan": "docs/PLAN_TRANSFER.md P6: the headline condition (a learned reader within 0.10 of the simulator's poses), after V3 failed",
+        "plan": "archive/2026-10-program/PLAN_TRANSFER.md P6: the headline condition (a learned reader within 0.10 of the simulator's poses), after V3 failed",
         "why": ("V3 (ledger p1_bindings tag v2): the first-frame reader trained on 30 placements per task lost on the three bottles "
                 "(362 vs 385 of 420, lower bound -0.121). Offline (ledger p6_reader): re-reading near the object 0.94 cm (no gain), "
                 "spatial feature maps 0.58 cm (no gain on the bottles), 400 simulator-rendered placements per task 0.25 cm pooled and "

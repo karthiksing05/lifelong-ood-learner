@@ -1,4 +1,4 @@
-"""GRAMMAR x BINDINGS, READ OUT (interpretability of the prototypes and the grammar; docs/PLAN_TRANSFER.md C1).
+"""GRAMMAR x BINDINGS, READ OUT (interpretability of the prototypes and the grammar; archive/2026-10-program/PLAN_TRANSFER.md C1).
 
 Two stages.
   labels (GPU): every frame's 10-step chunk of each task's ONE demo (results/robot/p0_demo) labelled by r19's basin rule at the

@@ -268,7 +268,7 @@ EMBODIED = [
     ("fold size, last two layers, KB", lambda: tuple([L.mean("r4_fold", "bytes.experts", tag="_approach_last2")[0] / 1e3] + list(L.mean("r4_fold", "bytes.experts", tag="_approach_last2")[1:])), "258"),
 ]
 
-TRANSFER = [   # docs/PLAN_TRANSFER.md probes (pre-registered: ledger m3_prereg tags p0, p1, p1_amend1, p2, p3a, p3b, p4, g38, p6)
+TRANSFER = [   # archive/2026-10-program/PLAN_TRANSFER.md probes (pre-registered: ledger m3_prereg tags p0, p1, p1_amend1, p2, p3a, p3b, p4, g38, p6)
     ("P0b: persistent movable-object failures", emb("p0_audit", "metrics.primary.n", tag="geometry"), "106"),
     ("P0b: aim-failure share", emb("p0_audit", "metrics.primary.aim_share", tag="geometry"), "0.83"),
     ("P0c: retargeted demo successes with no policy", emb("p0_audit", "metrics.totals.retarget", tag="retarget"), "58"),

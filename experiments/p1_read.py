@@ -1,4 +1,4 @@
-"""P1 and P6 reads (docs/PLAN_TRANSFER.md; ledger m3_prereg tags p1, p1_amend1, p6): phase programs with object-relative
+"""P1 and P6 reads (archive/2026-10-program/PLAN_TRANSFER.md; ledger m3_prereg tags p1, p1_amend1, p6): phase programs with object-relative
 bindings executed through the frozen policy, against the current program (dimfold_s1_last2; dimcode_s1 where the demo grasps
 nothing), paired on init states 30-49 of m3_final.
 

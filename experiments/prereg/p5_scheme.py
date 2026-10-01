@@ -11,7 +11,7 @@ dev = json.load(open("/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/
 print(ledger.record(
     "m3_prereg", bench="libero_90", tag="p5_scheme", seed=0,
     metrics={
-        "plan": "docs/PLAN_TRANSFER.md C3/C4: confirm the compositional scheme on fresh orders after the failed confirmation (p5_confirm: "
+        "plan": "archive/2026-10-program/PLAN_TRANSFER.md C3/C4: confirm the compositional scheme on fresh orders after the failed confirmation (p5_confirm: "
                 "157 vs 162 of 180 over nine arrivals; one composition passed practice and scored 9 of 20)",
         "changes_since_p5_confirm": [
             "the lookup (docs/GRAMMAR.md 3): grasp sources of the target's object type from the same scene first; place sources with the "

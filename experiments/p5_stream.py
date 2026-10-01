@@ -1,4 +1,4 @@
-"""P5 (docs/PLAN_TRANSFER.md, under rules v2): the minimal continual-learning stream over the 21 held-out tasks.
+"""P5 (archive/2026-10-program/PLAN_TRANSFER.md, under rules v2): the minimal continual-learning stream over the 21 held-out tasks.
 
 A binding table grows as tasks arrive: grasp bindings keyed by the manipulated object's TYPE, place bindings keyed by the goal
 RELATION (predicate + receptacle region; experiments/p3c_table.py `relation`), each pointing at the demo that supplied it.  On

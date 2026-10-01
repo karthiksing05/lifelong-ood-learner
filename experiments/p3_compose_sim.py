@@ -1,4 +1,4 @@
-"""P3a (docs/PLAN_TRANSFER.md; ledger m3_prereg tag p3a): do object-relative bindings COMPOSE across tasks?  No policy.
+"""P3a (archive/2026-10-program/PLAN_TRANSFER.md; ledger m3_prereg tag p3a): do object-relative bindings COMPOSE across tasks?  No policy.
 
 A target task is executed from PARTS of other tasks' recorded successes: the GRASP part (every segment up to and including the one
 whose close grasps the object) of a task with the same object, and the PLACE part (every segment after that source's grasp segment)

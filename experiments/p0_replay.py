@@ -1,4 +1,4 @@
-"""P0 (docs/PLAN_TRANSFER.md; ledger m3_prereg tag p0): replay recorded LIBERO episodes bit-exactly and log the object state.
+"""P0 (archive/2026-10-program/PLAN_TRANSFER.md; ledger m3_prereg tag p0): replay recorded LIBERO episodes bit-exactly and log the object state.
 
 A recorded episode (experiments/libero_client.py --record: 8-d state, executed actions, images, success) is replayed the way the
 recorded session produced it: a fresh env as at process start (np.random.seed, env, env.seed), as many resets as preceded the

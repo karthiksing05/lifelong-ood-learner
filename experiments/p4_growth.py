@@ -1,4 +1,4 @@
-"""P4 (docs/PLAN_TRANSFER.md; ledger m3_prereg tag p4): does growing the leaf library with other tasks' practice SUCCESSES change
+"""P4 (archive/2026-10-program/PLAN_TRANSFER.md; ledger m3_prereg tag p4): does growing the leaf library with other tasks' practice SUCCESSES change
 what a composition executes?  Offline gate before any rollout.
 
 Base = the leaf library (the prior's chunk means at the 40 training tasks' frames; r9_library_ablation's bank_policy).  Grown =

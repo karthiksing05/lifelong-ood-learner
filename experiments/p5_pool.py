@@ -1,4 +1,4 @@
-"""P5 pool (docs/PLAN_TRANSFER.md, under rules v2): the stream's tasks and their binding keys, from the task specification.
+"""P5 pool (archive/2026-10-program/PLAN_TRANSFER.md, under rules v2): the stream's tasks and their binding keys, from the task specification.
 
 Per task (a LIBERO-90 task the prior fails zero-shot, 0/5; ledger zeroshot90): the BDDL goal's atoms; the target OBJECT = the first
 argument of the first On/In atom whose first argument is movable (results/robot/p0_demo/<t>.npz movable flags); the RECEPTACLE = that

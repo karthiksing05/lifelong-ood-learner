@@ -452,7 +452,7 @@ Stage 1: LoRA on the family's (fam) or the random tasks' (rnd) pool alone; stage
 
 Both fail: the second stage restores the target's binding, and the family's pretraining adds nothing to it.
 
-## Transfer plan probes (docs/PLAN_TRANSFER.md; pre-registered: ledger m3_prereg tags p0, p1, p1_amend1, p2, p3a, p3b, p4, g38, p6)
+## Transfer plan probes (archive/2026-10-program/PLAN_TRANSFER.md; pre-registered: ledger m3_prereg tags p0, p1, p1_amend1, p2, p3a, p3b, p4, g38, p6)
 
 Object poses come from the simulator (an ORACLE the client sends) unless a row says learned reader.  Init states 30-49, paired by episode; bounds from the two-level bootstrap; sign tests exact and two-sided.
 

@@ -1,4 +1,4 @@
-"""Pre-registration of the v2 read (docs/PLAN_TRANSFER.md, after P6): the phase rules v2 and their generator."""
+"""Pre-registration of the v2 read (archive/2026-10-program/PLAN_TRANSFER.md, after P6): the phase rules v2 and their generator."""
 import sys
 sys.path.insert(0, "/coc/flash10/ksingara3/lifelong-ood-learner")
 from lifelong_ood import ledger
@@ -6,7 +6,7 @@ from lifelong_ood import ledger
 print(ledger.record(
     "m3_prereg", bench="libero_90", tag="v2", seed=0,
     metrics={
-        "plan": "docs/PLAN_TRANSFER.md section 0: iterate on the binding route; v2 fixes a defect found after the P1/P6/3.8 reads",
+        "plan": "archive/2026-10-program/PLAN_TRANSFER.md section 0: iterate on the binding route; v2 fixes a defect found after the P1/P6/3.8 reads",
         "defect": ("the living-room demos' first kept steps catch the object still FALLING after the scene spawned (ketchup 12.2 cm, "
                    "milk and orange juice 8.4 cm above rest); v1 anchored the approach on that pose, so the retargeted grasp aimed "
                    "under the object (48 and 58: 0 of 40 through the prior)"),

@@ -1,4 +1,4 @@
-"""PHASE OUTCOMES: how far each recorded episode got along its task's grammar (docs/PLAN_TRANSFER.md, the reach / grasp / carry /
+"""PHASE OUTCOMES: how far each recorded episode got along its task's grammar (archive/2026-10-program/PLAN_TRANSFER.md, the reach / grasp / carry /
 place phases of rules v2) -- a readable failure attribution per arm.
 
 Episodes recorded with experiments/libero_client.py --record --light --objects (states, actions, object poses; no images).  Stages,

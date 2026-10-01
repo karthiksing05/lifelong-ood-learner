@@ -1,4 +1,4 @@
-"""The results page of the transfer plan (docs/PLAN_TRANSFER.md, docs/METHOD.md): one self-contained HTML file, every number read from
+"""The results page of the transfer plan (archive/2026-10-program/PLAN_TRANSFER.md, archive/2026-10-program/METHOD_program.md): one self-contained HTML file, every number read from
 ledger/ (the rows the README quotes) or from the stream plans, charts drawn to scale as inline SVG.
 
     ~/flash/miniconda3/envs/chunks/bin/python experiments/results_page.py     # -> results/robot/results_page.html

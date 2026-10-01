@@ -1,4 +1,4 @@
-"""P0a (docs/PLAN_TRANSFER.md; ledger m3_prereg tag p0): the ONE demo's object poses, from LIBERO's raw demonstrations.
+"""P0a (archive/2026-10-program/PLAN_TRANSFER.md; ledger m3_prereg tag p0): the ONE demo's object poses, from LIBERO's raw demonstrations.
 
 The IPEC LeRobot port (our demos) re-rendered LIBERO's raw hdf5 demos with the no-op steps removed (|arm action| < 1e-4 and an
 unchanged gripper command) and failed replays dropped, so it carries no object state.  The raw files carry the full simulator

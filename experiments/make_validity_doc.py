@@ -42,12 +42,12 @@ def _cmp(v):
 
 
 def transfer_probes(w):
-    """The probe ladder of docs/PLAN_TRANSFER.md, each read from its ledger row (pre-registered: ledger m3_prereg tags p0, p1,
+    """The probe ladder of archive/2026-10-program/PLAN_TRANSFER.md, each read from its ledger row (pre-registered: ledger m3_prereg tags p0, p1,
     p1_amend1, p2, p3a, p3b, p4, g38, p6)."""
     geo, ret, p1, p1s = _row("p0_audit", "geometry"), _row("p0_audit", "retarget"), _row("p1_bindings", "read"), _row("p1_bindings", "secondary")
     if not (geo and p1):
         return
-    w("## Transfer plan probes (docs/PLAN_TRANSFER.md; pre-registered: ledger m3_prereg tags p0, p1, p1_amend1, p2, p3a, p3b, p4, g38, p6)\n")
+    w("## Transfer plan probes (archive/2026-10-program/PLAN_TRANSFER.md; pre-registered: ledger m3_prereg tags p0, p1, p1_amend1, p2, p3a, p3b, p4, g38, p6)\n")
     w("Object poses come from the simulator (an ORACLE the client sends) unless a row says learned reader.  Init states 30-49, "
       "paired by episode; bounds from the two-level bootstrap; sign tests exact and two-sided.\n")
     pr = geo["primary"]

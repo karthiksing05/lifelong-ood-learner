@@ -62,7 +62,7 @@ def main():
     ap.add_argument("--all-objects", action="store_true", help="with --objects: every movable object of the scene, not only the "
                     "objects of interest (which object the policy moves: the overhaul's binding read)")
     ap.add_argument("--objects", action="store_true", help="send (and record) the poses of the objects of interest: meta/obj_names, "
-                    "meta/obj_pos, meta/obj_quat (xyzw); privileged simulator state for the phase-binding server (docs/PLAN_TRANSFER.md P1)")
+                    "meta/obj_pos, meta/obj_quat (xyzw); privileged simulator state for the phase-binding server (archive/2026-10-program/PLAN_TRANSFER.md P1)")
     ap.add_argument("--branches", default="", help="a JSON list of stall-point branches of ONE task (experiments/r18_branch.py): "
                     "{id, trial, seed_base, at, variant}; each replays a recorded episode's noise up to query `at`, then the "
                     "server changes one knob; replaces --first-trial / --trials.  The prefix (queries < at) executes the recorded "

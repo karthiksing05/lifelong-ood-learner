@@ -1,4 +1,4 @@
-"""3.8 (docs/PLAN_TRANSFER.md; ledger m3_prereg tag g38): the ONE demo as a data generator.
+"""3.8 (archive/2026-10-program/PLAN_TRANSFER.md; ledger m3_prereg tag g38): the ONE demo as a data generator.
 
 The task's demo (IPEC episode 0 = a raw LIBERO demo; experiments/p0_demo_init.py: its object poses and actions at every kept step)
 is executed at init states 0-19 by P3's executor (experiments/p3_compose_sim.py, object_carry mode: object-state phases, the

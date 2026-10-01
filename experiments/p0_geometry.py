@@ -1,4 +1,4 @@
-"""P0b (docs/PLAN_TRANSFER.md; ledger m3_prereg tag p0): are the persistent practice failures BINDING (aim) failures?
+"""P0b (archive/2026-10-program/PLAN_TRANSFER.md; ledger m3_prereg tag p0): are the persistent practice failures BINDING (aim) failures?
 
 Reads the bit-exact replays of experiments/p0_replay.py.  Per task: the manipulated object = the movable object of interest grasped
 in the most successful episodes; the success reference = the mean eef position in that object's frame at the close event (first
