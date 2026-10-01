@@ -73,6 +73,7 @@ class PolicyBackbone:
             # denoise_step directly, so the backbone runs eager (the reference sampler too, for parity).
             self.train_config = dataclasses.replace(self.train_config, model=dataclasses.replace(self.train_config.model, pytorch_compile_mode=None))
         t0 = time.time()
+        self.checkpoint_dir = ck
         self.policy = _policy_config.create_trained_policy(self.train_config, ck, pytorch_device=device)
         assert self.policy._is_pytorch_model, "PolicyBackbone needs openpi's PyTorch model (model.safetensors)"
         self.model = self.policy._model.eval()

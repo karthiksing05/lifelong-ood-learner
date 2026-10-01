@@ -52,19 +52,34 @@ class Norm:
     q99: np.ndarray
     mean: np.ndarray
     std: np.ndarray
+    quantile: bool = True                 # pi0.5: quantile normalisation; pi0: z-score (openpi's use_quantile_norm)
 
     @classmethod
-    def load(cls, path=NORM_STATS, key="actions"):
+    def load(cls, path=NORM_STATS, key="actions", quantile=True):
         d = json.load(open(path))["norm_stats"][key]
-        return cls(*(np.asarray(d[k], np.float32) for k in ("q01", "q99", "mean", "std")))
+        return cls(*(np.asarray(d[k], np.float32) for k in ("q01", "q99", "mean", "std")), quantile=quantile)
+
+    @classmethod
+    def for_backbone(cls, bk):
+        """The action normalisation of the backbone's own checkpoint (its assets' norm stats, its config's quantile flag)."""
+        import glob
+        from openpi.training.config import ModelType
+        quantile = bk.train_config.model.model_type != ModelType.PI0
+        ck = getattr(bk, "checkpoint_dir", None)
+        paths = glob.glob(os.path.join(ck, "assets", "**", "norm_stats.json"), recursive=True) if ck else []
+        return cls.load(paths[0] if paths else NORM_STATS, quantile=quantile)
 
     def normalize(self, x):
         x = np.asarray(x, np.float32)
+        if not self.quantile:
+            return (x - self.mean[: x.shape[-1]]) / (self.std[: x.shape[-1]] + 1e-6)
         q01, q99 = self.q01[: x.shape[-1]], self.q99[: x.shape[-1]]
         return (x - q01) / (q99 - q01 + 1e-6) * 2.0 - 1.0
 
     def unnormalize(self, x):
         x = np.asarray(x, np.float32)
+        if not self.quantile:
+            return x * (self.std[: x.shape[-1]] + 1e-6) + self.mean[: x.shape[-1]]
         q01, q99 = self.q01[: x.shape[-1]], self.q99[: x.shape[-1]]
         return (x + 1.0) / 2.0 * (q99 - q01 + 1e-6) + q01
 

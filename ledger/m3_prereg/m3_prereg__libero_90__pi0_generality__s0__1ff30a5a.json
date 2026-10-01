@@ -1,0 +1,56 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration of the pi0 generality read",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky1.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "1ff30a5a7001c1ea4cdb010e4ae947c28a6e23f5",
+  "short": "1ff30a5a"
+ },
+ "keys": {},
+ "metrics": {
+  "arms": {
+   "phasebind2_rjpred_pca512_rj_pi0": "the unchanged method on pi0: the one demo's rules-v2 phases, the 7 KB reader head, predicted carry, constant-weight guide w = 1, variance 1e-3; the guide's actions normalised by pi0's own statistics (Norm.for_backbone)",
+   "zeroshot_pi0": "pi0 alone"
+  },
+  "hypotheses": {
+   "Z": "bindings on pi0 > pi0 zero-shot: exact sign test, p < 0.05",
+   "descriptive": "vs the same method on pi0.5 (372 of 420); per task; latency"
+  },
+  "model": "pi0 (openpi pi0_libero, converted to PyTorch with openpi's converter): flow matching, 50-step action chunks, z-score action normalisation, continuous state token; fine-tuned by Physical Intelligence on the same 40 LIBERO tasks",
+  "tasks": "the 21 held-out tasks; init states 30-49; SERVE_SEED 0; 420 episodes per arm",
+  "why": "the user asked whether the method applies to other compositional flow / diffusion policies",
+  "written_before": "any pi0 rollout at init states 30-49 (a smoke test on practice states may precede it)"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_90__pi0_generality__s0__1ff30a5a",
+ "schema": 1,
+ "script": "experiments/prereg/pi0_generality.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-01T12:54:00+00:00",
+ "stream": null,
+ "tag": "pi0_generality"
+}

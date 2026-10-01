@@ -62,7 +62,9 @@ def main():
         serve(policy, a.port)
         return
     from lifelong_ood.policy.backbone import PolicyBackbone
-    bk = PolicyBackbone(a.config, device="cuda")
+    cfg = os.environ.get("BACKBONE_CONFIG") or a.config              # another flow VLA, e.g. pi0_libero (generality checks)
+    ck = os.environ.get("BACKBONE_CKPT") or None
+    bk = PolicyBackbone(cfg, checkpoint_dir=ck, device="cuda")
     logging.info(bk.describe())
     hooks = None
     if a.mode.startswith("proto:"):
@@ -234,7 +236,7 @@ def main():
                 yz = np.load(os.path.join(R, f"p6_yaw_{t}.npz"), allow_pickle=True)
                 reader["yaw"] = {k: yz[k] for k in yz.files}
             logging.info(f"phasebind: reader p6_reader{sfx}_{t}.npz ({reader['features']}){' + yaw' if kv.get('yaw') == '1' else ''}")
-        hooks = PhaseBindHooks(src, parts, D.Norm.load(), fold=fold, state=state, key=key, var=float(kv.get("var", 1e-3)), H=bk.H,
+        hooks = PhaseBindHooks(src, parts, D.Norm.for_backbone(bk), fold=fold, state=state, key=key, var=float(kv.get("var", 1e-3)), H=bk.H,
                                reader=reader, carry="predicted" if kv.get("carry") == "pred" else "live", warp=kv.get("warp") == "1",
                                handoff=kv.get("handoff") == "1", radius=float(kv.get("hr", 0.05)), patience=float(kv.get("hp", 1.5)),
                                events=kv.get("events") == "1", tol=float(kv.get("tol", 0.02)), max_wait=int(kv.get("mw", 8)),

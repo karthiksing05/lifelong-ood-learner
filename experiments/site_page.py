@@ -212,8 +212,9 @@ footer{font:12px/1.6 var(--mono);color:var(--muted);border-top:1px solid var(--r
 NAV = [("Introduction", [("overview", "–", "Overview"), ("motivation", "1", "Motivation"), ("grammar", "2", "The grammar in the policy")]),
        ("Part I · Bindings from one demonstration", [("method-a", "3", "Method"), ("cases-a", "4", "Case study"), ("results-a", "5", "Twenty-one held-out tasks")]),
        ("Part II · Composing new tasks", [("method-b", "6", "Method"), ("cases-b", "7", "Case study: the carry"), ("stream", "8", "Fifty tasks in a stream")]),
-       ("Results", [("cost", "9", "What a task costs"), ("negatives", "10", "What did not work")]),
-       ("Appendix", [("verification", "11", "Verification")])]
+       ("Results", [("cost", "9", "Cost and latency"), ("negatives", "10", "What did not work")]),
+       ("Discussion", [("learned", "11", "Is it training or zero-shot?"), ("models", "12", "Other models, and pi0.7")]),
+       ("Appendix", [("baselines", "13", "How the baselines were implemented"), ("verification", "14", "Verification")])]
 ORDER = [(i, n, t) for _, items in NAV for i, n, t in items]
 
 
@@ -741,6 +742,33 @@ otherwise it asks for its one demo. Nothing stored is ever changed, so nothing l
 """
 
 
+def cost_block():
+    rows = [r for r in ledger.load("cost", tag="read") if not r.get("retired")]
+    if not rows:
+        return ""
+    c = rows[-1]["metrics"]
+    order = ["phasebind2_rjpred_pca512_rj", "phasebind2_reader_spatial4_synth", "phasebind2_nofold", "zeroshot", "lora", "lora_r17bal",
+             "lora_strap2", "lora_strap", "dsrlo", "dsrl", "lora_er"]
+    out = []
+    for tag in order:
+        v = c["arms"].get(tag)
+        if not v:
+            continue
+        L = v["latency"]
+        ad = v["adapt_secs"]
+        out.append([("ours" if tag.startswith("phasebind") else ""), esc(v["label"]), f'{v["successes"]}',
+                    (f'{L["ms_per_query"]:.0f}' if L else "–"), ("–" if ad is None else ("0" if ad == 0 else f"{ad / 60:.1f}")),
+                    str(v["practice_episodes"])])
+    return (f"""<h3 class="sec">Latency and compute</h3>
+<p class="tcap">Table 9.2. Per method on the 21 held-out tasks: successes of 420; milliseconds per policy query (one ten-step chunk,
+three servers sharing an A40, from the scoring runs' logs); minutes of compute to adapt one new task; practice episodes per task.</p>
+{table(["method", "successes", "ms per query", "minutes to adapt", "practice episodes"], out)}
+<p>The guide adds about {c['arms']['phasebind2_rjpred_pca512_rj']['latency']['ms_per_query'] - c['arms']['zeroshot']['latency']['ms_per_query']:.0f} ms per
+query over the frozen policy alone; a LoRA adds about {c['arms']['lora_r17bal']['latency']['ms_per_query'] - c['arms']['zeroshot']['latency']['ms_per_query']:.0f}.
+Adapting to a new task with bindings is rendering its scene's placements for the reader; the phases are cut from the demo in milliseconds.
+{esc(c['notes']['adapt'])}.</p>""")
+
+
 cost_rows = [["", "rank-16 LoRA (the best fine-tuning)", fmt_bytes(sto["lora_bytes"]), fmt_bytes(sto["streams"]["A"]["totals"]["lora"])],
              ["", "a raw LIBERO demonstration, kept for replay", fmt_bytes(sto["raw_demo_bytes"]), fmt_bytes(sto["streams"]["A"]["totals"]["raw"])],
              ["", "phases + the full pose reader", fmt_bytes(sto["median"]["program"] + sto["median"]["reader_full"]), fmt_bytes(sto["streams"]["A"]["totals"]["own_full"])],
@@ -752,6 +780,7 @@ P_COST = f"""
 new task cannot alter an old one: forgetting is ruled out by construction, not measured.</p>
 {fig("9.1", '<div class="chartwrap">' + RP["storage_bars"]() + '</div>', f"Bytes per task (log scale, medians over the 50 pool tasks). A task keeps "
      f"{per_task_kb:.1f} KB: {fmt_bytes(sto['median']['program'])} of phases and a {fmt_bytes(sto['median']['reader_pca512'])} reader head.")}
+{cost_block()}
 <p class="tcap">Table 9.1. Storage per task and over the 50-task stream.</p>
 {table(["what is stored", "per task", "50 tasks"], cost_rows)}
 <p>The reader head keeps success (pre-registered, margin −0.05): {rc['RC1']['x']} against {rc['RC1']['control']} of 1,000 episodes, lower bound
@@ -794,6 +823,102 @@ read's command) before its first scoring episode. Exploratory reads (practice-st
 training time only; nothing reaches the policy's server at test except camera images and the robot's own state.</li>
 </ol>
 """
+
+def models_block():
+    r = row("p1_bindings", "pi0") if any(True for _ in ledger.load("p1_bindings", tag="pi0")) else None
+    if not r:
+        return ('<div class="callout pending"><p><strong>Running: the same method on pi0.</strong> pi0 (openpi\'s pi0_libero, a flow-matching '
+                'VLA with 50-step action chunks and z-score action normalisation) with the bindings and the 7 KB reader head, against pi0 '
+                'zero-shot, on the 21 held-out tasks.</p></div>')
+    return (f'<div class="callout"><p><strong>On pi0, the same bindings work.</strong> pi0 (openpi\'s pi0_libero) zero-shot: {r["Z"]["control"]} of 420; '
+            f'with the bindings and the 7 KB reader head: {r["Z"]["x"]} of 420 (sign test p {r["Z"]["sign_p"]:.1g}). Nothing in the method changed '
+            f'except the action normalisation, which follows each checkpoint.</p></div>')
+
+
+FID = [
+    ("STRAP", "Memmel et al., ICLR 2025; github.com/WEIRDLabUW/STRAP",
+     "DINOv2 agent-view embeddings; segments cut where the end-effector's L1 step is below 2.5 mm, merged to >= 20 steps; subsequence DTW "
+     "with steps (1,1) and (1,2); top 100 split across segments; a transformer policy trained from scratch on 5 target demos + retrieved",
+     "the same retrieval (strap2); a rank-16 LoRA on pi0.5 instead of a policy from scratch; one target demo; prior data = pi0.5's 40 "
+     "training tasks; at most 3,000 frames (each costs 26 MB of VLM cache)"),
+    ("DSRL", "Wagenmaker et al., CoRL 2025; the pi0.5 LIBERO configuration in github.com/gonora24/dsrl_pi0",
+     "SAC over a 7-dim noise vector tiled across the chunk; bound 1.0; 10 critics, min reduction; 20 updates per step; discount 0.999; "
+     "auto temperature; a 64 x 64 CNN trained by the critic; pi0.5 zero-shot as the base",
+     "the same agent and hyperparameters (dsrlo); frozen ResNet-18 features + state instead of the CNN; the one-demo LoRA as the base, since "
+     "pi0.5 alone succeeds about 0% on these tasks and sparse rewards then never arrive; 100 practice episodes on states 0-29"),
+    ("experience replay", "arXiv 2603.03818: sequential fine-tuning with a replay buffer forgets little in VLAs",
+     "replay of earlier tasks' data while fine-tuning on each new one", "the end state of that stream: one LoRA trained jointly on all 21 "
+     "demos, balanced per batch (an upper bound for replay with this data)"),
+    ("LoRA + failure negatives", "DiffusionNFT-style negative-aware flow matching (the family of pi-StepNFT)",
+     "online RL rounds", "three rounds of practice on states 0-29, successes as positives and the failed chunks as negatives"),
+]
+
+
+def fid_rows():
+    return [[esc(a), esc(b), esc(c), esc(d)] for a, b, c, d in FID]
+
+
+def fidelity_block():
+    am = row("p1_bindings", "sota_amend1") if any(True for _ in ledger.load("p1_bindings", tag="sota_amend1")) else None
+    if not am:
+        return ('<div class="callout pending"><p><strong>Running: the re-runs with the authors\' settings.</strong> STRAP with its own '
+                'retrieval and DSRL with its pi0.5 LIBERO configuration, scored on the same 420 episodes.</p></div>')
+    return (f'<p>With the authors\' settings: STRAP {am["B1"]["control"]} of 420 (our variant {sota["B1"]["control"]}), DSRL {am["B2"]["control"]} '
+            f'(our variant {sota["B2"]["control"]}); the bindings, {am["B1"]["x"]}, beat both (Holm p {max(am["B1"]["holm_p"], am["B2"]["holm_p"]):.1g}).</p>')
+
+
+LEARNED = [
+    ("pi0.5, the policy", "pretrained by Physical Intelligence on LIBERO's 40 tasks", "frozen: no gradient step, ever", "shared"),
+    ("the prototype hierarchy", "mode-seeking over the policy's action chunks on its 40 training tasks", "built once, no gradients", "shared"),
+    ("phases and bindings", "cut from the task's one demo at the object events", "rules, no fitting", "2.4 KB per task"),
+    ("pose reader head", "ridge regression on 400 simulator-rendered placements of the task's scene", "closed-form fit, seconds", "7.2 KB per task"),
+    ("the reader's shared code", "principal directions of other tasks' rendered scenes", "closed-form, once", "16.8 MB shared"),
+    ("a composed task", "the binding table: a grasp source by object type, a place source by goal relation", "lookup; no demo", "8 bytes"),
+    ("the carry", "practice: 10 episodes with each of three carries, keep the best if it reaches 8", "a discrete choice", "–"),
+    ("the stove's fallback", "prototype borrowing + a 258 KB fold, or a LoRA, only where practice prefers it", "gradient training", "where used"),
+]
+P_LEARNED = f"""
+<p class="lede">The method never trains the policy. What it fits per task is a linear map from image features to object positions,
+in closed form; what it stores per task is a few numbers per phase. A composed task needs neither a demonstration nor a gradient step.</p>
+<p class="tcap">Table 11.1. What each part of the method learns, from what, and what it costs.</p>
+{table(["part", "comes from", "how it is fitted", "stored"], [[esc(a), esc(b), esc(c), esc(d)] for a, b, c, d in LEARNED], num_from=9)}
+<div class="callout"><p><strong>So: zero-shot in the weights, one-shot (or zero-shot) in demonstrations, few-shot in practice.</strong>
+A task with its own demo needs that demo and nothing else: its bindings are read off the demo, and its reader head is fitted on rendered
+images of its scene. A composed task needs no demo at all, only its scene description (to render placements for the reader) and the
+practice episodes that choose its carry. Practice is a check that selects among fixed options; no parameter of the policy or of the
+programs changes. The only gradient training anywhere is the fallback some tasks take when practice prefers it (Table 5.1's practice
+allocator).</p></div>
+"""
+
+P_MODELS = f"""
+<p class="lede">The method needs three things from a policy: a sampler that integrates a learned field from noise (flow matching or
+diffusion), so a guide can be added to it; actions expressed in a space where moving a goal with an object is defined (end-effector
+deltas here); and object poses, which the reader supplies from images.</p>
+<h3 class="sec">12.1 Other flow and diffusion policies</h3>
+<p>The guide adds a constant-weight Gaussian pull toward the planned actions to the sampler's velocity at every integration step. For a
+diffusion policy sampled with DDPM or DDIM the same pull adds to the score, through the usual conversion between noise, score and velocity
+parameterisations. Flow and diffusion VLAs (pi0, pi0.5, GR00T N1.x, SmolVLA, RDT) and Diffusion Policy all sample this way.
+Autoregressive token policies (OpenVLA, pi0-FAST) do not; they would need constrained decoding instead.</p>
+{models_block()}
+<h3 class="sec">12.2 pi0.7</h3>
+<p>Physical Intelligence announced pi0.7 in April 2026: a larger generalist that recombines skills it learned from fragmented data when it
+is prompted with language coaching, visual subgoals and strategy metadata. Its weights and an API are not available, and its published
+evaluations are real-robot tasks (espresso, box and laundry folding) with no simulation benchmark, so it cannot be run or compared number
+for number here. The two approaches compose at different levels: pi0.7 inside one very large model, steered by richer prompts; this
+method outside an open, frozen model, through explicit object-relative bindings that can be inspected, stored in kilobytes and looked
+up.</p>
+"""
+
+
+P_BASELINES = f"""
+<p class="lede">Each baseline as published and as run here. After the first read, a check of the authors' code found that our first
+STRAP and DSRL differed from theirs; both were re-run with the authors' settings (pre-registered amendment), and the first versions are
+kept as our variants.</p>
+<p class="tcap">Table 13.1. Baselines: the published method and this implementation.</p>
+{table(["baseline", "source", "as published", "as run here"], fid_rows(), num_from=9)}
+{fidelity_block()}
+"""
+
 
 JS = r"""
 (function(){
@@ -859,8 +984,11 @@ BODIES = {"overview": ("Introduction", "Overview", P_OVERVIEW), "motivation": ("
           "results-a": ("Part I · Section 5", "5 Twenty-one held-out tasks", P_RESULTS_A),
           "method-b": ("Part II · Section 6", "6 Method", P_METHOD_B), "cases-b": ("Part II · Section 7", "7 Case study: the carry", P_CASES_B),
           "stream": ("Part II · Section 8", "8 Fifty tasks in a stream", P_STREAM),
-          "cost": ("Results · Section 9", "9 What a task costs", P_COST), "negatives": ("Results · Section 10", "10 What did not work", P_NEG),
-          "verification": ("Appendix · Section 11", "11 Verification", P_VER)}
+          "cost": ("Results · Section 9", "9 Cost and latency", P_COST), "negatives": ("Results · Section 10", "10 What did not work", P_NEG),
+          "learned": ("Discussion · Section 11", "11 Is it training or zero-shot?", P_LEARNED),
+          "models": ("Discussion · Section 12", "12 Other models, and pi0.7", P_MODELS),
+          "baselines": ("Appendix · Section 13", "13 How the baselines were implemented", P_BASELINES),
+          "verification": ("Appendix · Section 14", "14 Verification", P_VER)}
 
 HTML = f"""<title>Grammar × Bindings</title>
 <meta name="description" content="Adapting a frozen pi0.5 to new LIBERO-90 tasks from one demonstration by storing only object-relative bindings, and composing new tasks from old ones.">

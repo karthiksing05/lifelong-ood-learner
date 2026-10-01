@@ -402,6 +402,38 @@ def sota():
     return res
 
 
+def pi0():
+    """ledger m3_prereg tag pi0_generality: Z the bindings on pi0 > pi0 zero-shot."""
+    arms = {"b": "phasebind2_rjpred_pca512_rj_pi0", "z": "zeroshot_pi0", "b05": "phasebind2_rjpred_pca512_rj"}
+    tab = table(HELD, arms)
+    res = {"per_task": {t: {k: int(sum(v[k].values())) for k in v} for t, v in tab.items()}}
+    res["Z"] = dict(x_arm=arms["b"], y_arm=arms["z"], **compare(tab, "b", "z"))
+    res["Z"]["passes"] = bool(res["Z"]["sign_p"] < 0.05 and res["Z"]["x"] > res["Z"]["control"])
+    res["vs_pi05"] = compare(tab, "b", "b05")
+    print(f"Z {_fmt(res['Z'])} -> passes {res['Z']['passes']}; vs the same method on pi0.5: {_fmt(res['vs_pi05'])}")
+    return res
+
+
+def sota_amend1():
+    """ledger m3_prereg tag baselines_sota_amend1: B1' ours vs STRAP (authors' retrieval), B2' ours vs DSRL (authors' config), B3 vs ER."""
+    arms = {"ours": "phasebind2_rjpred_pca512_rj", "strap": "lora_strap2", "dsrl": "dsrlo", "er": "lora_er", "nft": "lora_r17bal"}
+    tab = table(HELD, arms)
+    res = {"per_task": {t: {k: int(sum(v[k].values())) for k in v} for t, v in tab.items()}}
+    ps = {}
+    for h, b in (("B1", "strap"), ("B2", "dsrl"), ("B3", "er")):
+        res[h] = dict(x_arm=arms["ours"], y_arm=arms[b], **compare(tab, "ours", b))
+        ps[h] = res[h]["sign_p"]
+    order = sorted(ps, key=ps.get)
+    for i, h in enumerate(order):
+        res[h]["holm_p"] = min(1.0, max(ps[o] * (len(order) - j) for j, o in enumerate(order[:i + 1])))
+        res[h]["ours_better"] = bool(res[h]["x"] > res[h]["control"] and res[h]["holm_p"] < 0.05)
+    res["vs_nft"] = {b: compare(tab, b, "nft") for b in ("strap", "dsrl", "er")}
+    for h in ("B1", "B2", "B3"):
+        v = res[h]
+        print(f"{h} {v['x_arm']} vs {v['y_arm']}: {_fmt(v)}, Holm p {v['holm_p']:.3g} -> ours better {v['ours_better']}")
+    return res
+
+
 def _fmt(v):
     return (f"{v['x']} vs {v['control']} of {v['n']}, diff {v['diff']['diff']:+.3f} [{v['diff']['lo']:+.3f},{v['diff']['hi']:+.3f}] lo90 "
             f"{v['diff']['lo90']:+.3f}, discordant {v['discordant']}, sign p {v['sign_p']:.3g}")
@@ -409,11 +441,17 @@ def _fmt(v):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("read", choices=("primary", "secondary", "p6", "v2", "v2_synth", "p3c", "p3c_reader", "p3c_reader2", "alloc", "p5", "yaw", "seed1", "demo1", "compress", "sota"))
+    ap.add_argument("read", choices=("primary", "secondary", "p6", "v2", "v2_synth", "p3c", "p3c_reader", "p3c_reader2", "alloc", "p5", "yaw", "seed1", "demo1", "compress", "sota", "sota_amend1", "pi0"))
     ap.add_argument("--record", action="store_true")
     a = ap.parse_args()
     os.chdir(ROOT)
-    if a.read == "sota":
+    if a.read == "pi0":
+        res = pi0()
+        exp, tag, what = "p1_bindings", "pi0", "the unchanged method on pi0 (another flow VLA) vs pi0 zero-shot, 21 tasks"
+    elif a.read == "sota_amend1":
+        res = sota_amend1()
+        exp, tag, what = "p1_bindings", "sota_amend1", "bindings vs STRAP and DSRL with the authors' settings, and experience replay, 21 tasks"
+    elif a.read == "sota":
         res = sota()
         exp, tag, what = "p1_bindings", "sota", "bindings (7 KB reader head) vs STRAP, DSRL and experience replay, 21 tasks"
     elif a.read == "compress":
