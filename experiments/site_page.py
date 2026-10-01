@@ -361,10 +361,11 @@ claims = [
     ("A task's cost", "holds",
      f"{per_task_kb:.1f} KB per task: the phases and a pose-reader head, non-inferior to the full reader ({rc['RC1']['x']} vs {rc['RC1']['control']} "
      f"of 1,000). A LoRA stores {fmt_bytes(sto['lora_bytes'])}."),
-    ("Composing new tasks", "mixed",
-     f"Tasks built only from other tasks' bindings match their own demos where layouts fit ({p3c['C1']['x']} vs {p3c['C1']['control']} of 120). "
-     f"Carrying across layouts is the weak point; passing waypoints on arrival raises it by "
-     f"{(dcr['vs_route']['streamtle']['diff']['diff'] if dcr else 0):+.2f} on practice states. The stream's confirmation is running."),
+    ("Composing new tasks", "holds" if (scheme and scheme["H1"]["non_inferior"]) else "mixed",
+     (f"On four fresh orders of a 50-task stream, {scheme['H1']['units']} tasks built only from other tasks' bindings score {scheme['H1']['x']} of "
+      f"{scheme['H1']['n']} against {scheme['H1']['control']} for their own demos (pre-registered, non-inferior); the streams ask for "
+      f"{min(v['demos'] for v in scheme['orders'].values())}–{max(v['demos'] for v in scheme['orders'].values())} demos instead of 50."
+      if scheme else "The stream's confirmation is running.")),
 ]
 
 
@@ -654,6 +655,27 @@ carry ran: start from the carry that passes most often, then add whichever adds 
 {dcr["compositions"] if dcr else ""} compositions, against {dcr["passes"]["streamc"] if dcr else ""} for the route alone.</p>
 """
 
+def scheme_block():
+    if not scheme:
+        return ('<div class="callout pending"><p><strong>Running: the confirmation with the new carries.</strong> This page will show the result '
+                'when it lands.</p></div>')
+    h = scheme["H1"]
+    orows = [[f"order {o}", str(v["demos"]), f"{v['composed']} <span class='note'>({v['composed_first_half']} + {v['composed_second_half']})</span>",
+              str(v["rejected"])] for o, v in scheme["orders"].items()]
+    pu = sorted(scheme["per_unit"].items(), key=lambda kv: kv[1]["composed"] - kv[1]["own"])
+    worst, best = pu[0], pu[-1]
+    name = lambda k: esc(lang.get(int(k.split("_")[0]), k))
+    return (f'<div class="callout"><p><strong>The confirmation passes.</strong> With the lookup of Section 6 and the carries of Section 7, on four fresh '
+            f'orders and a new sampling seed (pre-registered), the {h["units"]} unique compositions that arrived score <strong>{h["x"]} of {h["n"]}</strong> '
+            f'against {h["control"]} for the same tasks\' own demos: {h["diff"]["diff"]:+.3f}, one-sided lower bound {h["diff"]["lo90"]:+.3f} against the '
+            f'margin −0.10 (sign test p {h["sign_p"]:.4f}). Each composition counts once however many orders it arrived in.</p></div>'
+            f'<p class="tcap">Table 8.1. The four fresh streams of 50 tasks: demos requested, tasks composed (first half + second half), compositions '
+            f'rejected by practice.</p>' + table(["order", "demos", "composed", "rejected"], orows) +
+            f'<p>Some compositions beat a weak demo of the task itself: <em>{name(best[0])}</em> scores {best[1]["composed"]} of 20 composed against '
+            f'{best[1]["own"]} with its own demo, because the borrowed demos were better. One still trails: <em>{name(worst[0])}</em>, '
+            f'{worst[1]["composed"]} against {worst[1]["own"]}, although it passed practice.</p>')
+
+
 bound = RP["binding_grid"]()
 P_STREAM = f"""
 <p class="lede">Fifty tasks the prior fails arrive one at a time. Each composes from the table when both its keys are known and passes practice;
@@ -668,9 +690,7 @@ otherwise it asks for its one demo. Nothing stored is ever changed, so nothing l
      f"({p5['S2']['x']} against {p5['S2']['control']} of {p5['S2']['n']} for the same tasks' own demos). Checked by practice, the streams return near the "
      f"all-demo stream with a few demos saved, but the pre-registered confirmation on fresh orders got {cf['composed_vs_own']['x']} against "
      f"{cf['composed_vs_own']['control']} of {cf['composed_vs_own']['n']}: too few arrivals, and one composition that passed practice scored 9 of 20.")}
-<div class="callout pending"><p><strong>Running: the confirmation with the new carries.</strong> The lookup of Section 6 and the carries of Section 7
-go into a pre-registered confirmation on four fresh orders with a new sampling seed; each unique composition counts once, against its own demo at
-the same seed, at the −0.10 margin. {"Result: " + str(scheme["H1"]["x"]) + " vs " + str(scheme["H1"]["control"]) if scheme else "This page will show the result when it lands."}</p></div>
+{scheme_block()}
 """
 
 

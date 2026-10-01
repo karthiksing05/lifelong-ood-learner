@@ -1,0 +1,87 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/m3_final_43_streamc_37_41_seed3.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "roll.sh MODE=phasebind:43?fold=0&rules=2&g=37&p=41&objn=white_bowl_1&recn=wooden_two_layer_shelf_1&reader=spatial4_synthonly_rj&carry=pred&var=0.001 SUITE=libero_90 TASKS=43 TRIALS=20 (job 3992665)",
+ "config": {
+  "client": {
+   "branches": "",
+   "first_trial": 30,
+   "host": "127.0.0.1",
+   "light": false,
+   "max_steps": 0,
+   "no_meta": false,
+   "objects": false,
+   "out": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/m3_final_43_streamc_37_41_seed3.json",
+   "port": 9705,
+   "record": false,
+   "replan": 5,
+   "resize": 224,
+   "seed": 7,
+   "suite": "libero_90",
+   "tasks": "43",
+   "trials": 20,
+   "videos": 2,
+   "wait": 10
+  },
+  "job": "3992665",
+  "mode": "phasebind:43?fold=0&rules=2&g=37&p=41&objn=white_bowl_1&recn=wooden_two_layer_shelf_1&reader=spatial4_synthonly_rj&carry=pred&var=0.001"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "gundam.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3992665",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_final",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "1ba0c40ed808b9091a1db1f8301bea326c8d4d41",
+  "short": "1ba0c40e"
+ },
+ "keys": {
+  "first_trial": 30,
+  "mode": "phasebind:43?fold=0&rules=2&g=37&p=41&objn=white_bowl_1&recn=wooden_two_layer_shelf_1&reader=spatial4_synthonly_rj&carry=pred&var=0.001",
+  "tasks": "43",
+  "trials": 20
+ },
+ "metrics": {
+  "complete": true,
+  "n_episodes": 20,
+  "secs": 443.7443335056305,
+  "success_rate": 1.0,
+  "tasks": {
+   "43": {
+    "errors": 0,
+    "language": "put the white bowl on top of the cabinet",
+    "mean_steps": 176.35,
+    "n": 20,
+    "success_rate": 1.0
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_final__libero_90__streamc_37_41_seed3__first_trial-30__modeffdf376d8b94__tasks-43__trials-20__s7__1ba0c40e",
+ "schema": 1,
+ "script": "experiments/libero_client.py",
+ "seconds": null,
+ "seed": 7,
+ "source_commit": null,
+ "started": "2026-10-01T00:37:39+00:00",
+ "stream": null,
+ "tag": "streamc_37_41_seed3"
+}

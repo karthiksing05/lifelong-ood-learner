@@ -6,7 +6,7 @@ poses from the simulator are used as an ORACLE first, then replaced by a learned
 continual-learning stream starts MINIMAL (about 14 tasks, two mirrored orders) and grows only if it shows falling marginal cost.
 The history (M0-M3, every retraction) stays in [docs/PLAN_2026-09.md](PLAN_2026-09.md); every number below is in `ledger/` and audited.
 
-## 0. Status (2026-09-29, midday): the ladder is run, then iterated (rules v2)
+## 0. Status (2026-09-30, night): the ladder is run, iterated (rules v2), and the compositional stream confirmed
 
 Every probe ran under its pre-registration (`ledger/m3_prereg` tags p0, p1, p1_amend1, p2, p3a, p3b, p4, g38, p6, then v2, v2_synth,
 p3c, p3c_amend1, p3c_reader); the full reads are in [docs/VALIDITY.md](VALIDITY.md) ("Transfer plan probes") and the README's ladder.
@@ -28,6 +28,10 @@ p3c, p3c_amend1, p3c_reader); the full reads are in [docs/VALIDITY.md](VALIDITY.
 | perception across tasks by object type (`ledger/p6_reader` tag type_transfer) | leave-one-task-out type readers: fixtures 0.20 cm, movable objects 3.12 cm | negative for movable objects: readers stay per task (rendered scenes, no demo) |
 | **P5 stream** (50 tasks, two mirrored orders; pre-registered p5_stream + amend1: validated bindings) | demos requested 35 (A) and 33 (B) of 50; 20 tasks compose only when late vs 4 only when early (p 0.0015); composed arrivals 252 vs 561 of 640 for their own demos | **S1 holds, S2 FAILS**: the vocabulary grows, but a place binding stored as a receptacle-relative path keeps the source's route; carry warping and a generic transport made it worse on practice states (82, 6 vs 123 of 320). EXPLORATORY: composing only after a no-policy check gives 855/832 of 1,000 with 43/42 demos, several sources per key 817/820 with 40/37 (all-demo 874 with 50): composition trades demos for success. PRACTICE-validated composition (the plan's loop; amend4, exploratory): 875/870 with 46/44 demos, accepted compositions 186 vs 189 of 200 (non-inferior); the pre-registered confirmation (fresh orders, seed 2) does not confirm it: 157 vs 162 of 180, lower bound -0.167 over nine arrivals |
 | book yaw (pre-registered yaw) | the reader reads book yaw at 0.8 deg (fixed yaw 10.2 deg); success 173 vs 175 of 220 | fails: orientation is not what limits the book tasks |
+| **grammar read out** (`ledger/grammar` readout; docs/GRAMMAR.md) | coarse prototypes named as verbs; carry prototype strings group by goal relation (0.27 vs 0.56, permutation p 0.001), grasp geometry by object type (2.0 vs 9.8 cm, p 0.0005), grasp strings do not (p 0.13) | prototypes carry the verb, bindings the object: the table's keys |
+| **reader head** (pre-registered reader_compress) | a 7 KB head over a shared 512-direction code: 861 vs 874 of 1,000, lower bound -0.034 (margin -0.05); 9.6 KB per task with the phases (`ledger/storage`) | **PASSES** |
+| carries between borrowed bindings (exploratory, 54 compositions on practice states) | route 197, prior 188, transport on arrival 307, lifted transport 316 of 540; two defects found from object-pose recordings (clock-driven waypoints; low-carry drag) | practice chooses among lifted transport, route, prior (34 of 54 pass) |
+| **the scheme's confirmation** (pre-registered p5_scheme; fresh orders E-H, seed 3) | 29 unique compositions 520 vs 493 of 580 for their own demos, +0.047, lower bound -0.014; streams of 50 tasks request 38-43 demos | **PASSES** (C3/C4 hold on LIBERO-90's sparse binding grid) |
 
 What this means for the claims (section 2): C2 (binding) holds: the demo's phases re-anchored on the objects' poses guide the frozen
 prior to 385 of 420 with no weights (376 with a learned reader, no simulator state at test). C3 (composition = transfer) holds under
