@@ -813,7 +813,7 @@ def cost_block():
         L = v["latency"]
         ad = v["adapt_secs"]
         out.append([("ours" if tag.startswith("phasebind") else ""), esc(v["label"]), f'{v["successes"]}',
-                    (f'{L["ms_per_query"]:.0f}' if L else "–"), ("–" if ad is None else ("0" if ad == 0 else f"{ad / 60:.1f}")),
+                    (f'{L["ms_per_query"]:.0f}' if L else "–"), ("not logged" if ad is None else ("0" if ad == 0 else f"{ad / 60:.1f}")),
                     str(v["practice_episodes"])])
     return (f"""<h3 class="sec">Latency and compute</h3>
 <p class="tcap">Table 9.2. Per method on the 21 held-out tasks: successes of 420; milliseconds per policy query (one ten-step chunk,
@@ -886,9 +886,14 @@ def models_block():
         return ('<div class="callout pending"><p><strong>Running: the same method on pi0.</strong> pi0 (openpi\'s pi0_libero, a flow-matching '
                 'VLA with 50-step action chunks and z-score action normalisation) with the bindings and the 7 KB reader head, against pi0 '
                 'zero-shot, on the 21 held-out tasks.</p></div>')
-    return (f'<div class="callout"><p><strong>On pi0, the same bindings work.</strong> pi0 (openpi\'s pi0_libero) zero-shot: {r["Z"]["control"]} of 420; '
-            f'with the bindings and the 7 KB reader head: {r["Z"]["x"]} of 420 (sign test p {r["Z"]["sign_p"]:.1g}). Nothing in the method changed '
-            f'except the action normalisation, which follows each checkpoint.</p></div>')
+    z = r["Z"]
+    ok = z["sign_p"] < 0.05 and z["x"] > z["control"]
+    head = "On pi0, the same bindings work." if ok else "On pi0, the bindings did not pass the pre-registered test."
+    return (f'<div class="callout"><p><strong>{head}</strong> pi0 (openpi\'s pi0_libero) zero-shot: {z["control"]} of 420; '
+            f'with the bindings and the 7 KB reader head: {z["x"]} of 420 (exact sign test p {z["sign_p"]:.1g}; on pi0.5 the same method '
+            f'scores {r["vs_pi05"]["control"]}). Two things follow each checkpoint and nothing else changed: the action normalisation (z-score for '
+            f'pi0) and pi0\'s state-relative actions (its first six action dimensions are trained relative to the robot\'s state, so the '
+            f'guide subtracts the state before it normalises).</p></div>')
 
 
 FID = [

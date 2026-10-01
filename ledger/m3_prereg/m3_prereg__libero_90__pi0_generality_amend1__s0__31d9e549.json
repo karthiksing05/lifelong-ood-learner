@@ -1,0 +1,50 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "amendment to the pi0 generality pre-registration",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky1.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "31d9e5491044e92f2f69729384e32c9923123655",
+  "short": "31d9e549"
+ },
+ "keys": {},
+ "metrics": {
+  "amends": "pi0_generality",
+  "change": "Norm.for_backbone reads the flag; the guide subtracts the raw state from its target's first six dims before normalising; the server passes the model's input state to the output transform (commit 31d9e54; tests/test_norm_delta.py)",
+  "check": "a decoding check on pi0's own training suite (libero_spatial tasks 0 and 5, 3 episodes each, zero-shot) must succeed in most episodes before the read's rollouts; the smoke run before the fix was cancelled before any episode finished",
+  "finding": "openpi trains pi0_libero with extra_delta_transform: its first six action dims are the LIBERO action minus the robot state (DeltaActions before Normalize, AbsoluteActions after Unnormalize); pi0.5 (pi05_libero) is trained without it. Our decoder passed a zero state to openpi's output transform, so pi0's state was never added back (harmless for pi0.5).",
+  "unchanged": "arms, tasks, init states 30-49, seeds and hypothesis Z of pi0_generality",
+  "written_before": "any pi0 rollout at init states 30-49"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_90__pi0_generality_amend1__s0__31d9e549",
+ "schema": 1,
+ "script": "experiments/prereg/pi0_generality_amend1.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-01T13:17:48+00:00",
+ "stream": null,
+ "tag": "pi0_generality_amend1"
+}
