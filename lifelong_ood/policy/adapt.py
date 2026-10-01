@@ -92,6 +92,24 @@ class PrefixBank:
         return int(sum(t.numel() * t.element_size() for t in self.k + self.v))
 
 
+class LazyPrefixBank:
+    """PrefixBank's interface for banks too large to cache (about 26 MB per observation): keeps the observations and computes
+    each gathered batch's prefix on the fly with the frozen VLM, under no_grad.  The same values as a cached bank, at one VLM
+    forward per training step (baselines that train on thousands of frames: experiments/b_strap.py, b_er.py)."""
+
+    def __init__(self, bk, obs_dicts):
+        self.bk = bk
+        self.obs = list(obs_dicts)
+        self.n = len(self.obs)
+
+    def take(self, idx):
+        with torch.no_grad():
+            return self.bk.prefix(self.bk.observations([self.obs[int(i)] for i in np.asarray(idx)]))
+
+    def bytes(self):
+        return 0
+
+
 def _flow_batch(n, H, A, gen, device):
     b = torch.distributions.Beta(torch.tensor(1.5), torch.tensor(1.0))
     t = (b.sample((n,)) * 0.999 + 0.001).to(device)

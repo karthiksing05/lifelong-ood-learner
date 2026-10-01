@@ -64,6 +64,8 @@ class GuidedPolicy:
         observation = self.bk.observation(obs)
         pre = self.bk.prefix(observation)
         nz = None if noise is None else np.asarray(noise).reshape(1, -1)
+        if nz is None and hasattr(self.hooks, "noise_for"):
+            nz = self.hooks.noise_for(obs, meta)             # DSRL (lifelong_ood/policy/dsrl.py): a learned initial noise
         if getattr(self.hooks, "needs_prior", False):
             # the PRIOR expert: the frozen policy's own chunk on this observation, before the composed teacher is built
             self.hooks.set_prior(self.bk.sample(1, pre, seed=sd, num_steps=self.num_steps, noise=nz)[0])

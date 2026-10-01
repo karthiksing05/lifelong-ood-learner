@@ -382,6 +382,27 @@ def compress():
     return res
 
 
+def sota():
+    """ledger m3_prereg tag baselines_sota: B1-B3 ours (bindings, 7 KB reader head) vs STRAP, DSRL, experience replay; Holm."""
+    arms = {"ours": "phasebind2_rjpred_pca512_rj", "strap": "lora_strap", "dsrl": "dsrl", "er": "lora_er", "lora": "lora", "nft": "lora_r17bal"}
+    tab = table(HELD, arms)
+    res = {"per_task": {t: {k: int(sum(v[k].values())) for k in v} for t, v in tab.items()}}
+    ps = {}
+    for h, b in (("B1", "strap"), ("B2", "dsrl"), ("B3", "er")):
+        res[h] = dict(x_arm=arms["ours"], y_arm=arms[b], **compare(tab, "ours", b))
+        ps[h] = res[h]["sign_p"]
+    order = sorted(ps, key=ps.get)
+    for i, h in enumerate(order):                                    # Holm
+        res[h]["holm_p"] = min(1.0, max(ps[o] * (len(order) - j) for j, o in enumerate(order[:i + 1])))
+        res[h]["ours_better"] = bool(res[h]["x"] > res[h]["control"] and res[h]["holm_p"] < 0.05)
+    res["vs_lora"] = {b: compare(tab, b, "lora") for b in ("strap", "dsrl", "er")}
+    res["vs_nft"] = {b: compare(tab, b, "nft") for b in ("strap", "dsrl", "er")}
+    for h in ("B1", "B2", "B3"):
+        v = res[h]
+        print(f"{h} {v['x_arm']} vs {v['y_arm']}: {_fmt(v)}, Holm p {v['holm_p']:.3g} -> ours better {v['ours_better']}")
+    return res
+
+
 def _fmt(v):
     return (f"{v['x']} vs {v['control']} of {v['n']}, diff {v['diff']['diff']:+.3f} [{v['diff']['lo']:+.3f},{v['diff']['hi']:+.3f}] lo90 "
             f"{v['diff']['lo90']:+.3f}, discordant {v['discordant']}, sign p {v['sign_p']:.3g}")
@@ -389,11 +410,14 @@ def _fmt(v):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("read", choices=("primary", "secondary", "p6", "v2", "v2_synth", "p3c", "p3c_reader", "p3c_reader2", "alloc", "p5", "yaw", "seed1", "demo1", "compress"))
+    ap.add_argument("read", choices=("primary", "secondary", "p6", "v2", "v2_synth", "p3c", "p3c_reader", "p3c_reader2", "alloc", "p5", "yaw", "seed1", "demo1", "compress", "sota"))
     ap.add_argument("--record", action="store_true")
     a = ap.parse_args()
     os.chdir(ROOT)
-    if a.read == "compress":
+    if a.read == "sota":
+        res = sota()
+        exp, tag, what = "p1_bindings", "sota", "bindings (7 KB reader head) vs STRAP, DSRL and experience replay, 21 tasks"
+    elif a.read == "compress":
         res = compress()
         exp, tag, what = "p6_reader", "compress_read", "own-demo programs with the shared-basis (pca512) reader head vs the full reader, 50 tasks"
     elif a.read == "seed1":

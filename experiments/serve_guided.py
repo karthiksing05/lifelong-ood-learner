@@ -242,6 +242,28 @@ def main():
         logging.info(f"phasebind: task {t}, {len(parts)} phases ({'object phases' if g and p_ else 'world frame'}; anchors "
                      f"{[None if q[6] is None else str(q[0]['names'][q[6]]) for q in parts]}), rules {kv.get('rules', '1')}, "
                      f"sources g={kv.get('g', t)} p={kv.get('p', t)}, fold {key}")
+    elif a.mode.startswith("dsrl:"):
+        # dsrl:<task>?train=1&save=<actor.pt>&load=<actor.pt>&warmup=10&utd=10&beta=2 -- DSRL (lifelong_ood/policy/dsrl.py): the
+        # task's one-demo LoRA switched on, the weights frozen, a SAC agent choosing each chunk's initial noise
+        import numpy as np
+        from lifelong_ood.policy import adapt
+        from lifelong_ood.policy.baselines import VinnPolicy
+        from lifelong_ood.policy.dsrl import DSRLHooks
+        body, q = (a.mode[len("dsrl:"):].split("?", 1) + [""])[:2]
+        kv = dict(x.split("=", 1) for x in q.split("&") if x)
+        t = int(body)
+        lp = kv.get("lora", os.path.join(ROOT, "results", "robot", f"r3_lora_{t}.pt"))
+        state, key, banks = adapt.load(bk, lp)
+        state["on"] = frozenset({key})
+        enc = VinnPolicy(np.zeros((1, 7), np.float32), np.zeros((1, 224, 224, 3), np.uint8), np.zeros((1, 224, 224, 3), np.uint8), device="cuda")
+
+        def feat(obs):
+            f_ = enc._embed(np.asarray(obs["observation/image"])[None], np.asarray(obs["observation/wrist_image"])[None])
+            return np.concatenate([f_.float().cpu().numpy()[0], np.asarray(obs["observation/state"], np.float32)])
+        hooks = DSRLHooks(feat, dim=bk.H * bk.A, train=kv.get("train", "1") == "1", save=kv.get("save"), load=kv.get("load"),
+                          warmup=int(kv.get("warmup", 10)), utd=int(kv.get("utd", 10)), beta=float(kv.get("beta", 2.0)),
+                          seed=int(os.environ.get("SERVE_SEED", "0") or 0), log=logging.info)
+        logging.info(f"dsrl: task {t}, LoRA {lp} on, noise dim {bk.H * bk.A}, train {hooks.train}")
     elif a.mode.startswith("lora:"):
         # lora:<expert.pt> -- the few-shot baseline: a flat adapter on the action expert, always on
         from lifelong_ood.policy import adapt

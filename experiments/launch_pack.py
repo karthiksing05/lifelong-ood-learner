@@ -117,6 +117,10 @@ def arm_spec(tid, arm, fold, demo=0):
         return (f"phasebind:{tid}?fold=0&rules=2&reader=spatial4_synthonly_rj&carry=pred&yaw=1&var=0.001", "0", False)
     if arm.startswith("phasebind2_rjpred@"):                             # the same with reader variant <v> (p6_reader_<v>_<t>.npz), e.g. pca512_rj
         return (f"phasebind:{tid}?fold=0&rules=2&reader={arm.split('@', 1)[1]}&carry=pred&var=0.001", "0", False)
+    if arm == "dsrl_train":                                              # DSRL practice: 100 episodes on init states 0-29 (STATE_MOD)
+        return (f"dsrl:{tid}?train=1&save={os.path.join(R, f'dsrl_{tid}_actor.pt')}&warmup=10&utd=10&beta=2", "0", False)
+    if arm == "dsrl":                                                    # DSRL scored: the trained actor, deterministic noise
+        return (f"dsrl:{tid}?train=0&load={os.path.join(R, f'dsrl_{tid}_actor.pt')}&beta=2", "0", False)
     if arm == "phasebind2_rjpred_e":                                     # own demo, events fire on arrival (PhaseBindHooks events=1)
         return (f"phasebind:{tid}?fold=0&rules=2&reader=spatial4_synthonly_rj&carry=pred&events=1&var=0.001", "0", False)
     if arm == "phasebind2_rjpred_h":                                     # own demo, the prior carries between grasp and descent (handoff)
@@ -201,7 +205,8 @@ def main():
                 continue
             spec = dict(MODE=s[0], SUITE="libero_90", TASKS=tid, TRIALS=trials, FIRST=first, EXPERIMENT=a.experiment, TAG=tag,
                         PROGRAM_BYTES=s[1], OUT=out, **({"RECORD": "1"} if a.record else {}), **({"SERVE_SEED": str(a.seed)} if a.seed else {}),
-                        **({"OBJECTS": "1"} if arm in ("phasebind", "phasebind_nofold", "phasebind2_nofold", "compose2", "sibling2") else {}))
+                        **({"OBJECTS": "1"} if arm in ("phasebind", "phasebind_nofold", "phasebind2_nofold", "compose2", "sibling2") else {}),
+                        **({"STATE_MOD": "30"} if arm == "dsrl_train" else {}))
             (specs_dep if s[2] else specs_free).append(spec)
         dep = None
         if specs_dep and not os.path.exists(os.path.join(R, f"r3_lora_{tid}{dsfx}.pt")):

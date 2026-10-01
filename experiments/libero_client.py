@@ -44,6 +44,8 @@ def main():
     ap.add_argument("--suite", default="libero_goal")
     ap.add_argument("--tasks", default="all")
     ap.add_argument("--trials", type=int, default=10)
+    ap.add_argument("--state-mod", type=int, default=0, help="trial k starts from init state k %% state_mod (0: k %% 50); online "
+                    "learners practise on states 0..state_mod-1 only")
     ap.add_argument("--first-trial", type=int, default=0)
     ap.add_argument("--seed", type=int, default=7)
     ap.add_argument("--replan", type=int, default=5)
@@ -98,7 +100,7 @@ def main():
                 for _ in range(int(br.get("resets", 0))):
                     env.reset()
             env.reset()
-            obs = env.set_init_state(init_states[k % len(init_states)])
+            obs = env.set_init_state(init_states[k % (a.state_mod or len(init_states))])
             plan = collections.deque()
             t, calls, done, frames, t0 = 0, 0, False, [], time.time()
             rec = dict(state=[], action=[], image=[], wrist=[], obj_pos=[], obj_quat=[]) if a.record else None
@@ -134,6 +136,8 @@ def main():
                               "prompt": str(task.language)}
                         if not a.no_meta:
                             el.update({"meta/episode_start": calls == 0, "meta/task_id": tid, "meta/episode": k, "meta/t": t - a.wait})
+                            if calls == 0 and eps:                  # the previous episode's outcome (online learners: lifelong_ood/policy/dsrl.py)
+                                el["meta/prev_success"] = bool(eps[-1]["success"])
                             if br is not None:
                                 el.update({"meta/seed_base": int(br["seed_base"]), "meta/branch_at": int(br["at"]),
                                            "meta/variant": str(br["variant"])})
