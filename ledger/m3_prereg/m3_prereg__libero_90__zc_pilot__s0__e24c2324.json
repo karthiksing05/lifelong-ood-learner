@@ -1,0 +1,67 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration of the composition pilot",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky1.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "e24c2324f5d239e52d7c2cf2e54bd4c7e67b62ab",
+  "short": "e24c2324"
+ },
+ "keys": {},
+ "metrics": {
+  "arms": {
+   "cfg@4": "control: 4 v(task) - 3 v(empty prompt)",
+   "fcomp@2": "lambda 2, approach",
+   "fcomp@4": "lambda 4, approach",
+   "fcomp@8": "lambda 8, approach",
+   "fcompall@4": "lambda 4, always on",
+   "placebo@4": "control: a random training-instruction pair at lambda 4"
+  },
+  "code": "factor_hooks.code_for: base = the readable same-scene sibling with the same relation, object factor = (the base with the task's object, the base), gated to the approach (gripper open) unless 'all'",
+  "decision": "go to the pre-registered 30-49 read only if the best composition arm reaches >= 10 of 70 successes and beats both cfg@4 and placebo@4 by >= 5 of 70; otherwise composition of object words is stopped on pi0.5 and the fold (factor tokens) is the main line",
+  "episodes": "10 per arm and task, practice init states 0-9, light recordings with every object's pose; zero-shot reference from zc_bind's own-instruction runs",
+  "parser_hash": "b0eb506ce1dc",
+  "tasks": [
+   48,
+   49,
+   52,
+   53,
+   58,
+   59,
+   62
+  ],
+  "why": "zc_bind: object words are read in LIBERO-Object layouts 0.43 of the time (neither >= 0.7 nor <= 0.3) and not in living rooms (non-habit objects 0.0-0.1); zc_probe failed its validity gate (LIBERO-Goal first-chunk pointing 0.43 < 0.8) but its contrast cosines were +0.72 in Goal and +0.5-0.7 in the living rooms; so the pre-registered branch is the composition pilot",
+  "written_before": "any episode of this pilot"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_90__zc_pilot__s0__e24c2324",
+ "schema": 1,
+ "script": "experiments/prereg/zc_pilot.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-01T16:07:00+00:00",
+ "stream": null,
+ "tag": "zc_pilot"
+}

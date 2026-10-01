@@ -1,0 +1,93 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/ftoken_48.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 18432,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 18432,
+  "tree": 0
+ },
+ "command": "experiments/f4_fold.py --task 48",
+ "config": {
+  "batch": 16,
+  "demo": 0,
+  "lr": 0.01,
+  "n_tokens": 1,
+  "seed": 0,
+  "source": "demo",
+  "steps": 600,
+  "tag": "",
+  "task": 48
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "voltron.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3995791",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "f4_fold",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "88c498c7809113bc61f1fe9b471d7e7bf86a4b0f",
+  "short": "88c498c7"
+ },
+ "keys": {
+  "task": 48
+ },
+ "metrics": {
+  "curve": {
+   "anchor": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "loss": [
+    0.030442316085100174,
+    0.013501998968422413,
+    0.01314130425453186,
+    0.010236643254756927,
+    0.0058824061416089535,
+    0.0074475607834756374
+   ],
+   "step": [
+    100,
+    200,
+    300,
+    400,
+    500,
+    600
+   ]
+  },
+  "demo_episode": 3092,
+  "final_loss": 0.0074475607834756374,
+  "first_loss": 0.030442316085100174,
+  "n_frames": 173,
+  "n_tokens": 1,
+  "source": "demo",
+  "task": 48,
+  "text": "pick up the ketchup and put it in the basket",
+  "train_secs": 54.05606245994568
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "f4_fold__libero_90__token_demo__task-48__s0__88c498c7",
+ "schema": 1,
+ "script": "experiments/f4_fold.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-01T15:51:15+00:00",
+ "stream": null,
+ "tag": "token_demo"
+}

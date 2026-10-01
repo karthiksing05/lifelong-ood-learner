@@ -1,0 +1,1094 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "experiments/f1_binding.py --experiment f1_bind --suite libero_90 --record",
+ "config": {
+  "experiment": "f1_bind",
+  "suite": "libero_90"
+ },
+ "env": {
+  "device": "cpu",
+  "host": "sky1.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "f1_binding",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "e24c2324f5d239e52d7c2cf2e54bd4c7e67b62ab",
+  "short": "e24c2324"
+ },
+ "keys": {},
+ "metrics": {
+  "move_m": 0.03,
+  "rows": {
+   "46:zeroshot": {
+    "BA": 1.0,
+    "bound_counts": {
+     "alphabet_soup": 10
+    },
+    "episodes": [
+     {
+      "bound": "alphabet_soup",
+      "named": "alphabet_soup",
+      "success": true,
+      "trial": 0
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "alphabet_soup",
+      "success": true,
+      "trial": 1
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "alphabet_soup",
+      "success": true,
+      "trial": 2
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "alphabet_soup",
+      "success": true,
+      "trial": 3
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "alphabet_soup",
+      "success": true,
+      "trial": 4
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "alphabet_soup",
+      "success": true,
+      "trial": 5
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "alphabet_soup",
+      "success": true,
+      "trial": 6
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "alphabet_soup",
+      "success": true,
+      "trial": 7
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "alphabet_soup",
+      "success": true,
+      "trial": 8
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "alphabet_soup",
+      "success": true,
+      "trial": 9
+     }
+    ],
+    "n": 10,
+    "named": "alphabet_soup",
+    "none": 0.0,
+    "success": 1.0,
+    "tag": "zeroshot",
+    "task": 46
+   },
+   "47:zeroshot": {
+    "BA": 0.0,
+    "bound_counts": {
+     "alphabet_soup": 10
+    },
+    "episodes": [
+     {
+      "bound": "alphabet_soup",
+      "named": "cream_cheese",
+      "success": true,
+      "trial": 0
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "cream_cheese",
+      "success": true,
+      "trial": 1
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "cream_cheese",
+      "success": true,
+      "trial": 2
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "cream_cheese",
+      "success": true,
+      "trial": 3
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "cream_cheese",
+      "success": true,
+      "trial": 4
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "cream_cheese",
+      "success": true,
+      "trial": 5
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "cream_cheese",
+      "success": true,
+      "trial": 6
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "cream_cheese",
+      "success": true,
+      "trial": 7
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "cream_cheese",
+      "success": true,
+      "trial": 8
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "cream_cheese",
+      "success": true,
+      "trial": 9
+     }
+    ],
+    "n": 10,
+    "named": "cream_cheese",
+    "none": 0.0,
+    "success": 1.0,
+    "tag": "zeroshot",
+    "task": 47
+   },
+   "48:zeroshot": {
+    "BA": 0.0,
+    "bound_counts": {
+     "alphabet_soup": 10
+    },
+    "episodes": [
+     {
+      "bound": "alphabet_soup",
+      "named": "ketchup",
+      "success": false,
+      "trial": 0
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "ketchup",
+      "success": false,
+      "trial": 1
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "ketchup",
+      "success": false,
+      "trial": 2
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "ketchup",
+      "success": false,
+      "trial": 3
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "ketchup",
+      "success": false,
+      "trial": 4
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "ketchup",
+      "success": false,
+      "trial": 5
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "ketchup",
+      "success": false,
+      "trial": 6
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "ketchup",
+      "success": false,
+      "trial": 7
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "ketchup",
+      "success": false,
+      "trial": 8
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "ketchup",
+      "success": false,
+      "trial": 9
+     }
+    ],
+    "n": 10,
+    "named": "ketchup",
+    "none": 0.0,
+    "success": 0.0,
+    "tag": "zeroshot",
+    "task": 48
+   },
+   "49:zeroshot": {
+    "BA": 0.0,
+    "bound_counts": {
+     "alphabet_soup": 10
+    },
+    "episodes": [
+     {
+      "bound": "alphabet_soup",
+      "named": "tomato_sauce",
+      "success": false,
+      "trial": 0
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "tomato_sauce",
+      "success": false,
+      "trial": 1
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "tomato_sauce",
+      "success": false,
+      "trial": 2
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "tomato_sauce",
+      "success": false,
+      "trial": 3
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "tomato_sauce",
+      "success": false,
+      "trial": 4
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "tomato_sauce",
+      "success": false,
+      "trial": 5
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "tomato_sauce",
+      "success": false,
+      "trial": 6
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "tomato_sauce",
+      "success": false,
+      "trial": 7
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "tomato_sauce",
+      "success": false,
+      "trial": 8
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "tomato_sauce",
+      "success": false,
+      "trial": 9
+     }
+    ],
+    "n": 10,
+    "named": "tomato_sauce",
+    "none": 0.0,
+    "success": 0.0,
+    "tag": "zeroshot",
+    "task": 49
+   },
+   "50:zeroshot": {
+    "BA": 1.0,
+    "bound_counts": {
+     "alphabet_soup": 10
+    },
+    "episodes": [
+     {
+      "bound": "alphabet_soup",
+      "named": "alphabet_soup",
+      "success": true,
+      "trial": 0
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "alphabet_soup",
+      "success": true,
+      "trial": 1
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "alphabet_soup",
+      "success": true,
+      "trial": 2
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "alphabet_soup",
+      "success": true,
+      "trial": 3
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "alphabet_soup",
+      "success": true,
+      "trial": 4
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "alphabet_soup",
+      "success": true,
+      "trial": 5
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "alphabet_soup",
+      "success": true,
+      "trial": 6
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "alphabet_soup",
+      "success": true,
+      "trial": 7
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "alphabet_soup",
+      "success": true,
+      "trial": 8
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "alphabet_soup",
+      "success": true,
+      "trial": 9
+     }
+    ],
+    "n": 10,
+    "named": "alphabet_soup",
+    "none": 0.0,
+    "success": 1.0,
+    "tag": "zeroshot",
+    "task": 50
+   },
+   "51:zeroshot": {
+    "BA": 0.0,
+    "bound_counts": {
+     "cream_cheese": 9,
+     "milk": 1
+    },
+    "episodes": [
+     {
+      "bound": "cream_cheese",
+      "named": "butter",
+      "success": true,
+      "trial": 0
+     },
+     {
+      "bound": "cream_cheese",
+      "named": "butter",
+      "success": true,
+      "trial": 1
+     },
+     {
+      "bound": "cream_cheese",
+      "named": "butter",
+      "success": true,
+      "trial": 2
+     },
+     {
+      "bound": "cream_cheese",
+      "named": "butter",
+      "success": true,
+      "trial": 3
+     },
+     {
+      "bound": "cream_cheese",
+      "named": "butter",
+      "success": true,
+      "trial": 4
+     },
+     {
+      "bound": "cream_cheese",
+      "named": "butter",
+      "success": true,
+      "trial": 5
+     },
+     {
+      "bound": "cream_cheese",
+      "named": "butter",
+      "success": true,
+      "trial": 6
+     },
+     {
+      "bound": "cream_cheese",
+      "named": "butter",
+      "success": true,
+      "trial": 7
+     },
+     {
+      "bound": "cream_cheese",
+      "named": "butter",
+      "success": true,
+      "trial": 8
+     },
+     {
+      "bound": "milk",
+      "named": "butter",
+      "success": true,
+      "trial": 9
+     }
+    ],
+    "n": 10,
+    "named": "butter",
+    "none": 0.0,
+    "success": 1.0,
+    "tag": "zeroshot",
+    "task": 51
+   },
+   "52:zeroshot": {
+    "BA": 0.1,
+    "bound_counts": {
+     "alphabet_soup": 8,
+     "milk": 1,
+     "orange_juice": 1
+    },
+    "episodes": [
+     {
+      "bound": "orange_juice",
+      "named": "milk",
+      "success": false,
+      "trial": 0
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "milk",
+      "success": false,
+      "trial": 1
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "milk",
+      "success": false,
+      "trial": 2
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "milk",
+      "success": false,
+      "trial": 3
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "milk",
+      "success": false,
+      "trial": 4
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "milk",
+      "success": false,
+      "trial": 5
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "milk",
+      "success": false,
+      "trial": 6
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "milk",
+      "success": false,
+      "trial": 7
+     },
+     {
+      "bound": "milk",
+      "named": "milk",
+      "success": false,
+      "trial": 8
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "milk",
+      "success": false,
+      "trial": 9
+     }
+    ],
+    "n": 10,
+    "named": "milk",
+    "none": 0.0,
+    "success": 0.0,
+    "tag": "zeroshot",
+    "task": 52
+   },
+   "53:zeroshot": {
+    "BA": 0.1,
+    "bound_counts": {
+     "milk": 9,
+     "orange_juice": 1
+    },
+    "episodes": [
+     {
+      "bound": "milk",
+      "named": "orange_juice",
+      "success": false,
+      "trial": 0
+     },
+     {
+      "bound": "milk",
+      "named": "orange_juice",
+      "success": false,
+      "trial": 1
+     },
+     {
+      "bound": "orange_juice",
+      "named": "orange_juice",
+      "success": false,
+      "trial": 2
+     },
+     {
+      "bound": "milk",
+      "named": "orange_juice",
+      "success": false,
+      "trial": 3
+     },
+     {
+      "bound": "milk",
+      "named": "orange_juice",
+      "success": false,
+      "trial": 4
+     },
+     {
+      "bound": "milk",
+      "named": "orange_juice",
+      "success": false,
+      "trial": 5
+     },
+     {
+      "bound": "milk",
+      "named": "orange_juice",
+      "success": false,
+      "trial": 6
+     },
+     {
+      "bound": "milk",
+      "named": "orange_juice",
+      "success": false,
+      "trial": 7
+     },
+     {
+      "bound": "milk",
+      "named": "orange_juice",
+      "success": false,
+      "trial": 8
+     },
+     {
+      "bound": "milk",
+      "named": "orange_juice",
+      "success": false,
+      "trial": 9
+     }
+    ],
+    "n": 10,
+    "named": "orange_juice",
+    "none": 0.0,
+    "success": 0.0,
+    "tag": "zeroshot",
+    "task": 53
+   },
+   "54:zeroshot": {
+    "BA": 0.0,
+    "bound_counts": {
+     "alphabet_soup": 9,
+     "orange_juice": 1
+    },
+    "episodes": [
+     {
+      "bound": "orange_juice",
+      "named": "tomato_sauce",
+      "success": true,
+      "trial": 0
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "tomato_sauce",
+      "success": true,
+      "trial": 1
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "tomato_sauce",
+      "success": true,
+      "trial": 2
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "tomato_sauce",
+      "success": true,
+      "trial": 3
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "tomato_sauce",
+      "success": true,
+      "trial": 4
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "tomato_sauce",
+      "success": false,
+      "trial": 5
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "tomato_sauce",
+      "success": true,
+      "trial": 6
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "tomato_sauce",
+      "success": true,
+      "trial": 7
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "tomato_sauce",
+      "success": true,
+      "trial": 8
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "tomato_sauce",
+      "success": true,
+      "trial": 9
+     }
+    ],
+    "n": 10,
+    "named": "tomato_sauce",
+    "none": 0.0,
+    "success": 0.9,
+    "tag": "zeroshot",
+    "task": 54
+   },
+   "55:zeroshot": {
+    "BA": 1.0,
+    "bound_counts": {
+     "alphabet_soup": 10
+    },
+    "episodes": [
+     {
+      "bound": "alphabet_soup",
+      "named": "alphabet_soup",
+      "success": true,
+      "trial": 0
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "alphabet_soup",
+      "success": true,
+      "trial": 1
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "alphabet_soup",
+      "success": true,
+      "trial": 2
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "alphabet_soup",
+      "success": true,
+      "trial": 3
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "alphabet_soup",
+      "success": true,
+      "trial": 4
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "alphabet_soup",
+      "success": true,
+      "trial": 5
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "alphabet_soup",
+      "success": true,
+      "trial": 6
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "alphabet_soup",
+      "success": true,
+      "trial": 7
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "alphabet_soup",
+      "success": true,
+      "trial": 8
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "alphabet_soup",
+      "success": true,
+      "trial": 9
+     }
+    ],
+    "n": 10,
+    "named": "alphabet_soup",
+    "none": 0.0,
+    "success": 1.0,
+    "tag": "zeroshot",
+    "task": 55
+   },
+   "56:zeroshot": {
+    "BA": 0.0,
+    "bound_counts": {
+     "cream_cheese": 10
+    },
+    "episodes": [
+     {
+      "bound": "cream_cheese",
+      "named": "butter",
+      "success": true,
+      "trial": 0
+     },
+     {
+      "bound": "cream_cheese",
+      "named": "butter",
+      "success": true,
+      "trial": 1
+     },
+     {
+      "bound": "cream_cheese",
+      "named": "butter",
+      "success": true,
+      "trial": 2
+     },
+     {
+      "bound": "cream_cheese",
+      "named": "butter",
+      "success": true,
+      "trial": 3
+     },
+     {
+      "bound": "cream_cheese",
+      "named": "butter",
+      "success": true,
+      "trial": 4
+     },
+     {
+      "bound": "cream_cheese",
+      "named": "butter",
+      "success": true,
+      "trial": 5
+     },
+     {
+      "bound": "cream_cheese",
+      "named": "butter",
+      "success": true,
+      "trial": 6
+     },
+     {
+      "bound": "cream_cheese",
+      "named": "butter",
+      "success": true,
+      "trial": 7
+     },
+     {
+      "bound": "cream_cheese",
+      "named": "butter",
+      "success": true,
+      "trial": 8
+     },
+     {
+      "bound": "cream_cheese",
+      "named": "butter",
+      "success": true,
+      "trial": 9
+     }
+    ],
+    "n": 10,
+    "named": "butter",
+    "none": 0.0,
+    "success": 1.0,
+    "tag": "zeroshot",
+    "task": 56
+   },
+   "57:zeroshot": {
+    "BA": 1.0,
+    "bound_counts": {
+     "cream_cheese": 10
+    },
+    "episodes": [
+     {
+      "bound": "cream_cheese",
+      "named": "cream_cheese",
+      "success": true,
+      "trial": 0
+     },
+     {
+      "bound": "cream_cheese",
+      "named": "cream_cheese",
+      "success": true,
+      "trial": 1
+     },
+     {
+      "bound": "cream_cheese",
+      "named": "cream_cheese",
+      "success": true,
+      "trial": 2
+     },
+     {
+      "bound": "cream_cheese",
+      "named": "cream_cheese",
+      "success": true,
+      "trial": 3
+     },
+     {
+      "bound": "cream_cheese",
+      "named": "cream_cheese",
+      "success": true,
+      "trial": 4
+     },
+     {
+      "bound": "cream_cheese",
+      "named": "cream_cheese",
+      "success": true,
+      "trial": 5
+     },
+     {
+      "bound": "cream_cheese",
+      "named": "cream_cheese",
+      "success": true,
+      "trial": 6
+     },
+     {
+      "bound": "cream_cheese",
+      "named": "cream_cheese",
+      "success": true,
+      "trial": 7
+     },
+     {
+      "bound": "cream_cheese",
+      "named": "cream_cheese",
+      "success": true,
+      "trial": 8
+     },
+     {
+      "bound": "cream_cheese",
+      "named": "cream_cheese",
+      "success": true,
+      "trial": 9
+     }
+    ],
+    "n": 10,
+    "named": "cream_cheese",
+    "none": 0.0,
+    "success": 1.0,
+    "tag": "zeroshot",
+    "task": 57
+   },
+   "58:zeroshot": {
+    "BA": 0.0,
+    "bound_counts": {
+     "alphabet_soup": 9,
+     "tomato_sauce": 1
+    },
+    "episodes": [
+     {
+      "bound": "alphabet_soup",
+      "named": "ketchup",
+      "success": false,
+      "trial": 0
+     },
+     {
+      "bound": "tomato_sauce",
+      "named": "ketchup",
+      "success": false,
+      "trial": 1
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "ketchup",
+      "success": false,
+      "trial": 2
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "ketchup",
+      "success": false,
+      "trial": 3
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "ketchup",
+      "success": false,
+      "trial": 4
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "ketchup",
+      "success": false,
+      "trial": 5
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "ketchup",
+      "success": false,
+      "trial": 6
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "ketchup",
+      "success": false,
+      "trial": 7
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "ketchup",
+      "success": false,
+      "trial": 8
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "ketchup",
+      "success": false,
+      "trial": 9
+     }
+    ],
+    "n": 10,
+    "named": "ketchup",
+    "none": 0.0,
+    "success": 0.0,
+    "tag": "zeroshot",
+    "task": 58
+   },
+   "59:zeroshot": {
+    "BA": 0.0,
+    "bound_counts": {
+     "None": 0,
+     "alphabet_soup": 7,
+     "butter": 2
+    },
+    "episodes": [
+     {
+      "bound": "alphabet_soup",
+      "named": "tomato_sauce",
+      "success": true,
+      "trial": 0
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "tomato_sauce",
+      "success": false,
+      "trial": 1
+     },
+     {
+      "bound": null,
+      "named": "tomato_sauce",
+      "success": false,
+      "trial": 2
+     },
+     {
+      "bound": "butter",
+      "named": "tomato_sauce",
+      "success": false,
+      "trial": 3
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "tomato_sauce",
+      "success": false,
+      "trial": 4
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "tomato_sauce",
+      "success": false,
+      "trial": 5
+     },
+     {
+      "bound": "butter",
+      "named": "tomato_sauce",
+      "success": false,
+      "trial": 6
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "tomato_sauce",
+      "success": false,
+      "trial": 7
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "tomato_sauce",
+      "success": false,
+      "trial": 8
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "tomato_sauce",
+      "success": false,
+      "trial": 9
+     }
+    ],
+    "n": 10,
+    "named": "tomato_sauce",
+    "none": 0.1,
+    "success": 0.1,
+    "tag": "zeroshot",
+    "task": 59
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "f1_binding__libero_90__f1_bind_libero_90__s0__e24c2324",
+ "schema": 1,
+ "script": "experiments/f1_binding.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-01T16:06:08+00:00",
+ "stream": null,
+ "tag": "f1_bind_libero_90"
+}

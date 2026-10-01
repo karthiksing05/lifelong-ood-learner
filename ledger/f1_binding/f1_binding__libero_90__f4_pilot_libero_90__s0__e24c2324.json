@@ -1,0 +1,275 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "experiments/f1_binding.py --experiment f4_pilot --suite libero_90 --record",
+ "config": {
+  "experiment": "f4_pilot",
+  "suite": "libero_90"
+ },
+ "env": {
+  "device": "cpu",
+  "host": "sky1.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "f1_binding",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "e24c2324f5d239e52d7c2cf2e54bd4c7e67b62ab",
+  "short": "e24c2324"
+ },
+ "keys": {},
+ "metrics": {
+  "move_m": 0.03,
+  "rows": {
+   "32:ftoken_48": {
+    "BA": 0.0,
+    "bound_counts": {
+     "None": 0
+    },
+    "episodes": [
+     {
+      "bound": null,
+      "named": "ketchup",
+      "success": false,
+      "trial": 0
+     },
+     {
+      "bound": null,
+      "named": "ketchup",
+      "success": false,
+      "trial": 1
+     },
+     {
+      "bound": null,
+      "named": "ketchup",
+      "success": false,
+      "trial": 2
+     },
+     {
+      "bound": null,
+      "named": "ketchup",
+      "success": false,
+      "trial": 3
+     },
+     {
+      "bound": null,
+      "named": "ketchup",
+      "success": false,
+      "trial": 4
+     },
+     {
+      "bound": null,
+      "named": "ketchup",
+      "success": false,
+      "trial": 5
+     },
+     {
+      "bound": null,
+      "named": "ketchup",
+      "success": false,
+      "trial": 6
+     },
+     {
+      "bound": null,
+      "named": "ketchup",
+      "success": false,
+      "trial": 7
+     },
+     {
+      "bound": null,
+      "named": "ketchup",
+      "success": false,
+      "trial": 8
+     },
+     {
+      "bound": null,
+      "named": "ketchup",
+      "success": false,
+      "trial": 9
+     }
+    ],
+    "n": 10,
+    "named": "ketchup",
+    "none": 1.0,
+    "success": 0.0,
+    "tag": "ftoken_48",
+    "task": 32
+   },
+   "48:ftoken_48": {
+    "BA": 0.9,
+    "bound_counts": {
+     "None": 0,
+     "ketchup": 9
+    },
+    "episodes": [
+     {
+      "bound": "ketchup",
+      "named": "ketchup",
+      "success": true,
+      "trial": 0
+     },
+     {
+      "bound": "ketchup",
+      "named": "ketchup",
+      "success": true,
+      "trial": 1
+     },
+     {
+      "bound": "ketchup",
+      "named": "ketchup",
+      "success": true,
+      "trial": 2
+     },
+     {
+      "bound": "ketchup",
+      "named": "ketchup",
+      "success": false,
+      "trial": 3
+     },
+     {
+      "bound": "ketchup",
+      "named": "ketchup",
+      "success": true,
+      "trial": 4
+     },
+     {
+      "bound": null,
+      "named": "ketchup",
+      "success": false,
+      "trial": 5
+     },
+     {
+      "bound": "ketchup",
+      "named": "ketchup",
+      "success": true,
+      "trial": 6
+     },
+     {
+      "bound": "ketchup",
+      "named": "ketchup",
+      "success": true,
+      "trial": 7
+     },
+     {
+      "bound": "ketchup",
+      "named": "ketchup",
+      "success": true,
+      "trial": 8
+     },
+     {
+      "bound": "ketchup",
+      "named": "ketchup",
+      "success": true,
+      "trial": 9
+     }
+    ],
+    "n": 10,
+    "named": "ketchup",
+    "none": 0.1,
+    "success": 0.8,
+    "tag": "ftoken_48",
+    "task": 48
+   },
+   "58:ftoken_48": {
+    "BA": 0.6,
+    "bound_counts": {
+     "None": 0,
+     "ketchup": 6,
+     "tomato_sauce": 1
+    },
+    "episodes": [
+     {
+      "bound": "ketchup",
+      "named": "ketchup",
+      "success": true,
+      "trial": 0
+     },
+     {
+      "bound": "tomato_sauce",
+      "named": "ketchup",
+      "success": false,
+      "trial": 1
+     },
+     {
+      "bound": "ketchup",
+      "named": "ketchup",
+      "success": true,
+      "trial": 2
+     },
+     {
+      "bound": null,
+      "named": "ketchup",
+      "success": false,
+      "trial": 3
+     },
+     {
+      "bound": "ketchup",
+      "named": "ketchup",
+      "success": false,
+      "trial": 4
+     },
+     {
+      "bound": null,
+      "named": "ketchup",
+      "success": false,
+      "trial": 5
+     },
+     {
+      "bound": "ketchup",
+      "named": "ketchup",
+      "success": true,
+      "trial": 6
+     },
+     {
+      "bound": null,
+      "named": "ketchup",
+      "success": false,
+      "trial": 7
+     },
+     {
+      "bound": "ketchup",
+      "named": "ketchup",
+      "success": false,
+      "trial": 8
+     },
+     {
+      "bound": "ketchup",
+      "named": "ketchup",
+      "success": true,
+      "trial": 9
+     }
+    ],
+    "n": 10,
+    "named": "ketchup",
+    "none": 0.3,
+    "success": 0.4,
+    "tag": "ftoken_48",
+    "task": 58
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "f1_binding__libero_90__f4_pilot_libero_90__s0__e24c2324",
+ "schema": 1,
+ "script": "experiments/f1_binding.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-01T16:06:20+00:00",
+ "stream": null,
+ "tag": "f4_pilot_libero_90"
+}

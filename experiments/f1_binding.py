@@ -49,7 +49,8 @@ def main():
     by = {(t.suite, t.index): t for t in tasks}
     res = {}
     for d in sorted(glob.glob(os.path.join(R, f"{a.experiment}_*_rec"))):
-        m = re.match(rf"{a.experiment}_(?:{a.suite}_)?(\d+)_(.+)_rec$", os.path.basename(d))
+        pre = "" if a.suite == "libero_90" else f"{a.suite}_"          # launch_pack names other suites' outputs with the suite
+        m = re.match(rf"{a.experiment}_{pre}(\d+)_(.+)_rec$", os.path.basename(d))
         if not m:
             continue
         tid, tag = int(m.group(1)), m.group(2)
@@ -71,10 +72,10 @@ def main():
             v = res[f"{tid}:{tag}"]
             print(f"[bind] {tid:>3} {tag:32s} named {named:20s} BA {v['BA']:.2f} none {v['none']:.2f} success {v['success']:.2f} "
                   f"{v['bound_counts']}", flush=True)
-    json.dump(res, open(os.path.join(R, f"{a.experiment}_binding.json"), "w"), indent=1)
+    json.dump(res, open(os.path.join(R, f"{a.experiment}_{a.suite}_binding.json"), "w"), indent=1)
     if "--record" in sys.argv and res:
         from lifelong_ood import ledger
-        print(ledger.record("f1_binding", bench=a.suite, tag=a.experiment, seed=0, metrics=dict(move_m=MOVE, rows=res),
+        print(ledger.record("f1_binding", bench=a.suite, tag=f"{a.experiment}_{a.suite}", seed=0, metrics=dict(move_m=MOVE, rows=res),
                             bytes=dict(experts=0, tree=0, codes=0, samples=0, teacher_copies=0, total=0), config=vars(a),
                             script="experiments/f1_binding.py", command=" ".join(sys.argv)))
 

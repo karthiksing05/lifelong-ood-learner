@@ -1,0 +1,1167 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_object",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "experiments/f1_binding.py --experiment f1_bind --suite libero_object --record",
+ "config": {
+  "experiment": "f1_bind",
+  "suite": "libero_object"
+ },
+ "env": {
+  "device": "cpu",
+  "host": "sky1.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "f1_binding",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "e24c2324f5d239e52d7c2cf2e54bd4c7e67b62ab",
+  "short": "e24c2324"
+ },
+ "keys": {},
+ "metrics": {
+  "move_m": 0.03,
+  "rows": {
+   "0:promptsub_alphabet_soup": {
+    "BA": 1.0,
+    "bound_counts": {
+     "alphabet_soup": 10
+    },
+    "episodes": [
+     {
+      "bound": "alphabet_soup",
+      "named": "alphabet_soup",
+      "success": true,
+      "trial": 0
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "alphabet_soup",
+      "success": true,
+      "trial": 1
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "alphabet_soup",
+      "success": true,
+      "trial": 2
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "alphabet_soup",
+      "success": true,
+      "trial": 3
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "alphabet_soup",
+      "success": true,
+      "trial": 4
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "alphabet_soup",
+      "success": true,
+      "trial": 5
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "alphabet_soup",
+      "success": true,
+      "trial": 6
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "alphabet_soup",
+      "success": true,
+      "trial": 7
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "alphabet_soup",
+      "success": true,
+      "trial": 8
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "alphabet_soup",
+      "success": true,
+      "trial": 9
+     }
+    ],
+    "n": 10,
+    "named": "alphabet_soup",
+    "none": 0.0,
+    "success": 1.0,
+    "tag": "promptsub_alphabet_soup",
+    "task": 0
+   },
+   "0:promptsub_butter": {
+    "BA": 0.5,
+    "bound_counts": {
+     "alphabet_soup": 5,
+     "butter": 5
+    },
+    "episodes": [
+     {
+      "bound": "butter",
+      "named": "butter",
+      "success": false,
+      "trial": 0
+     },
+     {
+      "bound": "butter",
+      "named": "butter",
+      "success": false,
+      "trial": 1
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "butter",
+      "success": false,
+      "trial": 2
+     },
+     {
+      "bound": "butter",
+      "named": "butter",
+      "success": false,
+      "trial": 3
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "butter",
+      "success": true,
+      "trial": 4
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "butter",
+      "success": true,
+      "trial": 5
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "butter",
+      "success": true,
+      "trial": 6
+     },
+     {
+      "bound": "butter",
+      "named": "butter",
+      "success": false,
+      "trial": 7
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "butter",
+      "success": false,
+      "trial": 8
+     },
+     {
+      "bound": "butter",
+      "named": "butter",
+      "success": false,
+      "trial": 9
+     }
+    ],
+    "n": 10,
+    "named": "butter",
+    "none": 0.0,
+    "success": 0.3,
+    "tag": "promptsub_butter",
+    "task": 0
+   },
+   "0:promptsub_cream_cheese": {
+    "BA": 0.1,
+    "bound_counts": {
+     "alphabet_soup": 9,
+     "cream_cheese": 1
+    },
+    "episodes": [
+     {
+      "bound": "alphabet_soup",
+      "named": "cream_cheese",
+      "success": false,
+      "trial": 0
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "cream_cheese",
+      "success": true,
+      "trial": 1
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "cream_cheese",
+      "success": true,
+      "trial": 2
+     },
+     {
+      "bound": "cream_cheese",
+      "named": "cream_cheese",
+      "success": false,
+      "trial": 3
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "cream_cheese",
+      "success": true,
+      "trial": 4
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "cream_cheese",
+      "success": true,
+      "trial": 5
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "cream_cheese",
+      "success": true,
+      "trial": 6
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "cream_cheese",
+      "success": true,
+      "trial": 7
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "cream_cheese",
+      "success": true,
+      "trial": 8
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "cream_cheese",
+      "success": false,
+      "trial": 9
+     }
+    ],
+    "n": 10,
+    "named": "cream_cheese",
+    "none": 0.0,
+    "success": 0.7,
+    "tag": "promptsub_cream_cheese",
+    "task": 0
+   },
+   "1:promptsub_alphabet_soup": {
+    "BA": 1.0,
+    "bound_counts": {
+     "alphabet_soup": 10
+    },
+    "episodes": [
+     {
+      "bound": "alphabet_soup",
+      "named": "alphabet_soup",
+      "success": false,
+      "trial": 0
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "alphabet_soup",
+      "success": false,
+      "trial": 1
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "alphabet_soup",
+      "success": false,
+      "trial": 2
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "alphabet_soup",
+      "success": false,
+      "trial": 3
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "alphabet_soup",
+      "success": false,
+      "trial": 4
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "alphabet_soup",
+      "success": false,
+      "trial": 5
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "alphabet_soup",
+      "success": false,
+      "trial": 6
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "alphabet_soup",
+      "success": false,
+      "trial": 7
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "alphabet_soup",
+      "success": false,
+      "trial": 8
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "alphabet_soup",
+      "success": false,
+      "trial": 9
+     }
+    ],
+    "n": 10,
+    "named": "alphabet_soup",
+    "none": 0.0,
+    "success": 0.0,
+    "tag": "promptsub_alphabet_soup",
+    "task": 1
+   },
+   "1:promptsub_butter": {
+    "BA": 0.0,
+    "bound_counts": {
+     "alphabet_soup": 1,
+     "cream_cheese": 9
+    },
+    "episodes": [
+     {
+      "bound": "cream_cheese",
+      "named": "butter",
+      "success": true,
+      "trial": 0
+     },
+     {
+      "bound": "cream_cheese",
+      "named": "butter",
+      "success": true,
+      "trial": 1
+     },
+     {
+      "bound": "cream_cheese",
+      "named": "butter",
+      "success": true,
+      "trial": 2
+     },
+     {
+      "bound": "alphabet_soup",
+      "named": "butter",
+      "success": false,
+      "trial": 3
+     },
+     {
+      "bound": "cream_cheese",
+      "named": "butter",
+      "success": true,
+      "trial": 4
+     },
+     {
+      "bound": "cream_cheese",
+      "named": "butter",
+      "success": true,
+      "trial": 5
+     },
+     {
+      "bound": "cream_cheese",
+      "named": "butter",
+      "success": true,
+      "trial": 6
+     },
+     {
+      "bound": "cream_cheese",
+      "named": "butter",
+      "success": true,
+      "trial": 7
+     },
+     {
+      "bound": "cream_cheese",
+      "named": "butter",
+      "success": true,
+      "trial": 8
+     },
+     {
+      "bound": "cream_cheese",
+      "named": "butter",
+      "success": true,
+      "trial": 9
+     }
+    ],
+    "n": 10,
+    "named": "butter",
+    "none": 0.0,
+    "success": 0.9,
+    "tag": "promptsub_butter",
+    "task": 1
+   },
+   "1:promptsub_cream_cheese": {
+    "BA": 1.0,
+    "bound_counts": {
+     "cream_cheese": 10
+    },
+    "episodes": [
+     {
+      "bound": "cream_cheese",
+      "named": "cream_cheese",
+      "success": true,
+      "trial": 0
+     },
+     {
+      "bound": "cream_cheese",
+      "named": "cream_cheese",
+      "success": true,
+      "trial": 1
+     },
+     {
+      "bound": "cream_cheese",
+      "named": "cream_cheese",
+      "success": true,
+      "trial": 2
+     },
+     {
+      "bound": "cream_cheese",
+      "named": "cream_cheese",
+      "success": true,
+      "trial": 3
+     },
+     {
+      "bound": "cream_cheese",
+      "named": "cream_cheese",
+      "success": true,
+      "trial": 4
+     },
+     {
+      "bound": "cream_cheese",
+      "named": "cream_cheese",
+      "success": true,
+      "trial": 5
+     },
+     {
+      "bound": "cream_cheese",
+      "named": "cream_cheese",
+      "success": true,
+      "trial": 6
+     },
+     {
+      "bound": "cream_cheese",
+      "named": "cream_cheese",
+      "success": true,
+      "trial": 7
+     },
+     {
+      "bound": "cream_cheese",
+      "named": "cream_cheese",
+      "success": true,
+      "trial": 8
+     },
+     {
+      "bound": "cream_cheese",
+      "named": "cream_cheese",
+      "success": true,
+      "trial": 9
+     }
+    ],
+    "n": 10,
+    "named": "cream_cheese",
+    "none": 0.0,
+    "success": 1.0,
+    "tag": "promptsub_cream_cheese",
+    "task": 1
+   },
+   "2:promptsub_alphabet_soup": {
+    "BA": 0.0,
+    "bound_counts": {
+     "ketchup": 8,
+     "salad_dressing": 2
+    },
+    "episodes": [
+     {
+      "bound": "ketchup",
+      "named": "alphabet_soup",
+      "success": false,
+      "trial": 0
+     },
+     {
+      "bound": "ketchup",
+      "named": "alphabet_soup",
+      "success": false,
+      "trial": 1
+     },
+     {
+      "bound": "salad_dressing",
+      "named": "alphabet_soup",
+      "success": true,
+      "trial": 2
+     },
+     {
+      "bound": "ketchup",
+      "named": "alphabet_soup",
+      "success": false,
+      "trial": 3
+     },
+     {
+      "bound": "salad_dressing",
+      "named": "alphabet_soup",
+      "success": true,
+      "trial": 4
+     },
+     {
+      "bound": "ketchup",
+      "named": "alphabet_soup",
+      "success": false,
+      "trial": 5
+     },
+     {
+      "bound": "ketchup",
+      "named": "alphabet_soup",
+      "success": false,
+      "trial": 6
+     },
+     {
+      "bound": "ketchup",
+      "named": "alphabet_soup",
+      "success": false,
+      "trial": 7
+     },
+     {
+      "bound": "ketchup",
+      "named": "alphabet_soup",
+      "success": false,
+      "trial": 8
+     },
+     {
+      "bound": "ketchup",
+      "named": "alphabet_soup",
+      "success": false,
+      "trial": 9
+     }
+    ],
+    "n": 10,
+    "named": "alphabet_soup",
+    "none": 0.0,
+    "success": 0.2,
+    "tag": "promptsub_alphabet_soup",
+    "task": 2
+   },
+   "2:promptsub_cream_cheese": {
+    "BA": 0.7,
+    "bound_counts": {
+     "cream_cheese": 7,
+     "salad_dressing": 3
+    },
+    "episodes": [
+     {
+      "bound": "cream_cheese",
+      "named": "cream_cheese",
+      "success": false,
+      "trial": 0
+     },
+     {
+      "bound": "cream_cheese",
+      "named": "cream_cheese",
+      "success": false,
+      "trial": 1
+     },
+     {
+      "bound": "salad_dressing",
+      "named": "cream_cheese",
+      "success": false,
+      "trial": 2
+     },
+     {
+      "bound": "cream_cheese",
+      "named": "cream_cheese",
+      "success": false,
+      "trial": 3
+     },
+     {
+      "bound": "salad_dressing",
+      "named": "cream_cheese",
+      "success": true,
+      "trial": 4
+     },
+     {
+      "bound": "cream_cheese",
+      "named": "cream_cheese",
+      "success": false,
+      "trial": 5
+     },
+     {
+      "bound": "cream_cheese",
+      "named": "cream_cheese",
+      "success": false,
+      "trial": 6
+     },
+     {
+      "bound": "cream_cheese",
+      "named": "cream_cheese",
+      "success": false,
+      "trial": 7
+     },
+     {
+      "bound": "salad_dressing",
+      "named": "cream_cheese",
+      "success": false,
+      "trial": 8
+     },
+     {
+      "bound": "cream_cheese",
+      "named": "cream_cheese",
+      "success": false,
+      "trial": 9
+     }
+    ],
+    "n": 10,
+    "named": "cream_cheese",
+    "none": 0.0,
+    "success": 0.1,
+    "tag": "promptsub_cream_cheese",
+    "task": 2
+   },
+   "2:promptsub_salad_dressing": {
+    "BA": 1.0,
+    "bound_counts": {
+     "salad_dressing": 10
+    },
+    "episodes": [
+     {
+      "bound": "salad_dressing",
+      "named": "salad_dressing",
+      "success": true,
+      "trial": 0
+     },
+     {
+      "bound": "salad_dressing",
+      "named": "salad_dressing",
+      "success": true,
+      "trial": 1
+     },
+     {
+      "bound": "salad_dressing",
+      "named": "salad_dressing",
+      "success": true,
+      "trial": 2
+     },
+     {
+      "bound": "salad_dressing",
+      "named": "salad_dressing",
+      "success": true,
+      "trial": 3
+     },
+     {
+      "bound": "salad_dressing",
+      "named": "salad_dressing",
+      "success": true,
+      "trial": 4
+     },
+     {
+      "bound": "salad_dressing",
+      "named": "salad_dressing",
+      "success": true,
+      "trial": 5
+     },
+     {
+      "bound": "salad_dressing",
+      "named": "salad_dressing",
+      "success": true,
+      "trial": 6
+     },
+     {
+      "bound": "salad_dressing",
+      "named": "salad_dressing",
+      "success": true,
+      "trial": 7
+     },
+     {
+      "bound": "salad_dressing",
+      "named": "salad_dressing",
+      "success": true,
+      "trial": 8
+     },
+     {
+      "bound": "salad_dressing",
+      "named": "salad_dressing",
+      "success": true,
+      "trial": 9
+     }
+    ],
+    "n": 10,
+    "named": "salad_dressing",
+    "none": 0.0,
+    "success": 1.0,
+    "tag": "promptsub_salad_dressing",
+    "task": 2
+   },
+   "3:promptsub_alphabet_soup": {
+    "BA": 0.0,
+    "bound_counts": {
+     "bbq_sauce": 2,
+     "chocolate_pudding": 7,
+     "salad_dressing": 1
+    },
+    "episodes": [
+     {
+      "bound": "bbq_sauce",
+      "named": "alphabet_soup",
+      "success": true,
+      "trial": 0
+     },
+     {
+      "bound": "chocolate_pudding",
+      "named": "alphabet_soup",
+      "success": false,
+      "trial": 1
+     },
+     {
+      "bound": "chocolate_pudding",
+      "named": "alphabet_soup",
+      "success": false,
+      "trial": 2
+     },
+     {
+      "bound": "chocolate_pudding",
+      "named": "alphabet_soup",
+      "success": false,
+      "trial": 3
+     },
+     {
+      "bound": "chocolate_pudding",
+      "named": "alphabet_soup",
+      "success": false,
+      "trial": 4
+     },
+     {
+      "bound": "salad_dressing",
+      "named": "alphabet_soup",
+      "success": false,
+      "trial": 5
+     },
+     {
+      "bound": "chocolate_pudding",
+      "named": "alphabet_soup",
+      "success": false,
+      "trial": 6
+     },
+     {
+      "bound": "bbq_sauce",
+      "named": "alphabet_soup",
+      "success": false,
+      "trial": 7
+     },
+     {
+      "bound": "chocolate_pudding",
+      "named": "alphabet_soup",
+      "success": false,
+      "trial": 8
+     },
+     {
+      "bound": "chocolate_pudding",
+      "named": "alphabet_soup",
+      "success": false,
+      "trial": 9
+     }
+    ],
+    "n": 10,
+    "named": "alphabet_soup",
+    "none": 0.0,
+    "success": 0.1,
+    "tag": "promptsub_alphabet_soup",
+    "task": 3
+   },
+   "3:promptsub_bbq_sauce": {
+    "BA": 1.0,
+    "bound_counts": {
+     "bbq_sauce": 10
+    },
+    "episodes": [
+     {
+      "bound": "bbq_sauce",
+      "named": "bbq_sauce",
+      "success": true,
+      "trial": 0
+     },
+     {
+      "bound": "bbq_sauce",
+      "named": "bbq_sauce",
+      "success": true,
+      "trial": 1
+     },
+     {
+      "bound": "bbq_sauce",
+      "named": "bbq_sauce",
+      "success": true,
+      "trial": 2
+     },
+     {
+      "bound": "bbq_sauce",
+      "named": "bbq_sauce",
+      "success": true,
+      "trial": 3
+     },
+     {
+      "bound": "bbq_sauce",
+      "named": "bbq_sauce",
+      "success": true,
+      "trial": 4
+     },
+     {
+      "bound": "bbq_sauce",
+      "named": "bbq_sauce",
+      "success": true,
+      "trial": 5
+     },
+     {
+      "bound": "bbq_sauce",
+      "named": "bbq_sauce",
+      "success": true,
+      "trial": 6
+     },
+     {
+      "bound": "bbq_sauce",
+      "named": "bbq_sauce",
+      "success": true,
+      "trial": 7
+     },
+     {
+      "bound": "bbq_sauce",
+      "named": "bbq_sauce",
+      "success": true,
+      "trial": 8
+     },
+     {
+      "bound": "bbq_sauce",
+      "named": "bbq_sauce",
+      "success": true,
+      "trial": 9
+     }
+    ],
+    "n": 10,
+    "named": "bbq_sauce",
+    "none": 0.0,
+    "success": 1.0,
+    "tag": "promptsub_bbq_sauce",
+    "task": 3
+   },
+   "3:promptsub_chocolate_pudding": {
+    "BA": 1.0,
+    "bound_counts": {
+     "chocolate_pudding": 10
+    },
+    "episodes": [
+     {
+      "bound": "chocolate_pudding",
+      "named": "chocolate_pudding",
+      "success": false,
+      "trial": 0
+     },
+     {
+      "bound": "chocolate_pudding",
+      "named": "chocolate_pudding",
+      "success": false,
+      "trial": 1
+     },
+     {
+      "bound": "chocolate_pudding",
+      "named": "chocolate_pudding",
+      "success": false,
+      "trial": 2
+     },
+     {
+      "bound": "chocolate_pudding",
+      "named": "chocolate_pudding",
+      "success": false,
+      "trial": 3
+     },
+     {
+      "bound": "chocolate_pudding",
+      "named": "chocolate_pudding",
+      "success": false,
+      "trial": 4
+     },
+     {
+      "bound": "chocolate_pudding",
+      "named": "chocolate_pudding",
+      "success": false,
+      "trial": 5
+     },
+     {
+      "bound": "chocolate_pudding",
+      "named": "chocolate_pudding",
+      "success": false,
+      "trial": 6
+     },
+     {
+      "bound": "chocolate_pudding",
+      "named": "chocolate_pudding",
+      "success": false,
+      "trial": 7
+     },
+     {
+      "bound": "chocolate_pudding",
+      "named": "chocolate_pudding",
+      "success": false,
+      "trial": 8
+     },
+     {
+      "bound": "chocolate_pudding",
+      "named": "chocolate_pudding",
+      "success": false,
+      "trial": 9
+     }
+    ],
+    "n": 10,
+    "named": "chocolate_pudding",
+    "none": 0.0,
+    "success": 0.0,
+    "tag": "promptsub_chocolate_pudding",
+    "task": 3
+   },
+   "4:promptsub_alphabet_soup": {
+    "BA": 0.0,
+    "bound_counts": {
+     "ketchup": 10
+    },
+    "episodes": [
+     {
+      "bound": "ketchup",
+      "named": "alphabet_soup",
+      "success": true,
+      "trial": 0
+     },
+     {
+      "bound": "ketchup",
+      "named": "alphabet_soup",
+      "success": true,
+      "trial": 1
+     },
+     {
+      "bound": "ketchup",
+      "named": "alphabet_soup",
+      "success": true,
+      "trial": 2
+     },
+     {
+      "bound": "ketchup",
+      "named": "alphabet_soup",
+      "success": true,
+      "trial": 3
+     },
+     {
+      "bound": "ketchup",
+      "named": "alphabet_soup",
+      "success": true,
+      "trial": 4
+     },
+     {
+      "bound": "ketchup",
+      "named": "alphabet_soup",
+      "success": true,
+      "trial": 5
+     },
+     {
+      "bound": "ketchup",
+      "named": "alphabet_soup",
+      "success": true,
+      "trial": 6
+     },
+     {
+      "bound": "ketchup",
+      "named": "alphabet_soup",
+      "success": true,
+      "trial": 7
+     },
+     {
+      "bound": "ketchup",
+      "named": "alphabet_soup",
+      "success": true,
+      "trial": 8
+     },
+     {
+      "bound": "ketchup",
+      "named": "alphabet_soup",
+      "success": true,
+      "trial": 9
+     }
+    ],
+    "n": 10,
+    "named": "alphabet_soup",
+    "none": 0.0,
+    "success": 1.0,
+    "tag": "promptsub_alphabet_soup",
+    "task": 4
+   },
+   "4:promptsub_bbq_sauce": {
+    "BA": 1.0,
+    "bound_counts": {
+     "bbq_sauce": 10
+    },
+    "episodes": [
+     {
+      "bound": "bbq_sauce",
+      "named": "bbq_sauce",
+      "success": false,
+      "trial": 0
+     },
+     {
+      "bound": "bbq_sauce",
+      "named": "bbq_sauce",
+      "success": false,
+      "trial": 1
+     },
+     {
+      "bound": "bbq_sauce",
+      "named": "bbq_sauce",
+      "success": false,
+      "trial": 2
+     },
+     {
+      "bound": "bbq_sauce",
+      "named": "bbq_sauce",
+      "success": false,
+      "trial": 3
+     },
+     {
+      "bound": "bbq_sauce",
+      "named": "bbq_sauce",
+      "success": false,
+      "trial": 4
+     },
+     {
+      "bound": "bbq_sauce",
+      "named": "bbq_sauce",
+      "success": false,
+      "trial": 5
+     },
+     {
+      "bound": "bbq_sauce",
+      "named": "bbq_sauce",
+      "success": false,
+      "trial": 6
+     },
+     {
+      "bound": "bbq_sauce",
+      "named": "bbq_sauce",
+      "success": false,
+      "trial": 7
+     },
+     {
+      "bound": "bbq_sauce",
+      "named": "bbq_sauce",
+      "success": false,
+      "trial": 8
+     },
+     {
+      "bound": "bbq_sauce",
+      "named": "bbq_sauce",
+      "success": false,
+      "trial": 9
+     }
+    ],
+    "n": 10,
+    "named": "bbq_sauce",
+    "none": 0.0,
+    "success": 0.0,
+    "tag": "promptsub_bbq_sauce",
+    "task": 4
+   },
+   "4:promptsub_ketchup": {
+    "BA": 1.0,
+    "bound_counts": {
+     "ketchup": 10
+    },
+    "episodes": [
+     {
+      "bound": "ketchup",
+      "named": "ketchup",
+      "success": true,
+      "trial": 0
+     },
+     {
+      "bound": "ketchup",
+      "named": "ketchup",
+      "success": true,
+      "trial": 1
+     },
+     {
+      "bound": "ketchup",
+      "named": "ketchup",
+      "success": true,
+      "trial": 2
+     },
+     {
+      "bound": "ketchup",
+      "named": "ketchup",
+      "success": true,
+      "trial": 3
+     },
+     {
+      "bound": "ketchup",
+      "named": "ketchup",
+      "success": true,
+      "trial": 4
+     },
+     {
+      "bound": "ketchup",
+      "named": "ketchup",
+      "success": true,
+      "trial": 5
+     },
+     {
+      "bound": "ketchup",
+      "named": "ketchup",
+      "success": true,
+      "trial": 6
+     },
+     {
+      "bound": "ketchup",
+      "named": "ketchup",
+      "success": true,
+      "trial": 7
+     },
+     {
+      "bound": "ketchup",
+      "named": "ketchup",
+      "success": true,
+      "trial": 8
+     },
+     {
+      "bound": "ketchup",
+      "named": "ketchup",
+      "success": true,
+      "trial": 9
+     }
+    ],
+    "n": 10,
+    "named": "ketchup",
+    "none": 0.0,
+    "success": 1.0,
+    "tag": "promptsub_ketchup",
+    "task": 4
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "f1_binding__libero_object__f1_bind_libero_object__s0__e24c2324",
+ "schema": 1,
+ "script": "experiments/f1_binding.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-01T16:06:15+00:00",
+ "stream": null,
+ "tag": "f1_bind_libero_object"
+}
