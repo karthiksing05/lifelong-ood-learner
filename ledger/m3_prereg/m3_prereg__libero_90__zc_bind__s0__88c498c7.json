@@ -1,0 +1,58 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration of the online binding read",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky1.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "88c498c7809113bc61f1fe9b471d7e7bf86a4b0f",
+  "short": "88c498c7"
+ },
+ "keys": {},
+ "metrics": {
+  "arms": {
+   "own": "zero-shot pi0.5 on LIBERO-90 tasks 46-59 (living rooms 1-3: the same scenes with different named objects), each under its own instruction",
+   "swap_object": "LIBERO-Object (in-distribution layouts) tasks 0-4 under their instruction with the object replaced by each other candidate present in the layout (factors.substitute, scene phrasing)"
+  },
+  "decisions": {
+   "object_words_not_read": "swap BA <= 0.3 AND living-room BA <= 0.3 for named objects that are not the scene's habit -> zero-shot object composition is dead on pi0.5; the fold (factor tokens) is the main line",
+   "object_words_read_in_distribution": "LIBERO-Object swap BA >= 0.7",
+   "otherwise": "composition pilots on practice states decide"
+  },
+  "episodes": "10 per arm and task, practice init states 0-9, light recordings with every object's pose",
+  "measure": "binding accuracy BA: share of episodes whose first object displaced > 3 cm with the gripper command closed is the named object (experiments/f1_binding.py); also which object is bound otherwise (habit)",
+  "parser_hash": "b0eb506ce1dc",
+  "question": "when the instruction names object X, which object does pi0.5 move? (does it READ object words, or does the scene key a trained habit?)",
+  "written_before": "any episode of this read"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_90__zc_bind__s0__88c498c7",
+ "schema": 1,
+ "script": "experiments/prereg/zc_bind.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-01T15:50:50+00:00",
+ "stream": null,
+ "tag": "zc_bind"
+}

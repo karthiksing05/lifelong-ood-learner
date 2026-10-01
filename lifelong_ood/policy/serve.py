@@ -80,6 +80,8 @@ class GuidedPolicy:
             return {"actions": np.asarray(actions, np.float32), "state": np.asarray(obs["observation/state"], np.float32)}
         observation = self.bk.observation(obs)
         pre = self.bk.prefix(observation)
+        if hasattr(self.hooks, "transform_prefix"):
+            pre = self.hooks.transform_prefix(pre)            # e.g. a factor token appended to the prompt's cache (token_fold)
         nz = None if noise is None else np.asarray(noise).reshape(1, -1)
         if nz is None and hasattr(self.hooks, "noise_for"):
             nz = self.hooks.noise_for(obs, meta)             # DSRL (lifelong_ood/policy/dsrl.py): a learned initial noise

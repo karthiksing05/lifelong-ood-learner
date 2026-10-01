@@ -34,6 +34,9 @@ def grasps(tid, demo=0):
 GROUP_A = {35, 36, 39, 42, 1, 6, 34, 37, 40, 52, 53, 62}             # the cross-fitting split of the shared-fold test
 
 
+SUITE_OF = {}
+
+
 def arm_spec(tid, arm, fold, demo=0):
     """-> (MODE, PROGRAM_BYTES, needs_prep) or None when the arm does not apply.  demo k > 0: the programs, fold and LoRA
     built from IPEC episode k of the task's text (files with the suffix _d<k>)."""
@@ -115,6 +118,15 @@ def arm_spec(tid, arm, fold, demo=0):
         return (f"phasebind:{tid}?fold=0&rules=2&reader=spatial4_synthonly_rj&carry=pred&var=0.001", "0", False)
     if arm == "phasebind2_rjpred_yaw":                                   # the same + the objects' yaw where it varies (p6_yaw_reader.py)
         return (f"phasebind:{tid}?fold=0&rules=2&reader=spatial4_synthonly_rj&carry=pred&yaw=1&var=0.001", "0", False)
+    if arm.startswith("promptsub@"):                                     # the task's instruction naming another object type (binding read)
+        from lifelong_ood.policy import factors as F
+        ts = F.load()
+        t = next(x for x in ts if x.suite == SUITE_OF.get("suite", "libero_90") and x.index == tid)
+        text = F.substitute(t, arm.split("@", 1)[1], F.scene_phrases(t, ts))
+        return (None if text is None else ("promptx:" + text.replace(" ", "_"), "0", False))
+    if arm.startswith("ftoken@"):                                        # ftoken@<source task>[+<task>]: factor tokens appended
+        srcs = arm.split("@", 1)[1].split("+")
+        return ("ftoken:" + "+".join(os.path.join(R, f"ftoken_{s_}.pt") for s_ in srcs), "0", False)
     if arm.startswith(("fcomp@", "fcompall@")):                         # factor-composed generation at weight lam (overhaul P1)
         lam = arm.split("@", 1)[1]
         return (f"factor:{tid}?lam={lam}&phase={'all' if arm.startswith('fcompall') else 'approach'}", "0", False)
@@ -185,11 +197,14 @@ def main():
     ap.add_argument("--record", action="store_true", help="the client saves every episode (frames, states, actions, outcome)")
     ap.add_argument("--task-after", default="", help="TASK:JOB[:JOB...],... jobs a task's packs wait for (e.g. its consolidation)")
     ap.add_argument("--backbone", default="", help="another flow VLA for the server (e.g. pi0_libero): tags gain _<name>")
+    ap.add_argument("--light", action="store_true", help="with --record: no images (states, actions, object poses)")
+    ap.add_argument("--all-objects", action="store_true", help="record every movable object's pose (implies object recording)")
     ap.add_argument("--suite", default="libero_90", help="the LIBERO suite (a backbone's own training suite for a decoding check)")
     ap.add_argument("--after", default="", help="job ids every pack of this run waits for (e.g. the shared-fold trainings)")
     ap.add_argument("--partition", default="", help="overcap: the packs run on the preemptible overcap partition (requeued)")
     ap.add_argument("--dry", action="store_true")
     a = ap.parse_args()
+    SUITE_OF["suite"] = a.suite
     os.chdir(ROOT)
     os.makedirs(os.path.join(R, ".packs"), exist_ok=True)
     running = {os.path.basename(x) for x in a.running.split(",") if x}
@@ -197,7 +212,10 @@ def main():
     n_pack = len(os.listdir(os.path.join(R, ".packs")))
     queue = []
     for tid in [int(x) for x in a.tasks.replace("+", ",").split(",")]:
-        fold = grasps(tid, a.demo)
+        try:
+            fold = grasps(tid, a.demo) if a.suite == "libero_90" else False
+        except (IndexError, KeyError):                     # no IPEC demo for this text (merged texts): no fold arms possible
+            fold = False
         dsfx = f"_d{a.demo}" if a.demo else ""
         specs_free, specs_dep = [], []
         if a.practice:
@@ -221,6 +239,7 @@ def main():
             spec = dict(MODE=s[0], SUITE=a.suite, TASKS=tid, TRIALS=trials, FIRST=first, EXPERIMENT=a.experiment, TAG=tag,
                         PROGRAM_BYTES=s[1], OUT=out, **({"RECORD": "1"} if a.record else {}), **({"SERVE_SEED": str(a.seed)} if a.seed else {}),
                         **({"OBJECTS": "1"} if arm in ("phasebind", "phasebind_nofold", "phasebind2_nofold", "compose2", "sibling2") else {}),
+                        **({"LIGHT": "1"} if a.light else {}), **({"OBJECTS": "1", "ALL_OBJECTS": "1"} if a.all_objects else {}),
                         **({"STATE_MOD": "30"} if arm in ("dsrl_train", "dsrlo_train") else {}),
                         **({"BACKBONE_CONFIG": a.backbone, "BACKBONE_CKPT": "lerobot/smolvla_libero",
                             "SERVER_PY": "/coc/flash10/ksingara3/robot/smolvla/.venv/bin/python"} if a.backbone.startswith("smolvla") else

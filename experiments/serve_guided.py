@@ -320,6 +320,18 @@ def main():
         sd = torch.load(a.mode.split(":", 1)[1], map_location="cuda")
         missing = bk.expert.load_state_dict(sd["expert"], strict=True)
         logging.info(f"fully fine-tuned action expert loaded ({missing})")
+    elif a.mode.startswith("promptx:"):
+        # promptx:<instruction with _ for spaces> -- the prior under an arbitrary instruction (the binding read: which object moves)
+        from lifelong_ood.policy.baselines import PromptHooks
+        text = a.mode[len("promptx:"):].replace("_", " ")
+        hooks = PromptHooks(text)
+        logging.info(f"prompt replaced by '{text}'")
+    elif a.mode.startswith("ftoken:"):
+        # ftoken:<path.pt>[+<path.pt>...] -- the task's own prompt with factor token(s) appended (lifelong_ood/policy/token_fold.py)
+        from lifelong_ood.policy.token_fold import TokenHooks
+        paths = a.mode[len("ftoken:"):].split("+")
+        hooks = TokenHooks(paths)
+        logging.info(f"factor tokens {paths}")
     elif a.mode.startswith("factor:"):
         # factor:<libero_90 task>?lam=2&phase=approach|all&ctrl=factor|cfg|placebo&w=2 -- factor-composed generation from the policy's
         # own conditionals (lifelong_ood/policy/factor_hooks.py; the code is built by rule from the task's factors)

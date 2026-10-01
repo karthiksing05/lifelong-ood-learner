@@ -59,6 +59,8 @@ def main():
                     "and outcome to <out without .json>_rec/task<t>_trial<k>.npz (learning from practice)")
     ap.add_argument("--light", action="store_true", help="with --record: no images (states, actions, object poses: phase-level "
                     "outcomes of every episode, experiments/phase_outcomes.py)")
+    ap.add_argument("--all-objects", action="store_true", help="with --objects: every movable object of the scene, not only the "
+                    "objects of interest (which object the policy moves: the overhaul's binding read)")
     ap.add_argument("--objects", action="store_true", help="send (and record) the poses of the objects of interest: meta/obj_names, "
                     "meta/obj_pos, meta/obj_quat (xyzw); privileged simulator state for the phase-binding server (docs/PLAN_TRANSFER.md P1)")
     ap.add_argument("--branches", default="", help="a JSON list of stall-point branches of ONE task (experiments/r18_branch.py): "
@@ -106,7 +108,7 @@ def main():
             rec = dict(state=[], action=[], image=[], wrist=[], obj_pos=[], obj_quat=[]) if a.record else None
 
             def objects(obs):
-                names = list(env.obj_of_interest)
+                names = list(env.env.objects_dict.keys()) if a.all_objects else list(env.obj_of_interest)
                 P, Q = [], []
                 for n in names:
                     if f"{n}_pos" in obs:
@@ -173,7 +175,7 @@ def main():
             if rec is not None and rec["action"]:
                 rec_dir = pathlib.Path(a.out).with_suffix("").parent / (pathlib.Path(a.out).stem + "_rec")
                 rec_dir.mkdir(parents=True, exist_ok=True)
-                extra = dict(obj_pos=np.stack(rec["obj_pos"]), obj_quat=np.stack(rec["obj_quat"]), obj_names=np.array(list(env.obj_of_interest))) \
+                extra = dict(obj_pos=np.stack(rec["obj_pos"]), obj_quat=np.stack(rec["obj_quat"]), obj_names=np.array(list(env.env.objects_dict.keys()) if a.all_objects else list(env.obj_of_interest))) \
                     if (a.objects and rec["obj_pos"]) else {}
                 np.savez_compressed(str(rec_dir / (f"task{tid}_trial{k}" + ("" if br is None else f"_{br['id']}") + ".npz")), state=np.stack(rec["state"]), action=np.stack(rec["action"]),
                                     **({} if a.light else dict(image=np.stack(rec["image"]), wrist=np.stack(rec["wrist"]))),
