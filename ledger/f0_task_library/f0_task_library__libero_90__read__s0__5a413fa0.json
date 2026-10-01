@@ -1,0 +1,3078 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/task_library.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "experiments/c0_task_library.py --record",
+ "config": {},
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "deebot.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3995912",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "f0_task_library",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "5a413fa0f6546b6806757f27ff680ebb5e2831eb",
+  "short": "5a413fa0"
+ },
+ "keys": {},
+ "metrics": {
+  "held_out": {
+   "1": {
+    "language": "close the top drawer of the cabinet and put the black bowl on top of it",
+    "selected": [
+     {
+      "chain": [
+       "open move",
+       "open move",
+       "open reach down",
+       "closed transport",
+       "closed lift",
+       "closed transport",
+       "closed lift",
+       "closed transport",
+       "closed lower",
+       "open move"
+      ],
+      "covers": [
+       [
+        "object",
+        "akita_black_bowl"
+       ],
+       [
+        "relation",
+        [
+         "On",
+         "wooden_cabinet",
+         "top_side"
+        ]
+       ]
+      ],
+      "language": "put the bowl on top of the cabinet",
+      "tid": "libero_goal:4"
+     }
+    ],
+    "uncovered": [
+     [
+      "relation",
+      [
+       "Close",
+       null,
+       "top"
+      ]
+     ],
+     [
+      "scene",
+      "KITCHEN_SCENE10"
+     ]
+    ]
+   },
+   "3": {
+    "language": "put the butter at the back in the top drawer of the cabinet and close it",
+    "selected": [
+     {
+      "chain": [
+       "open move",
+       "open move",
+       "open move",
+       "open reach down",
+       "closed transport",
+       "closed lift",
+       "closed lift",
+       "closed transport",
+       "closed lower",
+       "open move",
+       "open move",
+       "open move"
+      ],
+      "covers": [
+       [
+        "object",
+        "butter"
+       ]
+      ],
+      "language": "put both the cream cheese box and the butter in the basket",
+      "tid": "libero_10:1"
+     },
+     {
+      "chain": [
+       "open move",
+       "open move",
+       "open move",
+       "open move",
+       "open reach down",
+       "open grip change",
+       "closed transport",
+       "104",
+       "closed lower",
+       "235",
+       "closed lower",
+       "open move"
+      ],
+      "covers": [
+       [
+        "relation",
+        [
+         "In",
+         "wooden_cabinet",
+         "top"
+        ]
+       ]
+      ],
+      "language": "open the top drawer and put the bowl inside",
+      "tid": "libero_goal:3"
+     },
+     {
+      "chain": [
+       "open move",
+       "open move",
+       "open move",
+       "open reach down",
+       "open grip change",
+       "closed transport",
+       "closed lift",
+       "closed transport"
+      ],
+      "covers": [
+       [
+        "qualifier",
+        "back"
+       ]
+      ],
+      "language": "pick up the book and place it in the back compartment of the caddy",
+      "tid": "libero_10:5"
+     }
+    ],
+    "uncovered": [
+     [
+      "relation",
+      [
+       "Close",
+       null,
+       "top"
+      ]
+     ],
+     [
+      "scene",
+      "KITCHEN_SCENE10"
+     ]
+    ]
+   },
+   "32": {
+    "language": "put the ketchup in the top drawer of the cabinet",
+    "selected": [
+     {
+      "chain": [
+       "open move",
+       "open reach down",
+       "closed transport",
+       "closed lift",
+       "closed lift",
+       "closed transport",
+       "closed lower",
+       "open move"
+      ],
+      "covers": [
+       [
+        "object",
+        "ketchup"
+       ]
+      ],
+      "language": "pick up the ketchup and place it in the basket",
+      "tid": "libero_object:4"
+     }
+    ],
+    "uncovered": [
+     [
+      "relation",
+      [
+       "In",
+       "white_cabinet",
+       "top"
+      ]
+     ],
+     [
+      "scene",
+      "KITCHEN_SCENE5"
+     ]
+    ]
+   },
+   "34": {
+    "language": "put the yellow and white mug to the front of the white mug",
+    "selected": [
+     {
+      "chain": [
+       "open move",
+       "open move",
+       "open move",
+       "open move",
+       "open move",
+       "open reach down",
+       "closed transport",
+       "closed lift",
+       "closed transport",
+       "closed lift",
+       "closed transport",
+       "closed lift"
+      ],
+      "covers": [
+       [
+        "object",
+        "white_yellow_mug"
+       ],
+       [
+        "scene",
+        "KITCHEN_SCENE6"
+       ]
+      ],
+      "language": "put the yellow and white mug in the microwave and close it",
+      "tid": "libero_10:9"
+     },
+     {
+      "chain": [
+       "open move",
+       "open move",
+       "open move",
+       "open move"
+      ],
+      "covers": [
+       [
+        "qualifier",
+        "front"
+       ]
+      ],
+      "language": "push the plate to the front of the stove",
+      "tid": "libero_goal:5"
+     }
+    ],
+    "uncovered": [
+     [
+      "relation",
+      [
+       "On",
+       "porcelain_mug",
+       "front"
+      ]
+     ]
+    ]
+   },
+   "35": {
+    "language": "open the microwave",
+    "selected": [],
+    "uncovered": [
+     [
+      "relation",
+      [
+       "Open",
+       null,
+       null
+      ]
+     ],
+     [
+      "scene",
+      "KITCHEN_SCENE7"
+     ]
+    ]
+   },
+   "36": {
+    "language": "put the white bowl on the plate",
+    "selected": [
+     {
+      "chain": [
+       "open move",
+       "open reach down",
+       "closed transport",
+       "closed lower",
+       "open move",
+       "open move",
+       "open move",
+       "open reach down",
+       "closed transport",
+       "closed lift",
+       "closed transport",
+       "closed lower"
+      ],
+      "covers": [
+       [
+        "relation",
+        [
+         "On",
+         "plate",
+         null
+        ]
+       ]
+      ],
+      "language": "put the white mug on the left plate and put the yellow and white mug on the right plate",
+      "tid": "libero_10:4"
+     }
+    ],
+    "uncovered": [
+     [
+      "object",
+      "white_bowl"
+     ],
+     [
+      "scene",
+      "KITCHEN_SCENE7"
+     ]
+    ]
+   },
+   "37": {
+    "language": "put the white bowl to the right of the plate",
+    "selected": [
+     {
+      "chain": [
+       "open move",
+       "open reach down",
+       "closed transport",
+       "closed lower",
+       "open move",
+       "open reach down",
+       "open grip change",
+       "closed transport",
+       "closed lift",
+       "closed transport",
+       "closed lower",
+       "open move"
+      ],
+      "covers": [
+       [
+        "qualifier",
+        "right"
+       ],
+       [
+        "relation",
+        [
+         "On",
+         "plate",
+         "right"
+        ]
+       ]
+      ],
+      "language": "put the white mug on the plate and put the chocolate pudding to the right of the plate",
+      "tid": "libero_10:6"
+     }
+    ],
+    "uncovered": [
+     [
+      "object",
+      "white_bowl"
+     ],
+     [
+      "scene",
+      "KITCHEN_SCENE7"
+     ]
+    ]
+   },
+   "39": {
+    "language": "turn off the stove",
+    "selected": [
+     {
+      "chain": [
+       "open move",
+       "open move",
+       "open move",
+       "open reach down",
+       "open grip change",
+       "closed transport",
+       "closed lower",
+       "open move",
+       "open move",
+       "open move",
+       "open reach down",
+       "closed transport"
+      ],
+      "covers": [
+       [
+        "scene",
+        "KITCHEN_SCENE8"
+       ]
+      ],
+      "language": "put both moka pots on the stove",
+      "tid": "libero_10:8"
+     }
+    ],
+    "uncovered": [
+     [
+      "relation",
+      [
+       "Turnoff",
+       null,
+       null
+      ]
+     ]
+    ]
+   },
+   "4": {
+    "language": "put the butter at the front in the top drawer of the cabinet and close it",
+    "selected": [
+     {
+      "chain": [
+       "open move",
+       "open move",
+       "open move",
+       "open reach down",
+       "closed transport",
+       "closed lift",
+       "closed lift",
+       "closed transport",
+       "closed lower",
+       "open move",
+       "open move",
+       "open move"
+      ],
+      "covers": [
+       [
+        "object",
+        "butter"
+       ]
+      ],
+      "language": "put both the cream cheese box and the butter in the basket",
+      "tid": "libero_10:1"
+     },
+     {
+      "chain": [
+       "open move",
+       "open move",
+       "open move",
+       "open move",
+       "open reach down",
+       "open grip change",
+       "closed transport",
+       "104",
+       "closed lower",
+       "235",
+       "closed lower",
+       "open move"
+      ],
+      "covers": [
+       [
+        "relation",
+        [
+         "In",
+         "wooden_cabinet",
+         "top"
+        ]
+       ]
+      ],
+      "language": "open the top drawer and put the bowl inside",
+      "tid": "libero_goal:3"
+     },
+     {
+      "chain": [
+       "open move",
+       "open move",
+       "open move",
+       "open move"
+      ],
+      "covers": [
+       [
+        "qualifier",
+        "front"
+       ]
+      ],
+      "language": "push the plate to the front of the stove",
+      "tid": "libero_goal:5"
+     }
+    ],
+    "uncovered": [
+     [
+      "relation",
+      [
+       "Close",
+       null,
+       "top"
+      ]
+     ],
+     [
+      "scene",
+      "KITCHEN_SCENE10"
+     ]
+    ]
+   },
+   "40": {
+    "language": "put the frying pan on the cabinet shelf",
+    "selected": [],
+    "uncovered": [
+     [
+      "object",
+      "chefmate_8_frypan"
+     ],
+     [
+      "relation",
+      [
+       "In",
+       "wooden_two_layer_shelf",
+       "top"
+      ]
+     ],
+     [
+      "scene",
+      "KITCHEN_SCENE9"
+     ]
+    ]
+   },
+   "41": {
+    "language": "put the frying pan on top of the cabinet",
+    "selected": [],
+    "uncovered": [
+     [
+      "object",
+      "chefmate_8_frypan"
+     ],
+     [
+      "relation",
+      [
+       "On",
+       "wooden_two_layer_shelf",
+       "top_side"
+      ]
+     ],
+     [
+      "scene",
+      "KITCHEN_SCENE9"
+     ]
+    ]
+   },
+   "42": {
+    "language": "put the frying pan under the cabinet shelf",
+    "selected": [],
+    "uncovered": [
+     [
+      "object",
+      "chefmate_8_frypan"
+     ],
+     [
+      "relation",
+      [
+       "In",
+       "wooden_two_layer_shelf",
+       "bottom"
+      ]
+     ],
+     [
+      "scene",
+      "KITCHEN_SCENE9"
+     ]
+    ]
+   },
+   "43": {
+    "language": "put the white bowl on top of the cabinet",
+    "selected": [],
+    "uncovered": [
+     [
+      "object",
+      "white_bowl"
+     ],
+     [
+      "relation",
+      [
+       "On",
+       "wooden_two_layer_shelf",
+       "top_side"
+      ]
+     ],
+     [
+      "scene",
+      "KITCHEN_SCENE9"
+     ]
+    ]
+   },
+   "48": {
+    "language": "pick up the ketchup and put it in the basket",
+    "selected": [
+     {
+      "chain": [
+       "open move",
+       "open reach down",
+       "closed transport",
+       "closed lift",
+       "closed lift",
+       "closed transport",
+       "closed lower",
+       "open move"
+      ],
+      "covers": [
+       [
+        "object",
+        "ketchup"
+       ],
+       [
+        "relation",
+        [
+         "In",
+         "basket",
+         "contain"
+        ]
+       ]
+      ],
+      "language": "pick up the ketchup and place it in the basket",
+      "tid": "libero_object:4"
+     },
+     {
+      "chain": [
+       "open move",
+       "open move",
+       "open move",
+       "open move",
+       "open reach down",
+       "closed transport",
+       "closed lift",
+       "closed lift",
+       "closed transport",
+       "closed lower",
+       "open move",
+       "open reach down"
+      ],
+      "covers": [
+       [
+        "scene",
+        "LIVING_ROOM_SCENE1"
+       ]
+      ],
+      "language": "put both the alphabet soup and the cream cheese box in the basket",
+      "tid": "libero_10:7"
+     }
+    ],
+    "uncovered": []
+   },
+   "5": {
+    "language": "put the chocolate pudding in the top drawer of the cabinet and close it",
+    "selected": [
+     {
+      "chain": [
+       "open move",
+       "open reach down",
+       "closed transport",
+       "closed lower",
+       "open move",
+       "open reach down",
+       "open grip change",
+       "closed transport",
+       "closed lift",
+       "closed transport",
+       "closed lower",
+       "open move"
+      ],
+      "covers": [
+       [
+        "object",
+        "chocolate_pudding"
+       ]
+      ],
+      "language": "put the white mug on the plate and put the chocolate pudding to the right of the plate",
+      "tid": "libero_10:6"
+     },
+     {
+      "chain": [
+       "open move",
+       "open move",
+       "open move",
+       "open move",
+       "open reach down",
+       "open grip change",
+       "closed transport",
+       "104",
+       "closed lower",
+       "235",
+       "closed lower",
+       "open move"
+      ],
+      "covers": [
+       [
+        "relation",
+        [
+         "In",
+         "wooden_cabinet",
+         "top"
+        ]
+       ]
+      ],
+      "language": "open the top drawer and put the bowl inside",
+      "tid": "libero_goal:3"
+     }
+    ],
+    "uncovered": [
+     [
+      "relation",
+      [
+       "Close",
+       null,
+       "top"
+      ]
+     ],
+     [
+      "scene",
+      "KITCHEN_SCENE10"
+     ]
+    ]
+   },
+   "52": {
+    "language": "pick up the milk and put it in the basket",
+    "selected": [
+     {
+      "chain": [
+       "open move",
+       "open reach down",
+       "closed transport",
+       "closed lift",
+       "closed lift",
+       "closed transport",
+       "closed lower",
+       "open move"
+      ],
+      "covers": [
+       [
+        "object",
+        "milk"
+       ],
+       [
+        "relation",
+        [
+         "In",
+         "basket",
+         "contain"
+        ]
+       ]
+      ],
+      "language": "pick up the milk and place it in the basket",
+      "tid": "libero_object:7"
+     },
+     {
+      "chain": [
+       "open move",
+       "open reach down",
+       "closed transport",
+       "closed lift",
+       "closed lift",
+       "closed lower",
+       "open move",
+       "open reach down",
+       "open reach down",
+       "closed transport",
+       "closed lift",
+       "closed transport"
+      ],
+      "covers": [
+       [
+        "scene",
+        "LIVING_ROOM_SCENE2"
+       ]
+      ],
+      "language": "put both the alphabet soup and the tomato sauce in the basket",
+      "tid": "libero_10:0"
+     }
+    ],
+    "uncovered": []
+   },
+   "53": {
+    "language": "pick up the orange juice and put it in the basket",
+    "selected": [
+     {
+      "chain": [
+       "open move",
+       "open move",
+       "open move",
+       "open reach down",
+       "open grip change",
+       "closed transport",
+       "closed lift",
+       "closed lift",
+       "closed transport",
+       "closed lower",
+       "open move"
+      ],
+      "covers": [
+       [
+        "object",
+        "orange_juice"
+       ],
+       [
+        "relation",
+        [
+         "In",
+         "basket",
+         "contain"
+        ]
+       ]
+      ],
+      "language": "pick up the orange juice and place it in the basket",
+      "tid": "libero_object:9"
+     },
+     {
+      "chain": [
+       "open move",
+       "open reach down",
+       "closed transport",
+       "closed lift",
+       "closed lift",
+       "closed lower",
+       "open move",
+       "open reach down",
+       "open reach down",
+       "closed transport",
+       "closed lift",
+       "closed transport"
+      ],
+      "covers": [
+       [
+        "scene",
+        "LIVING_ROOM_SCENE2"
+       ]
+      ],
+      "language": "put both the alphabet soup and the tomato sauce in the basket",
+      "tid": "libero_10:0"
+     }
+    ],
+    "uncovered": []
+   },
+   "58": {
+    "language": "pick up the ketchup and put it in the tray",
+    "selected": [
+     {
+      "chain": [
+       "open move",
+       "open reach down",
+       "open reach down",
+       "closed transport",
+       "closed lift",
+       "closed lift",
+       "closed transport",
+       "closed lower",
+       "open move"
+      ],
+      "covers": [
+       [
+        "relation",
+        [
+         "In",
+         "wooden_tray",
+         "contain"
+        ]
+       ],
+       [
+        "scene",
+        "LIVING_ROOM_SCENE3"
+       ]
+      ],
+      "language": "pick up the alphabet soup and put it in the tray",
+      "tid": "libero_90:55"
+     },
+     {
+      "chain": [
+       "open move",
+       "open reach down",
+       "closed transport",
+       "closed lift",
+       "closed lift",
+       "closed transport",
+       "closed lower",
+       "open move"
+      ],
+      "covers": [
+       [
+        "object",
+        "ketchup"
+       ]
+      ],
+      "language": "pick up the ketchup and place it in the basket",
+      "tid": "libero_object:4"
+     }
+    ],
+    "uncovered": []
+   },
+   "6": {
+    "language": "open the bottom drawer of the cabinet",
+    "selected": [],
+    "uncovered": [
+     [
+      "relation",
+      [
+       "Open",
+       null,
+       "bottom"
+      ]
+     ],
+     [
+      "scene",
+      "KITCHEN_SCENE1"
+     ]
+    ]
+   },
+   "62": {
+    "language": "pick up the salad dressing and put it in the tray",
+    "selected": [
+     {
+      "chain": [
+       "open move",
+       "open reach down",
+       "open reach down",
+       "closed transport",
+       "closed lift",
+       "closed lift",
+       "closed transport",
+       "closed lower",
+       "open move"
+      ],
+      "covers": [
+       [
+        "relation",
+        [
+         "In",
+         "wooden_tray",
+         "contain"
+        ]
+       ]
+      ],
+      "language": "pick up the alphabet soup and put it in the tray",
+      "tid": "libero_90:55"
+     }
+    ],
+    "uncovered": [
+     [
+      "object",
+      "new_salad_dressing"
+     ],
+     [
+      "scene",
+      "LIVING_ROOM_SCENE4"
+     ]
+    ]
+   },
+   "63": {
+    "language": "stack the left bowl on the right bowl and place them in the tray",
+    "selected": [
+     {
+      "chain": [
+       "open move",
+       "open reach down",
+       "closed transport",
+       "closed lower",
+       "open move",
+       "open move",
+       "open move",
+       "open reach down",
+       "closed transport",
+       "closed lift",
+       "closed transport",
+       "closed lower"
+      ],
+      "covers": [
+       [
+        "qualifier",
+        "left"
+       ],
+       [
+        "qualifier",
+        "right"
+       ]
+      ],
+      "language": "put the white mug on the left plate and put the yellow and white mug on the right plate",
+      "tid": "libero_10:4"
+     },
+     {
+      "chain": [
+       "open move",
+       "open move",
+       "open move",
+       "open reach down",
+       "closed transport",
+       "closed lift",
+       "closed transport",
+       "closed lower",
+       "open move",
+       "72",
+       "open move",
+       "open move"
+      ],
+      "covers": [
+       [
+        "object",
+        "akita_black_bowl"
+       ]
+      ],
+      "language": "put the black bowl in the bottom drawer of the cabinet and close it",
+      "tid": "libero_10:3"
+     },
+     {
+      "chain": [
+       "open move",
+       "open move",
+       "open move",
+       "open reach down",
+       "closed transport",
+       "closed lift",
+       "closed transport",
+       "closed lower",
+       "open move"
+      ],
+      "covers": [
+       [
+        "relation",
+        [
+         "On",
+         "akita_black_bowl",
+         null
+        ]
+       ]
+      ],
+      "language": "put the cream cheese in the bowl",
+      "tid": "libero_goal:6"
+     }
+    ],
+    "uncovered": [
+     [
+      "relation",
+      [
+       "In",
+       "wooden_tray",
+       "contain"
+      ]
+     ],
+     [
+      "scene",
+      "LIVING_ROOM_SCENE4"
+     ]
+    ]
+   }
+  },
+  "library": [
+   {
+    "chain": [
+     0,
+     2,
+     4,
+     6,
+     0,
+     8,
+     0,
+     2,
+     4,
+     11,
+     4,
+     5,
+     0
+    ],
+    "coarse": [
+     0,
+     1,
+     0,
+     1,
+     2,
+     1,
+     0
+    ],
+    "language": "put the white mug on the left plate and put the yellow and white mug on the right plate",
+    "source": "train",
+    "success": 1.0,
+    "tid": "libero_10:4",
+    "verbs": [
+     "open move",
+     "open reach down",
+     "closed transport",
+     "closed lower",
+     "open move",
+     "open move",
+     "open move",
+     "open reach down",
+     "closed transport",
+     "closed lift",
+     "closed transport",
+     "closed lower",
+     "open move"
+    ]
+   },
+   {
+    "chain": [
+     0,
+     2,
+     4,
+     6,
+     0,
+     13,
+     9,
+     4,
+     11,
+     4,
+     12,
+     0,
+     14,
+     0,
+     1,
+     3,
+     4,
+     11,
+     4,
+     6,
+     0
+    ],
+    "coarse": [
+     0,
+     1,
+     0,
+     1,
+     2,
+     1,
+     0,
+     1,
+     2,
+     1,
+     0
+    ],
+    "language": "put the white mug on the plate and put the chocolate pudding to the right of the plate",
+    "source": "train",
+    "success": 1.0,
+    "tid": "libero_10:6",
+    "verbs": [
+     "open move",
+     "open reach down",
+     "closed transport",
+     "closed lower",
+     "open move",
+     "open reach down",
+     "open grip change",
+     "closed transport",
+     "closed lift",
+     "closed transport",
+     "closed lower",
+     "open move",
+     "14",
+     "open move",
+     "open reach down",
+     "open reach down",
+     "closed transport",
+     "closed lift",
+     "closed transport",
+     "closed lower",
+     "open move"
+    ]
+   },
+   {
+    "chain": [
+     0,
+     15,
+     16,
+     15,
+     0,
+     2,
+     4,
+     11,
+     4,
+     11,
+     4,
+     11,
+     4,
+     0,
+     8,
+     0,
+     19,
+     33,
+     20,
+     21,
+     0,
+     30,
+     25,
+     8,
+     0
+    ],
+    "coarse": [
+     0,
+     1,
+     2,
+     1,
+     2,
+     1,
+     2,
+     1,
+     0
+    ],
+    "language": "put the yellow and white mug in the microwave and close it",
+    "source": "train",
+    "success": 1.0,
+    "tid": "libero_10:9",
+    "verbs": [
+     "open move",
+     "open move",
+     "open move",
+     "open move",
+     "open move",
+     "open reach down",
+     "closed transport",
+     "closed lift",
+     "closed transport",
+     "closed lift",
+     "closed transport",
+     "closed lift",
+     "closed transport",
+     "open move",
+     "open move",
+     "open move",
+     "19",
+     "33",
+     "20",
+     "21",
+     "open move",
+     "open move",
+     "open move",
+     "open move",
+     "open move"
+    ]
+   },
+   {
+    "chain": [
+     0,
+     8,
+     0,
+     3,
+     4,
+     57,
+     53,
+     47,
+     6,
+     0,
+     30,
+     0,
+     30,
+     0,
+     2,
+     4,
+     10,
+     11,
+     4,
+     6,
+     0
+    ],
+    "coarse": [
+     0,
+     1,
+     0,
+     1,
+     2,
+     1,
+     0
+    ],
+    "language": "turn on the stove and put the moka pot on it",
+    "source": "train",
+    "success": 1.0,
+    "tid": "libero_10:2",
+    "verbs": [
+     "open move",
+     "open move",
+     "open move",
+     "open reach down",
+     "closed transport",
+     "closed transport",
+     "closed transport",
+     "closed transport",
+     "closed lower",
+     "open move",
+     "open move",
+     "open move",
+     "open move",
+     "open move",
+     "open reach down",
+     "closed transport",
+     "closed lift",
+     "closed lift",
+     "closed transport",
+     "closed lower",
+     "open move"
+    ]
+   },
+   {
+    "chain": [
+     0,
+     30,
+     15,
+     0,
+     2,
+     4,
+     10,
+     11,
+     4,
+     7,
+     0,
+     2,
+     4,
+     10,
+     11,
+     4,
+     6,
+     0
+    ],
+    "coarse": [
+     0,
+     1,
+     2,
+     1,
+     0,
+     1,
+     2,
+     1,
+     0
+    ],
+    "language": "put both the alphabet soup and the cream cheese box in the basket",
+    "source": "train",
+    "success": 1.0,
+    "tid": "libero_10:7",
+    "verbs": [
+     "open move",
+     "open move",
+     "open move",
+     "open move",
+     "open reach down",
+     "closed transport",
+     "closed lift",
+     "closed lift",
+     "closed transport",
+     "closed lower",
+     "open move",
+     "open reach down",
+     "closed transport",
+     "closed lift",
+     "closed lift",
+     "closed transport",
+     "closed lower",
+     "open move"
+    ]
+   },
+   {
+    "chain": [
+     0,
+     2,
+     4,
+     10,
+     11,
+     6,
+     0,
+     1,
+     3,
+     4,
+     10,
+     4,
+     11,
+     4,
+     7,
+     0
+    ],
+    "coarse": [
+     0,
+     1,
+     2,
+     0,
+     1,
+     2,
+     1,
+     0
+    ],
+    "language": "put both the alphabet soup and the tomato sauce in the basket",
+    "source": "train",
+    "success": 1.0,
+    "tid": "libero_10:0",
+    "verbs": [
+     "open move",
+     "open reach down",
+     "closed transport",
+     "closed lift",
+     "closed lift",
+     "closed lower",
+     "open move",
+     "open reach down",
+     "open reach down",
+     "closed transport",
+     "closed lift",
+     "closed transport",
+     "closed lift",
+     "closed transport",
+     "closed lower",
+     "open move"
+    ]
+   },
+   {
+    "chain": [
+     0,
+     15,
+     0,
+     13,
+     9,
+     4,
+     5,
+     0,
+     8,
+     0,
+     3,
+     4,
+     68,
+     4,
+     5,
+     0
+    ],
+    "coarse": [
+     0,
+     1,
+     0,
+     1,
+     0
+    ],
+    "language": "put both moka pots on the stove",
+    "source": "train",
+    "success": 1.0,
+    "tid": "libero_10:8",
+    "verbs": [
+     "open move",
+     "open move",
+     "open move",
+     "open reach down",
+     "open grip change",
+     "closed transport",
+     "closed lower",
+     "open move",
+     "open move",
+     "open move",
+     "open reach down",
+     "closed transport",
+     "closed lift",
+     "closed transport",
+     "closed lower",
+     "open move"
+    ]
+   },
+   {
+    "chain": [
+     0,
+     30,
+     0,
+     3,
+     4,
+     10,
+     11,
+     4,
+     5,
+     0,
+     30,
+     0,
+     13,
+     9,
+     4,
+     6,
+     0,
+     13,
+     9,
+     4,
+     10,
+     11,
+     4,
+     12,
+     0
+    ],
+    "coarse": [
+     0,
+     1,
+     2,
+     1,
+     0,
+     1,
+     0,
+     1,
+     2,
+     1,
+     0
+    ],
+    "language": "put both the cream cheese box and the butter in the basket",
+    "source": "train",
+    "success": 1.0,
+    "tid": "libero_10:1",
+    "verbs": [
+     "open move",
+     "open move",
+     "open move",
+     "open reach down",
+     "closed transport",
+     "closed lift",
+     "closed lift",
+     "closed transport",
+     "closed lower",
+     "open move",
+     "open move",
+     "open move",
+     "open reach down",
+     "open grip change",
+     "closed transport",
+     "closed lower",
+     "open move",
+     "open reach down",
+     "open grip change",
+     "closed transport",
+     "closed lift",
+     "closed lift",
+     "closed transport",
+     "closed lower",
+     "open move"
+    ]
+   },
+   {
+    "chain": [
+     0,
+     15,
+     0,
+     2,
+     4,
+     11,
+     4,
+     12,
+     0,
+     72,
+     0,
+     8,
+     0
+    ],
+    "coarse": [
+     0,
+     1,
+     2,
+     1,
+     0
+    ],
+    "language": "put the black bowl in the bottom drawer of the cabinet and close it",
+    "source": "train",
+    "success": 1.0,
+    "tid": "libero_10:3",
+    "verbs": [
+     "open move",
+     "open move",
+     "open move",
+     "open reach down",
+     "closed transport",
+     "closed lift",
+     "closed transport",
+     "closed lower",
+     "open move",
+     "72",
+     "open move",
+     "open move",
+     "open move"
+    ]
+   },
+   {
+    "chain": [
+     0,
+     8,
+     0,
+     13,
+     9,
+     4,
+     80,
+     4
+    ],
+    "coarse": [
+     0,
+     1
+    ],
+    "language": "pick up the book and place it in the back compartment of the caddy",
+    "source": "train",
+    "success": 1.0,
+    "tid": "libero_10:5",
+    "verbs": [
+     "open move",
+     "open move",
+     "open move",
+     "open reach down",
+     "open grip change",
+     "closed transport",
+     "closed lift",
+     "closed transport"
+    ]
+   },
+   {
+    "chain": [
+     0,
+     25,
+     0,
+     1,
+     3,
+     4,
+     11,
+     4,
+     6,
+     0
+    ],
+    "coarse": [
+     0,
+     1,
+     0
+    ],
+    "language": "put the bowl on the plate",
+    "source": "train",
+    "success": 1.0,
+    "tid": "libero_goal:8",
+    "verbs": [
+     "open move",
+     "open move",
+     "open move",
+     "open reach down",
+     "open reach down",
+     "closed transport",
+     "closed lift",
+     "closed transport",
+     "closed lower",
+     "open move"
+    ]
+   },
+   {
+    "chain": [
+     93,
+     84,
+     93,
+     152,
+     0,
+     2,
+     4,
+     85,
+     87,
+     86,
+     99,
+     4,
+     12,
+     0
+    ],
+    "coarse": [
+     0,
+     1,
+     0
+    ],
+    "language": "put the wine bottle on the rack",
+    "source": "train",
+    "success": 1.0,
+    "tid": "libero_goal:9",
+    "verbs": [
+     "open move",
+     "open move",
+     "open move",
+     "open move",
+     "open move",
+     "open reach down",
+     "closed transport",
+     "85",
+     "87",
+     "closed lift",
+     "closed lower",
+     "closed transport",
+     "closed lower",
+     "open move"
+    ]
+   },
+   {
+    "chain": [
+     30,
+     0,
+     8,
+     0,
+     13,
+     9,
+     4,
+     104,
+     211,
+     235,
+     7,
+     0
+    ],
+    "coarse": [
+     0,
+     1,
+     0
+    ],
+    "language": "open the top drawer and put the bowl inside",
+    "source": "train",
+    "success": 1.0,
+    "tid": "libero_goal:3",
+    "verbs": [
+     "open move",
+     "open move",
+     "open move",
+     "open move",
+     "open reach down",
+     "open grip change",
+     "closed transport",
+     "104",
+     "closed lower",
+     "235",
+     "closed lower",
+     "open move"
+    ]
+   },
+   {
+    "chain": [
+     8,
+     25,
+     0,
+     3,
+     4,
+     80,
+     4,
+     7,
+     0
+    ],
+    "coarse": [
+     0,
+     1,
+     0
+    ],
+    "language": "put the cream cheese in the bowl",
+    "source": "train",
+    "success": 1.0,
+    "tid": "libero_goal:6",
+    "verbs": [
+     "open move",
+     "open move",
+     "open move",
+     "open reach down",
+     "closed transport",
+     "closed lift",
+     "closed transport",
+     "closed lower",
+     "open move"
+    ]
+   },
+   {
+    "chain": [
+     0,
+     13,
+     9,
+     4,
+     69,
+     122,
+     0
+    ],
+    "coarse": [
+     0,
+     1,
+     0
+    ],
+    "language": "put the wine bottle on top of the cabinet",
+    "source": "train",
+    "success": 1.0,
+    "tid": "libero_goal:2",
+    "verbs": [
+     "open move",
+     "open reach down",
+     "open grip change",
+     "closed transport",
+     "closed lift",
+     "122",
+     "open move"
+    ]
+   },
+   {
+    "chain": [
+     25,
+     0,
+     8,
+     0
+    ],
+    "coarse": [
+     0
+    ],
+    "language": "push the plate to the front of the stove",
+    "source": "train",
+    "success": 1.0,
+    "tid": "libero_goal:5",
+    "verbs": [
+     "open move",
+     "open move",
+     "open move",
+     "open move"
+    ]
+   },
+   {
+    "chain": [
+     0,
+     8,
+     0,
+     3,
+     4,
+     47,
+     53,
+     54,
+     7
+    ],
+    "coarse": [
+     0,
+     1,
+     0
+    ],
+    "language": "turn on the stove",
+    "source": "train",
+    "success": 1.0,
+    "tid": "libero_goal:7",
+    "verbs": [
+     "open move",
+     "open move",
+     "open move",
+     "open reach down",
+     "closed transport",
+     "closed transport",
+     "closed transport",
+     "closed transport",
+     "closed lower"
+    ]
+   },
+   {
+    "chain": [
+     0,
+     25,
+     0,
+     13,
+     9,
+     4,
+     11,
+     4,
+     12,
+     0
+    ],
+    "coarse": [
+     0,
+     1,
+     2,
+     1,
+     0
+    ],
+    "language": "put the bowl on the stove",
+    "source": "train",
+    "success": 1.0,
+    "tid": "libero_goal:1",
+    "verbs": [
+     "open move",
+     "open move",
+     "open move",
+     "open reach down",
+     "open grip change",
+     "closed transport",
+     "closed lift",
+     "closed transport",
+     "closed lower",
+     "open move"
+    ]
+   },
+   {
+    "chain": [
+     25,
+     0,
+     2,
+     4,
+     10,
+     4,
+     80,
+     4,
+     6,
+     0
+    ],
+    "coarse": [
+     0,
+     1,
+     0
+    ],
+    "language": "put the bowl on top of the cabinet",
+    "source": "train",
+    "success": 1.0,
+    "tid": "libero_goal:4",
+    "verbs": [
+     "open move",
+     "open move",
+     "open reach down",
+     "closed transport",
+     "closed lift",
+     "closed transport",
+     "closed lift",
+     "closed transport",
+     "closed lower",
+     "open move"
+    ]
+   },
+   {
+    "chain": [
+     159,
+     94,
+     152,
+     93,
+     94,
+     0,
+     8,
+     0
+    ],
+    "coarse": [
+     0
+    ],
+    "language": "open the middle drawer of the cabinet",
+    "source": "train",
+    "success": 1.0,
+    "tid": "libero_goal:0",
+    "verbs": [
+     "open move",
+     "open move",
+     "open move",
+     "open move",
+     "open move",
+     "open move",
+     "open move",
+     "open move"
+    ]
+   },
+   {
+    "chain": [
+     0,
+     30,
+     0,
+     13,
+     9,
+     4,
+     10,
+     11,
+     4,
+     6,
+     0
+    ],
+    "coarse": [
+     0,
+     1,
+     2,
+     1,
+     0
+    ],
+    "language": "pick up the orange juice and place it in the basket",
+    "source": "train",
+    "success": 1.0,
+    "tid": "libero_object:9",
+    "verbs": [
+     "open move",
+     "open move",
+     "open move",
+     "open reach down",
+     "open grip change",
+     "closed transport",
+     "closed lift",
+     "closed lift",
+     "closed transport",
+     "closed lower",
+     "open move"
+    ]
+   },
+   {
+    "chain": [
+     0,
+     2,
+     4,
+     10,
+     11,
+     4,
+     12,
+     0
+    ],
+    "coarse": [
+     0,
+     1,
+     2,
+     1,
+     0
+    ],
+    "language": "pick up the ketchup and place it in the basket",
+    "source": "train",
+    "success": 1.0,
+    "tid": "libero_object:4",
+    "verbs": [
+     "open move",
+     "open reach down",
+     "closed transport",
+     "closed lift",
+     "closed lift",
+     "closed transport",
+     "closed lower",
+     "open move"
+    ]
+   },
+   {
+    "chain": [
+     0,
+     30,
+     0,
+     2,
+     4,
+     10,
+     11,
+     4,
+     5,
+     0
+    ],
+    "coarse": [
+     0,
+     1,
+     2,
+     1,
+     0
+    ],
+    "language": "pick up the cream cheese and place it in the basket",
+    "source": "train",
+    "success": 1.0,
+    "tid": "libero_object:1",
+    "verbs": [
+     "open move",
+     "open move",
+     "open move",
+     "open reach down",
+     "closed transport",
+     "closed lift",
+     "closed lift",
+     "closed transport",
+     "closed lower",
+     "open move"
+    ]
+   },
+   {
+    "chain": [
+     0,
+     30,
+     0,
+     2,
+     4,
+     10,
+     11,
+     4,
+     7,
+     0
+    ],
+    "coarse": [
+     0,
+     1,
+     2,
+     1,
+     0
+    ],
+    "language": "pick up the bbq sauce and place it in the basket",
+    "source": "train",
+    "success": 1.0,
+    "tid": "libero_object:3",
+    "verbs": [
+     "open move",
+     "open move",
+     "open move",
+     "open reach down",
+     "closed transport",
+     "closed lift",
+     "closed lift",
+     "closed transport",
+     "closed lower",
+     "open move"
+    ]
+   },
+   {
+    "chain": [
+     0,
+     13,
+     9,
+     4,
+     10,
+     11,
+     4,
+     5,
+     0
+    ],
+    "coarse": [
+     0,
+     1,
+     2,
+     1,
+     0
+    ],
+    "language": "pick up the alphabet soup and place it in the basket",
+    "source": "train",
+    "success": 1.0,
+    "tid": "libero_object:0",
+    "verbs": [
+     "open move",
+     "open reach down",
+     "open grip change",
+     "closed transport",
+     "closed lift",
+     "closed lift",
+     "closed transport",
+     "closed lower",
+     "open move"
+    ]
+   },
+   {
+    "chain": [
+     0,
+     2,
+     4,
+     10,
+     11,
+     4,
+     12,
+     0
+    ],
+    "coarse": [
+     0,
+     1,
+     2,
+     1,
+     0
+    ],
+    "language": "pick up the milk and place it in the basket",
+    "source": "train",
+    "success": 1.0,
+    "tid": "libero_object:7",
+    "verbs": [
+     "open move",
+     "open reach down",
+     "closed transport",
+     "closed lift",
+     "closed lift",
+     "closed transport",
+     "closed lower",
+     "open move"
+    ]
+   },
+   {
+    "chain": [
+     0,
+     30,
+     0,
+     2,
+     4,
+     10,
+     11,
+     4,
+     12,
+     0
+    ],
+    "coarse": [
+     0,
+     1,
+     2,
+     1,
+     0
+    ],
+    "language": "pick up the salad dressing and place it in the basket",
+    "source": "train",
+    "success": 1.0,
+    "tid": "libero_object:2",
+    "verbs": [
+     "open move",
+     "open move",
+     "open move",
+     "open reach down",
+     "closed transport",
+     "closed lift",
+     "closed lift",
+     "closed transport",
+     "closed lower",
+     "open move"
+    ]
+   },
+   {
+    "chain": [
+     30,
+     0,
+     2,
+     4,
+     10,
+     11,
+     4,
+     6,
+     0
+    ],
+    "coarse": [
+     0,
+     1,
+     2,
+     1,
+     0
+    ],
+    "language": "pick up the butter and place it in the basket",
+    "source": "train",
+    "success": 1.0,
+    "tid": "libero_object:6",
+    "verbs": [
+     "open move",
+     "open move",
+     "open reach down",
+     "closed transport",
+     "closed lift",
+     "closed lift",
+     "closed transport",
+     "closed lower",
+     "open move"
+    ]
+   },
+   {
+    "chain": [
+     30,
+     0,
+     2,
+     4,
+     10,
+     11,
+     4,
+     6,
+     0
+    ],
+    "coarse": [
+     0,
+     1,
+     2,
+     1,
+     0
+    ],
+    "language": "pick up the tomato sauce and place it in the basket",
+    "source": "train",
+    "success": 1.0,
+    "tid": "libero_object:5",
+    "verbs": [
+     "open move",
+     "open move",
+     "open reach down",
+     "closed transport",
+     "closed lift",
+     "closed lift",
+     "closed transport",
+     "closed lower",
+     "open move"
+    ]
+   },
+   {
+    "chain": [
+     0,
+     1,
+     3,
+     4,
+     10,
+     11,
+     4,
+     7,
+     0
+    ],
+    "coarse": [
+     0,
+     1,
+     2,
+     1,
+     0
+    ],
+    "language": "pick up the chocolate pudding and place it in the basket",
+    "source": "train",
+    "success": 1.0,
+    "tid": "libero_object:8",
+    "verbs": [
+     "open move",
+     "open reach down",
+     "open reach down",
+     "closed transport",
+     "closed lift",
+     "closed lift",
+     "closed transport",
+     "closed lower",
+     "open move"
+    ]
+   },
+   {
+    "chain": [
+     25,
+     0,
+     13,
+     9,
+     4,
+     10,
+     11,
+     4,
+     5,
+     0
+    ],
+    "coarse": [
+     0,
+     1,
+     2,
+     1,
+     0
+    ],
+    "language": "pick up the black bowl next to the cookie box and place it on the plate",
+    "source": "train",
+    "success": 1.0,
+    "tid": "libero_spatial:6",
+    "verbs": [
+     "open move",
+     "open move",
+     "open reach down",
+     "open grip change",
+     "closed transport",
+     "closed lift",
+     "closed lift",
+     "closed transport",
+     "closed lower",
+     "open move"
+    ]
+   },
+   {
+    "chain": [
+     30,
+     0,
+     2,
+     4,
+     10,
+     11,
+     4,
+     6,
+     0
+    ],
+    "coarse": [
+     0,
+     1,
+     2,
+     1,
+     0
+    ],
+    "language": "pick up the black bowl in the top drawer of the wooden cabinet and place it on the plate",
+    "source": "train",
+    "success": 1.0,
+    "tid": "libero_spatial:4",
+    "verbs": [
+     "open move",
+     "open move",
+     "open reach down",
+     "closed transport",
+     "closed lift",
+     "closed lift",
+     "closed transport",
+     "closed lower",
+     "open move"
+    ]
+   },
+   {
+    "chain": [
+     8,
+     0,
+     1,
+     3,
+     4,
+     11,
+     4,
+     12,
+     0
+    ],
+    "coarse": [
+     0,
+     1,
+     0
+    ],
+    "language": "pick up the black bowl on the ramekin and place it on the plate",
+    "source": "train",
+    "success": 1.0,
+    "tid": "libero_spatial:5",
+    "verbs": [
+     "open move",
+     "open move",
+     "open reach down",
+     "open reach down",
+     "closed transport",
+     "closed lift",
+     "closed transport",
+     "closed lower",
+     "open move"
+    ]
+   },
+   {
+    "chain": [
+     0,
+     2,
+     4,
+     11,
+     4,
+     7,
+     0
+    ],
+    "coarse": [
+     0,
+     1,
+     2,
+     1,
+     0
+    ],
+    "language": "pick up the black bowl on the stove and place it on the plate",
+    "source": "train",
+    "success": 1.0,
+    "tid": "libero_spatial:7",
+    "verbs": [
+     "open move",
+     "open reach down",
+     "closed transport",
+     "closed lift",
+     "closed transport",
+     "closed lower",
+     "open move"
+    ]
+   },
+   {
+    "chain": [
+     25,
+     0,
+     2,
+     4,
+     11,
+     4,
+     6,
+     0
+    ],
+    "coarse": [
+     0,
+     1,
+     0
+    ],
+    "language": "pick up the black bowl between the plate and the ramekin and place it on the plate",
+    "source": "train",
+    "success": 1.0,
+    "tid": "libero_spatial:0",
+    "verbs": [
+     "open move",
+     "open move",
+     "open reach down",
+     "closed transport",
+     "closed lift",
+     "closed transport",
+     "closed lower",
+     "open move"
+    ]
+   },
+   {
+    "chain": [
+     25,
+     0,
+     2,
+     4,
+     10,
+     11,
+     4,
+     12,
+     0
+    ],
+    "coarse": [
+     0,
+     1,
+     2,
+     1,
+     0
+    ],
+    "language": "pick up the black bowl on the cookie box and place it on the plate",
+    "source": "train",
+    "success": 1.0,
+    "tid": "libero_spatial:3",
+    "verbs": [
+     "open move",
+     "open move",
+     "open reach down",
+     "closed transport",
+     "closed lift",
+     "closed lift",
+     "closed transport",
+     "closed lower",
+     "open move"
+    ]
+   },
+   {
+    "chain": [
+     8,
+     25,
+     0,
+     2,
+     4,
+     80,
+     4,
+     6,
+     0
+    ],
+    "coarse": [
+     0,
+     1,
+     0
+    ],
+    "language": "pick up the black bowl next to the plate and place it on the plate",
+    "source": "train",
+    "success": 1.0,
+    "tid": "libero_spatial:8",
+    "verbs": [
+     "open move",
+     "open move",
+     "open move",
+     "open reach down",
+     "closed transport",
+     "closed lift",
+     "closed transport",
+     "closed lower",
+     "open move"
+    ]
+   },
+   {
+    "chain": [
+     8,
+     0,
+     1,
+     3,
+     4,
+     211,
+     12,
+     0
+    ],
+    "coarse": [
+     0,
+     1,
+     0
+    ],
+    "language": "pick up the black bowl next to the ramekin and place it on the plate",
+    "source": "train",
+    "success": 1.0,
+    "tid": "libero_spatial:1",
+    "verbs": [
+     "open move",
+     "open move",
+     "open reach down",
+     "open reach down",
+     "closed transport",
+     "closed lower",
+     "closed lower",
+     "open move"
+    ]
+   },
+   {
+    "chain": [
+     25,
+     0,
+     2,
+     4,
+     10,
+     11,
+     4,
+     211,
+     4,
+     5,
+     0
+    ],
+    "coarse": [
+     0,
+     1,
+     2,
+     1,
+     0
+    ],
+    "language": "pick up the black bowl from table center and place it on the plate",
+    "source": "train",
+    "success": 1.0,
+    "tid": "libero_spatial:2",
+    "verbs": [
+     "open move",
+     "open move",
+     "open reach down",
+     "closed transport",
+     "closed lift",
+     "closed lift",
+     "closed transport",
+     "closed lower",
+     "closed transport",
+     "closed lower",
+     "open move"
+    ]
+   },
+   {
+    "chain": [
+     0,
+     30,
+     25,
+     0,
+     2,
+     4,
+     11,
+     4,
+     11,
+     4,
+     12,
+     0
+    ],
+    "coarse": [
+     0,
+     1,
+     2,
+     1,
+     0
+    ],
+    "language": "pick up the black bowl on the wooden cabinet and place it on the plate",
+    "source": "train",
+    "success": 1.0,
+    "tid": "libero_spatial:9",
+    "verbs": [
+     "open move",
+     "open move",
+     "open move",
+     "open move",
+     "open reach down",
+     "closed transport",
+     "closed lift",
+     "closed transport",
+     "closed lift",
+     "closed transport",
+     "closed lower",
+     "open move"
+    ]
+   },
+   {
+    "chain": [
+     0,
+     30,
+     0,
+     3,
+     4,
+     10,
+     11,
+     4,
+     5,
+     0
+    ],
+    "coarse": [
+     0,
+     1,
+     2,
+     1,
+     0
+    ],
+    "language": "pick up the alphabet soup and put it in the basket",
+    "source": "zeroshot",
+    "success": 1.0,
+    "tid": "libero_90:46",
+    "verbs": [
+     "open move",
+     "open move",
+     "open move",
+     "open reach down",
+     "closed transport",
+     "closed lift",
+     "closed lift",
+     "closed transport",
+     "closed lower",
+     "open move"
+    ]
+   },
+   {
+    "chain": [
+     0,
+     30,
+     0,
+     3,
+     4,
+     10,
+     11,
+     4,
+     6,
+     0,
+     2,
+     4,
+     11,
+     4,
+     6,
+     0
+    ],
+    "coarse": [
+     0,
+     1,
+     2,
+     1,
+     0,
+     1,
+     2,
+     1,
+     0
+    ],
+    "language": "pick up the cream cheese box and put it in the basket",
+    "source": "zeroshot",
+    "success": 1.0,
+    "tid": "libero_90:47",
+    "verbs": [
+     "open move",
+     "open move",
+     "open move",
+     "open reach down",
+     "closed transport",
+     "closed lift",
+     "closed lift",
+     "closed transport",
+     "closed lower",
+     "open move",
+     "open reach down",
+     "closed transport",
+     "closed lift",
+     "closed transport",
+     "closed lower",
+     "open move"
+    ]
+   },
+   {
+    "chain": [
+     0,
+     13,
+     9,
+     4,
+     10,
+     11,
+     4,
+     6,
+     0
+    ],
+    "coarse": [
+     0,
+     1,
+     2,
+     1,
+     0
+    ],
+    "language": "pick up the alphabet soup and put it in the basket",
+    "source": "zeroshot",
+    "success": 1.0,
+    "tid": "libero_90:50",
+    "verbs": [
+     "open move",
+     "open reach down",
+     "open grip change",
+     "closed transport",
+     "closed lift",
+     "closed lift",
+     "closed transport",
+     "closed lower",
+     "open move"
+    ]
+   },
+   {
+    "chain": [
+     0,
+     30,
+     0,
+     2,
+     4,
+     10,
+     11,
+     4,
+     5,
+     0,
+     2,
+     4,
+     10,
+     11,
+     4,
+     7,
+     0
+    ],
+    "coarse": [
+     0,
+     1,
+     2,
+     1,
+     0,
+     1,
+     2,
+     1,
+     0
+    ],
+    "language": "pick up the butter and put it in the basket",
+    "source": "zeroshot",
+    "success": 1.0,
+    "tid": "libero_90:51",
+    "verbs": [
+     "open move",
+     "open move",
+     "open move",
+     "open reach down",
+     "closed transport",
+     "closed lift",
+     "closed lift",
+     "closed transport",
+     "closed lower",
+     "open move",
+     "open reach down",
+     "closed transport",
+     "closed lift",
+     "closed lift",
+     "closed transport",
+     "closed lower",
+     "open move"
+    ]
+   },
+   {
+    "chain": [
+     0,
+     2,
+     4,
+     10,
+     11,
+     4,
+     6,
+     0,
+     1,
+     3,
+     4,
+     10,
+     11,
+     4,
+     6,
+     0
+    ],
+    "coarse": [
+     0,
+     1,
+     2,
+     1,
+     0,
+     1,
+     2,
+     1,
+     0
+    ],
+    "language": "pick up the tomato sauce and put it in the basket",
+    "source": "zeroshot",
+    "success": 0.8,
+    "tid": "libero_90:54",
+    "verbs": [
+     "open move",
+     "open reach down",
+     "closed transport",
+     "closed lift",
+     "closed lift",
+     "closed transport",
+     "closed lower",
+     "open move",
+     "open reach down",
+     "open reach down",
+     "closed transport",
+     "closed lift",
+     "closed lift",
+     "closed transport",
+     "closed lower",
+     "open move"
+    ]
+   },
+   {
+    "chain": [
+     0,
+     1,
+     3,
+     4,
+     10,
+     11,
+     4,
+     6,
+     0
+    ],
+    "coarse": [
+     0,
+     1,
+     2,
+     1,
+     0
+    ],
+    "language": "pick up the alphabet soup and put it in the tray",
+    "source": "zeroshot",
+    "success": 1.0,
+    "tid": "libero_90:55",
+    "verbs": [
+     "open move",
+     "open reach down",
+     "open reach down",
+     "closed transport",
+     "closed lift",
+     "closed lift",
+     "closed transport",
+     "closed lower",
+     "open move"
+    ]
+   },
+   {
+    "chain": [
+     0,
+     30,
+     0,
+     30,
+     0,
+     2,
+     4,
+     10,
+     11,
+     4,
+     6,
+     0,
+     2,
+     4,
+     10,
+     4,
+     7,
+     0,
+     13,
+     9,
+     4,
+     10,
+     11,
+     4
+    ],
+    "coarse": [
+     0,
+     1,
+     2,
+     1,
+     0,
+     1,
+     0,
+     1,
+     2,
+     1
+    ],
+    "language": "pick up the butter and put it in the tray",
+    "source": "zeroshot",
+    "success": 0.8,
+    "tid": "libero_90:56",
+    "verbs": [
+     "open move",
+     "open move",
+     "open move",
+     "open move",
+     "open move",
+     "open reach down",
+     "closed transport",
+     "closed lift",
+     "closed lift",
+     "closed transport",
+     "closed lower",
+     "open move",
+     "open reach down",
+     "closed transport",
+     "closed lift",
+     "closed transport",
+     "closed lower",
+     "open move",
+     "open reach down",
+     "open grip change",
+     "closed transport",
+     "closed lift",
+     "closed lift",
+     "closed transport"
+    ]
+   },
+   {
+    "chain": [
+     0,
+     30,
+     0,
+     3,
+     4,
+     10,
+     11,
+     4,
+     6,
+     0
+    ],
+    "coarse": [
+     0,
+     1,
+     2,
+     1,
+     0
+    ],
+    "language": "pick up the cream cheese and put it in the tray",
+    "source": "zeroshot",
+    "success": 1.0,
+    "tid": "libero_90:57",
+    "verbs": [
+     "open move",
+     "open move",
+     "open move",
+     "open reach down",
+     "closed transport",
+     "closed lift",
+     "closed lift",
+     "closed transport",
+     "closed lower",
+     "open move"
+    ]
+   },
+   {
+    "chain": [
+     0,
+     13,
+     9,
+     4,
+     10,
+     11,
+     4,
+     12,
+     0,
+     2,
+     4,
+     10,
+     11,
+     4,
+     6,
+     0
+    ],
+    "coarse": [
+     0,
+     1,
+     2,
+     1,
+     0,
+     1,
+     2,
+     1,
+     0
+    ],
+    "language": "pick up the tomato sauce and put it in the tray",
+    "source": "zeroshot",
+    "success": 0.2,
+    "tid": "libero_90:59",
+    "verbs": [
+     "open move",
+     "open reach down",
+     "open grip change",
+     "closed transport",
+     "closed lift",
+     "closed lift",
+     "closed transport",
+     "closed lower",
+     "open move",
+     "open reach down",
+     "closed transport",
+     "closed lift",
+     "closed lift",
+     "closed transport",
+     "closed lower",
+     "open move"
+    ]
+   }
+  ],
+  "n_prototypes": 49
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "f0_task_library__libero_90__read__s0__5a413fa0",
+ "schema": 1,
+ "script": "experiments/c0_task_library.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-01T16:07:50+00:00",
+ "stream": null,
+ "tag": "read"
+}

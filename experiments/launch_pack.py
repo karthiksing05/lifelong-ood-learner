@@ -125,7 +125,8 @@ def arm_spec(tid, arm, fold, demo=0):
         text = F.substitute(t, arm.split("@", 1)[1], F.scene_phrases(t, ts))
         return (None if text is None else ("promptx:" + text.replace(" ", "_"), "0", False))
     if arm.startswith("ftoken@"):                                        # ftoken@<source task>[+<task>]: factor tokens appended
-        srcs = arm.split("@", 1)[1].split("+")
+        srcs = [str(tid) + (s_[4:] if s_.startswith("self") else "") if s_.startswith("self") else s_
+                for s_ in arm.split("@", 1)[1].split("+")]                  # self = the task's own token; self_d1 = demo 1's
         return ("ftoken:" + "+".join(os.path.join(R, f"ftoken_{s_}.pt") for s_ in srcs), "0", False)
     if arm.startswith(("fcomp@", "fcompall@")):                         # factor-composed generation at weight lam (overhaul P1)
         lam = arm.split("@", 1)[1]

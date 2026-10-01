@@ -1,0 +1,61 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration of the fold read",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky1.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "5a413fa0f6546b6806757f27ff680ebb5e2831eb",
+  "short": "5a413fa0"
+ },
+ "keys": {},
+ "metrics": {
+  "arms": {
+   "ftoken_self": "the task's own prompt + its demo-0 token (zero practice, zero weights changed)",
+   "ftoken_self_d1": "the same from demo 1 (IPEC episode 1)",
+   "lora": "the one-demo rank-16 LoRA (18.7 MB), demo 0 (recorded on 17 tasks; the 4 development tasks 35, 36, 39, 42 are scored now with the same adapters at the same states)",
+   "lora_d1": "the one-demo LoRA from demo 1 (recorded, 298 of 420)"
+  },
+  "hypotheses": {
+   "H2a": "ftoken_self non-inferior to lora at -0.10 (two-level bootstrap, one-sided 95% lower bound of the paired difference)",
+   "H2b": "ftoken_self_d1 non-inferior to lora_d1 at -0.10",
+   "Z": "ftoken_self > zero-shot pi0.5 (6 of 420): exact sign test, p < 0.05",
+   "claim": "the token matches the LoRA only if BOTH H2a and H2b hold (the lesson of the second-demo retraction)",
+   "cost": "bytes per task 18.4 KB against 18.7 MB"
+  },
+  "parser_hash": "b0eb506ce1dc",
+  "plan": "the overhaul's FOLD: a factor token (lifelong_ood/policy/token_fold.py; a learned key and value per layer appended to the prompt's cache; every policy weight frozen; 18.4 KB fp16) fitted on the arrival's one demo (experiments/f4_fold.py: the same frames and chunks the one-demo LoRA trains on; the demo is never executed)",
+  "tasks": "the 21 held-out tasks; init states 30-49; SERVE_SEED 0; 420 paired episodes per arm",
+  "written_before": "any token episode at init states 30-49"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_90__zc_fold__s0__5a413fa0",
+ "schema": 1,
+ "script": "experiments/prereg/zc_fold.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-01T16:08:51+00:00",
+ "stream": null,
+ "tag": "zc_fold"
+}

@@ -439,6 +439,26 @@ def nopolicy():
     return res
 
 
+def zc_fold():
+    """ledger m3_prereg tag zc_fold: H2a token (demo 0) vs one-demo LoRA, H2b token (demo 1) vs LoRA demo 1, both
+    non-inferior at -0.10; Z token vs zero-shot."""
+    arms = {"tok": "ftoken_self", "lora": "lora", "tok1": "ftoken_self_d1", "lora1": "lora_d1", "z": "zeroshot"}
+    tab = table(HELD, arms)
+    res = {"per_task": {t: {k: int(sum(v[k].values())) for k in v} for t, v in tab.items()}}
+    for h, (x, y) in (("H2a", ("tok", "lora")), ("H2b", ("tok1", "lora1")), ("Z", ("tok", "z"))):
+        res[h] = dict(x_arm=arms[x], y_arm=arms[y], **compare(tab, x, y))
+    for h in ("H2a", "H2b"):
+        res[h]["non_inferior_010"] = bool(res[h]["diff"]["lo90"] >= -0.10)
+    res["claim"] = bool(res["H2a"]["non_inferior_010"] and res["H2b"]["non_inferior_010"])
+    res["Z"]["passes"] = bool(res["Z"]["sign_p"] < 0.05 and res["Z"]["x"] > res["Z"]["control"])
+    for h in ("H2a", "H2b", "Z"):
+        v = res[h]
+        print(f"{h} {v['x_arm']} vs {v['y_arm']}: {_fmt(v)}" + (f" -> non-inferior {v['non_inferior_010']}" if h != "Z" else
+                                                                  f" -> passes {v['passes']}"))
+    print("claim (both demos):", res["claim"])
+    return res
+
+
 def sota_amend1():
     """ledger m3_prereg tag baselines_sota_amend1: B1' ours vs STRAP (authors' retrieval), B2' ours vs DSRL (authors' config), B3 vs ER."""
     arms = {"ours": "phasebind2_rjpred_pca512_rj", "strap": "lora_strap2", "dsrl": "dsrlo", "er": "lora_er", "nft": "lora_r17bal"}
@@ -466,13 +486,16 @@ def _fmt(v):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("read", choices=("primary", "secondary", "p6", "v2", "v2_synth", "p3c", "p3c_reader", "p3c_reader2", "alloc", "p5", "yaw", "seed1", "demo1", "compress", "sota", "sota_amend1", "pi0", "smolvla", "nopolicy"))
+    ap.add_argument("read", choices=("primary", "secondary", "p6", "v2", "v2_synth", "p3c", "p3c_reader", "p3c_reader2", "alloc", "p5", "yaw", "seed1", "demo1", "compress", "sota", "sota_amend1", "pi0", "smolvla", "nopolicy", "zc_fold"))
     ap.add_argument("--record", action="store_true")
     a = ap.parse_args()
     os.chdir(ROOT)
     if a.read == "pi0":
         res = pi0()
         exp, tag, what = "p1_bindings", "pi0", "the unchanged method on pi0 (another flow VLA) vs pi0 zero-shot, 21 tasks"
+    elif a.read == "zc_fold":
+        res = zc_fold()
+        exp, tag, what = "p1_bindings", "zc_fold", "factor tokens (18.4 KB, frozen policy) vs the one-demo LoRA, two demos"
     elif a.read == "nopolicy":
         res = nopolicy()
         exp, tag, what = "p1_bindings", "nopolicy", "the phase program executed with no policy vs the bindings arm through pi0.5, 21 tasks"
