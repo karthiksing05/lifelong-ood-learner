@@ -30,7 +30,7 @@ done
 [ $up = 1 ] || { echo "[roll] no free port after 4 attempts"; exit 3; }
 echo "[roll] server up on $PORT after $((i*5))s (mode $MODE)"
 PYTHONPATH=${PYTHONPATH:-}:$ROBOT/third_party/libero examples/libero/.venv/bin/python $REPO/experiments/libero_client.py \
-    --port $PORT --suite $SUITE --tasks $TASKS --trials $TRIALS --first-trial $FIRST --out $OUT ${RECORD:+--record} ${LIGHT:+--light} ${OBJECTS:+--objects} ${ALL_OBJECTS:+--all-objects} ${STATE_MOD:+--state-mod $STATE_MOD} ${BRANCHES:+--branches $BRANCHES --videos 0} ${SEG:+--seg} ${BIND:+--bind $BIND}
+    --port $PORT --suite $SUITE --tasks $TASKS --trials $TRIALS --first-trial $FIRST --out $OUT ${RECORD:+--record} ${LIGHT:+--light} ${OBJECTS:+--objects} ${ALL_OBJECTS:+--all-objects} ${STATE_MOD:+--state-mod $STATE_MOD} ${BRANCHES:+--branches $BRANCHES --videos 0} ${SEG:+--seg} ${BIND:+--bind $BIND} ${SWAP:+--swap $SWAP} ${SWAP_MODE:+--swap-mode $SWAP_MODE} ${SWAP_CAMS:+--swap-cams $SWAP_CAMS} ${SWAP_PHASE:+--swap-phase $SWAP_PHASE}
 rc=$?
 kill $SRV 2>/dev/null
 echo "[roll] client exit=$rc -> $OUT"

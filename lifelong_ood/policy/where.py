@@ -171,12 +171,16 @@ class OwlDetector:
         H = W = max(img224.shape[:2])                    # OWLv2 pads to a square
         res = self.proc.post_process_object_detection(out, threshold=0.0, target_sizes=torch.tensor([[H, W]]))[0]
         if len(res["scores"]) == 0:
+            self.last_center = None
             return np.zeros((GRID, GRID), np.float32), 0.0
         k = int(torch.argmax(res["scores"]))
         x0, y0, x1, y1 = [float(v) for v in res["boxes"][k]]
         s = PIX / float(img224.shape[0])                  # 224 -> 256 grid of the maps
         m = np.zeros((PIX, PIX), np.float32)
         m[int(max(0, y0 * s)):int(min(PIX, y1 * s)) + 1, int(max(0, x0 * s)):int(min(PIX, x1 * s)) + 1] = 1.0
+        # a box map is flat: its POINT is the box centre's token (argmax of a flat map would return the top-left token)
+        self.last_center = (min(GRID - 1, int(0.5 * (y0 + y1) * s) // (PIX // GRID)),
+                            min(GRID - 1, int(0.5 * (x0 + x1) * s) // (PIX // GRID)))
         return pool(m), float(res["scores"][k])
 
 

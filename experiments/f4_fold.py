@@ -39,6 +39,10 @@ def main():
     ap.add_argument("--demo", type=int, default=0)
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--tag", default="")
+    ap.add_argument("--rec", default="", help="source=rollouts: '+'-joined globs of recording dirs (<out>_rec); the SUCCESSFUL "
+                    "episodes' real frames and executed actions are the training data, under the task's own instruction")
+    ap.add_argument("--stride", type=int, default=5, help="source=rollouts: one frame in `stride` (5 = the policy's query frames)")
+    ap.add_argument("--max-frames", type=int, default=400)
     a = ap.parse_args()
     spec = importlib.util.spec_from_file_location("r3p", os.path.join(ROOT, "experiments", "r3_prepare.py"))
     r3p = importlib.util.module_from_spec(spec)
@@ -51,23 +55,49 @@ def main():
     for q in bk.model.parameters():
         q.requires_grad_(False)
     t0 = time.time()
-    if a.source != "demo":
-        raise SystemExit("only source=demo is implemented so far")
-    d90 = D.Demos90()
     obs, fulls, eps_ = [], [], []
-    for t in tids:
-        ep_idx = d90.episodes_of_text(texts[t])[a.demo]
-        ep = d90.load(ep_idx)
-        T_ = len(ep["actions"])
-        obs += [d90.observation(ep, i) for i in range(T_)]
-        idx, _ = D.chunk_indices(T_, bk.H)
-        fulls.append(D.pad_rows(D.to_rows(ep["actions"][idx], D.Norm.load()), bk.H))
-        eps_.append(int(ep_idx))
+    if a.source == "rollouts":
+        # SELF-DISTILLATION (no demonstration): the policy's own successful episodes, recorded with the REAL scene, relabelled
+        # with the task's own instruction (e.g. role-rebound episodes: base prompt + exchanged appearances at execution)
+        import glob as _glob
+        files = sorted(f for g in a.rec.split("+") for f in _glob.glob(os.path.join(g, "*.npz")))
+        norm = D.Norm.load()
+        for f in files:
+            z = np.load(f, allow_pickle=True)
+            tt = int(z["task"])
+            if not bool(z["success"]) or tt not in tids or "image" not in z.files:
+                continue
+            acts, sts = np.asarray(z["action"], np.float32), np.asarray(z["state"], np.float32)
+            T_ = len(acts)
+            idx, _ = D.chunk_indices(T_, bk.H)
+            rows = D.pad_rows(D.to_rows(acts[idx], norm), bk.H)
+            for i in range(0, T_, a.stride):
+                obs.append({"observation/image": z["image"][i], "observation/wrist_image": z["wrist"][i],
+                            "observation/state": sts[i], "prompt": texts[tt]})
+                fulls.append(rows[i:i + 1])
+            eps_.append(os.path.relpath(f, ROOT))
+        if len(obs) > a.max_frames:
+            keep = np.linspace(0, len(obs) - 1, a.max_frames).astype(int)
+            obs, fulls = [obs[i] for i in keep], [fulls[i] for i in keep]
+        if not obs:
+            raise SystemExit("no successful recorded episodes with images for these tasks")
+    elif a.source == "demo":
+        d90 = D.Demos90()
+        for t in tids:
+            ep_idx = d90.episodes_of_text(texts[t])[a.demo]
+            ep = d90.load(ep_idx)
+            T_ = len(ep["actions"])
+            obs += [d90.observation(ep, i) for i in range(T_)]
+            idx, _ = D.chunk_indices(T_, bk.H)
+            fulls.append(D.pad_rows(D.to_rows(ep["actions"][idx], D.Norm.load()), bk.H))
+            eps_.append(int(ep_idx))
+    else:
+        raise SystemExit(f"unknown source {a.source}")
     T = len(obs)
     bank = adapt.PrefixBank(bk, obs, store="cpu")
     full = np.concatenate(fulls)
     ep_idx = eps_[0] if len(eps_) == 1 else eps_
-    print(f"[f4] tasks {tids} '{text}': demo episodes {eps_}, {T} frames cached in {time.time() - t0:.0f}s", flush=True)
+    print(f"[f4] tasks {tids} '{text}': source {a.source}, episodes {len(eps_)}, {T} frames cached in {time.time() - t0:.0f}s", flush=True)
     pre0 = bank.take([0])
     pad = pre0.pad_masks[0].cpu().numpy().astype(bool)
     L = len(pad)

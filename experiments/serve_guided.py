@@ -355,12 +355,38 @@ def main():
         from lifelong_ood.policy import factors as F
         body, q = (a.mode[len("bind:"):].split("?", 1) + [""])[:2]
         kv = dict(x.split("=", 1) for x in q.split("&") if x)
-        task = next(t for t in F.load() if t.suite == kv.get("suite", "libero_90") and t.index == int(body))
+        tasks = F.load()
+        task = next(t for t in tasks if t.suite == kv.get("suite", "libero_90") and t.index == int(body))
         hooks = BH.BindHooks(bk, task, src=kv.get("src", "oracle"), rho=float(kv.get("rho", 0.5)),
+                             w1_layer=(int(kv["layer"]) if "layer" in kv else None), keep=float(kv.get("keep", 0.5)),
+                             phrases=F.scene_phrases(task, tasks),
                              beta=(float(kv["beta"]) if "beta" in kv else None), band=kv.get("band", "all"),
                              cams=kv.get("cams", "agent"), ctrl=kv.get("ctrl", "none"), phase=kv.get("phase", "1") == "1",
                              seed=int(kv.get("seed", 0)))
         logging.info(f"bind {task.suite}:{task.index} referents {hooks.ref} {hooks.cfg} src {hooks.src} ctrl {hooks.ctrl}")
+    elif a.mode.startswith("role:"):
+        # role:<task>?suite=libero_90&cams=agent[+wrist] -- the DEPLOYABLE role editor (lifelong_ood/policy/role_hooks.py): the base
+        # task prototype's instruction, the new task's object and the base's object exchanged in the policy's images by
+        # OWLv2 boxes (no simulator state); the code from lifelong_ood/policy/roles.py
+        import glob as _glob
+        import json as _json
+        from lifelong_ood.policy import factors as F
+        from lifelong_ood.policy import roles as RO
+        from lifelong_ood.policy.role_hooks import RoleHooks
+        body, q = (a.mode[len("role:"):].split("?", 1) + [""])[:2]
+        kv = dict(x.split("=", 1) for x in q.split("&") if x)
+        tasks = F.load()
+        task = next(t for t in tasks if t.suite == kv.get("suite", "libero_90") and t.index == int(body))
+        zs = {}
+        for f in _glob.glob(os.path.join(ROOT, "ledger", "zeroshot90", "*.json")):
+            zs.update({int(k): v["success_rate"] for k, v in _json.load(open(f))["metrics"]["tasks"].items()})
+        code = RO.role_code(task, tasks, zs, _json.load(open(os.path.join(ROOT, "results", "robot", "f1_bind_libero_90_binding.json"))))
+        if kv.get("ctrl") == "placebo":
+            code = RO.placebo_code(task, code)
+        ph = F.scene_phrases(task, tasks)
+        phrases = {n: ph.get(task.objects.get(n), str(task.objects.get(n, n)).replace("_", " ")) for p_ in code["pairs"] for n in p_}
+        hooks = RoleHooks(code, phrases, cams=kv.get("cams", "agent"))
+        logging.info(f"role {task.suite}:{task.index} code {code} phrases {phrases} cams {hooks.cams}")
     elif a.mode.startswith("prompt:"):
         # prompt:<training task index> -- the prior under a trained task's instruction (instruction retrieval)
         from lifelong_ood.policy import data as D

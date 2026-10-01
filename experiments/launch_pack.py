@@ -140,6 +140,34 @@ def arm_spec(tid, arm, fold, demo=0):
         knob = f"rho={cfg[3:]}" if cfg.startswith("rho") else f"beta={cfg[4:]}"
         ctrl = "placebo" if arm.startswith("bindplacebo") else "shift" if arm.startswith("bindshift") else "none"
         return (f"bind:{tid}?suite={SUITE_OF.get('suite', 'libero_90')}&src=oracle&{knob}&band={band}&ctrl={ctrl}", "0", False)
+    if arm.split("@")[0] in ("role", "roleplacebo", "roleshape"):       # role rebinding (lifelong_ood/policy/roles.py): the base task
+        import glob as _glob                                             # prototype's instruction, objects' appearances exchanged
+        from lifelong_ood.policy import factors as F
+        from lifelong_ood.policy import roles as RO
+        ts = F.load()
+        t = next(x for x in ts if x.suite == SUITE_OF.get("suite", "libero_90") and x.index == tid)
+        zs = {}
+        for f in _glob.glob(os.path.join(ROOT, "ledger", "zeroshot90", "*.json")):
+            zs.update({int(k): v["success_rate"] for k, v in json.load(open(f))["metrics"]["tasks"].items()})
+        bind = json.load(open(os.path.join(R, "f1_bind_libero_90_binding.json")))
+        code = RO.role_code(t, ts, zs, bind)
+        base_arm, _, var = arm.partition("@")                            # role@agent / role@open / role@agent_open (exploratory variants)
+        if base_arm == "roleplacebo":
+            code = RO.placebo_code(t, code)
+        elif base_arm == "roleshape":                                     # steerability with a differently SHAPED object (exploratory)
+            code = RO.placebo_code(t, code, shape_different=True)
+        if code is None:
+            return None
+        extra = {"SWAP": "+".join(f"{x}:{y}" for x, y in code["pairs"]), "SWAP_MODE": "render"}
+        if "agent" in var:
+            extra["SWAP_CAMS"] = "agent"
+        if "open" in var:
+            extra["SWAP_PHASE"] = "open"
+        return ("promptx:" + code["prompt"].replace(" ", "_"), "0", False, extra)
+    if arm.startswith(("roledet@", "roledetplacebo@")):                 # the deployable role editor (OWLv2 boxes): roledet@agent
+        cams = arm.split("@", 1)[1]
+        ctrl = "&ctrl=placebo" if arm.startswith("roledetplacebo") else ""
+        return (f"role:{tid}?suite={SUITE_OF.get('suite', 'libero_90')}&cams={cams}{ctrl}", "0", False)
     if arm == "zs":                                                      # the frozen policy, same protocol (bind tracking)
         return ("ours", "0", False)
     if arm.startswith("nopolicy_rjpred@"):                               # the same program executed with NO policy (the guide's target)
@@ -251,6 +279,7 @@ def main():
                         **({"LIGHT": "1"} if a.light else {}), **({"OBJECTS": "1", "ALL_OBJECTS": "1"} if a.all_objects else {}),
                         **({"STATE_MOD": "30"} if arm in ("dsrl_train", "dsrlo_train") else {}),
                         **({"SEG": "1"} if "src=oracle" in (s[0] or "") else {}), **({"BIND": a.bind} if a.bind else {}),
+                        **(s[3] if len(s) > 3 else {}),
                         **({"BACKBONE_CONFIG": a.backbone, "BACKBONE_CKPT": "lerobot/smolvla_libero",
                             "SERVER_PY": "/coc/flash10/ksingara3/robot/smolvla/.venv/bin/python"} if a.backbone.startswith("smolvla") else
                            {"BACKBONE_CONFIG": a.backbone, "BACKBONE_CKPT": f"/coc/flash10/ksingara3/robot/openpi_cache/openpi-assets/checkpoints/{a.backbone}_pytorch"}

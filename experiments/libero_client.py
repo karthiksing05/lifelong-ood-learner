@@ -61,6 +61,183 @@ def seg_maps(env, tables, cam):
     return (cnt.reshape(len(names), 256) / 256.0).astype(np.float16)
 
 
+def _flip(x):
+    return np.ascontiguousarray(x[::-1, ::-1])
+
+
+def seg_depth(sim, cam):
+    """Per-geom ids and metric depth of one camera at 256, in the CLIENT orientation (flipped like the policy's images)."""
+    s = sim.render(camera_name=cam, width=256, height=256, depth=False, segmentation=True)
+    ids = np.where(s[..., 0] == GEOM, s[..., 1], -1)
+    _, d = sim.render(camera_name=cam, width=256, height=256, depth=True)
+    ext = sim.model.stat.extent
+    far, near = sim.model.vis.map.zfar * ext, sim.model.vis.map.znear * ext
+    return _flip(ids), _flip(near / (1.0 - d * (1.0 - near / far)))
+
+
+def background(sim, cam, geoms):
+    """The camera's render with the given geoms hidden (moved to an unrendered geom group for one render)."""
+    g = sim.model.geom_group
+    old = g[geoms].copy()
+    g[geoms] = 5
+    try:
+        return _flip(sim.render(camera_name=cam, width=256, height=256, depth=False))
+    finally:
+        g[geoms] = old
+
+
+def _bottom_center(m):
+    r, c = np.where(m)
+    rb = r.max()
+    return int(rb), float(c[r >= rb - 2].mean())
+
+
+def _paste(dst, crop, mask, anchor, scale):
+    import cv2
+    h, w = mask.shape
+    H2, W2 = max(1, int(round(h * scale))), max(1, int(round(w * scale)))
+    rgb2 = cv2.resize(crop, (W2, H2), interpolation=cv2.INTER_LINEAR)
+    m2 = cv2.resize(mask.astype(np.uint8), (W2, H2), interpolation=cv2.INTER_NEAREST).astype(bool)
+    r1 = anchor[0] + 1
+    r0 = r1 - H2
+    c0 = int(round(anchor[1] - W2 / 2.0))
+    c1 = c0 + W2
+    R0, R1, C0, C1 = max(r0, 0), min(r1, dst.shape[0]), max(c0, 0), min(c1, dst.shape[1])
+    if R1 <= R0 or C1 <= C0:
+        return
+    sub = m2[R0 - r0:R1 - r0, C0 - c0:C1 - c0]
+    dst[R0:R1, C0:C1][sub] = rgb2[R0 - r0:R1 - r0, C0 - c0:C1 - c0][sub]
+
+
+def role_swap(env, tables, cam, rgb, pairs, cache, min_px=20):
+    """ORACLE role rebinding of one camera's image (256, client orientation): for each pair (a, b) of instances, the policy
+    sees b's appearance where a is and a's appearance where b is (bottom-aligned, scaled by depth); hidden pixels come from a
+    render without the swapped objects.  An object visible without its partner shows the partner's last sprite in this camera
+    (`cache`).  The scene's physics is untouched."""
+    names, geom_root = tables
+    sim = env.env.sim
+    ids, depth = seg_depth(sim, cam)
+    root = np.where(ids >= 0, geom_root[np.clip(ids, 0, len(geom_root) - 1)], -1)
+    inst = sorted({n for p in pairs for n in p})
+    masks = {n: root == names.index(n) for n in inst}
+    vis = {n: int(masks[n].sum()) >= min_px for n in inst}
+    sprites = {}
+    for n in inst:
+        if vis[n]:
+            r, c = np.where(masks[n])
+            r0, r1, c0, c1 = r.min(), r.max() + 1, c.min(), c.max() + 1
+            sprites[n] = (rgb[r0:r1, c0:c1].copy(), masks[n][r0:r1, c0:c1].copy(), float(np.median(depth[masks[n]])))
+            cache[(cam, n)] = sprites[n]
+    todo = []
+    for a_, b_ in pairs:
+        for src, dst in ((b_, a_), (a_, b_)):
+            if vis[dst] and (src in sprites or (cam, src) in cache):
+                todo.append((src, dst))
+    if not todo:
+        return rgb
+    hide = sorted({d for _, d in todo})
+    geoms = np.where(np.isin(geom_root, [names.index(n) for n in hide]))[0]
+    bg = background(sim, cam, geoms)
+    out = rgb.copy()
+    holes = np.zeros(rgb.shape[:2], bool)
+    for n in hide:
+        holes |= masks[n]
+    out[holes] = bg[holes]
+    todo.sort(key=lambda sd: -float(np.median(depth[masks[sd[1]]])))     # farther first
+    for src, dst in todo:
+        crop, m, d_src = sprites.get(src) or cache[(cam, src)]
+        _paste(out, crop, m, _bottom_center(masks[dst]), d_src / max(float(np.median(depth[masks[dst]])), 1e-6))
+    return out
+
+
+def _quat_mat(q):
+    w, x, y, z = (float(v) for v in q)
+    return np.array([[1 - 2 * (y * y + z * z), 2 * (x * y - z * w), 2 * (x * z + y * w)],
+                     [2 * (x * y + z * w), 1 - 2 * (x * x + z * z), 2 * (y * z - x * w)],
+                     [2 * (x * z - y * w), 2 * (y * z + x * w), 1 - 2 * (x * x + y * y)]])
+
+
+def _mat_quat(R):
+    """3x3 rotation -> (w, x, y, z)."""
+    R = np.asarray(R, np.float64)
+    tr = R[0, 0] + R[1, 1] + R[2, 2]
+    if tr > 0:
+        S = np.sqrt(tr + 1.0) * 2
+        q = [0.25 * S, (R[2, 1] - R[1, 2]) / S, (R[0, 2] - R[2, 0]) / S, (R[1, 0] - R[0, 1]) / S]
+    elif R[0, 0] > R[1, 1] and R[0, 0] > R[2, 2]:
+        S = np.sqrt(1.0 + R[0, 0] - R[1, 1] - R[2, 2]) * 2
+        q = [(R[2, 1] - R[1, 2]) / S, 0.25 * S, (R[0, 1] + R[1, 0]) / S, (R[0, 2] + R[2, 0]) / S]
+    elif R[1, 1] > R[2, 2]:
+        S = np.sqrt(1.0 + R[1, 1] - R[0, 0] - R[2, 2]) * 2
+        q = [(R[0, 2] - R[2, 0]) / S, (R[0, 1] + R[1, 0]) / S, 0.25 * S, (R[1, 2] + R[2, 1]) / S]
+    else:
+        S = np.sqrt(1.0 + R[2, 2] - R[0, 0] - R[1, 1]) * 2
+        q = [(R[1, 0] - R[0, 1]) / S, (R[0, 2] + R[2, 0]) / S, (R[1, 2] + R[2, 1]) / S, 0.25 * S]
+    q = np.asarray(q)
+    return q / np.linalg.norm(q)
+
+
+class RenderSwap:
+    """ORACLE role rebinding in the RENDERER: each pair's visual geoms exchange root bodies (each object's visual set expressed
+    in its own root frame at the moment of construction, bottoms aligned), so every camera shows b's appearance on a's body and
+    a's on b's, with true perspective, occlusion and carrying.  Collision geometry, masses and physics are untouched (visual
+    geoms have no contacts; inertia is fixed at compile time).  Build it right after an episode's reset (objects at rest)."""
+
+    def __init__(self, env, pairs):
+        self.sim = sim = env.env.sim
+        m, d = sim.model, sim.data
+        names, geom_root = seg_tables(env)
+        self.orig, self.new = {}, {}
+
+        def visual(n):
+            gs = [int(g) for g in np.where(geom_root == names.index(n))[0]
+                  if m.geom_contype[g] == 0 and m.geom_conaffinity[g] == 0 and m.geom_group[g] == 1]
+            if not gs:
+                raise RuntimeError(f"{n}: no visual geoms")
+            return gs
+
+        def rel(g, r):
+            Rr, pr = np.asarray(d.xmat[r]).reshape(3, 3), np.asarray(d.xpos[r])
+            Rg, pg = np.asarray(d.geom_xmat[g]).reshape(3, 3), np.asarray(d.geom_xpos[g])
+            return Rr.T @ Rg, Rr.T @ (pg - pr)
+
+        def bottom(g, R, p):
+            c, h = np.asarray(m.geom_aabb[g][:3], np.float64), np.asarray(m.geom_aabb[g][3:], np.float64)
+            corners = c + h * np.array([[i, j, k] for i in (-1, 1) for j in (-1, 1) for k in (-1, 1)], np.float64)
+            return float((corners @ R.T + p)[:, 2].min())
+
+        for a_, b_ in pairs:
+            ra, rb = int(env.env.obj_body_id[a_]), int(env.env.obj_body_id[b_])
+            ga, gb = visual(a_), visual(b_)
+            relA = {g: rel(g, ra) for g in ga}
+            relB = {g: rel(g, rb) for g in gb}
+            za = min(bottom(g, *relA[g]) for g in ga)
+            zb = min(bottom(g, *relB[g]) for g in gb)
+            for g in ga + gb:
+                self.orig[g] = (int(m.geom_bodyid[g]), np.array(m.geom_pos[g]), np.array(m.geom_quat[g]))
+            for g, (R, p) in relA.items():
+                self.new[g] = (rb, p + np.array([0.0, 0.0, zb - za]), _mat_quat(R))
+            for g, (R, p) in relB.items():
+                self.new[g] = (ra, p + np.array([0.0, 0.0, za - zb]), _mat_quat(R))
+        self.on = False
+
+    def set(self, on):
+        m = self.sim.model
+        for g, (b, p, q) in (self.new if on else self.orig).items():
+            m.geom_bodyid[g] = b
+            m.geom_pos[g] = p
+            m.geom_quat[g] = q
+        self.sim.forward()
+        self.on = bool(on)
+
+
+def swap_visuals(env, pairs):
+    """(kept for the preview script) build and switch on a RenderSwap."""
+    rs = RenderSwap(env, pairs)
+    rs.set(True)
+    return rs
+
+
 def movable_positions(env, obs):
     names = list(env.env.objects_dict.keys())
     P = []
@@ -113,6 +290,15 @@ def main():
                     "`resets`); the server only follows it (meta/ff)")
     ap.add_argument("--seg", action="store_true", help="ORACLE arms only: send per-token coverage maps of every object and fixture "
                     "from the simulator's segmentation (meta/seg_names, meta/seg_agent, meta/seg_wrist)")
+    ap.add_argument("--swap", default="", help="ORACLE role rebinding: 'a:b[+c:d]' instance pairs whose appearances the policy sees "
+                    "exchanged in both cameras (the objects stay where they are); e.g. ketchup_1:alphabet_soup_1")
+    ap.add_argument("--swap-mode", default="render", choices=("render", "pixel"), help="render: the meshes exchange bodies in the "
+                    "simulator's renderer (every camera consistent); pixel: sprites exchanged in the two images (the operation a "
+                    "deployable editor would perform)")
+    ap.add_argument("--swap-cams", default="both", choices=("both", "agent"), help="render swap: 'agent' re-renders the WRIST view "
+                    "real at each query (the closed-loop grasp sees the true object)")
+    ap.add_argument("--swap-phase", default="all", choices=("all", "open"), help="render swap: 'open' keeps the swap only while the "
+                    "last commanded gripper is open (approach), the real scene once it closes")
     ap.add_argument("--bind", default="", choices=("", "track", "stop"), help="track the first movable object displaced > 3 cm "
                     "while the commanded gripper is closed (episode field 'bound'); 'stop' ends the episode there")
     a = ap.parse_args()
@@ -130,7 +316,7 @@ def main():
         init_states = suite.get_task_init_states(tid)
         bddl = pathlib.Path(get_libero_path("bddl_files")) / task.problem_folder / task.bddl_file
         env = OffScreenRenderEnv(bddl_file_name=str(bddl), camera_heights=256, camera_widths=256,
-                                     **({"camera_segmentations": "element"} if a.seg else {}))
+                                     **({"camera_segmentations": "element"} if (a.seg or a.swap) else {}))
         env.seed(a.seed)
         eps = []
         todo = ([(int(b["trial"]), b) for b in json.load(open(a.branches))] if a.branches
@@ -146,15 +332,22 @@ def main():
                 env.close()
                 np.random.seed(a.seed)
                 env = OffScreenRenderEnv(bddl_file_name=str(bddl), camera_heights=256, camera_widths=256,
-                                     **({"camera_segmentations": "element"} if a.seg else {}))
+                                     **({"camera_segmentations": "element"} if (a.seg or a.swap) else {}))
                 env.seed(a.seed)
                 for _ in range(int(br.get("resets", 0))):
                     env.reset()
             env.reset()
             obs = env.set_init_state(init_states[k % (a.state_mod or len(init_states))])
+            swapped, rswap = False, None
+            if a.swap and a.swap_mode == "render":
+                rswap = RenderSwap(env, [tuple(p.split(":")) for p in a.swap.split("+") if p])
+                rswap.set(True)
+                swapped = True
             plan = collections.deque()
             t, calls, done, frames, t0 = 0, 0, False, [], time.time()
-            tables = seg_tables(env) if a.seg else None
+            tables = seg_tables(env) if (a.seg or a.swap) else None
+            pairs = [tuple(p.split(":")) for p in a.swap.split("+") if p] if a.swap else []
+            swap_cache, last_q, rec_act = {}, None, []
             bound, bound_step, start_pos = None, None, None
             rec = dict(state=[], action=[], image=[], wrist=[], obj_pos=[], obj_quat=[]) if a.record else None
 
@@ -178,13 +371,33 @@ def main():
                         continue
                     img = np.ascontiguousarray(obs["agentview_image"][::-1, ::-1])
                     wimg = np.ascontiguousarray(obs["robot0_eye_in_hand_image"][::-1, ::-1])
+                    if pairs and not plan and a.swap_mode == "render":
+                        want = not (a.swap_phase == "open" and len(rec_act) and rec_act[-1][6] > 0)
+                        if want != swapped:                  # phase-gated swap: the meshes follow the commanded gripper
+                            rswap.set(want)
+                            swapped = want
+                            sim_ = env.env.sim
+                            img = np.ascontiguousarray(sim_.render(camera_name="agentview", width=256, height=256)[::-1, ::-1])
+                            wimg = np.ascontiguousarray(sim_.render(camera_name="robot0_eye_in_hand", width=256, height=256)[::-1, ::-1])
+                        if a.swap_cams == "agent" and swapped:   # the wrist view real: un-swap, render, re-swap
+                            rswap.set(False)
+                            wimg = np.ascontiguousarray(env.env.sim.render(camera_name="robot0_eye_in_hand", width=256, height=256)[::-1, ::-1])
+                            rswap.set(True)
+                    if pairs and not plan and a.swap_mode == "pixel":    # what the POLICY sees at its queries (recordings keep the real scene)
+                        img_q = role_swap(env, tables, "agentview", img, pairs, swap_cache)
+                        wimg_q = role_swap(env, tables, "robot0_eye_in_hand", wimg, pairs, swap_cache)
+                        img_q = image_tools.convert_to_uint8(image_tools.resize_with_pad(img_q, a.resize, a.resize))
+                        wimg_q = image_tools.convert_to_uint8(image_tools.resize_with_pad(wimg_q, a.resize, a.resize))
                     img = image_tools.convert_to_uint8(image_tools.resize_with_pad(img, a.resize, a.resize))
                     wimg = image_tools.convert_to_uint8(image_tools.resize_with_pad(wimg, a.resize, a.resize))
+                    if not (pairs and not plan and a.swap_mode == "pixel"):
+                        img_q, wimg_q = (last_q if (pairs and a.swap_mode == "pixel" and last_q is not None) else (img, wimg))
+                    last_q = (img_q, wimg_q)
                     if len(eps) < a.videos:
-                        frames.append(img)
+                        frames.append(np.concatenate([img, img_q], axis=1) if (pairs and a.swap_mode == "pixel") else img)
                     st8 = np.concatenate((obs["robot0_eef_pos"], quat2axisangle(obs["robot0_eef_quat"]), obs["robot0_gripper_qpos"]))
                     if not plan:
-                        el = {"observation/image": img, "observation/wrist_image": wimg,
+                        el = {"observation/image": img_q, "observation/wrist_image": wimg_q,
                               "observation/state": st8,
                               "prompt": str(task.language)}
                         if not a.no_meta:
@@ -209,10 +422,22 @@ def main():
                         calls += 1
                         plan.extend(chunk[: a.replan])
                     act = np.asarray(plan.popleft(), np.float32)
+                    rec_act.append(act)
                     if rec is not None:
                         rec["state"].append(np.asarray(st8, np.float32)); rec["action"].append(act)
                         if not a.light:
-                            rec["image"].append(img); rec["wrist"].append(wimg)
+                            if a.swap and a.swap_mode == "render" and swapped:
+                                # the REAL scene for the recording (a fold learns real image + own instruction -> these actions):
+                                # the swap is an involution, so applying it twice restores the meshes
+                                rswap.set(False)
+                                sim_ = env.env.sim
+                                ri = np.ascontiguousarray(sim_.render(camera_name="agentview", width=256, height=256)[::-1, ::-1])
+                                rw = np.ascontiguousarray(sim_.render(camera_name="robot0_eye_in_hand", width=256, height=256)[::-1, ::-1])
+                                rswap.set(True)
+                                rec["image"].append(image_tools.convert_to_uint8(image_tools.resize_with_pad(ri, a.resize, a.resize)))
+                                rec["wrist"].append(image_tools.convert_to_uint8(image_tools.resize_with_pad(rw, a.resize, a.resize)))
+                            else:
+                                rec["image"].append(img); rec["wrist"].append(wimg)
                         if a.objects:
                             _, op_, oq_ = objects(obs)
                             rec["obj_pos"].append(op_.astype(np.float32)); rec["obj_quat"].append(oq_.astype(np.float32))

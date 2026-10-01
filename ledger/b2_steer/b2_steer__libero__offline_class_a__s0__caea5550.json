@@ -1,0 +1,176 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/b2_steer_offline_class_a.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "experiments/b2_steer_offline.py --only libero_90_18+libero_90_26+libero_90_48+libero_90_49+libero_90_52+libero_90_53+libero_90_58+libero_90_59+libero_90_60+libero_90_62+libero_90_65+libero_90_66+libero_90_71+libero_90_38+libero_90_70 --tag class_a --record",
+ "config": {},
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "baymax.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3998069",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "b2_steer",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "caea555081b802be3a13eb116a378c78c5da8079",
+  "short": "caea5550"
+ },
+ "keys": {},
+ "metrics": {
+  "configs": {
+   "fixed4_all": {
+    "beta": 4.0,
+    "layers": null,
+    "mode": "fixed"
+   },
+   "fixed8_all": {
+    "beta": 8.0,
+    "layers": null,
+    "mode": "fixed"
+   },
+   "mass0.3_all": {
+    "layers": null,
+    "mode": "mass",
+    "rho": 0.3
+   },
+   "mass0.3_mid": {
+    "layers": [
+     6,
+     7,
+     8,
+     9,
+     10,
+     11
+    ],
+    "mode": "mass",
+    "rho": 0.3
+   },
+   "mass0.5_all": {
+    "layers": null,
+    "mode": "mass",
+    "rho": 0.5
+   },
+   "mass0.5_mid": {
+    "layers": [
+     6,
+     7,
+     8,
+     9,
+     10,
+     11
+    ],
+    "mode": "mass",
+    "rho": 0.5
+   },
+   "mass0.7_all": {
+    "layers": null,
+    "mode": "mass",
+    "rho": 0.7
+   },
+   "mass0.7_mid": {
+    "layers": [
+     6,
+     7,
+     8,
+     9,
+     10,
+     11
+    ],
+    "mode": "mass",
+    "rho": 0.7
+   }
+  },
+  "groups": {
+   "class_a": {
+    "CC_swap": 0.31332000200572,
+    "PA_base": 0.2989795918367348,
+    "PA_swap": 0.31102040816326537,
+    "chance": 0.2989795918367348,
+    "configs": {
+     "fixed4_all": {
+      "CC": 0.49306134080228586,
+      "LS": 1.0048558867977422,
+      "OS": 0.9596643674752646,
+      "PA": 0.3069387755102041,
+      "SHIFT": 0.18809523809523812
+     },
+     "fixed8_all": {
+      "CC": 0.583925762183645,
+      "LS": 0.7879701453845808,
+      "OS": 0.6711817585548977,
+      "PA": 0.39852040816326534,
+      "SHIFT": 0.3373015873015873
+     },
+     "mass0.3_all": {
+      "CC": 0.44830194537599244,
+      "LS": 0.8727565861256686,
+      "OS": 0.808718645152336,
+      "PA": 0.30865646258503404,
+      "SHIFT": 0.17420634920634923
+     },
+     "mass0.3_mid": {
+      "CC": 0.45459026464445645,
+      "LS": 0.9945703564816688,
+      "OS": 0.9265798862035053,
+      "PA": 0.30088435374149664,
+      "SHIFT": 0.16706349206349208
+     },
+     "mass0.5_all": {
+      "CC": 0.5500007578595986,
+      "LS": 0.7859380082012335,
+      "OS": 0.6876730931751903,
+      "PA": 0.3461564625850341,
+      "SHIFT": 0.2492063492063492
+     },
+     "mass0.5_mid": {
+      "CC": 0.46511050235056406,
+      "LS": 0.9812964757611983,
+      "OS": 0.8626710609999346,
+      "PA": 0.30695578231292525,
+      "SHIFT": 0.15634920634920632
+     },
+     "mass0.7_all": {
+      "CC": 0.6162582030186095,
+      "LS": 2.122359093618343,
+      "OS": 1.1897097257507692,
+      "PA": 0.4291666666666666,
+      "SHIFT": 0.4892857142857143
+     },
+     "mass0.7_mid": {
+      "CC": 0.47112266647873124,
+      "LS": 0.9510798006621816,
+      "OS": 0.7866140309259538,
+      "PA": 0.32039115646258504,
+      "SHIFT": 0.12777777777777777
+     }
+    },
+    "tasks": 14
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "b2_steer__libero__offline_class_a__s0__caea5550",
+ "schema": 1,
+ "script": "experiments/b2_steer_offline.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-01T23:10:58+00:00",
+ "stream": null,
+ "tag": "offline_class_a"
+}

@@ -75,7 +75,7 @@ def shifted(mask16, avoid16):
 
 class BindHooks:
     def __init__(self, bk, task, src="oracle", rho=0.5, beta=None, band="all", cams="agent", ctrl="none", phase=True, seed=0,
-                 w1_layer=None):
+                 w1_layer=None, keep=0.5, phrases=None):
         self.bk, self.task = bk, task
         self.src, self.ctrl, self.phase = src, ctrl, bool(phase)
         self.cfg = (dict(mode="fixed", beta=float(beta)) if beta is not None else dict(mode="mass", rho=float(rho)))
@@ -85,6 +85,8 @@ class BindHooks:
         self.movable = list(task.objects)
         self.rng = np.random.default_rng(seed)
         self.w1_layer = w1_layer
+        self.keep = float(keep)                          # deployable maps keep the tokens >= keep x the map's peak
+        self.phrases = phrases or {}
         self.owl = None
         self.closed = False
         self.placebo = None
@@ -139,7 +141,34 @@ class BindHooks:
             return out
         if any(k.startswith(PRIVILEGED) for k in meta):
             raise RuntimeError("a deployable where-source received privileged simulator state")
-        raise NotImplementedError("deployable where-sources (w1, w3) are wired after Q1a fixes their settings")
+        out = {}
+        for n in names[:1]:                              # one referent per phase for the deployable sources
+            phrase = self.phrase_of(n)
+            if self.src == "w1":
+                from . import where as W
+                g = W.vlm_grounding(self.bk, obs, phrase, layers=[self.w1_layer], tokenizer=self._tok())
+                m = g[self.w1_layer]["agent"]
+            elif self.src == "w3":
+                if self.owl is None:
+                    from .where import OwlDetector
+                    self.owl = OwlDetector()
+                m, _ = self.owl(obs["observation/image"], phrase)
+                m = m / max(float(m.max()), 1e-9)
+            else:
+                raise ValueError(f"unknown where-source {self.src}")
+            out["agent"] = (m >= self.keep * m.max()).astype(np.float32)
+        return out
+
+    def phrase_of(self, inst):
+        """The words the instruction uses for an instance: the scene's phrase for its type, else the type's words."""
+        ty = self.task.objects.get(inst) or self.task.fixtures.get(inst) or inst
+        return self.phrases.get(ty, str(ty).replace("_", " "))
+
+    def _tok(self):
+        if getattr(self, "_tokenizer", None) is None:
+            from openpi.models import tokenizer as _t
+            self._tokenizer = _t.PaligemmaTokenizer(200)
+        return self._tokenizer
 
     # ── the policy's own chunk, with the bias ──────────────────────────────────────────────────────────────────────
     def __call__(self, obs, pre, meta):

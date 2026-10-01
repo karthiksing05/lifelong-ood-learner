@@ -1,0 +1,1098 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "experiments/b2_q2_read.py --record",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky1.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "b2_q2",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "caea555081b802be3a13eb116a378c78c5da8079",
+  "short": "caea5550"
+ },
+ "keys": {},
+ "metrics": {
+  "arms": {
+   "bind_rho0.3_all": {
+    "BA_mean": 0.1,
+    "NONE_max": 0.0,
+    "success_mean": 0.0,
+    "tasks": 4,
+    "tasks_BA_ge_0_5": 0
+   },
+   "bind_rho0.5_all": {
+    "BA_mean": 0.125,
+    "NONE_max": 0.9,
+    "success_mean": 0.0,
+    "tasks": 4,
+    "tasks_BA_ge_0_5": 0
+   },
+   "bind_rho0.7_all": {
+    "BA_mean": 0.425,
+    "NONE_max": 1.0,
+    "success_mean": 0.0,
+    "tasks": 4,
+    "tasks_BA_ge_0_5": 2
+   },
+   "bindplacebo_rho0.5_all": {
+    "BA_mean": 0.1,
+    "NONE_max": 0.3,
+    "success_mean": 0.0,
+    "tasks": 4,
+    "tasks_BA_ge_0_5": 0
+   },
+   "ftoken_self_role": {
+    "BA_mean": 0.75,
+    "NONE_max": 0.0,
+    "success_mean": 0.4,
+    "tasks": 2,
+    "tasks_BA_ge_0_5": 2
+   },
+   "role": {
+    "BA_mean": 0.24285714285714285,
+    "NONE_max": 0.9,
+    "success_mean": 0.14285714285714285,
+    "tasks": 14,
+    "tasks_BA_ge_0_5": 4
+   },
+   "role_agent": {
+    "BA_mean": 0.35,
+    "NONE_max": 0.1,
+    "success_mean": 0.0,
+    "tasks": 2,
+    "tasks_BA_ge_0_5": 1
+   },
+   "role_agent_open": {
+    "BA_mean": 0.35,
+    "NONE_max": 0.1,
+    "success_mean": 0.0,
+    "tasks": 2,
+    "tasks_BA_ge_0_5": 1
+   },
+   "role_open": {
+    "BA_mean": 0.22142857142857145,
+    "NONE_max": 0.6,
+    "success_mean": 0.17142857142857143,
+    "tasks": 14,
+    "tasks_BA_ge_0_5": 3
+   },
+   "roleplacebo": {
+    "BA_mean": 0.05,
+    "BA_placebo_pooled": 0.0,
+    "NONE_max": 0.7,
+    "success_mean": 0.025,
+    "tasks": 4,
+    "tasks_BA_ge_0_5": 0
+   },
+   "roleshape": {
+    "BA_mean": 0.025,
+    "BA_placebo_pooled": 0.45,
+    "NONE_max": 0.7,
+    "success_mean": 0.025,
+    "tasks": 4,
+    "tasks_BA_ge_0_5": 0
+   },
+   "zs": {
+    "BA_mean": 0.07857142857142858,
+    "NONE_max": 0.2,
+    "success_mean": 0.0642857142857143,
+    "tasks": 14,
+    "tasks_BA_ge_0_5": 1
+   }
+  },
+  "experiment": "b_q2mini",
+  "rows": {
+   "18:role": {
+    "BA": 0.0,
+    "NONE": 0.9,
+    "arm": "role",
+    "bound_counts": {
+     "None": 0,
+     "moka_pot_1": 1
+    },
+    "n": 10,
+    "named": "chefmate_8_frypan_1",
+    "success": 0.0,
+    "task": 18
+   },
+   "18:role_open": {
+    "BA": 0.0,
+    "NONE": 0.6,
+    "arm": "role_open",
+    "bound_counts": {
+     "None": 0,
+     "moka_pot_1": 4
+    },
+    "n": 10,
+    "named": "chefmate_8_frypan_1",
+    "success": 0.0,
+    "task": 18
+   },
+   "18:zs": {
+    "BA": 0.0,
+    "NONE": 0.2,
+    "arm": "zs",
+    "bound_counts": {
+     "None": 0,
+     "moka_pot_1": 8
+    },
+    "n": 10,
+    "named": "chefmate_8_frypan_1",
+    "success": 0.0,
+    "task": 18
+   },
+   "21:role": {
+    "BA": 0.0,
+    "NONE": 0.8,
+    "arm": "role",
+    "bound_counts": {
+     "None": 0,
+     "moka_pot_1": 2
+    },
+    "n": 10,
+    "named": "flat_stove_1",
+    "success": 0.0,
+    "task": 21
+   },
+   "21:role_open": {
+    "BA": 0.0,
+    "NONE": 0.4,
+    "arm": "role_open",
+    "bound_counts": {
+     "None": 0,
+     "moka_pot_1": 6
+    },
+    "n": 10,
+    "named": "flat_stove_1",
+    "success": 0.0,
+    "task": 21
+   },
+   "21:zs": {
+    "BA": 0.0,
+    "NONE": 0.0,
+    "arm": "zs",
+    "bound_counts": {
+     "moka_pot_1": 10
+    },
+    "n": 10,
+    "named": "flat_stove_1",
+    "success": 0.0,
+    "task": 21
+   },
+   "26:role": {
+    "BA": 0.5,
+    "NONE": 0.1,
+    "arm": "role",
+    "bound_counts": {
+     "None": 0,
+     "akita_black_bowl_1": 4,
+     "wine_bottle_1": 5
+    },
+    "n": 10,
+    "named": "wine_bottle_1",
+    "success": 0.0,
+    "task": 26
+   },
+   "26:role_open": {
+    "BA": 0.2,
+    "NONE": 0.1,
+    "arm": "role_open",
+    "bound_counts": {
+     "None": 0,
+     "akita_black_bowl_1": 7,
+     "wine_bottle_1": 2
+    },
+    "n": 10,
+    "named": "wine_bottle_1",
+    "success": 0.0,
+    "task": 26
+   },
+   "26:zs": {
+    "BA": 0.2,
+    "NONE": 0.1,
+    "arm": "zs",
+    "bound_counts": {
+     "None": 0,
+     "akita_black_bowl_1": 7,
+     "wine_bottle_1": 2
+    },
+    "n": 10,
+    "named": "wine_bottle_1",
+    "success": 0.0,
+    "task": 26
+   },
+   "48:bind_rho0.3_all": {
+    "BA": 0.0,
+    "NONE": 0.0,
+    "arm": "bind_rho0.3_all",
+    "bound_counts": {
+     "alphabet_soup_1": 10
+    },
+    "n": 10,
+    "named": "ketchup_1",
+    "success": 0.0,
+    "task": 48
+   },
+   "48:bind_rho0.5_all": {
+    "BA": 0.1,
+    "NONE": 0.0,
+    "arm": "bind_rho0.5_all",
+    "bound_counts": {
+     "alphabet_soup_1": 9,
+     "ketchup_1": 1
+    },
+    "n": 10,
+    "named": "ketchup_1",
+    "success": 0.0,
+    "task": 48
+   },
+   "48:bind_rho0.7_all": {
+    "BA": 0.7,
+    "NONE": 0.0,
+    "arm": "bind_rho0.7_all",
+    "bound_counts": {
+     "alphabet_soup_1": 3,
+     "ketchup_1": 7
+    },
+    "n": 10,
+    "named": "ketchup_1",
+    "success": 0.0,
+    "task": 48
+   },
+   "48:bindplacebo_rho0.5_all": {
+    "BA": 0.0,
+    "NONE": 0.2,
+    "arm": "bindplacebo_rho0.5_all",
+    "bound_counts": {
+     "None": 0,
+     "alphabet_soup_1": 6,
+     "tomato_sauce_1": 2
+    },
+    "n": 10,
+    "named": "ketchup_1",
+    "success": 0.0,
+    "task": 48
+   },
+   "48:role": {
+    "BA": 0.0,
+    "NONE": 0.7,
+    "arm": "role",
+    "bound_counts": {
+     "None": 0,
+     "alphabet_soup_1": 2,
+     "tomato_sauce_1": 1
+    },
+    "n": 10,
+    "named": "ketchup_1",
+    "success": 0.0,
+    "task": 48
+   },
+   "48:role_open": {
+    "BA": 0.0,
+    "NONE": 0.0,
+    "arm": "role_open",
+    "bound_counts": {
+     "alphabet_soup_1": 9,
+     "tomato_sauce_1": 1
+    },
+    "n": 10,
+    "named": "ketchup_1",
+    "success": 0.0,
+    "task": 48
+   },
+   "48:roleplacebo": {
+    "BA": 0.0,
+    "BA_placebo": 0.0,
+    "NONE": 0.0,
+    "arm": "roleplacebo",
+    "bound_counts": {
+     "alphabet_soup_1": 10
+    },
+    "n": 10,
+    "named": "ketchup_1",
+    "placebo_object": "tomato_sauce_1",
+    "success": 0.0,
+    "task": 48
+   },
+   "48:roleshape": {
+    "BA": 0.0,
+    "BA_placebo": 0.0,
+    "NONE": 0.1,
+    "arm": "roleshape",
+    "bound_counts": {
+     "None": 0,
+     "alphabet_soup_1": 5,
+     "tomato_sauce_1": 4
+    },
+    "n": 10,
+    "named": "ketchup_1",
+    "placebo_object": "cream_cheese_1",
+    "success": 0.0,
+    "task": 48
+   },
+   "48:zs": {
+    "BA": 0.0,
+    "NONE": 0.0,
+    "arm": "zs",
+    "bound_counts": {
+     "alphabet_soup_1": 10
+    },
+    "n": 10,
+    "named": "ketchup_1",
+    "success": 0.0,
+    "task": 48
+   },
+   "49:bind_rho0.3_all": {
+    "BA": 0.1,
+    "NONE": 0.0,
+    "arm": "bind_rho0.3_all",
+    "bound_counts": {
+     "alphabet_soup_1": 9,
+     "tomato_sauce_1": 1
+    },
+    "n": 10,
+    "named": "tomato_sauce_1",
+    "success": 0.0,
+    "task": 49
+   },
+   "49:bind_rho0.5_all": {
+    "BA": 0.1,
+    "NONE": 0.9,
+    "arm": "bind_rho0.5_all",
+    "bound_counts": {
+     "None": 0,
+     "tomato_sauce_1": 1
+    },
+    "n": 10,
+    "named": "tomato_sauce_1",
+    "success": 0.0,
+    "task": 49
+   },
+   "49:bind_rho0.7_all": {
+    "BA": 0.0,
+    "NONE": 1.0,
+    "arm": "bind_rho0.7_all",
+    "bound_counts": {
+     "None": 0
+    },
+    "n": 10,
+    "named": "tomato_sauce_1",
+    "success": 0.0,
+    "task": 49
+   },
+   "49:bindplacebo_rho0.5_all": {
+    "BA": 0.1,
+    "NONE": 0.1,
+    "arm": "bindplacebo_rho0.5_all",
+    "bound_counts": {
+     "None": 0,
+     "alphabet_soup_1": 8,
+     "tomato_sauce_1": 1
+    },
+    "n": 10,
+    "named": "tomato_sauce_1",
+    "success": 0.0,
+    "task": 49
+   },
+   "49:role": {
+    "BA": 0.0,
+    "NONE": 0.0,
+    "arm": "role",
+    "bound_counts": {
+     "alphabet_soup_1": 10
+    },
+    "n": 10,
+    "named": "tomato_sauce_1",
+    "success": 0.0,
+    "task": 49
+   },
+   "49:role_open": {
+    "BA": 0.0,
+    "NONE": 0.0,
+    "arm": "role_open",
+    "bound_counts": {
+     "alphabet_soup_1": 10
+    },
+    "n": 10,
+    "named": "tomato_sauce_1",
+    "success": 0.0,
+    "task": 49
+   },
+   "49:roleplacebo": {
+    "BA": 0.0,
+    "BA_placebo": 0.0,
+    "NONE": 0.7,
+    "arm": "roleplacebo",
+    "bound_counts": {
+     "None": 0,
+     "alphabet_soup_1": 3
+    },
+    "n": 10,
+    "named": "tomato_sauce_1",
+    "placebo_object": "ketchup_1",
+    "success": 0.1,
+    "task": 49
+   },
+   "49:roleshape": {
+    "BA": 0.0,
+    "BA_placebo": 0.0,
+    "NONE": 0.7,
+    "arm": "roleshape",
+    "bound_counts": {
+     "None": 0,
+     "alphabet_soup_1": 3
+    },
+    "n": 10,
+    "named": "tomato_sauce_1",
+    "placebo_object": "ketchup_1",
+    "success": 0.1,
+    "task": 49
+   },
+   "49:zs": {
+    "BA": 0.0,
+    "NONE": 0.0,
+    "arm": "zs",
+    "bound_counts": {
+     "alphabet_soup_1": 10
+    },
+    "n": 10,
+    "named": "tomato_sauce_1",
+    "success": 0.0,
+    "task": 49
+   },
+   "52:bind_rho0.3_all": {
+    "BA": 0.2,
+    "NONE": 0.0,
+    "arm": "bind_rho0.3_all",
+    "bound_counts": {
+     "alphabet_soup_1": 6,
+     "cream_cheese_1": 1,
+     "milk_1": 2,
+     "orange_juice_1": 1
+    },
+    "n": 10,
+    "named": "milk_1",
+    "success": 0.0,
+    "task": 52
+   },
+   "52:bind_rho0.5_all": {
+    "BA": 0.2,
+    "NONE": 0.1,
+    "arm": "bind_rho0.5_all",
+    "bound_counts": {
+     "None": 0,
+     "alphabet_soup_1": 5,
+     "milk_1": 2,
+     "orange_juice_1": 2
+    },
+    "n": 10,
+    "named": "milk_1",
+    "success": 0.0,
+    "task": 52
+   },
+   "52:bind_rho0.7_all": {
+    "BA": 0.7,
+    "NONE": 0.2,
+    "arm": "bind_rho0.7_all",
+    "bound_counts": {
+     "None": 0,
+     "alphabet_soup_1": 1,
+     "milk_1": 7
+    },
+    "n": 10,
+    "named": "milk_1",
+    "success": 0.0,
+    "task": 52
+   },
+   "52:bindplacebo_rho0.5_all": {
+    "BA": 0.2,
+    "NONE": 0.3,
+    "arm": "bindplacebo_rho0.5_all",
+    "bound_counts": {
+     "None": 0,
+     "alphabet_soup_1": 4,
+     "cream_cheese_1": 1,
+     "milk_1": 2
+    },
+    "n": 10,
+    "named": "milk_1",
+    "success": 0.0,
+    "task": 52
+   },
+   "52:ftoken_self_role": {
+    "BA": 0.5,
+    "NONE": 0.0,
+    "arm": "ftoken_self_role",
+    "bound_counts": {
+     "alphabet_soup_1": 1,
+     "cream_cheese_1": 4,
+     "milk_1": 5
+    },
+    "n": 10,
+    "named": "milk_1",
+    "success": 0.2,
+    "task": 52
+   },
+   "52:role": {
+    "BA": 0.9,
+    "NONE": 0.0,
+    "arm": "role",
+    "bound_counts": {
+     "cream_cheese_1": 1,
+     "milk_1": 9
+    },
+    "n": 10,
+    "named": "milk_1",
+    "success": 0.4,
+    "task": 52
+   },
+   "52:role_agent": {
+    "BA": 0.2,
+    "NONE": 0.0,
+    "arm": "role_agent",
+    "bound_counts": {
+     "alphabet_soup_1": 7,
+     "milk_1": 2,
+     "orange_juice_1": 1
+    },
+    "n": 10,
+    "named": "milk_1",
+    "success": 0.0,
+    "task": 52
+   },
+   "52:role_agent_open": {
+    "BA": 0.2,
+    "NONE": 0.0,
+    "arm": "role_agent_open",
+    "bound_counts": {
+     "alphabet_soup_1": 7,
+     "milk_1": 2,
+     "orange_juice_1": 1
+    },
+    "n": 10,
+    "named": "milk_1",
+    "success": 0.0,
+    "task": 52
+   },
+   "52:role_open": {
+    "BA": 0.9,
+    "NONE": 0.0,
+    "arm": "role_open",
+    "bound_counts": {
+     "cream_cheese_1": 1,
+     "milk_1": 9
+    },
+    "n": 10,
+    "named": "milk_1",
+    "success": 0.7,
+    "task": 52
+   },
+   "52:roleplacebo": {
+    "BA": 0.1,
+    "BA_placebo": 0.0,
+    "NONE": 0.0,
+    "arm": "roleplacebo",
+    "bound_counts": {
+     "alphabet_soup_1": 9,
+     "milk_1": 1
+    },
+    "n": 10,
+    "named": "milk_1",
+    "placebo_object": "tomato_sauce_1",
+    "success": 0.0,
+    "task": 52
+   },
+   "52:roleshape": {
+    "BA": 0.0,
+    "BA_placebo": 1.0,
+    "NONE": 0.0,
+    "arm": "roleshape",
+    "bound_counts": {
+     "orange_juice_1": 10
+    },
+    "n": 10,
+    "named": "milk_1",
+    "placebo_object": "orange_juice_1",
+    "success": 0.0,
+    "task": 52
+   },
+   "52:zs": {
+    "BA": 0.1,
+    "NONE": 0.0,
+    "arm": "zs",
+    "bound_counts": {
+     "alphabet_soup_1": 8,
+     "milk_1": 1,
+     "orange_juice_1": 1
+    },
+    "n": 10,
+    "named": "milk_1",
+    "success": 0.0,
+    "task": 52
+   },
+   "53:bind_rho0.3_all": {
+    "BA": 0.1,
+    "NONE": 0.0,
+    "arm": "bind_rho0.3_all",
+    "bound_counts": {
+     "cream_cheese_1": 4,
+     "milk_1": 5,
+     "orange_juice_1": 1
+    },
+    "n": 10,
+    "named": "orange_juice_1",
+    "success": 0.0,
+    "task": 53
+   },
+   "53:bind_rho0.5_all": {
+    "BA": 0.1,
+    "NONE": 0.1,
+    "arm": "bind_rho0.5_all",
+    "bound_counts": {
+     "None": 0,
+     "cream_cheese_1": 3,
+     "milk_1": 5,
+     "orange_juice_1": 1
+    },
+    "n": 10,
+    "named": "orange_juice_1",
+    "success": 0.0,
+    "task": 53
+   },
+   "53:bind_rho0.7_all": {
+    "BA": 0.3,
+    "NONE": 0.4,
+    "arm": "bind_rho0.7_all",
+    "bound_counts": {
+     "None": 0,
+     "cream_cheese_1": 1,
+     "milk_1": 2,
+     "orange_juice_1": 3
+    },
+    "n": 10,
+    "named": "orange_juice_1",
+    "success": 0.0,
+    "task": 53
+   },
+   "53:bindplacebo_rho0.5_all": {
+    "BA": 0.1,
+    "NONE": 0.2,
+    "arm": "bindplacebo_rho0.5_all",
+    "bound_counts": {
+     "None": 0,
+     "cream_cheese_1": 1,
+     "milk_1": 6,
+     "orange_juice_1": 1
+    },
+    "n": 10,
+    "named": "orange_juice_1",
+    "success": 0.0,
+    "task": 53
+   },
+   "53:ftoken_self_role": {
+    "BA": 1.0,
+    "NONE": 0.0,
+    "arm": "ftoken_self_role",
+    "bound_counts": {
+     "orange_juice_1": 10
+    },
+    "n": 10,
+    "named": "orange_juice_1",
+    "success": 0.6,
+    "task": 53
+   },
+   "53:role": {
+    "BA": 1.0,
+    "NONE": 0.0,
+    "arm": "role",
+    "bound_counts": {
+     "orange_juice_1": 10
+    },
+    "n": 10,
+    "named": "orange_juice_1",
+    "success": 0.3,
+    "task": 53
+   },
+   "53:role_agent": {
+    "BA": 0.5,
+    "NONE": 0.1,
+    "arm": "role_agent",
+    "bound_counts": {
+     "None": 0,
+     "alphabet_soup_1": 4,
+     "orange_juice_1": 5
+    },
+    "n": 10,
+    "named": "orange_juice_1",
+    "success": 0.0,
+    "task": 53
+   },
+   "53:role_agent_open": {
+    "BA": 0.5,
+    "NONE": 0.1,
+    "arm": "role_agent_open",
+    "bound_counts": {
+     "None": 0,
+     "alphabet_soup_1": 4,
+     "orange_juice_1": 5
+    },
+    "n": 10,
+    "named": "orange_juice_1",
+    "success": 0.0,
+    "task": 53
+   },
+   "53:role_open": {
+    "BA": 1.0,
+    "NONE": 0.0,
+    "arm": "role_open",
+    "bound_counts": {
+     "orange_juice_1": 10
+    },
+    "n": 10,
+    "named": "orange_juice_1",
+    "success": 0.7,
+    "task": 53
+   },
+   "53:roleplacebo": {
+    "BA": 0.1,
+    "BA_placebo": 0.0,
+    "NONE": 0.0,
+    "arm": "roleplacebo",
+    "bound_counts": {
+     "alphabet_soup_1": 9,
+     "orange_juice_1": 1
+    },
+    "n": 10,
+    "named": "orange_juice_1",
+    "placebo_object": "tomato_sauce_1",
+    "success": 0.0,
+    "task": 53
+   },
+   "53:roleshape": {
+    "BA": 0.1,
+    "BA_placebo": 0.8,
+    "NONE": 0.0,
+    "arm": "roleshape",
+    "bound_counts": {
+     "cream_cheese_1": 1,
+     "milk_1": 8,
+     "orange_juice_1": 1
+    },
+    "n": 10,
+    "named": "orange_juice_1",
+    "placebo_object": "milk_1",
+    "success": 0.0,
+    "task": 53
+   },
+   "53:zs": {
+    "BA": 0.0,
+    "NONE": 0.0,
+    "arm": "zs",
+    "bound_counts": {
+     "milk_1": 10
+    },
+    "n": 10,
+    "named": "orange_juice_1",
+    "success": 0.0,
+    "task": 53
+   },
+   "58:role": {
+    "BA": 0.0,
+    "NONE": 0.0,
+    "arm": "role",
+    "bound_counts": {
+     "alphabet_soup_1": 4,
+     "butter_1": 1,
+     "cream_cheese_1": 4,
+     "tomato_sauce_1": 1
+    },
+    "n": 10,
+    "named": "ketchup_1",
+    "success": 0.0,
+    "task": 58
+   },
+   "58:role_open": {
+    "BA": 0.0,
+    "NONE": 0.0,
+    "arm": "role_open",
+    "bound_counts": {
+     "alphabet_soup_1": 4,
+     "butter_1": 1,
+     "cream_cheese_1": 4,
+     "tomato_sauce_1": 1
+    },
+    "n": 10,
+    "named": "ketchup_1",
+    "success": 0.0,
+    "task": 58
+   },
+   "58:zs": {
+    "BA": 0.0,
+    "NONE": 0.0,
+    "arm": "zs",
+    "bound_counts": {
+     "alphabet_soup_1": 9,
+     "tomato_sauce_1": 1
+    },
+    "n": 10,
+    "named": "ketchup_1",
+    "success": 0.0,
+    "task": 58
+   },
+   "59:role": {
+    "BA": 0.0,
+    "NONE": 0.0,
+    "arm": "role",
+    "bound_counts": {
+     "alphabet_soup_1": 9,
+     "cream_cheese_1": 1
+    },
+    "n": 10,
+    "named": "tomato_sauce_1",
+    "success": 0.3,
+    "task": 59
+   },
+   "59:role_open": {
+    "BA": 0.0,
+    "NONE": 0.0,
+    "arm": "role_open",
+    "bound_counts": {
+     "alphabet_soup_1": 9,
+     "cream_cheese_1": 1
+    },
+    "n": 10,
+    "named": "tomato_sauce_1",
+    "success": 0.0,
+    "task": 59
+   },
+   "59:zs": {
+    "BA": 0.0,
+    "NONE": 0.1,
+    "arm": "zs",
+    "bound_counts": {
+     "None": 0,
+     "alphabet_soup_1": 7,
+     "butter_1": 2
+    },
+    "n": 10,
+    "named": "tomato_sauce_1",
+    "success": 0.1,
+    "task": 59
+   },
+   "60:role": {
+    "BA": 1.0,
+    "NONE": 0.0,
+    "arm": "role",
+    "bound_counts": {
+     "akita_black_bowl_1": 10
+    },
+    "n": 10,
+    "named": "akita_black_bowl_1",
+    "success": 1.0,
+    "task": 60
+   },
+   "60:role_open": {
+    "BA": 1.0,
+    "NONE": 0.0,
+    "arm": "role_open",
+    "bound_counts": {
+     "akita_black_bowl_1": 10
+    },
+    "n": 10,
+    "named": "akita_black_bowl_1",
+    "success": 1.0,
+    "task": 60
+   },
+   "60:zs": {
+    "BA": 0.8,
+    "NONE": 0.0,
+    "arm": "zs",
+    "bound_counts": {
+     "akita_black_bowl_1": 8,
+     "akita_black_bowl_2": 2
+    },
+    "n": 10,
+    "named": "akita_black_bowl_1",
+    "success": 0.8,
+    "task": 60
+   },
+   "62:role": {
+    "BA": 0.0,
+    "NONE": 0.0,
+    "arm": "role",
+    "bound_counts": {
+     "akita_black_bowl_1": 9,
+     "chocolate_pudding_1": 1
+    },
+    "n": 10,
+    "named": "new_salad_dressing_1",
+    "success": 0.0,
+    "task": 62
+   },
+   "62:role_open": {
+    "BA": 0.0,
+    "NONE": 0.0,
+    "arm": "role_open",
+    "bound_counts": {
+     "akita_black_bowl_1": 10
+    },
+    "n": 10,
+    "named": "new_salad_dressing_1",
+    "success": 0.0,
+    "task": 62
+   },
+   "62:zs": {
+    "BA": 0.0,
+    "NONE": 0.0,
+    "arm": "zs",
+    "bound_counts": {
+     "akita_black_bowl_1": 1,
+     "akita_black_bowl_2": 1,
+     "chocolate_pudding_1": 8
+    },
+    "n": 10,
+    "named": "new_salad_dressing_1",
+    "success": 0.0,
+    "task": 62
+   },
+   "65:role": {
+    "BA": 0.0,
+    "NONE": 0.0,
+    "arm": "role",
+    "bound_counts": {
+     "porcelain_mug_1": 10
+    },
+    "n": 10,
+    "named": "red_coffee_mug_1",
+    "success": 0.0,
+    "task": 65
+   },
+   "65:role_open": {
+    "BA": 0.0,
+    "NONE": 0.0,
+    "arm": "role_open",
+    "bound_counts": {
+     "porcelain_mug_1": 10
+    },
+    "n": 10,
+    "named": "red_coffee_mug_1",
+    "success": 0.0,
+    "task": 65
+   },
+   "65:zs": {
+    "BA": 0.0,
+    "NONE": 0.0,
+    "arm": "zs",
+    "bound_counts": {
+     "porcelain_mug_1": 9,
+     "white_yellow_mug_1": 1
+    },
+    "n": 10,
+    "named": "red_coffee_mug_1",
+    "success": 0.0,
+    "task": 65
+   },
+   "66:role": {
+    "BA": 0.0,
+    "NONE": 0.0,
+    "arm": "role",
+    "bound_counts": {
+     "porcelain_mug_1": 10
+    },
+    "n": 10,
+    "named": "red_coffee_mug_1",
+    "success": 0.0,
+    "task": 66
+   },
+   "66:role_open": {
+    "BA": 0.0,
+    "NONE": 0.0,
+    "arm": "role_open",
+    "bound_counts": {
+     "porcelain_mug_1": 10
+    },
+    "n": 10,
+    "named": "red_coffee_mug_1",
+    "success": 0.0,
+    "task": 66
+   },
+   "66:zs": {
+    "BA": 0.0,
+    "NONE": 0.0,
+    "arm": "zs",
+    "bound_counts": {
+     "porcelain_mug_1": 10
+    },
+    "n": 10,
+    "named": "red_coffee_mug_1",
+    "success": 0.0,
+    "task": 66
+   },
+   "71:role": {
+    "BA": 0.0,
+    "NONE": 0.0,
+    "arm": "role",
+    "bound_counts": {
+     "chocolate_pudding_1": 1,
+     "porcelain_mug_1": 9
+    },
+    "n": 10,
+    "named": "red_coffee_mug_1",
+    "success": 0.0,
+    "task": 71
+   },
+   "71:role_open": {
+    "BA": 0.0,
+    "NONE": 0.0,
+    "arm": "role_open",
+    "bound_counts": {
+     "porcelain_mug_1": 10
+    },
+    "n": 10,
+    "named": "red_coffee_mug_1",
+    "success": 0.0,
+    "task": 71
+   },
+   "71:zs": {
+    "BA": 0.0,
+    "NONE": 0.0,
+    "arm": "zs",
+    "bound_counts": {
+     "porcelain_mug_1": 10
+    },
+    "n": 10,
+    "named": "red_coffee_mug_1",
+    "success": 0.0,
+    "task": 71
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "b2_q2__libero_90__b_q2mini__s0__caea5550",
+ "schema": 1,
+ "script": "experiments/b2_q2_read.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-01T23:39:17+00:00",
+ "stream": null,
+ "tag": "b_q2mini"
+}

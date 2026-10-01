@@ -1,0 +1,106 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/ftoken_52_role.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 18432,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 18432,
+  "tree": 0
+ },
+ "command": "experiments/f4_fold.py --task 52 --source rollouts --rec results/robot/b_k1_practice_52_role_rec --tag _role",
+ "config": {
+  "batch": 16,
+  "demo": 0,
+  "lr": 0.01,
+  "max_frames": 400,
+  "n_tokens": 1,
+  "rec": "results/robot/b_k1_practice_52_role_rec",
+  "seed": 0,
+  "source": "rollouts",
+  "steps": 600,
+  "stride": 5,
+  "tag": "_role",
+  "task": "52"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "spot.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3998344",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "f4_fold",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "caea555081b802be3a13eb116a378c78c5da8079",
+  "short": "caea5550"
+ },
+ "keys": {
+  "task": "52"
+ },
+ "metrics": {
+  "curve": {
+   "anchor": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "loss": [
+    0.0377371571958065,
+    0.019520163536071777,
+    0.031347114592790604,
+    0.02863357774913311,
+    0.014469566754996777,
+    0.02389901876449585
+   ],
+   "step": [
+    100,
+    200,
+    300,
+    400,
+    500,
+    600
+   ]
+  },
+  "demo_episode": [
+   "results/robot/b_k1_practice_52_role_rec/task52_trial13.npz",
+   "results/robot/b_k1_practice_52_role_rec/task52_trial17.npz",
+   "results/robot/b_k1_practice_52_role_rec/task52_trial18.npz",
+   "results/robot/b_k1_practice_52_role_rec/task52_trial19.npz",
+   "results/robot/b_k1_practice_52_role_rec/task52_trial21.npz",
+   "results/robot/b_k1_practice_52_role_rec/task52_trial22.npz",
+   "results/robot/b_k1_practice_52_role_rec/task52_trial24.npz",
+   "results/robot/b_k1_practice_52_role_rec/task52_trial26.npz",
+   "results/robot/b_k1_practice_52_role_rec/task52_trial29.npz"
+  ],
+  "final_loss": 0.02389901876449585,
+  "first_loss": 0.0377371571958065,
+  "n_frames": 388,
+  "n_tokens": 1,
+  "source": "rollouts",
+  "task": "52",
+  "text": "pick up the milk and put it in the basket",
+  "train_secs": 63.370402574539185
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "f4_fold__libero_90__token_rollouts_role__task-52__s0__caea5550",
+ "schema": 1,
+ "script": "experiments/f4_fold.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-01T23:31:33+00:00",
+ "stream": null,
+ "tag": "token_rollouts_role"
+}

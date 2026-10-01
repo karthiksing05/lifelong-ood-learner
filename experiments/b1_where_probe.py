@@ -86,18 +86,21 @@ def main():
             rec = dict(state=int(z["states"][k]), w1={}, w3={}, ex={}, cover={c: float(truth[c].sum()) for c in cands})
             for c in visible:
                 obs = dict(base, prompt=prompts[c])
-                try:
-                    g = W.vlm_grounding(bk, obs, ph[c], tokenizer=tok)
-                except ValueError as e:
-                    print(f"[b1] {key} {c}: {e}", flush=True)
-                    continue
-                rec["w1"][c] = {int(l): int(W.points_at(m["agent"], truth[c], MIN_COVER)) for l, m in g.items()}
+                if "--skip-w1" not in sys.argv:
+                    try:
+                        g = W.vlm_grounding(bk, obs, ph[c], tokenizer=tok)
+                    except ValueError as e:
+                        print(f"[b1] {key} {c}: {e}", flush=True)
+                        continue
+                    rec["w1"][c] = {int(l): int(W.points_at(m["agent"], truth[c], MIN_COVER)) for l, m in g.items()}
                 if owl is not None:
                     mo, sc = owl(z["img"][k], ph[c])
-                    rec["w3"][c] = dict(hit=int(W.points_at(mo, truth[c], MIN_COVER)), score=sc)
+                    ctr = owl.last_center
+                    rec["w3"][c] = dict(hit=int(ctr is not None and truth[c][ctr] > MIN_COVER),          # box centre on the object
+                                        hit_peak=int(W.points_at(mo, truth[c], MIN_COVER)), score=sc, center=ctr)
             # the expert's own attention under the task's OWN instruction, one logging pass per candidate's oracle map
             pre = bk.prefix(bk.observation(dict(base, prompt=t.language)))
-            for c in visible:
+            for c in ([] if "--skip-ex" in sys.argv else visible):
                 log = []
                 bk.sample(1, pre, seed=0, step_gate=AB.bias_gate(bk, {"agent": (truth[c] >= MIN_COVER).astype(np.float32)}, pre,
                                                                  mode="fixed", beta=0.0, log=log))
@@ -125,13 +128,15 @@ def main():
                              ex_own_top=float(np.mean([v["ex_own_top"] for v in vs if v["ex_own_top"] is not None])))
         print(f"[b1] GROUP {gname}: {groups[gname]}", flush=True)
     res = dict(min_cover=MIN_COVER, groups=groups, per_task=per_task)
-    json.dump(res, open(os.path.join(R, "b1_where_probe.json"), "w"), indent=1)
+    TAG = sys.argv[sys.argv.index("--tag") + 1] if "--tag" in sys.argv else ""
+    out = os.path.join(R, f"b1_where_probe{'_' + TAG if TAG else ''}.json")
+    json.dump(res, open(out, "w"), indent=1)
     if "--record" in sys.argv:
         from lifelong_ood import ledger
-        print(ledger.record("b1_where", bench="libero", tag="read", seed=0, metrics=dict(min_cover=MIN_COVER, groups=groups),
+        print(ledger.record("b1_where", bench="libero", tag="read" + ("_" + TAG if TAG else ""), seed=0, metrics=dict(min_cover=MIN_COVER, groups=groups),
                             bytes=dict(experts=0, tree=0, codes=0, samples=0, teacher_copies=0, total=0), config={},
                             script="experiments/b1_where_probe.py", command=" ".join(sys.argv),
-                            artifacts=[os.path.join(R, "b1_where_probe.json")]))
+                            artifacts=[out]))
 
 
 if __name__ == "__main__":

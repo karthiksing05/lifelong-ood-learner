@@ -220,13 +220,15 @@ def main():
             print(f"[b2]     {n:14s} PA {v['PA']:.2f} CC {v['CC']:+.2f} OS {v['OS']} LS {v['LS']} SHIFT {v['SHIFT']}", flush=True)
     res = dict(configs={k: {kk: (list(vv) if isinstance(vv, tuple) else vv) for kk, vv in v.items()} for k, v in CONFIGS.items()},
                seeds=list(SEEDS), groups=groups, per_task=per_task)
-    json.dump(res, open(os.path.join(R, "b2_steer_offline.json"), "w"), indent=1)
+    TAG = sys.argv[sys.argv.index("--tag") + 1] if "--tag" in sys.argv else ""
+    out = os.path.join(R, f"b2_steer_offline{'_' + TAG if TAG else ''}.json")
+    json.dump(res, open(out, "w"), indent=1)
     if "--record" in sys.argv:
         from lifelong_ood import ledger
-        print(ledger.record("b2_steer", bench="libero", tag="offline", seed=0, metrics=dict(groups=groups, configs=res["configs"]),
+        print(ledger.record("b2_steer", bench="libero", tag="offline" + ("_" + TAG if TAG else ""), seed=0, metrics=dict(groups=groups, configs=res["configs"]),
                             bytes=dict(experts=0, tree=0, codes=0, samples=0, teacher_copies=0, total=0), config={},
                             script="experiments/b2_steer_offline.py", command=" ".join(sys.argv),
-                            artifacts=[os.path.join(R, "b2_steer_offline.json")]))
+                            artifacts=[out]))
 
 
 if __name__ == "__main__":

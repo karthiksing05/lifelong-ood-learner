@@ -1,0 +1,85 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/b1_where_probe_w3center.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "experiments/b1_where_probe.py --skip-w1 --skip-ex --tag w3center --record",
+ "config": {},
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "spd-13.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3998191",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "b1_where",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "caea555081b802be3a13eb116a378c78c5da8079",
+  "short": "caea5550"
+ },
+ "keys": {},
+ "metrics": {
+  "groups": {
+   "class_a": {
+    "ex_own_top": NaN,
+    "tasks": 14,
+    "w1_by_layer": {},
+    "w3": 0.7125680272108844
+   },
+   "object": {
+    "ex_own_top": NaN,
+    "tasks": 10,
+    "w1_by_layer": {},
+    "w3": 0.545
+   },
+   "other_libero_10": {
+    "ex_own_top": NaN,
+    "tasks": 4,
+    "w1_by_layer": {},
+    "w3": 0.975
+   },
+   "other_libero_90": {
+    "ex_own_top": NaN,
+    "tasks": 53,
+    "w1_by_layer": {},
+    "w3": 0.8507839947950554
+   },
+   "other_libero_spatial": {
+    "ex_own_top": NaN,
+    "tasks": 10,
+    "w1_by_layer": {},
+    "w3": 1.0
+   },
+   "validity": {
+    "ex_own_top": NaN,
+    "tasks": 8,
+    "w1_by_layer": {},
+    "w3": 0.6458333333333333
+   }
+  },
+  "min_cover": 0.1
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "b1_where__libero__read_w3center__s0__caea5550",
+ "schema": 1,
+ "script": "experiments/b1_where_probe.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-01T23:05:50+00:00",
+ "stream": null,
+ "tag": "read_w3center"
+}
