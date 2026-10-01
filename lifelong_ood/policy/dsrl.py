@@ -4,8 +4,8 @@ policy pi0.5: the policy's weights stay frozen and a small SAC agent chooses the
 Latent action z in [-beta, beta]^(H x A) (tanh-squashed Gaussian; H x A = 10 x 32, the padded chunk the flow integrates from), the
 observation = frozen ResNet-18 features of both cameras + the robot's 8-D state, sparse reward 1 when the episode succeeds (on its
 last chunk) else 0, terminal at episode end.  Stabilised for 320 bounded dimensions and a small buffer (the first version diverged:
-critic loss to 1e13, auto-tuned temperature from 0.01 to 1.6): the critic learns the discounted chance of success with targets
-clamped to [0, 1] and no entropy bonus, LayerNorm in every MLP, a fixed temperature 0.01 on the per-dimension log-probability in the
+critic loss to 1e13, auto-tuned temperature from 0.01 to 1.6): the critic learns the discounted chance of success through a
+sigmoid head (it cannot extrapolate above 1; a linear head valued the actor's noise at 2-3) without the entropy bonus, LayerNorm in every MLP, a fixed temperature 0.01 on the per-dimension log-probability in the
 actor's loss only, and 4 updates per chunk.  The replay buffer starts with `warmup` episodes of ordinary Gaussian noise (the base
 policy); after each later episode the agent takes utd x (that episode's chunks) gradient steps.  The client reports each episode's
 outcome at the next episode's start (meta prev_success), so the last training episode's outcome is not used.
@@ -131,14 +131,14 @@ class DSRLHooks:
         for _ in range(n):
             i = torch.as_tensor(self.rng.integers(0, B, min(self.batch, B)), device=self.device)
             s, z, r, s2, d = S[i], Z[i], Rw[i], S2[i], Dn[i]
-            with torch.no_grad():                                        # Q = the discounted chance of success, in [0, 1]
+            with torch.no_grad():                                        # Q = the discounted chance of success: a sigmoid head
                 z2, _ = self.actor(s2)
-                qn = torch.min(*[qt(torch.cat([s2, z2], -1)).squeeze(-1) for qt in self.qt])
-                y = (r + self.gamma * (1 - d) * qn).clamp(0.0, 1.0)
-            ql = sum(F.mse_loss(q(torch.cat([s, z], -1)).squeeze(-1), y) for q in self.q)
+                qn = torch.min(*[torch.sigmoid(qt(torch.cat([s2, z2], -1)).squeeze(-1)) for qt in self.qt])
+                y = r + self.gamma * (1 - d) * qn
+            ql = sum(F.binary_cross_entropy_with_logits(q(torch.cat([s, z], -1)).squeeze(-1), y) for q in self.q)
             self.opt_q.zero_grad(); ql.backward(); self.opt_q.step()
             za, lp = self.actor(s)
-            qa = torch.min(*[q(torch.cat([s, za], -1)).squeeze(-1) for q in self.q])
+            qa = torch.min(*[torch.sigmoid(q(torch.cat([s, za], -1)).squeeze(-1)) for q in self.q])
             al = (self.alpha * lp - qa).mean()                           # a fixed, small entropy regulariser on the actor only
             self.opt_a.zero_grad(); al.backward(); self.opt_a.step()
             with torch.no_grad():
