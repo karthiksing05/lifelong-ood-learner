@@ -1,0 +1,88 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/m3_final_53_dsrl.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "roll.sh MODE=dsrl:53?train=0&load=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/dsrl_53_actor.pt&beta=2 SUITE=libero_90 TASKS=53 TRIALS=20 (job 3994107)",
+ "config": {
+  "client": {
+   "branches": "",
+   "first_trial": 30,
+   "host": "127.0.0.1",
+   "light": false,
+   "max_steps": 0,
+   "no_meta": false,
+   "objects": false,
+   "out": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/m3_final_53_dsrl.json",
+   "port": 9682,
+   "record": false,
+   "replan": 5,
+   "resize": 224,
+   "seed": 7,
+   "state_mod": 0,
+   "suite": "libero_90",
+   "tasks": "53",
+   "trials": 20,
+   "videos": 2,
+   "wait": 10
+  },
+  "job": "3994107",
+  "mode": "dsrl:53?train=0&load=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/dsrl_53_actor.pt&beta=2"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "spot.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3994107",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_final",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "eb2684ccc3d14e6300e8fb01f6bd60f0a66f9d32",
+  "short": "eb2684cc"
+ },
+ "keys": {
+  "first_trial": 30,
+  "mode": "dsrl:53?train=0&load=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/dsrl_53_actor.pt&beta=2",
+  "tasks": "53",
+  "trials": 20
+ },
+ "metrics": {
+  "complete": true,
+  "n_episodes": 20,
+  "secs": 430.9773542881012,
+  "success_rate": 1.0,
+  "tasks": {
+   "53": {
+    "errors": 0,
+    "language": "pick up the orange juice and put it in the basket",
+    "mean_steps": 134.6,
+    "n": 20,
+    "success_rate": 1.0
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_final__libero_90__dsrl__first_trial-30__modeb717e872e6a7__tasks-53__trials-20__s7__eb2684cc",
+ "schema": 1,
+ "script": "experiments/libero_client.py",
+ "seconds": null,
+ "seed": 7,
+ "source_commit": null,
+ "started": "2026-10-01T08:36:14+00:00",
+ "stream": null,
+ "tag": "dsrl"
+}

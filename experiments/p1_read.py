@@ -384,7 +384,7 @@ def compress():
 
 def sota():
     """ledger m3_prereg tag baselines_sota: B1-B3 ours (bindings, 7 KB reader head) vs STRAP, DSRL, experience replay; Holm."""
-    arms = {"ours": "phasebind2_rjpred_pca512_rj", "strap": "lora_strap", "dsrl": "dsrl", "er": "lora_er", "lora": "lora", "nft": "lora_r17bal"}
+    arms = {"ours": "phasebind2_rjpred_pca512_rj", "strap": "lora_strap", "dsrl": "dsrl", "er": "lora_er", "nft": "lora_r17bal"}
     tab = table(HELD, arms)
     res = {"per_task": {t: {k: int(sum(v[k].values())) for k in v} for t, v in tab.items()}}
     ps = {}
@@ -395,7 +395,6 @@ def sota():
     for i, h in enumerate(order):                                    # Holm
         res[h]["holm_p"] = min(1.0, max(ps[o] * (len(order) - j) for j, o in enumerate(order[:i + 1])))
         res[h]["ours_better"] = bool(res[h]["x"] > res[h]["control"] and res[h]["holm_p"] < 0.05)
-    res["vs_lora"] = {b: compare(tab, b, "lora") for b in ("strap", "dsrl", "er")}
     res["vs_nft"] = {b: compare(tab, b, "nft") for b in ("strap", "dsrl", "er")}
     for h in ("B1", "B2", "B3"):
         v = res[h]

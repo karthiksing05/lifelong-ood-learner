@@ -1,0 +1,324 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "experiments/p1_read.py sota --record  # bindings (7 KB reader head) vs STRAP, DSRL and experience replay, 21 tasks",
+ "config": {
+  "read": "sota",
+  "record": true
+ },
+ "env": {
+  "device": "cpu",
+  "host": "sky1.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "p1_bindings",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "eb2684ccc3d14e6300e8fb01f6bd60f0a66f9d32",
+  "short": "eb2684cc"
+ },
+ "keys": {},
+ "metrics": {
+  "B1": {
+   "control": 168,
+   "diff": {
+    "diff": 0.4857142857142857,
+    "hi": 0.638095238095238,
+    "hi90": 0.6166666666666667,
+    "lo": 0.33095238095238094,
+    "lo90": 0.3547619047619048,
+    "n_pairs": 420,
+    "n_tasks": 21
+   },
+   "discordant": [
+    217,
+    13
+   ],
+   "holm_p": 1.412146052907404e-48,
+   "n": 420,
+   "ours_better": true,
+   "sign_p": 7.06073026453702e-49,
+   "x": 372,
+   "x_arm": "phasebind2_rjpred_pca512_rj",
+   "y_arm": "lora_strap"
+  },
+  "B2": {
+   "control": 234,
+   "diff": {
+    "diff": 0.32857142857142857,
+    "hi": 0.46904761904761905,
+    "hi90": 0.44761904761904764,
+    "lo": 0.19285714285714287,
+    "lo90": 0.21428571428571427,
+    "n_pairs": 420,
+    "n_tasks": 21
+   },
+   "discordant": [
+    155,
+    17
+   ],
+   "holm_p": 4.694050536180948e-29,
+   "n": 420,
+   "ours_better": true,
+   "sign_p": 4.694050536180948e-29,
+   "x": 372,
+   "x_arm": "phasebind2_rjpred_pca512_rj",
+   "y_arm": "dsrl"
+  },
+  "B3": {
+   "control": 138,
+   "diff": {
+    "diff": 0.5571428571428572,
+    "hi": 0.7,
+    "hi90": 0.6761904761904762,
+    "lo": 0.4095238095238095,
+    "lo90": 0.43333333333333335,
+    "n_pairs": 420,
+    "n_tasks": 21
+   },
+   "discordant": [
+    245,
+    11
+   ],
+   "holm_p": 3.381633086175877e-58,
+   "n": 420,
+   "ours_better": true,
+   "sign_p": 1.1272110287252922e-58,
+   "x": 372,
+   "x_arm": "phasebind2_rjpred_pca512_rj",
+   "y_arm": "lora_er"
+  },
+  "per_task": {
+   "1": {
+    "dsrl": 0,
+    "er": 2,
+    "nft": 9,
+    "ours": 20,
+    "strap": 3
+   },
+   "3": {
+    "dsrl": 20,
+    "er": 1,
+    "nft": 18,
+    "ours": 20,
+    "strap": 18
+   },
+   "32": {
+    "dsrl": 3,
+    "er": 6,
+    "nft": 10,
+    "ours": 20,
+    "strap": 9
+   },
+   "34": {
+    "dsrl": 18,
+    "er": 17,
+    "nft": 17,
+    "ours": 20,
+    "strap": 2
+   },
+   "35": {
+    "dsrl": 4,
+    "er": 0,
+    "nft": 7,
+    "ours": 20,
+    "strap": 3
+   },
+   "36": {
+    "dsrl": 13,
+    "er": 6,
+    "nft": 17,
+    "ours": 20,
+    "strap": 12
+   },
+   "37": {
+    "dsrl": 14,
+    "er": 3,
+    "nft": 17,
+    "ours": 18,
+    "strap": 7
+   },
+   "39": {
+    "dsrl": 10,
+    "er": 4,
+    "nft": 16,
+    "ours": 6,
+    "strap": 4
+   },
+   "4": {
+    "dsrl": 15,
+    "er": 8,
+    "nft": 11,
+    "ours": 20,
+    "strap": 11
+   },
+   "40": {
+    "dsrl": 6,
+    "er": 1,
+    "nft": 4,
+    "ours": 9,
+    "strap": 11
+   },
+   "41": {
+    "dsrl": 12,
+    "er": 0,
+    "nft": 18,
+    "ours": 18,
+    "strap": 16
+   },
+   "42": {
+    "dsrl": 6,
+    "er": 7,
+    "nft": 9,
+    "ours": 19,
+    "strap": 3
+   },
+   "43": {
+    "dsrl": 14,
+    "er": 8,
+    "nft": 20,
+    "ours": 20,
+    "strap": 9
+   },
+   "48": {
+    "dsrl": 6,
+    "er": 19,
+    "nft": 18,
+    "ours": 17,
+    "strap": 2
+   },
+   "5": {
+    "dsrl": 19,
+    "er": 5,
+    "nft": 16,
+    "ours": 17,
+    "strap": 17
+   },
+   "52": {
+    "dsrl": 11,
+    "er": 1,
+    "nft": 14,
+    "ours": 20,
+    "strap": 0
+   },
+   "53": {
+    "dsrl": 20,
+    "er": 14,
+    "nft": 20,
+    "ours": 20,
+    "strap": 1
+   },
+   "58": {
+    "dsrl": 8,
+    "er": 8,
+    "nft": 16,
+    "ours": 19,
+    "strap": 3
+   },
+   "6": {
+    "dsrl": 16,
+    "er": 19,
+    "nft": 18,
+    "ours": 20,
+    "strap": 20
+   },
+   "62": {
+    "dsrl": 5,
+    "er": 6,
+    "nft": 14,
+    "ours": 9,
+    "strap": 5
+   },
+   "63": {
+    "dsrl": 14,
+    "er": 3,
+    "nft": 13,
+    "ours": 20,
+    "strap": 12
+   }
+  },
+  "vs_nft": {
+   "dsrl": {
+    "control": 302,
+    "diff": {
+     "diff": -0.1619047619047619,
+     "hi": -0.05714285714285714,
+     "hi90": -0.07380952380952381,
+     "lo": -0.26666666666666666,
+     "lo90": -0.25,
+     "n_pairs": 420,
+     "n_tasks": 21
+    },
+    "discordant": [
+     34,
+     102
+    ],
+    "n": 420,
+    "sign_p": 4.379138784366245e-09,
+    "x": 234
+   },
+   "er": {
+    "control": 302,
+    "diff": {
+     "diff": -0.3904761904761905,
+     "hi": -0.26422619047619134,
+     "hi90": -0.2833333333333333,
+     "lo": -0.5190476190476191,
+     "lo90": -0.5,
+     "n_pairs": 420,
+     "n_tasks": 21
+    },
+    "discordant": [
+     25,
+     189
+    ],
+    "n": 420,
+    "sign_p": 2.3858975875220056e-32,
+    "x": 138
+   },
+   "strap": {
+    "control": 302,
+    "diff": {
+     "diff": -0.319047619047619,
+     "hi": -0.16428571428571428,
+     "hi90": -0.19047619047619047,
+     "lo": -0.4738095238095238,
+     "lo90": -0.45,
+     "n_pairs": 420,
+     "n_tasks": 21
+    },
+    "discordant": [
+     39,
+     173
+    ],
+    "n": 420,
+    "sign_p": 2.4549823660215025e-21,
+    "x": 168
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "p1_bindings__libero_90__sota__s0__eb2684cc",
+ "schema": 1,
+ "script": "experiments/p1_read.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-01T12:32:29+00:00",
+ "stream": null,
+ "tag": "sota"
+}

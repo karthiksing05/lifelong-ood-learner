@@ -555,7 +555,53 @@ T21 = [("zero-shot pi0.5", "zeroshot", ""), ("replaying the demo open-loop", "ba
        ("LoRA + practice + failure negatives", "nft_bal", ""), ("LoRA on demos generated from the phases", "gen_lora_v2", ""),
        ("bindings, simulator poses", "ours_phasebind2", "ours"), ("bindings, learned reader", "ours_phasebind2_synth", "ours")]
 t21_rows = [[c, esc(lab), str(meth(k)["k"]), fmt_bytes(max(meth(k)["bytes"], 1)) if meth(k)["bytes"] else "0 B"] for lab, k, c in T21]
+sota = row("p1_bindings", "sota")
+if sota:
+    lora21 = meth("practice_lora")["bytes"]
+    actor = sum(os.path.getsize(os.path.join(R, f"dsrl_{t}_actor.pt")) for t in (35, 36, 39, 42, 1, 6, 34, 37, 40, 52, 53, 62, 3, 4, 5, 32, 41, 43, 48, 58, 63))
+    new_rows = [["", "STRAP: LoRA on the demo + retrieved sub-trajectories", str(sota["B1"]["control"]), fmt_bytes(lora21)],
+                ["", "DSRL: one-demo LoRA steered in noise space, 100 practice episodes", str(sota["B2"]["control"]), fmt_bytes(lora21 + actor)],
+                ["", "experience replay: one LoRA on all 21 demos", str(sota["B3"]["control"]), fmt_bytes(sto["lora_bytes"] + 21 * sto["raw_demo_bytes"])]]
+    t21_rows = t21_rows[:7] + new_rows + t21_rows[7:]
 t21_rows.append(["ours", "practice picks the form per task", str(al["AL1"]["x"]), fmt_bytes(al["bytes_total"])])
+
+def _warm():
+    import json as _j
+    k = n = 0
+    for t in (35, 36, 39, 42, 1, 6, 34, 37, 40, 52, 53, 62, 3, 4, 5, 32, 41, 43, 48, 58, 63):
+        f = os.path.join(R, f"dsrl_practice_{t}_dsrl_train.json")
+        if os.path.exists(f):
+            e = _j.load(open(f))["tasks"][str(t)]["episodes"][:10]
+            k += sum(x["success"] for x in e)
+            n += len(e)
+    return k, max(n, 1)
+
+
+sota_warm = _warm()
+
+
+def sota_block():
+    if not sota:
+        return ""
+    rows = [["ours", "bindings + 7 KB reader head (no practice)", str(sota["B1"]["x"]), "–"]]
+    for h, lab in (("B1", "STRAP"), ("B2", "DSRL"), ("B3", "experience replay")):
+        v = sota[h]
+        rows.append(["", lab, str(v["control"]), f"{v['diff']['diff']:+.3f} [{v['diff']['lo']:+.3f}, {v['diff']['hi']:+.3f}], Holm p {v['holm_p']:.1g}"])
+    return (f"""<h3 class="sec">Recent methods</h3>
+<p>Three 2025–26 approaches, implemented here on pi0.5 with the same one demo and scored on the same 420 paired episodes (pre-registered):
+<strong>STRAP</strong> (Memmel et al., ICLR 2025) retrieves sub-trajectories that resemble the demo's from the policy's 40 training tasks, by
+subsequence DTW over DINOv2 features, and fine-tunes a LoRA on the demo and the retrieved data. <strong>DSRL</strong> (Wagenmaker et al., CoRL
+2025) keeps the network frozen and trains a small SAC agent to choose each chunk's initial noise from practice rewards; it starts from the
+one-demo LoRA and gets 100 practice episodes per task. <strong>Experience replay</strong>, which recent continual-learning work found to forget
+little in VLAs, trains one LoRA on every task's demo.</p>
+<p class="tcap">Table 5.2. The recent methods against the bindings (differences: ours minus the method, 95% interval).</p>
+{table(["method", "successes of 420", "difference"], rows)}
+<p>The bindings beat all three. Each also trails the best per-task LoRA ({sota['vs_nft']['strap']['control']}). Retrieving other tasks' behaviour under
+the target's instruction and sharing one adapter across tasks both mix the tasks up, as Section 1.2 found for pooling. DSRL did not improve on its
+base policy within 100 episodes, although that policy succeeded in about {round(100 * sota_warm[0] / sota_warm[1])}% of its warm-up
+episodes. These are our implementations, adapted to a pretrained VLA with one demo; STRAP was published with five demos and policies
+trained from scratch.</p>""")
+
 
 P_RESULTS_A = f"""
 <p class="lede">Twenty-one held-out tasks the prior fails, one demonstration each, twenty scoring episodes per task on start states nothing was
@@ -564,6 +610,7 @@ trained or practised on: 420 paired episodes per method.</p>
 {table(["method", "successes", "storage"], t21_rows)}
 {fig("5.1", '<div class="chartwrap">' + RP["scatter_success_bytes"]() + '</div>', f"Success against storage (log scale). Bindings reach {v2['V1']['x']} of 420 "
      f"at {fmt_bytes(meth('ours_phasebind2')['bytes'])}; every fine-tuning variant stores {fmt_bytes(meth('practice_lora')['bytes'])} or more.")}
+{sota_block()}
 <h3 class="sec">Replications</h3>
 <ol class="results">
 <li><strong>Another sampling seed</strong> (pre-registered): bindings {s1['R1']['x']}, with the reader {s1['R2']['x']}, practice allocation {s1['R3']['x']};
