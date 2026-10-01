@@ -19,7 +19,8 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT)
 from lifelong_ood import ledger as L                                   # noqa: E402
 
-DOCS = [os.path.join(ROOT, "README.md"), os.path.join(ROOT, "docs", "THE_TASK.md")]
+DOCS = [os.path.join(ROOT, "README.md"), os.path.join(ROOT, "docs", "THE_TASK.md"),
+        os.path.join(ROOT, "archive", "2026-10-program", "README_demo_rows.md")]
 RETIRED = os.path.join(ROOT, "experiments", "retired_checks.json")
 
 

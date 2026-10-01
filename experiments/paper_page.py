@@ -197,23 +197,20 @@ cap = capacity["totals"]
 
 ABSTRACT = f"""
 <p>A vision-language-action policy fine-tuned on forty tasks fails almost every new task in the same rooms: pi0.5 succeeds {Z['control']}
-times in {Z['n']} episodes on 21 held-out LIBERO-90 tasks. We ask whether such a policy can take on new tasks by recombining what it
-already holds, with the policy itself generating every action, a few bytes stored per task, and nothing it learned changed. First we
-find why it fails. Its successes follow whether its training instructions named a task's factors in a similar scene (AUC
-{F['rule_family_named']['auc']:.2f}), and in a scene it was trained in, it carries out that scene's trained routine whatever object the
-instruction names. Then we test two ways to supply what it cannot read. <b>Composition</b> sums the policy's own predictions under
-prompts it does read, after the rule that restores composition in image diffusion models; it works where a factor is faintly readable
-(a ketchup task goes from 0 to {zmain['per_task']['48']['f']} of 20) but does not pass its pre-registered test across tasks
-({H1['x']} against {H1['control']} of {H1['n']}). <b>Folding</b> a factor token, a learned key and value per layer appended to the
-prompt, with every weight frozen, reaches {H2a['x']} of {H2a['n']} at {token_bytes / 1e3:.1f} KB per task: far above the frozen
-policy, level with a 18.7 MB LoRA where the failure is reading, and short of it where the task needs new motion. A token fitted on
-two tasks that share an object carries that object to a third task. Escalating new motion to a larger fold, a stream of tasks and
-consolidation are running.</p>"""
+times in {Z['n']} episodes on 21 held-out LIBERO-90 tasks. We ask whether such a policy can take on tasks it has never seen, given
+only the task's instruction and scene and no demonstration, by recombining what it already holds: the policy itself generates every
+action, a few bytes are stored per task, and nothing it learned changes. First we find why it fails. Its successes follow whether its
+training instructions named a task's factors in a similar scene (AUC {F['rule_family_named']['auc']:.2f}), and in a scene it was trained
+in, it carries out that scene's trained routine whatever object the instruction names. Then we test <b>composition</b>: summing the
+policy's own predictions under prompts it does read, after the rule that restores composition in image diffusion models. It works
+where a factor is faintly readable (a ketchup task goes from 0 to {zmain['per_task']['48']['f']} of 20) but does not pass its
+pre-registered test across tasks ({H1['x']} against {H1['control']} of {H1['n']}). Composition over prototypes that carry where an
+object is, and folding what the policy learns from its own attempts, are next.</p>"""
 
 P_INTRO = f"""
 <p>A trained robot policy already knows how to reach, grasp, carry and place. When it fails a new task in a familiar room, the
-missing piece is often small: which object, which receptacle, which side. The usual repair trains weights for each new task, a
-LoRA of 18.7 MB in our setting, and adapters shared across related tasks mix the tasks up. This report pursues a different repair,
+missing piece is often small: which object, which receptacle, which side. The usual repair collects demonstrations of each new task and trains
+weights on them, a LoRA of 18.7 MB per task in our setting; a new task then needs a person to show it first. This report pursues a different repair,
 stated in <a href="#thesis">the thesis</a>: decompose a new task into what the policy already holds, store a code when that
 explains it, fold a small unit into the policy only where it does not, and keep generating every action from the policy itself.</p>
 <p>Two papers shape the approach. Wang et al. discover the prototypes a frozen diffusion model holds by mode-finding and compose them
@@ -225,9 +222,9 @@ Read the factors; compose the policy's own predictions when they explain the tas
 factor readable; consolidate. Cost then grows with the vocabulary of factors, not with the number of tasks, and the policy is never
 overwritten.</p></div>
 <p class="contrib"><b>What this report contributes.</b> (1) A diagnosis of why the policy fails new tasks: reading, not motor skill,
-for most of them (Section 2). (2) Composition of a flow policy's own conditionals, with the policy generating, and its pre-registered
-test (Section 4.1). (3) Factor tokens as the fold, their cost and their transfer (Section 4.2). (4) The earlier method of this
-project, which turned out to bypass the policy, kept as a baseline with the control that exposed it (Section 5).</p>"""
+for most of them (Section 2). (2) A benchmark that tests the thesis: tasks the policy has never seen, with no demonstration of them.
+(3) Composition of a flow policy's own conditionals over task prototypes, with the policy generating, and its pre-registered test
+(Section 4.1).</p>"""
 
 P_WHY = f"""
 <h3 id="s2-1">2.1 Success follows what the training instructions named</h3>
@@ -276,12 +273,10 @@ prototype covers are listed; they are where a fold will be needed.</p>
 in the object, so it isolates the object factor at this observation. It acts while the gripper is open and is released after the
 grasp. Every term is the policy's own prediction, so the policy keeps generating; with one prompt the sampler is the policy bit for bit.
 A task's code is its prompt ids, weights and phases: 9 bytes.</p>
-<h3 id="s3-4">3.4 Fold: a factor token</h3>
-<p>Where no prompt makes a factor readable, a token is learned: one key and one value per layer, appended to the prompt's cache that
-the action expert attends to. Every weight of the policy stays frozen, so a task that does not address the token is untouched. The
-token is fitted by flow matching on the arrival's one demonstration, which is training data and never executed, or on a composition's
-own successful episodes. It counts as a factor only if it carries to other tasks that share it; fitting it on two arrivals that share
-the value and differ elsewhere makes that value identifiable.</p>
+<h3 id="s3-4">3.4 Fold: from the policy's own attempts</h3>
+<p>Where composition reads a task only some of the time, the policy's own successful attempts are folded into a small unit that makes
+the task readable from one prompt: a factor token, one key and one value per layer appended to the prompt's cache, with every policy
+weight frozen. No demonstration enters. A token counts as a factor only if it carries to later tasks that share it.</p>
 <h3 id="s3-5">3.5 Consolidate</h3>
 <p>Tokens of one factor merge across arrivals; accrued tokens and any larger folds are distilled into one shared unit and deleted,
 trading bytes for drift on old tasks.</p>
@@ -300,84 +295,33 @@ alone and {pp['placebo_4']} for a placebo pair of unrelated instructions), so th
 {fig('<div class="chartwrap">' + composition_chart() + '</div>', "Per task, successes of 20 for each arm. The gain sits on the ketchup in living "
      "room 1, where the policy's first actions already lean toward the named object; elsewhere the named object stays unread.", wide=True)}
 {fig(video('ov_48_30'), "Pick up the ketchup and put it in the basket, init state 30. Zero-shot, the policy puts the alphabet soup in the "
-     "basket. Composed, it fetches the ketchup. The factor token reaches for the ketchup but runs out of time here; it succeeds in 13 of 20 "
-     "episodes of this task.", wide=True)}
+     "basket. Composed, it fetches the ketchup.", wide=True)}
 <p>Composition is therefore real but narrow: it amplifies a factor the policy reads faintly, and cannot create one it does not
 read.</p>"""
 
-tp = tokpilot
 P_FOLD = f"""
-<p>A factor token per task, fitted on that task's one demonstration, against the one-demo LoRA trained on the same frames.</p>
-{table(["", "factor token", "one-demo LoRA", "difference, lower bound", "verdict"],
-       [["H2a (demo 0)", f"{H2a['x']} of {H2a['n']}", f"{H2a['control']}", f"{H2a['diff']['diff']:+.3f}, {H2a['diff']['lo90']:+.3f}", "not non-inferior"],
-        ["H2b (demo 1)", f"{H2b['x']}", f"{H2b['control']}", f"{H2b['diff']['diff']:+.3f}, {H2b['diff']['lo90']:+.3f}", "not non-inferior"],
-        ["Z (vs zero-shot)", f"{Z['x']}", f"zero-shot {Z['control']}", f"{Z['diff']['diff']:+.3f}, {Z['diff']['lo90']:+.3f}", "passes"],
-        ["bytes per task", f"{token_bytes / 1e3:.1f} KB", "18.7 MB", "", ""]],
-       "The pre-registered fold read: 21 held-out tasks, 20 episodes each, init states 30-49 (ledger p1_bindings, tag zc_fold).", num_from=1)}
-{fig('<div class="chartwrap">' + token_chart() + '</div>', "Per task, successes of 20. Rows without a circle mark: tasks whose relation a "
-     "task prototype covers, where the token is level with the LoRA. Rows marked ◦: the relation is new (close the drawer, the shelf, "
-     "turn off), where the token falls short.", wide=True)}
-<h3 id="s4-2-1">A token as a factor</h3>
-<p>The ketchup token fitted on the living-room ketchup task carries to the ketchup-into-tray task in another room: the policy picks up
-the ketchup {tp['58:ftoken_48']['BA']:.1f} of the time, against 0 zero-shot. Fitted on two arrivals that share the ketchup, the token picks it up
-{tp['58:ftoken_48_32']['BA']:.1f} of the time (practice states, exploratory).</p>
-{fig(video('ov_58_0'), "Pick up the ketchup and put it in the tray, a task the token never saw. Left: zero-shot. Right: the ketchup token "
-     "fitted on two other ketchup tasks.", wide=True)}
-<h3 id="s4-2-2">New motion needs more than a token</h3>
-<p>On five tasks that need new motion, eight entries instead of one raise practice successes from {cap['ftoken_self']} to
-{cap['ftoken_self_n8']} of 50 (exploratory), still far below the LoRA. A token redirects what the policy reads; it cannot give the action
-expert a motion it lacks.</p>
-{fig(video('ov_3_31'), "Put the butter at the back in the top drawer and close it, init state 31. The token's policy reaches the drawer but "
-     "does not finish the motion; the LoRA does.", wide=True)}
-{pending("Escalation by practice", "Ten practice episodes decide per task: the composition's code if it passes, else a factor token, else a "
-         "larger fold on the action expert keyed by the token. The read reports the success and bytes of the chosen forms on the 21 tasks.")}"""
+{pending("Folding from the policy's own attempts", "Practice episodes of a composition that sometimes succeeds are folded into a factor "
+         "token (self-distillation, no demonstration); the token is then scored from one prompt and reused by later tasks that share "
+         "its factor.")}"""
 
 P_STREAM = f"""
 {pending("A stream of tasks", "The 50 LIBERO-90 tasks pi0.5 fails arrive one at a time in two mirrored orders. Each is decomposed into task "
-         "prototypes; it is composed when that explains it, else it folds a token (shared by every later task with that factor). The read "
-         "reports bytes against tasks, demonstrations requested, and the success of earlier arrivals at the end.")}
+         "prototypes; it is composed when that explains it, else what its own attempts teach is folded (shared by every later task with that "
+         "factor). The read reports success and bytes against tasks, and the success of earlier arrivals at the end.")}
 {pending("Other policies", "The same codes on pi0 and SmolVLA, each with its own conditionals and its own tokens; and CALVIN ABC→D, whose "
          "unseen scene D is the same reading problem.")}"""
-
-P_BASE = f"""
-<p>Before the overhaul, this project executed a one-demonstration program: the demo cut into phases at object events, re-anchored
-on the objects' current poses, and passed to pi0.5 as a guide. It scored {nopol['control']} of 420 on the 21 held-out tasks. A check of that
-guide showed it replaced the policy's prediction: the sampled chunk sat {override['guided_minus_target_rms']:.3f} from the plan, and two
-unrelated observations gave chunks {override['guided_obs0_minus_obs1_rms']:.4f} apart against {override['own_obs0_minus_obs1_rms']:.2f} for the
-policy's own. Executing the plan with no policy at all scored {nopol['x']} of 420. The program is a strong baseline for what an
-object-relative replay can do; it is not the policy generating.</p>
-{table(["method", "successes of 420", "stores per task"],
-       [["pi0.5 zero-shot", str(Z['control']), "0"],
-        ["one-demo program (policy bypassed)", str(nopol['control']), "9.6 KB"],
-        ["the same program with no policy", str(nopol['x']), "9.6 KB"],
-        ["one-demo LoRA", str(H2a['control']), "18.7 MB"],
-        ["STRAP (our variant)", str(sota['B1']['control']), "18.7 MB"],
-        ["DSRL (our variant)", str(sota['B2']['control']), "18.7 MB + actor"],
-        *([["STRAP (authors' retrieval)", str(amend['B1']['control']), "18.7 MB"],
-           ["DSRL (authors' configuration)", str(amend['B2']['control']), "18.7 MB + actor"],
-           ["one-demo LoRA + failure negatives", str(amend['vs_nft']['dsrl']['control']), "18.7 MB"]] if amend else []),
-        ["experience replay", str(sota['B3']['control']), "shared LoRA"],
-        ["factor token (this report)", str(H2a['x']), f"{token_bytes / 1e3:.1f} KB"]],
-       "The previous method and the baselines on the same 420 paired episodes.", num_from=1)}
-{pending("Faithful baselines", "STRAP with its authors' retrieval and DSRL with its authors' pi0.5 LIBERO configuration are being re-scored on "
-         "the same episodes; our first versions stay above as our variants.") if not amend else
-  f"""<p>A check of the authors' code found that our first STRAP and DSRL differed from theirs, so both were re-scored with the
-authors' settings under a pre-registered amendment. STRAP with the authors' retrieval scores {amend['B1']['control']}, below our variant.
-DSRL with the authors' configuration scores {amend['B2']['control']} against {H2a['control']} for the one-demo LoRA it steers, level
-with the LoRA trained with failure negatives ({amend['vs_nft']['dsrl']['control']}; sign test p {amend['vs_nft']['dsrl']['sign_p']:.2f}).
-DSRL keeps the policy generating: 100 practice episodes teach it which initial noise to hand the policy's own sampler.</p>"""}"""
 
 P_LIMITS = """
 <ul>
 <li>Composition reads only what the policy reads somewhere; an object it never had to tell apart from another stays unreadable.</li>
 <li>A base must exist: a task prototype the policy reads in the task's room with the task's relation.</li>
-<li>A token addresses a factor; new motion needs a larger fold, whose cost the escalation read will report.</li>
+<li>A task that needs a motion no prototype makes is out of reach of composition alone.</li>
 <li>Simulation only (LIBERO-90), one policy so far (pi0.5).</li>
 </ul>"""
 
 P_VER = f"""
 <p>Every read quoted as a test was pre-registered in <code>ledger/m3_prereg</code> before its first episode (tags zc_probe, zc_bind, zc_pilot,
-zc_main, zc_fold); reads marked exploratory were not. Every number on this page is read from <code>ledger/</code> at commit
+zc_main); reads marked exploratory were not. Every number on this page is read from <code>ledger/</code> at commit
 <code>{esc(commit)}</code> by <code>experiments/paper_page.py</code>, and the README's copies are re-derived by
 <code>experiments/audit_numbers.py</code>. Episodes are paired by task and init state; intervals come from a two-level bootstrap, tests from
 the exact sign test, with Holm correction within a read. One pre-registered probe failed its own validity gate and is not used: the
@@ -385,7 +329,7 @@ policy's first chunk points at the named object only {probe['validity']['PA']:.2
 
 NAV = [("abstract", "", "Abstract"), ("s1", "1", "Introduction"), ("s2", "2", "Why the policy fails new tasks"),
        ("s3", "3", "Method"), ("s4", "4", "Experiments"), ("s4-1", "4.1", "Composition"), ("s4-2", "4.2", "Folding"),
-       ("s4-3", "4.3", "Streams and other policies"), ("s5", "5", "The previous method as a baseline"), ("s6", "6", "Limitations"),
+       ("s4-3", "4.3", "Streams and other policies"), ("s6", "5", "Limitations"),
        ("s7", "", "Verification")]
 
 CSS = r"""
@@ -460,7 +404,7 @@ footer{margin-top:48px;padding-top:14px;border-top:1px solid var(--rule);font:13
 
 toc = "".join(f'<li><a href="#{i}"><span class="num">{n}</span><span>{esc(t)}</span></a></li>' for i, n, t in NAV)
 HTML = f"""<title>Read, Compose, Fold</title>
-<meta name="description" content="Composing a frozen robot policy's own predictions, and folding small factor tokens, to take on new LIBERO-90 tasks.">
+<meta name="description" content="Composing a frozen robot policy's own predictions to take on LIBERO-90 tasks it has never seen, with no demonstration.">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400&family=IBM+Plex+Sans:wght@400;500;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap">
 <style>{CSS}</style>
@@ -468,7 +412,7 @@ HTML = f"""<title>Read, Compose, Fold</title>
 <nav class="toc" aria-label="Contents"><ol>{toc}</ol></nav>
 <main>
 <header class="title"><p class="kicker">lifelong-ood-learner · working paper</p>
-<h1>Read, Compose, Fold: taking on new tasks with a frozen robot policy's own predictions</h1>
+<h1>Read, Compose, Fold: taking on tasks never seen, with no demonstration, from a frozen robot policy's own predictions</h1>
 <p class="meta">pi0.5 on LIBERO-90 · 21 held-out tasks the policy fails · every number from the project's ledger at commit {esc(commit)}; boxes marked
 <em>Running</em> fill in as their pre-registered reads land.</p></header>
 <section class="abstract" id="abstract"><h2>Abstract</h2>{ABSTRACT}</section>
@@ -476,15 +420,14 @@ HTML = f"""<title>Read, Compose, Fold</title>
 <section id="s2"><h2><span class="sn">2</span>Why the policy fails new tasks</h2>{P_WHY}</section>
 <section id="s3"><h2><span class="sn">3</span>Method: read, compose, fold, consolidate</h2>{P_METHOD}</section>
 <section id="s4"><h2><span class="sn">4</span>Experiments</h2>
-<p>Setup: pi0.5 (openpi's <code>pi05_libero</code>), frozen. 21 held-out LIBERO-90 tasks the policy fails, one demonstration each where a
-method uses one, 20 scoring episodes per task at init states 30-49 that no method trained or practised on, the same states and noise
+<p>Setup: pi0.5 (openpi's <code>pi05_libero</code>), frozen. 21 held-out LIBERO-90 tasks the policy fails, no demonstration of any of them,
+20 scoring episodes per task at init states 30-49 that no method trained or practised on, the same states and noise
 for every arm.</p>
 <section id="s4-1"><h3 style="font-size:20px">4.1 Composition</h3>{P_COMPOSE}</section>
 <section id="s4-2"><h3 style="font-size:20px">4.2 Folding</h3>{P_FOLD}</section>
 <section id="s4-3"><h3 style="font-size:20px">4.3 Streams and other policies</h3>{P_STREAM}</section>
 </section>
-<section id="s5"><h2><span class="sn">5</span>The previous method as a baseline</h2>{P_BASE}</section>
-<section id="s6"><h2><span class="sn">6</span>Limitations</h2>{P_LIMITS}</section>
+<section id="s6"><h2><span class="sn">5</span>Limitations</h2>{P_LIMITS}</section>
 <section id="s7"><h2>Verification</h2>{P_VER}</section>
 <footer>Simulation only (LIBERO-90). Commit {esc(commit)}. The program-era report is kept in the repository
 (<code>experiments/site_page.py</code>).</footer>

@@ -4,8 +4,9 @@ The method of the overhaul of 2026-10-01 (plan: `~/.claude/plans/i-m-interested-
 follows the thesis in [THE_TASK.md](THE_TASK.md): decompose an arrival into the model's prototypes, store a code when they
 explain it, fold a small unit only where they do not, consolidate, charge every byte, damage nothing, and generate new
 trajectories from the model's own conditional. Every result it rests on is a read in `ledger/`, quoted in the README; this page
-carries no numbers. The previous method (a one-demo object-relative program executed by the controller, with the policy
-bypassed) is kept as a validated baseline: [archive/2026-10-program/METHOD_program.md](../archive/2026-10-program/METHOD_program.md).
+carries no numbers. A new task arrives as its instruction and its scene, with NO demonstration (the user's decision of
+2026-10-01: a demonstration of the task is not a test of the thesis). Demo-based work, including the earlier one-demo program,
+is archived: [archive/2026-10-program/](../archive/2026-10-program/).
 
 ## What the frozen policy already holds
 
@@ -43,16 +44,15 @@ chunk replaced the policy's prediction; this does not). The CODE a task keeps is
 (`lifelong_ood/policy/factor_hooks.py`). Controls in every read: guidance on the task's instruction against the empty prompt,
 and a placebo pair of unrelated training instructions at the same weight.
 
-## 3 Fold: only where composition does not read the factor
+## 3 Fold: from the policy's own attempts
 
 A FACTOR TOKEN is a learned key and value per layer appended to the prompt's cache that the action expert attends to
 (`lifelong_ood/policy/token_fold.py`; prefix tuning). Every policy weight stays frozen, so a task that does not address the token
-is untouched by construction. It is fitted by flow matching on (a) a successful composition's own rollouts, which makes the
-composition readable from one prompt (self-distillation, no demo), or (b) for a primitive no composition reaches, the arrival's
-one demonstration as training data (never executed). A token is a FACTOR only if it transfers: it is reused, with no new demo, by
-later tasks that share the factor. One arrival cannot tell which of its factors a token learned; two arrivals that share the
-value and differ elsewhere can (docs/COBWEB_UPDATE.md, Proposition 7), so tokens of one factor are fitted on every arrival that
-shares it. A token that cannot make the motion escalates to a keyed expert on the action expert.
+is untouched by construction. It is fitted by flow matching on a composition's own successful attempts, which makes the
+composition readable from one prompt (self-distillation); no demonstration enters. A token is a FACTOR only if it transfers: it is
+reused by later tasks that share the factor. One arrival cannot tell which of its factors a token learned; two arrivals that share
+the value and differ elsewhere can (docs/COBWEB_UPDATE.md, Proposition 7), so tokens of one factor are fitted on every arrival that
+shares it.
 
 ## 4 Consolidate
 
@@ -62,6 +62,6 @@ trading bytes for drift on old tasks. Designed; run after the zero-shot and fold
 ## Known limits
 
 - Composition reads only what the policy reads in some context: an object word the policy never contrasted anywhere is not
-  readable by any composition, and needs a fold.
+  readable by any composition of prompts.
 - The base must exist: a readable task prototype with the task's relation in the task's scene.
 - Simulation only (LIBERO-90); pi0.5 so far. pi0 shares openpi's interface; SmolVLA runs through the same backbone interface for single prompts, and needs a batched observation method before composition runs on it.
