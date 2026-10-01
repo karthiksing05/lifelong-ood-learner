@@ -109,10 +109,18 @@ def _target(arg, inst):
     return arg, None
 
 
+def prompt_of(name):
+    """The instruction the policy was trained / evaluated with: LIBERO's grab_language_from_filename (the BDDL's own
+    (:language ...) differs on LIBERO-Goal, e.g. "Open the middle layer of the drawer")."""
+    if name[0].isupper():
+        return " ".join(name[name.find("SCENE") + (8 if "SCENE10" in name else 7):].split("_"))
+    return " ".join(name.split("_"))
+
+
 def parse(suite, index, name):
     path = os.path.join(LIBERO, "bddl_files", suite, name + ".bddl")
     text = open(path).read()
-    lang = re.search(r"\(:language ([^)]*)\)", text).group(1).strip()
+    lang = prompt_of(name)
     objects = _typed(_section(text, "objects"))
     fixtures = _typed(_section(text, "fixtures"))
     interest = _section(text, "obj_of_interest").split()
@@ -180,3 +188,77 @@ def coverage(task, train):
                 rel_any=has_rel(train), pred_any=all(any(p == s[0] for t in train for s in t.slots) for p in preds),
                 contrast_obj=contrast_obj() if moved else 0,
                 quals_seen=all(any(q in t.qualifiers for t in same_fam) for q in task.qualifiers))
+
+
+# ── object phrases (for factor prompts) ─────────────────────────────────────────────────────────────────────────────
+PHRASE_FALLBACK = {"akita_black_bowl": "black bowl", "porcelain_mug": "white mug", "white_yellow_mug": "yellow and white mug",
+                   "red_coffee_mug": "red mug", "chefmate_8_frypan": "frying pan", "black_book": "book", "yellow_book": "book",
+                   "cream_cheese": "cream cheese box", "new_salad_dressing": "salad dressing", "wooden_tray": "tray",
+                   "flat_stove": "stove", "wooden_cabinet": "cabinet", "white_cabinet": "cabinet", "desk_caddy": "caddy"}
+_PATTERNS = (r"pick up the (.+?) and (?:put|place) (?:it|them)", r"^put the (.+?) (?:in|on|to|at|under|into)\b",
+             r"^put both the (.+?) and the ", r"^stack the (.+?) on ")
+
+
+def object_phrases(tasks):
+    """type -> the phrase LIBERO's instructions use for it, read from single-object tasks (qualifiers dropped)."""
+    out = {}
+    for t in tasks:
+        mv = sorted(set(t.moved))
+        if len(mv) != 1:
+            continue
+        for pat in _PATTERNS:
+            m = re.search(pat, t.language)
+            if m:
+                head = re.split(r"\b(?:on|in|from|next|between|at|to|under)\b", m.group(1))[0]     # "book on the left" -> "book"
+                words = [w for w in head.split() if w not in QUALIFIERS and w not in ("the", "of")]
+                phrase = " ".join(words)
+                if phrase and mv[0] not in out:
+                    out[mv[0]] = phrase
+                break
+    for k, v in PHRASE_FALLBACK.items():
+        out.setdefault(k, v)
+    return out
+
+
+def phrase_of(typ, phrases):
+    return phrases.get(typ) or typ.replace("_", " ")
+
+
+def own_phrase(task, phrases):
+    """The phrase the task's own instruction uses for its moved object (read with the same patterns; the global phrase as a
+    fallback): LIBERO-Goal says "the bowl" where LIBERO-Spatial says "the black bowl"."""
+    mv = sorted(set(task.moved))
+    if len(mv) != 1:
+        return None
+    for pat in _PATTERNS:
+        m = re.search(pat, task.language)
+        if m:
+            head = re.split(r"\b(?:on|in|from|next|between|at|to|under)\b", m.group(1))[0]
+            words = [w for w in head.split() if w not in QUALIFIERS and w not in ("the", "of")]
+            if words and " ".join(words) in task.language:
+                return " ".join(words)
+    g = phrase_of(mv[0], phrases)
+    return g if g in task.language else None
+
+
+def substitute(task, new_type, phrases):
+    """The task's own instruction with its moved object's phrase replaced by `new_type`'s (None if it cannot be found)."""
+    old = own_phrase(task, phrases)
+    if old is None:
+        return None
+    if new_type in task.moved:
+        return task.language
+    return task.language.replace(old, phrase_of(new_type, phrases), 1)
+
+
+def scene_phrases(task, tasks):
+    """Phrases as the task's own scene says them (its other tasks' instructions first), then the global map."""
+    local = object_phrases([t for t in tasks if t.scene == task.scene])
+    glob_ = object_phrases(tasks)
+    return {**glob_, **local}
+
+
+def candidates(task):
+    """Movable object types in the scene that the task's object slot could name (its own targets excluded)."""
+    targets = {sl[2] for sl in task.slots if len(sl) > 2 and sl[2]}
+    return sorted({ty for ty in task.objects.values() if ty not in targets})

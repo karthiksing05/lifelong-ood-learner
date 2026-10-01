@@ -1,0 +1,687 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/f0_coverage.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "experiments/f0_coverage.py --record",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky1.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "f0_coverage",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "e9e77b6b8d77415dd0a368bfb28a565ce47b8f8e",
+  "short": "e9e77b6b"
+ },
+ "keys": {},
+ "metrics": {
+  "features": {
+   "contrast_obj": {
+    "auc": 0.7418461538461538,
+    "n_off": 47,
+    "n_on": 43,
+    "success_off": 0.12340425531914895,
+    "success_on": 0.43255813953488376
+   },
+   "obj_any": {
+    "auc": 0.6123076923076923,
+    "n_off": 29,
+    "n_on": 61,
+    "success_off": 0.11724137931034484,
+    "success_on": 0.3442622950819672
+   },
+   "obj_same_family": {
+    "auc": 0.6569230769230769,
+    "n_off": 42,
+    "n_on": 48,
+    "success_off": 0.10952380952380951,
+    "success_on": 0.41250000000000003
+   },
+   "obj_same_scene": {
+    "auc": 0.6661538461538461,
+    "n_off": 72,
+    "n_on": 18,
+    "success_off": 0.19444444444444445,
+    "success_on": 0.5777777777777778
+   },
+   "pred_any": {
+    "auc": 0.5076923076923077,
+    "n_off": 1,
+    "n_on": 89,
+    "success_off": 0.0,
+    "success_on": 0.27415730337078653
+   },
+   "quals_seen": {
+    "auc": 0.6061538461538462,
+    "n_off": 21,
+    "n_on": 69,
+    "success_off": 0.09523809523809523,
+    "success_on": 0.32463768115942027
+   },
+   "rel_any": {
+    "auc": 0.6830769230769231,
+    "n_off": 49,
+    "n_on": 41,
+    "success_off": 0.15102040816326529,
+    "success_on": 0.4146341463414634
+   },
+   "rel_same_family": {
+    "auc": 0.6907692307692308,
+    "n_off": 50,
+    "n_on": 40,
+    "success_off": 0.14800000000000002,
+    "success_on": 0.425
+   },
+   "rel_same_scene": {
+    "auc": 0.6953846153846154,
+    "n_off": 65,
+    "n_on": 25,
+    "success_off": 0.1753846153846154,
+    "success_on": 0.52
+   },
+   "rule_family_named": {
+    "auc": 0.72,
+    "n_on": 29,
+    "success_off": 0.14098360655737704,
+    "success_on": 0.5448275862068965
+   },
+   "scene_seen": {
+    "auc": 0.6184615384615385,
+    "n_off": 55,
+    "n_on": 35,
+    "success_off": 0.20727272727272728,
+    "success_on": 0.37142857142857144
+   }
+  },
+  "groups": {
+   "A": [],
+   "B": [
+    1,
+    3,
+    4,
+    5,
+    6,
+    32,
+    34,
+    35,
+    48,
+    52,
+    53,
+    58,
+    63
+   ],
+   "C": [
+    36,
+    37,
+    39,
+    40,
+    41,
+    42,
+    43,
+    62
+   ]
+  },
+  "held_out": {
+   "1": {
+    "bases": [],
+    "contrast_obj": 1,
+    "group": "B",
+    "language": "close the top drawer of the cabinet and put the black bowl on top of it",
+    "obj_any": true,
+    "obj_same_family": true,
+    "obj_same_scene": false,
+    "object_sources": [
+     "libero_spatial:0",
+     "libero_spatial:1",
+     "libero_spatial:2",
+     "libero_spatial:3",
+     "libero_spatial:4",
+     "libero_spatial:5"
+    ],
+    "pred_any": true,
+    "quals_seen": true,
+    "rel_any": false,
+    "rel_same_family": false,
+    "rel_same_scene": false,
+    "relation_sources": [
+     "libero_goal:2",
+     "libero_goal:4",
+     "libero_90:10"
+    ],
+    "scene": "KITCHEN_SCENE10",
+    "scene_seen": false,
+    "zeroshot": 0.0
+   },
+   "3": {
+    "bases": [],
+    "contrast_obj": 1,
+    "group": "B",
+    "language": "put the butter at the back in the top drawer of the cabinet and close it",
+    "obj_any": true,
+    "obj_same_family": false,
+    "obj_same_scene": false,
+    "object_sources": [
+     "libero_object:6",
+     "libero_10:1",
+     "libero_90:51",
+     "libero_90:56"
+    ],
+    "pred_any": true,
+    "quals_seen": false,
+    "rel_any": false,
+    "rel_same_family": false,
+    "rel_same_scene": false,
+    "relation_sources": [
+     "libero_goal:3"
+    ],
+    "scene": "KITCHEN_SCENE10",
+    "scene_seen": false,
+    "zeroshot": 0.0
+   },
+   "32": {
+    "bases": [],
+    "contrast_obj": 0,
+    "group": "B",
+    "language": "put the ketchup in the top drawer of the cabinet",
+    "obj_any": true,
+    "obj_same_family": false,
+    "obj_same_scene": false,
+    "object_sources": [
+     "libero_object:4"
+    ],
+    "pred_any": true,
+    "quals_seen": true,
+    "rel_any": false,
+    "rel_same_family": false,
+    "rel_same_scene": false,
+    "relation_sources": [],
+    "scene": "KITCHEN_SCENE5",
+    "scene_seen": false,
+    "zeroshot": 0.0
+   },
+   "34": {
+    "bases": [
+     "libero_90:33",
+     "libero_10:9"
+    ],
+    "contrast_obj": 1,
+    "group": "B",
+    "language": "put the yellow and white mug to the front of the white mug",
+    "obj_any": true,
+    "obj_same_family": true,
+    "obj_same_scene": true,
+    "object_sources": [
+     "libero_10:4",
+     "libero_10:9",
+     "libero_90:68"
+    ],
+    "pred_any": true,
+    "quals_seen": true,
+    "rel_any": false,
+    "rel_same_family": false,
+    "rel_same_scene": false,
+    "relation_sources": [],
+    "scene": "KITCHEN_SCENE6",
+    "scene_seen": true,
+    "zeroshot": 0.0
+   },
+   "35": {
+    "bases": [],
+    "contrast_obj": 0,
+    "group": "B",
+    "language": "open the microwave",
+    "obj_any": false,
+    "obj_same_family": false,
+    "obj_same_scene": false,
+    "object_sources": [],
+    "pred_any": true,
+    "quals_seen": true,
+    "rel_any": false,
+    "rel_same_family": false,
+    "rel_same_scene": false,
+    "relation_sources": [],
+    "scene": "KITCHEN_SCENE7",
+    "scene_seen": false,
+    "zeroshot": 0.2
+   },
+   "36": {
+    "bases": [],
+    "contrast_obj": 0,
+    "group": "C",
+    "language": "put the white bowl on the plate",
+    "obj_any": false,
+    "obj_same_family": false,
+    "obj_same_scene": false,
+    "object_sources": [],
+    "pred_any": true,
+    "quals_seen": true,
+    "rel_any": true,
+    "rel_same_family": true,
+    "rel_same_scene": false,
+    "relation_sources": [
+     "libero_spatial:0",
+     "libero_spatial:1",
+     "libero_spatial:2",
+     "libero_spatial:3",
+     "libero_spatial:4",
+     "libero_spatial:5"
+    ],
+    "scene": "KITCHEN_SCENE7",
+    "scene_seen": false,
+    "zeroshot": 0.0
+   },
+   "37": {
+    "bases": [],
+    "contrast_obj": 0,
+    "group": "C",
+    "language": "put the white bowl to the right of the plate",
+    "obj_any": false,
+    "obj_same_family": false,
+    "obj_same_scene": false,
+    "object_sources": [],
+    "pred_any": true,
+    "quals_seen": false,
+    "rel_any": true,
+    "rel_same_family": false,
+    "rel_same_scene": false,
+    "relation_sources": [
+     "libero_10:6"
+    ],
+    "scene": "KITCHEN_SCENE7",
+    "scene_seen": false,
+    "zeroshot": 0.0
+   },
+   "39": {
+    "bases": [
+     "libero_10:8"
+    ],
+    "contrast_obj": 0,
+    "group": "C",
+    "language": "turn off the stove",
+    "obj_any": false,
+    "obj_same_family": false,
+    "obj_same_scene": false,
+    "object_sources": [],
+    "pred_any": false,
+    "quals_seen": true,
+    "rel_any": false,
+    "rel_same_family": false,
+    "rel_same_scene": false,
+    "relation_sources": [],
+    "scene": "KITCHEN_SCENE8",
+    "scene_seen": true,
+    "zeroshot": 0.0
+   },
+   "4": {
+    "bases": [],
+    "contrast_obj": 1,
+    "group": "B",
+    "language": "put the butter at the front in the top drawer of the cabinet and close it",
+    "obj_any": true,
+    "obj_same_family": false,
+    "obj_same_scene": false,
+    "object_sources": [
+     "libero_object:6",
+     "libero_10:1",
+     "libero_90:51",
+     "libero_90:56"
+    ],
+    "pred_any": true,
+    "quals_seen": true,
+    "rel_any": false,
+    "rel_same_family": false,
+    "rel_same_scene": false,
+    "relation_sources": [
+     "libero_goal:3"
+    ],
+    "scene": "KITCHEN_SCENE10",
+    "scene_seen": false,
+    "zeroshot": 0.0
+   },
+   "40": {
+    "bases": [],
+    "contrast_obj": 0,
+    "group": "C",
+    "language": "put the frying pan on the cabinet shelf",
+    "obj_any": false,
+    "obj_same_family": false,
+    "obj_same_scene": false,
+    "object_sources": [],
+    "pred_any": true,
+    "quals_seen": true,
+    "rel_any": false,
+    "rel_same_family": false,
+    "rel_same_scene": false,
+    "relation_sources": [],
+    "scene": "KITCHEN_SCENE9",
+    "scene_seen": false,
+    "zeroshot": 0.0
+   },
+   "41": {
+    "bases": [],
+    "contrast_obj": 0,
+    "group": "C",
+    "language": "put the frying pan on top of the cabinet",
+    "obj_any": false,
+    "obj_same_family": false,
+    "obj_same_scene": false,
+    "object_sources": [],
+    "pred_any": true,
+    "quals_seen": true,
+    "rel_any": false,
+    "rel_same_family": false,
+    "rel_same_scene": false,
+    "relation_sources": [],
+    "scene": "KITCHEN_SCENE9",
+    "scene_seen": false,
+    "zeroshot": 0.0
+   },
+   "42": {
+    "bases": [],
+    "contrast_obj": 0,
+    "group": "C",
+    "language": "put the frying pan under the cabinet shelf",
+    "obj_any": false,
+    "obj_same_family": false,
+    "obj_same_scene": false,
+    "object_sources": [],
+    "pred_any": true,
+    "quals_seen": true,
+    "rel_any": false,
+    "rel_same_family": false,
+    "rel_same_scene": false,
+    "relation_sources": [],
+    "scene": "KITCHEN_SCENE9",
+    "scene_seen": false,
+    "zeroshot": 0.0
+   },
+   "43": {
+    "bases": [],
+    "contrast_obj": 0,
+    "group": "C",
+    "language": "put the white bowl on top of the cabinet",
+    "obj_any": false,
+    "obj_same_family": false,
+    "obj_same_scene": false,
+    "object_sources": [],
+    "pred_any": true,
+    "quals_seen": true,
+    "rel_any": false,
+    "rel_same_family": false,
+    "rel_same_scene": false,
+    "relation_sources": [],
+    "scene": "KITCHEN_SCENE9",
+    "scene_seen": false,
+    "zeroshot": 0.0
+   },
+   "48": {
+    "bases": [
+     "libero_90:46",
+     "libero_90:47",
+     "libero_10:7"
+    ],
+    "contrast_obj": 0,
+    "group": "B",
+    "language": "pick up the ketchup and put it in the basket",
+    "obj_any": true,
+    "obj_same_family": false,
+    "obj_same_scene": false,
+    "object_sources": [
+     "libero_object:4"
+    ],
+    "pred_any": true,
+    "quals_seen": true,
+    "rel_any": true,
+    "rel_same_family": true,
+    "rel_same_scene": true,
+    "relation_sources": [
+     "libero_object:0",
+     "libero_object:1",
+     "libero_object:2",
+     "libero_object:3",
+     "libero_object:4",
+     "libero_object:5"
+    ],
+    "scene": "LIVING_ROOM_SCENE1",
+    "scene_seen": true,
+    "zeroshot": 0.0
+   },
+   "5": {
+    "bases": [],
+    "contrast_obj": 1,
+    "group": "B",
+    "language": "put the chocolate pudding in the top drawer of the cabinet and close it",
+    "obj_any": true,
+    "obj_same_family": false,
+    "obj_same_scene": false,
+    "object_sources": [
+     "libero_object:8",
+     "libero_10:6",
+     "libero_90:61"
+    ],
+    "pred_any": true,
+    "quals_seen": true,
+    "rel_any": false,
+    "rel_same_family": false,
+    "rel_same_scene": false,
+    "relation_sources": [
+     "libero_goal:3"
+    ],
+    "scene": "KITCHEN_SCENE10",
+    "scene_seen": false,
+    "zeroshot": 0.0
+   },
+   "52": {
+    "bases": [
+     "libero_90:50",
+     "libero_90:51",
+     "libero_90:54",
+     "libero_10:0",
+     "libero_10:1"
+    ],
+    "contrast_obj": 0,
+    "group": "B",
+    "language": "pick up the milk and put it in the basket",
+    "obj_any": true,
+    "obj_same_family": false,
+    "obj_same_scene": false,
+    "object_sources": [
+     "libero_object:7"
+    ],
+    "pred_any": true,
+    "quals_seen": true,
+    "rel_any": true,
+    "rel_same_family": true,
+    "rel_same_scene": true,
+    "relation_sources": [
+     "libero_object:0",
+     "libero_object:1",
+     "libero_object:2",
+     "libero_object:3",
+     "libero_object:4",
+     "libero_object:5"
+    ],
+    "scene": "LIVING_ROOM_SCENE2",
+    "scene_seen": true,
+    "zeroshot": 0.0
+   },
+   "53": {
+    "bases": [
+     "libero_90:50",
+     "libero_90:51",
+     "libero_90:54",
+     "libero_10:0",
+     "libero_10:1"
+    ],
+    "contrast_obj": 0,
+    "group": "B",
+    "language": "pick up the orange juice and put it in the basket",
+    "obj_any": true,
+    "obj_same_family": false,
+    "obj_same_scene": false,
+    "object_sources": [
+     "libero_object:9"
+    ],
+    "pred_any": true,
+    "quals_seen": true,
+    "rel_any": true,
+    "rel_same_family": true,
+    "rel_same_scene": true,
+    "relation_sources": [
+     "libero_object:0",
+     "libero_object:1",
+     "libero_object:2",
+     "libero_object:3",
+     "libero_object:4",
+     "libero_object:5"
+    ],
+    "scene": "LIVING_ROOM_SCENE2",
+    "scene_seen": true,
+    "zeroshot": 0.0
+   },
+   "58": {
+    "bases": [
+     "libero_90:55",
+     "libero_90:56",
+     "libero_90:57"
+    ],
+    "contrast_obj": 0,
+    "group": "B",
+    "language": "pick up the ketchup and put it in the tray",
+    "obj_any": true,
+    "obj_same_family": false,
+    "obj_same_scene": false,
+    "object_sources": [
+     "libero_object:4"
+    ],
+    "pred_any": true,
+    "quals_seen": true,
+    "rel_any": false,
+    "rel_same_family": false,
+    "rel_same_scene": false,
+    "relation_sources": [
+     "libero_90:55",
+     "libero_90:56",
+     "libero_90:57",
+     "libero_90:61"
+    ],
+    "scene": "LIVING_ROOM_SCENE3",
+    "scene_seen": false,
+    "zeroshot": 0.0
+   },
+   "6": {
+    "bases": [
+     "libero_90:9",
+     "libero_90:10"
+    ],
+    "contrast_obj": 0,
+    "group": "B",
+    "language": "open the bottom drawer of the cabinet",
+    "obj_any": false,
+    "obj_same_family": false,
+    "obj_same_scene": false,
+    "object_sources": [],
+    "pred_any": true,
+    "quals_seen": true,
+    "rel_any": false,
+    "rel_same_family": false,
+    "rel_same_scene": false,
+    "relation_sources": [],
+    "scene": "KITCHEN_SCENE1",
+    "scene_seen": false,
+    "zeroshot": 0.0
+   },
+   "62": {
+    "bases": [
+     "libero_90:61"
+    ],
+    "contrast_obj": 0,
+    "group": "C",
+    "language": "pick up the salad dressing and put it in the tray",
+    "obj_any": false,
+    "obj_same_family": false,
+    "obj_same_scene": false,
+    "object_sources": [],
+    "pred_any": true,
+    "quals_seen": true,
+    "rel_any": false,
+    "rel_same_family": false,
+    "rel_same_scene": false,
+    "relation_sources": [
+     "libero_90:55",
+     "libero_90:56",
+     "libero_90:57",
+     "libero_90:61"
+    ],
+    "scene": "LIVING_ROOM_SCENE4",
+    "scene_seen": false,
+    "zeroshot": 0.0
+   },
+   "63": {
+    "bases": [
+     "libero_90:61"
+    ],
+    "contrast_obj": 1,
+    "group": "B",
+    "language": "stack the left bowl on the right bowl and place them in the tray",
+    "obj_any": true,
+    "obj_same_family": false,
+    "obj_same_scene": false,
+    "object_sources": [
+     "libero_spatial:0",
+     "libero_spatial:1",
+     "libero_spatial:2",
+     "libero_spatial:3",
+     "libero_spatial:4",
+     "libero_spatial:5"
+    ],
+    "pred_any": true,
+    "quals_seen": true,
+    "rel_any": false,
+    "rel_same_family": false,
+    "rel_same_scene": false,
+    "relation_sources": [
+     "libero_goal:6",
+     "libero_90:55",
+     "libero_90:56",
+     "libero_90:57",
+     "libero_90:61"
+    ],
+    "scene": "LIVING_ROOM_SCENE4",
+    "scene_seen": false,
+    "zeroshot": 0.0
+   }
+  },
+  "n_solved": 25,
+  "n_tasks": 90,
+  "parser_hash": "a01f0afd2a05",
+  "solved_threshold": 0.6
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "f0_coverage__libero_90__read__s0__e9e77b6b",
+ "schema": 1,
+ "script": "experiments/f0_coverage.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-01T15:29:51+00:00",
+ "stream": null,
+ "tag": "read"
+}

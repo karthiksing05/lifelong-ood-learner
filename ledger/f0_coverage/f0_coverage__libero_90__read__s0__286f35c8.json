@@ -674,7 +674,10 @@
   "solved_threshold": 0.6
  },
  "notes": null,
- "retired": null,
+ "retired": {
+  "reason": "superseded: prompts now follow LIBERO's filename rule (grab_language_from_filename), not the BDDL :language",
+  "when": "2026-10-01T15:29:46+00:00"
+ },
  "run_id": "f0_coverage__libero_90__read__s0__286f35c8",
  "schema": 1,
  "script": "experiments/f0_coverage.py",
