@@ -426,6 +426,19 @@ def smolvla():
     return res
 
 
+def nopolicy():
+    """ledger m3_prereg tag nopolicy_control: N the program executed with no policy non-inferior to the bindings arm at -0.05."""
+    arms = {"n": "nopolicy_rjpred_pca512_rj", "b": "phasebind2_rjpred_pca512_rj", "z": "zeroshot"}
+    tab = table(HELD, arms)
+    res = {"per_task": {t: {k: int(sum(v[k].values())) for k in v} for t, v in tab.items()}}
+    res["N"] = dict(x_arm=arms["n"], y_arm=arms["b"], **compare(tab, "n", "b"))
+    res["N"]["non_inferior_005"] = bool(res["N"]["diff"]["lo90"] >= -0.05)
+    res["vs_zeroshot"] = compare(tab, "n", "z")
+    v = res["N"]
+    print(f"N {v['x_arm']} vs {v['y_arm']}: {_fmt(v)} -> non-inferior at -0.05 {v['non_inferior_005']}; vs zero-shot: {_fmt(res['vs_zeroshot'])}")
+    return res
+
+
 def sota_amend1():
     """ledger m3_prereg tag baselines_sota_amend1: B1' ours vs STRAP (authors' retrieval), B2' ours vs DSRL (authors' config), B3 vs ER."""
     arms = {"ours": "phasebind2_rjpred_pca512_rj", "strap": "lora_strap2", "dsrl": "dsrlo", "er": "lora_er", "nft": "lora_r17bal"}
@@ -453,13 +466,16 @@ def _fmt(v):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("read", choices=("primary", "secondary", "p6", "v2", "v2_synth", "p3c", "p3c_reader", "p3c_reader2", "alloc", "p5", "yaw", "seed1", "demo1", "compress", "sota", "sota_amend1", "pi0", "smolvla"))
+    ap.add_argument("read", choices=("primary", "secondary", "p6", "v2", "v2_synth", "p3c", "p3c_reader", "p3c_reader2", "alloc", "p5", "yaw", "seed1", "demo1", "compress", "sota", "sota_amend1", "pi0", "smolvla", "nopolicy"))
     ap.add_argument("--record", action="store_true")
     a = ap.parse_args()
     os.chdir(ROOT)
     if a.read == "pi0":
         res = pi0()
         exp, tag, what = "p1_bindings", "pi0", "the unchanged method on pi0 (another flow VLA) vs pi0 zero-shot, 21 tasks"
+    elif a.read == "nopolicy":
+        res = nopolicy()
+        exp, tag, what = "p1_bindings", "nopolicy", "the phase program executed with no policy vs the bindings arm through pi0.5, 21 tasks"
     elif a.read == "smolvla":
         res = smolvla()
         exp, tag, what = "p1_bindings", "smolvla", "the unchanged method on SmolVLA (a non-pi flow VLA) vs SmolVLA zero-shot, 21 tasks"

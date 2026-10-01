@@ -1,0 +1,195 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "experiments/p1_read.py nopolicy --record  # the phase program executed with no policy vs the bindings arm through pi0.5, 21 tasks",
+ "config": {
+  "read": "nopolicy",
+  "record": true
+ },
+ "env": {
+  "device": "cpu",
+  "host": "sky1.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "p1_bindings",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "b5159b76fd521d9eeb70fb42d3aab046f0964c99",
+  "short": "b5159b76"
+ },
+ "keys": {},
+ "metrics": {
+  "N": {
+   "control": 372,
+   "diff": {
+    "diff": 0.0,
+    "hi": 0.02142857142857143,
+    "hi90": 0.016666666666666666,
+    "lo": -0.02142857142857143,
+    "lo90": -0.016666666666666666,
+    "n_pairs": 420,
+    "n_tasks": 21
+   },
+   "discordant": [
+    5,
+    5
+   ],
+   "n": 420,
+   "non_inferior_005": true,
+   "sign_p": 1.0,
+   "x": 372,
+   "x_arm": "nopolicy_rjpred_pca512_rj",
+   "y_arm": "phasebind2_rjpred_pca512_rj"
+  },
+  "per_task": {
+   "1": {
+    "b": 20,
+    "n": 20,
+    "z": 0
+   },
+   "3": {
+    "b": 20,
+    "n": 20,
+    "z": 0
+   },
+   "32": {
+    "b": 20,
+    "n": 20,
+    "z": 0
+   },
+   "34": {
+    "b": 20,
+    "n": 20,
+    "z": 0
+   },
+   "35": {
+    "b": 20,
+    "n": 20,
+    "z": 2
+   },
+   "36": {
+    "b": 20,
+    "n": 20,
+    "z": 0
+   },
+   "37": {
+    "b": 18,
+    "n": 20,
+    "z": 0
+   },
+   "39": {
+    "b": 6,
+    "n": 7,
+    "z": 0
+   },
+   "4": {
+    "b": 20,
+    "n": 20,
+    "z": 0
+   },
+   "40": {
+    "b": 9,
+    "n": 9,
+    "z": 0
+   },
+   "41": {
+    "b": 18,
+    "n": 18,
+    "z": 0
+   },
+   "42": {
+    "b": 19,
+    "n": 19,
+    "z": 0
+   },
+   "43": {
+    "b": 20,
+    "n": 20,
+    "z": 2
+   },
+   "48": {
+    "b": 17,
+    "n": 16,
+    "z": 0
+   },
+   "5": {
+    "b": 17,
+    "n": 17,
+    "z": 0
+   },
+   "52": {
+    "b": 20,
+    "n": 20,
+    "z": 0
+   },
+   "53": {
+    "b": 20,
+    "n": 20,
+    "z": 2
+   },
+   "58": {
+    "b": 19,
+    "n": 19,
+    "z": 0
+   },
+   "6": {
+    "b": 20,
+    "n": 20,
+    "z": 0
+   },
+   "62": {
+    "b": 9,
+    "n": 7,
+    "z": 0
+   },
+   "63": {
+    "b": 20,
+    "n": 20,
+    "z": 0
+   }
+  },
+  "vs_zeroshot": {
+   "control": 6,
+   "diff": {
+    "diff": 0.8714285714285714,
+    "hi": 0.9547619047619048,
+    "hi90": 0.9428571428571428,
+    "lo": 0.7690476190476191,
+    "lo90": 0.7857142857142857,
+    "n_pairs": 420,
+    "n_tasks": 21
+   },
+   "discordant": [
+    366,
+    0
+   ],
+   "n": 420,
+   "sign_p": 1.3306124500025471e-110,
+   "x": 372
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "p1_bindings__libero_90__nopolicy__s0__b5159b76",
+ "schema": 1,
+ "script": "experiments/p1_read.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-01T14:29:41+00:00",
+ "stream": null,
+ "tag": "nopolicy"
+}

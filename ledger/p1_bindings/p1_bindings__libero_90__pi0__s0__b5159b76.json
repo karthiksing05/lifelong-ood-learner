@@ -1,0 +1,195 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "experiments/p1_read.py pi0 --record  # the unchanged method on pi0 (another flow VLA) vs pi0 zero-shot, 21 tasks",
+ "config": {
+  "read": "pi0",
+  "record": true
+ },
+ "env": {
+  "device": "cpu",
+  "host": "sky1.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "p1_bindings",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "b5159b76fd521d9eeb70fb42d3aab046f0964c99",
+  "short": "b5159b76"
+ },
+ "keys": {},
+ "metrics": {
+  "Z": {
+   "control": 18,
+   "diff": {
+    "diff": 0.85,
+    "hi": 0.9476190476190476,
+    "hi90": 0.9333333333333333,
+    "lo": 0.7333333333333333,
+    "lo90": 0.7547619047619047,
+    "n_pairs": 420,
+    "n_tasks": 21
+   },
+   "discordant": [
+    357,
+    0
+   ],
+   "n": 420,
+   "passes": true,
+   "sign_p": 6.812735744013041e-108,
+   "x": 375,
+   "x_arm": "phasebind2_rjpred_pca512_rj_pi0",
+   "y_arm": "zeroshot_pi0"
+  },
+  "per_task": {
+   "1": {
+    "b": 20,
+    "b05": 20,
+    "z": 0
+   },
+   "3": {
+    "b": 20,
+    "b05": 20,
+    "z": 0
+   },
+   "32": {
+    "b": 20,
+    "b05": 20,
+    "z": 0
+   },
+   "34": {
+    "b": 20,
+    "b05": 20,
+    "z": 0
+   },
+   "35": {
+    "b": 20,
+    "b05": 20,
+    "z": 1
+   },
+   "36": {
+    "b": 20,
+    "b05": 20,
+    "z": 0
+   },
+   "37": {
+    "b": 20,
+    "b05": 18,
+    "z": 0
+   },
+   "39": {
+    "b": 7,
+    "b05": 6,
+    "z": 0
+   },
+   "4": {
+    "b": 20,
+    "b05": 20,
+    "z": 0
+   },
+   "40": {
+    "b": 9,
+    "b05": 9,
+    "z": 0
+   },
+   "41": {
+    "b": 17,
+    "b05": 18,
+    "z": 0
+   },
+   "42": {
+    "b": 19,
+    "b05": 19,
+    "z": 0
+   },
+   "43": {
+    "b": 20,
+    "b05": 20,
+    "z": 16
+   },
+   "48": {
+    "b": 16,
+    "b05": 17,
+    "z": 0
+   },
+   "5": {
+    "b": 17,
+    "b05": 17,
+    "z": 0
+   },
+   "52": {
+    "b": 20,
+    "b05": 20,
+    "z": 0
+   },
+   "53": {
+    "b": 20,
+    "b05": 20,
+    "z": 0
+   },
+   "58": {
+    "b": 19,
+    "b05": 19,
+    "z": 0
+   },
+   "6": {
+    "b": 20,
+    "b05": 20,
+    "z": 1
+   },
+   "62": {
+    "b": 11,
+    "b05": 9,
+    "z": 0
+   },
+   "63": {
+    "b": 20,
+    "b05": 20,
+    "z": 0
+   }
+  },
+  "vs_pi05": {
+   "control": 372,
+   "diff": {
+    "diff": 0.007142857142857143,
+    "hi": 0.02857142857142857,
+    "hi90": 0.023809523809523808,
+    "lo": -0.011904761904761904,
+    "lo90": -0.009523809523809525,
+    "n_pairs": 420,
+    "n_tasks": 21
+   },
+   "discordant": [
+    6,
+    3
+   ],
+   "n": 420,
+   "sign_p": 0.5078125,
+   "x": 375
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "p1_bindings__libero_90__pi0__s0__b5159b76",
+ "schema": 1,
+ "script": "experiments/p1_read.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-01T14:28:54+00:00",
+ "stream": null,
+ "tag": "pi0"
+}
