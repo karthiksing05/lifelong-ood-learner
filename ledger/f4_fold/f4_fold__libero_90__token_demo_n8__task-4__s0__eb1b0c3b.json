@@ -1,0 +1,105 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/ftoken_4_n8.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 147456,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 147456,
+  "tree": 0
+ },
+ "command": "experiments/f4_fold.py --task 4 --n-tokens 8 --steps 1000 --tag _n8",
+ "config": {
+  "batch": 16,
+  "demo": 0,
+  "lr": 0.01,
+  "n_tokens": 8,
+  "seed": 0,
+  "source": "demo",
+  "steps": 1000,
+  "tag": "_n8",
+  "task": "4"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "deebot.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3996037",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "f4_fold",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "eb1b0c3b1e31153bfe7270aa84c4cb215c8d6270",
+  "short": "eb1b0c3b"
+ },
+ "keys": {
+  "task": "4"
+ },
+ "metrics": {
+  "curve": {
+   "anchor": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "loss": [
+    0.04145268350839615,
+    0.031309351325035095,
+    0.039025504142045975,
+    0.03147123381495476,
+    0.017541375011205673,
+    0.015144549310207367,
+    0.025452664121985435,
+    0.014377245679497719,
+    0.013063532300293446,
+    0.011615438386797905
+   ],
+   "step": [
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "demo_episode": 1551,
+  "final_loss": 0.011615438386797905,
+  "first_loss": 0.04145268350839615,
+  "n_frames": 173,
+  "n_tokens": 8,
+  "source": "demo",
+  "task": "4",
+  "text": "put the butter at the front in the top drawer of the cabinet and close it",
+  "train_secs": 110.85243487358093
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "f4_fold__libero_90__token_demo_n8__task-4__s0__eb1b0c3b",
+ "schema": 1,
+ "script": "experiments/f4_fold.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-01T16:38:10+00:00",
+ "stream": null,
+ "tag": "token_demo_n8"
+}

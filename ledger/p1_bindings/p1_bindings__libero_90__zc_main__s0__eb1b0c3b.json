@@ -1,0 +1,189 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "experiments/p1_read.py zc_main --record  # factor-composed generation (the policy's own conditionals) vs zero-shot and controls",
+ "config": {
+  "read": "zc_main",
+  "record": true
+ },
+ "env": {
+  "device": "cpu",
+  "host": "sky1.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "p1_bindings",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "eb1b0c3b1e31153bfe7270aa84c4cb215c8d6270",
+  "short": "eb1b0c3b"
+ },
+ "keys": {},
+ "metrics": {
+  "H1": {
+   "control": 9,
+   "diff": {
+    "diff": 0.05416666666666667,
+    "hi": 0.15,
+    "hi90": 0.12916666666666668,
+    "lo": -0.0125,
+    "lo90": -0.004166666666666667,
+    "n_pairs": 240,
+    "n_tasks": 12
+   },
+   "discordant": [
+    20,
+    7
+   ],
+   "n": 240,
+   "passes": false,
+   "sign_p": 0.0191572904586792,
+   "x": 22,
+   "x_arm": "fcomp_8",
+   "y_arm": "zeroshot"
+  },
+  "H1b": {
+   "control": 19,
+   "diff": {
+    "diff": 0.0125,
+    "hi": 0.09583333333333334,
+    "hi90": 0.08333333333333333,
+    "lo": -0.0625,
+    "lo90": -0.05,
+    "n_pairs": 240,
+    "n_tasks": 12
+   },
+   "discordant": [
+    15,
+    12
+   ],
+   "holm_p": 0.7011080384254456,
+   "n": 240,
+   "passes": false,
+   "sign_p": 0.7011080384254456,
+   "x": 22,
+   "x_arm": "fcomp_8",
+   "y_arm": "cfg_8"
+  },
+  "H1c": {
+   "control": 9,
+   "diff": {
+    "diff": 0.05416666666666667,
+    "hi": 0.15416666666666667,
+    "hi90": 0.13333333333333333,
+    "lo": -0.016666666666666666,
+    "lo90": -0.008333333333333333,
+    "n_pairs": 240,
+    "n_tasks": 12
+   },
+   "discordant": [
+    20,
+    7
+   ],
+   "holm_p": 0.0383145809173584,
+   "n": 240,
+   "passes": true,
+   "sign_p": 0.0191572904586792,
+   "x": 22,
+   "x_arm": "fcomp_8",
+   "y_arm": "placebo_8"
+  },
+  "per_task": {
+   "18": {
+    "c": 0,
+    "f": 1,
+    "p": 0,
+    "z": 0
+   },
+   "26": {
+    "c": 1,
+    "f": 0,
+    "p": 0,
+    "z": 0
+   },
+   "48": {
+    "c": 2,
+    "f": 9,
+    "p": 0,
+    "z": 0
+   },
+   "49": {
+    "c": 2,
+    "f": 3,
+    "p": 1,
+    "z": 0
+   },
+   "52": {
+    "c": 0,
+    "f": 0,
+    "p": 2,
+    "z": 0
+   },
+   "53": {
+    "c": 2,
+    "f": 1,
+    "p": 1,
+    "z": 2
+   },
+   "58": {
+    "c": 0,
+    "f": 0,
+    "p": 0,
+    "z": 0
+   },
+   "59": {
+    "c": 12,
+    "f": 8,
+    "p": 5,
+    "z": 7
+   },
+   "62": {
+    "c": 0,
+    "f": 0,
+    "p": 0,
+    "z": 0
+   },
+   "65": {
+    "c": 0,
+    "f": 0,
+    "p": 0,
+    "z": 0
+   },
+   "66": {
+    "c": 0,
+    "f": 0,
+    "p": 0,
+    "z": 0
+   },
+   "71": {
+    "c": 0,
+    "f": 0,
+    "p": 0,
+    "z": 0
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "p1_bindings__libero_90__zc_main__s0__eb1b0c3b",
+ "schema": 1,
+ "script": "experiments/p1_read.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-01T16:59:19+00:00",
+ "stream": null,
+ "tag": "zc_main"
+}

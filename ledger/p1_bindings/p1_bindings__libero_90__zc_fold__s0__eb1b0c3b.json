@@ -1,0 +1,263 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "experiments/p1_read.py zc_fold --record  # factor tokens (18.4 KB, frozen policy) vs the one-demo LoRA, two demos",
+ "config": {
+  "read": "zc_fold",
+  "record": true
+ },
+ "env": {
+  "device": "cpu",
+  "host": "sky1.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "p1_bindings",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "eb1b0c3b1e31153bfe7270aa84c4cb215c8d6270",
+  "short": "eb1b0c3b"
+ },
+ "keys": {},
+ "metrics": {
+  "H2a": {
+   "control": 252,
+   "diff": {
+    "diff": -0.26666666666666666,
+    "hi": -0.15,
+    "hi90": -0.16666666666666666,
+    "lo": -0.38095238095238093,
+    "lo90": -0.3619047619047619,
+    "n_pairs": 420,
+    "n_tasks": 21
+   },
+   "discordant": [
+    33,
+    145
+   ],
+   "n": 420,
+   "non_inferior_010": false,
+   "sign_p": 5.999535974445369e-18,
+   "x": 140,
+   "x_arm": "ftoken_self",
+   "y_arm": "lora"
+  },
+  "H2b": {
+   "control": 298,
+   "diff": {
+    "diff": -0.44047619047619047,
+    "hi": -0.3119047619047619,
+    "hi90": -0.3333333333333333,
+    "lo": -0.5666666666666667,
+    "lo90": -0.5476190476190477,
+    "n_pairs": 420,
+    "n_tasks": 21
+   },
+   "discordant": [
+    12,
+    197
+   ],
+   "n": 420,
+   "non_inferior_010": false,
+   "sign_p": 2.7192063244398353e-44,
+   "x": 113,
+   "x_arm": "ftoken_self_d1",
+   "y_arm": "lora_d1"
+  },
+  "Z": {
+   "control": 6,
+   "diff": {
+    "diff": 0.319047619047619,
+    "hi": 0.43333333333333335,
+    "hi90": 0.4142857142857143,
+    "lo": 0.20714285714285716,
+    "lo90": 0.2261904761904762,
+    "n_pairs": 420,
+    "n_tasks": 21
+   },
+   "discordant": [
+    136,
+    2
+   ],
+   "n": 420,
+   "passes": true,
+   "sign_p": 5.505537994671573e-38,
+   "x": 140,
+   "x_arm": "ftoken_self",
+   "y_arm": "zeroshot"
+  },
+  "claim": false,
+  "per_task": {
+   "1": {
+    "lora": 7,
+    "lora1": 12,
+    "tok": 0,
+    "tok1": 0,
+    "z": 0
+   },
+   "3": {
+    "lora": 19,
+    "lora1": 16,
+    "tok": 5,
+    "tok1": 2,
+    "z": 0
+   },
+   "32": {
+    "lora": 7,
+    "lora1": 14,
+    "tok": 1,
+    "tok1": 4,
+    "z": 0
+   },
+   "34": {
+    "lora": 18,
+    "lora1": 12,
+    "tok": 10,
+    "tok1": 7,
+    "z": 0
+   },
+   "35": {
+    "lora": 5,
+    "lora1": 17,
+    "tok": 0,
+    "tok1": 7,
+    "z": 2
+   },
+   "36": {
+    "lora": 13,
+    "lora1": 12,
+    "tok": 3,
+    "tok1": 2,
+    "z": 0
+   },
+   "37": {
+    "lora": 7,
+    "lora1": 16,
+    "tok": 3,
+    "tok1": 0,
+    "z": 0
+   },
+   "39": {
+    "lora": 13,
+    "lora1": 4,
+    "tok": 9,
+    "tok1": 3,
+    "z": 0
+   },
+   "4": {
+    "lora": 17,
+    "lora1": 5,
+    "tok": 3,
+    "tok1": 0,
+    "z": 0
+   },
+   "40": {
+    "lora": 10,
+    "lora1": 5,
+    "tok": 0,
+    "tok1": 0,
+    "z": 0
+   },
+   "41": {
+    "lora": 15,
+    "lora1": 20,
+    "tok": 4,
+    "tok1": 2,
+    "z": 0
+   },
+   "42": {
+    "lora": 3,
+    "lora1": 20,
+    "tok": 5,
+    "tok1": 6,
+    "z": 0
+   },
+   "43": {
+    "lora": 12,
+    "lora1": 17,
+    "tok": 12,
+    "tok1": 14,
+    "z": 2
+   },
+   "48": {
+    "lora": 12,
+    "lora1": 18,
+    "tok": 13,
+    "tok1": 16,
+    "z": 0
+   },
+   "5": {
+    "lora": 19,
+    "lora1": 19,
+    "tok": 14,
+    "tok1": 5,
+    "z": 0
+   },
+   "52": {
+    "lora": 13,
+    "lora1": 15,
+    "tok": 11,
+    "tok1": 15,
+    "z": 0
+   },
+   "53": {
+    "lora": 20,
+    "lora1": 19,
+    "tok": 15,
+    "tok1": 16,
+    "z": 2
+   },
+   "58": {
+    "lora": 9,
+    "lora1": 6,
+    "tok": 10,
+    "tok1": 3,
+    "z": 0
+   },
+   "6": {
+    "lora": 17,
+    "lora1": 19,
+    "tok": 15,
+    "tok1": 1,
+    "z": 0
+   },
+   "62": {
+    "lora": 3,
+    "lora1": 17,
+    "tok": 5,
+    "tok1": 6,
+    "z": 0
+   },
+   "63": {
+    "lora": 13,
+    "lora1": 15,
+    "tok": 2,
+    "tok1": 4,
+    "z": 0
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "p1_bindings__libero_90__zc_fold__s0__eb1b0c3b",
+ "schema": 1,
+ "script": "experiments/p1_read.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-01T16:34:07+00:00",
+ "stream": null,
+ "tag": "zc_fold"
+}

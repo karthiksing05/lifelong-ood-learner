@@ -1,0 +1,105 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/ftoken_40_n8.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 147456,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 147456,
+  "tree": 0
+ },
+ "command": "experiments/f4_fold.py --task 40 --n-tokens 8 --steps 1000 --tag _n8",
+ "config": {
+  "batch": 16,
+  "demo": 0,
+  "lr": 0.01,
+  "n_tokens": 8,
+  "seed": 0,
+  "source": "demo",
+  "steps": 1000,
+  "tag": "_n8",
+  "task": "40"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "deebot.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3996038",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "f4_fold",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "eb1b0c3b1e31153bfe7270aa84c4cb215c8d6270",
+  "short": "eb1b0c3b"
+ },
+ "keys": {
+  "task": "40"
+ },
+ "metrics": {
+  "curve": {
+   "anchor": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "loss": [
+    0.035187412053346634,
+    0.021089179441332817,
+    0.025955522432923317,
+    0.016265183687210083,
+    0.013152486644685268,
+    0.008254450745880604,
+    0.014752285555005074,
+    0.007837913930416107,
+    0.007487823721021414,
+    0.012012097053229809
+   ],
+   "step": [
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "demo_episode": 1400,
+  "final_loss": 0.012012097053229809,
+  "first_loss": 0.035187412053346634,
+  "n_frames": 177,
+  "n_tokens": 8,
+  "source": "demo",
+  "task": "40",
+  "text": "put the frying pan on the cabinet shelf",
+  "train_secs": 114.44619989395142
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "f4_fold__libero_90__token_demo_n8__task-40__s0__eb1b0c3b",
+ "schema": 1,
+ "script": "experiments/f4_fold.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-01T16:38:09+00:00",
+ "stream": null,
+ "tag": "token_demo_n8"
+}
