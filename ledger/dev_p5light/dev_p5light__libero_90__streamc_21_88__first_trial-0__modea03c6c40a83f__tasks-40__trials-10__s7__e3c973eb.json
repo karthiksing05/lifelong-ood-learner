@@ -1,0 +1,87 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/dev_p5light_40_streamc_21_88.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "roll.sh MODE=phasebind:40?fold=0&rules=2&g=21&p=88&objn=chefmate_8_frypan_1&recn=wooden_two_layer_shelf_1&reader=spatial4_synthonly_rj&carry=pred&var=0.001 SUITE=libero_90 TASKS=40 TRIALS=10 (job 3991578)",
+ "config": {
+  "client": {
+   "branches": "",
+   "first_trial": 0,
+   "host": "127.0.0.1",
+   "light": true,
+   "max_steps": 0,
+   "no_meta": false,
+   "objects": true,
+   "out": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/dev_p5light_40_streamc_21_88.json",
+   "port": 9055,
+   "record": true,
+   "replan": 5,
+   "resize": 224,
+   "seed": 7,
+   "suite": "libero_90",
+   "tasks": "40",
+   "trials": 10,
+   "videos": 2,
+   "wait": 10
+  },
+  "job": "3991578",
+  "mode": "phasebind:40?fold=0&rules=2&g=21&p=88&objn=chefmate_8_frypan_1&recn=wooden_two_layer_shelf_1&reader=spatial4_synthonly_rj&carry=pred&var=0.001"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "qt-1.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3991578",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "dev_p5light",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "e3c973eb682dd0ac849b33fa42b771a802650c29",
+  "short": "e3c973eb"
+ },
+ "keys": {
+  "first_trial": 0,
+  "mode": "phasebind:40?fold=0&rules=2&g=21&p=88&objn=chefmate_8_frypan_1&recn=wooden_two_layer_shelf_1&reader=spatial4_synthonly_rj&carry=pred&var=0.001",
+  "tasks": "40",
+  "trials": 10
+ },
+ "metrics": {
+  "complete": true,
+  "n_episodes": 10,
+  "secs": 406.6926338672638,
+  "success_rate": 0.4,
+  "tasks": {
+   "40": {
+    "errors": 0,
+    "language": "put the frying pan on the cabinet shelf",
+    "mean_steps": 355.6,
+    "n": 10,
+    "success_rate": 0.4
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "dev_p5light__libero_90__streamc_21_88__first_trial-0__modea03c6c40a83f__tasks-40__trials-10__s7__e3c973eb",
+ "schema": 1,
+ "script": "experiments/libero_client.py",
+ "seconds": null,
+ "seed": 7,
+ "source_commit": null,
+ "started": "2026-10-01T03:09:55+00:00",
+ "stream": null,
+ "tag": "streamc_21_88"
+}

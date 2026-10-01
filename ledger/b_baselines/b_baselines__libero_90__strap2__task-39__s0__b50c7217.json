@@ -1,0 +1,146 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/strap2_39_lora.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 18710528,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 18710528,
+  "tree": 0
+ },
+ "command": "experiments/b_strap.py train --task 39 --official",
+ "config": {
+  "K": 100,
+  "batch": 32,
+  "lr": 0.0001,
+  "rank": 16,
+  "steps": 2000
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "consu.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3995306",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "b_baselines",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "b50c721715b4d11ce0813910435f13ee3e6b29c8",
+  "short": "b50c7217"
+ },
+ "keys": {
+  "task": 39
+ },
+ "metrics": {
+  "curve": {
+   "anchor": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "loss": [
+    0.01924128830432892,
+    0.003863143501803279,
+    0.0016803265316411853,
+    0.0011555124074220657,
+    0.00280563673004508,
+    0.0015092686517164111,
+    0.001843219273723662,
+    0.0020592310465872288,
+    0.0018968895310536027,
+    0.004076818469911814,
+    0.004027587827295065,
+    0.0034920319449156523,
+    0.0014554619556292892,
+    0.0020890773739665747,
+    0.0006921029998920858,
+    0.0013197025982663035,
+    0.0005111258942633867,
+    0.0010207490995526314,
+    0.0005737887695431709,
+    0.0006439365679398179,
+    0.0011573050869628787
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000,
+    1100,
+    1200,
+    1300,
+    1400,
+    1500,
+    1600,
+    1700,
+    1800,
+    1900,
+    2000
+   ]
+  },
+  "demo_frames": 116,
+  "final_loss": 0.0011573050869628787,
+  "first_loss": 0.01924128830432892,
+  "retrieved": 99,
+  "retrieved_frames": 2884,
+  "segments": [
+   [
+    0,
+    69
+   ],
+   [
+    69,
+    89
+   ],
+   [
+    89,
+    116
+   ]
+  ],
+  "task": 39,
+  "train_secs": 362.60760474205017
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "b_baselines__libero_90__strap2__task-39__s0__b50c7217",
+ "schema": 1,
+ "script": "experiments/b_strap.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-01T13:01:48+00:00",
+ "stream": null,
+ "tag": "strap2"
+}

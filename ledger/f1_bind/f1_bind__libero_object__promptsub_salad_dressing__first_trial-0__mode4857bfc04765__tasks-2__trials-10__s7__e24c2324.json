@@ -1,0 +1,89 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/f1_bind_libero_object_2_promptsub_salad_dressing.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_object",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "roll.sh MODE=promptx:pick_up_the_salad_dressing_and_place_it_in_the_basket SUITE=libero_object TASKS=2 TRIALS=10 (job 3995797)",
+ "config": {
+  "client": {
+   "all_objects": true,
+   "branches": "",
+   "first_trial": 0,
+   "host": "127.0.0.1",
+   "light": true,
+   "max_steps": 0,
+   "no_meta": false,
+   "objects": true,
+   "out": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/f1_bind_libero_object_2_promptsub_salad_dressing.json",
+   "port": 9531,
+   "record": true,
+   "replan": 5,
+   "resize": 224,
+   "seed": 7,
+   "state_mod": 0,
+   "suite": "libero_object",
+   "tasks": "2",
+   "trials": 10,
+   "videos": 2,
+   "wait": 10
+  },
+  "job": "3995797",
+  "mode": "promptx:pick_up_the_salad_dressing_and_place_it_in_the_basket"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "megabot.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3995797",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "f1_bind",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "e24c2324f5d239e52d7c2cf2e54bd4c7e67b62ab",
+  "short": "e24c2324"
+ },
+ "keys": {
+  "first_trial": 0,
+  "mode": "promptx:pick_up_the_salad_dressing_and_place_it_in_the_basket",
+  "tasks": "2",
+  "trials": 10
+ },
+ "metrics": {
+  "complete": true,
+  "n_episodes": 10,
+  "secs": 155.69840598106384,
+  "success_rate": 1.0,
+  "tasks": {
+   "2": {
+    "errors": 0,
+    "language": "pick up the salad dressing and place it in the basket",
+    "mean_steps": 116.4,
+    "n": 10,
+    "success_rate": 1.0
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "f1_bind__libero_object__promptsub_salad_dressing__first_trial-0__mode4857bfc04765__tasks-2__trials-10__s7__e24c2324",
+ "schema": 1,
+ "script": "experiments/libero_client.py",
+ "seconds": null,
+ "seed": 7,
+ "source_commit": null,
+ "started": "2026-10-01T15:55:37+00:00",
+ "stream": null,
+ "tag": "promptsub_salad_dressing"
+}

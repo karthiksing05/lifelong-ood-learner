@@ -1,0 +1,88 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/m3_final_1_nopolicy_rjpred_pca512_rj.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "roll.sh MODE=phasebind:1?fold=0&rules=2&reader=pca512_rj&carry=pred&var=0.001&nopolicy=1 SUITE=libero_90 TASKS=1 TRIALS=20 (job 3995468)",
+ "config": {
+  "client": {
+   "branches": "",
+   "first_trial": 30,
+   "host": "127.0.0.1",
+   "light": false,
+   "max_steps": 0,
+   "no_meta": false,
+   "objects": false,
+   "out": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/m3_final_1_nopolicy_rjpred_pca512_rj.json",
+   "port": 9415,
+   "record": false,
+   "replan": 5,
+   "resize": 224,
+   "seed": 7,
+   "state_mod": 0,
+   "suite": "libero_90",
+   "tasks": "1",
+   "trials": 20,
+   "videos": 2,
+   "wait": 10
+  },
+  "job": "3995468",
+  "mode": "phasebind:1?fold=0&rules=2&reader=pca512_rj&carry=pred&var=0.001&nopolicy=1"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "spd-13.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3995468",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_final",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "b5159b76fd521d9eeb70fb42d3aab046f0964c99",
+  "short": "b5159b76"
+ },
+ "keys": {
+  "first_trial": 30,
+  "mode": "phasebind:1?fold=0&rules=2&reader=pca512_rj&carry=pred&var=0.001&nopolicy=1",
+  "tasks": "1",
+  "trials": 20
+ },
+ "metrics": {
+  "complete": true,
+  "n_episodes": 20,
+  "secs": 268.24658370018005,
+  "success_rate": 1.0,
+  "tasks": {
+   "1": {
+    "errors": 0,
+    "language": "close the top drawer of the cabinet and put the black bowl on top of it",
+    "mean_steps": 196.3,
+    "n": 20,
+    "success_rate": 1.0
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_final__libero_90__nopolicy_rjpred_pca512_rj__first_trial-30__modeb2dffbc5f956__tasks-1__trials-20__s7__b5159b76",
+ "schema": 1,
+ "script": "experiments/libero_client.py",
+ "seconds": null,
+ "seed": 7,
+ "source_commit": null,
+ "started": "2026-10-01T13:58:43+00:00",
+ "stream": null,
+ "tag": "nopolicy_rjpred_pca512_rj"
+}

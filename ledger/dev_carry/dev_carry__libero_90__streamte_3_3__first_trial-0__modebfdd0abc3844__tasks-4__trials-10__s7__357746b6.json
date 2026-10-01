@@ -1,0 +1,87 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/dev_carry_4_streamte_3_3.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "roll.sh MODE=phasebind:4?fold=0&rules=2&g=3&p=3&objn=butter_1&recn=wooden_cabinet_1&reader=spatial4_synthonly_rj&carry=pred&transport=1&events=1&var=0.001 SUITE=libero_90 TASKS=4 TRIALS=10 (job 3991382)",
+ "config": {
+  "client": {
+   "branches": "",
+   "first_trial": 0,
+   "host": "127.0.0.1",
+   "light": true,
+   "max_steps": 0,
+   "no_meta": false,
+   "objects": true,
+   "out": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/dev_carry_4_streamte_3_3.json",
+   "port": 9338,
+   "record": true,
+   "replan": 5,
+   "resize": 224,
+   "seed": 7,
+   "suite": "libero_90",
+   "tasks": "4",
+   "trials": 10,
+   "videos": 2,
+   "wait": 10
+  },
+  "job": "3991382",
+  "mode": "phasebind:4?fold=0&rules=2&g=3&p=3&objn=butter_1&recn=wooden_cabinet_1&reader=spatial4_synthonly_rj&carry=pred&transport=1&events=1&var=0.001"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "spd-13.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3991382",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "dev_carry",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "357746b6c06703b0c8c05b8e39d87a9cb4c2a32d",
+  "short": "357746b6"
+ },
+ "keys": {
+  "first_trial": 0,
+  "mode": "phasebind:4?fold=0&rules=2&g=3&p=3&objn=butter_1&recn=wooden_cabinet_1&reader=spatial4_synthonly_rj&carry=pred&transport=1&events=1&var=0.001",
+  "tasks": "4",
+  "trials": 10
+ },
+ "metrics": {
+  "complete": true,
+  "n_episodes": 10,
+  "secs": 392.6560387611389,
+  "success_rate": 0.9,
+  "tasks": {
+   "4": {
+    "errors": 0,
+    "language": "put the butter at the front in the top drawer of the cabinet and close it",
+    "mean_steps": 313.5,
+    "n": 10,
+    "success_rate": 0.9
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "dev_carry__libero_90__streamte_3_3__first_trial-0__modebfdd0abc3844__tasks-4__trials-10__s7__357746b6",
+ "schema": 1,
+ "script": "experiments/libero_client.py",
+ "seconds": null,
+ "seed": 7,
+ "source_commit": null,
+ "started": "2026-09-30T21:24:50+00:00",
+ "stream": null,
+ "tag": "streamte_3_3"
+}

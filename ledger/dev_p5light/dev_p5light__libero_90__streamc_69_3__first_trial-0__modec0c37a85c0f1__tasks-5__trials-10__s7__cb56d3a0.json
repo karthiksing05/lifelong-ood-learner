@@ -1,0 +1,88 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/dev_p5light_5_streamc_69_3.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "roll.sh MODE=phasebind:5?fold=0&rules=2&g=69&p=3&objn=chocolate_pudding_1&recn=wooden_cabinet_1&reader=spatial4_synthonly_rj&carry=pred&var=0.001 SUITE=libero_90 TASKS=5 TRIALS=10 (job 3991582)",
+ "config": {
+  "client": {
+   "branches": "",
+   "first_trial": 0,
+   "host": "127.0.0.1",
+   "light": true,
+   "max_steps": 0,
+   "no_meta": false,
+   "objects": true,
+   "out": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/dev_p5light_5_streamc_69_3.json",
+   "port": 9067,
+   "record": true,
+   "replan": 5,
+   "resize": 224,
+   "seed": 7,
+   "state_mod": 0,
+   "suite": "libero_90",
+   "tasks": "5",
+   "trials": 10,
+   "videos": 2,
+   "wait": 10
+  },
+  "job": "3991582",
+  "mode": "phasebind:5?fold=0&rules=2&g=69&p=3&objn=chocolate_pudding_1&recn=wooden_cabinet_1&reader=spatial4_synthonly_rj&carry=pred&var=0.001"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "consu.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3991582",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "dev_p5light",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "cb56d3a022f43e66cdc4e7a5e5f83acabb5c5e8c",
+  "short": "cb56d3a0"
+ },
+ "keys": {
+  "first_trial": 0,
+  "mode": "phasebind:5?fold=0&rules=2&g=69&p=3&objn=chocolate_pudding_1&recn=wooden_cabinet_1&reader=spatial4_synthonly_rj&carry=pred&var=0.001",
+  "tasks": "5",
+  "trials": 10
+ },
+ "metrics": {
+  "complete": true,
+  "n_episodes": 10,
+  "secs": 343.8051850795746,
+  "success_rate": 0.5,
+  "tasks": {
+   "5": {
+    "errors": 0,
+    "language": "put the chocolate pudding in the top drawer of the cabinet and close it",
+    "mean_steps": 310.7,
+    "n": 10,
+    "success_rate": 0.5
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "dev_p5light__libero_90__streamc_69_3__first_trial-0__modec0c37a85c0f1__tasks-5__trials-10__s7__cb56d3a0",
+ "schema": 1,
+ "script": "experiments/libero_client.py",
+ "seconds": null,
+ "seed": 7,
+ "source_commit": null,
+ "started": "2026-10-01T12:40:19+00:00",
+ "stream": null,
+ "tag": "streamc_69_3"
+}

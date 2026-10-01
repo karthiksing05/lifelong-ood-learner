@@ -1,0 +1,89 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/f1_bind_libero_object_1_promptsub_alphabet_soup.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_object",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "roll.sh MODE=promptx:pick_up_the_alphabet_soup_and_place_it_in_the_basket SUITE=libero_object TASKS=1 TRIALS=10 (job 3995796)",
+ "config": {
+  "client": {
+   "all_objects": true,
+   "branches": "",
+   "first_trial": 0,
+   "host": "127.0.0.1",
+   "light": true,
+   "max_steps": 0,
+   "no_meta": false,
+   "objects": true,
+   "out": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/f1_bind_libero_object_1_promptsub_alphabet_soup.json",
+   "port": 9529,
+   "record": true,
+   "replan": 5,
+   "resize": 224,
+   "seed": 7,
+   "state_mod": 0,
+   "suite": "libero_object",
+   "tasks": "1",
+   "trials": 10,
+   "videos": 2,
+   "wait": 10
+  },
+  "job": "3995796",
+  "mode": "promptx:pick_up_the_alphabet_soup_and_place_it_in_the_basket"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "voltron.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3995796",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "f1_bind",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "e24c2324f5d239e52d7c2cf2e54bd4c7e67b62ab",
+  "short": "e24c2324"
+ },
+ "keys": {
+  "first_trial": 0,
+  "mode": "promptx:pick_up_the_alphabet_soup_and_place_it_in_the_basket",
+  "tasks": "1",
+  "trials": 10
+ },
+ "metrics": {
+  "complete": true,
+  "n_episodes": 10,
+  "secs": 264.84860277175903,
+  "success_rate": 0.0,
+  "tasks": {
+   "1": {
+    "errors": 0,
+    "language": "pick up the cream cheese and place it in the basket",
+    "mean_steps": 280.0,
+    "n": 10,
+    "success_rate": 0.0
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "f1_bind__libero_object__promptsub_alphabet_soup__first_trial-0__modec8e06b19df04__tasks-1__trials-10__s7__e24c2324",
+ "schema": 1,
+ "script": "experiments/libero_client.py",
+ "seconds": null,
+ "seed": 7,
+ "source_commit": null,
+ "started": "2026-10-01T15:57:13+00:00",
+ "stream": null,
+ "tag": "promptsub_alphabet_soup"
+}

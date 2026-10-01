@@ -1,0 +1,87 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/dev_carry_5_streamtle_69_3.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "roll.sh MODE=phasebind:5?fold=0&rules=2&g=69&p=3&objn=chocolate_pudding_1&recn=wooden_cabinet_1&reader=spatial4_synthonly_rj&carry=pred&transport=1&events=1&lift=1&var=0.001 SUITE=libero_90 TASKS=5 TRIALS=10 (job 3991601)",
+ "config": {
+  "client": {
+   "branches": "",
+   "first_trial": 0,
+   "host": "127.0.0.1",
+   "light": true,
+   "max_steps": 0,
+   "no_meta": false,
+   "objects": true,
+   "out": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/dev_carry_5_streamtle_69_3.json",
+   "port": 9124,
+   "record": true,
+   "replan": 5,
+   "resize": 224,
+   "seed": 7,
+   "suite": "libero_90",
+   "tasks": "5",
+   "trials": 10,
+   "videos": 2,
+   "wait": 10
+  },
+  "job": "3991601",
+  "mode": "phasebind:5?fold=0&rules=2&g=69&p=3&objn=chocolate_pudding_1&recn=wooden_cabinet_1&reader=spatial4_synthonly_rj&carry=pred&transport=1&events=1&lift=1&var=0.001"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "brainiac.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3991601",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "dev_carry",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "f24d2f880d7ea44446c385e38fcc9ca87fa6b80a",
+  "short": "f24d2f88"
+ },
+ "keys": {
+  "first_trial": 0,
+  "mode": "phasebind:5?fold=0&rules=2&g=69&p=3&objn=chocolate_pudding_1&recn=wooden_cabinet_1&reader=spatial4_synthonly_rj&carry=pred&transport=1&events=1&lift=1&var=0.001",
+  "tasks": "5",
+  "trials": 10
+ },
+ "metrics": {
+  "complete": true,
+  "n_episodes": 10,
+  "secs": 412.4171555042267,
+  "success_rate": 0.6,
+  "tasks": {
+   "5": {
+    "errors": 0,
+    "language": "put the chocolate pudding in the top drawer of the cabinet and close it",
+    "mean_steps": 341.1,
+    "n": 10,
+    "success_rate": 0.6
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "dev_carry__libero_90__streamtle_69_3__first_trial-0__mode7d69195ad795__tasks-5__trials-10__s7__f24d2f88",
+ "schema": 1,
+ "script": "experiments/libero_client.py",
+ "seconds": null,
+ "seed": 7,
+ "source_commit": null,
+ "started": "2026-09-30T23:13:08+00:00",
+ "stream": null,
+ "tag": "streamtle_69_3"
+}

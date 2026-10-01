@@ -1,0 +1,89 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/f4_pilot_41_ftoken_self.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "roll.sh MODE=ftoken:/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/ftoken_41.pt SUITE=libero_90 TASKS=41 TRIALS=10 (job 3996139)",
+ "config": {
+  "client": {
+   "all_objects": false,
+   "branches": "",
+   "first_trial": 0,
+   "host": "127.0.0.1",
+   "light": false,
+   "max_steps": 0,
+   "no_meta": false,
+   "objects": false,
+   "out": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/f4_pilot_41_ftoken_self.json",
+   "port": 9688,
+   "record": false,
+   "replan": 5,
+   "resize": 224,
+   "seed": 7,
+   "state_mod": 0,
+   "suite": "libero_90",
+   "tasks": "41",
+   "trials": 10,
+   "videos": 2,
+   "wait": 10
+  },
+  "job": "3996139",
+  "mode": "ftoken:/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/ftoken_41.pt"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "hk47.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3996139",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "f4_pilot",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "0ad121887dff7e9ec38332ba0f99c3ab4d0a0d00",
+  "short": "0ad12188"
+ },
+ "keys": {
+  "first_trial": 0,
+  "mode": "ftoken:/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/ftoken_41.pt",
+  "tasks": "41",
+  "trials": 10
+ },
+ "metrics": {
+  "complete": true,
+  "n_episodes": 10,
+  "secs": 397.9985649585724,
+  "success_rate": 0.3,
+  "tasks": {
+   "41": {
+    "errors": 0,
+    "language": "put the frying pan on top of the cabinet",
+    "mean_steps": 341.6,
+    "n": 10,
+    "success_rate": 0.3
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "f4_pilot__libero_90__ftoken_self__first_trial-0__modef2b76e853f98__tasks-41__trials-10__s7__0ad12188",
+ "schema": 1,
+ "script": "experiments/libero_client.py",
+ "seconds": null,
+ "seed": 7,
+ "source_commit": null,
+ "started": "2026-10-01T17:06:30+00:00",
+ "stream": null,
+ "tag": "ftoken_self"
+}

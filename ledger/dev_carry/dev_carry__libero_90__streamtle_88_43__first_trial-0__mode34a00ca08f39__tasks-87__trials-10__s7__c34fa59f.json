@@ -1,0 +1,87 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/dev_carry_87_streamtle_88_43.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "roll.sh MODE=phasebind:87?fold=0&rules=2&g=88&p=43&objn=yellow_book_2&recn=wooden_two_layer_shelf_1&reader=spatial4_synthonly_rj&carry=pred&transport=1&events=1&lift=1&var=0.001 SUITE=libero_90 TASKS=87 TRIALS=10 (job 3991610)",
+ "config": {
+  "client": {
+   "branches": "",
+   "first_trial": 0,
+   "host": "127.0.0.1",
+   "light": true,
+   "max_steps": 0,
+   "no_meta": false,
+   "objects": true,
+   "out": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/dev_carry_87_streamtle_88_43.json",
+   "port": 9151,
+   "record": true,
+   "replan": 5,
+   "resize": 224,
+   "seed": 7,
+   "suite": "libero_90",
+   "tasks": "87",
+   "trials": 10,
+   "videos": 2,
+   "wait": 10
+  },
+  "job": "3991610",
+  "mode": "phasebind:87?fold=0&rules=2&g=88&p=43&objn=yellow_book_2&recn=wooden_two_layer_shelf_1&reader=spatial4_synthonly_rj&carry=pred&transport=1&events=1&lift=1&var=0.001"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "major.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3991610",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "dev_carry",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "c34fa59f3bf3060bda6de0c023d345cf4ff52267",
+  "short": "c34fa59f"
+ },
+ "keys": {
+  "first_trial": 0,
+  "mode": "phasebind:87?fold=0&rules=2&g=88&p=43&objn=yellow_book_2&recn=wooden_two_layer_shelf_1&reader=spatial4_synthonly_rj&carry=pred&transport=1&events=1&lift=1&var=0.001",
+  "tasks": "87",
+  "trials": 10
+ },
+ "metrics": {
+  "complete": true,
+  "n_episodes": 10,
+  "secs": 357.0014238357544,
+  "success_rate": 1.0,
+  "tasks": {
+   "87": {
+    "errors": 0,
+    "language": "pick up the book on the left and place it on top of the shelf",
+    "mean_steps": 317.5,
+    "n": 10,
+    "success_rate": 1.0
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "dev_carry__libero_90__streamtle_88_43__first_trial-0__mode34a00ca08f39__tasks-87__trials-10__s7__c34fa59f",
+ "schema": 1,
+ "script": "experiments/libero_client.py",
+ "seconds": null,
+ "seed": 7,
+ "source_commit": null,
+ "started": "2026-09-30T23:29:33+00:00",
+ "stream": null,
+ "tag": "streamtle_88_43"
+}

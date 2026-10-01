@@ -353,11 +353,19 @@ object-relative replay can do; it is not the policy generating.</p>
         ["one-demo LoRA", str(H2a['control']), "18.7 MB"],
         ["STRAP (our variant)", str(sota['B1']['control']), "18.7 MB"],
         ["DSRL (our variant)", str(sota['B2']['control']), "18.7 MB + actor"],
+        *([["STRAP (authors' retrieval)", str(amend['B1']['control']), "18.7 MB"],
+           ["DSRL (authors' configuration)", str(amend['B2']['control']), "18.7 MB + actor"],
+           ["one-demo LoRA + failure negatives", str(amend['vs_nft']['dsrl']['control']), "18.7 MB"]] if amend else []),
         ["experience replay", str(sota['B3']['control']), "shared LoRA"],
         ["factor token (this report)", str(H2a['x']), f"{token_bytes / 1e3:.1f} KB"]],
        "The previous method and the baselines on the same 420 paired episodes.", num_from=1)}
 {pending("Faithful baselines", "STRAP with its authors' retrieval and DSRL with its authors' pi0.5 LIBERO configuration are being re-scored on "
-         "the same episodes; our first versions stay above as our variants.") if not amend else ""}"""
+         "the same episodes; our first versions stay above as our variants.") if not amend else
+  f"""<p>A check of the authors' code found that our first STRAP and DSRL differed from theirs, so both were re-scored with the
+authors' settings under a pre-registered amendment. STRAP with the authors' retrieval scores {amend['B1']['control']}, below our variant.
+DSRL with the authors' configuration scores {amend['B2']['control']} against {H2a['control']} for the one-demo LoRA it steers, level
+with the LoRA trained with failure negatives ({amend['vs_nft']['dsrl']['control']}; sign test p {amend['vs_nft']['dsrl']['sign_p']:.2f}).
+DSRL keeps the policy generating: 100 practice episodes teach it which initial noise to hand the policy's own sampler.</p>"""}"""
 
 P_LIMITS = """
 <ul>

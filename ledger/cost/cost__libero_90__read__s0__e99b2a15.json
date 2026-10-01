@@ -1,0 +1,185 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/cost_read.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "experiments/cost_read.py --record",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky1.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "cost",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "e99b2a15b3570e487c68a6a9f88e681c5896779a",
+  "short": "e99b2a15"
+ },
+ "keys": {},
+ "metrics": {
+  "arms": {
+   "dsrl": {
+    "adapt_secs": 3876.7946962174915,
+    "episodes": 420,
+    "label": "DSRL (our variant)",
+    "latency": {
+     "calls": 22200,
+     "ms_per_query": 572.4121621621622,
+     "runs": 21
+    },
+    "practice_episodes": 100,
+    "successes": 234
+   },
+   "dsrlo": {
+    "adapt_secs": 5520.908775726954,
+    "episodes": 420,
+    "label": "DSRL, authors' configuration",
+    "latency": {
+     "calls": 19900,
+     "ms_per_query": 595.2160804020101,
+     "runs": 21
+    },
+    "practice_episodes": 100,
+    "successes": 282
+   },
+   "lora": {
+    "adapt_secs": 130.19807076454163,
+    "episodes": 420,
+    "label": "LoRA, one demo",
+    "latency": {
+     "calls": 21900,
+     "ms_per_query": 560.9931506849315,
+     "runs": 21
+    },
+    "practice_episodes": 0,
+    "successes": 252
+   },
+   "lora_er": {
+    "adapt_secs": 42.149428549267,
+    "episodes": 420,
+    "label": "experience replay",
+    "latency": {
+     "calls": 26900,
+     "ms_per_query": 595.4795539033457,
+     "runs": 21
+    },
+    "practice_episodes": 0,
+    "successes": 138
+   },
+   "lora_r17bal": {
+    "adapt_secs": null,
+    "episodes": 420,
+    "label": "LoRA + failure negatives",
+    "latency": {
+     "calls": 19800,
+     "ms_per_query": 595.8712121212121,
+     "runs": 21
+    },
+    "practice_episodes": 30,
+    "successes": 302
+   },
+   "lora_strap": {
+    "adapt_secs": 438.9430800506047,
+    "episodes": 420,
+    "label": "STRAP",
+    "latency": {
+     "calls": 25800,
+     "ms_per_query": 545.2054263565891,
+     "runs": 21
+    },
+    "practice_episodes": 0,
+    "successes": 168
+   },
+   "lora_strap2": {
+    "adapt_secs": 479.3637435209183,
+    "episodes": 420,
+    "label": "STRAP, authors' retrieval",
+    "latency": {
+     "calls": 27400,
+     "ms_per_query": 582.3047445255474,
+     "runs": 21
+    },
+    "practice_episodes": 0,
+    "successes": 138
+   },
+   "phasebind2_nofold": {
+    "adapt_secs": 0.0,
+    "episodes": 420,
+    "label": "bindings, simulator poses",
+    "latency": {
+     "calls": 14800,
+     "ms_per_query": 450.8445945945946,
+     "runs": 21
+    },
+    "practice_episodes": 0,
+    "successes": 385
+   },
+   "phasebind2_reader_spatial4_synth": {
+    "adapt_secs": 399.0,
+    "episodes": 420,
+    "label": "bindings, full reader",
+    "latency": {
+     "calls": 15200,
+     "ms_per_query": 443.4703947368421,
+     "runs": 21
+    },
+    "practice_episodes": 0,
+    "successes": 376
+   },
+   "phasebind2_rjpred_pca512_rj": {
+    "adapt_secs": 399.0,
+    "episodes": 420,
+    "label": "bindings, 7 KB reader head",
+    "latency": {
+     "calls": 15500,
+     "ms_per_query": 397.86129032258066,
+     "runs": 21
+    },
+    "practice_episodes": 0,
+    "successes": 372
+   },
+   "zeroshot": {
+    "adapt_secs": 0.0,
+    "episodes": 420,
+    "label": "zero-shot pi0.5",
+    "latency": {
+     "calls": 23750,
+     "ms_per_query": 368.17052631578946,
+     "runs": 15
+    },
+    "practice_episodes": 0,
+    "successes": 6
+   }
+  },
+  "notes": {
+   "adapt": "seconds of compute to adapt one new task: training (LoRA, STRAP, experience replay per task), the practice episodes' wall time (DSRL), rendering the task's 400 placements for the reader (bindings with a reader; experiments/p6_synth.py on task 42 with 8 CPU workers and EGL on one A40; the ridge fit adds seconds); STRAP's one-time embedding of the prior data is not included; the phases themselves are cut from the demo in milliseconds",
+   "latency": "mean ms per policy query (one query = one 10-step chunk, 5 executed), three servers per A40, weighted by calls"
+  },
+  "render_secs": 399.0
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "cost__libero_90__read__s0__e99b2a15",
+ "schema": 1,
+ "script": "experiments/cost_read.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-01T19:38:15+00:00",
+ "stream": null,
+ "tag": "read"
+}

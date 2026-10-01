@@ -1,0 +1,88 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/dsrl_practice_6_dsrlo_train.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "roll.sh MODE=dsrl:6?train=1&official=1&save=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/dsrlo_6_actor.pt&warmup=10 SUITE=libero_90 TASKS=6 TRIALS=100 (job 3995326)",
+ "config": {
+  "client": {
+   "branches": "",
+   "first_trial": 0,
+   "host": "127.0.0.1",
+   "light": false,
+   "max_steps": 0,
+   "no_meta": false,
+   "objects": false,
+   "out": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/dsrl_practice_6_dsrlo_train.json",
+   "port": 9860,
+   "record": false,
+   "replan": 5,
+   "resize": 224,
+   "seed": 7,
+   "state_mod": 30,
+   "suite": "libero_90",
+   "tasks": "6",
+   "trials": 100,
+   "videos": 2,
+   "wait": 10
+  },
+  "job": "3995326",
+  "mode": "dsrl:6?train=1&official=1&save=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/dsrlo_6_actor.pt&warmup=10"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "brainiac.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3995326",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "dsrl_practice",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "822fac5693b97358ba88a7364c6407ec5e93512f",
+  "short": "822fac56"
+ },
+ "keys": {
+  "first_trial": 0,
+  "mode": "dsrl:6?train=1&official=1&save=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/dsrlo_6_actor.pt&warmup=10",
+  "tasks": "6",
+  "trials": 100
+ },
+ "metrics": {
+  "complete": true,
+  "n_episodes": 100,
+  "secs": 4584.8464250564575,
+  "success_rate": 0.88,
+  "tasks": {
+   "6": {
+    "errors": 0,
+    "language": "open the bottom drawer of the cabinet",
+    "mean_steps": 177.12,
+    "n": 100,
+    "success_rate": 0.88
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "dsrl_practice__libero_90__dsrlo_train__first_trial-0__mode656043c15aff__tasks-6__trials-100__s7__822fac56",
+ "schema": 1,
+ "script": "experiments/libero_client.py",
+ "seconds": null,
+ "seed": 7,
+ "source_commit": null,
+ "started": "2026-10-01T16:22:05+00:00",
+ "stream": null,
+ "tag": "dsrlo_train"
+}

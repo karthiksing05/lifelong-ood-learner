@@ -1,0 +1,87 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/dev_carry_66_streamhe_65_65.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "roll.sh MODE=phasebind:66?fold=0&rules=2&g=65&p=65&objn=red_coffee_mug_1&recn=plate_2&reader=spatial4_synthonly_rj&carry=pred&handoff=1&events=1&var=0.001 SUITE=libero_90 TASKS=66 TRIALS=10 (job 3991387)",
+ "config": {
+  "client": {
+   "branches": "",
+   "first_trial": 0,
+   "host": "127.0.0.1",
+   "light": true,
+   "max_steps": 0,
+   "no_meta": false,
+   "objects": true,
+   "out": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/dev_carry_66_streamhe_65_65.json",
+   "port": 9353,
+   "record": true,
+   "replan": 5,
+   "resize": 224,
+   "seed": 7,
+   "suite": "libero_90",
+   "tasks": "66",
+   "trials": 10,
+   "videos": 2,
+   "wait": 10
+  },
+  "job": "3991387",
+  "mode": "phasebind:66?fold=0&rules=2&g=65&p=65&objn=red_coffee_mug_1&recn=plate_2&reader=spatial4_synthonly_rj&carry=pred&handoff=1&events=1&var=0.001"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "brainiac.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3991387",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "dev_carry",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "b96ff82205434ab01567c9028091f94b25f4f3a0",
+  "short": "b96ff822"
+ },
+ "keys": {
+  "first_trial": 0,
+  "mode": "phasebind:66?fold=0&rules=2&g=65&p=65&objn=red_coffee_mug_1&recn=plate_2&reader=spatial4_synthonly_rj&carry=pred&handoff=1&events=1&var=0.001",
+  "tasks": "66",
+  "trials": 10
+ },
+ "metrics": {
+  "complete": true,
+  "n_episodes": 10,
+  "secs": 276.9922544956207,
+  "success_rate": 0.7,
+  "tasks": {
+   "66": {
+    "errors": 0,
+    "language": "put the red mug on the right plate",
+    "mean_steps": 208.3,
+    "n": 10,
+    "success_rate": 0.7
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "dev_carry__libero_90__streamhe_65_65__first_trial-0__mode5b998231c23f__tasks-66__trials-10__s7__b96ff822",
+ "schema": 1,
+ "script": "experiments/libero_client.py",
+ "seconds": null,
+ "seed": 7,
+ "source_commit": null,
+ "started": "2026-09-30T21:34:45+00:00",
+ "stream": null,
+ "tag": "streamhe_65_65"
+}
