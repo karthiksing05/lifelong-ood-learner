@@ -53,6 +53,7 @@ class Norm:
     mean: np.ndarray
     std: np.ndarray
     quantile: bool = True                 # pi0.5: quantile normalisation; pi0: z-score (openpi's use_quantile_norm)
+    delta: int = 0                        # pi0_libero: the first 6 action dims are taken relative to the state (extra_delta_transform)
 
     @classmethod
     def load(cls, path=NORM_STATS, key="actions", quantile=True):
@@ -67,10 +68,17 @@ class Norm:
         quantile = bk.train_config.model.model_type != ModelType.PI0
         ck = getattr(bk, "checkpoint_dir", None)
         paths = glob.glob(os.path.join(ck, "assets", "**", "norm_stats.json"), recursive=True) if ck else []
-        return cls.load(paths[0] if paths else NORM_STATS, quantile=quantile)
+        n = cls.load(paths[0] if paths else NORM_STATS, quantile=quantile)
+        n.delta = 6 if getattr(bk.train_config.data, "extra_delta_transform", False) else 0
+        return n
 
-    def normalize(self, x):
-        x = np.asarray(x, np.float32)
+    def normalize(self, x, state=None):
+        """Raw actions -> the model's normalised units.  With `delta` (pi0_libero), the first `delta` dims are first taken relative to
+        the raw state, as openpi's DeltaActions does before Normalize; pass the observation's raw state."""
+        x = np.array(x, np.float32)
+        if self.delta:
+            assert state is not None, "this checkpoint's actions are relative to the state: pass the raw state"
+            x[..., : self.delta] -= np.asarray(state, np.float32)[: self.delta]
         if not self.quantile:
             return (x - self.mean[: x.shape[-1]]) / (self.std[: x.shape[-1]] + 1e-6)
         q01, q99 = self.q01[: x.shape[-1]], self.q99[: x.shape[-1]]

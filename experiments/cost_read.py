@@ -81,6 +81,8 @@ def main():
     sto = [r for r in ledger.load("storage", tag="read") if not r.get("retired")][-1]["metrics"]
     lora_secs = np.mean([r["metrics"]["train_secs"] for r in ledger.load("r3_fewshot") if r.get("tag", "") == "" and "train_secs" in r["metrics"]])
     strap_secs = np.mean([r["metrics"]["train_secs"] for r in ledger.load("b_baselines", tag="strap")])
+    s2 = [r["metrics"]["train_secs"] for r in ledger.load("b_baselines", tag="strap2") if "train_secs" in r["metrics"]]
+    strap2_secs = float(np.mean(s2)) if s2 else None
     er_secs = [r["metrics"]["train_secs"] for r in ledger.load("b_baselines", tag="er")][-1]
     dsrl_secs = {}
     for k in ("dsrl_train", "dsrlo_train"):
@@ -88,14 +90,14 @@ def main():
         dsrl_secs[k] = float(np.mean(v)) if v else None
     timing = os.path.join(R, "p6_synth_timing.json")
     render = json.load(open(timing))["secs"] if os.path.exists(timing) else None
-    adapt = {"zeroshot": 0.0, "lora": lora_secs, "lora_strap": strap_secs, "lora_strap2": strap_secs, "lora_er": er_secs / 21,
+    adapt = {"zeroshot": 0.0, "lora": lora_secs, "lora_strap": strap_secs, "lora_strap2": strap2_secs, "lora_er": er_secs / 21,
              "dsrl": dsrl_secs["dsrl_train"], "dsrlo": dsrl_secs["dsrlo_train"],
              "phasebind2_rjpred_pca512_rj": render, "phasebind2_reader_spatial4_synth": render, "phasebind2_nofold": 0.0}
     practice = {"lora_r17bal": 30, "dsrl": 100, "dsrlo": 100}
     res = dict(arms={}, render_secs=render, notes={
         "latency": "mean ms per policy query (one query = one 10-step chunk, 5 executed), three servers per A40, weighted by calls",
         "adapt": "seconds of compute to adapt one new task: training (LoRA, STRAP, experience replay per task), the practice episodes' "
-                 "wall time (DSRL), rendering the task's 400 placements for the reader (bindings with a reader); STRAP's one-time "
+                 "wall time (DSRL), rendering the task's 400 placements for the reader (bindings with a reader; experiments/p6_synth.py on task 42 with 8 CPU workers and EGL on one A40; the ridge fit adds seconds); STRAP's one-time "
                  "embedding of the prior data is not included; the phases themselves are cut from the demo in milliseconds"})
     M = [r for r in ledger.load("m3_stats", tag="final_23tasks") if not r.get("retired")][-1]["metrics"]["methods"]
     for lab, tag in ARMS:

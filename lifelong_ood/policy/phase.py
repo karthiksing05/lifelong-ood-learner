@@ -492,5 +492,5 @@ class PhaseBindHooks:
         self.log.append(frame)
         if self.on is not None and self.fold is not None and frame >= 0 and frame < len(self.fold) and bool(self.fold[frame]):
             return None, (lambda x, t: self.on)
-        rows = self.norm.normalize(acts).reshape(-1)
+        rows = self.norm.normalize(acts, state=st).reshape(-1)
         return guide(rows, np.full_like(rows, self.var), wmax=1.0, schedule="const", path="flow"), None

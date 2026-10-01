@@ -259,15 +259,17 @@ class PolicyBackbone:
         return out.float().cpu().numpy()
 
     # ── normalisation to / from the dataset's action units ──────────────────
-    def unnormalize(self, rows):
-        """real rows [n, dim] -> dataset actions [n, H, 7] through the policy's own output transform."""
+    def unnormalize(self, rows, state=None):
+        """real rows [n, dim] -> dataset actions [n, H, 7] through the policy's own output transform.  `state`: the model's input state
+        (normalised, as in the Observation), which openpi's output transform unnormalises and, for checkpoints trained with
+        extra_delta_transform (pi0_libero), adds back to the first 6 action dims (AbsoluteActions); zeros are exact for pi0.5."""
         R = np.asarray(rows, np.float32).reshape(-1, self.dim)
+        st = np.zeros(self.A, np.float32) if state is None else np.asarray(state, np.float32).reshape(-1)
         out = []
         for r in R:
             full = np.zeros((self.H, self.A), np.float32)
             full.reshape(-1)[self.real] = r
-            # openpi's Unnormalize walks every key of its norm stats (state and actions): give it a state
-            out.append(self.policy._output_transform({"actions": full, "state": np.zeros(self.A, np.float32)})["actions"])
+            out.append(self.policy._output_transform({"actions": full, "state": st.copy()})["actions"])
         return np.stack(out)
 
     def describe(self):

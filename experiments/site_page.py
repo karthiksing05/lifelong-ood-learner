@@ -434,6 +434,45 @@ that fail where the task's own succeed. Each read below was pre-registered with 
 """
 
 
+def action_profiles():
+    """Each verb's most-used t = 0.4 prototype as signals over its ten steps: the commanded hand displacement per step along the robot's
+    forward, left and up axes (cm), and the gripper command (+1 closed, -1 open); one scale per row."""
+    P = gram["prototypes"]["0.4"]
+    verbs = [v for v, _ in (("open move", 0), ("open reach down", 0), ("open grip change", 0), ("closed lift", 0), ("closed transport", 0), ("closed lower", 0))]
+    pick = {}
+    for v in verbs:
+        cand = [(P[c]["frames"], c) for c in P if P[c]["name"].split(" (")[0] == v]
+        if cand:
+            pick[v] = max(cand)[1]
+    rows = [("forward", 0), ("left", 1), ("up", 2), ("gripper", 3)]
+    cw, ch, gx, top, left = 150, 46, 14, 34, 66
+    W = left + len(pick) * (cw + gx)
+    H = top + len(rows) * (ch + 8) + 10
+    import numpy as _np
+    paths = {v: _np.diff(_np.vstack([_np.zeros(3), _np.asarray(P[c]["mode_path_cm"])]), axis=0) for v, c in pick.items()}
+    vmax = max(1.0, max(float(_np.abs(p).max()) for p in paths.values()))
+    g = [f'<svg viewBox="0 0 {W} {H}" role="img" aria-labelledby="f22t" class="chart" style="min-width:{min(W, 980)}px">']
+    for r, (lab, k) in enumerate(rows):
+        y0 = top + r * (ch + 8)
+        g.append(f'<text x="{left - 8}" y="{y0 + ch / 2 + 4:.1f}" class="tick" text-anchor="end">{lab}</text>')
+    for i, (v, c) in enumerate(pick.items()):
+        x0 = left + i * (cw + gx)
+        g.append(f'<text x="{x0 + cw / 2}" y="16" class="lab" text-anchor="middle">{esc(v)}</text>')
+        g.append(f'<text x="{x0 + cw / 2}" y="29" class="tick" text-anchor="middle">prototype {c} · {P[c]["tasks"]} tasks</text>')
+        for r, (lab, k) in enumerate(rows):
+            y0 = top + r * (ch + 8)
+            mid = y0 + ch / 2
+            g.append(f'<rect x="{x0}" y="{y0}" width="{cw}" height="{ch}" class="glyph"/><line x1="{x0}" x2="{x0 + cw}" y1="{mid}" y2="{mid}" class="grid"/>')
+            vals = paths[v][:, k] / vmax if k < 3 else _np.asarray(P[c]["mode_grip"])
+            bw = cw / len(vals)
+            for j, val in enumerate(vals):
+                h = float(val) * (ch / 2 - 3)
+                cls = "s2" if (k == 3 and val > 0) else "s1"
+                g.append(f'<rect x="{x0 + j * bw + 1:.1f}" y="{min(mid, mid - h):.1f}" width="{bw - 2:.1f}" height="{abs(h):.1f}" class="{cls}"/>')
+    g.append('</svg>')
+    return "".join(g), vmax
+
+
 def proto_cards():
     P = gram["prototypes"]["0.4"]
     cards = []
@@ -451,6 +490,19 @@ def proto_cards():
             f'<b>frames</b><span>{fr:,}</span><b>hand speed</b><span>{spd:.2f} cm per step</span>'
             f'<b>vertical</b><span>{dz:+.2f} cm per step</span><b>gripper closed</b><span>{grip:.0%} of frames</span></div></div>')
     return "".join(cards)
+
+
+def exec_block():
+    m = MEDIA.get("proto_exec")
+    if not m:
+        return ""
+    return fig("2.3", video(m["file"], loop=True), "Each verb's prototype EXECUTED: its ten commanded actions replayed four times in a row, open-loop, "
+               f"from the same start state of one scene (<em>{esc(m['language'])}</em>), with no policy. Beside each clip, the hand's path so far, "
+               "from above (as the camera sees the table) and from the side. " + esc(m["moves"]) + " Each matches its profile in Figure 2.2 in "
+               "direction and proportion: the controller covers about a quarter of each commanded step, so four repetitions travel about as far as "
+               "the profile's one chunk. Reach down, grip change and lower do what their names say. Open move and closed transport move the hand "
+               "only about 2 cm. Closed lift mostly carries the closed hand "
+               "sideways (40 cm left, 3 cm up). It took its name from where its frames fall in the demos, just after the grasp.")
 
 
 levels_rows = [[f"{float(u):.2f}", f"{d['prototypes']:,}", f"{d['change_points_per_demo']:.1f}",
@@ -486,6 +538,10 @@ line up with the task's phase events.</p>
 task its frames fall in. The same names come out across scenes and objects. Each card below plays the demo frames where that verb is active, in four
 tasks from four different scenes (the green bar under a clip marks the verb's frames).</p>
 <div class="grid3">{proto_cards()}</div>
+{fig("2.2", '<div class="chartwrap">' + action_profiles()[0] + '</div>', f"What each verb's prototype commands, step by step over its ten steps: the hand's "
+     f"displacement along the robot's forward, left and up axes (one scale, the largest step = {action_profiles()[1]:.1f} cm), and the gripper "
+     f"command (orange = close). Reaching down ends by closing the gripper; lowering ends by opening it.")}
+{exec_block()}
 {fig("2.1", '<div class="chartwrap">' + RP["verb_glyphs"]() + '</div>', "What each coarse prototype commands: the hand path of its mode over ten steps, horizontal travel against height, on one scale; "
      "orange where the gripper is closed.")}
 <h3 class="sec">2.3 A program is a sentence over the verbs</h3>

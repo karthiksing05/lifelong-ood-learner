@@ -219,10 +219,76 @@ def stills(lang):
     return dict(mosaic_tasks=len(thumbs), demo48_frames=len(demo), demo48_keys=keys, roll48_frames=n)
 
 
+def hand_trace(e, j, h=300, w=150):
+    """The hand's path so far, drawn the way the camera sees the table: from above (left = image left, forward = image down) and
+    from the side (forward to the right, up = up); one scale per clip, with a scale bar."""
+    d = (e - e[0]) * 100                                                   # cm, robot frame: x forward, y left, z up
+    s = max(5.0, float(np.abs(d).max()) * 1.15)                             # half-range of both views, cm
+    can = Image.new("RGB", (w, h), PAPER)
+    dr = ImageDraw.Draw(can)
+    box = 112
+    views = [("from above", 16, lambda p: (-p[1], p[0])), ("from the side", 16 + box + 20, lambda p: (p[0], -p[2]))]
+    for name, top, f in views:
+        x0, y0 = 12, top
+        dr.rectangle([x0, y0, x0 + box, y0 + box], outline=(205, 210, 206), fill=(255, 255, 255))
+        dr.text((x0, y0 - 15), name, font=F_R(11), fill=(88, 98, 94))
+        px = lambda p: (x0 + box / 2 + f(p)[0] / s * box / 2, y0 + box / 2 + f(p)[1] / s * box / 2)
+        pts = [px(p) for p in d[: j + 1]]
+        if len(pts) > 1:
+            dr.line(pts, fill=GOOD, width=3)
+        cx, cy = pts[0]
+        dr.ellipse([cx - 4, cy - 4, cx + 4, cy + 4], outline=INK, width=2)
+        cx, cy = pts[-1]
+        dr.ellipse([cx - 4, cy - 4, cx + 4, cy + 4], fill=GOOD)
+    bar = 10 if s > 12 else 2                                               # scale bar, cm
+    L = bar / s * box / 2
+    y = 16 + 2 * box + 20 + 18
+    dr.line([12, y, 12 + L, y], fill=INK, width=2)
+    dr.text((16 + L, y - 7), f"{bar} cm", font=F_R(11), fill=INK)
+    return np.asarray(can)
+
+
+def proto_exec_video():
+    """The executed prototypes (experiments/proto_exec.py): a 3 x 2 grid, each verb's frame beside the hand's path so far (the large
+    moves carry the hand out of the camera's view), labelled with the hand's displacement."""
+    z = np.load(os.path.join(R, "proto_exec.npz"), allow_pickle=True)
+    verbs = [k[len("frames_"):] for k in z.files if k.startswith("frames_")]
+    n = max(len(z[f"frames_{v}"]) for v in verbs)
+    moves = []
+    frames = []
+    for i in range(n):
+        cells = []
+        for v in verbs:
+            fr = z[f"frames_{v}"]
+            e = z[f"eef_{v}"]
+            j = min(i, len(fr) - 1)
+            d = (e[j] - e[0]) * 100
+            img = Image.fromarray(fr[j]).resize((256, 256), Image.BICUBIC)
+            can = Image.new("RGB", (256 + 150, 256 + 44), PAPER)
+            can.paste(img, (0, 0))
+            can.paste(Image.fromarray(hand_trace(e, j)), (256, 0))
+            dr = ImageDraw.Draw(can)
+            dr.text((8, 260), v.replace("_", " "), font=F_B(15), fill=INK)
+            dr.text((8, 279), f"hand {d[0]:+.0f} fwd {d[1]:+.0f} left {d[2]:+.0f} up (cm), step {j}", font=F_R(12), fill=(88, 98, 94))
+            cells.append(np.asarray(can))
+        sep = np.full((300, 6, 3), 246, np.uint8)
+        r1 = np.concatenate([cells[0], sep, cells[1], sep, cells[2]], axis=1)
+        r2 = np.concatenate([cells[3], sep, cells[4], sep, cells[5]], axis=1)
+        frames.append(np.concatenate([r1, np.full((6, r1.shape[1], 3), 246, np.uint8), r2], axis=0))
+    frames += [frames[-1]] * 10
+    for v in verbs:
+        e = z[f"eef_{v}"]
+        d = (e[-1] - e[0]) * 100
+        moves.append(f"{v.replace('_', ' ')}: {d[0]:+.0f} forward, {d[1]:+.0f} left, {d[2]:+.0f} up (cm)")
+    size = write_mp4(frames, os.path.join(OUT, "proto_exec.mp4"), fps=10, crf=24)
+    print(f"proto_exec.mp4: {len(frames)} frames, {size / 1e3:.0f} KB", flush=True)
+    return dict(file="proto_exec.mp4", language=str(z["language"]), moves="Net hand displacement after four repetitions: " + "; ".join(moves) + ".")
+
+
 def posters():
     """A poster per clip: the last frame of a comparison (it shows every panel's outcome), the middle frame of a prototype clip."""
     for f in sorted(glob.glob(os.path.join(OUT, "*.mp4"))):
-        at = ["-sseof", "-0.2"] if not os.path.basename(f).startswith("proto_") else ["-ss", "1.0"]
+        at = ["-sseof", "-0.2"] if not os.path.basename(f).startswith("proto_") or "exec" in f else ["-ss", "1.0"]
         subprocess.run([FF, "-v", "error", "-y"] + at + ["-i", f, "-frames:v", "1", "-q:v", "4", f[:-4] + ".jpg"], check=True)
     print("posters:", len(glob.glob(os.path.join(OUT, "*.mp4"))), flush=True)
 
@@ -264,6 +330,8 @@ def main():
         meta["stills"] = stills(lang)
     if "proto" in only:
         meta["prototypes"] = prototype_clips(lang)
+    if "exec" in only:
+        meta["proto_exec"] = proto_exec_video()
     json.dump(meta, open(os.path.join(OUT, "media.json"), "w"), indent=1)
     if "posters" in only or len(only) > 1:
         posters()
