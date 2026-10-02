@@ -567,7 +567,33 @@ def inst_par():
             f"{A['kept_forms']} and {B['kept_forms']} forms kept). The front bowl, which no stored prototype pointed at, rises to "
             f"{fb[0]} of 20 from {fb[1]} through another kitchen's prototype at its fourth peak. The gain sits in a few tasks, the "
             f"task-level intervals include zero, and one kept form loses at test (the chocolate pudding), so ten practice episodes "
-            f"sometimes keep the wrong unit.</p>" + confirm_par())
+            f"sometimes keep the wrong unit.</p>" + codes_table() + confirm_par())
+
+
+def codes_table():
+    r, plan = row("q20_stream", "read"), json.load(open(os.path.join(R, "q20_plan.json")))
+    if not r:
+        return ""
+    info, rows = plan["info"], []
+    import re as _re
+    for h in ("H1", "H2"):
+        v = r["hypotheses"][h]
+        for t, arm in r["kept"][v["condition"]].items():
+            if arm == "zs":
+                continue
+            m = _re.match(r"bindw4@rho0.7_approach_src(\d+)(?:_inst(\d+)_npk(\d+))?", arm)
+            src, inst, npk = m.group(1), m.group(2), m.group(3)
+            pt = info[src]["type"].replace("_", " ").replace("akita ", "")
+            where = (f"its own demonstration's {pt} prototype" if src == t else
+                     f"the {pt} prototype stored for task {src} ({'same room' if info[src]['scene'] == info[t]['scene'] else 'another room'})")
+            code = esc(f"\u201c{info[t]['language']}\u201d + {where}" + (f", instance {int(inst) + 1} of {npk}" if inst else "")
+                       + ", attention raised while the gripper is open")
+            ks, zs = v["per_task"][t]
+            rows.append([esc("A" if h == "H1" else "B (mirror)"), code, "4 KB" if src == t else "an index", f"{ks}", f"{zs}"])
+    return table(["order", "the kept code, read aloud", "stored", "kept (of 20)", "zero-shot (of 20)"], rows,
+                 "Every form the stream with instances kept (ledger q20_stream), with its successes on init states 30-49. Each code "
+                 "is the task's instruction plus a pointer into the library; a prototype stored for another task costs the new task "
+                 "only its index.", num_from=3)
 
 
 def confirm_par():
