@@ -55,7 +55,16 @@ def main():
     bk = PolicyBackbone("pi05_libero", device="cuda")
     d90 = D.Demos90()
     protos, per = {}, {}
-    for tid in sorted(set(HELD + CLASS_A)):
+    todo = ([int(x) for x in sys.argv[sys.argv.index("--tasks") + 1].split("+")] if "--tasks" in sys.argv else sorted(set(HELD + CLASS_A)))
+    tag = sys.argv[sys.argv.index("--tag") + 1] if "--tag" in sys.argv else ""
+    if tag and os.path.exists(os.path.join(R, "q4_object_protos.npz")):          # extend the stored prototypes, never drop them
+        old = np.load(os.path.join(R, "q4_object_protos.npz"))
+        tids_old, types_old = [int(x) for x in old["tids"]], [str(x) for x in old["types"]]
+        for k in old.files:
+            if k not in ("types", "tids"):
+                kk = int(k)
+                protos[kk] = dict(vec=old[k], type=types_old[tids_old.index(kk)] if kk in tids_old else "", token=None)
+    for tid in todo:
         t = by[("libero_90", tid)]
         moved = BH.referents(t)["open"]
         if not moved or tid not in [x.index for x in tasks if x.suite == "libero_90"]:
@@ -86,7 +95,7 @@ def main():
         print(f"[q4] {tid:>3} {mtype:22s} demo token {i},{j} pointing {np.mean(hits):.2f} | {texts[tid]}", flush=True)
     # reuse: a prototype in OTHER scenes with an object of the same type (LIBERO-90 and LIBERO-Object first frames)
     reuse = []
-    for src, p in protos.items():
+    for src, p in ([] if tag else protos.items()):
         for f in sorted(os.listdir(FR)):
             suite, tb = f[:-4].rsplit("_", 1)
             if suite not in ("libero_90", "libero_object") or (suite == "libero_90" and int(tb) == src):
@@ -110,15 +119,15 @@ def main():
     print(f"[q4] own-scene pointing {own:.3f} over {len(per)} tasks; reuse in other scenes {ru} over {len(reuse)} pairs", flush=True)
     res = dict(own_pointing=own, reuse_pointing=ru, n_tasks=len(per), n_reuse=len(reuse), per_task=per, reuse=reuse,
                proto_bytes=int(2 * len(next(iter(protos.values()))["vec"])) if protos else 0)
-    json.dump(res, open(os.path.join(R, "q4_template.json"), "w"), indent=1)
+    json.dump(res, open(os.path.join(R, f"q4_template{'_' + tag if tag else ''}.json"), "w"), indent=1)
     np.savez(os.path.join(R, "q4_object_protos.npz"), **{str(k): v["vec"] for k, v in protos.items()},
              types=np.array([protos[k]["type"] for k in protos]), tids=np.array(list(protos)))
     if "--record" in sys.argv:
         from lifelong_ood import ledger
-        print(ledger.record("q4_template", bench="libero", tag="read", seed=0, metrics={k: v for k, v in res.items() if k != "per_task"},
+        print(ledger.record("q4_template", bench="libero", tag="read" + ("_" + tag if tag else ""), seed=0, metrics={k: v for k, v in res.items() if k != "per_task"},
                             bytes=dict(experts=0, tree=0, codes=res["proto_bytes"], samples=0, teacher_copies=0, total=res["proto_bytes"]),
                             config={}, script="experiments/q4_template.py", command=" ".join(sys.argv),
-                            artifacts=[os.path.join(R, "q4_template.json")]))
+                            artifacts=[os.path.join(R, f"q4_template{'_' + tag if tag else ''}.json")]))
 
 
 if __name__ == "__main__":

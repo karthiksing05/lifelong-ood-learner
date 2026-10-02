@@ -48,6 +48,14 @@ w1g, w3g = row("b1_where", "read_all")["groups"], row("b1_where", "read_w3center
 steer = row("b2_steer", "offline_class_a")["groups"]["class_a"]
 scheme = row("b5_scheme", "main")
 roletok = [r for r in L.load("f4_fold", tag="token_rollouts_role") if not r.get("retired")][-1]["bytes"]["total"]
+q0 = row("q0_share", "read")
+q1 = row("q1_options", "read")
+q2x = row("q2_explain", "read")
+q3p = row("q3_pilot", "read")
+q4t = row("q4_template", "read")
+q5 = row("b2_q2", "q5_w4")
+q6 = row("q6_main", "read")
+q7 = row("q7_tokpractice", "read")
 of10 = lambda key, f="BA", src=None: int(round(10 * (src or q2m)[key][f]))                     # noqa: E731
 token_bytes = [r for r in L.load("f4_fold", tag="token_demo") if not r.get("retired")][-1]["bytes"]["total"]
 lang = {int(k): v["language"] for k, v in json.load(open(os.path.join(R, "f0_coverage.json")))["tasks"].items()}   # the read's artifact
@@ -393,6 +401,32 @@ if both stay below 0.2); that form practises on states 10-29, its successes fit 
 both rounds. Scoring uses states 30-49, which no step tuned on.</p>
 {main_read()}"""
 
+P_POE = f"""
+<p>Since 2026-10-02 one demonstration may serve as the query, used once to select experts and never executed. We ported Wang et
+al.'s test-time composition to the policy: the experts are the policy itself under its instruction, under other prompts and with its
+attention on one of 16 image blocks (scene options), and the motion prototypes the demonstration's chunks fall into; per gripper
+phase, Wang's greedy coverage selects three, and the prototypes multiply into one Gaussian that is mixed with the policy experts at
+every sampling step, the policy keeping a fixed minimum share.</p>
+{table(["probe", "result"],
+       [["share of the policy", f"an early prototype weight still moves the output by {q0['early_effect_max']:.2f} of the gap (the pre-registered limit was 0.2), "
+                                f"so weights are constant over the steps; at weight 0.5 the chunk keeps {q0['summary']['0.5_0.5']['sens']:.2f} of the policy's "
+                                f"sensitivity to the observation"],
+        ["options at one observation", f"none under the empty prompt; attention on an image block reaches "
+                                       f"{q1['groups']['class_a']['grid_objects_mean']:.1f} objects per frame"],
+        ["explaining a second demo", f"the code from demo 0 beats the policy alone on demo 1 in {q2x['recomputed_beats_policy']} of "
+                                     f"{q2x['tasks_with_demo1']} tasks, but recomputing its options at demo 1's observations beats freezing them in only "
+                                     f"{q2x['recomputed_vs_frozen']}"],
+        ["pilot, 6 tasks x 10 episodes", f"{q3p['totals']['poe_0.5']} successes of 60 against {q3p['totals']['zs']} zero-shot: the go rule fails"]],
+       "Prototype PoE planning (ledger q0_share, q1_options, q2_explain, q3_pilot; all pre-registered).", num_from=1)}
+<p>A product of motion prototypes held over a whole gripper phase is an average motion: it says how the hand moves, never where.
+The demonstration does carry where: the gripper's position at its first grasp marks the object in its first frame, and the policy's
+own image features there are a {q4t['proto_bytes'] / 1e3:.0f} KB object prototype that finds the object in new start states
+{q4t['own_pointing']:.2f} of the time. Binding the policy's attention to it (no simulator state) puts the white bowl on top of the
+cabinet in {of10('43:bindw4_rho0.7_approach', 'success', row('b2_q2', 'q5_w4')['rows'])} of 10 practice episodes (zero-shot 0); in the
+pre-registered read the folded tokens alone succeed {q6['hypotheses']['H1']['x']} of {q6['hypotheses']['H1']['n']} times against
+{q6['hypotheses']['H1']['control']} on the two tasks practice gave a form. A round of the demo token's own practice does not help
+({q7['H1']['x']} against {q7['H1']['control']} of 420; the one-demo LoRA {q7['H2']['control']}).</p>"""
+
 P_STREAM = f"""
 {pending("A stream of tasks", "The 50 LIBERO-90 tasks pi0.5 fails arrive one at a time in two mirrored orders. Each is decomposed into task "
          "prototypes; it is composed when that explains it, else what its own attempts teach is folded (shared by every later task with that "
@@ -421,7 +455,8 @@ policy's first chunk points at the named object only {probe['validity']['PA']:.2
 
 NAV = [("abstract", "", "Abstract"), ("s1", "1", "Introduction"), ("s2", "2", "Why the policy fails new tasks"),
        ("s3", "3", "Method"), ("s4", "4", "Experiments"), ("s4-1", "4.1", "Prompt composition"), ("s4-2", "4.2", "Where"),
-       ("s4-3", "4.3", "Binding"), ("s4-4", "4.4", "Folding"), ("s4-5", "4.5", "Main read"), ("s4-6", "4.6", "Streams, other policies"), ("s6", "5", "Limitations"),
+       ("s4-3", "4.3", "Binding"), ("s4-4", "4.4", "Folding"), ("s4-5", "4.5", "Main read"), ("s4-6", "4.6", "Prototype PoE"),
+       ("s4-7", "4.7", "Streams, other policies"), ("s6", "5", "Limitations"),
        ("s7", "", "Verification")]
 
 CSS = r"""
@@ -520,7 +555,8 @@ for every arm.</p>
 <section id="s4-3"><h3 style="font-size:20px">4.3 Binding a task prototype's slot</h3>{P_BIND}</section>
 <section id="s4-4"><h3 style="font-size:20px">4.4 Folding the policy's own successes</h3>{P_FOLD}</section>
 <section id="s4-5"><h3 style="font-size:20px">4.5 The scheme on unseen start states</h3>{P_MAIN}</section>
-<section id="s4-6"><h3 style="font-size:20px">4.6 Streams and other policies</h3>{P_STREAM}</section>
+<section id="s4-6"><h3 style="font-size:20px">4.6 Prototype PoE planning, and where from one demonstration</h3>{P_POE}</section>
+<section id="s4-7"><h3 style="font-size:20px">4.7 Streams and other policies</h3>{P_STREAM}</section>
 </section>
 <section id="s6"><h2><span class="sn">5</span>Limitations</h2>{P_LIMITS}</section>
 <section id="s7"><h2>Verification</h2>{P_VER}</section>
