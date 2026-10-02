@@ -1,0 +1,53 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration: acceptance test on the grammar arm",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky1.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "dcc612658a75c32a00351a0cd81984741be8afb7",
+  "short": "dcc61265"
+ },
+ "keys": {},
+ "metrics": {
+  "disclosure": "q24_grammar's test episodes were read before this registration and are reused; the acceptance episodes are new and decide alone which arm each task keeps",
+  "hypotheses": {
+   "H1": "success: kept > zero-shot pooled over 14 tasks (exact sign test)",
+   "H2": "named object moved first: kept > zero-shot",
+   "correction": "Holm over H1, H2"
+  },
+  "rule": "the acceptance rule fixed in q13_main (ties to the policy)",
+  "tasks": "the 14 tasks of q24_grammar",
+  "written_before": "any episode of q26_accept"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_90__q26_grammar_accept__s6__dcc61265",
+ "schema": 1,
+ "script": "experiments/prereg/q26_grammar_accept.py",
+ "seconds": null,
+ "seed": 6,
+ "source_commit": null,
+ "started": "2026-10-02T20:10:09+00:00",
+ "stream": null,
+ "tag": "q26_grammar_accept"
+}
