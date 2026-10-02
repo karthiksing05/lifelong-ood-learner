@@ -1,0 +1,238 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "C1 primitive reuse",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky1.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "c1_reuse",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "ae21c0f7d657fe1f7acac4d8b93bea28f3e6eac7",
+  "short": "ae21c0f7"
+ },
+ "keys": {},
+ "metrics": {
+  "gains": [
+   12,
+   15
+  ],
+  "note": "plan C read C1 (exploratory), practice states 0-9, 10 episodes, noise seed 0: a step primitive fitted on ONE other task's demo (same step key) runs the recipient's own clause, no binding; the drawer pairs (3, 4, 5, 32) used first-step primitives that never release (fixed in c0_fit, rerun with _v2)",
+  "one_step_pairs": [
+   12,
+   13,
+   14,
+   15,
+   25,
+   30,
+   31,
+   41,
+   43,
+   64,
+   86,
+   88,
+   89
+  ],
+  "reused": 9,
+  "rows": {
+   "12:prims_36.0": {
+    "bound": 6,
+    "n": 10,
+    "success": 6
+   },
+   "12:zs": {
+    "bound": 5,
+    "n": 10,
+    "success": 4
+   },
+   "13:prims_36.0": {
+    "bound": 0,
+    "n": 10,
+    "success": 0
+   },
+   "13:zs": {
+    "bound": 0,
+    "n": 10,
+    "success": 0
+   },
+   "14:prims_36.0": {
+    "bound": 3,
+    "n": 10,
+    "success": 0
+   },
+   "14:zs": {
+    "bound": 5,
+    "n": 10,
+    "success": 5
+   },
+   "15:prims_43.0": {
+    "bound": 1,
+    "n": 10,
+    "success": 2
+   },
+   "15:zs": {
+    "bound": 0,
+    "n": 10,
+    "success": 0
+   },
+   "25:prims_43.0": {
+    "bound": 1,
+    "n": 10,
+    "success": 0
+   },
+   "25:zs": {
+    "bound": 10,
+    "n": 10,
+    "success": 0
+   },
+   "30:prims_36.0": {
+    "bound": 10,
+    "n": 10,
+    "success": 1
+   },
+   "30:zs": {
+    "bound": 10,
+    "n": 10,
+    "success": 8
+   },
+   "31:prims_43.0": {
+    "bound": 1,
+    "n": 10,
+    "success": 0
+   },
+   "31:zs": {
+    "bound": 4,
+    "n": 10,
+    "success": 2
+   },
+   "32:prims_4.0": {
+    "bound": 8,
+    "n": 10,
+    "success": 0
+   },
+   "32:zs": {
+    "bound": 9,
+    "n": 10,
+    "success": 0
+   },
+   "3:prims_4.0+4.1": {
+    "bound": 0,
+    "n": 10,
+    "success": 0
+   },
+   "3:zs": {
+    "bound": 0,
+    "n": 10,
+    "success": 0
+   },
+   "41:prims_43.0": {
+    "bound": 0,
+    "n": 10,
+    "success": 0
+   },
+   "41:zs": {
+    "bound": 0,
+    "n": 10,
+    "success": 0
+   },
+   "43:prims_41.0": {
+    "bound": 1,
+    "n": 10,
+    "success": 0
+   },
+   "43:zs": {
+    "bound": 2,
+    "n": 10,
+    "success": 0
+   },
+   "4:prims_3.0+3.1": {
+    "bound": 0,
+    "n": 10,
+    "success": 0
+   },
+   "4:zs": {
+    "bound": 0,
+    "n": 10,
+    "success": 0
+   },
+   "5:prims_4.0+4.1": {
+    "bound": 0,
+    "n": 10,
+    "success": 0
+   },
+   "5:zs": {
+    "bound": 0,
+    "n": 10,
+    "success": 0
+   },
+   "64:prims_x+63.1": {
+    "bound": 3,
+    "n": 10,
+    "success": 0
+   },
+   "64:zs": {
+    "bound": 3,
+    "n": 10,
+    "success": 3
+   },
+   "86:prims_40.0": {
+    "bound": 1,
+    "n": 10,
+    "success": 0
+   },
+   "86:zs": {
+    "bound": 0,
+    "n": 10,
+    "success": 0
+   },
+   "88:prims_40.0": {
+    "bound": 6,
+    "n": 10,
+    "success": 0
+   },
+   "88:zs": {
+    "bound": 10,
+    "n": 10,
+    "success": 0
+   },
+   "89:prims_42.0": {
+    "bound": 10,
+    "n": 10,
+    "success": 0
+   },
+   "89:zs": {
+    "bound": 10,
+    "n": 10,
+    "success": 0
+   }
+  },
+  "zero_shot": 22
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "c1_reuse__libero_90__screen__s0__ae21c0f7",
+ "schema": 1,
+ "script": "(c0_fit.py; launch_pack c1_reuse, arms zs, prims@<donor>.<step>)",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-02T23:50:19+00:00",
+ "stream": null,
+ "tag": "screen"
+}
