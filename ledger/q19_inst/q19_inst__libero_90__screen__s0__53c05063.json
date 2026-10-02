@@ -1,0 +1,203 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "instance enumeration screen",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky1.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "q19_inst",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "53c0506322d6d4c1a50ad9c57049c9b5a816f9fe",
+  "short": "53c05063"
+ },
+ "keys": {},
+ "metrics": {
+  "best": {
+   "12": {
+    "arm": "bindw4_rho0.7_approach_src2_inst0",
+    "bound": 10,
+    "n": 10,
+    "success": 10
+   },
+   "13": {
+    "arm": "bindw4_rho0.7_approach_src2_inst3_npk4",
+    "bound": 3,
+    "n": 10,
+    "success": 3
+   },
+   "14": {
+    "arm": "bindw4_rho0.7_approach_src17_inst2",
+    "bound": 6,
+    "n": 10,
+    "success": 8
+   },
+   "15": {
+    "arm": "bindw4_rho0.7_approach_src2_inst0_npk4",
+    "bound": 0,
+    "n": 10,
+    "success": 0
+   }
+  },
+  "note": "exploratory screen, practice states 0-9, 10 episodes, noise seed 0: the binding form with ANOTHER task's black-bowl prototype (task 2, another kitchen; task 17, the same kitchen) restricted to ONE instance of its type: the r-th of the map's 3 (or 4, _npk4) strongest peaks in row-major order, tracked through the episode (BindHooks inst=r); zero-shot on the same states (q14_borrow): back bowl 4, front bowl 0, middle bowl 5",
+  "rows": {
+   "12:bindw4_rho0.7_approach_src17_inst0": {
+    "bound": 6,
+    "n": 10,
+    "success": 5
+   },
+   "12:bindw4_rho0.7_approach_src17_inst1": {
+    "bound": 0,
+    "n": 10,
+    "success": 0
+   },
+   "12:bindw4_rho0.7_approach_src17_inst2": {
+    "bound": 1,
+    "n": 10,
+    "success": 0
+   },
+   "12:bindw4_rho0.7_approach_src2_inst0": {
+    "bound": 10,
+    "n": 10,
+    "success": 10
+   },
+   "12:bindw4_rho0.7_approach_src2_inst1": {
+    "bound": 3,
+    "n": 10,
+    "success": 3
+   },
+   "12:bindw4_rho0.7_approach_src2_inst2": {
+    "bound": 4,
+    "n": 10,
+    "success": 4
+   },
+   "13:bindw4_rho0.7_approach_src17_inst0": {
+    "bound": 2,
+    "n": 10,
+    "success": 1
+   },
+   "13:bindw4_rho0.7_approach_src17_inst1": {
+    "bound": 1,
+    "n": 10,
+    "success": 1
+   },
+   "13:bindw4_rho0.7_approach_src17_inst2": {
+    "bound": 2,
+    "n": 10,
+    "success": 2
+   },
+   "13:bindw4_rho0.7_approach_src2_inst0": {
+    "bound": 0,
+    "n": 10,
+    "success": 0
+   },
+   "13:bindw4_rho0.7_approach_src2_inst0_npk4": {
+    "bound": 0,
+    "n": 10,
+    "success": 0
+   },
+   "13:bindw4_rho0.7_approach_src2_inst1": {
+    "bound": 0,
+    "n": 10,
+    "success": 0
+   },
+   "13:bindw4_rho0.7_approach_src2_inst1_npk4": {
+    "bound": 0,
+    "n": 10,
+    "success": 0
+   },
+   "13:bindw4_rho0.7_approach_src2_inst2": {
+    "bound": 0,
+    "n": 10,
+    "success": 0
+   },
+   "13:bindw4_rho0.7_approach_src2_inst2_npk4": {
+    "bound": 0,
+    "n": 10,
+    "success": 0
+   },
+   "13:bindw4_rho0.7_approach_src2_inst3_npk4": {
+    "bound": 3,
+    "n": 10,
+    "success": 3
+   },
+   "14:bindw4_rho0.7_approach_src17_inst0": {
+    "bound": 7,
+    "n": 10,
+    "success": 7
+   },
+   "14:bindw4_rho0.7_approach_src17_inst1": {
+    "bound": 5,
+    "n": 10,
+    "success": 5
+   },
+   "14:bindw4_rho0.7_approach_src17_inst2": {
+    "bound": 6,
+    "n": 10,
+    "success": 8
+   },
+   "14:bindw4_rho0.7_approach_src2_inst0": {
+    "bound": 1,
+    "n": 10,
+    "success": 0
+   },
+   "14:bindw4_rho0.7_approach_src2_inst1": {
+    "bound": 7,
+    "n": 10,
+    "success": 7
+   },
+   "14:bindw4_rho0.7_approach_src2_inst2": {
+    "bound": 0,
+    "n": 10,
+    "success": 0
+   },
+   "15:bindw4_rho0.7_approach_src2_inst0_npk4": {
+    "bound": 0,
+    "n": 10,
+    "success": 0
+   },
+   "15:bindw4_rho0.7_approach_src2_inst1_npk4": {
+    "bound": 3,
+    "n": 10,
+    "success": 0
+   },
+   "15:bindw4_rho0.7_approach_src2_inst2_npk4": {
+    "bound": 2,
+    "n": 10,
+    "success": 0
+   },
+   "15:bindw4_rho0.7_approach_src2_inst3_npk4": {
+    "bound": 0,
+    "n": 10,
+    "success": 0
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "q19_inst__libero_90__screen__s0__53c05063",
+ "schema": 1,
+ "script": "(launch_pack q19_inst, arms bindw4@rho0.7_approach_src<k>_inst<r>[_npk4])",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-02T17:14:00+00:00",
+ "stream": null,
+ "tag": "screen"
+}

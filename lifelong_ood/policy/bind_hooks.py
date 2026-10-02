@@ -75,7 +75,7 @@ def shifted(mask16, avoid16):
 
 class BindHooks:
     def __init__(self, bk, task, src="oracle", rho=0.5, beta=None, band="all", cams="agent", ctrl="none", phase=True, seed=0,
-                 w1_layer=None, keep=0.5, phrases=None, proto=None, topk=4, gproto=None, inst=None):
+                 w1_layer=None, keep=0.5, phrases=None, proto=None, topk=4, gproto=None, inst=None, npk=3):
         self.bk, self.task = bk, task
         self.src, self.ctrl, self.phase = src, ctrl, bool(phase) and phase != "approach"
         self.cfg = (dict(mode="fixed", beta=float(beta)) if beta is not None else dict(mode="mass", rho=float(rho)))
@@ -90,6 +90,7 @@ class BindHooks:
         self.gproto = None if gproto is None else np.asarray(gproto, np.float32)   # the demo's goal prototype (carry phase)
         self.inst = None if inst is None else int(inst)  # INSTANCE r of the prototype's type: the r-th peak of its map (row-major)
         self.track = None                                # the tracked instance's patch (row, col) within the episode
+        self.npk = int(npk)                              # how many peaks (instances) the map is cut into
         self.topk = int(topk)
         self.phrases = phrases or {}
         self.owl = None
@@ -160,7 +161,7 @@ class BindHooks:
             if self.src == "w4":                         # the demo's visual object prototype (experiments/q4_template.py)
                 f = self._feats(obs)
                 sim = f @ (self.gproto if (self.closed and self.gproto is not None) else self.proto)
-                k = np.argsort(sim)[::-1][: self.topk] if self.inst is None else self._instance(sim)
+                k = np.argsort(sim)[::-1][: self.topk] if self.inst is None else self._instance(sim, n_peaks=self.npk)
                 m = np.zeros(256, np.float32)
                 m[k] = 1.0
                 m = m.reshape(16, 16)
