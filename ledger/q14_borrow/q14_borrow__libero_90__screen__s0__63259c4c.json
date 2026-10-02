@@ -1,0 +1,228 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 4096,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 4096,
+  "tree": 0
+ },
+ "command": "borrowed object prototypes",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky1.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "q14_borrow",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "63259c4ca154f88db89d7030076181bdc54acbff",
+  "short": "63259c4c"
+ },
+ "keys": {},
+ "metrics": {
+  "multi_borrowed_same_scene": {
+   "bound": 4,
+   "n": 40,
+   "success": 0
+  },
+  "multi_pairs": [
+   "12<-13",
+   "13<-12",
+   "14<-12",
+   "15<-14",
+   "12<-2",
+   "13<-2",
+   "14<-2",
+   "15<-2",
+   "2<-12"
+  ],
+  "note": "exploratory screen, practice states 0-9, 10 episodes: attention binding with the object prototype of ANOTHER task's demo (src<t>) vs the task's own and zero-shot; unique = the moved object's type has one instance in the scene",
+  "rows": {
+   "12:bindw4_rho0.7_approach": {
+    "bound": 9,
+    "n": 10,
+    "success": 9
+   },
+   "12:bindw4_rho0.7_approach_src13": {
+    "bound": 0,
+    "n": 10,
+    "success": 0
+   },
+   "12:bindw4_rho0.7_approach_src2": {
+    "bound": 10,
+    "n": 10,
+    "success": 9
+   },
+   "12:zs": {
+    "bound": 5,
+    "n": 10,
+    "success": 4
+   },
+   "13:bindw4_rho0.7_approach": {
+    "bound": 7,
+    "n": 10,
+    "success": 6
+   },
+   "13:bindw4_rho0.7_approach_src12": {
+    "bound": 0,
+    "n": 10,
+    "success": 0
+   },
+   "13:bindw4_rho0.7_approach_src2": {
+    "bound": 0,
+    "n": 10,
+    "success": 0
+   },
+   "13:zs": {
+    "bound": 0,
+    "n": 10,
+    "success": 0
+   },
+   "14:bindw4_rho0.7_approach": {
+    "bound": 7,
+    "n": 10,
+    "success": 4
+   },
+   "14:bindw4_rho0.7_approach_src12": {
+    "bound": 1,
+    "n": 10,
+    "success": 0
+   },
+   "14:bindw4_rho0.7_approach_src2": {
+    "bound": 0,
+    "n": 10,
+    "success": 0
+   },
+   "14:zs": {
+    "bound": 5,
+    "n": 10,
+    "success": 5
+   },
+   "15:bindw4_rho0.7_approach": {
+    "bound": 6,
+    "n": 10,
+    "success": 3
+   },
+   "15:bindw4_rho0.7_approach_src14": {
+    "bound": 3,
+    "n": 10,
+    "success": 0
+   },
+   "15:bindw4_rho0.7_approach_src2": {
+    "bound": 0,
+    "n": 10,
+    "success": 0
+   },
+   "15:zs": {
+    "bound": 0,
+    "n": 10,
+    "success": 0
+   },
+   "2:bindw4_rho0.7_approach": {
+    "bound": 6,
+    "n": 10,
+    "success": 6
+   },
+   "2:bindw4_rho0.7_approach_src1": {
+    "bound": 7,
+    "n": 10,
+    "success": 7
+   },
+   "2:bindw4_rho0.7_approach_src12": {
+    "bound": 4,
+    "n": 10,
+    "success": 2
+   },
+   "2:zs": {
+    "bound": 9,
+    "n": 10,
+    "success": 9
+   },
+   "43:bindw4_rho0.7_approach": {
+    "bound": 10,
+    "n": 10,
+    "success": 8
+   },
+   "43:bindw4_rho0.7_approach_src36": {
+    "bound": 8,
+    "n": 10,
+    "success": 5
+   },
+   "43:zs": {
+    "bound": 2,
+    "n": 10,
+    "success": 0
+   },
+   "70:bindw4_rho0.7_approach": {
+    "bound": 9,
+    "n": 10,
+    "success": 2
+   },
+   "70:bindw4_rho0.7_approach_src5": {
+    "bound": 10,
+    "n": 10,
+    "success": 5
+   },
+   "70:bindw4_rho0.7_approach_src69": {
+    "bound": 10,
+    "n": 10,
+    "success": 3
+   },
+   "70:zs": {
+    "bound": 3,
+    "n": 10,
+    "success": 6
+   },
+   "79:bindw4_rho0.7_approach": {
+    "bound": 6,
+    "n": 10,
+    "success": 3
+   },
+   "79:bindw4_rho0.7_approach_src73": {
+    "bound": 3,
+    "n": 10,
+    "success": 0
+   },
+   "79:bindw4_rho0.7_approach_src77": {
+    "bound": 6,
+    "n": 10,
+    "success": 2
+   },
+   "79:zs": {
+    "bound": 10,
+    "n": 10,
+    "success": 1
+   }
+  },
+  "unique_borrowed": {
+   "bound": 44,
+   "n": 60,
+   "success": 22
+  },
+  "unique_own": {
+   "bound": 46,
+   "n": 60,
+   "success": 24
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "q14_borrow__libero_90__screen__s0__63259c4c",
+ "schema": 1,
+ "script": "(launch_pack q14_borrow, arms bindw4@rho0.7_approach_src<t>)",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-02T13:56:48+00:00",
+ "stream": null,
+ "tag": "screen"
+}

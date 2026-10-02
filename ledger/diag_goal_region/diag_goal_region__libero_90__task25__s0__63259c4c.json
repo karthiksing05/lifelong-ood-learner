@@ -1,0 +1,56 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "slurm/4002794.out (diag_cabpose_25_zs_rec)",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky1.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "diag_goal_region",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "63259c4ca154f88db89d7030076181bdc54acbff",
+  "short": "63259c4c"
+ },
+ "keys": {},
+ "metrics": {
+  "ever_in_z": 0,
+  "final_dz": [
+   -0.202,
+   -0.202,
+   -0.201,
+   -0.202
+  ],
+  "final_dz_mean_cm": -20.174999999999997,
+  "in_xy": 4,
+  "note": "task 25 (put the black bowl on top of the cabinet), zero-shot, practice states 0-3, recorded object poses: the bowl's position in the goal site's frame (white_cabinet_1_top_side; LIBERO's On needs |dx|,|dy| < half-size and dz in [size_z - 0.005, size_z + 0.10])",
+  "successes": 0,
+  "trials": 4
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "diag_goal_region__libero_90__task25__s0__63259c4c",
+ "schema": 1,
+ "script": "experiments/diag_goal_region.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-02T13:57:32+00:00",
+ "stream": null,
+ "tag": "task25"
+}

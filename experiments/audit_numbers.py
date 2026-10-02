@@ -688,6 +688,23 @@ BIND = [   # the Bind plan's reads (no demonstration; ledger m3_prereg tags b_bi
     ("grasp token: open success", lambda: (float(_row("q12_joint", "black_bowl_grasp")["totals"]["ftoken_12_2_60_jbg_open"]["success"]), 0.0, 1), "20"),
     ("grasp token: always bound", lambda: (float(_row("q12_joint", "black_bowl_grasp")["totals"]["ftoken_12_2_60_jbg"]["bound"]), 0.0, 1), "37"),
     ("grasp token: always success", lambda: (float(_row("q12_joint", "black_bowl_grasp")["totals"]["ftoken_12_2_60_jbg"]["success"]), 0.0, 1), "8"),
+    ("borrow: unique bound", lambda: (float(_row("q14_borrow", "screen")["unique_borrowed"]["bound"]), 0.0, 1), "44"),
+    ("borrow: unique episodes", lambda: (float(_row("q14_borrow", "screen")["unique_borrowed"]["n"]), 0.0, 1), "60"),
+    ("borrow: unique success", lambda: (float(_row("q14_borrow", "screen")["unique_borrowed"]["success"]), 0.0, 1), "22"),
+    ("borrow: own bound", lambda: (float(_row("q14_borrow", "screen")["unique_own"]["bound"]), 0.0, 1), "46"),
+    ("borrow: own success", lambda: (float(_row("q14_borrow", "screen")["unique_own"]["success"]), 0.0, 1), "24"),
+    ("borrow: three-bowl bound", lambda: (float(_row("q14_borrow", "screen")["multi_borrowed_same_scene"]["bound"]), 0.0, 1), "4"),
+    ("borrow: three-bowl episodes", lambda: (float(_row("q14_borrow", "screen")["multi_borrowed_same_scene"]["n"]), 0.0, 1), "40"),
+    ("borrow: three-bowl success", lambda: (float(_row("q14_borrow", "screen")["multi_borrowed_same_scene"]["success"]), 0.0, 1), "0"),
+    ("goal: task 25 zero-shot bound", lambda: (float(_row("q15_goal", "screen")["rows"]["25:zs"]["bound"]), 0.0, 1), "10"),
+    ("goal: recorded trials", lambda: (float(_row("diag_goal_region", "task25")["trials"]), 0.0, 1), "4"),
+    ("goal: in footprint", lambda: (float(_row("diag_goal_region", "task25")["in_xy"]), 0.0, 1), "4"),
+    ("goal: depth below top (cm)", lambda: (-_row("diag_goal_region", "task25")["final_dz_mean_cm"], 0.0, 1), "20"),
+    ("goal: carry 25", lambda: (float(_row("q15_goal", "screen")["rows"]["25:bindw4g_rho0.7_carry"]["success"]), 0.0, 1), "0"),
+    ("goal: carry 31", lambda: (float(_row("q15_goal", "screen")["rows"]["31:bindw4g_rho0.7_carry"]["success"]), 0.0, 1), "0"),
+    ("goal: carry 15", lambda: (float(_row("q15_goal", "screen")["rows"]["15:bindw4g_rho0.7_carry"]["success"]), 0.0, 1), "0"),
+    ("goal: white bowl object binding", lambda: (float(_row("q15_goal", "screen")["rows"]["43:bindw4_rho0.7_approach"]["success"]), 0.0, 1), "8"),
+    ("goal: white bowl both", lambda: (float(_row("q15_goal", "screen")["rows"]["43:bindw4g_rho0.7_both"]["success"]), 0.0, 1), "0"),
 ]
 
 CHECKS = EMBODIED + TRANSFER + BIND + [
