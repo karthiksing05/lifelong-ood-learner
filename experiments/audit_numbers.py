@@ -612,6 +612,14 @@ BIND = [   # the Bind plan's reads (no demonstration; ledger m3_prereg tags b_bi
     ("PoE pilot: lambda 0.5", lambda: (float(_row("q3_pilot", "read")["totals"]["poe_0.5"]), 0.0, 1), "3"),
     ("PoE pilot: zero-shot", lambda: (float(_row("q3_pilot", "read")["totals"]["zs"]), 0.0, 1), "1"),
     ("PoE pilot: lambda 0.3", lambda: (float(_row("q3_pilot", "read")["totals"]["poe_0.3"]), 0.0, 1), "0"),
+    ("PoE P1: null multi-mode class a", lambda: (max(_row("q1_options", "read")["groups"]["class_a"]["null_multi_share"].values()), 0.0, 1), "0.06"),
+    ("PoE P1: grid objects class a", lambda: (_row("q1_options", "read")["groups"]["class_a"]["grid_objects_mean"], 0.0, 1), "2.7"),
+    ("PoE P1: grid owner hit class a", lambda: (_row("q1_options", "read")["groups"]["class_a"]["grid_owner_hit"], 0.0, 1), "0.37"),
+    ("PoE P1: grid owner chance class a", lambda: (_row("q1_options", "read")["groups"]["class_a"]["grid_owner_chance"], 0.0, 1), "0.25"),
+    ("W4: own-scene pointing", lambda: (_row("q4_template", "read")["own_pointing"], 0.0, 1), "0.60"),
+    ("W4: tasks", lambda: (float(_row("q4_template", "read")["n_tasks"]), 0.0, 1), "27"),
+    ("W4: reuse pointing", lambda: (_row("q4_template", "read")["reuse_pointing"], 0.0, 1), "0.55"),
+    ("W4: prototype KB", lambda: (_row("q4_template", "read")["proto_bytes"] / 1e3, 0.0, 1), "4"),
 ]
 
 CHECKS = EMBODIED + TRANSFER + BIND + [

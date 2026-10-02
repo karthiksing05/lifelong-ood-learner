@@ -1,0 +1,2165 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/q4_template.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero",
+ "bytes": {
+  "codes": 4096,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 4096,
+  "tree": 0
+ },
+ "command": "experiments/q4_template.py --record",
+ "config": {},
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "major.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4001295",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "q4_template",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "09b01b58a842af42d0a48609d8ea863ff260f07e",
+  "short": "09b01b58"
+ },
+ "keys": {},
+ "metrics": {
+  "n_reuse": 352,
+  "n_tasks": 27,
+  "own_pointing": 0.5962962962962963,
+  "proto_bytes": 4096,
+  "reuse": [
+   {
+    "dst": "libero_90_50",
+    "pointing": 0.2,
+    "src": 3,
+    "type": "butter"
+   },
+   {
+    "dst": "libero_90_51",
+    "pointing": 0.4,
+    "src": 3,
+    "type": "butter"
+   },
+   {
+    "dst": "libero_90_52",
+    "pointing": 0.4,
+    "src": 3,
+    "type": "butter"
+   },
+   {
+    "dst": "libero_90_53",
+    "pointing": 0.4,
+    "src": 3,
+    "type": "butter"
+   },
+   {
+    "dst": "libero_90_54",
+    "pointing": 0.6,
+    "src": 3,
+    "type": "butter"
+   },
+   {
+    "dst": "libero_90_55",
+    "pointing": 0.2,
+    "src": 3,
+    "type": "butter"
+   },
+   {
+    "dst": "libero_90_56",
+    "pointing": 0.0,
+    "src": 3,
+    "type": "butter"
+   },
+   {
+    "dst": "libero_90_57",
+    "pointing": 0.2,
+    "src": 3,
+    "type": "butter"
+   },
+   {
+    "dst": "libero_90_58",
+    "pointing": 0.6,
+    "src": 3,
+    "type": "butter"
+   },
+   {
+    "dst": "libero_90_59",
+    "pointing": 0.2,
+    "src": 3,
+    "type": "butter"
+   },
+   {
+    "dst": "libero_object_0",
+    "pointing": 0.0,
+    "src": 3,
+    "type": "butter"
+   },
+   {
+    "dst": "libero_object_1",
+    "pointing": 0.6,
+    "src": 3,
+    "type": "butter"
+   },
+   {
+    "dst": "libero_object_5",
+    "pointing": 0.6,
+    "src": 3,
+    "type": "butter"
+   },
+   {
+    "dst": "libero_object_6",
+    "pointing": 0.2,
+    "src": 3,
+    "type": "butter"
+   },
+   {
+    "dst": "libero_object_7",
+    "pointing": 0.4,
+    "src": 3,
+    "type": "butter"
+   },
+   {
+    "dst": "libero_object_9",
+    "pointing": 0.6,
+    "src": 3,
+    "type": "butter"
+   },
+   {
+    "dst": "libero_90_50",
+    "pointing": 0.4,
+    "src": 4,
+    "type": "butter"
+   },
+   {
+    "dst": "libero_90_51",
+    "pointing": 0.6,
+    "src": 4,
+    "type": "butter"
+   },
+   {
+    "dst": "libero_90_52",
+    "pointing": 1.0,
+    "src": 4,
+    "type": "butter"
+   },
+   {
+    "dst": "libero_90_53",
+    "pointing": 0.4,
+    "src": 4,
+    "type": "butter"
+   },
+   {
+    "dst": "libero_90_54",
+    "pointing": 0.8,
+    "src": 4,
+    "type": "butter"
+   },
+   {
+    "dst": "libero_90_55",
+    "pointing": 0.4,
+    "src": 4,
+    "type": "butter"
+   },
+   {
+    "dst": "libero_90_56",
+    "pointing": 0.2,
+    "src": 4,
+    "type": "butter"
+   },
+   {
+    "dst": "libero_90_57",
+    "pointing": 0.4,
+    "src": 4,
+    "type": "butter"
+   },
+   {
+    "dst": "libero_90_58",
+    "pointing": 0.8,
+    "src": 4,
+    "type": "butter"
+   },
+   {
+    "dst": "libero_90_59",
+    "pointing": 0.4,
+    "src": 4,
+    "type": "butter"
+   },
+   {
+    "dst": "libero_object_0",
+    "pointing": 0.0,
+    "src": 4,
+    "type": "butter"
+   },
+   {
+    "dst": "libero_object_1",
+    "pointing": 0.6,
+    "src": 4,
+    "type": "butter"
+   },
+   {
+    "dst": "libero_object_5",
+    "pointing": 0.8,
+    "src": 4,
+    "type": "butter"
+   },
+   {
+    "dst": "libero_object_6",
+    "pointing": 0.8,
+    "src": 4,
+    "type": "butter"
+   },
+   {
+    "dst": "libero_object_7",
+    "pointing": 1.0,
+    "src": 4,
+    "type": "butter"
+   },
+   {
+    "dst": "libero_object_9",
+    "pointing": 0.2,
+    "src": 4,
+    "type": "butter"
+   },
+   {
+    "dst": "libero_90_0",
+    "pointing": 1.0,
+    "src": 5,
+    "type": "chocolate_pudding"
+   },
+   {
+    "dst": "libero_90_1",
+    "pointing": 0.8,
+    "src": 5,
+    "type": "chocolate_pudding"
+   },
+   {
+    "dst": "libero_90_2",
+    "pointing": 0.6,
+    "src": 5,
+    "type": "chocolate_pudding"
+   },
+   {
+    "dst": "libero_90_3",
+    "pointing": 0.8,
+    "src": 5,
+    "type": "chocolate_pudding"
+   },
+   {
+    "dst": "libero_90_4",
+    "pointing": 0.8,
+    "src": 5,
+    "type": "chocolate_pudding"
+   },
+   {
+    "dst": "libero_90_60",
+    "pointing": 0.0,
+    "src": 5,
+    "type": "chocolate_pudding"
+   },
+   {
+    "dst": "libero_90_61",
+    "pointing": 0.0,
+    "src": 5,
+    "type": "chocolate_pudding"
+   },
+   {
+    "dst": "libero_90_62",
+    "pointing": 0.0,
+    "src": 5,
+    "type": "chocolate_pudding"
+   },
+   {
+    "dst": "libero_90_63",
+    "pointing": 0.0,
+    "src": 5,
+    "type": "chocolate_pudding"
+   },
+   {
+    "dst": "libero_90_64",
+    "pointing": 0.0,
+    "src": 5,
+    "type": "chocolate_pudding"
+   },
+   {
+    "dst": "libero_90_69",
+    "pointing": 0.0,
+    "src": 5,
+    "type": "chocolate_pudding"
+   },
+   {
+    "dst": "libero_90_70",
+    "pointing": 0.2,
+    "src": 5,
+    "type": "chocolate_pudding"
+   },
+   {
+    "dst": "libero_90_71",
+    "pointing": 0.2,
+    "src": 5,
+    "type": "chocolate_pudding"
+   },
+   {
+    "dst": "libero_90_72",
+    "pointing": 0.2,
+    "src": 5,
+    "type": "chocolate_pudding"
+   },
+   {
+    "dst": "libero_object_3",
+    "pointing": 0.0,
+    "src": 5,
+    "type": "chocolate_pudding"
+   },
+   {
+    "dst": "libero_object_5",
+    "pointing": 0.0,
+    "src": 5,
+    "type": "chocolate_pudding"
+   },
+   {
+    "dst": "libero_object_6",
+    "pointing": 0.0,
+    "src": 5,
+    "type": "chocolate_pudding"
+   },
+   {
+    "dst": "libero_object_7",
+    "pointing": 0.4,
+    "src": 5,
+    "type": "chocolate_pudding"
+   },
+   {
+    "dst": "libero_object_8",
+    "pointing": 0.2,
+    "src": 5,
+    "type": "chocolate_pudding"
+   },
+   {
+    "dst": "libero_object_9",
+    "pointing": 1.0,
+    "src": 5,
+    "type": "chocolate_pudding"
+   },
+   {
+    "dst": "libero_90_19",
+    "pointing": 0.6,
+    "src": 18,
+    "type": "chefmate_8_frypan"
+   },
+   {
+    "dst": "libero_90_20",
+    "pointing": 0.6,
+    "src": 18,
+    "type": "chefmate_8_frypan"
+   },
+   {
+    "dst": "libero_90_21",
+    "pointing": 0.8,
+    "src": 18,
+    "type": "chefmate_8_frypan"
+   },
+   {
+    "dst": "libero_90_40",
+    "pointing": 0.6,
+    "src": 18,
+    "type": "chefmate_8_frypan"
+   },
+   {
+    "dst": "libero_90_41",
+    "pointing": 0.8,
+    "src": 18,
+    "type": "chefmate_8_frypan"
+   },
+   {
+    "dst": "libero_90_42",
+    "pointing": 0.6,
+    "src": 18,
+    "type": "chefmate_8_frypan"
+   },
+   {
+    "dst": "libero_90_43",
+    "pointing": 1.0,
+    "src": 18,
+    "type": "chefmate_8_frypan"
+   },
+   {
+    "dst": "libero_90_44",
+    "pointing": 1.0,
+    "src": 18,
+    "type": "chefmate_8_frypan"
+   },
+   {
+    "dst": "libero_90_45",
+    "pointing": 1.0,
+    "src": 18,
+    "type": "chefmate_8_frypan"
+   },
+   {
+    "dst": "libero_90_22",
+    "pointing": 0.0,
+    "src": 26,
+    "type": "wine_bottle"
+   },
+   {
+    "dst": "libero_90_23",
+    "pointing": 0.8,
+    "src": 26,
+    "type": "wine_bottle"
+   },
+   {
+    "dst": "libero_90_24",
+    "pointing": 0.0,
+    "src": 26,
+    "type": "wine_bottle"
+   },
+   {
+    "dst": "libero_90_25",
+    "pointing": 0.6,
+    "src": 26,
+    "type": "wine_bottle"
+   },
+   {
+    "dst": "libero_90_27",
+    "pointing": 0.2,
+    "src": 26,
+    "type": "wine_bottle"
+   },
+   {
+    "dst": "libero_90_28",
+    "pointing": 1.0,
+    "src": 32,
+    "type": "ketchup"
+   },
+   {
+    "dst": "libero_90_29",
+    "pointing": 0.8,
+    "src": 32,
+    "type": "ketchup"
+   },
+   {
+    "dst": "libero_90_30",
+    "pointing": 1.0,
+    "src": 32,
+    "type": "ketchup"
+   },
+   {
+    "dst": "libero_90_31",
+    "pointing": 1.0,
+    "src": 32,
+    "type": "ketchup"
+   },
+   {
+    "dst": "libero_90_46",
+    "pointing": 1.0,
+    "src": 32,
+    "type": "ketchup"
+   },
+   {
+    "dst": "libero_90_47",
+    "pointing": 1.0,
+    "src": 32,
+    "type": "ketchup"
+   },
+   {
+    "dst": "libero_90_48",
+    "pointing": 1.0,
+    "src": 32,
+    "type": "ketchup"
+   },
+   {
+    "dst": "libero_90_49",
+    "pointing": 1.0,
+    "src": 32,
+    "type": "ketchup"
+   },
+   {
+    "dst": "libero_90_50",
+    "pointing": 1.0,
+    "src": 32,
+    "type": "ketchup"
+   },
+   {
+    "dst": "libero_90_51",
+    "pointing": 0.8,
+    "src": 32,
+    "type": "ketchup"
+   },
+   {
+    "dst": "libero_90_52",
+    "pointing": 0.8,
+    "src": 32,
+    "type": "ketchup"
+   },
+   {
+    "dst": "libero_90_53",
+    "pointing": 1.0,
+    "src": 32,
+    "type": "ketchup"
+   },
+   {
+    "dst": "libero_90_54",
+    "pointing": 1.0,
+    "src": 32,
+    "type": "ketchup"
+   },
+   {
+    "dst": "libero_90_55",
+    "pointing": 1.0,
+    "src": 32,
+    "type": "ketchup"
+   },
+   {
+    "dst": "libero_90_56",
+    "pointing": 0.8,
+    "src": 32,
+    "type": "ketchup"
+   },
+   {
+    "dst": "libero_90_57",
+    "pointing": 0.8,
+    "src": 32,
+    "type": "ketchup"
+   },
+   {
+    "dst": "libero_90_58",
+    "pointing": 1.0,
+    "src": 32,
+    "type": "ketchup"
+   },
+   {
+    "dst": "libero_90_59",
+    "pointing": 1.0,
+    "src": 32,
+    "type": "ketchup"
+   },
+   {
+    "dst": "libero_object_2",
+    "pointing": 0.2,
+    "src": 32,
+    "type": "ketchup"
+   },
+   {
+    "dst": "libero_object_3",
+    "pointing": 0.0,
+    "src": 32,
+    "type": "ketchup"
+   },
+   {
+    "dst": "libero_object_4",
+    "pointing": 0.6,
+    "src": 32,
+    "type": "ketchup"
+   },
+   {
+    "dst": "libero_object_6",
+    "pointing": 0.6,
+    "src": 32,
+    "type": "ketchup"
+   },
+   {
+    "dst": "libero_object_8",
+    "pointing": 0.4,
+    "src": 32,
+    "type": "ketchup"
+   },
+   {
+    "dst": "libero_object_9",
+    "pointing": 1.0,
+    "src": 32,
+    "type": "ketchup"
+   },
+   {
+    "dst": "libero_90_33",
+    "pointing": 0.6,
+    "src": 34,
+    "type": "white_yellow_mug"
+   },
+   {
+    "dst": "libero_90_65",
+    "pointing": 0.0,
+    "src": 34,
+    "type": "white_yellow_mug"
+   },
+   {
+    "dst": "libero_90_66",
+    "pointing": 0.2,
+    "src": 34,
+    "type": "white_yellow_mug"
+   },
+   {
+    "dst": "libero_90_67",
+    "pointing": 0.4,
+    "src": 34,
+    "type": "white_yellow_mug"
+   },
+   {
+    "dst": "libero_90_68",
+    "pointing": 0.2,
+    "src": 34,
+    "type": "white_yellow_mug"
+   },
+   {
+    "dst": "libero_90_73",
+    "pointing": 1.0,
+    "src": 34,
+    "type": "white_yellow_mug"
+   },
+   {
+    "dst": "libero_90_74",
+    "pointing": 1.0,
+    "src": 34,
+    "type": "white_yellow_mug"
+   },
+   {
+    "dst": "libero_90_75",
+    "pointing": 0.6,
+    "src": 34,
+    "type": "white_yellow_mug"
+   },
+   {
+    "dst": "libero_90_76",
+    "pointing": 0.4,
+    "src": 34,
+    "type": "white_yellow_mug"
+   },
+   {
+    "dst": "libero_90_35",
+    "pointing": 1.0,
+    "src": 36,
+    "type": "white_bowl"
+   },
+   {
+    "dst": "libero_90_37",
+    "pointing": 1.0,
+    "src": 36,
+    "type": "white_bowl"
+   },
+   {
+    "dst": "libero_90_40",
+    "pointing": 0.6,
+    "src": 36,
+    "type": "white_bowl"
+   },
+   {
+    "dst": "libero_90_41",
+    "pointing": 0.8,
+    "src": 36,
+    "type": "white_bowl"
+   },
+   {
+    "dst": "libero_90_42",
+    "pointing": 1.0,
+    "src": 36,
+    "type": "white_bowl"
+   },
+   {
+    "dst": "libero_90_43",
+    "pointing": 1.0,
+    "src": 36,
+    "type": "white_bowl"
+   },
+   {
+    "dst": "libero_90_44",
+    "pointing": 0.2,
+    "src": 36,
+    "type": "white_bowl"
+   },
+   {
+    "dst": "libero_90_45",
+    "pointing": 0.8,
+    "src": 36,
+    "type": "white_bowl"
+   },
+   {
+    "dst": "libero_90_35",
+    "pointing": 1.0,
+    "src": 37,
+    "type": "white_bowl"
+   },
+   {
+    "dst": "libero_90_36",
+    "pointing": 0.8,
+    "src": 37,
+    "type": "white_bowl"
+   },
+   {
+    "dst": "libero_90_40",
+    "pointing": 0.4,
+    "src": 37,
+    "type": "white_bowl"
+   },
+   {
+    "dst": "libero_90_41",
+    "pointing": 0.2,
+    "src": 37,
+    "type": "white_bowl"
+   },
+   {
+    "dst": "libero_90_42",
+    "pointing": 0.6,
+    "src": 37,
+    "type": "white_bowl"
+   },
+   {
+    "dst": "libero_90_43",
+    "pointing": 0.8,
+    "src": 37,
+    "type": "white_bowl"
+   },
+   {
+    "dst": "libero_90_44",
+    "pointing": 0.2,
+    "src": 37,
+    "type": "white_bowl"
+   },
+   {
+    "dst": "libero_90_45",
+    "pointing": 0.8,
+    "src": 37,
+    "type": "white_bowl"
+   },
+   {
+    "dst": "libero_90_18",
+    "pointing": 0.4,
+    "src": 40,
+    "type": "chefmate_8_frypan"
+   },
+   {
+    "dst": "libero_90_19",
+    "pointing": 0.6,
+    "src": 40,
+    "type": "chefmate_8_frypan"
+   },
+   {
+    "dst": "libero_90_20",
+    "pointing": 0.4,
+    "src": 40,
+    "type": "chefmate_8_frypan"
+   },
+   {
+    "dst": "libero_90_21",
+    "pointing": 0.4,
+    "src": 40,
+    "type": "chefmate_8_frypan"
+   },
+   {
+    "dst": "libero_90_41",
+    "pointing": 0.6,
+    "src": 40,
+    "type": "chefmate_8_frypan"
+   },
+   {
+    "dst": "libero_90_42",
+    "pointing": 0.6,
+    "src": 40,
+    "type": "chefmate_8_frypan"
+   },
+   {
+    "dst": "libero_90_43",
+    "pointing": 0.8,
+    "src": 40,
+    "type": "chefmate_8_frypan"
+   },
+   {
+    "dst": "libero_90_44",
+    "pointing": 0.8,
+    "src": 40,
+    "type": "chefmate_8_frypan"
+   },
+   {
+    "dst": "libero_90_45",
+    "pointing": 1.0,
+    "src": 40,
+    "type": "chefmate_8_frypan"
+   },
+   {
+    "dst": "libero_90_18",
+    "pointing": 0.6,
+    "src": 41,
+    "type": "chefmate_8_frypan"
+   },
+   {
+    "dst": "libero_90_19",
+    "pointing": 0.6,
+    "src": 41,
+    "type": "chefmate_8_frypan"
+   },
+   {
+    "dst": "libero_90_20",
+    "pointing": 0.2,
+    "src": 41,
+    "type": "chefmate_8_frypan"
+   },
+   {
+    "dst": "libero_90_21",
+    "pointing": 0.2,
+    "src": 41,
+    "type": "chefmate_8_frypan"
+   },
+   {
+    "dst": "libero_90_40",
+    "pointing": 0.8,
+    "src": 41,
+    "type": "chefmate_8_frypan"
+   },
+   {
+    "dst": "libero_90_42",
+    "pointing": 1.0,
+    "src": 41,
+    "type": "chefmate_8_frypan"
+   },
+   {
+    "dst": "libero_90_43",
+    "pointing": 0.8,
+    "src": 41,
+    "type": "chefmate_8_frypan"
+   },
+   {
+    "dst": "libero_90_44",
+    "pointing": 1.0,
+    "src": 41,
+    "type": "chefmate_8_frypan"
+   },
+   {
+    "dst": "libero_90_45",
+    "pointing": 1.0,
+    "src": 41,
+    "type": "chefmate_8_frypan"
+   },
+   {
+    "dst": "libero_90_18",
+    "pointing": 0.8,
+    "src": 42,
+    "type": "chefmate_8_frypan"
+   },
+   {
+    "dst": "libero_90_19",
+    "pointing": 0.6,
+    "src": 42,
+    "type": "chefmate_8_frypan"
+   },
+   {
+    "dst": "libero_90_20",
+    "pointing": 0.6,
+    "src": 42,
+    "type": "chefmate_8_frypan"
+   },
+   {
+    "dst": "libero_90_21",
+    "pointing": 0.4,
+    "src": 42,
+    "type": "chefmate_8_frypan"
+   },
+   {
+    "dst": "libero_90_40",
+    "pointing": 0.6,
+    "src": 42,
+    "type": "chefmate_8_frypan"
+   },
+   {
+    "dst": "libero_90_41",
+    "pointing": 1.0,
+    "src": 42,
+    "type": "chefmate_8_frypan"
+   },
+   {
+    "dst": "libero_90_43",
+    "pointing": 1.0,
+    "src": 42,
+    "type": "chefmate_8_frypan"
+   },
+   {
+    "dst": "libero_90_44",
+    "pointing": 0.8,
+    "src": 42,
+    "type": "chefmate_8_frypan"
+   },
+   {
+    "dst": "libero_90_45",
+    "pointing": 1.0,
+    "src": 42,
+    "type": "chefmate_8_frypan"
+   },
+   {
+    "dst": "libero_90_35",
+    "pointing": 0.0,
+    "src": 43,
+    "type": "white_bowl"
+   },
+   {
+    "dst": "libero_90_36",
+    "pointing": 0.0,
+    "src": 43,
+    "type": "white_bowl"
+   },
+   {
+    "dst": "libero_90_37",
+    "pointing": 0.0,
+    "src": 43,
+    "type": "white_bowl"
+   },
+   {
+    "dst": "libero_90_40",
+    "pointing": 0.2,
+    "src": 43,
+    "type": "white_bowl"
+   },
+   {
+    "dst": "libero_90_41",
+    "pointing": 0.0,
+    "src": 43,
+    "type": "white_bowl"
+   },
+   {
+    "dst": "libero_90_42",
+    "pointing": 0.0,
+    "src": 43,
+    "type": "white_bowl"
+   },
+   {
+    "dst": "libero_90_44",
+    "pointing": 0.0,
+    "src": 43,
+    "type": "white_bowl"
+   },
+   {
+    "dst": "libero_90_45",
+    "pointing": 0.0,
+    "src": 43,
+    "type": "white_bowl"
+   },
+   {
+    "dst": "libero_90_28",
+    "pointing": 0.0,
+    "src": 48,
+    "type": "ketchup"
+   },
+   {
+    "dst": "libero_90_29",
+    "pointing": 0.2,
+    "src": 48,
+    "type": "ketchup"
+   },
+   {
+    "dst": "libero_90_30",
+    "pointing": 0.2,
+    "src": 48,
+    "type": "ketchup"
+   },
+   {
+    "dst": "libero_90_31",
+    "pointing": 0.4,
+    "src": 48,
+    "type": "ketchup"
+   },
+   {
+    "dst": "libero_90_32",
+    "pointing": 0.4,
+    "src": 48,
+    "type": "ketchup"
+   },
+   {
+    "dst": "libero_90_46",
+    "pointing": 0.8,
+    "src": 48,
+    "type": "ketchup"
+   },
+   {
+    "dst": "libero_90_47",
+    "pointing": 0.4,
+    "src": 48,
+    "type": "ketchup"
+   },
+   {
+    "dst": "libero_90_49",
+    "pointing": 0.6,
+    "src": 48,
+    "type": "ketchup"
+   },
+   {
+    "dst": "libero_90_50",
+    "pointing": 0.8,
+    "src": 48,
+    "type": "ketchup"
+   },
+   {
+    "dst": "libero_90_51",
+    "pointing": 0.6,
+    "src": 48,
+    "type": "ketchup"
+   },
+   {
+    "dst": "libero_90_52",
+    "pointing": 0.6,
+    "src": 48,
+    "type": "ketchup"
+   },
+   {
+    "dst": "libero_90_53",
+    "pointing": 0.8,
+    "src": 48,
+    "type": "ketchup"
+   },
+   {
+    "dst": "libero_90_54",
+    "pointing": 0.8,
+    "src": 48,
+    "type": "ketchup"
+   },
+   {
+    "dst": "libero_90_55",
+    "pointing": 0.8,
+    "src": 48,
+    "type": "ketchup"
+   },
+   {
+    "dst": "libero_90_56",
+    "pointing": 0.4,
+    "src": 48,
+    "type": "ketchup"
+   },
+   {
+    "dst": "libero_90_57",
+    "pointing": 0.6,
+    "src": 48,
+    "type": "ketchup"
+   },
+   {
+    "dst": "libero_90_58",
+    "pointing": 0.6,
+    "src": 48,
+    "type": "ketchup"
+   },
+   {
+    "dst": "libero_90_59",
+    "pointing": 0.6,
+    "src": 48,
+    "type": "ketchup"
+   },
+   {
+    "dst": "libero_object_2",
+    "pointing": 0.2,
+    "src": 48,
+    "type": "ketchup"
+   },
+   {
+    "dst": "libero_object_3",
+    "pointing": 0.0,
+    "src": 48,
+    "type": "ketchup"
+   },
+   {
+    "dst": "libero_object_4",
+    "pointing": 0.0,
+    "src": 48,
+    "type": "ketchup"
+   },
+   {
+    "dst": "libero_object_6",
+    "pointing": 1.0,
+    "src": 48,
+    "type": "ketchup"
+   },
+   {
+    "dst": "libero_object_8",
+    "pointing": 0.0,
+    "src": 48,
+    "type": "ketchup"
+   },
+   {
+    "dst": "libero_object_9",
+    "pointing": 0.0,
+    "src": 48,
+    "type": "ketchup"
+   },
+   {
+    "dst": "libero_90_46",
+    "pointing": 0.0,
+    "src": 49,
+    "type": "tomato_sauce"
+   },
+   {
+    "dst": "libero_90_47",
+    "pointing": 0.0,
+    "src": 49,
+    "type": "tomato_sauce"
+   },
+   {
+    "dst": "libero_90_48",
+    "pointing": 0.0,
+    "src": 49,
+    "type": "tomato_sauce"
+   },
+   {
+    "dst": "libero_90_50",
+    "pointing": 1.0,
+    "src": 49,
+    "type": "tomato_sauce"
+   },
+   {
+    "dst": "libero_90_51",
+    "pointing": 1.0,
+    "src": 49,
+    "type": "tomato_sauce"
+   },
+   {
+    "dst": "libero_90_52",
+    "pointing": 1.0,
+    "src": 49,
+    "type": "tomato_sauce"
+   },
+   {
+    "dst": "libero_90_53",
+    "pointing": 1.0,
+    "src": 49,
+    "type": "tomato_sauce"
+   },
+   {
+    "dst": "libero_90_54",
+    "pointing": 0.8,
+    "src": 49,
+    "type": "tomato_sauce"
+   },
+   {
+    "dst": "libero_90_55",
+    "pointing": 1.0,
+    "src": 49,
+    "type": "tomato_sauce"
+   },
+   {
+    "dst": "libero_90_56",
+    "pointing": 0.6,
+    "src": 49,
+    "type": "tomato_sauce"
+   },
+   {
+    "dst": "libero_90_57",
+    "pointing": 0.8,
+    "src": 49,
+    "type": "tomato_sauce"
+   },
+   {
+    "dst": "libero_90_58",
+    "pointing": 0.6,
+    "src": 49,
+    "type": "tomato_sauce"
+   },
+   {
+    "dst": "libero_90_59",
+    "pointing": 0.6,
+    "src": 49,
+    "type": "tomato_sauce"
+   },
+   {
+    "dst": "libero_object_0",
+    "pointing": 1.0,
+    "src": 49,
+    "type": "tomato_sauce"
+   },
+   {
+    "dst": "libero_object_1",
+    "pointing": 0.0,
+    "src": 49,
+    "type": "tomato_sauce"
+   },
+   {
+    "dst": "libero_object_2",
+    "pointing": 0.8,
+    "src": 49,
+    "type": "tomato_sauce"
+   },
+   {
+    "dst": "libero_object_5",
+    "pointing": 1.0,
+    "src": 49,
+    "type": "tomato_sauce"
+   },
+   {
+    "dst": "libero_object_6",
+    "pointing": 1.0,
+    "src": 49,
+    "type": "tomato_sauce"
+   },
+   {
+    "dst": "libero_object_7",
+    "pointing": 1.0,
+    "src": 49,
+    "type": "tomato_sauce"
+   },
+   {
+    "dst": "libero_90_50",
+    "pointing": 1.0,
+    "src": 52,
+    "type": "milk"
+   },
+   {
+    "dst": "libero_90_51",
+    "pointing": 1.0,
+    "src": 52,
+    "type": "milk"
+   },
+   {
+    "dst": "libero_90_53",
+    "pointing": 1.0,
+    "src": 52,
+    "type": "milk"
+   },
+   {
+    "dst": "libero_90_54",
+    "pointing": 1.0,
+    "src": 52,
+    "type": "milk"
+   },
+   {
+    "dst": "libero_object_0",
+    "pointing": 1.0,
+    "src": 52,
+    "type": "milk"
+   },
+   {
+    "dst": "libero_object_1",
+    "pointing": 0.6,
+    "src": 52,
+    "type": "milk"
+   },
+   {
+    "dst": "libero_object_2",
+    "pointing": 1.0,
+    "src": 52,
+    "type": "milk"
+   },
+   {
+    "dst": "libero_object_4",
+    "pointing": 1.0,
+    "src": 52,
+    "type": "milk"
+   },
+   {
+    "dst": "libero_object_5",
+    "pointing": 0.0,
+    "src": 52,
+    "type": "milk"
+   },
+   {
+    "dst": "libero_object_7",
+    "pointing": 1.0,
+    "src": 52,
+    "type": "milk"
+   },
+   {
+    "dst": "libero_90_50",
+    "pointing": 0.8,
+    "src": 53,
+    "type": "orange_juice"
+   },
+   {
+    "dst": "libero_90_51",
+    "pointing": 0.8,
+    "src": 53,
+    "type": "orange_juice"
+   },
+   {
+    "dst": "libero_90_52",
+    "pointing": 1.0,
+    "src": 53,
+    "type": "orange_juice"
+   },
+   {
+    "dst": "libero_90_54",
+    "pointing": 1.0,
+    "src": 53,
+    "type": "orange_juice"
+   },
+   {
+    "dst": "libero_object_1",
+    "pointing": 0.0,
+    "src": 53,
+    "type": "orange_juice"
+   },
+   {
+    "dst": "libero_object_5",
+    "pointing": 1.0,
+    "src": 53,
+    "type": "orange_juice"
+   },
+   {
+    "dst": "libero_object_6",
+    "pointing": 0.0,
+    "src": 53,
+    "type": "orange_juice"
+   },
+   {
+    "dst": "libero_object_7",
+    "pointing": 0.0,
+    "src": 53,
+    "type": "orange_juice"
+   },
+   {
+    "dst": "libero_object_8",
+    "pointing": 1.0,
+    "src": 53,
+    "type": "orange_juice"
+   },
+   {
+    "dst": "libero_object_9",
+    "pointing": 1.0,
+    "src": 53,
+    "type": "orange_juice"
+   },
+   {
+    "dst": "libero_90_28",
+    "pointing": 0.0,
+    "src": 58,
+    "type": "ketchup"
+   },
+   {
+    "dst": "libero_90_29",
+    "pointing": 0.2,
+    "src": 58,
+    "type": "ketchup"
+   },
+   {
+    "dst": "libero_90_30",
+    "pointing": 0.2,
+    "src": 58,
+    "type": "ketchup"
+   },
+   {
+    "dst": "libero_90_31",
+    "pointing": 0.0,
+    "src": 58,
+    "type": "ketchup"
+   },
+   {
+    "dst": "libero_90_32",
+    "pointing": 0.0,
+    "src": 58,
+    "type": "ketchup"
+   },
+   {
+    "dst": "libero_90_46",
+    "pointing": 0.2,
+    "src": 58,
+    "type": "ketchup"
+   },
+   {
+    "dst": "libero_90_47",
+    "pointing": 0.0,
+    "src": 58,
+    "type": "ketchup"
+   },
+   {
+    "dst": "libero_90_48",
+    "pointing": 0.0,
+    "src": 58,
+    "type": "ketchup"
+   },
+   {
+    "dst": "libero_90_49",
+    "pointing": 0.4,
+    "src": 58,
+    "type": "ketchup"
+   },
+   {
+    "dst": "libero_90_50",
+    "pointing": 0.8,
+    "src": 58,
+    "type": "ketchup"
+   },
+   {
+    "dst": "libero_90_51",
+    "pointing": 0.6,
+    "src": 58,
+    "type": "ketchup"
+   },
+   {
+    "dst": "libero_90_52",
+    "pointing": 0.2,
+    "src": 58,
+    "type": "ketchup"
+   },
+   {
+    "dst": "libero_90_53",
+    "pointing": 0.4,
+    "src": 58,
+    "type": "ketchup"
+   },
+   {
+    "dst": "libero_90_54",
+    "pointing": 0.4,
+    "src": 58,
+    "type": "ketchup"
+   },
+   {
+    "dst": "libero_90_55",
+    "pointing": 0.2,
+    "src": 58,
+    "type": "ketchup"
+   },
+   {
+    "dst": "libero_90_56",
+    "pointing": 0.2,
+    "src": 58,
+    "type": "ketchup"
+   },
+   {
+    "dst": "libero_90_57",
+    "pointing": 0.4,
+    "src": 58,
+    "type": "ketchup"
+   },
+   {
+    "dst": "libero_90_59",
+    "pointing": 0.4,
+    "src": 58,
+    "type": "ketchup"
+   },
+   {
+    "dst": "libero_object_2",
+    "pointing": 0.0,
+    "src": 58,
+    "type": "ketchup"
+   },
+   {
+    "dst": "libero_object_3",
+    "pointing": 0.0,
+    "src": 58,
+    "type": "ketchup"
+   },
+   {
+    "dst": "libero_object_4",
+    "pointing": 0.0,
+    "src": 58,
+    "type": "ketchup"
+   },
+   {
+    "dst": "libero_object_6",
+    "pointing": 0.2,
+    "src": 58,
+    "type": "ketchup"
+   },
+   {
+    "dst": "libero_object_8",
+    "pointing": 0.0,
+    "src": 58,
+    "type": "ketchup"
+   },
+   {
+    "dst": "libero_object_9",
+    "pointing": 0.0,
+    "src": 58,
+    "type": "ketchup"
+   },
+   {
+    "dst": "libero_90_46",
+    "pointing": 0.0,
+    "src": 59,
+    "type": "tomato_sauce"
+   },
+   {
+    "dst": "libero_90_47",
+    "pointing": 0.0,
+    "src": 59,
+    "type": "tomato_sauce"
+   },
+   {
+    "dst": "libero_90_48",
+    "pointing": 0.0,
+    "src": 59,
+    "type": "tomato_sauce"
+   },
+   {
+    "dst": "libero_90_49",
+    "pointing": 0.0,
+    "src": 59,
+    "type": "tomato_sauce"
+   },
+   {
+    "dst": "libero_90_50",
+    "pointing": 1.0,
+    "src": 59,
+    "type": "tomato_sauce"
+   },
+   {
+    "dst": "libero_90_51",
+    "pointing": 1.0,
+    "src": 59,
+    "type": "tomato_sauce"
+   },
+   {
+    "dst": "libero_90_52",
+    "pointing": 1.0,
+    "src": 59,
+    "type": "tomato_sauce"
+   },
+   {
+    "dst": "libero_90_53",
+    "pointing": 1.0,
+    "src": 59,
+    "type": "tomato_sauce"
+   },
+   {
+    "dst": "libero_90_54",
+    "pointing": 1.0,
+    "src": 59,
+    "type": "tomato_sauce"
+   },
+   {
+    "dst": "libero_90_55",
+    "pointing": 1.0,
+    "src": 59,
+    "type": "tomato_sauce"
+   },
+   {
+    "dst": "libero_90_56",
+    "pointing": 1.0,
+    "src": 59,
+    "type": "tomato_sauce"
+   },
+   {
+    "dst": "libero_90_57",
+    "pointing": 1.0,
+    "src": 59,
+    "type": "tomato_sauce"
+   },
+   {
+    "dst": "libero_90_58",
+    "pointing": 0.8,
+    "src": 59,
+    "type": "tomato_sauce"
+   },
+   {
+    "dst": "libero_object_0",
+    "pointing": 1.0,
+    "src": 59,
+    "type": "tomato_sauce"
+   },
+   {
+    "dst": "libero_object_1",
+    "pointing": 0.2,
+    "src": 59,
+    "type": "tomato_sauce"
+   },
+   {
+    "dst": "libero_object_2",
+    "pointing": 0.8,
+    "src": 59,
+    "type": "tomato_sauce"
+   },
+   {
+    "dst": "libero_object_5",
+    "pointing": 1.0,
+    "src": 59,
+    "type": "tomato_sauce"
+   },
+   {
+    "dst": "libero_object_6",
+    "pointing": 1.0,
+    "src": 59,
+    "type": "tomato_sauce"
+   },
+   {
+    "dst": "libero_object_7",
+    "pointing": 1.0,
+    "src": 59,
+    "type": "tomato_sauce"
+   },
+   {
+    "dst": "libero_90_0",
+    "pointing": 1.0,
+    "src": 60,
+    "type": "akita_black_bowl"
+   },
+   {
+    "dst": "libero_90_1",
+    "pointing": 1.0,
+    "src": 60,
+    "type": "akita_black_bowl"
+   },
+   {
+    "dst": "libero_90_10",
+    "pointing": 1.0,
+    "src": 60,
+    "type": "akita_black_bowl"
+   },
+   {
+    "dst": "libero_90_2",
+    "pointing": 1.0,
+    "src": 60,
+    "type": "akita_black_bowl"
+   },
+   {
+    "dst": "libero_90_22",
+    "pointing": 1.0,
+    "src": 60,
+    "type": "akita_black_bowl"
+   },
+   {
+    "dst": "libero_90_23",
+    "pointing": 1.0,
+    "src": 60,
+    "type": "akita_black_bowl"
+   },
+   {
+    "dst": "libero_90_24",
+    "pointing": 1.0,
+    "src": 60,
+    "type": "akita_black_bowl"
+   },
+   {
+    "dst": "libero_90_25",
+    "pointing": 1.0,
+    "src": 60,
+    "type": "akita_black_bowl"
+   },
+   {
+    "dst": "libero_90_26",
+    "pointing": 1.0,
+    "src": 60,
+    "type": "akita_black_bowl"
+   },
+   {
+    "dst": "libero_90_27",
+    "pointing": 1.0,
+    "src": 60,
+    "type": "akita_black_bowl"
+   },
+   {
+    "dst": "libero_90_28",
+    "pointing": 1.0,
+    "src": 60,
+    "type": "akita_black_bowl"
+   },
+   {
+    "dst": "libero_90_29",
+    "pointing": 1.0,
+    "src": 60,
+    "type": "akita_black_bowl"
+   },
+   {
+    "dst": "libero_90_3",
+    "pointing": 1.0,
+    "src": 60,
+    "type": "akita_black_bowl"
+   },
+   {
+    "dst": "libero_90_30",
+    "pointing": 0.8,
+    "src": 60,
+    "type": "akita_black_bowl"
+   },
+   {
+    "dst": "libero_90_31",
+    "pointing": 0.8,
+    "src": 60,
+    "type": "akita_black_bowl"
+   },
+   {
+    "dst": "libero_90_32",
+    "pointing": 1.0,
+    "src": 60,
+    "type": "akita_black_bowl"
+   },
+   {
+    "dst": "libero_90_4",
+    "pointing": 0.8,
+    "src": 60,
+    "type": "akita_black_bowl"
+   },
+   {
+    "dst": "libero_90_5",
+    "pointing": 1.0,
+    "src": 60,
+    "type": "akita_black_bowl"
+   },
+   {
+    "dst": "libero_90_6",
+    "pointing": 1.0,
+    "src": 60,
+    "type": "akita_black_bowl"
+   },
+   {
+    "dst": "libero_90_7",
+    "pointing": 1.0,
+    "src": 60,
+    "type": "akita_black_bowl"
+   },
+   {
+    "dst": "libero_90_8",
+    "pointing": 1.0,
+    "src": 60,
+    "type": "akita_black_bowl"
+   },
+   {
+    "dst": "libero_90_9",
+    "pointing": 1.0,
+    "src": 60,
+    "type": "akita_black_bowl"
+   },
+   {
+    "dst": "libero_90_60",
+    "pointing": 0.4,
+    "src": 62,
+    "type": "new_salad_dressing"
+   },
+   {
+    "dst": "libero_90_61",
+    "pointing": 0.4,
+    "src": 62,
+    "type": "new_salad_dressing"
+   },
+   {
+    "dst": "libero_90_63",
+    "pointing": 0.4,
+    "src": 62,
+    "type": "new_salad_dressing"
+   },
+   {
+    "dst": "libero_90_64",
+    "pointing": 0.4,
+    "src": 62,
+    "type": "new_salad_dressing"
+   },
+   {
+    "dst": "libero_90_0",
+    "pointing": 1.0,
+    "src": 63,
+    "type": "akita_black_bowl"
+   },
+   {
+    "dst": "libero_90_1",
+    "pointing": 1.0,
+    "src": 63,
+    "type": "akita_black_bowl"
+   },
+   {
+    "dst": "libero_90_10",
+    "pointing": 1.0,
+    "src": 63,
+    "type": "akita_black_bowl"
+   },
+   {
+    "dst": "libero_90_2",
+    "pointing": 1.0,
+    "src": 63,
+    "type": "akita_black_bowl"
+   },
+   {
+    "dst": "libero_90_22",
+    "pointing": 1.0,
+    "src": 63,
+    "type": "akita_black_bowl"
+   },
+   {
+    "dst": "libero_90_23",
+    "pointing": 1.0,
+    "src": 63,
+    "type": "akita_black_bowl"
+   },
+   {
+    "dst": "libero_90_24",
+    "pointing": 1.0,
+    "src": 63,
+    "type": "akita_black_bowl"
+   },
+   {
+    "dst": "libero_90_25",
+    "pointing": 1.0,
+    "src": 63,
+    "type": "akita_black_bowl"
+   },
+   {
+    "dst": "libero_90_26",
+    "pointing": 1.0,
+    "src": 63,
+    "type": "akita_black_bowl"
+   },
+   {
+    "dst": "libero_90_27",
+    "pointing": 1.0,
+    "src": 63,
+    "type": "akita_black_bowl"
+   },
+   {
+    "dst": "libero_90_28",
+    "pointing": 0.8,
+    "src": 63,
+    "type": "akita_black_bowl"
+   },
+   {
+    "dst": "libero_90_29",
+    "pointing": 1.0,
+    "src": 63,
+    "type": "akita_black_bowl"
+   },
+   {
+    "dst": "libero_90_3",
+    "pointing": 0.8,
+    "src": 63,
+    "type": "akita_black_bowl"
+   },
+   {
+    "dst": "libero_90_30",
+    "pointing": 0.6,
+    "src": 63,
+    "type": "akita_black_bowl"
+   },
+   {
+    "dst": "libero_90_31",
+    "pointing": 0.6,
+    "src": 63,
+    "type": "akita_black_bowl"
+   },
+   {
+    "dst": "libero_90_32",
+    "pointing": 0.6,
+    "src": 63,
+    "type": "akita_black_bowl"
+   },
+   {
+    "dst": "libero_90_4",
+    "pointing": 0.8,
+    "src": 63,
+    "type": "akita_black_bowl"
+   },
+   {
+    "dst": "libero_90_5",
+    "pointing": 1.0,
+    "src": 63,
+    "type": "akita_black_bowl"
+   },
+   {
+    "dst": "libero_90_6",
+    "pointing": 1.0,
+    "src": 63,
+    "type": "akita_black_bowl"
+   },
+   {
+    "dst": "libero_90_7",
+    "pointing": 1.0,
+    "src": 63,
+    "type": "akita_black_bowl"
+   },
+   {
+    "dst": "libero_90_8",
+    "pointing": 1.0,
+    "src": 63,
+    "type": "akita_black_bowl"
+   },
+   {
+    "dst": "libero_90_9",
+    "pointing": 1.0,
+    "src": 63,
+    "type": "akita_black_bowl"
+   },
+   {
+    "dst": "libero_90_66",
+    "pointing": 0.2,
+    "src": 65,
+    "type": "red_coffee_mug"
+   },
+   {
+    "dst": "libero_90_67",
+    "pointing": 0.4,
+    "src": 65,
+    "type": "red_coffee_mug"
+   },
+   {
+    "dst": "libero_90_68",
+    "pointing": 0.0,
+    "src": 65,
+    "type": "red_coffee_mug"
+   },
+   {
+    "dst": "libero_90_69",
+    "pointing": 0.6,
+    "src": 65,
+    "type": "red_coffee_mug"
+   },
+   {
+    "dst": "libero_90_70",
+    "pointing": 0.4,
+    "src": 65,
+    "type": "red_coffee_mug"
+   },
+   {
+    "dst": "libero_90_71",
+    "pointing": 0.8,
+    "src": 65,
+    "type": "red_coffee_mug"
+   },
+   {
+    "dst": "libero_90_72",
+    "pointing": 0.6,
+    "src": 65,
+    "type": "red_coffee_mug"
+   },
+   {
+    "dst": "libero_90_77",
+    "pointing": 0.2,
+    "src": 65,
+    "type": "red_coffee_mug"
+   },
+   {
+    "dst": "libero_90_78",
+    "pointing": 0.8,
+    "src": 65,
+    "type": "red_coffee_mug"
+   },
+   {
+    "dst": "libero_90_79",
+    "pointing": 0.2,
+    "src": 65,
+    "type": "red_coffee_mug"
+   },
+   {
+    "dst": "libero_90_80",
+    "pointing": 0.0,
+    "src": 65,
+    "type": "red_coffee_mug"
+   },
+   {
+    "dst": "libero_90_81",
+    "pointing": 0.0,
+    "src": 65,
+    "type": "red_coffee_mug"
+   },
+   {
+    "dst": "libero_90_82",
+    "pointing": 0.0,
+    "src": 65,
+    "type": "red_coffee_mug"
+   },
+   {
+    "dst": "libero_90_83",
+    "pointing": 0.0,
+    "src": 65,
+    "type": "red_coffee_mug"
+   },
+   {
+    "dst": "libero_90_84",
+    "pointing": 0.0,
+    "src": 65,
+    "type": "red_coffee_mug"
+   },
+   {
+    "dst": "libero_90_85",
+    "pointing": 0.0,
+    "src": 65,
+    "type": "red_coffee_mug"
+   },
+   {
+    "dst": "libero_90_65",
+    "pointing": 0.8,
+    "src": 66,
+    "type": "red_coffee_mug"
+   },
+   {
+    "dst": "libero_90_67",
+    "pointing": 0.6,
+    "src": 66,
+    "type": "red_coffee_mug"
+   },
+   {
+    "dst": "libero_90_68",
+    "pointing": 1.0,
+    "src": 66,
+    "type": "red_coffee_mug"
+   },
+   {
+    "dst": "libero_90_69",
+    "pointing": 0.6,
+    "src": 66,
+    "type": "red_coffee_mug"
+   },
+   {
+    "dst": "libero_90_70",
+    "pointing": 1.0,
+    "src": 66,
+    "type": "red_coffee_mug"
+   },
+   {
+    "dst": "libero_90_71",
+    "pointing": 0.6,
+    "src": 66,
+    "type": "red_coffee_mug"
+   },
+   {
+    "dst": "libero_90_72",
+    "pointing": 0.4,
+    "src": 66,
+    "type": "red_coffee_mug"
+   },
+   {
+    "dst": "libero_90_77",
+    "pointing": 0.0,
+    "src": 66,
+    "type": "red_coffee_mug"
+   },
+   {
+    "dst": "libero_90_78",
+    "pointing": 0.0,
+    "src": 66,
+    "type": "red_coffee_mug"
+   },
+   {
+    "dst": "libero_90_79",
+    "pointing": 0.0,
+    "src": 66,
+    "type": "red_coffee_mug"
+   },
+   {
+    "dst": "libero_90_80",
+    "pointing": 0.0,
+    "src": 66,
+    "type": "red_coffee_mug"
+   },
+   {
+    "dst": "libero_90_81",
+    "pointing": 0.0,
+    "src": 66,
+    "type": "red_coffee_mug"
+   },
+   {
+    "dst": "libero_90_82",
+    "pointing": 0.0,
+    "src": 66,
+    "type": "red_coffee_mug"
+   },
+   {
+    "dst": "libero_90_83",
+    "pointing": 0.0,
+    "src": 66,
+    "type": "red_coffee_mug"
+   },
+   {
+    "dst": "libero_90_84",
+    "pointing": 0.0,
+    "src": 66,
+    "type": "red_coffee_mug"
+   },
+   {
+    "dst": "libero_90_85",
+    "pointing": 0.0,
+    "src": 66,
+    "type": "red_coffee_mug"
+   },
+   {
+    "dst": "libero_90_65",
+    "pointing": 0.4,
+    "src": 71,
+    "type": "red_coffee_mug"
+   },
+   {
+    "dst": "libero_90_66",
+    "pointing": 0.0,
+    "src": 71,
+    "type": "red_coffee_mug"
+   },
+   {
+    "dst": "libero_90_67",
+    "pointing": 0.2,
+    "src": 71,
+    "type": "red_coffee_mug"
+   },
+   {
+    "dst": "libero_90_68",
+    "pointing": 0.0,
+    "src": 71,
+    "type": "red_coffee_mug"
+   },
+   {
+    "dst": "libero_90_69",
+    "pointing": 0.0,
+    "src": 71,
+    "type": "red_coffee_mug"
+   },
+   {
+    "dst": "libero_90_70",
+    "pointing": 0.0,
+    "src": 71,
+    "type": "red_coffee_mug"
+   },
+   {
+    "dst": "libero_90_72",
+    "pointing": 0.0,
+    "src": 71,
+    "type": "red_coffee_mug"
+   },
+   {
+    "dst": "libero_90_77",
+    "pointing": 0.0,
+    "src": 71,
+    "type": "red_coffee_mug"
+   },
+   {
+    "dst": "libero_90_78",
+    "pointing": 0.0,
+    "src": 71,
+    "type": "red_coffee_mug"
+   },
+   {
+    "dst": "libero_90_79",
+    "pointing": 0.0,
+    "src": 71,
+    "type": "red_coffee_mug"
+   },
+   {
+    "dst": "libero_90_80",
+    "pointing": 0.0,
+    "src": 71,
+    "type": "red_coffee_mug"
+   },
+   {
+    "dst": "libero_90_81",
+    "pointing": 0.0,
+    "src": 71,
+    "type": "red_coffee_mug"
+   },
+   {
+    "dst": "libero_90_82",
+    "pointing": 0.0,
+    "src": 71,
+    "type": "red_coffee_mug"
+   },
+   {
+    "dst": "libero_90_83",
+    "pointing": 0.0,
+    "src": 71,
+    "type": "red_coffee_mug"
+   },
+   {
+    "dst": "libero_90_84",
+    "pointing": 0.0,
+    "src": 71,
+    "type": "red_coffee_mug"
+   },
+   {
+    "dst": "libero_90_85",
+    "pointing": 0.0,
+    "src": 71,
+    "type": "red_coffee_mug"
+   }
+  ],
+  "reuse_pointing": 0.5517045454545454
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "q4_template__libero__read__s0__09b01b58",
+ "schema": 1,
+ "script": "experiments/q4_template.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-02T06:05:35+00:00",
+ "stream": null,
+ "tag": "read"
+}

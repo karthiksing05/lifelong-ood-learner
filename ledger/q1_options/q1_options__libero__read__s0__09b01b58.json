@@ -1,0 +1,95 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/q1_options.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "experiments/q1_options.py --record",
+ "config": {},
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "voltron.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4000648",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "q1_options",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "09b01b58a842af42d0a48609d8ea863ff260f07e",
+  "short": "09b01b58"
+ },
+ "keys": {},
+ "metrics": {
+  "groups": {
+   "class_a": {
+    "frames": 72,
+    "grid_objects_mean": 2.6944444444444446,
+    "grid_owner_chance": 0.2543981481481482,
+    "grid_owner_hit": 0.3697981802148469,
+    "null_multi_share": {
+     "0.4": 0.05555555555555555,
+     "0.55": 0.0,
+     "0.7": 0.0
+    },
+    "null_objects_mean": {
+     "0.4": 1.0138888888888888,
+     "0.55": 1.0,
+     "0.7": 1.0
+    },
+    "own_multi_share": {
+     "0.4": 0.0,
+     "0.55": 0.0,
+     "0.7": 0.0
+    }
+   },
+   "validity": {
+    "frames": 50,
+    "grid_objects_mean": 2.56,
+    "grid_owner_chance": 0.25,
+    "grid_owner_hit": 0.28400000000000003,
+    "null_multi_share": {
+     "0.4": 0.0,
+     "0.55": 0.0,
+     "0.7": 0.0
+    },
+    "null_objects_mean": {
+     "0.4": 1.0,
+     "0.55": 1.0,
+     "0.7": 1.0
+    },
+    "own_multi_share": {
+     "0.4": 0.0,
+     "0.55": 0.0,
+     "0.7": 0.0
+    }
+   }
+  },
+  "levels": [
+   0.4,
+   0.55,
+   0.7
+  ]
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "q1_options__libero__read__s0__09b01b58",
+ "schema": 1,
+ "script": "experiments/q1_options.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-02T05:33:19+00:00",
+ "stream": null,
+ "tag": "read"
+}
