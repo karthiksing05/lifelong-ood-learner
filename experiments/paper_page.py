@@ -585,7 +585,24 @@ def grammar_par():
             f"prototype from another kitchen (zero-shot {r['12:zs']['success']}), the middle bowl "
             f"{r['14:bindw4_rho0.7_approach_src2_qual_npk3']['success']} (zero-shot {r['14:zs']['success']}); but when a distractor "
             f"(the plate) is among the peaks the middle one is the wrong object "
-            f"({r['14:bindw4_rho0.7_approach_src2_qual_npk4']['success']} of 10). The rule is exact; its input, the peaks, is not.</p>")
+            f"({r['14:bindw4_rho0.7_approach_src2_qual_npk4']['success']} of 10). The rule is exact; its input, the peaks, is not.</p>"
+            + grammar_read_par())
+
+
+def grammar_read_par():
+    g, tm = row("q24_grammar", "read"), row("q23_typemap", "offline")
+    if not (g and tm):
+        return ""
+    h1, h2, pt = g["hypotheses"]["H1"], g["hypotheses"]["H2"], g["per_task"]
+    return (f"<p>A type is what its exemplars share. Averaging the library's prototypes of a type from other tasks gives a type "
+            f"prototype whose peaks are more often the type's instances (the grammar's pick lands on the named object "
+            f"{tm['mean']['mean_n3']:.2f} of the time offline, against {tm['mean']['single_n3']:.2f} from one donor), and how many "
+            f"peaks each word orders is learned from the other tasks that use it. In the pre-registered read (m3_prereg tag "
+            f"q24_grammar) on the {len(pt)} qualifier tasks, with no demonstration of the scored task, the named object is moved "
+            f"first {h1['x']} of {h1['n']} times against {h1['control']} zero-shot (discordant pairs {h1['discordant'][0]} to "
+            f"{h1['discordant'][1]}, Holm p {h1['holm_p']:.2g}); success is level ({h2['x']} against {h2['control']}). Five words "
+            f"and the library now pick the object. The pick-and-place tasks gain (the front bowl {pt['13']['success_grammar']} "
+            f"against {pt['13']['success_zs']}); the tasks with a second step bind and still fail at that step.</p>")
 
 
 def reach_par():
@@ -684,7 +701,7 @@ LIBERO-90 tasks have one.</li>
 
 P_VER = f"""
 <p>Every read quoted as a test was pre-registered in <code>ledger/m3_prereg</code> before its first episode (tags zc_probe, zc_bind, zc_pilot,
-zc_main, b_bind_q1, b_bind_q2, b_bind_q2_amend1, b_scheme_main, q_probes, q_pilot, q6_main, q7_tokpractice, q8_main, q10_main, q13_main, q16_library, q17_stream, q18_self, q20_stream, q20_confirm); reads marked exploratory were not. Every number on this page is read from <code>ledger/</code> at commit
+zc_main, b_bind_q1, b_bind_q2, b_bind_q2_amend1, b_scheme_main, q_probes, q_pilot, q6_main, q7_tokpractice, q8_main, q10_main, q13_main, q16_library, q17_stream, q18_self, q20_stream, q20_confirm, q24_grammar); reads marked exploratory were not. Every number on this page is read from <code>ledger/</code> at commit
 <code>{esc(commit)}</code> by <code>experiments/paper_page.py</code>, and the README's copies are re-derived by
 <code>experiments/audit_numbers.py</code>. Episodes are paired by task and init state; intervals come from a two-level bootstrap, tests from
 the exact sign test, with Holm correction within a read. One pre-registered probe failed its own validity gate and is not used: the

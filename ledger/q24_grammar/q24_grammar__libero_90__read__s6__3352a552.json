@@ -1,0 +1,191 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "experiments/q24_read.py --record",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky1.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "q24_grammar",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "3352a5523ca920746058d1164b9c929131f81b45",
+  "short": "3352a552"
+ },
+ "keys": {},
+ "metrics": {
+  "hypotheses": {
+   "H1": {
+    "control": 92,
+    "diff": {
+     "diff": 0.24642857142857144,
+     "hi": 0.4392857142857143,
+     "hi90": 0.4107142857142857,
+     "lo": 0.05357142857142857,
+     "lo90": 0.08214285714285714,
+     "n_pairs": 280,
+     "n_tasks": 14
+    },
+    "discordant": [
+     87,
+     18
+    ],
+    "holm_p": 9.892511968778444e-12,
+    "metric": "bound",
+    "n": 280,
+    "passes": true,
+    "sign_p": 4.946255984389222e-12,
+    "x": 161
+   },
+   "H2": {
+    "control": 37,
+    "diff": {
+     "diff": 0.010714285714285714,
+     "hi": 0.11428571428571428,
+     "hi90": 0.09642857142857143,
+     "lo": -0.09642857142857143,
+     "lo90": -0.07857142857142857,
+     "n_pairs": 280,
+     "n_tasks": 14
+    },
+    "discordant": [
+     23,
+     20
+    ],
+    "holm_p": 0.7607916425613439,
+    "metric": "success",
+    "n": 280,
+    "passes": false,
+    "sign_p": 0.7607916425613439,
+    "x": 40
+   }
+  },
+  "missing": [],
+  "per_task": {
+   "12": {
+    "bound_grammar": 15,
+    "bound_zs": 5,
+    "success_grammar": 11,
+    "success_zs": 5,
+    "word": "back"
+   },
+   "13": {
+    "bound_grammar": 6,
+    "bound_zs": 2,
+    "success_grammar": 6,
+    "success_zs": 0,
+    "word": "front"
+   },
+   "14": {
+    "bound_grammar": 19,
+    "bound_zs": 12,
+    "success_grammar": 15,
+    "success_zs": 12,
+    "word": "middle"
+   },
+   "15": {
+    "bound_grammar": 8,
+    "bound_zs": 0,
+    "success_grammar": 3,
+    "success_zs": 0,
+    "word": "middle"
+   },
+   "16": {
+    "bound_grammar": 15,
+    "bound_zs": 0,
+    "success_grammar": 0,
+    "success_zs": 0,
+    "word": "front"
+   },
+   "17": {
+    "bound_grammar": 17,
+    "bound_zs": 4,
+    "success_grammar": 0,
+    "success_zs": 0,
+    "word": "middle"
+   },
+   "3": {
+    "bound_grammar": 11,
+    "bound_zs": 0,
+    "success_grammar": 0,
+    "success_zs": 0,
+    "word": "back"
+   },
+   "4": {
+    "bound_grammar": 0,
+    "bound_zs": 0,
+    "success_grammar": 0,
+    "success_zs": 0,
+    "word": "front"
+   },
+   "60": {
+    "bound_grammar": 6,
+    "bound_zs": 11,
+    "success_grammar": 5,
+    "success_zs": 11,
+    "word": "left"
+   },
+   "63": {
+    "bound_grammar": 13,
+    "bound_zs": 14,
+    "success_grammar": 0,
+    "success_zs": 1,
+    "word": "left"
+   },
+   "64": {
+    "bound_grammar": 19,
+    "bound_zs": 4,
+    "success_grammar": 0,
+    "success_zs": 8,
+    "word": "right"
+   },
+   "87": {
+    "bound_grammar": 0,
+    "bound_zs": 0,
+    "success_grammar": 0,
+    "success_zs": 0,
+    "word": "left"
+   },
+   "88": {
+    "bound_grammar": 13,
+    "bound_zs": 20,
+    "success_grammar": 0,
+    "success_zs": 0,
+    "word": "right"
+   },
+   "89": {
+    "bound_grammar": 19,
+    "bound_zs": 20,
+    "success_grammar": 0,
+    "success_zs": 0,
+    "word": "right"
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "q24_grammar__libero_90__read__s6__3352a552",
+ "schema": 1,
+ "script": "experiments/q24_read.py",
+ "seconds": null,
+ "seed": 6,
+ "source_commit": null,
+ "started": "2026-10-02T19:49:09+00:00",
+ "stream": null,
+ "tag": "read"
+}
