@@ -1,0 +1,205 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "experiments/q16_read.py --read --record",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky1.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "q16_library",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "41fc3dcc2ac16689c0fc1f0d93e1a78124741ce8",
+  "short": "41fc3dcc"
+ },
+ "keys": {},
+ "metrics": {
+  "acceptance": {
+   "12": {
+    "13": 0,
+    "14": 1,
+    "15": 0,
+    "16": 0,
+    "17": 1,
+    "2": 9,
+    "zs": 4
+   },
+   "13": {
+    "12": 0,
+    "14": 1,
+    "15": 0,
+    "16": 4,
+    "17": 2,
+    "2": 0,
+    "zs": 0
+   },
+   "14": {
+    "12": 0,
+    "13": 6,
+    "15": 8,
+    "16": 4,
+    "17": 6,
+    "2": 0,
+    "zs": 5
+   },
+   "15": {
+    "12": 0,
+    "13": 1,
+    "14": 1,
+    "16": 1,
+    "17": 0,
+    "2": 0,
+    "zs": 1
+   },
+   "2": {
+    "12": 2,
+    "13": 1,
+    "14": 1,
+    "15": 0,
+    "16": 4,
+    "17": 1,
+    "zs": 8
+   },
+   "43": {
+    "36": 5,
+    "37": 6,
+    "zs": 1
+   },
+   "70": {
+    "5": 5,
+    "69": 3,
+    "zs": 9
+   },
+   "79": {
+    "73": 2,
+    "74": 2,
+    "75": 3,
+    "77": 1,
+    "78": 2,
+    "80": 3,
+    "zs": 2
+   }
+  },
+  "hypotheses": {
+   "H1": {
+    "control": 56,
+    "diff": {
+     "diff": 0.125,
+     "hi": 0.25625,
+     "hi90": 0.2375,
+     "lo": 0.00625,
+     "lo90": 0.025,
+     "n_pairs": 160,
+     "n_tasks": 8
+    },
+    "discordant": [
+     28,
+     8
+    ],
+    "n": 160,
+    "passes": true,
+    "sign_p": 0.0011932429624721408,
+    "x": 76
+   },
+   "H2": {
+    "control": 75,
+    "diff": {
+     "diff": 0.00625,
+     "hi": 0.20015624999999773,
+     "hi90": 0.175,
+     "lo": -0.2,
+     "lo90": -0.16875,
+     "n_pairs": 160,
+     "n_tasks": 8
+    },
+    "discordant": [
+     29,
+     28
+    ],
+    "n": 160,
+    "sign_p": 1.0,
+    "x": 76
+   }
+  },
+  "kept": {
+   "12": "bindw4@rho0.7_approach_src2",
+   "13": "bindw4@rho0.7_approach_src16",
+   "14": "bindw4@rho0.7_approach_src15",
+   "15": "zs",
+   "2": "zs",
+   "43": "bindw4@rho0.7_approach_src37",
+   "70": "zs",
+   "79": "bindw4@rho0.7_approach_src80"
+  },
+  "kept_forms": 5,
+  "missing": [],
+  "per_task": {
+   "12": {
+    "kept": 14,
+    "own": 14,
+    "zs": 7
+   },
+   "13": {
+    "kept": 3,
+    "own": 13,
+    "zs": 1
+   },
+   "14": {
+    "kept": 15,
+    "own": 8,
+    "zs": 10
+   },
+   "15": {
+    "kept": 0,
+    "own": 3,
+    "zs": 0
+   },
+   "2": {
+    "kept": 15,
+    "own": 11,
+    "zs": 15
+   },
+   "43": {
+    "kept": 8,
+    "own": 12,
+    "zs": 1
+   },
+   "70": {
+    "kept": 15,
+    "own": 8,
+    "zs": 15
+   },
+   "79": {
+    "kept": 6,
+    "own": 6,
+    "zs": 7
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "q16_library__libero_90__read__s2__41fc3dcc",
+ "schema": 1,
+ "script": "experiments/q16_read.py",
+ "seconds": null,
+ "seed": 2,
+ "source_commit": null,
+ "started": "2026-10-02T14:31:27+00:00",
+ "stream": null,
+ "tag": "read"
+}

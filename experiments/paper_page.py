@@ -57,6 +57,7 @@ q5 = row("b2_q2", "q5_w4")
 q6 = row("q6_main", "read")
 q7 = row("q7_tokpractice", "read")
 q13 = row("q13_main", "read")
+q16 = row("q16_library", "read")
 of10 = lambda key, f="BA", src=None: int(round(10 * (src or q2m)[key][f]))                     # noqa: E731
 token_bytes = [r for r in L.load("f4_fold", tag="token_demo") if not r.get("retired")][-1]["bytes"]["total"]
 lang = {int(k): v["language"] for k, v in json.load(open(os.path.join(R, "f0_coverage.json")))["tasks"].items()}   # the read's artifact
@@ -231,7 +232,10 @@ prototype in the policy's own image features, which points the attention with no
 whichever of the policy alone, this binding and its folded token its own fresh practice validates then succeeds
 {q13['hypotheses']['H1']['x']} of {q13['hypotheses']['H1']['n']} times against {q13['hypotheses']['H1']['control']} on nine tasks in a
 pre-registered read, storing {q13['kept_bytes'] / 1024:.0f} KB in all and leaving the policy unchanged where neither unit helps.
-Tokens shared across tasks bind the object more often but succeed less often.</p>"""
+Once an object type has a prototype, later tasks with that type need no demonstration: practice chooses among the stored
+prototypes, and the kept arm succeeds {q16['hypotheses']['H1']['x']} of {q16['hypotheses']['H1']['n']} times against
+{q16['hypotheses']['H1']['control']} zero-shot, level with forms built from each task's own demonstration
+({q16['hypotheses']['H2']['control']}). Tokens shared across tasks bind the object more often but succeed less often.</p>"""
 
 P_INTRO = f"""
 <p>A trained robot policy already knows how to reach, grasp, carry and place. When it fails a new task in a familiar room, the
@@ -251,7 +255,7 @@ overwritten.</p></div>
 for most of them (Section 2). (2) A benchmark that tests the thesis: tasks the policy has never seen, with no demonstration of them.
 (3) Role codes: a new task as a task prototype the policy performs with one object slot rebound, and two ways to inject the
 binding with the policy generating (Sections 3.3, 4.3). (4) Folding the policy's own successes into a token, with no demonstration
-(Section 4.4), and the scheme's pre-registered read on start states nobody tuned on (Section 4.5). (5) An acceptance test on the learner's own practice that keeps the policy, the binding or the token per task; in its pre-registered read no task does worse than the frozen policy (Section 4.5).</p>"""
+(Section 4.4), and the scheme's pre-registered read on start states nobody tuned on (Section 4.5). (5) An acceptance test on the learner's own practice that keeps the policy, the binding or the token per task; in its pre-registered read no task does worse than the frozen policy (Section 4.5). (6) A library of 4 KB object prototypes that lets later tasks with a known object type skip the demonstration (Sections 4.5, 4.7).</p>"""
 
 P_WHY = f"""
 <h3 id="s2-1">2.1 Success follows what the training instructions named</h3>
@@ -408,16 +412,18 @@ def all_reads():
                                      ("broad screen, 7 tasks", "no demonstration", "simulator (practice only)", "token", row("q8_main", "read")),
                                      ("demo prototype, 7 tasks", "1 demo as the query", "the demo's object prototype", "token", row("q10_main", "read")),
                                      ("acceptance test, 9 tasks", "1 demo as the query", "the demo's object prototype",
-                                      "what practice kept", row("q13_main", "read"))):
+                                      "what practice kept", row("q13_main", "read")),
+                                     ("library, 8 tasks", "no demonstration", "other tasks' object prototypes",
+                                      "what practice kept", row("q16_library", "read"))):
         if not r:
             continue
         h = r["hypotheses"]["H1"]
-        rows.append([esc(lab), esc(src), esc(where), esc(test), f"{h['x']} vs {h['control']} of {h['n']}", f"{h['holm_p']:.2g}",
+        rows.append([esc(lab), esc(src), esc(where), esc(test), f"{h['x']} vs {h['control']} of {h['n']}", f"{h.get('holm_p', h['sign_p']):.2g}",
                      "passes" if h["passes"] else "fails"])
     return table(["read", "demonstration", "where during practice", "at test", "successes vs zero-shot", "Holm p", "verdict"], rows,
                  "Every pre-registered read of the scheme. At test the policy gets the task's instruction and an 18.4 KB token, or, in "
                  "the acceptance test, whichever of nothing, the 4 KB form and the token its own practice kept (ledger b5_scheme, "
-                 "q6_main, q8_main, q10_main, q13_main).", num_from=4)
+                 "q6_main, q8_main, q10_main, q13_main, q16_library).", num_from=4)
 
 
 def accept_par():
@@ -435,7 +441,24 @@ def accept_par():
             f"{r['kept_bytes']:,} bytes for {len(kept)} tasks. The token alone ({h['H2']['x']}) and the form alone ({h['H3']['x']}) "
             f"also beat zero-shot at this seed, but their task-level intervals include zero: each fails on some task where the other, "
             f"or the policy, does better. The rule was proposed after the q6 and q10 reads; the episodes, the noise and the acceptance "
-            f"states are new.</p>")
+            f"states are new.</p>" + library_par())
+
+
+def library_par():
+    r = row("q16_library", "read")
+    if not r:
+        return ""
+    h1, h2, pt = r["hypotheses"]["H1"], r["hypotheses"]["H2"], r["per_task"]
+    d = h1["diff"]
+    return (f"<p>The library removes the demonstration (m3_prereg tag q16_library). A new task's candidate forms use object "
+            f"prototypes already stored from other tasks' demonstrations of the same object type, up to six, and the same "
+            f"acceptance test keeps one or the policy alone. On the {len(r['kept'])} tasks with a stored prototype of their type, at "
+            f"a third noise seed, the kept arm succeeds {h1['x']} of {h1['n']} times against {h1['control']} zero-shot "
+            f"(discordant pairs {h1['discordant'][0]} to {h1['discordant'][1]}; task-level bootstrap {d['diff']:+.3f}, 95% interval "
+            f"{d['lo']:.3f} to {d['hi']:.3f}), level with the forms built from each task's own demonstration ({h2['control']}). "
+            f"Among three bowls, practice found prototypes of the right instance in tasks that moved it (the middle bowl: "
+            f"{pt['14']['kept']} against {pt['14']['zs']} zero-shot), and missed once (the front bowl: {pt['13']['kept']} against "
+            f"{pt['13']['own']} with its own demonstration). The kept unit is an index into the library.</p>")
 
 
 P_MAIN = f"""
