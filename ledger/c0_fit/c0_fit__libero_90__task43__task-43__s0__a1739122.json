@@ -1,0 +1,76 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 18710528,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 18710528,
+  "tree": 0
+ },
+ "command": "experiments/c0_fit.py --task 43",
+ "config": {
+  "batch": 32,
+  "demo": 0,
+  "lr": 0.0001,
+  "rank": 16,
+  "scope": "expert",
+  "steps": 1000,
+  "tag": "",
+  "task": 43
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "xaea-12.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4004752",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "c0_fit",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "a17391225204cd41a535e8a9372ec01d989dc4a4",
+  "short": "a1739122"
+ },
+ "keys": {
+  "task": 43
+ },
+ "metrics": {
+  "steps": [
+   {
+    "bytes": 18710528,
+    "clause": "put the white bowl on top of the cabinet",
+    "demo_episode": 273,
+    "final_loss": 0.0036695816088467836,
+    "first_loss": 0.0853058472275734,
+    "frames": [
+     0,
+     144
+    ],
+    "path": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/prim_43_0.pt",
+    "rank": 16,
+    "scope": "expert",
+    "secs": 144.72031211853027,
+    "step": 0,
+    "step_key": "put|on top of|the cabinet",
+    "task": 43
+   }
+  ],
+  "text": "put the white bowl on top of the cabinet"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "c0_fit__libero_90__task43__task-43__s0__a1739122",
+ "schema": 1,
+ "script": "experiments/c0_fit.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-02T21:23:59+00:00",
+ "stream": null,
+ "tag": "task43"
+}

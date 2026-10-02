@@ -1,0 +1,76 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 18710528,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 18710528,
+  "tree": 0
+ },
+ "command": "experiments/c0_fit.py --task 37",
+ "config": {
+  "batch": 32,
+  "demo": 0,
+  "lr": 0.0001,
+  "rank": 16,
+  "scope": "expert",
+  "steps": 1000,
+  "tag": "",
+  "task": 37
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "ig-88.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4004748",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "c0_fit",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "a17391225204cd41a535e8a9372ec01d989dc4a4",
+  "short": "a1739122"
+ },
+ "keys": {
+  "task": 37
+ },
+ "metrics": {
+  "steps": [
+   {
+    "bytes": 18710528,
+    "clause": "put the white bowl to the right of the plate",
+    "demo_episode": 3226,
+    "final_loss": 0.003228646470233798,
+    "first_loss": 0.1631755232810974,
+    "frames": [
+     0,
+     120
+    ],
+    "path": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/prim_37_0.pt",
+    "rank": 16,
+    "scope": "expert",
+    "secs": 133.7533938884735,
+    "step": 0,
+    "step_key": "put|to the right of|the plate",
+    "task": 37
+   }
+  ],
+  "text": "put the white bowl to the right of the plate"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "c0_fit__libero_90__task37__task-37__s0__a1739122",
+ "schema": 1,
+ "script": "experiments/c0_fit.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-02T21:19:41+00:00",
+ "stream": null,
+ "tag": "task37"
+}

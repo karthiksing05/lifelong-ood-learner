@@ -1,0 +1,322 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "C0 step primitives",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky1.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "c0_exec",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "6234537c4cac7584412822b40515aea80e49ac41",
+  "short": "6234537c"
+ },
+ "keys": {},
+ "metrics": {
+  "episodes": 130,
+  "note": "plan C read C0 (exploratory), practice states 0-9, 10 episodes, noise seed 0: on the 13 pool tasks with an archived one-demo LoRA, the task's own step primitives (c0_fit.py: one rank-16 LoRA per step on that step's segment of the demo, switched at the policy's release) vs the LoRA (one adapter, whole demo) vs zero-shot; _bind adds attention binding during the first step",
+  "one_step": {
+   "lora": 35,
+   "prims_own": 47
+  },
+  "rows": {
+   "1:lora": {
+    "bound": 0,
+    "n": 10,
+    "success": 1
+   },
+   "1:prims_own": {
+    "bound": 0,
+    "n": 10,
+    "success": 2
+   },
+   "1:prims_own_bind": {
+    "bound": 0,
+    "n": 10,
+    "success": 0
+   },
+   "1:zs": {
+    "bound": 0,
+    "n": 10,
+    "success": 0
+   },
+   "32:lora": {
+    "bound": 5,
+    "n": 10,
+    "success": 2
+   },
+   "32:prims_own": {
+    "bound": 4,
+    "n": 10,
+    "success": 1
+   },
+   "32:prims_own_bind": {
+    "bound": 0,
+    "n": 10,
+    "success": 0
+   },
+   "32:zs": {
+    "bound": 9,
+    "n": 10,
+    "success": 0
+   },
+   "34:lora": {
+    "bound": 10,
+    "n": 10,
+    "success": 10
+   },
+   "34:prims_own": {
+    "bound": 10,
+    "n": 10,
+    "success": 10
+   },
+   "34:prims_own_bind": {
+    "bound": 5,
+    "n": 10,
+    "success": 1
+   },
+   "34:zs": {
+    "bound": 10,
+    "n": 10,
+    "success": 0
+   },
+   "36:lora": {
+    "bound": 7,
+    "n": 10,
+    "success": 4
+   },
+   "36:prims_own": {
+    "bound": 5,
+    "n": 10,
+    "success": 4
+   },
+   "36:prims_own_bind": {
+    "bound": 2,
+    "n": 10,
+    "success": 0
+   },
+   "36:zs": {
+    "bound": 0,
+    "n": 10,
+    "success": 0
+   },
+   "37:lora": {
+    "bound": 9,
+    "n": 10,
+    "success": 5
+   },
+   "37:prims_own": {
+    "bound": 10,
+    "n": 10,
+    "success": 9
+   },
+   "37:prims_own_bind": {
+    "bound": 0,
+    "n": 10,
+    "success": 0
+   },
+   "37:zs": {
+    "bound": 0,
+    "n": 10,
+    "success": 0
+   },
+   "3:lora": {
+    "bound": 10,
+    "n": 10,
+    "success": 10
+   },
+   "3:prims_own": {
+    "bound": 10,
+    "n": 10,
+    "success": 1
+   },
+   "3:prims_own_bind": {
+    "bound": 8,
+    "n": 10,
+    "success": 1
+   },
+   "3:zs": {
+    "bound": 0,
+    "n": 10,
+    "success": 0
+   },
+   "40:lora": {
+    "bound": 5,
+    "n": 10,
+    "success": 3
+   },
+   "40:prims_own": {
+    "bound": 5,
+    "n": 10,
+    "success": 5
+   },
+   "40:prims_own_bind": {
+    "bound": 3,
+    "n": 10,
+    "success": 0
+   },
+   "40:zs": {
+    "bound": 1,
+    "n": 10,
+    "success": 0
+   },
+   "41:lora": {
+    "bound": 9,
+    "n": 10,
+    "success": 4
+   },
+   "41:prims_own": {
+    "bound": 10,
+    "n": 10,
+    "success": 9
+   },
+   "41:prims_own_bind": {
+    "bound": 0,
+    "n": 10,
+    "success": 0
+   },
+   "41:zs": {
+    "bound": 0,
+    "n": 10,
+    "success": 0
+   },
+   "42:lora": {
+    "bound": 1,
+    "n": 10,
+    "success": 0
+   },
+   "42:prims_own": {
+    "bound": 1,
+    "n": 10,
+    "success": 1
+   },
+   "42:prims_own_bind": {
+    "bound": 0,
+    "n": 10,
+    "success": 0
+   },
+   "42:zs": {
+    "bound": 0,
+    "n": 10,
+    "success": 0
+   },
+   "43:lora": {
+    "bound": 8,
+    "n": 10,
+    "success": 7
+   },
+   "43:prims_own": {
+    "bound": 9,
+    "n": 10,
+    "success": 8
+   },
+   "43:prims_own_bind": {
+    "bound": 8,
+    "n": 10,
+    "success": 7
+   },
+   "43:zs": {
+    "bound": 2,
+    "n": 10,
+    "success": 0
+   },
+   "4:lora": {
+    "bound": 9,
+    "n": 10,
+    "success": 8
+   },
+   "4:prims_own": {
+    "bound": 9,
+    "n": 10,
+    "success": 9
+   },
+   "4:prims_own_bind": {
+    "bound": 0,
+    "n": 10,
+    "success": 0
+   },
+   "4:zs": {
+    "bound": 0,
+    "n": 10,
+    "success": 0
+   },
+   "5:lora": {
+    "bound": 10,
+    "n": 10,
+    "success": 9
+   },
+   "5:prims_own": {
+    "bound": 6,
+    "n": 10,
+    "success": 2
+   },
+   "5:prims_own_bind": {
+    "bound": 5,
+    "n": 10,
+    "success": 3
+   },
+   "5:zs": {
+    "bound": 0,
+    "n": 10,
+    "success": 0
+   },
+   "63:lora": {
+    "bound": 10,
+    "n": 10,
+    "success": 8
+   },
+   "63:prims_own": {
+    "bound": 10,
+    "n": 10,
+    "success": 2
+   },
+   "63:prims_own_bind": {
+    "bound": 7,
+    "n": 10,
+    "success": 1
+   },
+   "63:zs": {
+    "bound": 6,
+    "n": 10,
+    "success": 0
+   }
+  },
+  "totals": {
+   "lora": 71,
+   "prims_own": 63,
+   "prims_own_bind": 13,
+   "zs": 0
+  },
+  "two_step": {
+   "lora": 36,
+   "prims_own": 16
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "c0_exec__libero_90__screen__s0__6234537c",
+ "schema": 1,
+ "script": "(c0_fit.py; launch_pack c0_exec, arms zs, lora, prims@own, prims@own_bind)",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-02T23:28:43+00:00",
+ "stream": null,
+ "tag": "screen"
+}

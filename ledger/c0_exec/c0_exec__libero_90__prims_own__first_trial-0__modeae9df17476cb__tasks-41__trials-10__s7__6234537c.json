@@ -1,0 +1,95 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/c0_exec_41_prims_own.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "roll.sh MODE=prims:41?suite=libero_90&paths=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/prim_41_0.pt SUITE=libero_90 TASKS=41 TRIALS=10 (job 4004854)",
+ "config": {
+  "client": {
+   "all_objects": false,
+   "bind": "track",
+   "branches": "",
+   "first_trial": 0,
+   "host": "127.0.0.1",
+   "light": false,
+   "max_steps": 0,
+   "no_meta": false,
+   "objects": false,
+   "out": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/c0_exec_41_prims_own.json",
+   "port": 9733,
+   "record": false,
+   "replan": 5,
+   "resize": 224,
+   "seed": 7,
+   "seg": false,
+   "state_mod": 0,
+   "suite": "libero_90",
+   "swap": "",
+   "swap_cams": "both",
+   "swap_mode": "render",
+   "swap_phase": "all",
+   "tasks": "41",
+   "trials": 10,
+   "videos": 2,
+   "wait": 10
+  },
+  "job": "4004854",
+  "mode": "prims:41?suite=libero_90&paths=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/prim_41_0.pt"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "consu.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4004854",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "c0_exec",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "6234537c4cac7584412822b40515aea80e49ac41",
+  "short": "6234537c"
+ },
+ "keys": {
+  "first_trial": 0,
+  "mode": "prims:41?suite=libero_90&paths=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/prim_41_0.pt",
+  "tasks": "41",
+  "trials": 10
+ },
+ "metrics": {
+  "complete": true,
+  "n_episodes": 10,
+  "secs": 341.84224796295166,
+  "success_rate": 0.9,
+  "tasks": {
+   "41": {
+    "errors": 0,
+    "language": "put the frying pan on top of the cabinet",
+    "mean_steps": 281.8,
+    "n": 10,
+    "success_rate": 0.9
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "c0_exec__libero_90__prims_own__first_trial-0__modeae9df17476cb__tasks-41__trials-10__s7__6234537c",
+ "schema": 1,
+ "script": "experiments/libero_client.py",
+ "seconds": null,
+ "seed": 7,
+ "source_commit": null,
+ "started": "2026-10-02T23:08:56+00:00",
+ "stream": null,
+ "tag": "prims_own"
+}
