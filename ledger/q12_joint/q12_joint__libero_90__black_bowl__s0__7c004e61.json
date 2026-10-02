@@ -1,0 +1,124 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 18432,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 18432,
+  "tree": 0
+ },
+ "command": "joint black-bowl token",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky1.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "q12_joint",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "7c004e6105a4835e055cbcc254344fe52357ef83",
+  "short": "7c004e61"
+ },
+ "keys": {},
+ "metrics": {
+  "note": "one token fitted on the policy's own successes of 3 black-bowl tasks (12, 2, 60) vs the task-12 token, on 4 unseen black-bowl tasks (29, 30, 31, 25), states 30-49",
+  "rows": {
+   "25:ftoken_12_2_60_jb": {
+    "bound_bowl": 20,
+    "n": 20,
+    "success": 0
+   },
+   "25:ftoken_12_q82": {
+    "bound_bowl": 20,
+    "n": 20,
+    "success": 0
+   },
+   "25:zs": {
+    "bound_bowl": 20,
+    "n": 20,
+    "success": 0
+   },
+   "29:ftoken_12_2_60_jb": {
+    "bound_bowl": 6,
+    "n": 20,
+    "success": 9
+   },
+   "29:ftoken_12_q82": {
+    "bound_bowl": 5,
+    "n": 20,
+    "success": 3
+   },
+   "29:zs": {
+    "bound_bowl": 4,
+    "n": 20,
+    "success": 12
+   },
+   "30:ftoken_12_2_60_jb": {
+    "bound_bowl": 17,
+    "n": 20,
+    "success": 9
+   },
+   "30:ftoken_12_q82": {
+    "bound_bowl": 12,
+    "n": 20,
+    "success": 3
+   },
+   "30:zs": {
+    "bound_bowl": 16,
+    "n": 20,
+    "success": 14
+   },
+   "31:ftoken_12_2_60_jb": {
+    "bound_bowl": 15,
+    "n": 20,
+    "success": 2
+   },
+   "31:ftoken_12_q82": {
+    "bound_bowl": 8,
+    "n": 20,
+    "success": 1
+   },
+   "31:zs": {
+    "bound_bowl": 8,
+    "n": 20,
+    "success": 3
+   }
+  },
+  "totals": {
+   "ftoken_12_2_60_jb": {
+    "bound": 58,
+    "n": 80,
+    "success": 20
+   },
+   "ftoken_12_q82": {
+    "bound": 45,
+    "n": 80,
+    "success": 7
+   },
+   "zs": {
+    "bound": 48,
+    "n": 80,
+    "success": 29
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "q12_joint__libero_90__black_bowl__s0__7c004e61",
+ "schema": 1,
+ "script": "(experiments/f4_fold.py --task 12+2+60 --source rollouts; launch_pack q12_joint)",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-02T11:23:20+00:00",
+ "stream": null,
+ "tag": "black_bowl"
+}

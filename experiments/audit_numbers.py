@@ -660,6 +660,12 @@ BIND = [   # the Bind plan's reads (no demonstration; ledger m3_prereg tags b_bi
     ("deployable broad: back bowl form", lambda: (float(_row("q10_main", "read")["per_task"]["13"]["form"]), 0.0, 1), "12"),
     ("reuse: white bowl episodes", lambda: (float(_row("q11_reuse", "white_bowl")["episodes"]), 0.0, 1), "80"),
     ("reuse: white bowl successes", lambda: (float(_row("q11_reuse", "white_bowl")["successes"]), 0.0, 1), "0"),
+    ("joint: bound", lambda: (float(_row("q12_joint", "black_bowl")["totals"]["ftoken_12_2_60_jb"]["bound"]), 0.0, 1), "58"),
+    ("joint: zero-shot bound", lambda: (float(_row("q12_joint", "black_bowl")["totals"]["zs"]["bound"]), 0.0, 1), "48"),
+    ("joint: single bound", lambda: (float(_row("q12_joint", "black_bowl")["totals"]["ftoken_12_q82"]["bound"]), 0.0, 1), "45"),
+    ("joint: success", lambda: (float(_row("q12_joint", "black_bowl")["totals"]["ftoken_12_2_60_jb"]["success"]), 0.0, 1), "20"),
+    ("joint: zero-shot success", lambda: (float(_row("q12_joint", "black_bowl")["totals"]["zs"]["success"]), 0.0, 1), "29"),
+    ("joint: single success", lambda: (float(_row("q12_joint", "black_bowl")["totals"]["ftoken_12_q82"]["success"]), 0.0, 1), "7"),
 ]
 
 CHECKS = EMBODIED + TRANSFER + BIND + [
