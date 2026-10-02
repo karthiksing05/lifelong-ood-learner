@@ -650,6 +650,14 @@ BIND = [   # the Bind plan's reads (no demonstration; ledger m3_prereg tags b_bi
     ("broadened: form", lambda: (float(_row("q8_main", "read")["hypotheses"]["H2"]["x"]), 0.0, 1), "70"),
     ("broadened: front bowl token", lambda: (float(_row("q8_main", "read")["per_task"]["12"]["token"]), 0.0, 1), "17"),
     ("broadened: front bowl zero-shot", lambda: (float(_row("q8_main", "read")["per_task"]["12"]["zs"]), 0.0, 1), "5"),
+    ("deployable broad: token", lambda: (float(_row("q10_main", "read")["hypotheses"]["H1"]["x"]), 0.0, 1), "65"),
+    ("deployable broad: zero-shot", lambda: (float(_row("q10_main", "read")["hypotheses"]["H1"]["control"]), 0.0, 1), "50"),
+    ("deployable broad: form", lambda: (float(_row("q10_main", "read")["hypotheses"]["H2"]["x"]), 0.0, 1), "66"),
+    ("deployable broad: Holm p", lambda: (_row("q10_main", "read")["hypotheses"]["H1"]["holm_p"], 0.0, 1), "0.088"),
+    ("deployable broad: front bowl token", lambda: (float(_row("q10_main", "read")["per_task"]["12"]["token"]), 0.0, 1), "18"),
+    ("deployable broad: book zero-shot", lambda: (float(_row("q10_main", "read")["per_task"]["79"]["zs"]), 0.0, 1), "4"),
+    ("deployable broad: book token", lambda: (float(_row("q10_main", "read")["per_task"]["79"]["token"]), 0.0, 1), "10"),
+    ("deployable broad: back bowl form", lambda: (float(_row("q10_main", "read")["per_task"]["13"]["form"]), 0.0, 1), "12"),
 ]
 
 CHECKS = EMBODIED + TRANSFER + BIND + [
