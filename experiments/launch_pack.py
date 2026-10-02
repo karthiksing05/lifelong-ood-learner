@@ -172,6 +172,19 @@ def arm_spec(tid, arm, fold, demo=0):
         lam, _, dsx = arm.split("@", 1)[1].partition("_d")
         abl = "&ablate=nopolicy" if arm.startswith("poenopol") else "&ablate=noproto" if arm.startswith("poeopt") else ""
         return (f"phasecode:{os.path.join(R, 'poe_codes', f'{tid}_d{dsx or 0}.json')}?lam={lam}{abl}", "0", False)
+    if arm.startswith("prims@"):                                        # plan C: prims@own[_bind] -- the task's own step primitives;
+        import glob as _glob                                             # prims@<k0>+<k1>[_bind] -- step s uses task k_s's step-s
+        spec_, _, fl = arm.split("@", 1)[1].partition("_")               # primitive ("x" = none: the policy itself)
+        if spec_ == "own":
+            ps = sorted(_glob.glob(os.path.join(R, f"prim_{tid}_[0-9].pt")))
+            if not ps:
+                return None
+        else:
+            ps = []
+            for s_, k_ in enumerate(spec_.split("+")):
+                ps.append("none" if k_ == "x" else os.path.join(R, f"prim_{k_.split('.')[0]}_{k_.split('.')[1] if '.' in k_ else s_}.pt"))
+        bind = "&bind=1" if "bind" in fl else ""
+        return (f"prims:{tid}?suite={SUITE_OF.get('suite', 'libero_90')}&paths={'+'.join(ps)}{bind}", "0", False)
     if arm == "seqzs":                                                   # sequencing alone: the instruction's two clauses in turn
         return (f"bind:{tid}?suite={SUITE_OF.get('suite', 'libero_90')}&src=w4&rho=0.7&band=all&proto=none&nobind=1&seq=1", "0", False)
     if arm.startswith("bindw4g@"):                                       # the goal slot: attention on the demo's goal prototype while

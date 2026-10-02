@@ -272,6 +272,31 @@ def main():
                           seed=int(os.environ.get("SERVE_SEED", "0") or 0), log=logging.info, official=kv.get("official") == "1",
                           H=bk.H, A=bk.A)
         logging.info(f"dsrl: task {t}, LoRA {lp} on, noise dim {bk.H * bk.A}, train {hooks.train}")
+    elif a.mode.startswith("prims:"):
+        # prims:<task>?paths=<p0>+<p1>[&bind=1&proto=<k>&rho=0.7] -- plan C (docs/PLAN_PRIMITIVES.md): the task's steps in turn, each
+        # with its motion primitive (a keyed LoRA; "none" = the policy itself), switched at the policy's own release; bind=1
+        # raises attention on the object prototype during the first step (lifelong_ood/policy/primitives.py)
+        import numpy as np
+        from lifelong_ood.policy import bind_hooks as BH
+        from lifelong_ood.policy import factors as F
+        from lifelong_ood.policy import primitives as PR
+        body, q = (a.mode[len("prims:"):].split("?", 1) + [""])[:2]
+        kv = dict(x.split("=", 1) for x in q.split("&") if x)
+        tasks = F.load()
+        task = next(t for t in tasks if t.suite == kv.get("suite", "libero_90") and t.index == int(body))
+        paths = [None if p_ == "none" else p_ for p_ in kv["paths"].split("+")]
+        steps = PR.steps_of(task.language)
+        if len(paths) != len(steps):                         # a demo without a release fitted one primitive for the whole task
+            steps = [task.language]
+            paths = paths[:1]
+        inner = None
+        if kv.get("bind") == "1":
+            inner = BH.BindHooks(bk, task, src="w4", rho=float(kv.get("rho", 0.7)), band="all", phase="approach",
+                                 phrases=F.scene_phrases(task, tasks),
+                                 proto=np.load(os.path.join(ROOT, "results", "robot", kv.get("pfile", "q4_object_protos") + ".npz"))[
+                                     kv.get("proto", body)])
+        hooks = PR.PrimHooks(bk, steps, paths, inner=inner)
+        logging.info(f"prims: task {body}, steps {steps}, primitives {paths}, bind {inner is not None}")
     elif a.mode.startswith("lora:"):
         # lora:<expert.pt> -- the few-shot baseline: a flat adapter on the action expert, always on
         from lifelong_ood.policy import adapt
