@@ -658,6 +658,8 @@ BIND = [   # the Bind plan's reads (no demonstration; ledger m3_prereg tags b_bi
     ("deployable broad: book zero-shot", lambda: (float(_row("q10_main", "read")["per_task"]["79"]["zs"]), 0.0, 1), "4"),
     ("deployable broad: book token", lambda: (float(_row("q10_main", "read")["per_task"]["79"]["token"]), 0.0, 1), "10"),
     ("deployable broad: back bowl form", lambda: (float(_row("q10_main", "read")["per_task"]["13"]["form"]), 0.0, 1), "12"),
+    ("reuse: white bowl episodes", lambda: (float(_row("q11_reuse", "white_bowl")["episodes"]), 0.0, 1), "80"),
+    ("reuse: white bowl successes", lambda: (float(_row("q11_reuse", "white_bowl")["successes"]), 0.0, 1), "0"),
 ]
 
 CHECKS = EMBODIED + TRANSFER + BIND + [

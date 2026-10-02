@@ -1,0 +1,71 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 18432,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 18432,
+  "tree": 0
+ },
+ "command": "ftoken@43_q82,ftoken@43_w2 on 36+37",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky1.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "q11_reuse",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "8684b68eb18a92d754a472651aa791b8e5fa4d58",
+  "short": "8684b68e"
+ },
+ "keys": {},
+ "metrics": {
+  "bound": 0,
+  "episodes": 80,
+  "note": "the white-bowl tokens of task 43 (oracle-teacher q82 and deployable w2) on tasks 36 and 37 (other rooms), states 30-49",
+  "rows": {
+   "36:ftoken_43_q82": {
+    "bound_white_bowl": 0,
+    "n": 20,
+    "success": 0
+   },
+   "36:ftoken_43_w2": {
+    "bound_white_bowl": 0,
+    "n": 20,
+    "success": 0
+   },
+   "37:ftoken_43_q82": {
+    "bound_white_bowl": 0,
+    "n": 20,
+    "success": 0
+   },
+   "37:ftoken_43_w2": {
+    "bound_white_bowl": 0,
+    "n": 20,
+    "success": 0
+   }
+  },
+  "successes": 0,
+  "zero_shot": 0
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "q11_reuse__libero_90__white_bowl__s0__8684b68e",
+ "schema": 1,
+ "script": "(inline, experiments/launch_pack.py q11_reuse)",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-02T10:53:37+00:00",
+ "stream": null,
+ "tag": "white_bowl"
+}
