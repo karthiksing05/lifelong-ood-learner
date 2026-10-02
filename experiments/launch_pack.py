@@ -140,7 +140,7 @@ def arm_spec(tid, arm, fold, demo=0):
     if arm.startswith(("bind@", "bindplacebo@", "bindshift@")):          # Bind (plan 2026-10-01 evening): bind@rho0.5_all, bind@beta4_mid
         parts = arm.split("@", 1)[1].split("_")                          # bind@rho0.7_all[_approach]
         cfg, band = parts[0], (parts[1] if len(parts) > 1 else "all")
-        ph = "&phase=approach" if "approach" in parts[2:] else ""
+        ph = "&phase=approach" if "approach" in parts[2:] else "&phase=carry" if "carry" in parts[2:] else ""
         knob = f"rho={cfg[3:]}" if cfg.startswith("rho") else f"beta={cfg[4:]}"
         ctrl = "placebo" if arm.startswith("bindplacebo") else "shift" if arm.startswith("bindshift") else "none"
         return (f"bind:{tid}?suite={SUITE_OF.get('suite', 'libero_90')}&src=oracle&{knob}&band={band}&ctrl={ctrl}{ph}", "0", False)
@@ -172,6 +172,12 @@ def arm_spec(tid, arm, fold, demo=0):
         lam, _, dsx = arm.split("@", 1)[1].partition("_d")
         abl = "&ablate=nopolicy" if arm.startswith("poenopol") else "&ablate=noproto" if arm.startswith("poeopt") else ""
         return (f"phasecode:{os.path.join(R, 'poe_codes', f'{tid}_d{dsx or 0}.json')}?lam={lam}{abl}", "0", False)
+    if arm.startswith("bindw4g@"):                                       # the goal slot: attention on the demo's goal prototype while
+        parts = arm.split("@", 1)[1].split("_")                          # carrying; bindw4g@rho0.7_carry (goal only) or _both (object
+        both = "both" in parts                                           # prototype while open, goal prototype while closed)
+        src = next((p_[3:] for p_ in parts if p_.startswith("src")), str(tid))
+        return (f"bind:{tid}?suite={SUITE_OF.get('suite', 'libero_90')}&src=w4&rho={parts[0][3:]}&band=all"
+                f"&phase={'1' if both else 'carry'}&proto={tid if both else 'none'}&gproto={src}", "0", False)
     if arm.startswith("bindw4@"):                                        # attention binding, where from the demo's object prototype
         parts = arm.split("@", 1)[1].split("_")                          # bindw4@rho0.7_approach[_src<task>] (deployable)
         src = next((p_[3:] for p_ in parts if p_.startswith("src")), str(tid))

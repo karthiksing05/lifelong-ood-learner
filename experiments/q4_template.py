@@ -6,6 +6,9 @@ features at that patch (and its 4 neighbours, averaged) are the object's prototy
 state the patch most similar to the prototype is where the object is.  Scored with the oracle segmentation of the first frames
 (experiments/f0b_firstframes_seg.py; practice states 0-9): pointing = the best patch is covered >= 0.1 by the moved object.
 REUSE: the prototype from one task's demo, applied in OTHER tasks' scenes that contain an object of the same type.
+--goal: the GOAL prototype instead -- the end effector at the demo's first release (the gripper opens after the first grasp),
+projected into the first frame, marks where the object goes (the goal slot); stored in q4_goal_protos.npz, pointing scored against
+the target fixture's segmentation (a coarse check: the whole fixture, not its goal region).
 
     sbatch --export=ALL,ENV=openpi,SCRIPT="experiments/q4_template.py --record" slurm/jobs/robot_gpu.sbatch
 """
@@ -57,8 +60,12 @@ def main():
     protos, per = {}, {}
     todo = ([int(x) for x in sys.argv[sys.argv.index("--tasks") + 1].split("+")] if "--tasks" in sys.argv else sorted(set(HELD + CLASS_A)))
     tag = sys.argv[sys.argv.index("--tag") + 1] if "--tag" in sys.argv else ""
-    if tag and os.path.exists(os.path.join(R, "q4_object_protos.npz")):          # extend the stored prototypes, never drop them
-        old = np.load(os.path.join(R, "q4_object_protos.npz"))
+    goal = "--goal" in sys.argv
+    PF = os.path.join(R, "q4_goal_protos.npz" if goal else "q4_object_protos.npz")
+    if goal:
+        tag = tag or "goal"
+    if tag and os.path.exists(PF):          # extend the stored prototypes, never drop them
+        old = np.load(PF)
         tids_old, types_old = [int(x) for x in old["tids"]], [str(x) for x in old["types"]]
         for k in old.files:
             if k not in ("types", "tids"):
@@ -66,7 +73,7 @@ def main():
                 protos[kk] = dict(vec=old[k], type=types_old[tids_old.index(kk)] if kk in tids_old else "", token=None)
     for tid in todo:
         t = by[("libero_90", tid)]
-        moved = BH.referents(t)["open"]
+        moved = BH.referents(t)["closed" if goal else "open"]
         if not moved or tid not in [x.index for x in tasks if x.suite == "libero_90"]:
             continue
         ep = d90.load(d90.episodes_of_text(texts[tid])[0])
@@ -74,6 +81,11 @@ def main():
         if len(closed) == 0:
             continue
         g = int(closed[0])
+        if goal:                                                      # the first release after the first grasp
+            opened = np.where((ep["actions"][:, 6] <= 0) & (np.arange(len(ep["actions"])) > g))[0]
+            if len(opened) == 0:
+                continue
+            g = int(opened[0])
         z = np.load(os.path.join(FR, f"libero_90_{tid}.npz"), allow_pickle=True)
         rc = W.project(ep["state"][g][:3], z["K"], z["E"][0])
         i, j = int(np.clip(rc[0] // 16, 0, 15)), int(np.clip(rc[1] // 16, 0, 15))
@@ -81,17 +93,18 @@ def main():
         f0 = feats(bk, ep["image"][0], ep["wrist_image"][0], ep["state"][0])
         proto = np.mean([f0[a * 16 + b] for a, b in neighbours(i, j)], 0)
         proto /= np.linalg.norm(proto)
-        mtype = t.objects.get(moved[0], moved[0])
+        mtype = t.objects.get(moved[0], t.fixtures.get(moved[0], moved[0]) if isinstance(t.fixtures, dict) else moved[0])
         protos[tid] = dict(vec=proto, type=mtype, token=(i, j))
-        hits = []
+        hits, top4 = [], []
         for k in range(len(z["states"])):
             fk = feats(bk, z["img"][k], z["wimg"][k], z["state8"][k])
             sim = fk @ proto
             pk = int(np.argmax(sim))
+            top4.append([int(x) for x in np.argsort(sim)[::-1][:4]])
             truth = W.oracle_map(z["seg"][k], W.geoms_of(z, name=moved[0]))
             hits.append(int(truth.reshape(-1)[pk] > 0.1))
         per[str(tid)] = dict(language=texts[tid], moved=moved[0], type=mtype, grasp_frame=g, demo_token=[i, j],
-                             pointing=float(np.mean(hits)))
+                             pointing=float(np.mean(hits)), top4=top4)
         print(f"[q4] {tid:>3} {mtype:22s} demo token {i},{j} pointing {np.mean(hits):.2f} | {texts[tid]}", flush=True)
     # reuse: a prototype in OTHER scenes with an object of the same type (LIBERO-90 and LIBERO-Object first frames)
     reuse = []
@@ -120,7 +133,7 @@ def main():
     res = dict(own_pointing=own, reuse_pointing=ru, n_tasks=len(per), n_reuse=len(reuse), per_task=per, reuse=reuse,
                proto_bytes=int(2 * len(next(iter(protos.values()))["vec"])) if protos else 0)
     json.dump(res, open(os.path.join(R, f"q4_template{'_' + tag if tag else ''}.json"), "w"), indent=1)
-    np.savez(os.path.join(R, "q4_object_protos.npz"), **{str(k): v["vec"] for k, v in protos.items()},
+    np.savez(PF, **{str(k): v["vec"] for k, v in protos.items()},
              types=np.array([protos[k]["type"] for k in protos]), tids=np.array(list(protos)))
     if "--record" in sys.argv:
         from lifelong_ood import ledger

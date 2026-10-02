@@ -363,11 +363,13 @@ def main():
                              w1_layer=(int(kv["layer"]) if "layer" in kv else None), keep=float(kv.get("keep", 0.5)),
                              phrases=F.scene_phrases(task, tasks),
                              proto=(np.load(os.path.join(ROOT, "results", "robot", "q4_object_protos.npz"))[kv.get("proto", body)]
-                                    if kv.get("src") == "w4" else None),
+                                    if kv.get("src") == "w4" and kv.get("proto") != "none" else None),
+                             gproto=(np.load(os.path.join(ROOT, "results", "robot", "q4_goal_protos.npz"))[kv["gproto"]]
+                                     if "gproto" in kv else None),
                              topk=int(kv.get("topk", 4)),
                              beta=(float(kv["beta"]) if "beta" in kv else None), band=kv.get("band", "all"),
                              cams=kv.get("cams", "agent"), ctrl=kv.get("ctrl", "none"),
-                             phase=("approach" if kv.get("phase") == "approach" else kv.get("phase", "1") == "1"),
+                             phase=(kv["phase"] if kv.get("phase") in ("approach", "carry") else kv.get("phase", "1") == "1"),
                              seed=int(kv.get("seed", 0)))
         if kv.get("prompt") == "base":                     # the role code's base instruction (binding split with a role swap)
             import glob as _glob

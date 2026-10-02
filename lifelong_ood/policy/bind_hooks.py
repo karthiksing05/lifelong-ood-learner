@@ -75,7 +75,7 @@ def shifted(mask16, avoid16):
 
 class BindHooks:
     def __init__(self, bk, task, src="oracle", rho=0.5, beta=None, band="all", cams="agent", ctrl="none", phase=True, seed=0,
-                 w1_layer=None, keep=0.5, phrases=None, proto=None, topk=4):
+                 w1_layer=None, keep=0.5, phrases=None, proto=None, topk=4, gproto=None):
         self.bk, self.task = bk, task
         self.src, self.ctrl, self.phase = src, ctrl, bool(phase) and phase != "approach"
         self.cfg = (dict(mode="fixed", beta=float(beta)) if beta is not None else dict(mode="mass", rho=float(rho)))
@@ -87,6 +87,7 @@ class BindHooks:
         self.w1_layer = w1_layer
         self.keep = float(keep)                          # deployable maps keep the tokens >= keep x the map's peak
         self.proto = None if proto is None else np.asarray(proto, np.float32)
+        self.gproto = None if gproto is None else np.asarray(gproto, np.float32)   # the demo's goal prototype (carry phase)
         self.topk = int(topk)
         self.phrases = phrases or {}
         self.owl = None
@@ -95,6 +96,7 @@ class BindHooks:
         self.started = False                            # the server's warm-up calls (before any episode) run unbiased
         self.prompt = None
         self.approach_only = phase == "approach"
+        self.carry_only = phase == "carry"               # the goal slot: only the target, only while the gripper is closed
         self.log = []                                   # per query: (phase, referent, mass before, mass after)
 
     # ── episode ───────────────────────────────────────────────────────────────────────────────────────────────────
@@ -113,6 +115,8 @@ class BindHooks:
     def _referent(self):
         if self.approach_only and self.closed:
             return []                                    # approach-only binding: the routine carries and places unbiased
+        if self.carry_only and not self.closed:
+            return []                                    # carry-only binding: the routine approaches and grasps unbiased
         if self.ctrl == "placebo":
             return [self.placebo] if self.placebo else []
         key = "closed" if (self.phase and self.closed and self.ref["closed"]) else "open"
@@ -152,7 +156,7 @@ class BindHooks:
             phrase = self.phrase_of(n)
             if self.src == "w4":                         # the demo's visual object prototype (experiments/q4_template.py)
                 f = self._feats(obs)
-                sim = f @ self.proto
+                sim = f @ (self.gproto if (self.closed and self.gproto is not None) else self.proto)
                 k = np.argsort(sim)[::-1][: self.topk]
                 m = np.zeros(256, np.float32)
                 m[k] = 1.0
