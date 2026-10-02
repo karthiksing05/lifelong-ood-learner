@@ -567,7 +567,25 @@ def inst_par():
             f"{A['kept_forms']} and {B['kept_forms']} forms kept). The front bowl, which no stored prototype pointed at, rises to "
             f"{fb[0]} of 20 from {fb[1]} through another kitchen's prototype at its fourth peak. The gain sits in a few tasks, the "
             f"task-level intervals include zero, and one kept form loses at test (the chocolate pudding), so ten practice episodes "
-            f"sometimes keep the wrong unit.</p>" + codes_table() + confirm_par() + reach_par())
+            f"sometimes keep the wrong unit.</p>" + codes_table() + grammar_par() + confirm_par() + reach_par())
+
+
+def grammar_par():
+    g, q = row("q22_grammar", "offline"), row("q22_qual", "screen")
+    if not (g and q):
+        return ""
+    r = q["rows"]
+    return (f"<p>The kept codes hint at a grammar: practice kept the first peak for the back bowl and the last for the front bowl. "
+            f"Across all {g['tasks']} LIBERO-90 tasks whose instruction picks one of several same-type objects by a word, the named "
+            f"object holds a fixed place among its siblings in the policy's own image: back the top row, front the bottom row, middle "
+            f"the middle row, left the rightmost column and right the leftmost (the camera faces the robot). Learned for each word from "
+            f"the other tasks that use it, the rule picks the named object in {g['loo_hits']} of {g['loo_frames']} held-out first "
+            f"frames (exploratory, simulator segmentation for the analysis). Applied to the peaks of another task's prototype it "
+            f"needs no instance search: the back bowl {r['12:bindw4_rho0.7_approach_src2_qual_npk3']['success']} of 10 with a "
+            f"prototype from another kitchen (zero-shot {r['12:zs']['success']}), the middle bowl "
+            f"{r['14:bindw4_rho0.7_approach_src2_qual_npk3']['success']} (zero-shot {r['14:zs']['success']}); but when a distractor "
+            f"(the plate) is among the peaks the middle one is the wrong object "
+            f"({r['14:bindw4_rho0.7_approach_src2_qual_npk4']['success']} of 10). The rule is exact; its input, the peaks, is not.</p>")
 
 
 def reach_par():
