@@ -63,8 +63,9 @@ def main():
             o["prompt"] = clause
             obs.append(o)
         bank = adapt.PrefixBank(bk, obs)
-        idx, _ = D.chunk_indices(hi - lo, bk.H)                            # chunks end at the step's end (padded there)
-        full = D.pad_rows(D.to_rows(ep["actions"][lo:hi][idx], norm), bk.H)
+        idx, _ = D.chunk_indices(len(ep["actions"]), bk.H)                # a chunk near the step's end runs into the demo's real
+        full = D.pad_rows(D.to_rows(ep["actions"][idx[lo:hi]], norm), bk.H)  # next actions (its release); padding at the step's end
+        #                                                                   taught the first step never to open the gripper
         key = f"prim_{a.task}_{s}{a.tag}"
         params = add_node(banks, key, a.rank)
         hist = adapt.train(bk, state, key, params, bank, full, steps=a.steps, lr=a.lr, batch=a.batch,

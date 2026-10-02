@@ -175,14 +175,16 @@ def arm_spec(tid, arm, fold, demo=0):
     if arm.startswith("prims@"):                                        # plan C: prims@own[_bind] -- the task's own step primitives;
         import glob as _glob                                             # prims@<k0>+<k1>[_bind] -- step s uses task k_s's step-s
         spec_, _, fl = arm.split("@", 1)[1].partition("_")               # primitive ("x" = none: the policy itself)
-        if spec_ == "own":
-            ps = sorted(_glob.glob(os.path.join(R, f"prim_{tid}_[0-9].pt")))
+        if spec_ in ("own", "own2"):                                     # own2: the refit primitives (c0_fit --tag _v2)
+            ps = sorted(_glob.glob(os.path.join(R, f"prim_{tid}_[0-9]{'_v2' if spec_ == 'own2' else ''}.pt")))
             if not ps:
                 return None
-        else:
+        else:                                                            # <task>.<step>[.v2]
             ps = []
             for s_, k_ in enumerate(spec_.split("+")):
-                ps.append("none" if k_ == "x" else os.path.join(R, f"prim_{k_.split('.')[0]}_{k_.split('.')[1] if '.' in k_ else s_}.pt"))
+                f_ = k_.split(".")
+                ps.append("none" if k_ == "x" else os.path.join(
+                    R, f"prim_{f_[0]}_{f_[1] if len(f_) > 1 else s_}{'_' + f_[2] if len(f_) > 2 else ''}.pt"))
         bind = "&bind=1" if "bind" in fl else ""
         return (f"prims:{tid}?suite={SUITE_OF.get('suite', 'libero_90')}&paths={'+'.join(ps)}{bind}", "0", False)
     if arm == "seqzs":                                                   # sequencing alone: the instruction's two clauses in turn
