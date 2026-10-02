@@ -1,0 +1,145 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "experiments/q20_stream.py --confirm --record",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky1.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "q20_stream",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "96c7e666082c464327a1c81592964cfb2464d8f7",
+  "short": "96c7e666"
+ },
+ "keys": {},
+ "metrics": {
+  "confirmation": {
+   "A:13": {
+    "arm": "bindw4@rho0.7_approach_src17_inst0_npk4",
+    "form": 1,
+    "zs": 1
+   },
+   "A:14": {
+    "arm": "bindw4@rho0.7_approach_src17_inst2_npk4",
+    "form": 10,
+    "zs": 3
+   },
+   "A:43": {
+    "arm": "bindw4@rho0.7_approach_src37_inst3_npk4",
+    "form": 3,
+    "zs": 0
+   },
+   "B:12": {
+    "arm": "bindw4@rho0.7_approach_src30_inst0_npk4",
+    "form": 6,
+    "zs": 7
+   },
+   "B:13": {
+    "arm": "bindw4@rho0.7_approach_src30_inst3_npk4",
+    "form": 5,
+    "zs": 1
+   },
+   "B:15": {
+    "arm": "bindw4@rho0.7_approach_src30_inst1_npk4",
+    "form": 1,
+    "zs": 1
+   },
+   "B:43": {
+    "arm": "bindw4@rho0.7_approach_src43",
+    "form": 6,
+    "zs": 0
+   },
+   "B:70": {
+    "arm": "bindw4@rho0.7_approach_src69_inst0_npk4",
+    "form": 4,
+    "zs": 3
+   }
+  },
+  "hypotheses": {
+   "H1": {
+    "condition": "A",
+    "control": 113,
+    "diff": {
+     "diff": 0.010416666666666666,
+     "hi": 0.034375,
+     "hi90": 0.029166666666666667,
+     "lo": -0.004166666666666667,
+     "lo90": -0.0020833333333333333,
+     "n_pairs": 960,
+     "n_tasks": 48
+    },
+    "discordant": [
+     17,
+     7
+    ],
+    "holm_p": 0.10650382819585502,
+    "kept": {
+     "14": "bindw4@rho0.7_approach_src17_inst2_npk4",
+     "43": "bindw4@rho0.7_approach_src37_inst3_npk4"
+    },
+    "kept_forms": 2,
+    "n": 960,
+    "passes": false,
+    "sign_p": 0.06391465663909912,
+    "x": 123
+   },
+   "H2": {
+    "condition": "B",
+    "control": 113,
+    "diff": {
+     "diff": 0.013541666666666667,
+     "hi": 0.06041666666666667,
+     "hi90": 0.052083333333333336,
+     "lo": -0.028125,
+     "lo90": -0.022916666666666665,
+     "n_pairs": 960,
+     "n_tasks": 48
+    },
+    "discordant": [
+     26,
+     13
+    ],
+    "holm_p": 0.10650382819585502,
+    "kept": {
+     "13": "bindw4@rho0.7_approach_src30_inst3_npk4",
+     "43": "bindw4@rho0.7_approach_src43",
+     "70": "bindw4@rho0.7_approach_src69_inst0_npk4"
+    },
+    "kept_forms": 3,
+    "n": 960,
+    "passes": false,
+    "sign_p": 0.05325191409792751,
+    "x": 126
+   }
+  },
+  "missing": [],
+  "rule": "confirmation round, m3_prereg tag q20_confirm"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "q20_stream__libero_90__confirm__s5__96c7e666",
+ "schema": 1,
+ "script": "experiments/q20_stream.py",
+ "seconds": null,
+ "seed": 5,
+ "source_commit": null,
+ "started": "2026-10-02T18:45:57+00:00",
+ "stream": null,
+ "tag": "confirm"
+}

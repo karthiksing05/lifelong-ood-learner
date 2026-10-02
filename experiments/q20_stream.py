@@ -178,7 +178,53 @@ def read(record):
                             config={}, script="experiments/q20_stream.py", command=" ".join(sys.argv)))
 
 
+def confirm(record):
+    """Amendment q20_confirm: a kept form stays only if it again beats the policy on init states 10-19 (q20_confirm)."""
+    k = json.load(open(KEPT))
+    res, hyp, missing, conf = dict(rule="confirmation round, m3_prereg tag q20_confirm"), {}, [], {}
+    for h, n in (("H1", "A"), ("H2", "B")):
+        kept = {}
+        for t, a in k["kept"][n].items():
+            if a == "zs":
+                kept[t] = "zs"
+                continue
+            f, z = load("q20_confirm", t, a), load("q20_confirm", t, "zs")
+            if f is None or z is None:
+                missing.append(f"{n}:{t}")
+                continue
+            conf[f"{n}:{t}"] = dict(arm=a, form=int(sum(f.values())), zs=int(sum(z.values())))
+            kept[t] = a if sum(f.values()) > sum(z.values()) else "zs"
+        tab = {t: {"kept": load("q20_main", t, a), "zs": load("q20_main", t, "zs")} for t, a in kept.items()}
+        pairs = stats.paired(tab, "kept", "zs", list(tab))
+        d = stats.bootstrap_diff(pairs, B=10000)
+        d.pop("samples", None)
+        b, c = stats.discordant(pairs)
+        hyp[h] = dict(condition=n, x=int(sum(sum(v[0]) for v in pairs.values())), control=int(sum(sum(v[1]) for v in pairs.values())),
+                      n=int(sum(len(v[0]) for v in pairs.values())), diff=d, discordant=[int(b), int(c)],
+                      sign_p=float(stats.sign_test(b, c)), kept_forms=int(sum(v != "zs" for v in kept.values())),
+                      kept={t: a for t, a in kept.items() if a != "zs"})
+    order = sorted(hyp, key=lambda h: hyp[h]["sign_p"])
+    run = 0.0
+    for r_, h in enumerate(order):
+        run = max(run, min(1.0, (len(order) - r_) * hyp[h]["sign_p"]))
+        hyp[h]["holm_p"] = run
+        hyp[h]["passes"] = bool(hyp[h]["x"] > hyp[h]["control"] and run < 0.05)
+    res.update(hypotheses=hyp, confirmation=conf, missing=missing)
+    for h, v in hyp.items():
+        print(f"[q20c] {h} ({v['condition']}): {v['x']} vs {v['control']} of {v['n']}, discordant {v['discordant']}, sign p "
+              f"{v['sign_p']:.3g}, Holm {v['holm_p']:.3g} -> passes {v['passes']}; forms kept {v['kept_forms']} {v['kept']}", flush=True)
+    print("[q20c] confirmation", conf, flush=True)
+    json.dump(res, open(os.path.join(R, "q20_confirm_read.json"), "w"), indent=1)
+    if record and not missing:
+        from lifelong_ood import ledger
+        print(ledger.record("q20_stream", bench="libero_90", tag="confirm", seed=SEED, metrics=res,
+                            bytes=dict(experts=0, tree=0, codes=0, samples=0, teacher_copies=0, total=0),
+                            config={}, script="experiments/q20_stream.py", command=" ".join(sys.argv)))
+
+
 if __name__ == "__main__":
+    if "--confirm" in sys.argv:
+        confirm("--record" in sys.argv)
     if "--plan" in sys.argv:
         plan()
     if "--launch-accept" in sys.argv:
