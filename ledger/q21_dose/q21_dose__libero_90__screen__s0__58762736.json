@@ -1,0 +1,129 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "binding dose screen",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky1.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "q21_dose",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "587627364155e2a6c61e3209c1ca688fe382cc96",
+  "short": "58762736"
+ },
+ "keys": {},
+ "metrics": {
+  "best": {
+   "3": {
+    "arm": "bindw4_rho0.85_approach",
+    "bound": 9,
+    "n": 10,
+    "success": 0
+   },
+   "36": {
+    "arm": "bindw4_rho0.85_approach",
+    "bound": 0,
+    "n": 10,
+    "success": 0
+   },
+   "41": {
+    "arm": "bindw4_rho0.85_approach",
+    "bound": 0,
+    "n": 10,
+    "success": 0
+   },
+   "42": {
+    "arm": "bindw4_rho0.85_approach",
+    "bound": 0,
+    "n": 10,
+    "success": 0
+   },
+   "5": {
+    "arm": "bindw4_rho0.85_approach",
+    "bound": 2,
+    "n": 10,
+    "success": 0
+   }
+  },
+  "note": "exploratory screen, practice states 0-9, 10 episodes, noise seed 0: the binding form with the task's own demo prototype at attention mass 0.85 and 0.95 (0.7 in q9_w4screen) on 5 tasks where the prototype points at the object but binding failed",
+  "rows": {
+   "36:bindw4_rho0.85_approach": {
+    "bound": 0,
+    "n": 10,
+    "success": 0
+   },
+   "36:bindw4_rho0.95_approach": {
+    "bound": 0,
+    "n": 10,
+    "success": 0
+   },
+   "3:bindw4_rho0.85_approach": {
+    "bound": 9,
+    "n": 10,
+    "success": 0
+   },
+   "3:bindw4_rho0.95_approach": {
+    "bound": 6,
+    "n": 10,
+    "success": 0
+   },
+   "41:bindw4_rho0.85_approach": {
+    "bound": 0,
+    "n": 10,
+    "success": 0
+   },
+   "41:bindw4_rho0.95_approach": {
+    "bound": 0,
+    "n": 10,
+    "success": 0
+   },
+   "42:bindw4_rho0.85_approach": {
+    "bound": 0,
+    "n": 10,
+    "success": 0
+   },
+   "42:bindw4_rho0.95_approach": {
+    "bound": 0,
+    "n": 10,
+    "success": 0
+   },
+   "5:bindw4_rho0.85_approach": {
+    "bound": 2,
+    "n": 10,
+    "success": 0
+   },
+   "5:bindw4_rho0.95_approach": {
+    "bound": 5,
+    "n": 10,
+    "success": 0
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "q21_dose__libero_90__screen__s0__58762736",
+ "schema": 1,
+ "script": "(launch_pack q21_dose, arms bindw4@rho0.85_approach, bindw4@rho0.95_approach)",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-02T19:04:39+00:00",
+ "stream": null,
+ "tag": "screen"
+}
