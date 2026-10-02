@@ -91,6 +91,7 @@ class BindHooks:
         self.closed = False
         self.placebo = None
         self.started = False                            # the server's warm-up calls (before any episode) run unbiased
+        self.prompt = None
         self.approach_only = phase == "approach"
         self.log = []                                   # per query: (phase, referent, mass before, mass after)
 
@@ -172,6 +173,13 @@ class BindHooks:
             from openpi.models import tokenizer as _t
             self._tokenizer = _t.PaligemmaTokenizer(200)
         return self._tokenizer
+
+    def rewrite(self, obs, meta):
+        """An optional prompt (e.g. the base task prototype's instruction when the binding is split with a role swap)."""
+        if self.prompt:
+            obs = dict(obs)
+            obs["prompt"] = self.prompt
+        return obs
 
     # ── the policy's own chunk, with the bias ──────────────────────────────────────────────────────────────────────
     def __call__(self, obs, pre, meta):

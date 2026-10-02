@@ -1,0 +1,114 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/ftoken_59_s1.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 18432,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 18432,
+  "tree": 0
+ },
+ "command": "experiments/f4_fold.py --task 59 --source rollouts --rec results/robot/b_s1_practice_59_bind_rho0.7_all_approach_rec --tag _s1",
+ "config": {
+  "batch": 16,
+  "demo": 0,
+  "lr": 0.01,
+  "max_frames": 400,
+  "n_tokens": 1,
+  "rec": "results/robot/b_s1_practice_59_bind_rho0.7_all_approach_rec",
+  "seed": 0,
+  "source": "rollouts",
+  "steps": 600,
+  "stride": 5,
+  "tag": "_s1",
+  "task": "59"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "ig-88.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3998622",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "f4_fold",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "d673c8bce9fca84e2339dc379ac6e7e628cb4736",
+  "short": "d673c8bc"
+ },
+ "keys": {
+  "task": "59"
+ },
+ "metrics": {
+  "curve": {
+   "anchor": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "loss": [
+    0.022856200113892555,
+    0.02325110137462616,
+    0.03570893034338951,
+    0.03890498727560043,
+    0.024582941085100174,
+    0.030568450689315796
+   ],
+   "step": [
+    100,
+    200,
+    300,
+    400,
+    500,
+    600
+   ]
+  },
+  "demo_episode": [
+   "results/robot/b_s1_practice_59_bind_rho0.7_all_approach_rec/task59_trial10.npz",
+   "results/robot/b_s1_practice_59_bind_rho0.7_all_approach_rec/task59_trial11.npz",
+   "results/robot/b_s1_practice_59_bind_rho0.7_all_approach_rec/task59_trial12.npz",
+   "results/robot/b_s1_practice_59_bind_rho0.7_all_approach_rec/task59_trial13.npz",
+   "results/robot/b_s1_practice_59_bind_rho0.7_all_approach_rec/task59_trial14.npz",
+   "results/robot/b_s1_practice_59_bind_rho0.7_all_approach_rec/task59_trial17.npz",
+   "results/robot/b_s1_practice_59_bind_rho0.7_all_approach_rec/task59_trial18.npz",
+   "results/robot/b_s1_practice_59_bind_rho0.7_all_approach_rec/task59_trial19.npz",
+   "results/robot/b_s1_practice_59_bind_rho0.7_all_approach_rec/task59_trial20.npz",
+   "results/robot/b_s1_practice_59_bind_rho0.7_all_approach_rec/task59_trial22.npz",
+   "results/robot/b_s1_practice_59_bind_rho0.7_all_approach_rec/task59_trial23.npz",
+   "results/robot/b_s1_practice_59_bind_rho0.7_all_approach_rec/task59_trial24.npz",
+   "results/robot/b_s1_practice_59_bind_rho0.7_all_approach_rec/task59_trial25.npz",
+   "results/robot/b_s1_practice_59_bind_rho0.7_all_approach_rec/task59_trial26.npz",
+   "results/robot/b_s1_practice_59_bind_rho0.7_all_approach_rec/task59_trial27.npz",
+   "results/robot/b_s1_practice_59_bind_rho0.7_all_approach_rec/task59_trial28.npz",
+   "results/robot/b_s1_practice_59_bind_rho0.7_all_approach_rec/task59_trial29.npz"
+  ],
+  "final_loss": 0.030568450689315796,
+  "first_loss": 0.022856200113892555,
+  "n_frames": 400,
+  "n_tokens": 1,
+  "source": "rollouts",
+  "task": "59",
+  "text": "pick up the tomato sauce and put it in the tray",
+  "train_secs": 55.72943162918091
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "f4_fold__libero_90__token_rollouts_s1__task-59__s0__d673c8bc",
+ "schema": 1,
+ "script": "experiments/f4_fold.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-02T00:42:36+00:00",
+ "stream": null,
+ "tag": "token_rollouts_s1"
+}

@@ -297,7 +297,7 @@ def main():
                     "deployable editor would perform)")
     ap.add_argument("--swap-cams", default="both", choices=("both", "agent"), help="render swap: 'agent' re-renders the WRIST view "
                     "real at each query (the closed-loop grasp sees the true object)")
-    ap.add_argument("--swap-phase", default="all", choices=("all", "open"), help="render swap: 'open' keeps the swap only while the "
+    ap.add_argument("--swap-phase", default="all", choices=("all", "open", "closed"), help="render swap: 'open' keeps the swap only while the "
                     "last commanded gripper is open (approach), the real scene once it closes")
     ap.add_argument("--bind", default="", choices=("", "track", "stop"), help="track the first movable object displaced > 3 cm "
                     "while the commanded gripper is closed (episode field 'bound'); 'stop' ends the episode there")
@@ -341,8 +341,9 @@ def main():
             swapped, rswap = False, None
             if a.swap and a.swap_mode == "render":
                 rswap = RenderSwap(env, [tuple(p.split(":")) for p in a.swap.split("+") if p])
-                rswap.set(True)
-                swapped = True
+                if a.swap_phase != "closed":                 # the episode starts with the gripper open
+                    rswap.set(True)
+                    swapped = True
             plan = collections.deque()
             t, calls, done, frames, t0 = 0, 0, False, [], time.time()
             tables = seg_tables(env) if (a.seg or a.swap) else None
@@ -372,7 +373,8 @@ def main():
                     img = np.ascontiguousarray(obs["agentview_image"][::-1, ::-1])
                     wimg = np.ascontiguousarray(obs["robot0_eye_in_hand_image"][::-1, ::-1])
                     if pairs and not plan and a.swap_mode == "render":
-                        want = not (a.swap_phase == "open" and len(rec_act) and rec_act[-1][6] > 0)
+                        closed_now = bool(len(rec_act) and rec_act[-1][6] > 0)
+                        want = {"all": True, "open": not closed_now, "closed": closed_now}[a.swap_phase]
                         if want != swapped:                  # phase-gated swap: the meshes follow the commanded gripper
                             rswap.set(want)
                             swapped = want

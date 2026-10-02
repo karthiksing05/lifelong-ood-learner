@@ -77,7 +77,7 @@ def table(head, rows, caption, num_from=1, cls=""):
 
 
 def video(name):
-    m = MEDIA["overhaul"][name]
+    m = MEDIA["overhaul"].get(name) or MEDIA.get("bind", {})[name]
     return (f'<video src="media/{m["file"]}" poster="media/{m["file"][:-4]}.jpg" controls playsinline muted preload="metadata">'
             f'</video>')
 
@@ -213,7 +213,11 @@ giving the new object the prototype's object's appearance or by raising the acti
 training contrasted object shapes, the role swap rebinds the routine (milk and orange juice picked up first in {of10('52:role')} and
 {of10('53:role')} of 10 episodes, against {of10('52:zs')} and {of10('53:zs')}); where the routine is tied to a position, only the
 attention pointer redirects it. The policy's own successes, recorded with the real scene, then fold into an 18.4 KB key-value token
-with every weight frozen, after which the task's own instruction suffices.</p>"""
+with every weight frozen, after which the task's own instruction suffices. In the pre-registered read on start states nobody tuned
+on, practice found a form for 4 of the 14 tasks with a role code; there the tokens alone succeed
+{scheme['hypotheses']['H1']['x']} of {scheme['hypotheses']['H1']['n']} times against {scheme['hypotheses']['H1']['control']} for the frozen
+policy, with no demonstration and no simulator state at test. The tokens do not transfer to another room, and 10 of the 14 tasks
+stay out of reach.</p>"""
 
 P_INTRO = f"""
 <p>A trained robot policy already knows how to reach, grasp, carry and place. When it fails a new task in a familiar room, the
@@ -348,7 +352,13 @@ the tray in {of10('59:bind_rho0.7_all_approach', 'success', q2f)} of 10 episodes
 frying pan in a moka pot's role, stay out of reach of both.</p>
 {(fig(video('bd_53_1'), "Pick up the orange juice and put it in the basket. Left: zero-shot, the policy takes the milk. Middle: the role code, "
      "as the policy sees it (the orange juice wears the soup can's mesh; task 50's instruction). Right: the folded token, the task's own "
-     "instruction and the real scene.", wide=True) if 'bind' in MEDIA and 'bd_53_1' in MEDIA['bind'] else '')}"""
+     "instruction and the real scene.", wide=True) if 'bind' in MEDIA and 'bd_53_1' in MEDIA['bind'] else '')}
+{(fig(video('bd_59_0'), "Pick up the tomato sauce and put it in the tray (living room 3). Left: zero-shot, the policy takes the alphabet soup. "
+     "Right: the attention pointer on the tomato sauce while the gripper is open; the policy does the rest.", wide=True)
+  if 'bind' in MEDIA and 'bd_59_0' in MEDIA['bind'] else '')}
+{(fig(video('bd_48_0'), "Living room 1, the ketchup. Left: the role swap; the routine goes to the alphabet soup's place, where the ketchup's "
+     "appearance now stands. Right: the attention pointer; the policy takes the ketchup and holds it, but the room's carry never starts.",
+     wide=True) if 'bind' in MEDIA and 'bd_48_0' in MEDIA['bind'] else '')}"""
 
 P_FOLD = f"""
 <p>The role episodes that succeeded on practice states 10-29 fit an {roletok / 1e3:.1f} KB token per task. Given only its own

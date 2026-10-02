@@ -491,7 +491,10 @@
   }
  },
  "notes": null,
- "retired": null,
+ "retired": {
+  "reason": "superseded by the 23b4143a row of the same read (adds the split-binding and remaining approach-only arms)",
+  "when": "2026-10-02T01:32:19+00:00"
+ },
  "run_id": "b2_q2__libero_90__b_q2full__s0__b923620a",
  "schema": 1,
  "script": "experiments/b2_q2_read.py",

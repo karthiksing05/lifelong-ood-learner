@@ -364,7 +364,16 @@ def main():
                              cams=kv.get("cams", "agent"), ctrl=kv.get("ctrl", "none"),
                              phase=("approach" if kv.get("phase") == "approach" else kv.get("phase", "1") == "1"),
                              seed=int(kv.get("seed", 0)))
-        logging.info(f"bind {task.suite}:{task.index} referents {hooks.ref} {hooks.cfg} src {hooks.src} ctrl {hooks.ctrl}")
+        if kv.get("prompt") == "base":                     # the role code's base instruction (binding split with a role swap)
+            import glob as _glob
+            import json as _json
+            from lifelong_ood.policy import roles as RO
+            zs = {}
+            for f in _glob.glob(os.path.join(ROOT, "ledger", "zeroshot90", "*.json")):
+                zs.update({int(k): v["success_rate"] for k, v in _json.load(open(f))["metrics"]["tasks"].items()})
+            hooks.prompt = RO.role_code(task, tasks, zs, _json.load(open(os.path.join(ROOT, "results", "robot",
+                                                                                     "f1_bind_libero_90_binding.json"))))["prompt"]
+        logging.info(f"bind {task.suite}:{task.index} referents {hooks.ref} {hooks.cfg} src {hooks.src} ctrl {hooks.ctrl} prompt {hooks.prompt}")
     elif a.mode.startswith("role:"):
         # role:<task>?suite=libero_90&cams=agent[+wrist] -- the DEPLOYABLE role editor (lifelong_ood/policy/role_hooks.py): the base
         # task prototype's instruction, the new task's object and the base's object exchanged in the policy's images by

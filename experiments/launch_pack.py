@@ -166,6 +166,20 @@ def arm_spec(tid, arm, fold, demo=0):
         if "open" in var:
             extra["SWAP_PHASE"] = "open"
         return ("promptx:" + code["prompt"].replace(" ", "_"), "0", False, extra)
+    if arm == "bindrole":                                                # attention pointer while open + role swap while closed
+        import glob as _glob                                             # (base instruction): the approach and the carry bound apart
+        from lifelong_ood.policy import factors as F
+        from lifelong_ood.policy import roles as RO
+        ts = F.load()
+        t = next(x for x in ts if x.suite == SUITE_OF.get("suite", "libero_90") and x.index == tid)
+        zs = {}
+        for f in _glob.glob(os.path.join(ROOT, "ledger", "zeroshot90", "*.json")):
+            zs.update({int(k): v["success_rate"] for k, v in json.load(open(f))["metrics"]["tasks"].items()})
+        code = RO.role_code(t, ts, zs, json.load(open(os.path.join(R, "f1_bind_libero_90_binding.json"))))
+        if code is None:
+            return None
+        return (f"bind:{tid}?suite={SUITE_OF.get('suite', 'libero_90')}&src=oracle&rho=0.7&band=all&phase=approach&prompt=base", "0", False,
+                {"SWAP": "+".join(f"{x}:{y}" for x, y in code["pairs"]), "SWAP_MODE": "render", "SWAP_PHASE": "closed"})
     if arm.startswith(("roledet@", "roledetplacebo@")):                 # the deployable role editor (OWLv2 boxes): roledet@agent
         cams = arm.split("@", 1)[1]
         ctrl = "&ctrl=placebo" if arm.startswith("roledetplacebo") else ""
