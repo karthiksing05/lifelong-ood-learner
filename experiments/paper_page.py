@@ -42,6 +42,13 @@ override = row("p0_audit", "guide_override")["pi05_libero"]
 sota = row("p1_bindings", "sota")
 pi0 = row("p1_bindings", "pi0")
 amend = row("p1_bindings", "sota_amend1")
+q2m, q2ma = row("b2_q2", "b_q2mini")["rows"], row("b2_q2", "b_q2mini")["arms"]
+q2f, q2fa = row("b2_q2", "b_q2full")["rows"], row("b2_q2", "b_q2full")["arms"]
+w1g, w3g = row("b1_where", "read_all")["groups"], row("b1_where", "read_w3center")["groups"]
+steer = row("b2_steer", "offline_class_a")["groups"]["class_a"]
+scheme = row("b5_scheme", "main")
+roletok = [r for r in L.load("f4_fold", tag="token_rollouts_role") if not r.get("retired")][-1]["bytes"]["total"]
+of10 = lambda key, f="BA", src=None: int(round(10 * (src or q2m)[key][f]))                     # noqa: E731
 token_bytes = [r for r in L.load("f4_fold", tag="token_demo") if not r.get("retired")][-1]["bytes"]["total"]
 lang = {int(k): v["language"] for k, v in json.load(open(os.path.join(R, "f0_coverage.json")))["tasks"].items()}   # the read's artifact
 commit = subprocess.run(["git", "rev-parse", "--short", "HEAD"], capture_output=True, text=True, cwd=ROOT).stdout.strip()
@@ -196,16 +203,17 @@ ex3 = library["held_out"]["3"]
 cap = capacity["totals"]
 
 ABSTRACT = f"""
-<p>A vision-language-action policy fine-tuned on forty tasks fails almost every new task in the same rooms: pi0.5 succeeds {Z['control']}
-times in {Z['n']} episodes on 21 held-out LIBERO-90 tasks. We ask whether such a policy can take on tasks it has never seen, given
-only the task's instruction and scene and no demonstration, by recombining what it already holds: the policy itself generates every
-action, a few bytes are stored per task, and nothing it learned changes. First we find why it fails. Its successes follow whether its
-training instructions named a task's factors in a similar scene (AUC {F['rule_family_named']['auc']:.2f}), and in a scene it was trained
-in, it carries out that scene's trained routine whatever object the instruction names. Then we test <b>composition</b>: summing the
-policy's own predictions under prompts it does read, after the rule that restores composition in image diffusion models. It works
-where a factor is faintly readable (a ketchup task goes from 0 to {zmain['per_task']['48']['f']} of 20) but does not pass its
-pre-registered test across tasks ({H1['x']} against {H1['control']} of {H1['n']}). Composition over prototypes that carry where an
-object is, and folding what the policy learns from its own attempts, are next.</p>"""
+<p>A vision-language-action policy fine-tuned on forty tasks fails almost every new task in the same rooms. We ask whether such a
+policy can take on tasks it has never seen, given only the task's instruction and scene and no demonstration, by recombining what
+it already holds. The policy generates every action, a few bytes are stored per task, and nothing it learned changes. In a familiar
+room pi0.5 carries out the room's trained routine whatever object the instruction names, so a new task usually differs from a task
+it performs only in which object fills a role. We code such a task as that <b>task prototype plus a role map</b>, about 40 bytes
+("task 50 with the milk in the alphabet soup's role"), and supply the binding the policy cannot read from the word, either by
+giving the new object the prototype's object's appearance or by raising the action expert's attention on it. Where the scene's
+training contrasted object shapes, the role swap rebinds the routine (milk and orange juice picked up first in {of10('52:role')} and
+{of10('53:role')} of 10 episodes, against {of10('52:zs')} and {of10('53:zs')}); where the routine is tied to a position, only the
+attention pointer redirects it. The policy's own successes, recorded with the real scene, then fold into an 18.4 KB key-value token
+with every weight frozen, after which the task's own instruction suffices.</p>"""
 
 P_INTRO = f"""
 <p>A trained robot policy already knows how to reach, grasp, carry and place. When it fails a new task in a familiar room, the
@@ -223,8 +231,9 @@ factor readable; consolidate. Cost then grows with the vocabulary of factors, no
 overwritten.</p></div>
 <p class="contrib"><b>What this report contributes.</b> (1) A diagnosis of why the policy fails new tasks: reading, not motor skill,
 for most of them (Section 2). (2) A benchmark that tests the thesis: tasks the policy has never seen, with no demonstration of them.
-(3) Composition of a flow policy's own conditionals over task prototypes, with the policy generating, and its pre-registered test
-(Section 4.1).</p>"""
+(3) Role codes: a new task as a task prototype the policy performs with one object slot rebound, and two ways to inject the
+binding with the policy generating (Sections 3.3, 4.3). (4) Folding the policy's own successes into a token, with no demonstration
+(Section 4.4), and the scheme's pre-registered read on start states nobody tuned on (Section 4.5).</p>"""
 
 P_WHY = f"""
 <h3 id="s2-1">2.1 Success follows what the training instructions named</h3>
@@ -266,17 +275,23 @@ prototype covers are listed; they are where a fold will be needed.</p>
        + [[esc(ex3['language']) if i == 0 else "", esc(s['language']), esc(", ".join(c[0] for c in s['covers']))] for i, s in enumerate(ex3['selected'])]
        + [["", "<em>not covered</em>", esc("; ".join(fmt_factor(u) for u in ex3['uncovered']))]],
        "Two decompositions read from the task-prototype library (results/robot/task_library.json).", num_from=9)}
-<h3 id="s3-3">3.3 Compose: the policy's own predictions, summed</h3>
-<p>At every step of the policy's sampler, its velocities under several prompts are combined with coefficients that sum to one:</p>
-<p class="eq"><var>v</var> = <var>v</var>(<var>o</var>, base) + <var>λ</var> · [ <var>v</var>(<var>o</var>, base with the task's object) − <var>v</var>(<var>o</var>, base) ]</p>
-<p>The base is a task prototype the policy reads in this room with the task's relation. The bracket is a minimal pair that differs only
-in the object, so it isolates the object factor at this observation. It acts while the gripper is open and is released after the
-grasp. Every term is the policy's own prediction, so the policy keeps generating; with one prompt the sampler is the policy bit for bit.
-A task's code is its prompt ids, weights and phases: 9 bytes.</p>
+<h3 id="s3-3">3.3 Compose: a task prototype with its object slot rebound</h3>
+<p>Most failures in a familiar room come from a task that differs from one the policy performs only in which object fills a role.
+The ROLE CODE of such a task names the performed task (the base: same scene, same goal with the moved object replaced) and the
+object pair. The policy runs the base's own conditional; composition must supply the binding of the base's object slot to the new
+object, which the policy cannot read from the word. Two injections bind it, and in both the policy produces every action:</p>
+<ul><li><b>Role swap.</b> The new object and the base's object exchange appearance in what the policy sees, while its own commanded
+gripper is open; the simulator's renderer exchanges their meshes (an oracle of what an image editor would do).</li>
+<li><b>Attention pointer.</b> The action expert's attention to the image tokens over the new object is raised to a target mass at every
+layer and Euler step, while the gripper is open. Zero bias is the policy bit for bit.</li></ul>
+<p>Practice on a few start states decides which injection a task keeps. Prompt composition, summing the policy's velocities under
+several prompts by the rule that restores composition in image diffusion models, remains available: it amplifies a factor the
+policy reads faintly (Section 4.1).</p>
 <h3 id="s3-4">3.4 Fold: from the policy's own attempts</h3>
-<p>Where composition reads a task only some of the time, the policy's own successful attempts are folded into a small unit that makes
-the task readable from one prompt: a factor token, one key and one value per layer appended to the prompt's cache, with every policy
-weight frozen. No demonstration enters. A token counts as a factor only if it carries to later tasks that share it.</p>
+<p>The composed episodes that succeed are recorded with the REAL scene and relabelled with the task's own instruction; they fit a
+factor token, one key and one value per layer appended to the prompt's cache, with every policy weight frozen (18.4 KB). The token
+then practises alone and is refit on both rounds' successes. At test the policy receives only the instruction and the token: no
+injection and no simulator state. No demonstration enters at any point.</p>
 <h3 id="s3-5">3.5 Consolidate</h3>
 <p>Tokens of one factor merge across arrivals; accrued tokens and any larger folds are distilled into one shared unit and deleted,
 trading bytes for drift on old tasks.</p>
@@ -299,10 +314,74 @@ alone and {pp['placebo_4']} for a placebo pair of unrelated instructions), so th
 <p>Composition is therefore real but narrow: it amplifies a factor the policy reads faintly, and cannot create one it does not
 read.</p>"""
 
+P_WHERE = f"""
+<p>Binding needs to know where the named object is. We asked the policy's own vision-language backbone first: the attention from the
+object's words to the image tokens, layer by layer, scored by whether its peak token lies on the object (simulator segmentation). The
+pre-registered gate asked for 0.8 on LIBERO-Goal and 0.6 on the failing tasks; the best layer reaches
+{w1g['validity']['w1_by_layer']['10']:.2f} and {w1g['class_a']['w1_by_layer']['10']:.2f}, and an open-vocabulary detector (OWLv2)
+{w3g['validity']['w3']:.2f} and {w3g['class_a']['w3']:.2f}. The detector finds kitchen objects but never the alphabet soup. Both fail, so
+the reads below take where from the simulator's segmentation and renderer: an oracle, used during practice only for the token arm.</p>"""
+
+def bind_rows():
+    out = []
+    for t, name in ((48, "ketchup → basket (living room 1)"), (49, "tomato sauce → basket (living room 1)"),
+                    (52, "milk → basket (living room 2)"), (53, "orange juice → basket (living room 2)")):
+        out.append([esc(name), f"{of10(f'{t}:zs')}", f"{of10(f'{t}:bind_rho0.7_all')}", f"{of10(f'{t}:role')}"])
+    return out
+
+
+P_BIND = f"""
+<p>We first checked offline that the attention pointer acts: on the failing tasks it turns the policy's first chunk toward the biased
+object (contrast cosine {min(v['CC'] for v in steer['configs'].values()):.2f} to {max(v['CC'] for v in steer['configs'].values()):.2f}).
+Online, on practice start states, we counted which object the policy picks up first.</p>
+{table(["task", "zero-shot", "attention pointer", "role swap"], bind_rows(),
+       "Episodes (of 10) in which the named object is the first picked up; practice states 0-9; oracle where (ledger b2_q2, tag b_q2mini; "
+       "pre-registered).", num_from=1)}
+<p>The two injections bind in different scenes. Living room 2 was trained on two instructions over cans and boxes; its routine keys
+on shape, and giving the milk or the orange juice the soup can's appearance makes the policy pick them up. Showing the real object once
+it is held raises success to {q2m['52:role_open']['success']:.1f} and {q2m['53:role_open']['success']:.1f} (exploratory). An unnamed carton given
+the can's appearance is picked up too ({q2m['52:roleshape']['BA_placebo']:.1f} and {q2m['53:roleshape']['BA_placebo']:.1f}), an unnamed can is
+not: the routine follows shape, not label. Living room 1 was trained on one instruction; its routine goes to the soup's position
+whatever stands there, and only the attention pointer moves it to the ketchup. Biasing attention for whole episodes breaks grasping
+on most tasks (mean success {q2fa['bind_rho0.7_all']['success_mean']:.2f}); biasing it only during the approach puts the tomato sauce in
+the tray in {of10('59:bind_rho0.7_all_approach', 'success', q2f)} of 10 episodes (exploratory). Mugs that differ only in colour, and a
+frying pan in a moka pot's role, stay out of reach of both.</p>
+{(fig(video('bd_53_1'), "Pick up the orange juice and put it in the basket. Left: zero-shot, the policy takes the milk. Middle: the role code, "
+     "as the policy sees it (the orange juice wears the soup can's mesh; task 50's instruction). Right: the folded token, the task's own "
+     "instruction and the real scene.", wide=True) if 'bind' in MEDIA and 'bd_53_1' in MEDIA['bind'] else '')}"""
+
 P_FOLD = f"""
-{pending("Folding from the policy's own attempts", "Practice episodes of a composition that sometimes succeeds are folded into a factor "
-         "token (self-distillation, no demonstration); the token is then scored from one prompt and reused by later tasks that share "
-         "its factor.")}"""
+<p>The role episodes that succeeded on practice states 10-29 fit an {roletok / 1e3:.1f} KB token per task. Given only its own
+instruction, the policy then picks up the orange juice first in {of10('53:ftoken_self_role')} of 10 episodes and succeeds
+{q2m['53:ftoken_self_role']['success']:.1f} of the time (zero-shot: {of10('53:zs')}, 0); the milk {of10('52:ftoken_self_role')} of 10 and
+{q2m['52:ftoken_self_role']['success']:.1f} (exploratory, practice states 0-9). The token reads a word the policy could not read before,
+learned from its own attempts.</p>"""
+
+
+def main_read():
+    if not scheme:
+        return pending("The scheme's pre-registered read", "Init states 30-49 of the 14 tasks with a role code: zero-shot against the form "
+                       "practice chose and against the folded token alone; the tomato-sauce token from living room 3 reused in living room 1.")
+    h = scheme["hypotheses"]
+    rows = []
+    for k, lab in (("H2", "composed form (oracle) vs zero-shot"), ("H1", "token alone vs zero-shot"), ("H4", "transferred token vs zero-shot")):
+        if k in h:
+            v = h[k]
+            rows.append([k, esc(lab), f"{v['x']} vs {v['control']} of {v['n']}", f"{v['diff']['diff']:+.2f}",
+                         f"{v['sign_p']:.2g}", "passes" if v["passes"] else "fails"])
+    pt = scheme["per_task"]
+    trows = [[esc(lang.get(int(t), t)), str(v.get('zs', '')), str(v.get('form', '–')), str(v.get('token', '–'))]
+             for t, v in pt.items() if 'form' in v]
+    return (table(["", "comparison", "successes", "difference", "sign test p", "verdict"], rows,
+                  "The scheme's pre-registered read on init states 30-49 (ledger b5_scheme, tag main; m3_prereg tag b_scheme_main).", num_from=2)
+            + table(["task", "zero-shot", "composed form", "token alone"], trows, "Successes of 20 on the tasks practice gave a form.", num_from=1))
+
+
+P_MAIN = f"""
+<p>Fixed in advance: on practice states 0-9 each of the 14 tasks with a role code keeps the injection with the higher success (none
+if both stay below 0.2); that form practises on states 10-29, its successes fit a token, the token practises alone, and is refit on
+both rounds. Scoring uses states 30-49, which no step tuned on.</p>
+{main_read()}"""
 
 P_STREAM = f"""
 {pending("A stream of tasks", "The 50 LIBERO-90 tasks pi0.5 fails arrive one at a time in two mirrored orders. Each is decomposed into task "
@@ -313,23 +392,26 @@ P_STREAM = f"""
 
 P_LIMITS = """
 <ul>
-<li>Composition reads only what the policy reads somewhere; an object it never had to tell apart from another stays unreadable.</li>
-<li>A base must exist: a task prototype the policy reads in the task's room with the task's relation.</li>
-<li>A task that needs a motion no prototype makes is out of reach of composition alone.</li>
+<li>Where the named object is comes from the simulator: the policy's own grounding and an open-vocabulary detector both fall short of
+the pre-registered gate. The token arm uses it only during practice.</li>
+<li>A role swap binds only where the scene's routine keys on appearance (here, shape); a routine tied to a position needs the attention
+pointer, and objects that differ only in colour, or whose grasps differ, stay out of reach.</li>
+<li>A base must exist: a task the policy performs in the same scene with the same goal up to the moved object. 14 of the 71 failing
+LIBERO-90 tasks have one.</li>
 <li>Simulation only (LIBERO-90), one policy so far (pi0.5).</li>
 </ul>"""
 
 P_VER = f"""
 <p>Every read quoted as a test was pre-registered in <code>ledger/m3_prereg</code> before its first episode (tags zc_probe, zc_bind, zc_pilot,
-zc_main); reads marked exploratory were not. Every number on this page is read from <code>ledger/</code> at commit
+zc_main, b_bind_q1, b_bind_q2, b_bind_q2_amend1, b_scheme_main); reads marked exploratory were not. Every number on this page is read from <code>ledger/</code> at commit
 <code>{esc(commit)}</code> by <code>experiments/paper_page.py</code>, and the README's copies are re-derived by
 <code>experiments/audit_numbers.py</code>. Episodes are paired by task and init state; intervals come from a two-level bootstrap, tests from
 the exact sign test, with Holm correction within a read. One pre-registered probe failed its own validity gate and is not used: the
 policy's first chunk points at the named object only {probe['validity']['PA']:.2f} of the time even in LIBERO-Goal.</p>"""
 
 NAV = [("abstract", "", "Abstract"), ("s1", "1", "Introduction"), ("s2", "2", "Why the policy fails new tasks"),
-       ("s3", "3", "Method"), ("s4", "4", "Experiments"), ("s4-1", "4.1", "Composition"), ("s4-2", "4.2", "Folding"),
-       ("s4-3", "4.3", "Streams and other policies"), ("s6", "5", "Limitations"),
+       ("s3", "3", "Method"), ("s4", "4", "Experiments"), ("s4-1", "4.1", "Prompt composition"), ("s4-2", "4.2", "Where"),
+       ("s4-3", "4.3", "Binding"), ("s4-4", "4.4", "Folding"), ("s4-5", "4.5", "Main read"), ("s4-6", "4.6", "Streams, other policies"), ("s6", "5", "Limitations"),
        ("s7", "", "Verification")]
 
 CSS = r"""
@@ -423,9 +505,12 @@ HTML = f"""<title>Read, Compose, Fold</title>
 <p>Setup: pi0.5 (openpi's <code>pi05_libero</code>), frozen. 21 held-out LIBERO-90 tasks the policy fails, no demonstration of any of them,
 20 scoring episodes per task at init states 30-49 that no method trained or practised on, the same states and noise
 for every arm.</p>
-<section id="s4-1"><h3 style="font-size:20px">4.1 Composition</h3>{P_COMPOSE}</section>
-<section id="s4-2"><h3 style="font-size:20px">4.2 Folding</h3>{P_FOLD}</section>
-<section id="s4-3"><h3 style="font-size:20px">4.3 Streams and other policies</h3>{P_STREAM}</section>
+<section id="s4-1"><h3 style="font-size:20px">4.1 Prompt composition</h3>{P_COMPOSE}</section>
+<section id="s4-2"><h3 style="font-size:20px">4.2 Where an unread object is</h3>{P_WHERE}</section>
+<section id="s4-3"><h3 style="font-size:20px">4.3 Binding a task prototype's slot</h3>{P_BIND}</section>
+<section id="s4-4"><h3 style="font-size:20px">4.4 Folding the policy's own successes</h3>{P_FOLD}</section>
+<section id="s4-5"><h3 style="font-size:20px">4.5 The scheme on unseen start states</h3>{P_MAIN}</section>
+<section id="s4-6"><h3 style="font-size:20px">4.6 Streams and other policies</h3>{P_STREAM}</section>
 </section>
 <section id="s6"><h2><span class="sn">5</span>Limitations</h2>{P_LIMITS}</section>
 <section id="s7"><h2>Verification</h2>{P_VER}</section>

@@ -301,8 +301,14 @@ def main():
     queue.sort(key=lambda x: x[1] is not None)
     for i in range(0, len(queue), a.per):
         grp = queue[i:i + a.per]
-        n_pack += 1
-        path = os.path.join(R, ".packs", f"p_{n_pack:04d}.tsv")
+        while True:                                  # claim the next free name atomically (concurrent launches never share one)
+            n_pack += 1
+            path = os.path.join(R, ".packs", f"p_{n_pack:04d}.tsv")
+            try:
+                os.close(os.open(path, os.O_CREAT | os.O_EXCL | os.O_WRONLY))
+                break
+            except FileExistsError:
+                continue
         with open(path, "w") as f:
             for sp, _ in grp:
                 f.write("\t".join(f"{k}={v}" for k, v in sp.items()) + "\n")

@@ -372,6 +372,20 @@ def main():
             if r:
                 r["language"] = lang.get(t)
                 meta["overhaul"][name] = r
+    if "bind" in only:                                       # the Bind plan (no demonstration): role, attention, folded token
+        BD = [("bd_53_1", 53, 1, [("f1_bind_53_zeroshot", "pi0.5, zero-shot", "asked for the orange juice"),
+                                  ("b_q2mini_53_role_open", "Role rebinding", "what the policy sees: task 50's routine"),
+                                  ("b_q2mini_53_ftoken_self_role", "Folded token", "own instruction + 18.4 KB")]),
+              ("bd_59_0", 59, 0, [("f1_bind_59_zeroshot", "pi0.5, zero-shot", "asked for the tomato sauce"),
+                                  ("b_q2full_59_bind_rho0.7_all_approach", "Attention binding", "approach only (oracle where)")]),
+              ("bd_48_0", 48, 0, [("b_q2mini_48_role", "Role swap, living room 1", "the routine goes to the soup's place"),
+                                  ("b_q2full_48_bind_rho0.7_all_approach", "Attention binding", "takes the ketchup, never carries it")])]
+        meta["bind"] = {}
+        for name, t, k, specs in BD:
+            r = side_by_side(specs, f"{name}.mp4", t, k)
+            if r:
+                r["language"] = lang.get(t)
+                meta["bind"][name] = r
     if "exec" in only:
         meta["proto_exec"] = proto_exec_video()
     json.dump(meta, open(os.path.join(OUT, "media.json"), "w"), indent=1)
