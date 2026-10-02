@@ -1,0 +1,225 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 81920,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 81920,
+  "tree": 0
+ },
+ "command": "experiments/q13_read.py --record",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky1.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "q13_main",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "5d237c571cfb00c7b18f343082c286c815747b22",
+  "short": "5d237c57"
+ },
+ "keys": {},
+ "metrics": {
+  "acceptance": {
+   "12": {
+    "form": 5,
+    "token": 9,
+    "zs": 4
+   },
+   "13": {
+    "form": 5,
+    "token": 0,
+    "zs": 0
+   },
+   "14": {
+    "form": 4,
+    "token": 2,
+    "zs": 4
+   },
+   "15": {
+    "form": 1,
+    "token": 2,
+    "zs": 0
+   },
+   "2": {
+    "form": 6,
+    "token": 6,
+    "zs": 8
+   },
+   "43": {
+    "form": 8,
+    "token": 5,
+    "zs": 1
+   },
+   "52": {
+    "form": 1,
+    "token": 1,
+    "zs": 0
+   },
+   "70": {
+    "form": 3,
+    "token": 6,
+    "zs": 9
+   },
+   "79": {
+    "form": 0,
+    "token": 9,
+    "zs": 1
+   }
+  },
+  "hypotheses": {
+   "H1": {
+    "control": 53,
+    "diff": {
+     "diff": 0.24444444444444444,
+     "hi": 0.43333333333333335,
+     "hi90": 0.4,
+     "lo": 0.07777777777777778,
+     "lo90": 0.1,
+     "n_pairs": 180,
+     "n_tasks": 9
+    },
+    "discordant": [
+     48,
+     4
+    ],
+    "holm_p": 3.9195846568418347e-10,
+    "n": 180,
+    "passes": true,
+    "sign_p": 1.3065282189472782e-10,
+    "x": 97
+   },
+   "H2": {
+    "control": 53,
+    "diff": {
+     "diff": 0.11666666666666667,
+     "hi": 0.2722222222222222,
+     "hi90": 0.25,
+     "lo": -0.03888888888888889,
+     "lo90": -0.016666666666666666,
+     "n_pairs": 180,
+     "n_tasks": 9
+    },
+    "discordant": [
+     37,
+     16
+    ],
+    "holm_p": 0.005486344876760141,
+    "n": 180,
+    "passes": true,
+    "sign_p": 0.005486344876760141,
+    "x": 74
+   },
+   "H3": {
+    "control": 53,
+    "diff": {
+     "diff": 0.16111111111111112,
+     "hi": 0.38333333333333336,
+     "hi90": 0.34444444444444444,
+     "lo": -0.06111111111111111,
+     "lo90": -0.022222222222222223,
+     "n_pairs": 180,
+     "n_tasks": 9
+    },
+    "discordant": [
+     52,
+     23
+    ],
+    "holm_p": 0.0021590310133325643,
+    "n": 180,
+    "passes": true,
+    "sign_p": 0.0010795155066662821,
+    "x": 82
+   }
+  },
+  "kept": {
+   "12": "token",
+   "13": "form",
+   "14": "zs",
+   "15": "token",
+   "2": "zs",
+   "43": "form",
+   "52": "token",
+   "70": "zs",
+   "79": "token"
+  },
+  "kept_bytes": 81920,
+  "missing": [],
+  "per_task": {
+   "12": {
+    "form": 12,
+    "kept": 17,
+    "token": 17,
+    "zs": 7
+   },
+   "13": {
+    "form": 12,
+    "kept": 12,
+    "token": 0,
+    "zs": 1
+   },
+   "14": {
+    "form": 11,
+    "kept": 12,
+    "token": 7,
+    "zs": 12
+   },
+   "15": {
+    "form": 2,
+    "kept": 1,
+    "token": 1,
+    "zs": 0
+   },
+   "2": {
+    "form": 13,
+    "kept": 12,
+    "token": 16,
+    "zs": 12
+   },
+   "43": {
+    "form": 15,
+    "kept": 15,
+    "token": 6,
+    "zs": 1
+   },
+   "52": {
+    "form": 6,
+    "kept": 6,
+    "token": 6,
+    "zs": 0
+   },
+   "70": {
+    "form": 5,
+    "kept": 13,
+    "token": 12,
+    "zs": 13
+   },
+   "79": {
+    "form": 6,
+    "kept": 9,
+    "token": 9,
+    "zs": 7
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "q13_main__libero_90__read__s1__5d237c57",
+ "schema": 1,
+ "script": "experiments/q13_read.py",
+ "seconds": null,
+ "seed": 1,
+ "source_commit": null,
+ "started": "2026-10-02T13:32:05+00:00",
+ "stream": null,
+ "tag": "read"
+}
