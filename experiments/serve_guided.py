@@ -329,8 +329,9 @@ def main():
     elif a.mode.startswith("ftoken:"):
         # ftoken:<path.pt>[+<path.pt>...] -- the task's own prompt with factor token(s) appended (lifelong_ood/policy/token_fold.py)
         from lifelong_ood.policy.token_fold import TokenHooks
-        paths = a.mode[len("ftoken:"):].split("+")
-        hooks = TokenHooks(paths)
+        body_, _, q_ = a.mode[len("ftoken:"):].partition("?")              # ftoken:<paths>?open=1: attached only while the gripper is open
+        paths = body_.split("+")
+        hooks = TokenHooks(paths, open_only=("open=1" in q_))
         logging.info(f"factor tokens {paths}")
     elif a.mode.startswith("factor:"):
         # factor:<libero_90 task>?lam=2&phase=approach|all&ctrl=factor|cfg|placebo&w=2 -- factor-composed generation from the policy's

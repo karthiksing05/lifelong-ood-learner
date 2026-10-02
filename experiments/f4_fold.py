@@ -43,6 +43,8 @@ def main():
                     "episodes' real frames and executed actions are the training data, under the task's own instruction")
     ap.add_argument("--stride", type=int, default=5, help="source=rollouts: one frame in `stride` (5 = the policy's query frames)")
     ap.add_argument("--max-frames", type=int, default=400)
+    ap.add_argument("--grasp-only", action="store_true", help="source=rollouts: keep only frames up to the first gripper close + 5 "
+                    "steps (the approach and the grasp: the object, without the source's placement)")
     a = ap.parse_args()
     spec = importlib.util.spec_from_file_location("r3p", os.path.join(ROOT, "experiments", "r3_prepare.py"))
     r3p = importlib.util.module_from_spec(spec)
@@ -71,7 +73,11 @@ def main():
             T_ = len(acts)
             idx, _ = D.chunk_indices(T_, bk.H)
             rows = D.pad_rows(D.to_rows(acts[idx], norm), bk.H)
-            for i in range(0, T_, a.stride):
+            stop = T_
+            if a.grasp_only:
+                cl = np.where(acts[:, 6] > 0)[0]
+                stop = min(T_, int(cl[0]) + 5) if len(cl) else T_
+            for i in range(0, stop, a.stride):
                 obs.append({"observation/image": z["image"][i], "observation/wrist_image": z["wrist"][i],
                             "observation/state": sts[i], "prompt": texts[tt]})
                 fulls.append(rows[i:i + 1])

@@ -1,4 +1,4 @@
-"""PhaseBindHooks (lifelong_ood/policy/phase.py; docs/PLAN_TRANSFER.md P1, P6): the retargeting geometry on a synthetic demo.
+"""PhaseBindHooks (lifelong_ood/policy/phase.py; archive/2026-10-program/PLAN_TRANSFER.md P1, P6): the retargeting geometry on a synthetic demo.
 
 - rotation helpers round-trip;
 - with the objects where the demo had them, the plan IS the demo's controller goals (retarget at identity = identity);

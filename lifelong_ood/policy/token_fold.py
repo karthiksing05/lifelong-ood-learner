@@ -109,13 +109,25 @@ def fit(bk, token, bank, chunks_full, steps=600, lr=1e-2, batch=16, seed=0, anch
 class TokenHooks:
     """Server hooks: the task's own prompt with factor token(s) appended to its cache; the policy samples unguided."""
 
-    def __init__(self, paths, device="cuda"):
+    def __init__(self, paths, device="cuda", open_only=False):
         self.tokens = []
         for p in paths:
             d = torch.load(p, map_location=device)["token"]
             self.tokens.append(KVToken(d["k"].float(), d["v"].float()).to(device))
+        self.open_only = bool(open_only)            # attach only while the policy's own commanded gripper is open (a grasp-phase token)
+        self.closed = False
+
+    def reset(self, meta):
+        self.closed = False
+
+    def observe(self, actions):
+        import numpy as _np
+        a = _np.asarray(actions)
+        self.closed = bool(a[min(4, len(a) - 1), 6] > 0)
 
     def transform_prefix(self, pre):
+        if self.open_only and self.closed:
+            return pre
         for tok in self.tokens:
             pre = attach(pre, tok)
         return pre

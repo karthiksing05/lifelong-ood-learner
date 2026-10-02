@@ -1,0 +1,124 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 18432,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 18432,
+  "tree": 0
+ },
+ "command": "grasp-only joint black-bowl token",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky1.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "q12_joint",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "69762c187d66537ccd6358f198a085fabcb38f63",
+  "short": "69762c18"
+ },
+ "keys": {},
+ "metrics": {
+  "note": "the joint black-bowl token refit on the grasp phase only (frames up to the first gripper close + 5) of the policy's own successes on 3 black-bowl tasks (12, 2, 60); on 4 unseen black-bowl tasks (29, 30, 31, 25), states 30-49: loaded only while the gripper is open (_open) or always; zero-shot = the same episodes as tag black_bowl",
+  "rows": {
+   "25:ftoken_12_2_60_jbg": {
+    "bound_bowl": 14,
+    "n": 20,
+    "success": 0
+   },
+   "25:ftoken_12_2_60_jbg_open": {
+    "bound_bowl": 20,
+    "n": 20,
+    "success": 0
+   },
+   "25:zs": {
+    "bound_bowl": 20,
+    "n": 20,
+    "success": 0
+   },
+   "29:ftoken_12_2_60_jbg": {
+    "bound_bowl": 6,
+    "n": 20,
+    "success": 0
+   },
+   "29:ftoken_12_2_60_jbg_open": {
+    "bound_bowl": 9,
+    "n": 20,
+    "success": 8
+   },
+   "29:zs": {
+    "bound_bowl": 4,
+    "n": 20,
+    "success": 12
+   },
+   "30:ftoken_12_2_60_jbg": {
+    "bound_bowl": 11,
+    "n": 20,
+    "success": 8
+   },
+   "30:ftoken_12_2_60_jbg_open": {
+    "bound_bowl": 16,
+    "n": 20,
+    "success": 10
+   },
+   "30:zs": {
+    "bound_bowl": 16,
+    "n": 20,
+    "success": 14
+   },
+   "31:ftoken_12_2_60_jbg": {
+    "bound_bowl": 6,
+    "n": 20,
+    "success": 0
+   },
+   "31:ftoken_12_2_60_jbg_open": {
+    "bound_bowl": 9,
+    "n": 20,
+    "success": 2
+   },
+   "31:zs": {
+    "bound_bowl": 8,
+    "n": 20,
+    "success": 3
+   }
+  },
+  "totals": {
+   "ftoken_12_2_60_jbg": {
+    "bound": 37,
+    "n": 80,
+    "success": 8
+   },
+   "ftoken_12_2_60_jbg_open": {
+    "bound": 54,
+    "n": 80,
+    "success": 20
+   },
+   "zs": {
+    "bound": 48,
+    "n": 80,
+    "success": 29
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "q12_joint__libero_90__black_bowl_grasp__s0__69762c18",
+ "schema": 1,
+ "script": "(experiments/f4_fold.py --task 12+2+60 --source rollouts --grasp-only --stride 2 --tag _jbg; launch_pack q12_joint)",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-02T13:10:04+00:00",
+ "stream": null,
+ "tag": "black_bowl_grasp"
+}

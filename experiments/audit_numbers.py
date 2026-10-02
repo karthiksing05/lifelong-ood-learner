@@ -666,6 +666,10 @@ BIND = [   # the Bind plan's reads (no demonstration; ledger m3_prereg tags b_bi
     ("joint: success", lambda: (float(_row("q12_joint", "black_bowl")["totals"]["ftoken_12_2_60_jb"]["success"]), 0.0, 1), "20"),
     ("joint: zero-shot success", lambda: (float(_row("q12_joint", "black_bowl")["totals"]["zs"]["success"]), 0.0, 1), "29"),
     ("joint: single success", lambda: (float(_row("q12_joint", "black_bowl")["totals"]["ftoken_12_q82"]["success"]), 0.0, 1), "7"),
+    ("grasp token: open bound", lambda: (float(_row("q12_joint", "black_bowl_grasp")["totals"]["ftoken_12_2_60_jbg_open"]["bound"]), 0.0, 1), "54"),
+    ("grasp token: open success", lambda: (float(_row("q12_joint", "black_bowl_grasp")["totals"]["ftoken_12_2_60_jbg_open"]["success"]), 0.0, 1), "20"),
+    ("grasp token: always bound", lambda: (float(_row("q12_joint", "black_bowl_grasp")["totals"]["ftoken_12_2_60_jbg"]["bound"]), 0.0, 1), "37"),
+    ("grasp token: always success", lambda: (float(_row("q12_joint", "black_bowl_grasp")["totals"]["ftoken_12_2_60_jbg"]["success"]), 0.0, 1), "8"),
 ]
 
 CHECKS = EMBODIED + TRANSFER + BIND + [

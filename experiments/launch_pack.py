@@ -127,7 +127,9 @@ def arm_spec(tid, arm, fold, demo=0):
     if arm.startswith("ftoken@"):                                        # ftoken@<source task>[+<task>]: factor tokens appended
         srcs = [str(tid) + (s_[4:] if s_.startswith("self") else "") if s_.startswith("self") else s_
                 for s_ in arm.split("@", 1)[1].split("+")]                  # self = the task's own token; self_d1 = demo 1's
-        return ("ftoken:" + "+".join(os.path.join(R, f"ftoken_{s_}.pt") for s_ in srcs), "0", False)
+        opn = "?open=1" if srcs and srcs[-1].endswith("_open") else ""      # ftoken@<src>_open: a grasp-phase token, attached while open
+        srcs = [s_[:-5] if s_.endswith("_open") else s_ for s_ in srcs]
+        return ("ftoken:" + "+".join(os.path.join(R, f"ftoken_{s_}.pt") for s_ in srcs) + opn, "0", False)
     if arm.startswith(("fcomp@", "fcompall@")):                         # factor-composed generation at weight lam (overhaul P1)
         lam = arm.split("@", 1)[1]
         return (f"factor:{tid}?lam={lam}&phase={'all' if arm.startswith('fcompall') else 'approach'}", "0", False)

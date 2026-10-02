@@ -1,0 +1,95 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/q12_joint_25_ftoken_12_2_60_jbg.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "roll.sh MODE=ftoken:/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/ftoken_12_2_60_jbg.pt SUITE=libero_90 TASKS=25 TRIALS=20 (job 4002683)",
+ "config": {
+  "client": {
+   "all_objects": false,
+   "bind": "track",
+   "branches": "",
+   "first_trial": 30,
+   "host": "127.0.0.1",
+   "light": false,
+   "max_steps": 0,
+   "no_meta": false,
+   "objects": false,
+   "out": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/q12_joint_25_ftoken_12_2_60_jbg.json",
+   "port": 9310,
+   "record": false,
+   "replan": 5,
+   "resize": 224,
+   "seed": 7,
+   "seg": false,
+   "state_mod": 0,
+   "suite": "libero_90",
+   "swap": "",
+   "swap_cams": "both",
+   "swap_mode": "render",
+   "swap_phase": "all",
+   "tasks": "25",
+   "trials": 20,
+   "videos": 2,
+   "wait": 10
+  },
+  "job": "4002683",
+  "mode": "ftoken:/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/ftoken_12_2_60_jbg.pt"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "conroy.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4002683",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "q12_joint",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "69762c187d66537ccd6358f198a085fabcb38f63",
+  "short": "69762c18"
+ },
+ "keys": {
+  "first_trial": 30,
+  "mode": "ftoken:/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/ftoken_12_2_60_jbg.pt",
+  "tasks": "25",
+  "trials": 20
+ },
+ "metrics": {
+  "complete": true,
+  "n_episodes": 20,
+  "secs": 727.5498089790344,
+  "success_rate": 0.0,
+  "tasks": {
+   "25": {
+    "errors": 0,
+    "language": "put the black bowl on top of the cabinet",
+    "mean_steps": 400.0,
+    "n": 20,
+    "success_rate": 0.0
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "q12_joint__libero_90__ftoken_12_2_60_jbg__first_trial-30__mode40021e1aaa2f__tasks-25__trials-20__s7__69762c18",
+ "schema": 1,
+ "script": "experiments/libero_client.py",
+ "seconds": null,
+ "seed": 7,
+ "source_commit": null,
+ "started": "2026-10-02T11:43:32+00:00",
+ "stream": null,
+ "tag": "ftoken_12_2_60_jbg"
+}

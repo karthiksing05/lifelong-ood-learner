@@ -1,4 +1,4 @@
-"""PHASE PROGRAMS WITH OBJECT-RELATIVE BINDINGS (docs/PLAN_TRANSFER.md P1): the one demo executed through the frozen policy.
+"""PHASE PROGRAMS WITH OBJECT-RELATIVE BINDINGS (archive/2026-10-program/PLAN_TRANSFER.md P1): the one demo executed through the frozen policy.
 
 The demo is cut into phases from object state (experiments/p3_compose_sim.py `phases`: the approach in the grasped object's frame,
 the object-centric carry relative to the receptacle, the rest; a demo that lifts nothing is one world-frame phase).  At rollout
@@ -86,7 +86,7 @@ def track(p, R_, p_t, R_t, g):
     return a
 
 
-# ── the demo as a phase program, rules v2 (docs/PLAN_TRANSFER.md; v1 = experiments/p3_compose_sim.py `phases`) ─────────
+# ── the demo as a phase program, rules v2 (archive/2026-10-program/PLAN_TRANSFER.md; v1 = experiments/p3_compose_sim.py `phases`) ─────────
 MOVE, CLOSE_TAIL, OPEN_TAIL = 0.015, 8, 5
 
 
