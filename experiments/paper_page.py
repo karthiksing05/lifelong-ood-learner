@@ -395,11 +395,30 @@ def main_read():
             + table(["task", "zero-shot", "composed form", "token alone"], trows, "Successes of 20 on the tasks practice gave a form.", num_from=1))
 
 
+def all_reads():
+    rows = []
+    for lab, src, where, r in (("role codes, 4 tasks", "no demonstration", "simulator (practice only)", scheme),
+                               ("demo prototype, 2 tasks", "1 demo as the query", "the demo's object prototype", q6),
+                               ("broad screen, 7 tasks", "no demonstration", "simulator (practice only)", row("q8_main", "read")),
+                               ("demo prototype, 7 tasks", "1 demo as the query", "the demo's object prototype", row("q10_main", "read"))):
+        if not r:
+            continue
+        h = r["hypotheses"]["H1"]
+        rows.append([esc(lab), esc(src), esc(where), f"{h['x']} vs {h['control']} of {h['n']}", f"{h['holm_p']:.2g}",
+                     "passes" if h["passes"] else "fails"])
+    return table(["read", "demonstration", "where during practice", "token alone vs zero-shot", "Holm p", "verdict"], rows,
+                 "Every pre-registered read of the scheme: at test the policy gets only the task's instruction and an 18.4 KB token "
+                 "(ledger b5_scheme, q6_main, q8_main, q10_main).", num_from=3)
+
+
 P_MAIN = f"""
 <p>Fixed in advance: on practice states 0-9 each of the 14 tasks with a role code keeps the injection with the higher success (none
 if both stay below 0.2); that form practises on states 10-29, its successes fit a token, the token practises alone, and is refit on
 both rounds. Scoring uses states 30-49, which no step tuned on.</p>
-{main_read()}"""
+{main_read()}
+<p>The same procedure was then run on the tasks two broad screens found (48 more failing tasks, 10 practice episodes each), with the
+simulator's segmentation and, separately, with only the demonstration's object prototype as where.</p>
+{all_reads()}"""
 
 P_POE = f"""
 <p>Since 2026-10-02 one demonstration may serve as the query, used once to select experts and never executed. We ported Wang et
