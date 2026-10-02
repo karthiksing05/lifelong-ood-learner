@@ -1,0 +1,369 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 16384,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 16384,
+  "tree": 0
+ },
+ "command": "experiments/q18_read.py --read --record",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky1.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "q18_self",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "b2fb160dddef8d804f4c75a7dd6454b9dd8d2362",
+  "short": "b2fb160d"
+ },
+ "keys": {},
+ "metrics": {
+  "acceptance": {
+   "12": {
+    "bindw4@rho0.7_approach_self": 5,
+    "zs": 7
+   },
+   "14": {
+    "bindw4@rho0.7_approach_self": 7,
+    "zs": 4
+   },
+   "15": {
+    "bindw4@rho0.7_approach_self": 3,
+    "zs": 1
+   },
+   "2": {
+    "bindw4@rho0.7_approach_self": 4,
+    "zs": 7
+   },
+   "29": {
+    "bindw4@rho0.7_approach_self": 3,
+    "zs": 7
+   },
+   "30": {
+    "bindw4@rho0.7_approach_self": 0,
+    "zs": 7
+   },
+   "38": {
+    "bindw4@rho0.7_approach_self": 0,
+    "zs": 7
+   },
+   "64": {
+    "bindw4@rho0.7_approach_self": 0,
+    "zs": 6
+   },
+   "70": {
+    "bindw4@rho0.7_approach_self": 7,
+    "zs": 5
+   },
+   "74": {
+    "bindw4@rho0.7_approach_self": 0,
+    "zs": 1
+   },
+   "77": {
+    "bindw4@rho0.7_approach_self": 4,
+    "zs": 2
+   },
+   "79": {
+    "bindw4@rho0.7_approach_self": 0,
+    "zs": 2
+   },
+   "82": {
+    "bindw4@rho0.7_approach_self": 0,
+    "zs": 2
+   }
+  },
+  "bytes": 16384,
+  "forms_kept": 4,
+  "hypotheses": {
+   "H1": {
+    "control": 110,
+    "diff": {
+     "diff": 0.007291666666666667,
+     "hi": 0.03229166666666667,
+     "hi90": 0.028125,
+     "lo": -0.016666666666666666,
+     "lo90": -0.0125,
+     "n_pairs": 960,
+     "n_tasks": 48
+    },
+    "discordant": [
+     16,
+     9
+    ],
+    "n": 960,
+    "passes": false,
+    "sign_p": 0.2295229434967041,
+    "x": 117
+   }
+  },
+  "kept": {
+   "1": "zs",
+   "12": "zs",
+   "13": "zs",
+   "14": "bindw4@rho0.7_approach_self",
+   "15": "bindw4@rho0.7_approach_self",
+   "16": "zs",
+   "17": "zs",
+   "2": "zs",
+   "25": "zs",
+   "27": "zs",
+   "29": "zs",
+   "3": "zs",
+   "30": "zs",
+   "31": "zs",
+   "32": "zs",
+   "34": "zs",
+   "36": "zs",
+   "37": "zs",
+   "38": "zs",
+   "4": "zs",
+   "40": "zs",
+   "41": "zs",
+   "42": "zs",
+   "43": "zs",
+   "45": "zs",
+   "5": "zs",
+   "63": "zs",
+   "64": "zs",
+   "69": "zs",
+   "70": "bindw4@rho0.7_approach_self",
+   "73": "zs",
+   "74": "zs",
+   "75": "zs",
+   "76": "zs",
+   "77": "bindw4@rho0.7_approach_self",
+   "78": "zs",
+   "79": "zs",
+   "8": "zs",
+   "80": "zs",
+   "81": "zs",
+   "82": "zs",
+   "83": "zs",
+   "84": "zs",
+   "85": "zs",
+   "86": "zs",
+   "87": "zs",
+   "88": "zs",
+   "89": "zs"
+  },
+  "missing": [],
+  "per_task": {
+   "1": [
+    0,
+    0
+   ],
+   "12": [
+    5,
+    5
+   ],
+   "13": [
+    2,
+    2
+   ],
+   "14": [
+    16,
+    9
+   ],
+   "15": [
+    0,
+    0
+   ],
+   "16": [
+    0,
+    0
+   ],
+   "17": [
+    0,
+    0
+   ],
+   "2": [
+    14,
+    14
+   ],
+   "25": [
+    0,
+    0
+   ],
+   "27": [
+    0,
+    0
+   ],
+   "29": [
+    12,
+    12
+   ],
+   "3": [
+    0,
+    0
+   ],
+   "30": [
+    16,
+    16
+   ],
+   "31": [
+    4,
+    4
+   ],
+   "32": [
+    0,
+    0
+   ],
+   "34": [
+    0,
+    0
+   ],
+   "36": [
+    0,
+    0
+   ],
+   "37": [
+    0,
+    0
+   ],
+   "38": [
+    9,
+    9
+   ],
+   "4": [
+    0,
+    0
+   ],
+   "40": [
+    0,
+    0
+   ],
+   "41": [
+    0,
+    0
+   ],
+   "42": [
+    0,
+    0
+   ],
+   "43": [
+    2,
+    2
+   ],
+   "45": [
+    0,
+    0
+   ],
+   "5": [
+    0,
+    0
+   ],
+   "63": [
+    2,
+    2
+   ],
+   "64": [
+    10,
+    10
+   ],
+   "69": [
+    0,
+    0
+   ],
+   "70": [
+    5,
+    11
+   ],
+   "73": [
+    0,
+    0
+   ],
+   "74": [
+    0,
+    0
+   ],
+   "75": [
+    0,
+    0
+   ],
+   "76": [
+    0,
+    0
+   ],
+   "77": [
+    7,
+    1
+   ],
+   "78": [
+    0,
+    0
+   ],
+   "79": [
+    8,
+    8
+   ],
+   "8": [
+    0,
+    0
+   ],
+   "80": [
+    0,
+    0
+   ],
+   "81": [
+    0,
+    0
+   ],
+   "82": [
+    5,
+    5
+   ],
+   "83": [
+    0,
+    0
+   ],
+   "84": [
+    0,
+    0
+   ],
+   "85": [
+    0,
+    0
+   ],
+   "86": [
+    0,
+    0
+   ],
+   "87": [
+    0,
+    0
+   ],
+   "88": [
+    0,
+    0
+   ],
+   "89": [
+    0,
+    0
+   ]
+  },
+  "pointing_mean": 0.6307692307692307,
+  "self_protos": 13
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "q18_self__libero_90__read__s4__b2fb160d",
+ "schema": 1,
+ "script": "experiments/q18_read.py",
+ "seconds": null,
+ "seed": 4,
+ "source_commit": null,
+ "started": "2026-10-02T16:47:36+00:00",
+ "stream": null,
+ "tag": "read"
+}

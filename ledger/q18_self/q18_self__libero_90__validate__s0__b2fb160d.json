@@ -1,0 +1,374 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "--rec q8_p1 --tag bind_rho0.7_all_approach --out q18_validate",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky1.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "q18_self",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "b2fb160dddef8d804f4c75a7dd6454b9dd8d2362",
+  "short": "b2fb160d"
+ },
+ "keys": {},
+ "metrics": {
+  "note": "the self-prototype grasp rule checked on the recorded q8_p1 practice episodes (oracle-binding rollouts, 7 tasks): pointing of each task's self-prototype on the first frames of init states 0-9, before any q18 episode",
+  "per_task": {
+   "12": {
+    "cos_demo": 0.995942234992981,
+    "episodes": 20,
+    "pointing": 1.0,
+    "successes": 16,
+    "tokens": [
+     [
+      8,
+      6
+     ],
+     [
+      8,
+      6
+     ],
+     [
+      8,
+      6
+     ],
+     [
+      7,
+      7
+     ],
+     [
+      8,
+      6
+     ],
+     [
+      7,
+      6
+     ],
+     [
+      7,
+      7
+     ],
+     [
+      8,
+      6
+     ],
+     [
+      7,
+      6
+     ],
+     [
+      7,
+      7
+     ],
+     [
+      7,
+      6
+     ],
+     [
+      7,
+      7
+     ],
+     [
+      7,
+      7
+     ],
+     [
+      8,
+      6
+     ],
+     [
+      8,
+      6
+     ],
+     [
+      8,
+      6
+     ]
+    ]
+   },
+   "13": {
+    "cos_demo": 0.9955212473869324,
+    "episodes": 20,
+    "pointing": 0.8,
+    "successes": 12,
+    "tokens": [
+     [
+      10,
+      5
+     ],
+     [
+      11,
+      4
+     ],
+     [
+      11,
+      4
+     ],
+     [
+      10,
+      5
+     ],
+     [
+      10,
+      5
+     ],
+     [
+      11,
+      5
+     ],
+     [
+      11,
+      5
+     ],
+     [
+      11,
+      5
+     ],
+     [
+      11,
+      4
+     ],
+     [
+      11,
+      5
+     ],
+     [
+      11,
+      4
+     ],
+     [
+      10,
+      5
+     ]
+    ]
+   },
+   "14": {
+    "cos_demo": 0.994497537612915,
+    "episodes": 20,
+    "pointing": 0.8,
+    "successes": 14,
+    "tokens": [
+     [
+      9,
+      4
+     ],
+     [
+      9,
+      4
+     ],
+     [
+      8,
+      4
+     ],
+     [
+      8,
+      4
+     ],
+     [
+      9,
+      4
+     ],
+     [
+      9,
+      4
+     ],
+     [
+      9,
+      4
+     ],
+     [
+      9,
+      4
+     ],
+     [
+      9,
+      4
+     ],
+     [
+      8,
+      4
+     ],
+     [
+      8,
+      4
+     ],
+     [
+      9,
+      4
+     ],
+     [
+      9,
+      5
+     ],
+     [
+      8,
+      4
+     ]
+    ]
+   },
+   "2": {
+    "cos_demo": 0.9965741038322449,
+    "episodes": 20,
+    "pointing": 1.0,
+    "successes": 12,
+    "tokens": [
+     [
+      8,
+      7
+     ],
+     [
+      8,
+      7
+     ],
+     [
+      8,
+      7
+     ],
+     [
+      8,
+      7
+     ],
+     [
+      8,
+      7
+     ],
+     [
+      8,
+      7
+     ],
+     [
+      8,
+      7
+     ],
+     [
+      8,
+      7
+     ],
+     [
+      8,
+      7
+     ],
+     [
+      8,
+      7
+     ],
+     [
+      9,
+      7
+     ],
+     [
+      8,
+      7
+     ]
+    ]
+   },
+   "43": {
+    "cos_demo": 0.9951040744781494,
+    "episodes": 20,
+    "pointing": 0.5,
+    "successes": 6,
+    "tokens": [
+     [
+      8,
+      6
+     ],
+     [
+      8,
+      6
+     ],
+     [
+      8,
+      6
+     ],
+     [
+      8,
+      6
+     ],
+     [
+      8,
+      6
+     ],
+     [
+      8,
+      6
+     ]
+    ]
+   },
+   "70": {
+    "cos_demo": 0.9929406046867371,
+    "episodes": 20,
+    "pointing": 0.7,
+    "successes": 6,
+    "tokens": [
+     [
+      9,
+      5
+     ],
+     [
+      9,
+      5
+     ],
+     [
+      9,
+      5
+     ],
+     [
+      9,
+      5
+     ],
+     [
+      9,
+      5
+     ],
+     [
+      9,
+      5
+     ]
+    ]
+   },
+   "82": {
+    "cos_demo": 0.982257068157196,
+    "episodes": 20,
+    "pointing": 1.0,
+    "successes": 1,
+    "tokens": [
+     [
+      9,
+      10
+     ]
+    ]
+   }
+  },
+  "pointing_max": 1.0,
+  "pointing_mean": 0.8285714285714285,
+  "pointing_min": 0.5
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "q18_self__libero_90__validate__s0__b2fb160d",
+ "schema": 1,
+ "script": "experiments/q18_selfproto.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-02T16:48:19+00:00",
+ "stream": null,
+ "tag": "validate"
+}
