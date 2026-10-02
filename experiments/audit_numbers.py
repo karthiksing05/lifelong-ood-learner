@@ -633,6 +633,11 @@ BIND = [   # the Bind plan's reads (no demonstration; ledger m3_prereg tags b_bi
     ("deployable: token Holm p", lambda: (_row("q6_main", "read")["hypotheses"]["H1"]["holm_p"], 0.0, 1), "0.039"),
     ("deployable: white bowl token", lambda: (float(_row("q6_main", "read")["per_task"]["43"]["token"]), 0.0, 1), "6"),
     ("deployable: milk token", lambda: (float(_row("q6_main", "read")["per_task"]["52"]["token"]), 0.0, 1), "4"),
+    ("token practice: practised", lambda: (float(_row("q7_tokpractice", "read")["H1"]["x"]), 0.0, 1), "150"),
+    ("token practice: demo token", lambda: (float(_row("q7_tokpractice", "read")["H1"]["control"]), 0.0, 1), "140"),
+    ("token practice: sign p", lambda: (_row("q7_tokpractice", "read")["H1"]["sign_p"], 0.0, 1), "0.42"),
+    ("token practice: LoRA", lambda: (float(_row("q7_tokpractice", "read")["H2"]["control"]), 0.0, 1), "252"),
+    ("token practice: lower bound (quoted negated)", lambda: (-_row("q7_tokpractice", "read")["H2"]["diff"]["lo90"], 0.0, 1), "0.360"),
 ]
 
 CHECKS = EMBODIED + TRANSFER + BIND + [

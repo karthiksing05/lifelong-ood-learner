@@ -1,0 +1,256 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 387072,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 387072,
+  "tree": 0
+ },
+ "command": "experiments/q7_read.py --record",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky1.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "q7_tokpractice",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "8d29cc5bcbce7e733801d133537d1b5713aa5c81",
+  "short": "8d29cc5b"
+ },
+ "keys": {},
+ "metrics": {
+  "H1": {
+   "control": 140,
+   "diff": {
+    "diff": 0.023809523809523808,
+    "hi": 0.10714285714285714,
+    "hi90": 0.09285714285714286,
+    "lo": -0.06428571428571428,
+    "lo90": -0.047619047619047616,
+    "n_pairs": 420,
+    "n_tasks": 21
+   },
+   "discordant": [
+    67,
+    57
+   ],
+   "holm_p": 0.8381474850332706,
+   "n": 420,
+   "passes": false,
+   "sign_p": 0.4190737425166353,
+   "x": 150
+  },
+  "H2": {
+   "control": 252,
+   "diff": {
+    "diff": -0.24285714285714285,
+    "hi": -0.09761904761904762,
+    "hi90": -0.11904761904761904,
+    "lo": -0.38095238095238093,
+    "lo90": -0.3595238095238095,
+    "n_pairs": 420,
+    "n_tasks": 21
+   },
+   "discordant": [
+    41,
+    143
+   ],
+   "n": 420,
+   "noninferior": false,
+   "sign_p": 1.9614947570663734e-14,
+   "x": 150
+  },
+  "missing": [],
+  "per_task": {
+   "1": {
+    "lora": 7,
+    "tok": 0,
+    "tp": 0,
+    "zs": 0
+   },
+   "3": {
+    "lora": 19,
+    "tok": 5,
+    "tp": 6,
+    "zs": 0
+   },
+   "32": {
+    "lora": 7,
+    "tok": 1,
+    "tp": 3,
+    "zs": 0
+   },
+   "34": {
+    "lora": 18,
+    "tok": 10,
+    "tp": 6,
+    "zs": 0
+   },
+   "35": {
+    "lora": 5,
+    "tok": 0,
+    "tp": 1,
+    "zs": 2
+   },
+   "36": {
+    "lora": 13,
+    "tok": 3,
+    "tp": 6,
+    "zs": 0
+   },
+   "37": {
+    "lora": 7,
+    "tok": 3,
+    "tp": 5,
+    "zs": 0
+   },
+   "39": {
+    "lora": 13,
+    "tok": 9,
+    "tp": 13,
+    "zs": 0
+   },
+   "4": {
+    "lora": 17,
+    "tok": 3,
+    "tp": 3,
+    "zs": 0
+   },
+   "40": {
+    "lora": 10,
+    "tok": 0,
+    "tp": 3,
+    "zs": 0
+   },
+   "41": {
+    "lora": 15,
+    "tok": 4,
+    "tp": 3,
+    "zs": 0
+   },
+   "42": {
+    "lora": 3,
+    "tok": 5,
+    "tp": 4,
+    "zs": 0
+   },
+   "43": {
+    "lora": 12,
+    "tok": 12,
+    "tp": 17,
+    "zs": 2
+   },
+   "48": {
+    "lora": 12,
+    "tok": 13,
+    "tp": 15,
+    "zs": 0
+   },
+   "5": {
+    "lora": 19,
+    "tok": 14,
+    "tp": 4,
+    "zs": 0
+   },
+   "52": {
+    "lora": 13,
+    "tok": 11,
+    "tp": 8,
+    "zs": 0
+   },
+   "53": {
+    "lora": 20,
+    "tok": 15,
+    "tp": 16,
+    "zs": 2
+   },
+   "58": {
+    "lora": 9,
+    "tok": 10,
+    "tp": 15,
+    "zs": 0
+   },
+   "6": {
+    "lora": 17,
+    "tok": 15,
+    "tp": 15,
+    "zs": 0
+   },
+   "62": {
+    "lora": 3,
+    "tok": 5,
+    "tp": 5,
+    "zs": 0
+   },
+   "63": {
+    "lora": 13,
+    "tok": 2,
+    "tp": 2,
+    "zs": 0
+   }
+  },
+  "practice_successes": {
+   "1": 0,
+   "3": 2,
+   "32": 2,
+   "34": 11,
+   "35": 2,
+   "36": 4,
+   "37": 3,
+   "39": 4,
+   "4": 2,
+   "40": 1,
+   "41": 3,
+   "42": 2,
+   "43": 13,
+   "48": 12,
+   "5": 10,
+   "52": 11,
+   "53": 13,
+   "58": 8,
+   "6": 20,
+   "62": 8,
+   "63": 4
+  },
+  "vs_zero_shot": {
+   "control": 6,
+   "diff": {
+    "diff": 0.34285714285714286,
+    "hi": 0.4642857142857143,
+    "hi90": 0.4452380952380952,
+    "lo": 0.23095238095238096,
+    "lo90": 0.24761904761904763,
+    "n_pairs": 420,
+    "n_tasks": 21
+   },
+   "discordant": [
+    147,
+    3
+   ],
+   "n": 420,
+   "sign_p": 7.884069497892145e-40,
+   "x": 150
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "q7_tokpractice__libero_90__read__s0__8d29cc5b",
+ "schema": 1,
+ "script": "experiments/q7_read.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-02T08:12:54+00:00",
+ "stream": null,
+ "tag": "read"
+}
