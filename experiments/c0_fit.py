@@ -36,7 +36,14 @@ def main():
     ap.add_argument("--scope", default="expert")
     ap.add_argument("--demo", type=int, default=0)
     ap.add_argument("--tag", default="")
+    ap.add_argument("--joint", default="", help="t1+t2+...: ONE primitive for --key fitted on these tasks' demo segments (each "
+                                                 "with its own clause), saved as prim_<name>_0.pt")
+    ap.add_argument("--key", default="", help="the step key of --joint")
+    ap.add_argument("--name", default="", help="the file name of --joint")
     a = ap.parse_args()
+    if a.joint:
+        a.key = a.key.replace("_", " ")                                   # the job wrapper splits arguments on spaces
+        return joint(a)
     spec = importlib.util.spec_from_file_location("r3p", os.path.join(ROOT, "experiments", "r3_prepare.py"))
     r3p = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(r3p)
@@ -83,6 +90,52 @@ def main():
                         metrics=dict(text=text, steps=out), bytes=dict(experts=total, tree=0, codes=0, samples=0, teacher_copies=0,
                                                                          total=total),
                         config=vars(a), script="experiments/c0_fit.py", command=" ".join(sys.argv)))
+
+
+def joint(a):
+    """Plan C, consolidation: a step's primitive fitted on SEVERAL arrivals' demos that share its key (different objects and
+    rooms), so it can learn the step rather than one object's grasp (docs/COBWEB_UPDATE.md, Proposition 7)."""
+    spec = importlib.util.spec_from_file_location("r3p", os.path.join(ROOT, "experiments", "r3_prepare.py"))
+    r3p = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(r3p)
+    texts, _ = r3p.libero90_texts()
+    from lifelong_ood.policy.backbone import PolicyBackbone
+    bk = PolicyBackbone("pi05_libero", device="cuda")
+    d90 = D.Demos90()
+    norm = D.Norm.load()
+    obs, rows, used = [], [], []
+    for t in [int(x) for x in a.joint.split("+")]:
+        steps = P.steps_of(texts[t])
+        s = next((i for i, c in enumerate(steps) if P.step_key(c) == a.key), None)
+        ep = d90.load(d90.episodes_of_text(texts[t])[a.demo])
+        segs = P.segment(ep["actions"], len(steps))
+        if s is None or segs is None:
+            print(f"[c0j] task {t}: no step with key {a.key} (or no release to cut at); skipped", flush=True)
+            continue
+        lo, hi = segs[s]
+        idx, _ = D.chunk_indices(len(ep["actions"]), bk.H)
+        rows.append(D.pad_rows(D.to_rows(ep["actions"][idx[lo:hi]], norm), bk.H))
+        for i in range(lo, hi):
+            o = d90.observation(ep, i)
+            o["prompt"] = steps[s]
+            obs.append(o)
+        used.append(dict(task=t, clause=steps[s], frames=[int(lo), int(hi)]))
+        print(f"[c0j] task {t} step {s} '{steps[s]}': frames {lo}-{hi}", flush=True)
+    full = np.concatenate(rows, 0)
+    bank = adapt.LazyPrefixBank(bk, obs)                                    # ~26 MB per cached prefix: computed per batch
+    state, banks = adapt.inject(bk, scope=a.scope)
+    key = f"prim_{a.name}_0"
+    params = add_node(banks, key, a.rank)
+    t0 = time.time()
+    hist = adapt.train(bk, state, key, params, bank, full, steps=a.steps, lr=a.lr, batch=a.batch, log=lambda x: print(x, flush=True))
+    path = os.path.join(R, f"prim_{a.name}_0.pt")
+    meta = dict(joint=used, step_key=a.key, rank=a.rank, scope=a.scope, frames=int(len(obs)))
+    nb = adapt.save(banks, key, path, meta=meta)
+    print(f"[c0j] {a.name}: key {a.key}, {len(used)} demos, {len(obs)} frames, {nb / 1e6:.1f} MB, flow {hist['loss'][0]:.4f} -> "
+          f"{hist['loss'][-1]:.4f} in {time.time() - t0:.0f}s", flush=True)
+    print(ledger.record("c0_fit", bench="libero_90", tag=f"joint_{a.name}", seed=0, metrics=dict(meta, bytes=nb, curve=hist),
+                        bytes=dict(experts=nb, tree=0, codes=0, samples=0, teacher_copies=0, total=nb), config=vars(a),
+                        script="experiments/c0_fit.py", command=" ".join(sys.argv)))
 
 
 if __name__ == "__main__":
