@@ -1,0 +1,65 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/q2_explain.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 1647,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 1647,
+  "tree": 0
+ },
+ "command": "experiments/q2_explain.py --record",
+ "config": {},
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "voltron.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4000924",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "q2_explain",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "06852abb94383b02e1a668876d7339ac64ad6f24",
+  "short": "06852abb"
+ },
+ "keys": {},
+ "metrics": {
+  "code_bytes_mean": 1647.857142857143,
+  "kill": false,
+  "lam": 0.5,
+  "levels": [
+   0.3,
+   0.4,
+   0.55
+  ],
+  "nll_fit": {
+   "both": 0.8265350884757936,
+   "leaves": 0.983379425588877,
+   "motion": 1.2795334449451832,
+   "options": 17.94523777465026,
+   "policy": 41.38358745953393
+  },
+  "options_nll_cut": 0.5663682421878569,
+  "recomputed_beats_policy": 21,
+  "recomputed_vs_frozen": 10,
+  "tasks_with_demo1": 21
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "q2_explain__libero_90__read__s0__06852abb",
+ "schema": 1,
+ "script": "experiments/q2_explain.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-02T04:52:34+00:00",
+ "stream": null,
+ "tag": "read"
+}

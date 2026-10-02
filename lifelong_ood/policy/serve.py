@@ -61,6 +61,22 @@ class GuidedPolicy:
         if self.branch is not None and self.ep_q == self.branch["at"] and hasattr(self.hooks, "branch"):
             self.hooks.branch(self.branch["variant"])        # the knob changes from this query to the end of the episode
         sd = self._seed()
+        if hasattr(self.hooks, "compose_poe"):
+            # prototype PoE planning (lifelong_ood/policy/poe.py): a convex mix of live policy experts and motion prototypes per
+            # dim, the policy family's share held at the last steps; every policy expert re-runs at this observation
+            from . import poe as _poe
+            pre, rows, protos, beta = self.hooks.compose_poe(obs, meta)
+            nz = None if noise is None else np.asarray(noise).reshape(1, -1)
+            rws = _poe.sample_poe(self.bk, pre, rows, protos, beta, seed=sd, num_steps=self.num_steps, noise=nz)
+            actions = self.bk.unnormalize(rws, state=pre.state[0].float().cpu().numpy())[0]
+            if hasattr(self.hooks, "observe"):
+                self.hooks.observe(actions)
+            self.calls += 1
+            self.ep_q += 1
+            self.secs += time.monotonic() - t0
+            if self.log_every and self.calls % self.log_every == 0:
+                logging.info(f"[serve] {self.calls} calls, {1000 * self.secs / self.calls:.0f} ms each")
+            return {"actions": np.asarray(actions, np.float32), "state": np.asarray(obs["observation/state"], np.float32)}
         if hasattr(self.hooks, "compose"):
             # factor-composed generation (lifelong_ood/policy/conditionals.py): the policy's own velocities under the code's
             # prompts, combined affinely at every Euler step; nothing external is followed

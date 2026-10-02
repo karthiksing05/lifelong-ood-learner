@@ -21,6 +21,25 @@ is archived: [archive/2026-10-program/](../archive/2026-10-program/).
   ICLR paper found the same in image diffusion models: a model that never read several objects from one caption fails to,
   although it learned each object.
 
+## 0 The method since 2026-10-02: prototype PoE planning
+
+Wang et al.'s test-time composition (arXiv 2605.07078) ported to the flow policy: the arrival's ONE demonstration is the query,
+used once to select experts and never executed (`lifelong_ood/policy/poe.py`, `experiments/q3_build.py`).
+- EXPERTS. The policy family, live at every observation: the policy under the task's instruction, under "pick up the {noun}"
+  prompts, and with its action expert's attention raised on one of 16 image blocks (scene options; no oracle). Motion prototypes:
+  the nodes of the policy's action-marginal tree that the demonstration's chunks fall into at t = 0.3, 0.4, 0.55 (Wang's discovery
+  from the query), as Gaussians.
+- SELECTION per phase (the gripper's open / closed runs): Wang's greedy submodular coverage of the phase's demo chunks, the task's
+  own policy forced in, K = 3, per-dim softmax weights (tau 0.5), the policy's variance its calibrated error against demos.
+- THE CODE per phase: the experts' observation-free ids and per-dim weights (0.6-1.8 KB per task; built in under 70 s, no training).
+- COMPOSITION: the selected prototypes multiply into one Gaussian (Wang's Eq. 9, precision-weighted, so broad prototypes barely
+  move it); it is mixed with the policy experts in velocity space at every Euler step with the policy family's share at least
+  lambda on every action dim (the gripper from the policy family), so the policy keeps generating (the share that keeps
+  observation sensitivity >= 0.3 was measured, not assumed: an early weight still moves the output, ledger q0_share).
+- REUSE and FOLD (designed): phase codes are kept in a library keyed by the phase's verb signature; a phase no stored code
+  explains folds a token that becomes a new expert for later tasks (Wang's missing mechanism).
+Sections 1-4 below describe the role-code scheme of 2026-10-01 (no demonstration), kept as the no-demo reference.
+
 ## 1 Read: decompose the arrival
 
 A task's factors are read by rule from its BDDL goal (`lifelong_ood/policy/factors.py`): the moved object's type, the goal

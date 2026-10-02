@@ -1,0 +1,61 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration of P0-P2",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky1.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "06852abb94383b02e1a668876d7339ac64ad6f24",
+  "short": "06852abb"
+ },
+ "keys": {},
+ "metrics": {
+  "P0": {
+   "kill": "the early weight moving the output by more than 0.2 of ||q - a_pi|| (median over frames) -> revisit the sampler model before anything else",
+   "question": "does the policy's share follow the expert weight at the last Euler steps (a ~= (1 - w_late) a_pi + w_late q)?",
+   "script": "experiments/q0_share.py"
+  },
+  "P1": {
+   "kill": "the null-prompt generator is dropped if it shows <= 1 cluster holding >= 10% of the ascent starts; scene options are killed if no generator reaches contrast >= 0.4 and pointing gain >= 0.1",
+   "question": "do observation-grounded options exist and point at objects?",
+   "script": "experiments/b2_steer_offline.py (scene-option generators)"
+  },
+  "P2": {
+   "kill": "options cut the demo NLL by < 10%, or the recomputed code beats the policy alone on < 12 of 21 tasks -> stop before rollouts",
+   "question": "does the expert pool explain held-out demos, and does a code built on demo 0 transfer to demo 1 with options recomputed at demo 1's observations?",
+   "script": "experiments/q2_explain.py"
+  },
+  "plan": "~/.claude/plans/i-m-interested-in-re-workshopping-quizzical-crane.md (Prototype PoE planning: Wang et al. 2605.07078 ported to pi0.5); one demonstration may be the query, used once for selection, never executed",
+  "written_before": "any output of q0_share.py, the P1 generators or q2_explain.py"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero__q_probes__s0__06852abb",
+ "schema": 1,
+ "script": "experiments/prereg/q_probes.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-02T03:40:47+00:00",
+ "stream": null,
+ "tag": "q_probes"
+}

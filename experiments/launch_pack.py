@@ -166,6 +166,10 @@ def arm_spec(tid, arm, fold, demo=0):
         if "open" in var:
             extra["SWAP_PHASE"] = "open"
         return ("promptx:" + code["prompt"].replace(" ", "_"), "0", False, extra)
+    if arm.startswith(("poe@", "poenopol@", "poeopt@")):                # prototype PoE planning: poe@<lam>[_d<demo>]
+        lam, _, dsx = arm.split("@", 1)[1].partition("_d")
+        abl = "&ablate=nopolicy" if arm.startswith("poenopol") else "&ablate=noproto" if arm.startswith("poeopt") else ""
+        return (f"phasecode:{os.path.join(R, 'poe_codes', f'{tid}_d{dsx or 0}.json')}?lam={lam}{abl}", "0", False)
     if arm == "bindrole":                                                # attention pointer while open + role swap while closed
         import glob as _glob                                             # (base instruction): the approach and the carry bound apart
         from lifelong_ood.policy import factors as F

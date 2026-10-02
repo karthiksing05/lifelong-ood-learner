@@ -1,0 +1,65 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration of the PoE pilot",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky1.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "06852abb94383b02e1a668876d7339ac64ad6f24",
+  "short": "06852abb"
+ },
+ "keys": {},
+ "metrics": {
+  "arms": {
+   "poe@0.3 / poe@0.5 / poe@0.7": "the phase codes with policy-share floor lambda",
+   "poenopol@0.5": "the no-policy control: the prototype product alone on the arm dims",
+   "poeopt@0.5": "the codes without their prototypes (policy experts only)",
+   "zs": "pi0.5 zero-shot"
+  },
+  "codes": "experiments/q3_build.py on demo 0 of each task (results/robot/poe_codes/<task>_d0.json)",
+  "episodes": "10 per arm and task, practice init states 0-9",
+  "go_rule": "go to the pre-registered main read with the lambda >= 0.5 arm of highest pooled success if at least 3 of the 6 tasks gain >= 3/10 over zero-shot at that lambda; success only at lambda = 0.3 (sensitivity < 0.3) or with the no-policy control matching ours (within 2 of 60) = the policy is bypassed -> stop",
+  "p0_outcome": "KILL fired (ledger q0_share): an early prototype weight moves the output by 0.38 of ||q - a_pi|| even with the policy alone at the last three steps (limit 0.2); the last step does not set the policy's share alone",
+  "p2_outcome": "passes (ledger q2_explain): options cut the fit NLL by 0.57; the demo-0 code beats the policy on demo 1 in 21 of 21 tasks (by rms 15 of 21 with prototypes, 19 of 21 options only); recomputed options beat frozen ones in only 10 of 21",
+  "revision": "one CONSTANT expert weight over all Euler steps; the policy family's share is a FLOOR lambda on every action dim (lifelong_ood/policy/poe.make_beta), the gripper from the policy family; the selected prototypes enter as Wang's precision-weighted product (poe.proto_product), and only prototypes reached FROM the demo phase are candidates (poe.query_nodes); experts are mixed in velocity space (a one-hot weight is the policy exactly); observation sensitivity at a constant prototype weight w (P0): w 0.5 -> 0.33, so lambda >= 0.5 keeps it >= 0.3",
+  "tasks": [
+   35,
+   36,
+   39,
+   42,
+   1,
+   6
+  ],
+  "written_before": "any episode of this pilot"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_90__q_pilot__s0__06852abb",
+ "schema": 1,
+ "script": "experiments/prereg/q_pilot.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-02T04:53:50+00:00",
+ "stream": null,
+ "tag": "q_pilot"
+}

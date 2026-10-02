@@ -1,0 +1,104 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "experiments/q0_share.py --record",
+ "config": {},
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "voltron.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4000641",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "q0_share",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "06852abb94383b02e1a668876d7339ac64ad6f24",
+  "short": "06852abb"
+ },
+ "keys": {},
+ "metrics": {
+  "early_effect_max": 0.380022794008255,
+  "exact_max_abs": 0.003818035125732422,
+  "frames": 210,
+  "kill": true,
+  "summary": {
+   "0.0_0.0": {
+    "dev": 0.0,
+    "early": 0.0,
+    "sens": 1.0
+   },
+   "0.0_0.3": {
+    "dev": 0.09482962265610695,
+    "early": 0.0,
+    "sens": 0.6481182873249054
+   },
+   "0.0_0.5": {
+    "dev": 0.1259039118885994,
+    "early": 0.0,
+    "sens": 0.4335997402667999
+   },
+   "0.0_0.7": {
+    "dev": 0.1266850233078003,
+    "early": 0.0,
+    "sens": 0.2424127385020256
+   },
+   "0.0_1.0": {
+    "dev": 0.1543181911110878,
+    "early": 0.0,
+    "sens": 0.03479979559779167
+   },
+   "0.5_0.5": {
+    "dev": 0.1975913569331169,
+    "early": 0.09348954260349274,
+    "sens": 0.3284718990325928
+   },
+   "1.0_0.0": {
+    "dev": 0.380022794008255,
+    "early": 0.380022794008255,
+    "sens": 0.581615686416626
+   },
+   "1.0_0.5": {
+    "dev": 0.3059643507003784,
+    "early": 0.2024221271276474,
+    "sens": 0.18611165136098862
+   },
+   "1.0_1.0": {
+    "dev": 0.1228480227291584,
+    "early": 0.03547191806137562,
+    "sens": 0.0
+   }
+  },
+  "var": [
+   0.0018119661835953593,
+   0.0014232497196644545,
+   0.0018827180610969663,
+   0.001850960194133222,
+   0.0026038410142064095,
+   0.0008565852185711265,
+   0.020463034510612488
+  ]
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "q0_share__libero_90__read__s0__06852abb",
+ "schema": 1,
+ "script": "experiments/q0_share.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-02T03:57:08+00:00",
+ "stream": null,
+ "tag": "read"
+}

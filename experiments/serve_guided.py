@@ -397,6 +397,19 @@ def main():
         phrases = {n: ph.get(task.objects.get(n), str(task.objects.get(n, n)).replace("_", " ")) for p_ in code["pairs"] for n in p_}
         hooks = RoleHooks(code, phrases, cams=kv.get("cams", "agent"))
         logging.info(f"role {task.suite}:{task.index} code {code} phrases {phrases} cams {hooks.cams}")
+    elif a.mode.startswith("phasecode:"):
+        # phasecode:<code json>?lam=0.5 -- prototype PoE planning (lifelong_ood/policy/poe_hooks.py): the task's phase codes, built
+        # from one demo by experiments/q3_build.py; policy experts re-run at every observation, motion prototypes analytic
+        import json as _json
+        from lifelong_ood.policy.poe_hooks import PoeHooks
+        from lifelong_ood.tree.nodes import Tree
+        body, q = (a.mode[len("phasecode:"):].split("?", 1) + [""])[:2]
+        kv = dict(x.split("=", 1) for x in q.split("&") if x)
+        spec = _json.load(open(body))
+        tree = Tree.load(os.path.join(ROOT, "results", "robot", "r2b_libero_40_tree.npz"))
+        hooks = PoeHooks(bk, spec["codes"], spec["language"], tree=tree, policy_share=float(kv.get("lam", 0.5)),
+                         exact=kv.get("exact", "0") == "1", ablate=kv.get("ablate", ""))
+        logging.info(f"phasecode task {spec['task']} ({spec['bytes']} B): " + " ; ".join(f"{c['phase']}: {c['experts']}" for c in spec["codes"]))
     elif a.mode.startswith("prompt:"):
         # prompt:<training task index> -- the prior under a trained task's instruction (instruction retrieval)
         from lifelong_ood.policy import data as D
