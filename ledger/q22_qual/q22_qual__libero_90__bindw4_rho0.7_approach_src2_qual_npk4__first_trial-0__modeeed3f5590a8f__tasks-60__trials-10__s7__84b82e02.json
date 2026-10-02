@@ -1,0 +1,95 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/q22_qual_60_bindw4_rho0.7_approach_src2_qual_npk4.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "roll.sh MODE=bind:60?suite=libero_90&src=w4&rho=0.7&band=all&phase=approach&proto=2&npk=4&qual=left SUITE=libero_90 TASKS=60 TRIALS=10 (job 4004267)",
+ "config": {
+  "client": {
+   "all_objects": false,
+   "bind": "track",
+   "branches": "",
+   "first_trial": 0,
+   "host": "127.0.0.1",
+   "light": false,
+   "max_steps": 0,
+   "no_meta": false,
+   "objects": false,
+   "out": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/q22_qual_60_bindw4_rho0.7_approach_src2_qual_npk4.json",
+   "port": 9711,
+   "record": false,
+   "replan": 5,
+   "resize": 224,
+   "seed": 7,
+   "seg": false,
+   "state_mod": 0,
+   "suite": "libero_90",
+   "swap": "",
+   "swap_cams": "both",
+   "swap_mode": "render",
+   "swap_phase": "all",
+   "tasks": "60",
+   "trials": 10,
+   "videos": 2,
+   "wait": 10
+  },
+  "job": "4004267",
+  "mode": "bind:60?suite=libero_90&src=w4&rho=0.7&band=all&phase=approach&proto=2&npk=4&qual=left"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "deebot.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4004267",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "q22_qual",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "84b82e0201591212bae1ee003f1d5a8110b9a5ec",
+  "short": "84b82e02"
+ },
+ "keys": {
+  "first_trial": 0,
+  "mode": "bind:60?suite=libero_90&src=w4&rho=0.7&band=all&phase=approach&proto=2&npk=4&qual=left",
+  "tasks": "60",
+  "trials": 10
+ },
+ "metrics": {
+  "complete": true,
+  "n_episodes": 10,
+  "secs": 382.6480116844177,
+  "success_rate": 0.4,
+  "tasks": {
+   "60": {
+    "errors": 0,
+    "language": "pick up the black bowl on the left and put it in the tray",
+    "mean_steps": 341.8,
+    "n": 10,
+    "success_rate": 0.4
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "q22_qual__libero_90__bindw4_rho0.7_approach_src2_qual_npk4__first_trial-0__modeeed3f5590a8f__tasks-60__trials-10__s7__84b82e02",
+ "schema": 1,
+ "script": "experiments/libero_client.py",
+ "seconds": null,
+ "seed": 7,
+ "source_commit": null,
+ "started": "2026-10-02T19:17:42+00:00",
+ "stream": null,
+ "tag": "bindw4_rho0.7_approach_src2_qual_npk4"
+}

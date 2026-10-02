@@ -1,0 +1,211 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "grammar instance screen",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky1.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "q22_qual",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "84b82e0201591212bae1ee003f1d5a8110b9a5ec",
+  "short": "84b82e02"
+ },
+ "keys": {},
+ "metrics": {
+  "best": {
+   "12": {
+    "arm": "bindw4_rho0.7_approach_src2_qual_npk3",
+    "bound": 10,
+    "n": 10,
+    "success": 10
+   },
+   "13": {
+    "arm": "bindw4_rho0.7_approach_src2_qual_npk4",
+    "bound": 3,
+    "n": 10,
+    "success": 3
+   },
+   "14": {
+    "arm": "bindw4_rho0.7_approach_src2_qual_npk3",
+    "bound": 7,
+    "n": 10,
+    "success": 7
+   },
+   "60": {
+    "arm": "zs",
+    "bound": 8,
+    "n": 10,
+    "success": 8
+   },
+   "87": {
+    "arm": "bindw4_rho0.7_approach_src88",
+    "bound": 0,
+    "n": 10,
+    "success": 0
+   },
+   "88": {
+    "arm": "bindw4_rho0.7_approach_src87",
+    "bound": 0,
+    "n": 10,
+    "success": 0
+   },
+   "89": {
+    "arm": "bindw4_rho0.7_approach_src87",
+    "bound": 0,
+    "n": 10,
+    "success": 0
+   }
+  },
+  "note": "exploratory screen, practice states 0-9, 10 episodes, noise seed 0: the binding form with another task's prototype of the type (another room where one exists, else a sibling task) restricted to the instance the instruction's qualifier names by the grammar of q22_grammar, applied to the map's 3 or 4 strongest peaks (_qual_npk3/_npk4)",
+  "rows": {
+   "12:bindw4_rho0.7_approach_src2_qual_npk3": {
+    "bound": 10,
+    "n": 10,
+    "success": 10
+   },
+   "12:bindw4_rho0.7_approach_src2_qual_npk4": {
+    "bound": 10,
+    "n": 10,
+    "success": 10
+   },
+   "12:zs": {
+    "bound": 5,
+    "n": 10,
+    "success": 4
+   },
+   "13:bindw4_rho0.7_approach_src2_qual_npk3": {
+    "bound": 0,
+    "n": 10,
+    "success": 0
+   },
+   "13:bindw4_rho0.7_approach_src2_qual_npk4": {
+    "bound": 3,
+    "n": 10,
+    "success": 3
+   },
+   "13:zs": {
+    "bound": 0,
+    "n": 10,
+    "success": 0
+   },
+   "14:bindw4_rho0.7_approach_src2_qual_npk3": {
+    "bound": 7,
+    "n": 10,
+    "success": 7
+   },
+   "14:bindw4_rho0.7_approach_src2_qual_npk4": {
+    "bound": 2,
+    "n": 10,
+    "success": 2
+   },
+   "14:zs": {
+    "bound": 5,
+    "n": 10,
+    "success": 5
+   },
+   "60:bindw4_rho0.7_approach_src2_qual_npk3": {
+    "bound": 3,
+    "n": 10,
+    "success": 3
+   },
+   "60:bindw4_rho0.7_approach_src2_qual_npk4": {
+    "bound": 4,
+    "n": 10,
+    "success": 4
+   },
+   "60:zs": {
+    "bound": 8,
+    "n": 10,
+    "success": 8
+   },
+   "87:bindw4_rho0.7_approach_src88": {
+    "bound": 0,
+    "n": 10,
+    "success": 0
+   },
+   "87:bindw4_rho0.7_approach_src88_qual_npk3": {
+    "bound": 0,
+    "n": 10,
+    "success": 0
+   },
+   "87:bindw4_rho0.7_approach_src88_qual_npk4": {
+    "bound": 0,
+    "n": 10,
+    "success": 0
+   },
+   "87:zs": {
+    "bound": 0,
+    "n": 10,
+    "success": 0
+   },
+   "88:bindw4_rho0.7_approach_src87": {
+    "bound": 0,
+    "n": 10,
+    "success": 0
+   },
+   "88:bindw4_rho0.7_approach_src87_qual_npk3": {
+    "bound": 3,
+    "n": 10,
+    "success": 0
+   },
+   "88:bindw4_rho0.7_approach_src87_qual_npk4": {
+    "bound": 3,
+    "n": 10,
+    "success": 0
+   },
+   "88:zs": {
+    "bound": 10,
+    "n": 10,
+    "success": 0
+   },
+   "89:bindw4_rho0.7_approach_src87": {
+    "bound": 0,
+    "n": 10,
+    "success": 0
+   },
+   "89:bindw4_rho0.7_approach_src87_qual_npk3": {
+    "bound": 6,
+    "n": 10,
+    "success": 0
+   },
+   "89:bindw4_rho0.7_approach_src87_qual_npk4": {
+    "bound": 7,
+    "n": 10,
+    "success": 0
+   },
+   "89:zs": {
+    "bound": 10,
+    "n": 10,
+    "success": 0
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "q22_qual__libero_90__screen__s0__84b82e02",
+ "schema": 1,
+ "script": "(launch_pack q22_qual, arms bindw4@rho0.7_approach_src<k>_qual_npk3|4)",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-02T19:21:37+00:00",
+ "stream": null,
+ "tag": "screen"
+}
