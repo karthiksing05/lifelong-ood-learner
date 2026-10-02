@@ -550,7 +550,20 @@ def stream_par():
             f"the mirror {B['x']} (Holm p {B['holm_p']:.2g}). Each order keeps a form on {A['kept_forms']} tasks; a demonstration for "
             f"every task keeps {E['kept_forms']} and succeeds {E['x']} times ({r['bytes']['every_demo']:,} bytes). The library holds "
             f"one prototype per type, and among three bowls it points at its own source's bowl: tasks naming the front or the "
-            f"middle bowl find no candidate that beats the policy. The library has to grow below the type.</p>")
+            f"middle bowl find no candidate that beats the policy. The library has to grow below the type.</p>" + self_par())
+
+
+def self_par():
+    r = row("q18_self", "read")
+    if not r:
+        return ""
+    h = r["hypotheses"]["H1"]
+    return (f"<p>Growing it from the learner's own successes, with no demonstration at all, fails (m3_prereg tag q18_self). Each of the "
+            f"same tasks practises zero-shot; a success yields a prototype from the policy's own grasp, the same construction as from "
+            f"a demonstration. {r['self_protos']} tasks get one, {r['forms_kept']} keep a form, and the kept arms succeed {h['x']} of "
+            f"{h['n']} times against {h['control']} (sign p {h['sign_p']:.2g}). A prototype exists only where the policy already "
+            f"finds the object, and there binding mostly gets in its way; the tasks binding rescues never succeed zero-shot, so they "
+            f"offer nothing to learn from.</p>")
 
 
 P_STREAM = f"""
