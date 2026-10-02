@@ -624,7 +624,19 @@ def reach_par():
             f"{d['42:bindw4_rho0.95_approach']['bound']} of 10), and the butter, moved first {d['3:bindw4_rho0.85_approach']['bound']} "
             f"of 10 times at 0.85, never completes the task's second step. Composition reaches the tasks a frozen policy fails by "
             f"reading the wrong object and could grasp; a grasp it lacks or a step it does not chain still needs what a fitted "
-            f"adapter takes from a demonstration.</p>")
+            f"adapter takes from a demonstration.</p>" + seq_par())
+
+
+def seq_par():
+    q = row("q25_seq", "screen")
+    if not q:
+        return ""
+    t = q["totals"]
+    return (f"<p>Chaining by the instruction's grammar does not supply the missing step either (exploratory). Splitting the "
+            f"two-clause instructions at their conjunction and switching to the second clause at the policy's first release gives "
+            f"{t['seqzs']} successes alone and {t['bindw4_rho0.7_approach_seq']} with binding over 80 practice episodes, against "
+            f"{t['zs']} zero-shot; in recorded episodes the policy carries the bound butter toward its own base, never to the "
+            f"drawer. The first clause is itself not a task the policy performs, and a sequence can only chain clauses it does.</p>")
 
 
 def codes_table():
