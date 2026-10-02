@@ -1,0 +1,52 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/q4_template_all.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero",
+ "bytes": {
+  "codes": 4096,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 4096,
+  "tree": 0
+ },
+ "command": "experiments/q4_template.py --tasks 1+2+3+4+5+8+12+13+14+15+16+17+25+27+29+30+31+32+34+36+37+38+40+41+42+43+45+63+64+69+70+73+74+75+76+77+78+79+80+81+82+83+84+85+86+87+88+89 --tag all --record",
+ "config": {},
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "dave.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4002269",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "q4_template",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "56e567cf9fc13cac2c08094fe6edd9b0671bc260",
+  "short": "56e567cf"
+ },
+ "keys": {},
+ "metrics": {
+  "n_reuse": 0,
+  "n_tasks": 48,
+  "own_pointing": 0.6958333333333334,
+  "proto_bytes": 4096,
+  "reuse": [],
+  "reuse_pointing": null
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "q4_template__libero__read_all__s0__56e567cf",
+ "schema": 1,
+ "script": "experiments/q4_template.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-02T08:27:32+00:00",
+ "stream": null,
+ "tag": "read_all"
+}

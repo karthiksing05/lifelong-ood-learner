@@ -1,0 +1,652 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "experiments/b2_q2_read.py --experiment q8_screen --record",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky1.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "b2_q2",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "56e567cf9fc13cac2c08094fe6edd9b0671bc260",
+  "short": "56e567cf"
+ },
+ "keys": {},
+ "metrics": {
+  "arms": {
+   "bind_rho0.7_all_approach": {
+    "BA_mean": 0.42173913043478267,
+    "NONE_max": 1.0,
+    "success_mean": 0.10652173913043479,
+    "tasks": 46,
+    "tasks_BA_ge_0_5": 17
+   }
+  },
+  "experiment": "q8_screen",
+  "rows": {
+   "12:bind_rho0.7_all_approach": {
+    "BA": 1.0,
+    "NONE": 0.0,
+    "arm": "bind_rho0.7_all_approach",
+    "bound_counts": {
+     "akita_black_bowl_3": 10
+    },
+    "n": 10,
+    "named": "akita_black_bowl_3",
+    "success": 0.9,
+    "task": 12
+   },
+   "13:bind_rho0.7_all_approach": {
+    "BA": 0.5,
+    "NONE": 0.0,
+    "arm": "bind_rho0.7_all_approach",
+    "bound_counts": {
+     "akita_black_bowl_1": 5,
+     "akita_black_bowl_2": 5
+    },
+    "n": 10,
+    "named": "akita_black_bowl_1",
+    "success": 0.6,
+    "task": 13
+   },
+   "14:bind_rho0.7_all_approach": {
+    "BA": 1.0,
+    "NONE": 0.0,
+    "arm": "bind_rho0.7_all_approach",
+    "bound_counts": {
+     "akita_black_bowl_2": 10
+    },
+    "n": 10,
+    "named": "akita_black_bowl_2",
+    "success": 0.9,
+    "task": 14
+   },
+   "15:bind_rho0.7_all_approach": {
+    "BA": 0.4,
+    "NONE": 0.0,
+    "arm": "bind_rho0.7_all_approach",
+    "bound_counts": {
+     "akita_black_bowl_2": 4,
+     "akita_black_bowl_3": 6
+    },
+    "n": 10,
+    "named": "akita_black_bowl_2",
+    "success": 0.1,
+    "task": 15
+   },
+   "16:bind_rho0.7_all_approach": {
+    "BA": 0.6,
+    "NONE": 0.0,
+    "arm": "bind_rho0.7_all_approach",
+    "bound_counts": {
+     "akita_black_bowl_1": 6,
+     "akita_black_bowl_2": 4
+    },
+    "n": 10,
+    "named": "akita_black_bowl_1",
+    "success": 0.1,
+    "task": 16
+   },
+   "17:bind_rho0.7_all_approach": {
+    "BA": 1.0,
+    "NONE": 0.0,
+    "arm": "bind_rho0.7_all_approach",
+    "bound_counts": {
+     "akita_black_bowl_2": 10
+    },
+    "n": 10,
+    "named": "akita_black_bowl_2",
+    "success": 0.0,
+    "task": 17
+   },
+   "1:bind_rho0.7_all_approach": {
+    "BA": 0.0,
+    "NONE": 0.2,
+    "arm": "bind_rho0.7_all_approach",
+    "bound_counts": {
+     "None": 0,
+     "akita_black_bowl_1": 8
+    },
+    "n": 10,
+    "named": "wooden_cabinet_1",
+    "success": 0.0,
+    "task": 1
+   },
+   "25:bind_rho0.7_all_approach": {
+    "BA": 1.0,
+    "NONE": 0.0,
+    "arm": "bind_rho0.7_all_approach",
+    "bound_counts": {
+     "akita_black_bowl_1": 10
+    },
+    "n": 10,
+    "named": "akita_black_bowl_1",
+    "success": 0.0,
+    "task": 25
+   },
+   "27:bind_rho0.7_all_approach": {
+    "BA": 0.1,
+    "NONE": 0.9,
+    "arm": "bind_rho0.7_all_approach",
+    "bound_counts": {
+     "None": 0,
+     "wine_bottle_1": 1
+    },
+    "n": 10,
+    "named": "wine_bottle_1",
+    "success": 0.0,
+    "task": 27
+   },
+   "29:bind_rho0.7_all_approach": {
+    "BA": 0.2,
+    "NONE": 0.6,
+    "arm": "bind_rho0.7_all_approach",
+    "bound_counts": {
+     "None": 0,
+     "akita_black_bowl_1": 2,
+     "ketchup_1": 2
+    },
+    "n": 10,
+    "named": "akita_black_bowl_1",
+    "success": 0.1,
+    "task": 29
+   },
+   "2:bind_rho0.7_all_approach": {
+    "BA": 0.6,
+    "NONE": 0.4,
+    "arm": "bind_rho0.7_all_approach",
+    "bound_counts": {
+     "None": 0,
+     "akita_black_bowl_1": 6
+    },
+    "n": 10,
+    "named": "akita_black_bowl_1",
+    "success": 0.5,
+    "task": 2
+   },
+   "30:bind_rho0.7_all_approach": {
+    "BA": 0.3,
+    "NONE": 0.7,
+    "arm": "bind_rho0.7_all_approach",
+    "bound_counts": {
+     "None": 0,
+     "akita_black_bowl_1": 3
+    },
+    "n": 10,
+    "named": "akita_black_bowl_1",
+    "success": 0.1,
+    "task": 30
+   },
+   "31:bind_rho0.7_all_approach": {
+    "BA": 0.1,
+    "NONE": 0.9,
+    "arm": "bind_rho0.7_all_approach",
+    "bound_counts": {
+     "None": 0,
+     "akita_black_bowl_1": 1
+    },
+    "n": 10,
+    "named": "akita_black_bowl_1",
+    "success": 0.1,
+    "task": 31
+   },
+   "32:bind_rho0.7_all_approach": {
+    "BA": 0.3,
+    "NONE": 0.7,
+    "arm": "bind_rho0.7_all_approach",
+    "bound_counts": {
+     "None": 0,
+     "ketchup_1": 3
+    },
+    "n": 10,
+    "named": "ketchup_1",
+    "success": 0.0,
+    "task": 32
+   },
+   "34:bind_rho0.7_all_approach": {
+    "BA": 0.9,
+    "NONE": 0.1,
+    "arm": "bind_rho0.7_all_approach",
+    "bound_counts": {
+     "None": 0,
+     "white_yellow_mug_1": 9
+    },
+    "n": 10,
+    "named": "white_yellow_mug_1",
+    "success": 0.0,
+    "task": 34
+   },
+   "36:bind_rho0.7_all_approach": {
+    "BA": 0.0,
+    "NONE": 1.0,
+    "arm": "bind_rho0.7_all_approach",
+    "bound_counts": {
+     "None": 0
+    },
+    "n": 10,
+    "named": "white_bowl_1",
+    "success": 0.0,
+    "task": 36
+   },
+   "37:bind_rho0.7_all_approach": {
+    "BA": 0.0,
+    "NONE": 1.0,
+    "arm": "bind_rho0.7_all_approach",
+    "bound_counts": {
+     "None": 0
+    },
+    "n": 10,
+    "named": "white_bowl_1",
+    "success": 0.0,
+    "task": 37
+   },
+   "38:bind_rho0.7_all_approach": {
+    "BA": 0.1,
+    "NONE": 0.8,
+    "arm": "bind_rho0.7_all_approach",
+    "bound_counts": {
+     "None": 0,
+     "moka_pot_1": 1,
+     "moka_pot_2": 1
+    },
+    "n": 10,
+    "named": "moka_pot_1",
+    "success": 0.0,
+    "task": 38
+   },
+   "3:bind_rho0.7_all_approach": {
+    "BA": 0.2,
+    "NONE": 0.5,
+    "arm": "bind_rho0.7_all_approach",
+    "bound_counts": {
+     "None": 0,
+     "akita_black_bowl_1": 3,
+     "butter_2": 2
+    },
+    "n": 10,
+    "named": "butter_2",
+    "success": 0.0,
+    "task": 3
+   },
+   "40:bind_rho0.7_all_approach": {
+    "BA": 0.4,
+    "NONE": 0.3,
+    "arm": "bind_rho0.7_all_approach",
+    "bound_counts": {
+     "None": 0,
+     "chefmate_8_frypan_1": 4,
+     "white_bowl_1": 3
+    },
+    "n": 10,
+    "named": "chefmate_8_frypan_1",
+    "success": 0.0,
+    "task": 40
+   },
+   "41:bind_rho0.7_all_approach": {
+    "BA": 0.2,
+    "NONE": 0.7,
+    "arm": "bind_rho0.7_all_approach",
+    "bound_counts": {
+     "None": 0,
+     "chefmate_8_frypan_1": 2,
+     "white_bowl_1": 1
+    },
+    "n": 10,
+    "named": "chefmate_8_frypan_1",
+    "success": 0.0,
+    "task": 41
+   },
+   "42:bind_rho0.7_all_approach": {
+    "BA": 0.4,
+    "NONE": 0.4,
+    "arm": "bind_rho0.7_all_approach",
+    "bound_counts": {
+     "None": 0,
+     "chefmate_8_frypan_1": 4,
+     "white_bowl_1": 2
+    },
+    "n": 10,
+    "named": "chefmate_8_frypan_1",
+    "success": 0.0,
+    "task": 42
+   },
+   "43:bind_rho0.7_all_approach": {
+    "BA": 1.0,
+    "NONE": 0.0,
+    "arm": "bind_rho0.7_all_approach",
+    "bound_counts": {
+     "white_bowl_1": 10
+    },
+    "n": 10,
+    "named": "white_bowl_1",
+    "success": 0.6,
+    "task": 43
+   },
+   "45:bind_rho0.7_all_approach": {
+    "BA": 0.0,
+    "NONE": 1.0,
+    "arm": "bind_rho0.7_all_approach",
+    "bound_counts": {
+     "None": 0
+    },
+    "n": 10,
+    "named": "flat_stove_1",
+    "success": 0.0,
+    "task": 45
+   },
+   "4:bind_rho0.7_all_approach": {
+    "BA": 0.0,
+    "NONE": 0.5,
+    "arm": "bind_rho0.7_all_approach",
+    "bound_counts": {
+     "None": 0,
+     "akita_black_bowl_1": 4,
+     "butter_2": 1
+    },
+    "n": 10,
+    "named": "butter_1",
+    "success": 0.0,
+    "task": 4
+   },
+   "5:bind_rho0.7_all_approach": {
+    "BA": 0.0,
+    "NONE": 0.1,
+    "arm": "bind_rho0.7_all_approach",
+    "bound_counts": {
+     "None": 0,
+     "akita_black_bowl_1": 9
+    },
+    "n": 10,
+    "named": "chocolate_pudding_1",
+    "success": 0.0,
+    "task": 5
+   },
+   "63:bind_rho0.7_all_approach": {
+    "BA": 0.1,
+    "NONE": 0.0,
+    "arm": "bind_rho0.7_all_approach",
+    "bound_counts": {
+     "akita_black_bowl_1": 1,
+     "akita_black_bowl_2": 9
+    },
+    "n": 10,
+    "named": "akita_black_bowl_1",
+    "success": 0.0,
+    "task": 63
+   },
+   "64:bind_rho0.7_all_approach": {
+    "BA": 0.6,
+    "NONE": 0.0,
+    "arm": "bind_rho0.7_all_approach",
+    "bound_counts": {
+     "akita_black_bowl_1": 4,
+     "akita_black_bowl_2": 6
+    },
+    "n": 10,
+    "named": "akita_black_bowl_2",
+    "success": 0.0,
+    "task": 64
+   },
+   "69:bind_rho0.7_all_approach": {
+    "BA": 1.0,
+    "NONE": 0.0,
+    "arm": "bind_rho0.7_all_approach",
+    "bound_counts": {
+     "chocolate_pudding_1": 10
+    },
+    "n": 10,
+    "named": "chocolate_pudding_1",
+    "success": 0.0,
+    "task": 69
+   },
+   "70:bind_rho0.7_all_approach": {
+    "BA": 1.0,
+    "NONE": 0.0,
+    "arm": "bind_rho0.7_all_approach",
+    "bound_counts": {
+     "chocolate_pudding_1": 10
+    },
+    "n": 10,
+    "named": "chocolate_pudding_1",
+    "success": 0.5,
+    "task": 70
+   },
+   "75:bind_rho0.7_all_approach": {
+    "BA": 0.7,
+    "NONE": 0.3,
+    "arm": "bind_rho0.7_all_approach",
+    "bound_counts": {
+     "None": 0,
+     "black_book_1": 7
+    },
+    "n": 10,
+    "named": "black_book_1",
+    "success": 0.0,
+    "task": 75
+   },
+   "76:bind_rho0.7_all_approach": {
+    "BA": 0.8,
+    "NONE": 0.2,
+    "arm": "bind_rho0.7_all_approach",
+    "bound_counts": {
+     "None": 0,
+     "white_yellow_mug_1": 8
+    },
+    "n": 10,
+    "named": "white_yellow_mug_1",
+    "success": 0.0,
+    "task": 76
+   },
+   "77:bind_rho0.7_all_approach": {
+    "BA": 0.4,
+    "NONE": 0.6,
+    "arm": "bind_rho0.7_all_approach",
+    "bound_counts": {
+     "None": 0,
+     "black_book_1": 4
+    },
+    "n": 10,
+    "named": "black_book_1",
+    "success": 0.0,
+    "task": 77
+   },
+   "78:bind_rho0.7_all_approach": {
+    "BA": 0.3,
+    "NONE": 0.7,
+    "arm": "bind_rho0.7_all_approach",
+    "bound_counts": {
+     "None": 0,
+     "black_book_1": 3
+    },
+    "n": 10,
+    "named": "black_book_1",
+    "success": 0.0,
+    "task": 78
+   },
+   "79:bind_rho0.7_all_approach": {
+    "BA": 0.3,
+    "NONE": 0.7,
+    "arm": "bind_rho0.7_all_approach",
+    "bound_counts": {
+     "None": 0,
+     "black_book_1": 3
+    },
+    "n": 10,
+    "named": "black_book_1",
+    "success": 0.1,
+    "task": 79
+   },
+   "80:bind_rho0.7_all_approach": {
+    "BA": 0.4,
+    "NONE": 0.6,
+    "arm": "bind_rho0.7_all_approach",
+    "bound_counts": {
+     "None": 0,
+     "black_book_1": 4
+    },
+    "n": 10,
+    "named": "black_book_1",
+    "success": 0.0,
+    "task": 80
+   },
+   "81:bind_rho0.7_all_approach": {
+    "BA": 0.1,
+    "NONE": 0.8,
+    "arm": "bind_rho0.7_all_approach",
+    "bound_counts": {
+     "None": 0,
+     "black_book_1": 1,
+     "porcelain_mug_1": 1
+    },
+    "n": 10,
+    "named": "black_book_1",
+    "success": 0.0,
+    "task": 81
+   },
+   "82:bind_rho0.7_all_approach": {
+    "BA": 0.3,
+    "NONE": 0.6,
+    "arm": "bind_rho0.7_all_approach",
+    "bound_counts": {
+     "None": 0,
+     "black_book_1": 3,
+     "porcelain_mug_1": 1
+    },
+    "n": 10,
+    "named": "black_book_1",
+    "success": 0.3,
+    "task": 82
+   },
+   "83:bind_rho0.7_all_approach": {
+    "BA": 0.1,
+    "NONE": 0.8,
+    "arm": "bind_rho0.7_all_approach",
+    "bound_counts": {
+     "None": 0,
+     "black_book_1": 1,
+     "porcelain_mug_1": 1
+    },
+    "n": 10,
+    "named": "black_book_1",
+    "success": 0.0,
+    "task": 83
+   },
+   "84:bind_rho0.7_all_approach": {
+    "BA": 0.2,
+    "NONE": 0.8,
+    "arm": "bind_rho0.7_all_approach",
+    "bound_counts": {
+     "None": 0,
+     "red_coffee_mug_1": 2
+    },
+    "n": 10,
+    "named": "red_coffee_mug_1",
+    "success": 0.0,
+    "task": 84
+   },
+   "85:bind_rho0.7_all_approach": {
+    "BA": 0.7,
+    "NONE": 0.3,
+    "arm": "bind_rho0.7_all_approach",
+    "bound_counts": {
+     "None": 0,
+     "porcelain_mug_1": 7
+    },
+    "n": 10,
+    "named": "porcelain_mug_1",
+    "success": 0.0,
+    "task": 85
+   },
+   "86:bind_rho0.7_all_approach": {
+    "BA": 0.1,
+    "NONE": 0.9,
+    "arm": "bind_rho0.7_all_approach",
+    "bound_counts": {
+     "None": 0,
+     "black_book_1": 1
+    },
+    "n": 10,
+    "named": "black_book_1",
+    "success": 0.0,
+    "task": 86
+   },
+   "87:bind_rho0.7_all_approach": {
+    "BA": 0.0,
+    "NONE": 0.9,
+    "arm": "bind_rho0.7_all_approach",
+    "bound_counts": {
+     "None": 0,
+     "black_book_1": 1
+    },
+    "n": 10,
+    "named": "yellow_book_2",
+    "success": 0.0,
+    "task": 87
+   },
+   "88:bind_rho0.7_all_approach": {
+    "BA": 1.0,
+    "NONE": 0.0,
+    "arm": "bind_rho0.7_all_approach",
+    "bound_counts": {
+     "yellow_book_1": 10
+    },
+    "n": 10,
+    "named": "yellow_book_1",
+    "success": 0.0,
+    "task": 88
+   },
+   "89:bind_rho0.7_all_approach": {
+    "BA": 1.0,
+    "NONE": 0.0,
+    "arm": "bind_rho0.7_all_approach",
+    "bound_counts": {
+     "yellow_book_1": 10
+    },
+    "n": 10,
+    "named": "yellow_book_1",
+    "success": 0.0,
+    "task": 89
+   },
+   "8:bind_rho0.7_all_approach": {
+    "BA": 0.0,
+    "NONE": 0.4,
+    "arm": "bind_rho0.7_all_approach",
+    "bound_counts": {
+     "None": 0,
+     "akita_black_bowl_1": 6
+    },
+    "n": 10,
+    "named": "wooden_cabinet_1",
+    "success": 0.0,
+    "task": 8
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "b2_q2__libero_90__q8_screen__s0__56e567cf",
+ "schema": 1,
+ "script": "experiments/b2_q2_read.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-02T08:38:18+00:00",
+ "stream": null,
+ "tag": "q8_screen"
+}

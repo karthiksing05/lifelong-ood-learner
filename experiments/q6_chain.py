@@ -15,6 +15,12 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PY = os.path.expanduser("~/flash/miniconda3/envs/chunks/bin/python")
 FORM = "bindw4@rho0.7_approach"
 FORM_TAG = "bindw4_rho0.7_approach"
+PRE = "q6"
+if "--form" in sys.argv:                       # e.g. --form bind@rho0.7_all_approach --pre q8 (oracle where during practice)
+    FORM = sys.argv[sys.argv.index("--form") + 1]
+    FORM_TAG = FORM.replace("@", "_")
+if "--pre" in sys.argv:
+    PRE = sys.argv[sys.argv.index("--pre") + 1]
 
 
 def run(cmd, dry):
@@ -48,13 +54,14 @@ def main():
     tasks = [int(x) for x in sys.argv[sys.argv.index("--tasks") + 1].split("+")]
     dry = "--dry" in sys.argv
     for t in tasks:
-        p1 = pack(t, FORM, "q6_p1", 10, 20, record=True, dry=dry)
-        f1 = fit(t, [f"results/robot/q6_p1_{t}_{FORM_TAG}_rec"], "_w1", p1, dry)
-        p2 = pack(t, "ftoken@self_w1", "q6_p2", 10, 20, after=f1, record=True, dry=dry)
-        f2 = fit(t, [f"results/robot/q6_p1_{t}_{FORM_TAG}_rec", f"results/robot/q6_p2_{t}_ftoken_self_w1_rec"], "_w2", p2, dry)
-        s_tok = pack(t, "ftoken@self_w2", "q6_main", 30, 20, after=f2, dry=dry)
-        s_form = pack(t, FORM, "q6_main", 30, 20, dry=dry)
-        s_zs = pack(t, "zs", "q6_main", 30, 20, dry=dry)
+        w1, w2 = f"_{PRE}1", f"_{PRE}2"
+        p1 = pack(t, FORM, f"{PRE}_p1", 10, 20, record=True, dry=dry)
+        f1 = fit(t, [f"results/robot/{PRE}_p1_{t}_{FORM_TAG}_rec"], w1, p1, dry)
+        p2 = pack(t, f"ftoken@self{w1}", f"{PRE}_p2", 10, 20, after=f1, record=True, dry=dry)
+        f2 = fit(t, [f"results/robot/{PRE}_p1_{t}_{FORM_TAG}_rec", f"results/robot/{PRE}_p2_{t}_ftoken_self{w1}_rec"], w2, p2, dry)
+        s_tok = pack(t, f"ftoken@self{w2}", f"{PRE}_main", 30, 20, after=f2, dry=dry)
+        s_form = pack(t, FORM, f"{PRE}_main", 30, 20, dry=dry)
+        s_zs = pack(t, "zs", f"{PRE}_main", 30, 20, dry=dry)
         print(f"[q6] task {t}: practice {p1} fit {f1} token practice {p2} refit {f2} | score token {s_tok} form {s_form} zs {s_zs}",
               flush=True)
 

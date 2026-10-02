@@ -1,0 +1,63 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration of the broadened scheme's read",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky1.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "56e567cf9fc13cac2c08094fe6edd9b0671bc260",
+  "short": "56e567cf"
+ },
+ "keys": {},
+ "metrics": {
+  "deployability": "the form uses the simulator's segmentation (an oracle teacher during practice); the token arm uses only the instruction and the frozen policy's inputs",
+  "form_rule": "practice success >= 0.2 in the screen",
+  "hypotheses": {
+   "H1": "token alone > zs pooled over the 7 tasks (exact sign test on discordant pairs)",
+   "H2": "form > zs pooled",
+   "correction": "Holm over H1, H2"
+  },
+  "procedure": "experiments/q6_chain.py --form bind@rho0.7_all_approach --pre q8: the form on states 10-29 (recorded) -> token (_q81) -> the token alone on 10-29 -> refit on both rounds (_q82) -> init states 30-49, 20 episodes: zs, form, token alone",
+  "screen": "48 failing LIBERO-90 tasks with a moved object, not screened before; form = the action expert's attention at mass 0.7 on the moved object's tokens (simulator segmentation: an oracle teacher during practice only) while the gripper is open; 10 practice episodes on init states 0-9 (ledger b2_q2 tag q8_screen)",
+  "tasks": [
+   12,
+   13,
+   14,
+   2,
+   43,
+   70,
+   82
+  ],
+  "written_before": "any episode of q8_p1, q8_p2 or q8_main"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_90__q8_main__s0__56e567cf",
+ "schema": 1,
+ "script": "experiments/prereg/q8_main.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-02T08:38:22+00:00",
+ "stream": null,
+ "tag": "q8_main"
+}

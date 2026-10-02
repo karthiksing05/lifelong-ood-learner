@@ -14,13 +14,21 @@ from lifelong_ood import stats                              # noqa: E402
 R = os.path.join(ROOT, "results", "robot")
 TASKS = [43, 52]
 ARMS = {"zs": "zs", "form": "bindw4_rho0.7_approach", "token": "ftoken_self_w2"}
+PRE = "q6"
+if "--pre" in sys.argv:                      # e.g. --pre q8 --tasks 12+13 --form bind_rho0.7_all_approach
+    PRE = sys.argv[sys.argv.index("--pre") + 1]
+    ARMS["token"] = f"ftoken_self_{PRE}2"
+if "--tasks" in sys.argv:
+    TASKS = [int(x) for x in sys.argv[sys.argv.index("--tasks") + 1].split("+")]
+if "--form" in sys.argv:
+    ARMS["form"] = sys.argv[sys.argv.index("--form") + 1]
 
 
 def main():
     tab, missing = {}, []
     for t in TASKS:
         for k, tag in ARMS.items():
-            f = os.path.join(R, f"q6_main_{t}_{tag}.json")
+            f = os.path.join(R, f"{PRE}_main_{t}_{tag}.json")
             if not os.path.exists(f):
                 missing.append(f"{t}:{k}")
                 continue
@@ -48,11 +56,13 @@ def main():
         print(f"[q6] {h}: {v['x']} vs {v['control']} of {v['n']}, discordant {v['discordant']}, sign p {v['sign_p']:.3g}, Holm "
               f"{v['holm_p']:.3g} -> passes {v['passes']}", flush=True)
     print("[q6] per task", res["per_task"], ("missing " + str(missing)) if missing else "", flush=True)
-    json.dump(res, open(os.path.join(R, "q6_read.json"), "w"), indent=1)
+    json.dump(res, open(os.path.join(R, f"{PRE}_read.json"), "w"), indent=1)
     if "--record" in sys.argv and not missing:
         from lifelong_ood import ledger
-        print(ledger.record("q6_main", bench="libero_90", tag="read", seed=0, metrics=res,
-                            bytes=dict(experts=2 * 18432, tree=0, codes=2 * 4096, samples=0, teacher_copies=0, total=2 * (18432 + 4096)),
+        nb = len(TASKS) * 18432 + (len(TASKS) * 4096 if PRE == "q6" else 0)
+        print(ledger.record(f"{PRE}_main", bench="libero_90", tag="read", seed=0, metrics=res,
+                            bytes=dict(experts=len(TASKS) * 18432, tree=0, codes=nb - len(TASKS) * 18432, samples=0, teacher_copies=0,
+                                       total=nb),
                             config={}, script="experiments/q6_read.py", command=" ".join(sys.argv)))
 
 
