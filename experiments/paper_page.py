@@ -567,7 +567,29 @@ def inst_par():
             f"{A['kept_forms']} and {B['kept_forms']} forms kept). The front bowl, which no stored prototype pointed at, rises to "
             f"{fb[0]} of 20 from {fb[1]} through another kitchen's prototype at its fourth peak. The gain sits in a few tasks, the "
             f"task-level intervals include zero, and one kept form loses at test (the chocolate pudding), so ten practice episodes "
-            f"sometimes keep the wrong unit.</p>" + codes_table() + confirm_par())
+            f"sometimes keep the wrong unit.</p>" + codes_table() + confirm_par() + reach_par())
+
+
+def reach_par():
+    zb, dose = row("q20_stream", "zs_binding"), row("q21_dose", "screen")
+    if not (zb and dose):
+        return ""
+    ov = [1, 3, 4, 5, 32, 34, 36, 37, 40, 41, 42, 43, 63]
+    lo = [L.load("m3_final", tag="lora", keys__tasks=str(t))[-1]["metrics"] for t in ov]
+    k_lo, n_lo = sum(round(m["success_rate"] * m["n_episodes"]) for m in lo), sum(m["n_episodes"] for m in lo)
+    h = row("q20_stream", "read")["hypotheses"]
+    a, b = (sum(h[x]["per_task"][str(t)][0] for t in ov) for x in ("H1", "H2"))
+    z = sum(h["H1"]["per_task"][str(t)][1] for t in ov)
+    d = dose["rows"]
+    return (f"<p>Where composition stops. {len(ov)} of the stream's tasks also have the archived one-demo LoRA, an 18.7 MB adapter "
+            f"fitted on the task's demonstration: it succeeds {k_lo} of {n_lo} times there, the stream {a} and {b}, zero-shot {z}. On "
+            f"{len(zb['wrong_object'])} of these the policy moves another object first, so binding is what fails, yet attention binding "
+            f"takes hold on only the white bowl; raising the attention mass to 0.95 still never moves the white bowl of the second "
+            f"kitchen or the frying pan first ({d['36:bindw4_rho0.95_approach']['bound']} and "
+            f"{d['42:bindw4_rho0.95_approach']['bound']} of 10), and the butter, moved first {d['3:bindw4_rho0.85_approach']['bound']} "
+            f"of 10 times at 0.85, never completes the task's second step. Composition reaches the tasks a frozen policy fails by "
+            f"reading the wrong object and could grasp; a grasp it lacks or a step it does not chain still needs what a fitted "
+            f"adapter takes from a demonstration.</p>")
 
 
 def codes_table():
