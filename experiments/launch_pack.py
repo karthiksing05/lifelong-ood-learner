@@ -183,6 +183,7 @@ def arm_spec(tid, arm, fold, demo=0):
         src = next((p_[3:] for p_ in parts if p_.startswith("src")), str(tid))
         ph = "&phase=approach" if "approach" in parts else ""
         pf = "&pfile=q18_self_protos" if "self" in parts else ""         # _self: the prototype from the task's own successes
+        pf += next((f"&inst={p_[4:]}" for p_ in parts if p_.startswith("inst")), "")   # _inst<r>: the r-th instance of the type
         return (f"bind:{tid}?suite={SUITE_OF.get('suite', 'libero_90')}&src=w4&rho={parts[0][3:]}&band=all{ph}&proto={src}{pf}", "0", False)
     if arm == "bindrole":                                                # attention pointer while open + role swap while closed
         import glob as _glob                                             # (base instruction): the approach and the carry bound apart

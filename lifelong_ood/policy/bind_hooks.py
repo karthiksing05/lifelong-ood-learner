@@ -75,7 +75,7 @@ def shifted(mask16, avoid16):
 
 class BindHooks:
     def __init__(self, bk, task, src="oracle", rho=0.5, beta=None, band="all", cams="agent", ctrl="none", phase=True, seed=0,
-                 w1_layer=None, keep=0.5, phrases=None, proto=None, topk=4, gproto=None):
+                 w1_layer=None, keep=0.5, phrases=None, proto=None, topk=4, gproto=None, inst=None):
         self.bk, self.task = bk, task
         self.src, self.ctrl, self.phase = src, ctrl, bool(phase) and phase != "approach"
         self.cfg = (dict(mode="fixed", beta=float(beta)) if beta is not None else dict(mode="mass", rho=float(rho)))
@@ -88,6 +88,8 @@ class BindHooks:
         self.keep = float(keep)                          # deployable maps keep the tokens >= keep x the map's peak
         self.proto = None if proto is None else np.asarray(proto, np.float32)
         self.gproto = None if gproto is None else np.asarray(gproto, np.float32)   # the demo's goal prototype (carry phase)
+        self.inst = None if inst is None else int(inst)  # INSTANCE r of the prototype's type: the r-th peak of its map (row-major)
+        self.track = None                                # the tracked instance's patch (row, col) within the episode
         self.topk = int(topk)
         self.phrases = phrases or {}
         self.owl = None
@@ -103,6 +105,7 @@ class BindHooks:
     def reset(self, meta):
         self.started = True
         self.closed = False
+        self.track = None
         named = set(self.ref["open"]) | set(self.ref["closed"])
         others = [n for n in self.movable if n not in named]
         self.placebo = str(self.rng.choice(others)) if others else None
@@ -157,7 +160,7 @@ class BindHooks:
             if self.src == "w4":                         # the demo's visual object prototype (experiments/q4_template.py)
                 f = self._feats(obs)
                 sim = f @ (self.gproto if (self.closed and self.gproto is not None) else self.proto)
-                k = np.argsort(sim)[::-1][: self.topk]
+                k = np.argsort(sim)[::-1][: self.topk] if self.inst is None else self._instance(sim)
                 m = np.zeros(256, np.float32)
                 m[k] = 1.0
                 m = m.reshape(16, 16)
@@ -186,6 +189,30 @@ class BindHooks:
             f = self.bk.model.paligemma_with_expert.embed_image(images[0])[0].float()
         f = f / f.norm(dim=-1, keepdim=True)
         return f.cpu().numpy()
+
+    def _instance(self, sim, n_peaks=3, sep=2):
+        """The top-k patches of ONE instance of the prototype's type.  At the episode's first query the map's n_peaks strongest
+        peaks at least `sep` patches apart are ordered row-major and the inst-th is chosen; later queries follow it (the strongest
+        patch within `sep` of the last position).  The acceptance test, not the prototype, decides which instance a task binds."""
+        S = sim.reshape(16, 16)
+        if self.track is None:
+            peaks = []
+            for p in np.argsort(sim)[::-1]:
+                ij = divmod(int(p), 16)
+                if all(max(abs(ij[0] - a), abs(ij[1] - b)) > sep for a, b in peaks):
+                    peaks.append(ij)
+                if len(peaks) == n_peaks:
+                    break
+            peaks.sort()
+            self.track = peaks[min(self.inst, len(peaks) - 1)]
+        else:
+            i0, j0 = self.track
+            win = [(a, b) for a in range(max(0, i0 - sep), min(16, i0 + sep + 1)) for b in range(max(0, j0 - sep), min(16, j0 + sep + 1))]
+            self.track = max(win, key=lambda ab: S[ab])
+        i0, j0 = self.track
+        near = [(a, b) for a in range(max(0, i0 - 1), min(16, i0 + 2)) for b in range(max(0, j0 - 1), min(16, j0 + 2))]
+        near.sort(key=lambda ab: -S[ab])
+        return np.array([a * 16 + b for a, b in near[: self.topk]])
 
     def phrase_of(self, inst):
         """The words the instruction uses for an instance: the scene's phrase for its type, else the type's words."""
