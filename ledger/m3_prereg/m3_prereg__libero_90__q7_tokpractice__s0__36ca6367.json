@@ -1,0 +1,76 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration of the token-practice read",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky1.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "36ca6367121c3eec14e1f0d5a6033ac584fd1676",
+  "short": "36ca6367"
+ },
+ "keys": {},
+ "metrics": {
+  "bytes": "18.4 KB per task (token) against 18.7 MB (LoRA)",
+  "hypotheses": {
+   "H1": "practised token > demo token (zc_fold's token arm), exact sign test on discordant pairs",
+   "H2": "practised token non-inferior to the one-demo LoRA (252): one-sided 95% lower bound of the pooled difference > -0.10 (two-level bootstrap)",
+   "correction": "Holm over H1, H2"
+  },
+  "procedure": "the demo token of each task (results/robot/ftoken_<t>.pt, fitted on demo 0; ledger p1_bindings tag zc_fold: 140 of 420) practises alone (the task's instruction + the token) on init states 10-29, 20 episodes, real scene recorded; a new token is fitted on demo 0 PLUS the successful episodes (experiments/f4_fold.py --source demo+rollouts, tag _tp); a task with no practice success keeps its demo token",
+  "scoring": "init states 30-49, 20 episodes per task, the same paired episodes as zc_fold",
+  "tasks": [
+   35,
+   36,
+   39,
+   42,
+   1,
+   6,
+   34,
+   37,
+   40,
+   52,
+   53,
+   62,
+   3,
+   4,
+   5,
+   32,
+   41,
+   43,
+   48,
+   58,
+   63
+  ],
+  "written_before": "any episode of q7_p1 or q7_main"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_90__q7_tokpractice__s0__36ca6367",
+ "schema": 1,
+ "script": "experiments/prereg/q7_tokpractice.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-02T06:40:17+00:00",
+ "stream": null,
+ "tag": "q7_tokpractice"
+}

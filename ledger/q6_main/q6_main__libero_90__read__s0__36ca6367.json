@@ -1,0 +1,101 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 8192,
+  "experts": 36864,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 45056,
+  "tree": 0
+ },
+ "command": "experiments/q6_read.py --record",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky1.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "q6_main",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "36ca6367121c3eec14e1f0d5a6033ac584fd1676",
+  "short": "36ca6367"
+ },
+ "keys": {},
+ "metrics": {
+  "hypotheses": {
+   "H1": {
+    "control": 2,
+    "diff": {
+     "diff": 0.2,
+     "hi": 0.35,
+     "hi90": 0.325,
+     "lo": 0.05,
+     "lo90": 0.075,
+     "n_pairs": 40,
+     "n_tasks": 2
+    },
+    "discordant": [
+     10,
+     2
+    ],
+    "holm_p": 0.03857421875,
+    "n": 40,
+    "passes": true,
+    "sign_p": 0.03857421875,
+    "x": 10
+   },
+   "H2": {
+    "control": 2,
+    "diff": {
+     "diff": 0.375,
+     "hi": 0.625,
+     "hi90": 0.575,
+     "lo": 0.15,
+     "lo90": 0.175,
+     "n_pairs": 40,
+     "n_tasks": 2
+    },
+    "discordant": [
+     16,
+     1
+    ],
+    "holm_p": 0.00054931640625,
+    "n": 40,
+    "passes": true,
+    "sign_p": 0.000274658203125,
+    "x": 17
+   }
+  },
+  "missing": [],
+  "per_task": {
+   "43": {
+    "form": 12,
+    "token": 6,
+    "zs": 2
+   },
+   "52": {
+    "form": 5,
+    "token": 4,
+    "zs": 0
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "q6_main__libero_90__read__s0__36ca6367",
+ "schema": 1,
+ "script": "experiments/q6_read.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-02T08:11:39+00:00",
+ "stream": null,
+ "tag": "read"
+}

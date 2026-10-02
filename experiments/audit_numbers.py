@@ -620,6 +620,19 @@ BIND = [   # the Bind plan's reads (no demonstration; ledger m3_prereg tags b_bi
     ("W4: tasks", lambda: (float(_row("q4_template", "read")["n_tasks"]), 0.0, 1), "27"),
     ("W4: reuse pointing", lambda: (_row("q4_template", "read")["reuse_pointing"], 0.0, 1), "0.55"),
     ("W4: prototype KB", lambda: (_row("q4_template", "read")["proto_bytes"] / 1e3, 0.0, 1), "4"),
+    ("W4 pilot: white bowl (of 10)", q2("q5_w4", "43:bindw4_rho0.7_approach", "success", 10), "8"),
+    ("W4 pilot: white bowl zero-shot (of 10)", q2("q5_w4", "43:zs", "success", 10), "0"),
+    ("W4 pilot: milk (of 10)", q2("q5_w4", "52:bindw4_rho0.7_approach", "success", 10), "2"),
+    ("W4 pilot: success mean", lambda: (_row("b2_q2", "q5_w4")["arms"]["bindw4_rho0.7_approach"]["success_mean"], 0.0, 1), "0.055"),
+    ("W4 pilot: zero-shot mean", lambda: (_row("b2_q2", "q5_w4")["arms"]["zs"]["success_mean"], 0.0, 1), "0.009"),
+    ("W4 pilot: tasks", lambda: (float(_row("b2_q2", "q5_w4")["arms"]["bindw4_rho0.7_approach"]["tasks"]), 0.0, 1), "20"),
+    ("deployable: form", lambda: (float(_row("q6_main", "read")["hypotheses"]["H2"]["x"]), 0.0, 1), "17"),
+    ("deployable: episodes", lambda: (float(_row("q6_main", "read")["hypotheses"]["H2"]["n"]), 0.0, 1), "40"),
+    ("deployable: zero-shot", lambda: (float(_row("q6_main", "read")["hypotheses"]["H2"]["control"]), 0.0, 1), "2"),
+    ("deployable: token", lambda: (float(_row("q6_main", "read")["hypotheses"]["H1"]["x"]), 0.0, 1), "10"),
+    ("deployable: token Holm p", lambda: (_row("q6_main", "read")["hypotheses"]["H1"]["holm_p"], 0.0, 1), "0.039"),
+    ("deployable: white bowl token", lambda: (float(_row("q6_main", "read")["per_task"]["43"]["token"]), 0.0, 1), "6"),
+    ("deployable: milk token", lambda: (float(_row("q6_main", "read")["per_task"]["52"]["token"]), 0.0, 1), "4"),
 ]
 
 CHECKS = EMBODIED + TRANSFER + BIND + [

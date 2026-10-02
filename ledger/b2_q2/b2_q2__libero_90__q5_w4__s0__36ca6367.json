@@ -1,0 +1,613 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "experiments/b2_q2_read.py --experiment q5_w4 --record",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky1.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "b2_q2",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "36ca6367121c3eec14e1f0d5a6033ac584fd1676",
+  "short": "36ca6367"
+ },
+ "keys": {},
+ "metrics": {
+  "arms": {
+   "bindw4_rho0.7_approach": {
+    "BA_mean": 0.19,
+    "NONE_max": 1.0,
+    "success_mean": 0.05500000000000001,
+    "tasks": 20,
+    "tasks_BA_ge_0_5": 2
+   },
+   "zs": {
+    "BA_mean": 0.13636363636363638,
+    "NONE_max": 0.9,
+    "success_mean": 0.009090909090909092,
+    "tasks": 22,
+    "tasks_BA_ge_0_5": 3
+   }
+  },
+  "experiment": "q5_w4",
+  "rows": {
+   "1:bindw4_rho0.7_approach": {
+    "BA": 0.0,
+    "NONE": 0.3,
+    "arm": "bindw4_rho0.7_approach",
+    "bound_counts": {
+     "None": 0,
+     "akita_black_bowl_1": 7
+    },
+    "n": 10,
+    "named": "wooden_cabinet_1",
+    "success": 0.0,
+    "task": 1
+   },
+   "1:zs": {
+    "BA": 0.0,
+    "NONE": 0.5,
+    "arm": "zs",
+    "bound_counts": {
+     "None": 0,
+     "akita_black_bowl_1": 5
+    },
+    "n": 10,
+    "named": "wooden_cabinet_1",
+    "success": 0.0,
+    "task": 1
+   },
+   "32:bindw4_rho0.7_approach": {
+    "BA": 0.3,
+    "NONE": 0.7,
+    "arm": "bindw4_rho0.7_approach",
+    "bound_counts": {
+     "None": 0,
+     "ketchup_1": 3
+    },
+    "n": 10,
+    "named": "ketchup_1",
+    "success": 0.0,
+    "task": 32
+   },
+   "32:zs": {
+    "BA": 0.9,
+    "NONE": 0.1,
+    "arm": "zs",
+    "bound_counts": {
+     "None": 0,
+     "ketchup_1": 9
+    },
+    "n": 10,
+    "named": "ketchup_1",
+    "success": 0.0,
+    "task": 32
+   },
+   "34:bindw4_rho0.7_approach": {
+    "BA": 0.2,
+    "NONE": 0.8,
+    "arm": "bindw4_rho0.7_approach",
+    "bound_counts": {
+     "None": 0,
+     "white_yellow_mug_1": 2
+    },
+    "n": 10,
+    "named": "white_yellow_mug_1",
+    "success": 0.0,
+    "task": 34
+   },
+   "34:zs": {
+    "BA": 1.0,
+    "NONE": 0.0,
+    "arm": "zs",
+    "bound_counts": {
+     "white_yellow_mug_1": 10
+    },
+    "n": 10,
+    "named": "white_yellow_mug_1",
+    "success": 0.0,
+    "task": 34
+   },
+   "35:zs": {
+    "BA": 0.0,
+    "NONE": 0.8,
+    "arm": "zs",
+    "bound_counts": {
+     "None": 0,
+     "plate_1": 2
+    },
+    "n": 10,
+    "named": "microwave_1",
+    "success": 0.1,
+    "task": 35
+   },
+   "36:bindw4_rho0.7_approach": {
+    "BA": 0.0,
+    "NONE": 1.0,
+    "arm": "bindw4_rho0.7_approach",
+    "bound_counts": {
+     "None": 0
+    },
+    "n": 10,
+    "named": "white_bowl_1",
+    "success": 0.0,
+    "task": 36
+   },
+   "36:zs": {
+    "BA": 0.0,
+    "NONE": 0.3,
+    "arm": "zs",
+    "bound_counts": {
+     "None": 0,
+     "plate_1": 7
+    },
+    "n": 10,
+    "named": "white_bowl_1",
+    "success": 0.0,
+    "task": 36
+   },
+   "37:bindw4_rho0.7_approach": {
+    "BA": 0.0,
+    "NONE": 1.0,
+    "arm": "bindw4_rho0.7_approach",
+    "bound_counts": {
+     "None": 0
+    },
+    "n": 10,
+    "named": "white_bowl_1",
+    "success": 0.0,
+    "task": 37
+   },
+   "37:zs": {
+    "BA": 0.0,
+    "NONE": 0.1,
+    "arm": "zs",
+    "bound_counts": {
+     "None": 0,
+     "plate_1": 9
+    },
+    "n": 10,
+    "named": "white_bowl_1",
+    "success": 0.0,
+    "task": 37
+   },
+   "39:bindw4_rho0.7_approach": {
+    "BA": 0.0,
+    "NONE": 0.9,
+    "arm": "bindw4_rho0.7_approach",
+    "bound_counts": {
+     "None": 0,
+     "moka_pot_1": 1
+    },
+    "n": 10,
+    "named": "flat_stove_1",
+    "success": 0.0,
+    "task": 39
+   },
+   "39:zs": {
+    "BA": 0.0,
+    "NONE": 0.0,
+    "arm": "zs",
+    "bound_counts": {
+     "moka_pot_2": 10
+    },
+    "n": 10,
+    "named": "flat_stove_1",
+    "success": 0.0,
+    "task": 39
+   },
+   "3:bindw4_rho0.7_approach": {
+    "BA": 0.7,
+    "NONE": 0.2,
+    "arm": "bindw4_rho0.7_approach",
+    "bound_counts": {
+     "None": 0,
+     "butter_1": 1,
+     "butter_2": 7
+    },
+    "n": 10,
+    "named": "butter_2",
+    "success": 0.0,
+    "task": 3
+   },
+   "3:zs": {
+    "BA": 0.0,
+    "NONE": 0.1,
+    "arm": "zs",
+    "bound_counts": {
+     "None": 0,
+     "akita_black_bowl_1": 9
+    },
+    "n": 10,
+    "named": "butter_2",
+    "success": 0.0,
+    "task": 3
+   },
+   "40:bindw4_rho0.7_approach": {
+    "BA": 0.1,
+    "NONE": 0.9,
+    "arm": "bindw4_rho0.7_approach",
+    "bound_counts": {
+     "None": 0,
+     "chefmate_8_frypan_1": 1
+    },
+    "n": 10,
+    "named": "chefmate_8_frypan_1",
+    "success": 0.0,
+    "task": 40
+   },
+   "40:zs": {
+    "BA": 0.1,
+    "NONE": 0.0,
+    "arm": "zs",
+    "bound_counts": {
+     "chefmate_8_frypan_1": 1,
+     "white_bowl_1": 9
+    },
+    "n": 10,
+    "named": "chefmate_8_frypan_1",
+    "success": 0.0,
+    "task": 40
+   },
+   "41:bindw4_rho0.7_approach": {
+    "BA": 0.2,
+    "NONE": 0.8,
+    "arm": "bindw4_rho0.7_approach",
+    "bound_counts": {
+     "None": 0,
+     "chefmate_8_frypan_1": 2
+    },
+    "n": 10,
+    "named": "chefmate_8_frypan_1",
+    "success": 0.1,
+    "task": 41
+   },
+   "41:zs": {
+    "BA": 0.0,
+    "NONE": 0.2,
+    "arm": "zs",
+    "bound_counts": {
+     "None": 0,
+     "white_bowl_1": 8
+    },
+    "n": 10,
+    "named": "chefmate_8_frypan_1",
+    "success": 0.0,
+    "task": 41
+   },
+   "42:bindw4_rho0.7_approach": {
+    "BA": 0.0,
+    "NONE": 1.0,
+    "arm": "bindw4_rho0.7_approach",
+    "bound_counts": {
+     "None": 0
+    },
+    "n": 10,
+    "named": "chefmate_8_frypan_1",
+    "success": 0.0,
+    "task": 42
+   },
+   "42:zs": {
+    "BA": 0.0,
+    "NONE": 0.5,
+    "arm": "zs",
+    "bound_counts": {
+     "None": 0,
+     "white_bowl_1": 5
+    },
+    "n": 10,
+    "named": "chefmate_8_frypan_1",
+    "success": 0.0,
+    "task": 42
+   },
+   "43:bindw4_rho0.7_approach": {
+    "BA": 1.0,
+    "NONE": 0.0,
+    "arm": "bindw4_rho0.7_approach",
+    "bound_counts": {
+     "white_bowl_1": 10
+    },
+    "n": 10,
+    "named": "white_bowl_1",
+    "success": 0.8,
+    "task": 43
+   },
+   "43:zs": {
+    "BA": 0.2,
+    "NONE": 0.6,
+    "arm": "zs",
+    "bound_counts": {
+     "None": 0,
+     "chefmate_8_frypan_1": 2,
+     "white_bowl_1": 2
+    },
+    "n": 10,
+    "named": "white_bowl_1",
+    "success": 0.0,
+    "task": 43
+   },
+   "48:bindw4_rho0.7_approach": {
+    "BA": 0.0,
+    "NONE": 0.4,
+    "arm": "bindw4_rho0.7_approach",
+    "bound_counts": {
+     "None": 0,
+     "alphabet_soup_1": 6
+    },
+    "n": 10,
+    "named": "ketchup_1",
+    "success": 0.0,
+    "task": 48
+   },
+   "48:zs": {
+    "BA": 0.0,
+    "NONE": 0.0,
+    "arm": "zs",
+    "bound_counts": {
+     "alphabet_soup_1": 10
+    },
+    "n": 10,
+    "named": "ketchup_1",
+    "success": 0.0,
+    "task": 48
+   },
+   "4:bindw4_rho0.7_approach": {
+    "BA": 0.3,
+    "NONE": 0.0,
+    "arm": "bindw4_rho0.7_approach",
+    "bound_counts": {
+     "akita_black_bowl_1": 1,
+     "butter_1": 3,
+     "butter_2": 6
+    },
+    "n": 10,
+    "named": "butter_1",
+    "success": 0.0,
+    "task": 4
+   },
+   "4:zs": {
+    "BA": 0.0,
+    "NONE": 0.1,
+    "arm": "zs",
+    "bound_counts": {
+     "None": 0,
+     "akita_black_bowl_1": 8,
+     "chocolate_pudding_1": 1
+    },
+    "n": 10,
+    "named": "butter_1",
+    "success": 0.0,
+    "task": 4
+   },
+   "52:bindw4_rho0.7_approach": {
+    "BA": 0.3,
+    "NONE": 0.4,
+    "arm": "bindw4_rho0.7_approach",
+    "bound_counts": {
+     "None": 0,
+     "cream_cheese_1": 2,
+     "milk_1": 3,
+     "orange_juice_1": 1
+    },
+    "n": 10,
+    "named": "milk_1",
+    "success": 0.2,
+    "task": 52
+   },
+   "52:zs": {
+    "BA": 0.1,
+    "NONE": 0.0,
+    "arm": "zs",
+    "bound_counts": {
+     "alphabet_soup_1": 8,
+     "milk_1": 1,
+     "orange_juice_1": 1
+    },
+    "n": 10,
+    "named": "milk_1",
+    "success": 0.0,
+    "task": 52
+   },
+   "53:bindw4_rho0.7_approach": {
+    "BA": 0.3,
+    "NONE": 0.5,
+    "arm": "bindw4_rho0.7_approach",
+    "bound_counts": {
+     "None": 0,
+     "milk_1": 2,
+     "orange_juice_1": 3
+    },
+    "n": 10,
+    "named": "orange_juice_1",
+    "success": 0.0,
+    "task": 53
+   },
+   "53:zs": {
+    "BA": 0.1,
+    "NONE": 0.0,
+    "arm": "zs",
+    "bound_counts": {
+     "milk_1": 9,
+     "orange_juice_1": 1
+    },
+    "n": 10,
+    "named": "orange_juice_1",
+    "success": 0.0,
+    "task": 53
+   },
+   "58:bindw4_rho0.7_approach": {
+    "BA": 0.0,
+    "NONE": 0.3,
+    "arm": "bindw4_rho0.7_approach",
+    "bound_counts": {
+     "None": 0,
+     "alphabet_soup_1": 7
+    },
+    "n": 10,
+    "named": "ketchup_1",
+    "success": 0.0,
+    "task": 58
+   },
+   "58:zs": {
+    "BA": 0.0,
+    "NONE": 0.0,
+    "arm": "zs",
+    "bound_counts": {
+     "alphabet_soup_1": 9,
+     "tomato_sauce_1": 1
+    },
+    "n": 10,
+    "named": "ketchup_1",
+    "success": 0.0,
+    "task": 58
+   },
+   "59:bindw4_rho0.7_approach": {
+    "BA": 0.0,
+    "NONE": 0.6,
+    "arm": "bindw4_rho0.7_approach",
+    "bound_counts": {
+     "None": 0,
+     "butter_1": 4
+    },
+    "n": 10,
+    "named": "tomato_sauce_1",
+    "success": 0.0,
+    "task": 59
+   },
+   "59:zs": {
+    "BA": 0.0,
+    "NONE": 0.1,
+    "arm": "zs",
+    "bound_counts": {
+     "None": 0,
+     "alphabet_soup_1": 7,
+     "butter_1": 2
+    },
+    "n": 10,
+    "named": "tomato_sauce_1",
+    "success": 0.1,
+    "task": 59
+   },
+   "5:bindw4_rho0.7_approach": {
+    "BA": 0.0,
+    "NONE": 0.7,
+    "arm": "bindw4_rho0.7_approach",
+    "bound_counts": {
+     "None": 0,
+     "akita_black_bowl_1": 3
+    },
+    "n": 10,
+    "named": "chocolate_pudding_1",
+    "success": 0.0,
+    "task": 5
+   },
+   "5:zs": {
+    "BA": 0.0,
+    "NONE": 0.3,
+    "arm": "zs",
+    "bound_counts": {
+     "None": 0,
+     "akita_black_bowl_1": 7
+    },
+    "n": 10,
+    "named": "chocolate_pudding_1",
+    "success": 0.0,
+    "task": 5
+   },
+   "62:bindw4_rho0.7_approach": {
+    "BA": 0.0,
+    "NONE": 0.0,
+    "arm": "bindw4_rho0.7_approach",
+    "bound_counts": {
+     "akita_black_bowl_1": 2,
+     "akita_black_bowl_2": 4,
+     "chocolate_pudding_1": 4
+    },
+    "n": 10,
+    "named": "new_salad_dressing_1",
+    "success": 0.0,
+    "task": 62
+   },
+   "62:zs": {
+    "BA": 0.0,
+    "NONE": 0.0,
+    "arm": "zs",
+    "bound_counts": {
+     "akita_black_bowl_1": 1,
+     "akita_black_bowl_2": 1,
+     "chocolate_pudding_1": 8
+    },
+    "n": 10,
+    "named": "new_salad_dressing_1",
+    "success": 0.0,
+    "task": 62
+   },
+   "63:bindw4_rho0.7_approach": {
+    "BA": 0.4,
+    "NONE": 0.0,
+    "arm": "bindw4_rho0.7_approach",
+    "bound_counts": {
+     "akita_black_bowl_1": 4,
+     "akita_black_bowl_2": 6
+    },
+    "n": 10,
+    "named": "akita_black_bowl_1",
+    "success": 0.0,
+    "task": 63
+   },
+   "63:zs": {
+    "BA": 0.6,
+    "NONE": 0.0,
+    "arm": "zs",
+    "bound_counts": {
+     "akita_black_bowl_1": 6,
+     "akita_black_bowl_2": 4
+    },
+    "n": 10,
+    "named": "akita_black_bowl_1",
+    "success": 0.0,
+    "task": 63
+   },
+   "6:zs": {
+    "BA": 0.0,
+    "NONE": 0.9,
+    "arm": "zs",
+    "bound_counts": {
+     "None": 0,
+     "akita_black_bowl_1": 1
+    },
+    "n": 10,
+    "named": "wooden_cabinet_1",
+    "success": 0.0,
+    "task": 6
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "b2_q2__libero_90__q5_w4__s0__36ca6367",
+ "schema": 1,
+ "script": "experiments/b2_q2_read.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-02T06:38:11+00:00",
+ "stream": null,
+ "tag": "q5_w4"
+}

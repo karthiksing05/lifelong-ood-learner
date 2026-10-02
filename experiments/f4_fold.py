@@ -56,7 +56,7 @@ def main():
         q.requires_grad_(False)
     t0 = time.time()
     obs, fulls, eps_ = [], [], []
-    if a.source == "rollouts":
+    if a.source in ("rollouts", "demo+rollouts"):
         # SELF-DISTILLATION (no demonstration): the policy's own successful episodes, recorded with the REAL scene, relabelled
         # with the task's own instruction (e.g. role-rebound episodes: base prompt + exchanged appearances at execution)
         import glob as _glob
@@ -79,9 +79,9 @@ def main():
         if len(obs) > a.max_frames:
             keep = np.linspace(0, len(obs) - 1, a.max_frames).astype(int)
             obs, fulls = [obs[i] for i in keep], [fulls[i] for i in keep]
-        if not obs:
+        if not obs and a.source == "rollouts":
             raise SystemExit("no successful recorded episodes with images for these tasks")
-    elif a.source == "demo":
+    if a.source in ("demo", "demo+rollouts"):
         d90 = D.Demos90()
         for t in tids:
             ep_idx = d90.episodes_of_text(texts[t])[a.demo]
@@ -91,7 +91,7 @@ def main():
             idx, _ = D.chunk_indices(T_, bk.H)
             fulls.append(D.pad_rows(D.to_rows(ep["actions"][idx], D.Norm.load()), bk.H))
             eps_.append(int(ep_idx))
-    else:
+    if a.source not in ("demo", "rollouts", "demo+rollouts"):
         raise SystemExit(f"unknown source {a.source}")
     T = len(obs)
     bank = adapt.PrefixBank(bk, obs, store="cpu")
