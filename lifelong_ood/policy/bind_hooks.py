@@ -77,7 +77,7 @@ class BindHooks:
     def __init__(self, bk, task, src="oracle", rho=0.5, beta=None, band="all", cams="agent", ctrl="none", phase=True, seed=0,
                  w1_layer=None, keep=0.5, phrases=None):
         self.bk, self.task = bk, task
-        self.src, self.ctrl, self.phase = src, ctrl, bool(phase)
+        self.src, self.ctrl, self.phase = src, ctrl, bool(phase) and phase != "approach"
         self.cfg = (dict(mode="fixed", beta=float(beta)) if beta is not None else dict(mode="mass", rho=float(rho)))
         self.cfg["layers"] = BANDS[band]
         self.cams = cams.split("+")
@@ -91,6 +91,7 @@ class BindHooks:
         self.closed = False
         self.placebo = None
         self.started = False                            # the server's warm-up calls (before any episode) run unbiased
+        self.approach_only = phase == "approach"
         self.log = []                                   # per query: (phase, referent, mass before, mass after)
 
     # ── episode ───────────────────────────────────────────────────────────────────────────────────────────────────
@@ -107,6 +108,8 @@ class BindHooks:
 
     # ── where ─────────────────────────────────────────────────────────────────────────────────────────────────────
     def _referent(self):
+        if self.approach_only and self.closed:
+            return []                                    # approach-only binding: the routine carries and places unbiased
         if self.ctrl == "placebo":
             return [self.placebo] if self.placebo else []
         key = "closed" if (self.phase and self.closed and self.ref["closed"]) else "open"

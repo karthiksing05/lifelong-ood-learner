@@ -28,28 +28,34 @@ relation (predicate, target type, region), the qualifiers of the instruction, an
 TASK PROTOTYPES by a greedy cover of its factors (the selection step of Wang et al., moved from pixels to tasks): each selected
 prototype supplies the factors it shares with the task, and its chain says in which phase that factor acts.
 
-## 2 Compose: zero-shot, no demo, no weights
+## 2 Compose: a task prototype with its object slot rebound
 
-The policy's own velocities under several prompts are combined affinely at every Euler step of its sampler
-(`lifelong_ood/policy/conditionals.py`; the user's ICLR paper restores composition by summing single-object predictions,
-Liu et al.'s rule):
+A new task that differs from a task the policy performs only in WHICH object fills a role is coded as that task prototype plus
+a role map (`lifelong_ood/policy/roles.py`): the base is a performed task of the same scene whose goal equals the new goal with
+the moved object replaced (same target, every other atom identical, so a trained sequence composes too). The code is the base's
+id and the object pair, tens of bytes, and reads as a sentence: "task 50 with the milk in the alphabet soup's role". The policy
+runs the base's own conditional; what composition must supply is the BINDING of the base's object slot to the new object, which
+the policy cannot read from the word. Two injections bind it, both leaving every action to the policy:
 
-    v = v(o, base) + lambda * [ v(o, base with the task's object) - v(o, base) ]
+- ROLE: the new object and the base's object exchange appearance in what the policy sees (the simulator's renderer exchanges
+  their meshes: an oracle; `experiments/libero_client.py --swap`), while the policy's own commanded gripper is open. It works
+  where the scene's routine keys on the object's appearance (in LIBERO, on its shape, where training contrasted shapes).
+- ATTENTION: the action expert's attention to the image tokens covering the new object is raised to a target mass at every
+  layer and Euler step (`lifelong_ood/policy/attn_bias.py`), while the gripper is open. It redirects a routine tied to a
+  position, where the role swap cannot.
 
-The base is a task prototype the policy reads in this scene with the task's relation; the bracket is a minimal pair that differs
-in the object only, so it isolates the object factor at this observation (the ICLR paper's d_j). The factor acts while the gripper
-is open (the phase read from the policy's own gripper command, the hierarchy's top split) and is released after the grasp.
-Nothing external is followed: every term is the policy's own conditional, so the policy keeps generating (a guide toward a target
-chunk replaced the policy's prediction; this does not). The CODE a task keeps is its prompt ids, weights and phases
-(`lifelong_ood/policy/factor_hooks.py`). Controls in every read: guidance on the task's instruction against the empty prompt,
-and a placebo pair of unrelated training instructions at the same weight.
+Practice decides which injection a task keeps. Prompt composition (the policy's velocities under several prompts, summed at
+every Euler step by the ICLR paper's rule; `lifelong_ood/policy/conditionals.py`) remains available and amplifies a factor the
+policy reads faintly; it cannot supply a binding the policy never learned.
 
 ## 3 Fold: from the policy's own attempts
 
 A FACTOR TOKEN is a learned key and value per layer appended to the prompt's cache that the action expert attends to
 (`lifelong_ood/policy/token_fold.py`; prefix tuning). Every policy weight stays frozen, so a task that does not address the token
-is untouched by construction. It is fitted by flow matching on a composition's own successful attempts, which makes the
-composition readable from one prompt (self-distillation); no demonstration enters. A token is a FACTOR only if it transfers: it is
+is untouched by construction. It is fitted by flow matching on a composition's own successful attempts, recorded with the REAL
+scene and relabelled with the task's own instruction, which makes the composition readable from that instruction alone
+(self-distillation); no demonstration enters, and at test the token needs no injection and no simulator state. A second round
+practises with the token alone and refits it on both rounds' successes. A token is a FACTOR only if it transfers: it is
 reused by later tasks that share the factor. One arrival cannot tell which of its factors a token learned; two arrivals that share
 the value and differ elsewhere can (docs/COBWEB_UPDATE.md, Proposition 7), so tokens of one factor are fitted on every arrival that
 shares it.
@@ -61,7 +67,10 @@ trading bytes for drift on old tasks. Designed; run after the zero-shot and fold
 
 ## Known limits
 
-- Composition reads only what the policy reads in some context: an object word the policy never contrasted anywhere is not
-  readable by any composition of prompts.
-- The base must exist: a readable task prototype with the task's relation in the task's scene.
-- Simulation only (LIBERO-90); pi0.5 so far. pi0 shares openpi's interface; SmolVLA runs through the same backbone interface for single prompts, and needs a batched observation method before composition runs on it.
+- The binding injections need WHERE the new object is. The policy's own grounding and an open-vocabulary detector both fall short
+  of the pre-registered pointing gate; the reads use the simulator's segmentation and renderer as an oracle, during practice
+  only for the token arm.
+- A role swap binds only where the scene's routine keys on the object's appearance; a routine tied to a position, objects that
+  differ only in colour or label, and objects whose grasps differ (a pan for a moka pot) stay out of reach.
+- A base must exist: a task the policy performs in the same scene with the same goal up to the moved object.
+- Simulation only (LIBERO-90), one policy so far (pi0.5).

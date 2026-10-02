@@ -361,7 +361,8 @@ def main():
                              w1_layer=(int(kv["layer"]) if "layer" in kv else None), keep=float(kv.get("keep", 0.5)),
                              phrases=F.scene_phrases(task, tasks),
                              beta=(float(kv["beta"]) if "beta" in kv else None), band=kv.get("band", "all"),
-                             cams=kv.get("cams", "agent"), ctrl=kv.get("ctrl", "none"), phase=kv.get("phase", "1") == "1",
+                             cams=kv.get("cams", "agent"), ctrl=kv.get("ctrl", "none"),
+                             phase=("approach" if kv.get("phase") == "approach" else kv.get("phase", "1") == "1"),
                              seed=int(kv.get("seed", 0)))
         logging.info(f"bind {task.suite}:{task.index} referents {hooks.ref} {hooks.cfg} src {hooks.src} ctrl {hooks.ctrl}")
     elif a.mode.startswith("role:"):

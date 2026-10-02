@@ -136,10 +136,12 @@ def arm_spec(tid, arm, fold, demo=0):
     if arm.startswith("placebo@"):                                       # control: a random training-instruction pair, same weight
         return (f"factor:{tid}?ctrl=placebo&lam={arm.split('@', 1)[1]}", "0", False)
     if arm.startswith(("bind@", "bindplacebo@", "bindshift@")):          # Bind (plan 2026-10-01 evening): bind@rho0.5_all, bind@beta4_mid
-        cfg, band = (arm.split("@", 1)[1].split("_") + ["all"])[:2]
+        parts = arm.split("@", 1)[1].split("_")                          # bind@rho0.7_all[_approach]
+        cfg, band = parts[0], (parts[1] if len(parts) > 1 else "all")
+        ph = "&phase=approach" if "approach" in parts[2:] else ""
         knob = f"rho={cfg[3:]}" if cfg.startswith("rho") else f"beta={cfg[4:]}"
         ctrl = "placebo" if arm.startswith("bindplacebo") else "shift" if arm.startswith("bindshift") else "none"
-        return (f"bind:{tid}?suite={SUITE_OF.get('suite', 'libero_90')}&src=oracle&{knob}&band={band}&ctrl={ctrl}", "0", False)
+        return (f"bind:{tid}?suite={SUITE_OF.get('suite', 'libero_90')}&src=oracle&{knob}&band={band}&ctrl={ctrl}{ph}", "0", False)
     if arm.split("@")[0] in ("role", "roleplacebo", "roleshape"):       # role rebinding (lifelong_ood/policy/roles.py): the base task
         import glob as _glob                                             # prototype's instruction, objects' appearances exchanged
         from lifelong_ood.policy import factors as F

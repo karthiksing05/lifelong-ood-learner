@@ -539,7 +539,51 @@ TRANSFER = [   # archive/2026-10-program/PLAN_TRANSFER.md probes (pre-registered
     ("storage: 50 tasks phases + heads MB", sto("streams", "A", "totals", "own_pca", scale=1e6), "17.3"),
 ]
 
-CHECKS = EMBODIED + TRANSFER + [
+def _row(exp, tag):
+    return L.load(exp, tag=tag)[-1]["metrics"]
+
+
+def q2(tag, key, field, scale=1.0):
+    """b2_q2 reads (experiments/b2_q2_read.py): rows keyed '<task>:<arm>' (arm names contain dots, so no dotted paths)."""
+    return lambda: (scale * float(_row("b2_q2", tag)["rows"][key][field]), 0.0, 1)
+
+
+BIND = [   # the Bind plan's reads (no demonstration; ledger m3_prereg tags b_bind_q1, b_bind_q2, b_bind_q2_amend1)
+    ("bind Q1a: W1 LIBERO-Goal layer 10", lambda: (_row("b1_where", "read_all")["groups"]["validity"]["w1_by_layer"]["10"], 0.0, 1), "0.74"),
+    ("bind Q1a: W1 class a layer 10", lambda: (_row("b1_where", "read_all")["groups"]["class_a"]["w1_by_layer"]["10"], 0.0, 1), "0.51"),
+    ("bind Q1a: OWLv2 LIBERO-Goal", lambda: (_row("b1_where", "read_w3center")["groups"]["validity"]["w3"], 0.0, 1), "0.65"),
+    ("bind Q1a: OWLv2 class a", lambda: (_row("b1_where", "read_w3center")["groups"]["class_a"]["w3"], 0.0, 1), "0.71"),
+    ("bind Q1b: CC lowest config", lambda: (min(v["CC"] for v in _row("b2_steer", "offline_class_a")["groups"]["class_a"]["configs"].values()), 0.0, 1), "0.45"),
+    ("bind Q1b: CC highest config", lambda: (max(v["CC"] for v in _row("b2_steer", "offline_class_a")["groups"]["class_a"]["configs"].values()), 0.0, 1), "0.62"),
+    ("bind Q1b: PA mass 0.7", lambda: (_row("b2_steer", "offline_class_a")["groups"]["class_a"]["configs"]["mass0.7_all"]["PA"], 0.0, 1), "0.43"),
+    ("bind Q1b: PA unbiased", lambda: (_row("b2_steer", "offline_class_a")["groups"]["class_a"]["PA_base"], 0.0, 1), "0.30"),
+    ("bind Q2: ketchup attention (of 10)", q2("b_q2mini", "48:bind_rho0.7_all", "BA", 10), "7"),
+    ("bind Q2: milk attention (of 10)", q2("b_q2mini", "52:bind_rho0.7_all", "BA", 10), "7"),
+    ("bind Q2: milk zero-shot (of 10)", q2("b_q2mini", "52:zs", "BA", 10), "1"),
+    ("bind Q2: tomato sauce attention none (of 10)", q2("b_q2mini", "49:bind_rho0.7_all", "NONE", 10), "10"),
+    ("bind Q2: attention whole-episode success mean", lambda: (_row("b2_q2", "b_q2full")["arms"]["bind_rho0.7_all"]["success_mean"], 0.0, 1), "0.01"),
+    ("bind Q2: tomato sauce approach-only (of 10)", q2("b_q2full", "59:bind_rho0.7_all_approach", "success", 10), "10"),
+    ("bind Q2: tomato sauce zero-shot success (of 10)", q2("b_q2mini", "59:zs", "success", 10), "1"),
+    ("role: milk BA", q2("b_q2mini", "52:role", "BA"), "0.9"),
+    ("role: OJ BA", q2("b_q2mini", "53:role", "BA"), "1.0"),
+    ("role: milk zero-shot BA", q2("b_q2mini", "52:zs", "BA"), "0.1"),
+    ("role: milk success", q2("b_q2mini", "52:role", "success"), "0.4"),
+    ("role: OJ success", q2("b_q2mini", "53:role", "success"), "0.3"),
+    ("role: milk approach-only success", q2("b_q2mini", "52:role_open", "success"), "0.7"),
+    ("role: OJ approach-only success", q2("b_q2mini", "53:role_open", "success"), "0.7"),
+    ("role: ketchup BA", q2("b_q2mini", "48:role", "BA"), "0.0"),
+    ("role: ketchup none (of 10)", q2("b_q2mini", "48:role", "NONE", 10), "7"),
+    ("role: same-shape placebo pooled", lambda: (_row("b2_q2", "b_q2mini")["arms"]["roleplacebo"]["BA_placebo_pooled"], 0.0, 1), "0.0"),
+    ("role: carton placebo task 52", q2("b_q2mini", "52:roleshape", "BA_placebo"), "1.0"),
+    ("role: carton placebo task 53", q2("b_q2mini", "53:roleshape", "BA_placebo"), "0.8"),
+    ("fold: token bytes (KB)", lambda: (L.load("f4_fold", tag="token_rollouts_role")[-1]["bytes"]["total"] / 1e3, 0.0, 1), "18.4"),
+    ("fold: OJ token BA (of 10)", q2("b_q2mini", "53:ftoken_self_role", "BA", 10), "10"),
+    ("fold: OJ token success", q2("b_q2mini", "53:ftoken_self_role", "success"), "0.6"),
+    ("fold: milk token BA", q2("b_q2mini", "52:ftoken_self_role", "BA"), "0.5"),
+    ("fold: milk token success", q2("b_q2mini", "52:ftoken_self_role", "success"), "0.2"),
+]
+
+CHECKS = EMBODIED + TRANSFER + BIND + [
     ("p1 tree (phase 0): best background purity, level 1", p1("metrics.levels.1.purity_bg"), "0.84"),
     ("p1 tree (phase 0): best digit purity, level 0", p1("metrics.levels.0.purity_digit"), "0.25"),
     ("p3 smoke: label-gated reference taught joint, task 0", p3s("metrics.taught_joint", "lora-all-c1@gate=label", 0), "0.778"),

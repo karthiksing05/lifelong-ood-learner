@@ -1,0 +1,91 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration of the scheme's main read",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky1.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "b923620af11cea5f8f51a4eaca497a906b6b1b3b",
+  "short": "b923620a"
+ },
+ "keys": {},
+ "metrics": {
+  "deployability": "the forms use the simulator (renderer or segmentation) and are an oracle teacher during practice; the token arm uses nothing but the instruction and the frozen policy's inputs",
+  "fold": {
+   "round1": "the chosen form on practice states 10-29 (20 episodes, real scene recorded); its successes, relabelled with the task's own instruction, fit a 1-entry KV token (experiments/f4_fold.py --source rollouts, 600 steps, lr 1e-2; tag _s1)",
+   "round2": "the token alone (own instruction, no form, no simulator state) on states 10-29; its successes plus round 1's refit the token (tag _s2); a task with no success in round 1 gets no token"
+  },
+  "form_choice_from_the_rule": {
+   "52": "role_open (0.7)",
+   "53": "role_open (0.7)",
+   "59": "attn (1.0)",
+   "60": "role_open (1.0)",
+   "others": "none (best practice success <= 0.1)"
+  },
+  "form_rule": "per task, the form with the highest success on practice states 0-9 (ledger b2_q2 tags b_q2mini and b_q2full, already run); ties -> role_open; if the best practice success is below 0.2 the task gets no form and no token (the scheme leaves it to the frozen policy)",
+  "forms": {
+   "attn": "the task's own instruction; the action expert's attention raised to mass 0.7 on the moved object's agent-view tokens (simulator segmentation, ORACLE), all layers, while the gripper is open (b_q2full bind@rho0.7_all_approach)",
+   "role_open": "the base task prototype's instruction; the new object and the base's object exchange appearance in the simulator's renderer while the policy's commanded gripper is open (ORACLE; b_q2mini role@open)"
+  },
+  "hypotheses": {
+   "H1": "token > zs, pooled over the tasks with a token (one-sided exact sign test on discordant paired episodes)",
+   "H2": "form > zs, pooled over the tasks with a form",
+   "H4": "transfer > zs on task 49",
+   "correction": "Holm over H1, H2, H4",
+   "population": "descriptive: successes of the scheme (token where it exists, else zero-shot) against zero-shot over all 14 tasks (280 paired episodes); secondary: two-level bootstrap"
+  },
+  "parser_hash": "b0eb506ce1dc",
+  "plan": "~/.claude/plans/i-m-interested-in-re-workshopping-quizzical-crane.md (Bind and Chain) as revised by the Q2 reads; no demonstration of any held-out task is used anywhere",
+  "population": {
+   "rule": "every LIBERO-90 task pi0.5 fails zero-shot (< 0.8 on states 0-4) that has a role code (a performed task of the same scene whose goal equals the task's with the moved object replaced)",
+   "tasks": [
+    18,
+    21,
+    26,
+    48,
+    49,
+    52,
+    53,
+    58,
+    59,
+    60,
+    62,
+    65,
+    66,
+    71
+   ]
+  },
+  "scoring": "init states 30-49, 20 episodes per arm and task, client bind tracking; arms: zs (all 14 tasks), form (tasks with a form), token = own instruction + the round-2 token (tasks with a token), transfer = task 49 with task 59's token (tomato sauce learned in living room 3, used in living room 1, no practice on 49)",
+  "written_before": "any practice episode of this protocol (tags _s1/_s2) and any episode on states 30-49 of these tasks"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_90__b_scheme_main__s0__b923620a",
+ "schema": 1,
+ "script": "experiments/prereg/b_scheme_main.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-02T00:23:51+00:00",
+ "stream": null,
+ "tag": "b_scheme_main"
+}
