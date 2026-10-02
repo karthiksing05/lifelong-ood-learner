@@ -1,0 +1,223 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "experiments/q26_read.py --record",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky1.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "q26_grammar_accept",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "a17391225204cd41a535e8a9372ec01d989dc4a4",
+  "short": "a1739122"
+ },
+ "keys": {},
+ "metrics": {
+  "acceptance": {
+   "12": {
+    "grammar": 8,
+    "zs": 5
+   },
+   "13": {
+    "grammar": 5,
+    "zs": 1
+   },
+   "14": {
+    "grammar": 5,
+    "zs": 4
+   },
+   "15": {
+    "grammar": 3,
+    "zs": 1
+   },
+   "16": {
+    "grammar": 0,
+    "zs": 0
+   },
+   "17": {
+    "grammar": 0,
+    "zs": 0
+   },
+   "3": {
+    "grammar": 0,
+    "zs": 0
+   },
+   "4": {
+    "grammar": 0,
+    "zs": 0
+   },
+   "60": {
+    "grammar": 4,
+    "zs": 7
+   },
+   "63": {
+    "grammar": 0,
+    "zs": 0
+   },
+   "64": {
+    "grammar": 0,
+    "zs": 4
+   },
+   "87": {
+    "grammar": 0,
+    "zs": 0
+   },
+   "88": {
+    "grammar": 0,
+    "zs": 0
+   },
+   "89": {
+    "grammar": 0,
+    "zs": 0
+   }
+  },
+  "hypotheses": {
+   "H1": {
+    "control": 37,
+    "diff": {
+     "diff": 0.06428571428571428,
+     "hi": 0.1357142857142857,
+     "hi90": 0.125,
+     "lo": 0.007142857142857143,
+     "lo90": 0.014285714285714285,
+     "n_pairs": 280,
+     "n_tasks": 14
+    },
+    "discordant": [
+     23,
+     5
+    ],
+    "holm_p": 0.0009122341871261597,
+    "metric": "success",
+    "n": 280,
+    "passes": true,
+    "sign_p": 0.0009122341871261597,
+    "x": 55
+   },
+   "H2": {
+    "control": 92,
+    "diff": {
+     "diff": 0.10357142857142858,
+     "hi": 0.20714285714285716,
+     "hi90": 0.18928571428571428,
+     "lo": 0.017857142857142856,
+     "lo90": 0.02857142857142857,
+     "n_pairs": 280,
+     "n_tasks": 14
+    },
+    "discordant": [
+     31,
+     2
+    ],
+    "holm_p": 2.6170164346694946e-07,
+    "metric": "bound",
+    "n": 280,
+    "passes": true,
+    "sign_p": 1.3085082173347473e-07,
+    "x": 121
+   }
+  },
+  "kept": {
+   "12": "grammar",
+   "13": "grammar",
+   "14": "grammar",
+   "15": "grammar",
+   "16": "zs",
+   "17": "zs",
+   "3": "zs",
+   "4": "zs",
+   "60": "zs",
+   "63": "zs",
+   "64": "zs",
+   "87": "zs",
+   "88": "zs",
+   "89": "zs"
+  },
+  "missing": [],
+  "per_task": {
+   "12": [
+    11,
+    5
+   ],
+   "13": [
+    6,
+    0
+   ],
+   "14": [
+    15,
+    12
+   ],
+   "15": [
+    3,
+    0
+   ],
+   "16": [
+    0,
+    0
+   ],
+   "17": [
+    0,
+    0
+   ],
+   "3": [
+    0,
+    0
+   ],
+   "4": [
+    0,
+    0
+   ],
+   "60": [
+    11,
+    11
+   ],
+   "63": [
+    1,
+    1
+   ],
+   "64": [
+    8,
+    8
+   ],
+   "87": [
+    0,
+    0
+   ],
+   "88": [
+    0,
+    0
+   ],
+   "89": [
+    0,
+    0
+   ]
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "q26_grammar_accept__libero_90__read__s6__a1739122",
+ "schema": 1,
+ "script": "experiments/q26_read.py",
+ "seconds": null,
+ "seed": 6,
+ "source_commit": null,
+ "started": "2026-10-02T21:27:04+00:00",
+ "stream": null,
+ "tag": "read"
+}

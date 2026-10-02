@@ -602,7 +602,20 @@ def grammar_read_par():
             f"first {h1['x']} of {h1['n']} times against {h1['control']} zero-shot (discordant pairs {h1['discordant'][0]} to "
             f"{h1['discordant'][1]}, Holm p {h1['holm_p']:.2g}); success is level ({h2['x']} against {h2['control']}). Five words "
             f"and the library now pick the object. The pick-and-place tasks gain (the front bowl {pt['13']['success_grammar']} "
-            f"against {pt['13']['success_zs']}); the tasks with a second step bind and still fail at that step.</p>")
+            f"against {pt['13']['success_zs']}); the tasks with a second step bind and still fail at that step.</p>" + gaccept_par())
+
+
+def gaccept_par():
+    g = row("q26_grammar_accept", "read")
+    if not g:
+        return ""
+    h1, h2 = g["hypotheses"]["H1"], g["hypotheses"]["H2"]
+    k = sum(v == "grammar" for v in g["kept"].values())
+    return (f"<p>Filtered by the acceptance test (m3_prereg tag q26_grammar_accept), the grammar is kept on {k} tasks, all bowl "
+            f"tasks, and the policy elsewhere; the kept arms succeed {h1['x']} of {h1['n']} times against {h1['control']} "
+            f"(discordant pairs {h1['discordant'][0]} to {h1['discordant'][1]}, Holm p {h1['holm_p']:.2g}). A type prototype, five "
+            f"words and the learner's own practice turn better reading into more successes, with no demonstration of the scored "
+            f"task.</p>")
 
 
 def reach_par():
@@ -713,7 +726,7 @@ LIBERO-90 tasks have one.</li>
 
 P_VER = f"""
 <p>Every read quoted as a test was pre-registered in <code>ledger/m3_prereg</code> before its first episode (tags zc_probe, zc_bind, zc_pilot,
-zc_main, b_bind_q1, b_bind_q2, b_bind_q2_amend1, b_scheme_main, q_probes, q_pilot, q6_main, q7_tokpractice, q8_main, q10_main, q13_main, q16_library, q17_stream, q18_self, q20_stream, q20_confirm, q24_grammar); reads marked exploratory were not. Every number on this page is read from <code>ledger/</code> at commit
+zc_main, b_bind_q1, b_bind_q2, b_bind_q2_amend1, b_scheme_main, q_probes, q_pilot, q6_main, q7_tokpractice, q8_main, q10_main, q13_main, q16_library, q17_stream, q18_self, q20_stream, q20_confirm, q24_grammar, q26_grammar_accept); reads marked exploratory were not. Every number on this page is read from <code>ledger/</code> at commit
 <code>{esc(commit)}</code> by <code>experiments/paper_page.py</code>, and the README's copies are re-derived by
 <code>experiments/audit_numbers.py</code>. Episodes are paired by task and init state; intervals come from a two-level bootstrap, tests from
 the exact sign test, with Holm correction within a read. One pre-registered probe failed its own validity gate and is not used: the
