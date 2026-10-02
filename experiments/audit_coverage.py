@@ -27,6 +27,8 @@ IGNORE = {
     "104", "0.7", "0.2", "0.5",
     # embodied: noise levels named as settings; simulator-rendered placements per task (a setting)
     "0.4", "400",
+    # embodied: attention masses tried as settings (q21_dose)
+    "0.85",
 }
 NUM = re.compile(r"(?<![A-Za-z0-9_./#-])(\d[\d,]*(?:\.\d+)?)(?![A-Za-z0-9_./-])")
 
