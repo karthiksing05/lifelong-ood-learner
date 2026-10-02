@@ -567,7 +567,19 @@ def inst_par():
             f"{A['kept_forms']} and {B['kept_forms']} forms kept). The front bowl, which no stored prototype pointed at, rises to "
             f"{fb[0]} of 20 from {fb[1]} through another kitchen's prototype at its fourth peak. The gain sits in a few tasks, the "
             f"task-level intervals include zero, and one kept form loses at test (the chocolate pudding), so ten practice episodes "
-            f"sometimes keep the wrong unit.</p>")
+            f"sometimes keep the wrong unit.</p>" + confirm_par())
+
+
+def confirm_par():
+    c = row("q20_stream", "confirm")
+    if not c:
+        return ""
+    h, pu = c["hypotheses"], c["confirmation"]["B:70"]
+    return (f"<p>A confirmation round does not repair it (amendment q20_confirm): requiring a kept form to beat the policy again on "
+            f"init states 10-19 drops the back bowl's gain and keeps the pudding's form, which wins {pu['form']} to {pu['zs']} there "
+            f"while the policy alone succeeds 16 of 20 times on the test states; neither order passes ({h['H1']['x']} and "
+            f"{h['H2']['x']} against {h['H1']['control']}, Holm p {h['H1']['holm_p']:.2g}). The pudding's practice states do not "
+            f"represent its test states.</p>")
 
 
 def self_par():
@@ -606,7 +618,7 @@ LIBERO-90 tasks have one.</li>
 
 P_VER = f"""
 <p>Every read quoted as a test was pre-registered in <code>ledger/m3_prereg</code> before its first episode (tags zc_probe, zc_bind, zc_pilot,
-zc_main, b_bind_q1, b_bind_q2, b_bind_q2_amend1, b_scheme_main, q_probes, q_pilot, q6_main, q7_tokpractice, q8_main, q10_main, q13_main, q16_library, q17_stream, q18_self, q20_stream); reads marked exploratory were not. Every number on this page is read from <code>ledger/</code> at commit
+zc_main, b_bind_q1, b_bind_q2, b_bind_q2_amend1, b_scheme_main, q_probes, q_pilot, q6_main, q7_tokpractice, q8_main, q10_main, q13_main, q16_library, q17_stream, q18_self, q20_stream, q20_confirm); reads marked exploratory were not. Every number on this page is read from <code>ledger/</code> at commit
 <code>{esc(commit)}</code> by <code>experiments/paper_page.py</code>, and the README's copies are re-derived by
 <code>experiments/audit_numbers.py</code>. Episodes are paired by task and init state; intervals come from a two-level bootstrap, tests from
 the exact sign test, with Holm correction within a read. One pre-registered probe failed its own validity gate and is not used: the
