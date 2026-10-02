@@ -1,0 +1,126 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 129024,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 129024,
+  "tree": 0
+ },
+ "command": "experiments/q6_read.py --pre q8 --tasks 12+13+14+2+43+70+82 --form bind_rho0.7_all_approach --record",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky1.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "q8_main",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "a75dae6812d53e382a7a5f76e26a21f3a1c6eb8b",
+  "short": "a75dae68"
+ },
+ "keys": {},
+ "metrics": {
+  "hypotheses": {
+   "H1": {
+    "control": 56,
+    "diff": {
+     "diff": 0.15,
+     "hi": 0.35,
+     "hi90": 0.32142857142857145,
+     "lo": -0.04285714285714286,
+     "lo90": -0.007142857142857143,
+     "n_pairs": 140,
+     "n_tasks": 7
+    },
+    "discordant": [
+     38,
+     17
+    ],
+    "holm_p": 0.012911606219913274,
+    "n": 140,
+    "passes": true,
+    "sign_p": 0.006455803109956637,
+    "x": 77
+   },
+   "H2": {
+    "control": 56,
+    "diff": {
+     "diff": 0.1,
+     "hi": 0.34285714285714286,
+     "hi90": 0.30714285714285716,
+     "lo": -0.15714285714285714,
+     "lo90": -0.11428571428571428,
+     "n_pairs": 140,
+     "n_tasks": 7
+    },
+    "discordant": [
+     39,
+     25
+    ],
+    "holm_p": 0.10342187831608089,
+    "n": 140,
+    "passes": false,
+    "sign_p": 0.10342187831608089,
+    "x": 70
+   }
+  },
+  "missing": [],
+  "per_task": {
+   "12": {
+    "form": 14,
+    "token": 17,
+    "zs": 5
+   },
+   "13": {
+    "form": 10,
+    "token": 6,
+    "zs": 1
+   },
+   "14": {
+    "form": 17,
+    "token": 12,
+    "zs": 12
+   },
+   "2": {
+    "form": 12,
+    "token": 15,
+    "zs": 15
+   },
+   "43": {
+    "form": 8,
+    "token": 7,
+    "zs": 2
+   },
+   "70": {
+    "form": 8,
+    "token": 16,
+    "zs": 13
+   },
+   "82": {
+    "form": 1,
+    "token": 4,
+    "zs": 8
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "q8_main__libero_90__read__s0__a75dae68",
+ "schema": 1,
+ "script": "experiments/q6_read.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-02T09:37:10+00:00",
+ "stream": null,
+ "tag": "read"
+}

@@ -638,6 +638,18 @@ BIND = [   # the Bind plan's reads (no demonstration; ledger m3_prereg tags b_bi
     ("token practice: sign p", lambda: (_row("q7_tokpractice", "read")["H1"]["sign_p"], 0.0, 1), "0.42"),
     ("token practice: LoRA", lambda: (float(_row("q7_tokpractice", "read")["H2"]["control"]), 0.0, 1), "252"),
     ("token practice: lower bound (quoted negated)", lambda: (-_row("q7_tokpractice", "read")["H2"]["diff"]["lo90"], 0.0, 1), "0.360"),
+    ("screen: tasks", lambda: (float(_row("b2_q2", "q9_w4screen")["arms"]["bindw4_rho0.7_approach"]["tasks"]), 0.0, 1), "48"),
+    ("screen: named first (oracle)", lambda: (float(sum(v["BA"] >= 0.5 for v in _row("b2_q2", "q8_screen")["rows"].values())), 0.0, 1), "17"),
+    ("screen: forms (oracle)", lambda: (float(sum(v["success"] >= 0.2 for v in _row("b2_q2", "q8_screen")["rows"].values())), 0.0, 1), "7"),
+    ("screen: forms (prototype)", lambda: (float(sum(v["success"] >= 0.2 for v in _row("b2_q2", "q9_w4screen")["rows"].values())), 0.0, 1), "8"),
+    ("screen: prototype mean", lambda: (_row("b2_q2", "q9_w4screen")["arms"]["bindw4_rho0.7_approach"]["success_mean"], 0.0, 1), "0.09"),
+    ("broadened: token", lambda: (float(_row("q8_main", "read")["hypotheses"]["H1"]["x"]), 0.0, 1), "77"),
+    ("broadened: episodes", lambda: (float(_row("q8_main", "read")["hypotheses"]["H1"]["n"]), 0.0, 1), "140"),
+    ("broadened: zero-shot", lambda: (float(_row("q8_main", "read")["hypotheses"]["H1"]["control"]), 0.0, 1), "56"),
+    ("broadened: Holm p", lambda: (_row("q8_main", "read")["hypotheses"]["H1"]["holm_p"], 0.0, 1), "0.013"),
+    ("broadened: form", lambda: (float(_row("q8_main", "read")["hypotheses"]["H2"]["x"]), 0.0, 1), "70"),
+    ("broadened: front bowl token", lambda: (float(_row("q8_main", "read")["per_task"]["12"]["token"]), 0.0, 1), "17"),
+    ("broadened: front bowl zero-shot", lambda: (float(_row("q8_main", "read")["per_task"]["12"]["zs"]), 0.0, 1), "5"),
 ]
 
 CHECKS = EMBODIED + TRANSFER + BIND + [

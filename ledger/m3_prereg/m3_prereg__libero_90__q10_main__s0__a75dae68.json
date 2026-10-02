@@ -1,0 +1,63 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration of the fully deployable broadened scheme's read",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky1.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "a75dae6812d53e382a7a5f76e26a21f3a1c6eb8b",
+  "short": "a75dae68"
+ },
+ "keys": {},
+ "metrics": {
+  "deployability": "nothing but the demo's 4 KB object prototype and the frozen policy's own attempts; the token arm uses only the instruction",
+  "form_rule": "practice success >= 0.2 in the deployable screen",
+  "hypotheses": {
+   "H1": "token alone > zs pooled over the 7 tasks (exact sign test on discordant pairs)",
+   "H2": "form > zs pooled",
+   "correction": "Holm over H1, H2"
+  },
+  "procedure": "experiments/q6_chain.py --form bindw4@rho0.7_approach --pre q10: the form on states 10-29 (recorded) -> token (_q101) -> the token alone on 10-29 -> refit on both rounds (_q102) -> init states 30-49, 20 episodes: zs, form, token alone",
+  "screen": "the 48 tasks of q8_screen with the DEPLOYABLE form: attention at mass 0.7 on the 4 patches most like the demo's object prototype (experiments/q4_template.py), no simulator state anywhere; 10 practice episodes on states 0-9 (ledger b2_q2 tag q9_w4screen); task 43 was read in q6_main and is excluded",
+  "tasks": [
+   12,
+   2,
+   13,
+   14,
+   79,
+   15,
+   70
+  ],
+  "written_before": "any episode of q10_p1, q10_p2 or q10_main"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_90__q10_main__s0__a75dae68",
+ "schema": 1,
+ "script": "experiments/prereg/q10_main.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-02T09:37:50+00:00",
+ "stream": null,
+ "tag": "q10_main"
+}
