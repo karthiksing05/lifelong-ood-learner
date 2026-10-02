@@ -1,0 +1,72 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration of the acceptance-test read",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky1.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "e804993159d4773a5277d08c9a3aa7447801d85e",
+  "short": "e8049931"
+ },
+ "keys": {},
+ "metrics": {
+  "acceptance": "experiment q13_accept: each arm on init states 0-9 (never used to fit a token), 10 episodes, noise seed 1",
+  "arms": {
+   "form": "bindw4@rho0.7_approach (the demo's 4 KB object prototype, no simulator state)",
+   "policy": "zs",
+   "token": "ftoken@self_q102 (tasks of q10_main) / ftoken@self_w2 (43, 52 of q6_main): the tokens already folded"
+  },
+  "bytes": "kept arm: policy 0, token 18432, form 4096 per task",
+  "disclosure": "the rule was proposed after seeing q6_main and q10_main: there, choosing between form and token by the fold-round practice (states 10-29) would have given 91 of 180 against 52 zero-shot (form 83, token 75). The tasks are the same 9 (no other LIBERO-90 task passes the screen); the episodes, noise and acceptance states are new",
+  "hypotheses": {
+   "H1": "kept arm > policy, pooled over the 9 tasks (exact sign test on discordant pairs by init state)",
+   "H2": "token > policy pooled (replication of q10 H1 at a new seed)",
+   "H3": "form > policy pooled (replication of q10 H2)",
+   "correction": "Holm over H1-H3"
+  },
+  "rule": "keep the arm with the most acceptance successes; ties go to the policy, then the token, then the form",
+  "tasks": [
+   12,
+   2,
+   13,
+   14,
+   79,
+   15,
+   70,
+   43,
+   52
+  ],
+  "test": "experiment q13_main: all three arms on init states 30-49, 20 episodes, noise seed 1 (fresh draws; q6/q10 used seed 0)",
+  "written_before": "any episode of q13_accept or q13_main"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_90__q13_main__s1__e8049931",
+ "schema": 1,
+ "script": "experiments/prereg/q13_main.py",
+ "seconds": null,
+ "seed": 1,
+ "source_commit": null,
+ "started": "2026-10-02T13:12:32+00:00",
+ "stream": null,
+ "tag": "q13_main"
+}
