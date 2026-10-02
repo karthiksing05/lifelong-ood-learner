@@ -491,7 +491,26 @@ def reuse_par():
             f"{zs['bound']} zero-shot) but succeeds less ({jb['success']} against {zs['success']}). Cut at the grasp and loaded only "
             f"while the gripper is open, it binds {go['bound']} and still succeeds {go['success']}; loaded throughout, {ga['bound']} and "
             f"{ga['success']} (ledger q12_joint). The loss arises during the approach itself, so placements copied from the source tasks "
-            f"do not explain it.</p>")
+            f"do not explain it.</p>" + proto_reuse())
+
+
+def proto_reuse():
+    b = row("q14_borrow", "screen")
+    if not b:
+        return ""
+    u, o, m = b["unique_borrowed"], b["unique_own"], b["multi_borrowed_same_scene"]
+    return (f"<p>The 4 KB object prototype reuses where the token does not (exploratory, practice states). Where the moved object's "
+            f"type has one instance in the scene, a prototype from another task's demonstration, three of the six from other rooms, "
+            f"picks the object up first {u['bound']} of {u['n']} times and succeeds {u['success']} times; the task's own gives "
+            f"{o['bound']} and {o['success']}. In the kitchen with three black bowls a sibling task's prototype finds the named bowl "
+            f"{m['bound']} of {m['n']} times. Figure {FIG['n'] + 1} shows why: the prototype matches every bowl by type, and its best "
+            f"patches fall on the bowl at its source's place.</p>"
+            + fig('<img src="media/q14_maps.png" alt="cosine maps of object prototypes over first frames" style="width:100%">',
+                  "Cosine similarity of an object prototype to the policy's own image features in a task's first frame (brighter: "
+                  "more similar; green: the 4 patches binding attends to). Top row: each task's own prototype. Bottom row: a "
+                  "prototype from another task's demonstration. The white bowl (task 43) and the chocolate pudding (task 70) are "
+                  "found from other rooms; in the three-bowl kitchen (tasks 12 and 13) a borrowed prototype points at its own "
+                  "source's bowl.", wide=True))
 
 
 P_STREAM = f"""
