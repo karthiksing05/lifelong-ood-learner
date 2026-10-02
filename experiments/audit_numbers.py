@@ -602,6 +602,16 @@ BIND = [   # the Bind plan's reads (no demonstration; ledger m3_prereg tags b_bi
     ("scheme: population episodes", lambda: (float(_row("b5_scheme", "main")["population"]["episodes"]), 0.0, 1), "280"),
     ("split binding: ketchup (of 10)", q2("b_q2full", "48:bindrole", "success", 10), "0"),
     ("split binding: tomato sauce (of 10)", q2("b_q2full", "49:bindrole", "success", 10), "1"),
+    ("PoE P0: early effect", lambda: (_row("q0_share", "read")["early_effect_max"], 0.0, 1), "0.38"),
+    ("PoE P0: sensitivity at 0.5", lambda: (_row("q0_share", "read")["summary"]["0.5_0.5"]["sens"], 0.0, 1), "0.33"),
+    ("PoE P2: tasks", lambda: (float(_row("q2_explain", "read")["tasks_with_demo1"]), 0.0, 1), "21"),
+    ("PoE P2: beats policy on demo 1", lambda: (float(_row("q2_explain", "read")["recomputed_beats_policy"]), 0.0, 1), "21"),
+    ("PoE P2: options NLL cut", lambda: (_row("q2_explain", "read")["options_nll_cut"], 0.0, 1), "0.57"),
+    ("PoE P2: recomputed beats frozen", lambda: (float(_row("q2_explain", "read")["recomputed_vs_frozen"]), 0.0, 1), "10"),
+    ("PoE P2: code KB", lambda: (_row("q2_explain", "read")["code_bytes_mean"] / 1e3, 0.0, 1), "1.6"),
+    ("PoE pilot: lambda 0.5", lambda: (float(_row("q3_pilot", "read")["totals"]["poe_0.5"]), 0.0, 1), "3"),
+    ("PoE pilot: zero-shot", lambda: (float(_row("q3_pilot", "read")["totals"]["zs"]), 0.0, 1), "1"),
+    ("PoE pilot: lambda 0.3", lambda: (float(_row("q3_pilot", "read")["totals"]["poe_0.3"]), 0.0, 1), "0"),
 ]
 
 CHECKS = EMBODIED + TRANSFER + BIND + [

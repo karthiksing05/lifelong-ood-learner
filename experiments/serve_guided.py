@@ -351,6 +351,7 @@ def main():
         # bind:<task>?suite=libero_90&src=oracle&rho=0.5|beta=4&band=all|mid&cams=agent&ctrl=none|placebo|shift&phase=1 -- the
         # policy's own chunk with its action expert's attention biased toward the current phase's referent
         # (lifelong_ood/policy/bind_hooks.py; the Bind plan of 2026-10-01 evening)
+        import numpy as np
         from lifelong_ood.policy import bind_hooks as BH
         from lifelong_ood.policy import factors as F
         body, q = (a.mode[len("bind:"):].split("?", 1) + [""])[:2]
@@ -360,6 +361,9 @@ def main():
         hooks = BH.BindHooks(bk, task, src=kv.get("src", "oracle"), rho=float(kv.get("rho", 0.5)),
                              w1_layer=(int(kv["layer"]) if "layer" in kv else None), keep=float(kv.get("keep", 0.5)),
                              phrases=F.scene_phrases(task, tasks),
+                             proto=(np.load(os.path.join(ROOT, "results", "robot", "q4_object_protos.npz"))[kv.get("proto", body)]
+                                    if kv.get("src") == "w4" else None),
+                             topk=int(kv.get("topk", 4)),
                              beta=(float(kv["beta"]) if "beta" in kv else None), band=kv.get("band", "all"),
                              cams=kv.get("cams", "agent"), ctrl=kv.get("ctrl", "none"),
                              phase=("approach" if kv.get("phase") == "approach" else kv.get("phase", "1") == "1"),

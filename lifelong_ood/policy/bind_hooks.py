@@ -75,7 +75,7 @@ def shifted(mask16, avoid16):
 
 class BindHooks:
     def __init__(self, bk, task, src="oracle", rho=0.5, beta=None, band="all", cams="agent", ctrl="none", phase=True, seed=0,
-                 w1_layer=None, keep=0.5, phrases=None):
+                 w1_layer=None, keep=0.5, phrases=None, proto=None, topk=4):
         self.bk, self.task = bk, task
         self.src, self.ctrl, self.phase = src, ctrl, bool(phase) and phase != "approach"
         self.cfg = (dict(mode="fixed", beta=float(beta)) if beta is not None else dict(mode="mass", rho=float(rho)))
@@ -86,6 +86,8 @@ class BindHooks:
         self.rng = np.random.default_rng(seed)
         self.w1_layer = w1_layer
         self.keep = float(keep)                          # deployable maps keep the tokens >= keep x the map's peak
+        self.proto = None if proto is None else np.asarray(proto, np.float32)
+        self.topk = int(topk)
         self.phrases = phrases or {}
         self.owl = None
         self.closed = False
@@ -148,6 +150,15 @@ class BindHooks:
         out = {}
         for n in names[:1]:                              # one referent per phase for the deployable sources
             phrase = self.phrase_of(n)
+            if self.src == "w4":                         # the demo's visual object prototype (experiments/q4_template.py)
+                f = self._feats(obs)
+                sim = f @ self.proto
+                k = np.argsort(sim)[::-1][: self.topk]
+                m = np.zeros(256, np.float32)
+                m[k] = 1.0
+                m = m.reshape(16, 16)
+                out["agent"] = m
+                continue
             if self.src == "w1":
                 from . import where as W
                 g = W.vlm_grounding(self.bk, obs, phrase, layers=[self.w1_layer], tokenizer=self._tok())
@@ -162,6 +173,15 @@ class BindHooks:
                 raise ValueError(f"unknown where-source {self.src}")
             out["agent"] = (m >= self.keep * m.max()).astype(np.float32)
         return out
+
+    def _feats(self, obs):
+        import torch
+        o = self.bk.observation({k: obs[k] for k in ("observation/image", "observation/wrist_image", "observation/state")} | {"prompt": ""})
+        images, _, _, _, _ = self.bk.model._preprocess_observation(o, train=False)
+        with torch.no_grad():
+            f = self.bk.model.paligemma_with_expert.embed_image(images[0])[0].float()
+        f = f / f.norm(dim=-1, keepdim=True)
+        return f.cpu().numpy()
 
     def phrase_of(self, inst):
         """The words the instruction uses for an instance: the scene's phrase for its type, else the type's words."""

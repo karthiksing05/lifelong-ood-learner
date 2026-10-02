@@ -1,0 +1,115 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "experiments/q3_pilot_read.py --record",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky1.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "q3_pilot",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "e7f671ef046ff6d07ee77fe8e75bca12139a4326",
+  "short": "e7f671ef"
+ },
+ "keys": {},
+ "metrics": {
+  "best": null,
+  "bypass": false,
+  "gains": {
+   "poe_0.3": 0,
+   "poe_0.5": 1,
+   "poe_0.7": 0,
+   "poenopol_0.5": 0,
+   "poeopt_0.5": 0,
+   "zs": 0
+  },
+  "go": false,
+  "missing": [],
+  "only_lambda_03": false,
+  "per_task": {
+   "1": {
+    "poe_0.3": 0,
+    "poe_0.5": 0,
+    "poe_0.7": 0,
+    "poenopol_0.5": 0,
+    "poeopt_0.5": 0,
+    "zs": 0
+   },
+   "35": {
+    "poe_0.3": 0,
+    "poe_0.5": 0,
+    "poe_0.7": 0,
+    "poenopol_0.5": 0,
+    "poeopt_0.5": 0,
+    "zs": 1
+   },
+   "36": {
+    "poe_0.3": 0,
+    "poe_0.5": 0,
+    "poe_0.7": 0,
+    "poenopol_0.5": 0,
+    "poeopt_0.5": 0,
+    "zs": 0
+   },
+   "39": {
+    "poe_0.3": 0,
+    "poe_0.5": 0,
+    "poe_0.7": 0,
+    "poenopol_0.5": 0,
+    "poeopt_0.5": 0,
+    "zs": 0
+   },
+   "42": {
+    "poe_0.3": 0,
+    "poe_0.5": 0,
+    "poe_0.7": 0,
+    "poenopol_0.5": 0,
+    "poeopt_0.5": 0,
+    "zs": 0
+   },
+   "6": {
+    "poe_0.3": 0,
+    "poe_0.5": 3,
+    "poe_0.7": 0,
+    "poenopol_0.5": 0,
+    "poeopt_0.5": 0,
+    "zs": 0
+   }
+  },
+  "totals": {
+   "poe_0.3": 0,
+   "poe_0.5": 3,
+   "poe_0.7": 0,
+   "poenopol_0.5": 0,
+   "poeopt_0.5": 0,
+   "zs": 1
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "q3_pilot__libero_90__read__s0__e7f671ef",
+ "schema": 1,
+ "script": "experiments/q3_pilot_read.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-02T05:16:08+00:00",
+ "stream": null,
+ "tag": "read"
+}
