@@ -172,6 +172,8 @@ def arm_spec(tid, arm, fold, demo=0):
         lam, _, dsx = arm.split("@", 1)[1].partition("_d")
         abl = "&ablate=nopolicy" if arm.startswith("poenopol") else "&ablate=noproto" if arm.startswith("poeopt") else ""
         return (f"phasecode:{os.path.join(R, 'poe_codes', f'{tid}_d{dsx or 0}.json')}?lam={lam}{abl}", "0", False)
+    if arm == "seqzs":                                                   # sequencing alone: the instruction's two clauses in turn
+        return (f"bind:{tid}?suite={SUITE_OF.get('suite', 'libero_90')}&src=w4&rho=0.7&band=all&proto=none&nobind=1&seq=1", "0", False)
     if arm.startswith("bindw4g@"):                                       # the goal slot: attention on the demo's goal prototype while
         parts = arm.split("@", 1)[1].split("_")                          # carrying; bindw4g@rho0.7_carry (goal only) or _both (object
         both = "both" in parts                                           # prototype while open, goal prototype while closed)
@@ -184,6 +186,7 @@ def arm_spec(tid, arm, fold, demo=0):
         ph = "&phase=approach" if "approach" in parts else ""
         pf = "&pfile=q18_self_protos" if "self" in parts else ""         # _self: the prototype from the task's own successes
         pf += "&pfile=q24_type_protos" if "type" in parts else ""        # _type: the mean of other tasks' prototypes of the type
+        pf += "&seq=1" if "seq" in parts else ""                         # _seq: then the instruction's second clause (bind_hooks)
         pf += next((f"&inst={p_[4:]}" for p_ in parts if p_.startswith("inst")), "")   # _inst<r>: the r-th instance of the type
         pf += next((f"&npk={p_[3:]}" for p_ in parts if p_.startswith("npk")), "")     # _npk<n>: the map cut into n instances
         if "qual" in parts:                                              # _qual: the instance the instruction's qualifier names

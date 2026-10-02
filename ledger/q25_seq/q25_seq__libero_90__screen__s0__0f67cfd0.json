@@ -1,0 +1,222 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "sequencing screen",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky1.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "q25_seq",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "0f67cfd0155b59b4c75106af828eb53f53b23282",
+  "short": "0f67cfd0"
+ },
+ "keys": {},
+ "metrics": {
+  "best": {
+   "1": {
+    "arm": "bindw4_rho0.7_approach_seq",
+    "bound": 0,
+    "n": 10,
+    "success": 0
+   },
+   "3": {
+    "arm": "bindw4_rho0.7_approach_seq",
+    "bound": 10,
+    "n": 10,
+    "success": 0
+   },
+   "4": {
+    "arm": "bindw4_rho0.7_approach_seq",
+    "bound": 1,
+    "n": 10,
+    "success": 0
+   },
+   "45": {
+    "arm": "bindw4_rho0.7_approach_seq",
+    "bound": 0,
+    "n": 10,
+    "success": 0
+   },
+   "5": {
+    "arm": "bindw4_rho0.7_approach_seq",
+    "bound": 0,
+    "n": 10,
+    "success": 0
+   },
+   "63": {
+    "arm": "seqzs",
+    "bound": 5,
+    "n": 10,
+    "success": 2
+   },
+   "64": {
+    "arm": "zs",
+    "bound": 3,
+    "n": 10,
+    "success": 3
+   },
+   "8": {
+    "arm": "bindw4_rho0.7_approach_seq",
+    "bound": 0,
+    "n": 10,
+    "success": 0
+   }
+  },
+  "note": "exploratory screen, practice states 0-9, 10 episodes, noise seed 0: SEQUENCING by the instruction's grammar (bind_hooks.split_conj: 'A and B' -> A until the first grasp held 3 queries is released, then B with it/them resolved to A's last noun phrase), alone (seqzs) or with binding by the task's own demo prototype during A (bindw4@rho0.7_approach_seq), on the 8 two-clause tasks",
+  "rows": {
+   "1:bindw4_rho0.7_approach_seq": {
+    "bound": 0,
+    "n": 10,
+    "success": 0
+   },
+   "1:seqzs": {
+    "bound": 0,
+    "n": 10,
+    "success": 0
+   },
+   "1:zs": {
+    "bound": 0,
+    "n": 10,
+    "success": 0
+   },
+   "3:bindw4_rho0.7_approach_seq": {
+    "bound": 10,
+    "n": 10,
+    "success": 0
+   },
+   "3:seqzs": {
+    "bound": 0,
+    "n": 10,
+    "success": 0
+   },
+   "3:zs": {
+    "bound": 0,
+    "n": 10,
+    "success": 0
+   },
+   "45:bindw4_rho0.7_approach_seq": {
+    "bound": 0,
+    "n": 10,
+    "success": 0
+   },
+   "45:seqzs": {
+    "bound": 0,
+    "n": 10,
+    "success": 0
+   },
+   "45:zs": {
+    "bound": 0,
+    "n": 10,
+    "success": 0
+   },
+   "4:bindw4_rho0.7_approach_seq": {
+    "bound": 1,
+    "n": 10,
+    "success": 0
+   },
+   "4:seqzs": {
+    "bound": 0,
+    "n": 10,
+    "success": 0
+   },
+   "4:zs": {
+    "bound": 0,
+    "n": 10,
+    "success": 0
+   },
+   "5:bindw4_rho0.7_approach_seq": {
+    "bound": 0,
+    "n": 10,
+    "success": 0
+   },
+   "5:seqzs": {
+    "bound": 1,
+    "n": 10,
+    "success": 0
+   },
+   "5:zs": {
+    "bound": 0,
+    "n": 10,
+    "success": 0
+   },
+   "63:bindw4_rho0.7_approach_seq": {
+    "bound": 1,
+    "n": 10,
+    "success": 0
+   },
+   "63:seqzs": {
+    "bound": 5,
+    "n": 10,
+    "success": 2
+   },
+   "63:zs": {
+    "bound": 6,
+    "n": 10,
+    "success": 0
+   },
+   "64:bindw4_rho0.7_approach_seq": {
+    "bound": 7,
+    "n": 10,
+    "success": 1
+   },
+   "64:seqzs": {
+    "bound": 3,
+    "n": 10,
+    "success": 1
+   },
+   "64:zs": {
+    "bound": 3,
+    "n": 10,
+    "success": 3
+   },
+   "8:bindw4_rho0.7_approach_seq": {
+    "bound": 0,
+    "n": 10,
+    "success": 0
+   },
+   "8:seqzs": {
+    "bound": 0,
+    "n": 10,
+    "success": 0
+   },
+   "8:zs": {
+    "bound": 0,
+    "n": 10,
+    "success": 0
+   }
+  },
+  "totals": {
+   "bindw4_rho0.7_approach_seq": 1,
+   "seqzs": 3,
+   "zs": 3
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "q25_seq__libero_90__screen__s0__0f67cfd0",
+ "schema": 1,
+ "script": "(launch_pack q25_seq, arms zs, seqzs, bindw4@rho0.7_approach_seq)",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-02T20:03:57+00:00",
+ "stream": null,
+ "tag": "screen"
+}

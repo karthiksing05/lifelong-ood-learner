@@ -77,9 +77,29 @@ GRAMMAR = {"back": ("row", "first"), "front": ("row", "last"), "middle": ("row",
            "right": ("col", "first")}     # ledger q22_grammar: each word's rank among same-type instances in the policy's image
 
 
+def split_conj(language):
+    """SEQUENCING by the instruction's grammar: "<A> and <B>", B starting with a verb -> [A, B], with "it" in B resolved to A's
+    final noun phrase (at most two modifiers, e.g. "the top drawer of the cabinet") and "them" to the plural of A's object noun.
+    None without such a conjunction ("pick up X and place it ..." is one pick and place; "the yellow and white mug" one object)."""
+    import re as _re
+    m = _re.match(r"(.+?) and ((?:close|open|put|place|turn|stack|push|pick)\b.*)$", language)
+    if m is None or language.startswith("pick up"):
+        return None
+    a, b = m.group(1), m.group(2)
+    last = _re.search(r"\b(the (?:[a-z]+ ){0,2}[a-z]+(?: of the [a-z]+)?)$", a)
+    if last is None:
+        return None
+    first = _re.search(r"\bthe (?:[a-z]+ ){0,2}?(bowl|book|mug|pan|pot|butter|pudding)\b", a)
+    b = _re.sub(r"\bit\b", last.group(1), b)
+    if first:
+        b = _re.sub(r"\bthem\b", f"the {first.group(1)}s", b)
+    return [a.strip(), b.strip()]
+
+
 class BindHooks:
     def __init__(self, bk, task, src="oracle", rho=0.5, beta=None, band="all", cams="agent", ctrl="none", phase=True, seed=0,
-                 w1_layer=None, keep=0.5, phrases=None, proto=None, topk=4, gproto=None, inst=None, npk=3, qual=None):
+                 w1_layer=None, keep=0.5, phrases=None, proto=None, topk=4, gproto=None, inst=None, npk=3, qual=None,
+                 seq=None, nobind=False):
         self.bk, self.task = bk, task
         self.src, self.ctrl, self.phase = src, ctrl, bool(phase) and phase != "approach"
         self.cfg = (dict(mode="fixed", beta=float(beta)) if beta is not None else dict(mode="mass", rho=float(rho)))
@@ -96,6 +116,9 @@ class BindHooks:
         self.track = None                                # the tracked instance's patch (row, col) within the episode
         self.npk = int(npk)                              # how many peaks (instances) the map is cut into
         self.qual = qual                                 # a qualifier word: the instance by the grammar (experiments/q22_grammar.py)
+        self.seq = seq                                   # [A, B]: the instruction's two clauses, B after the first release
+        self.nobind = bool(nobind)                       # sequencing alone (zero bias: the policy itself)
+        self.step, self.run = 0, 0
         self.topk = int(topk)
         self.phrases = phrases or {}
         self.owl = None
@@ -112,6 +135,8 @@ class BindHooks:
         self.started = True
         self.closed = False
         self.track = None
+        self.step, self.run = 0, 0
+        self.prompt = self.seq[0] if self.seq else self.prompt
         named = set(self.ref["open"]) | set(self.ref["closed"])
         others = [n for n in self.movable if n not in named]
         self.placebo = str(self.rng.choice(others)) if others else None
@@ -119,9 +144,18 @@ class BindHooks:
     def observe(self, actions):
         a = np.asarray(actions)
         self.closed = bool(a[min(4, len(a) - 1), 6] > 0)
+        if self.seq and self.step == 0:                  # a grasp held for 3 queries, then released: clause A is done
+            if self.closed:
+                self.run += 1
+            else:
+                if self.run >= 3:
+                    self.step, self.prompt = 1, self.seq[1]
+                self.run = 0
 
     # ── where ─────────────────────────────────────────────────────────────────────────────────────────────────────
     def _referent(self):
+        if self.nobind or self.step > 0:
+            return []                                    # sequencing alone, or clause B: the policy unbiased
         if self.approach_only and self.closed:
             return []                                    # approach-only binding: the routine carries and places unbiased
         if self.carry_only and not self.closed:

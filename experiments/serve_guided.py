@@ -367,6 +367,7 @@ def main():
                              gproto=(np.load(os.path.join(ROOT, "results", "robot", "q4_goal_protos.npz"))[kv["gproto"]]
                                      if "gproto" in kv else None),
                              inst=(int(kv["inst"]) if "inst" in kv else None), npk=int(kv.get("npk", 3)), qual=kv.get("qual"),
+                             seq=(BH.split_conj(task.language) if kv.get("seq") == "1" else None), nobind=kv.get("nobind") == "1",
                              topk=int(kv.get("topk", 4)),
                              beta=(float(kv["beta"]) if "beta" in kv else None), band=kv.get("band", "all"),
                              cams=kv.get("cams", "agent"), ctrl=kv.get("ctrl", "none"),
