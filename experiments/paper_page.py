@@ -56,6 +56,7 @@ q4t = row("q4_template", "read")
 q5 = row("b2_q2", "q5_w4")
 q6 = row("q6_main", "read")
 q7 = row("q7_tokpractice", "read")
+q13 = row("q13_main", "read")
 of10 = lambda key, f="BA", src=None: int(round(10 * (src or q2m)[key][f]))                     # noqa: E731
 token_bytes = [r for r in L.load("f4_fold", tag="token_demo") if not r.get("retired")][-1]["bytes"]["total"]
 lang = {int(k): v["language"] for k, v in json.load(open(os.path.join(R, "f0_coverage.json")))["tasks"].items()}   # the read's artifact
@@ -225,7 +226,12 @@ with every weight frozen, after which the task's own instruction suffices. In th
 on, practice found a form for 4 of the 14 tasks with a role code; there the tokens alone succeed
 {scheme['hypotheses']['H1']['x']} of {scheme['hypotheses']['H1']['n']} times against {scheme['hypotheses']['H1']['control']} for the frozen
 policy, with no demonstration and no simulator state at test. The tokens do not transfer to another room, and 10 of the 14 tasks
-stay out of reach.</p>"""
+stay out of reach. Allowing one demonstration, used once as a query and never executed, its first grasp marks a 4 KB object
+prototype in the policy's own image features, which points the attention with no simulator state at any step. A learner that keeps
+whichever of the policy alone, this binding and its folded token its own fresh practice validates then succeeds
+{q13['hypotheses']['H1']['x']} of {q13['hypotheses']['H1']['n']} times against {q13['hypotheses']['H1']['control']} on nine tasks in a
+pre-registered read, storing {q13['kept_bytes'] / 1024:.0f} KB in all and leaving the policy unchanged where neither unit helps.
+Tokens shared across tasks bind the object more often but succeed less often.</p>"""
 
 P_INTRO = f"""
 <p>A trained robot policy already knows how to reach, grasp, carry and place. When it fails a new task in a familiar room, the
@@ -245,7 +251,7 @@ overwritten.</p></div>
 for most of them (Section 2). (2) A benchmark that tests the thesis: tasks the policy has never seen, with no demonstration of them.
 (3) Role codes: a new task as a task prototype the policy performs with one object slot rebound, and two ways to inject the
 binding with the policy generating (Sections 3.3, 4.3). (4) Folding the policy's own successes into a token, with no demonstration
-(Section 4.4), and the scheme's pre-registered read on start states nobody tuned on (Section 4.5).</p>"""
+(Section 4.4), and the scheme's pre-registered read on start states nobody tuned on (Section 4.5). (5) An acceptance test on the learner's own practice that keeps the policy, the binding or the token per task; in its pre-registered read no task does worse than the frozen policy (Section 4.5).</p>"""
 
 P_WHY = f"""
 <h3 id="s2-1">2.1 Success follows what the training instructions named</h3>
@@ -397,18 +403,39 @@ def main_read():
 
 def all_reads():
     rows = []
-    for lab, src, where, r in (("role codes, 4 tasks", "no demonstration", "simulator (practice only)", scheme),
-                               ("demo prototype, 2 tasks", "1 demo as the query", "the demo's object prototype", q6),
-                               ("broad screen, 7 tasks", "no demonstration", "simulator (practice only)", row("q8_main", "read")),
-                               ("demo prototype, 7 tasks", "1 demo as the query", "the demo's object prototype", row("q10_main", "read"))):
+    for lab, src, where, test, r in (("role codes, 4 tasks", "no demonstration", "simulator (practice only)", "token", scheme),
+                                     ("demo prototype, 2 tasks", "1 demo as the query", "the demo's object prototype", "token", q6),
+                                     ("broad screen, 7 tasks", "no demonstration", "simulator (practice only)", "token", row("q8_main", "read")),
+                                     ("demo prototype, 7 tasks", "1 demo as the query", "the demo's object prototype", "token", row("q10_main", "read")),
+                                     ("acceptance test, 9 tasks", "1 demo as the query", "the demo's object prototype",
+                                      "what practice kept", row("q13_main", "read"))):
         if not r:
             continue
         h = r["hypotheses"]["H1"]
-        rows.append([esc(lab), esc(src), esc(where), f"{h['x']} vs {h['control']} of {h['n']}", f"{h['holm_p']:.2g}",
+        rows.append([esc(lab), esc(src), esc(where), esc(test), f"{h['x']} vs {h['control']} of {h['n']}", f"{h['holm_p']:.2g}",
                      "passes" if h["passes"] else "fails"])
-    return table(["read", "demonstration", "where during practice", "token alone vs zero-shot", "Holm p", "verdict"], rows,
-                 "Every pre-registered read of the scheme: at test the policy gets only the task's instruction and an 18.4 KB token "
-                 "(ledger b5_scheme, q6_main, q8_main, q10_main).", num_from=3)
+    return table(["read", "demonstration", "where during practice", "at test", "successes vs zero-shot", "Holm p", "verdict"], rows,
+                 "Every pre-registered read of the scheme. At test the policy gets the task's instruction and an 18.4 KB token, or, in "
+                 "the acceptance test, whichever of nothing, the 4 KB form and the token its own practice kept (ledger b5_scheme, "
+                 "q6_main, q8_main, q10_main, q13_main).", num_from=4)
+
+
+def accept_par():
+    r = row("q13_main", "read")
+    if not r:
+        return ""
+    h, kept = r["hypotheses"], list(r["kept"].values())
+    d = h["H1"]["diff"]
+    return (f"<p>Fixed in advance (m3_prereg tag q13_main): before it is scored, the learner tries the policy alone, the binding form and "
+            f"the folded token 10 times each on init states 0-9, which no token was fitted on, and keeps the best (ties go to the policy, "
+            f"then the token). At a new noise seed the kept arm succeeds {h['H1']['x']} of {h['H1']['n']} times against "
+            f"{h['H1']['control']} zero-shot; it loses only {h['H1']['discordant'][1]} paired episodes and wins {h['H1']['discordant'][0]} "
+            f"(task-level bootstrap {d['diff']:+.3f}, 95% interval {d['lo']:.3f} to {d['hi']:.3f}). It keeps the policy on "
+            f"{kept.count('zs')} tasks, the token on {kept.count('token')} and the form on {kept.count('form')}: "
+            f"{r['kept_bytes']:,} bytes for {len(kept)} tasks. The token alone ({h['H2']['x']}) and the form alone ({h['H3']['x']}) "
+            f"also beat zero-shot at this seed, but their task-level intervals include zero: each fails on some task where the other, "
+            f"or the policy, does better. The rule was proposed after the q6 and q10 reads; the episodes, the noise and the acceptance "
+            f"states are new.</p>")
 
 
 P_MAIN = f"""
@@ -418,7 +445,8 @@ both rounds. Scoring uses states 30-49, which no step tuned on.</p>
 {main_read()}
 <p>The same procedure was then run on the tasks two broad screens found (48 more failing tasks, 10 practice episodes each), with the
 simulator's segmentation and, separately, with only the demonstration's object prototype as where.</p>
-{all_reads()}"""
+{all_reads()}
+{accept_par()}"""
 
 P_POE = f"""
 <p>Since 2026-10-02 one demonstration may serve as the query, used once to select experts and never executed. We ported Wang et
@@ -446,7 +474,28 @@ pre-registered read the folded tokens alone succeed {q6['hypotheses']['H1']['x']
 {q6['hypotheses']['H1']['control']} on the two tasks practice gave a form. A round of the demo token's own practice does not help
 ({q7['H1']['x']} against {q7['H1']['control']} of 420; the one-demo LoRA {q7['H2']['control']}).</p>"""
 
+q11 = row("q11_reuse", "white_bowl")
+q12 = row("q12_joint", "black_bowl")
+q12g = row("q12_joint", "black_bowl_grasp")
+
+
+def reuse_par():
+    if not (q11 and q12 and q12g):
+        return ""
+    t, g = q12["totals"], q12g["totals"]
+    jb, zs, go, ga = t["ftoken_12_2_60_jb"], t["zs"], g["ftoken_12_2_60_jbg_open"], g["ftoken_12_2_60_jbg"]
+    return (f"<p>Reuse is not yet shown (exploratory reads). A token folded on one arrival learns that task, not its object: the "
+            f"white-bowl tokens of task 43, loaded unchanged for the white-bowl tasks of other rooms, succeed {q11['successes']} times "
+            f"in {q11['episodes']} episodes (ledger q11_reuse). One token fitted on the policy's own successes from three black-bowl "
+            f"tasks picks up the bowl first more often on four black-bowl tasks it never practised ({jb['bound']} of {jb['n']} against "
+            f"{zs['bound']} zero-shot) but succeeds less ({jb['success']} against {zs['success']}). Cut at the grasp and loaded only "
+            f"while the gripper is open, it binds {go['bound']} and still succeeds {go['success']}; loaded throughout, {ga['bound']} and "
+            f"{ga['success']} (ledger q12_joint). The loss arises during the approach itself, so placements copied from the source tasks "
+            f"do not explain it.</p>")
+
+
 P_STREAM = f"""
+{reuse_par()}
 {pending("A stream of tasks", "The 50 LIBERO-90 tasks pi0.5 fails arrive one at a time in two mirrored orders. Each is decomposed into task "
          "prototypes; it is composed when that explains it, else what its own attempts teach is folded (shared by every later task with that "
          "factor). The read reports success and bytes against tasks, and the success of earlier arrivals at the end.")}
@@ -455,18 +504,22 @@ P_STREAM = f"""
 
 P_LIMITS = """
 <ul>
-<li>Where the named object is comes from the simulator: the policy's own grounding and an open-vocabulary detector both fall short of
-the pre-registered gate. The token arm uses it only during practice.</li>
+<li>Where the named object is comes from the simulator's segmentation during practice, or from the one demonstration's object
+prototype: the policy's own grounding and an open-vocabulary detector both fall short of the pre-registered gate. At test only the
+instruction and the kept unit remain.</li>
+<li>Coverage: approach-only binding gives a form on 9 of the 48 failing tasks with a moved object; on the rest the policy fails for
+reasons binding does not reach.</li>
+<li>Reuse across arrivals is not yet shown: shared tokens bind more often and succeed less often.</li>
 <li>A role swap binds only where the scene's routine keys on appearance (here, shape); a routine tied to a position needs the attention
 pointer, and objects that differ only in colour, or whose grasps differ, stay out of reach.</li>
-<li>A base must exist: a task the policy performs in the same scene with the same goal up to the moved object. 14 of the 71 failing
+<li>Role codes need a base: a task the policy performs in the same scene with the same goal up to the moved object. 14 of the 71 failing
 LIBERO-90 tasks have one.</li>
 <li>Simulation only (LIBERO-90), one policy so far (pi0.5).</li>
 </ul>"""
 
 P_VER = f"""
 <p>Every read quoted as a test was pre-registered in <code>ledger/m3_prereg</code> before its first episode (tags zc_probe, zc_bind, zc_pilot,
-zc_main, b_bind_q1, b_bind_q2, b_bind_q2_amend1, b_scheme_main); reads marked exploratory were not. Every number on this page is read from <code>ledger/</code> at commit
+zc_main, b_bind_q1, b_bind_q2, b_bind_q2_amend1, b_scheme_main, q_probes, q_pilot, q6_main, q7_tokpractice, q8_main, q10_main, q13_main); reads marked exploratory were not. Every number on this page is read from <code>ledger/</code> at commit
 <code>{esc(commit)}</code> by <code>experiments/paper_page.py</code>, and the README's copies are re-derived by
 <code>experiments/audit_numbers.py</code>. Episodes are paired by task and init state; intervals come from a two-level bootstrap, tests from
 the exact sign test, with Holm correction within a read. One pre-registered probe failed its own validity gate and is not used: the
@@ -550,7 +603,7 @@ footer{margin-top:48px;padding-top:14px;border-top:1px solid var(--rule);font:13
 
 toc = "".join(f'<li><a href="#{i}"><span class="num">{n}</span><span>{esc(t)}</span></a></li>' for i, n, t in NAV)
 HTML = f"""<title>Read, Compose, Fold</title>
-<meta name="description" content="Composing a frozen robot policy's own predictions to take on LIBERO-90 tasks it has never seen, with no demonstration.">
+<meta name="description" content="Composing a frozen robot policy's own predictions to take on LIBERO-90 tasks it has never seen, with at most one demonstration used as a query.">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400&family=IBM+Plex+Sans:wght@400;500;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap">
 <style>{CSS}</style>
