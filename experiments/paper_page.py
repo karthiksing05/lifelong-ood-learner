@@ -550,7 +550,24 @@ def stream_par():
             f"the mirror {B['x']} (Holm p {B['holm_p']:.2g}). Each order keeps a form on {A['kept_forms']} tasks; a demonstration for "
             f"every task keeps {E['kept_forms']} and succeeds {E['x']} times ({r['bytes']['every_demo']:,} bytes). The library holds "
             f"one prototype per type, and among three bowls it points at its own source's bowl: tasks naming the front or the "
-            f"middle bowl find no candidate that beats the policy. The library has to grow below the type.</p>" + self_par())
+            f"middle bowl find no candidate that beats the policy. The library has to grow below the type.</p>" + self_par()
+            + inst_par())
+
+
+def inst_par():
+    r = row("q20_stream", "read")
+    if not r:
+        return ""
+    A, B = r["hypotheses"]["H1"], r["hypotheses"]["H2"]
+    fb = B["per_task"]["13"]
+    return (f"<p>Practice can supply the instance instead (m3_prereg tag q20_stream). A type's prototype matches every object of "
+            f"the type (Figure {FIG['n']}); cut its map into its 4 strongest peaks, bind one peak per candidate, and let the "
+            f"acceptance test choose. The same stream, with the same {r['demos']['A']} demonstrations, then passes in both orders: "
+            f"{A['x']} and {B['x']} of {A['n']} against {A['control']} zero-shot (Holm p {A['holm_p']:.2g} and {B['holm_p']:.2g}; "
+            f"{A['kept_forms']} and {B['kept_forms']} forms kept). The front bowl, which no stored prototype pointed at, rises to "
+            f"{fb[0]} of 20 from {fb[1]} through another kitchen's prototype at its fourth peak. The gain sits in a few tasks, the "
+            f"task-level intervals include zero, and one kept form loses at test (the chocolate pudding), so ten practice episodes "
+            f"sometimes keep the wrong unit.</p>")
 
 
 def self_par():
@@ -589,7 +606,7 @@ LIBERO-90 tasks have one.</li>
 
 P_VER = f"""
 <p>Every read quoted as a test was pre-registered in <code>ledger/m3_prereg</code> before its first episode (tags zc_probe, zc_bind, zc_pilot,
-zc_main, b_bind_q1, b_bind_q2, b_bind_q2_amend1, b_scheme_main, q_probes, q_pilot, q6_main, q7_tokpractice, q8_main, q10_main, q13_main, q16_library, q17_stream); reads marked exploratory were not. Every number on this page is read from <code>ledger/</code> at commit
+zc_main, b_bind_q1, b_bind_q2, b_bind_q2_amend1, b_scheme_main, q_probes, q_pilot, q6_main, q7_tokpractice, q8_main, q10_main, q13_main, q16_library, q17_stream, q18_self, q20_stream); reads marked exploratory were not. Every number on this page is read from <code>ledger/</code> at commit
 <code>{esc(commit)}</code> by <code>experiments/paper_page.py</code>, and the README's copies are re-derived by
 <code>experiments/audit_numbers.py</code>. Episodes are paired by task and init state; intervals come from a two-level bootstrap, tests from
 the exact sign test, with Holm correction within a read. One pre-registered probe failed its own validity gate and is not used: the
