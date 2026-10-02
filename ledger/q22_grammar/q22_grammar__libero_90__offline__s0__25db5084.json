@@ -1,0 +1,385 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "experiments/q22_grammar.py --record",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky1.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "q22_grammar",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "25db50848d6bb6e6339e2eb303153126834002ce",
+  "short": "25db5084"
+ },
+ "keys": {},
+ "metrics": {
+  "frames": 150,
+  "loo_frames": 150,
+  "loo_hits": 150,
+  "per_task": {
+   "12": {
+    "col_rank": [
+     0,
+     0,
+     10
+    ],
+    "frames": 10,
+    "instances": 3,
+    "language": "put the black bowl at the back on the plate",
+    "loo_hits": 10,
+    "loo_rule": [
+     "row",
+     "first"
+    ],
+    "qualifier": "back",
+    "row_rank": [
+     10,
+     0,
+     0
+    ],
+    "rule_hits": 10
+   },
+   "13": {
+    "col_rank": [
+     1,
+     9,
+     0
+    ],
+    "frames": 10,
+    "instances": 3,
+    "language": "put the black bowl at the front on the plate",
+    "loo_hits": 10,
+    "loo_rule": [
+     "row",
+     "last"
+    ],
+    "qualifier": "front",
+    "row_rank": [
+     0,
+     0,
+     10
+    ],
+    "rule_hits": 10
+   },
+   "14": {
+    "col_rank": [
+     9,
+     1,
+     0
+    ],
+    "frames": 10,
+    "instances": 3,
+    "language": "put the middle black bowl on the plate",
+    "loo_hits": 10,
+    "loo_rule": [
+     "row",
+     "middle"
+    ],
+    "qualifier": "middle",
+    "row_rank": [
+     0,
+     10,
+     0
+    ],
+    "rule_hits": 10
+   },
+   "15": {
+    "col_rank": [
+     10,
+     0,
+     0
+    ],
+    "frames": 10,
+    "instances": 3,
+    "language": "put the middle black bowl on top of the cabinet",
+    "loo_hits": 10,
+    "loo_rule": [
+     "row",
+     "middle"
+    ],
+    "qualifier": "middle",
+    "row_rank": [
+     0,
+     10,
+     0
+    ],
+    "rule_hits": 10
+   },
+   "16": {
+    "col_rank": [
+     0,
+     10,
+     0
+    ],
+    "frames": 10,
+    "instances": 3,
+    "language": "stack the black bowl at the front on the black bowl in the middle",
+    "loo_hits": 10,
+    "loo_rule": [
+     "row",
+     "last"
+    ],
+    "qualifier": "front",
+    "row_rank": [
+     0,
+     0,
+     10
+    ],
+    "rule_hits": 10
+   },
+   "17": {
+    "col_rank": [
+     10,
+     0,
+     0
+    ],
+    "frames": 10,
+    "instances": 3,
+    "language": "stack the middle black bowl on the back black bowl",
+    "loo_hits": 10,
+    "loo_rule": [
+     "row",
+     "middle"
+    ],
+    "qualifier": "middle",
+    "row_rank": [
+     0,
+     10,
+     0
+    ],
+    "rule_hits": 10
+   },
+   "3": {
+    "col_rank": [
+     0,
+     10
+    ],
+    "frames": 10,
+    "instances": 2,
+    "language": "put the butter at the back in the top drawer of the cabinet and close it",
+    "loo_hits": 10,
+    "loo_rule": [
+     "row",
+     "first"
+    ],
+    "qualifier": "back",
+    "row_rank": [
+     10,
+     0
+    ],
+    "rule_hits": 10
+   },
+   "38": {
+    "col_rank": [
+     10,
+     0
+    ],
+    "frames": 10,
+    "instances": 2,
+    "language": "put the right moka pot on the stove",
+    "loo_hits": 10,
+    "loo_rule": [
+     "col",
+     "first"
+    ],
+    "qualifier": "right",
+    "row_rank": [
+     10,
+     0
+    ],
+    "rule_hits": 10
+   },
+   "4": {
+    "col_rank": [
+     8,
+     2
+    ],
+    "frames": 10,
+    "instances": 2,
+    "language": "put the butter at the front in the top drawer of the cabinet and close it",
+    "loo_hits": 10,
+    "loo_rule": [
+     "row",
+     "last"
+    ],
+    "qualifier": "front",
+    "row_rank": [
+     0,
+     10
+    ],
+    "rule_hits": 10
+   },
+   "60": {
+    "col_rank": [
+     0,
+     10
+    ],
+    "frames": 10,
+    "instances": 2,
+    "language": "pick up the black bowl on the left and put it in the tray",
+    "loo_hits": 10,
+    "loo_rule": [
+     "col",
+     "middle"
+    ],
+    "qualifier": "left",
+    "row_rank": [
+     7,
+     3
+    ],
+    "rule_hits": 10
+   },
+   "63": {
+    "col_rank": [
+     0,
+     10
+    ],
+    "frames": 10,
+    "instances": 2,
+    "language": "stack the left bowl on the right bowl and place them in the tray",
+    "loo_hits": 10,
+    "loo_rule": [
+     "col",
+     "middle"
+    ],
+    "qualifier": "left",
+    "row_rank": [
+     6,
+     4
+    ],
+    "rule_hits": 10
+   },
+   "64": {
+    "col_rank": [
+     10,
+     0
+    ],
+    "frames": 10,
+    "instances": 2,
+    "language": "stack the right bowl on the left bowl and place them in the tray",
+    "loo_hits": 10,
+    "loo_rule": [
+     "col",
+     "first"
+    ],
+    "qualifier": "right",
+    "row_rank": [
+     6,
+     4
+    ],
+    "rule_hits": 10
+   },
+   "87": {
+    "col_rank": [
+     0,
+     10
+    ],
+    "frames": 10,
+    "instances": 2,
+    "language": "pick up the book on the left and place it on top of the shelf",
+    "loo_hits": 10,
+    "loo_rule": [
+     "col",
+     "middle"
+    ],
+    "qualifier": "left",
+    "row_rank": [
+     10,
+     0
+    ],
+    "rule_hits": 10
+   },
+   "88": {
+    "col_rank": [
+     10,
+     0
+    ],
+    "frames": 10,
+    "instances": 2,
+    "language": "pick up the book on the right and place it on the cabinet shelf",
+    "loo_hits": 10,
+    "loo_rule": [
+     "col",
+     "first"
+    ],
+    "qualifier": "right",
+    "row_rank": [
+     0,
+     10
+    ],
+    "rule_hits": 10
+   },
+   "89": {
+    "col_rank": [
+     10,
+     0
+    ],
+    "frames": 10,
+    "instances": 2,
+    "language": "pick up the book on the right and place it under the cabinet shelf",
+    "loo_hits": 10,
+    "loo_rule": [
+     "col",
+     "first"
+    ],
+    "qualifier": "right",
+    "row_rank": [
+     0,
+     10
+    ],
+    "rule_hits": 10
+   }
+  },
+  "rule": {
+   "back": [
+    "row",
+    "first"
+   ],
+   "front": [
+    "row",
+    "last"
+   ],
+   "left": [
+    "col",
+    "last"
+   ],
+   "middle": [
+    "row",
+    "middle"
+   ],
+   "right": [
+    "col",
+    "first"
+   ]
+  },
+  "rule_hits": 150,
+  "tasks": 15
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "q22_grammar__libero_90__offline__s0__25db5084",
+ "schema": 1,
+ "script": "experiments/q22_grammar.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-02T19:08:43+00:00",
+ "stream": null,
+ "tag": "offline"
+}

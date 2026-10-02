@@ -366,7 +366,7 @@ def main():
                                         kv.get("proto", body)] if kv.get("src") == "w4" and kv.get("proto") != "none" else None),
                              gproto=(np.load(os.path.join(ROOT, "results", "robot", "q4_goal_protos.npz"))[kv["gproto"]]
                                      if "gproto" in kv else None),
-                             inst=(int(kv["inst"]) if "inst" in kv else None), npk=int(kv.get("npk", 3)),
+                             inst=(int(kv["inst"]) if "inst" in kv else None), npk=int(kv.get("npk", 3)), qual=kv.get("qual"),
                              topk=int(kv.get("topk", 4)),
                              beta=(float(kv["beta"]) if "beta" in kv else None), band=kv.get("band", "all"),
                              cams=kv.get("cams", "agent"), ctrl=kv.get("ctrl", "none"),

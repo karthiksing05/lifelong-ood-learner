@@ -73,9 +73,13 @@ def shifted(mask16, avoid16):
     return m
 
 
+GRAMMAR = {"back": ("row", "first"), "front": ("row", "last"), "middle": ("row", "middle"), "left": ("col", "last"),
+           "right": ("col", "first")}     # ledger q22_grammar: each word's rank among same-type instances in the policy's image
+
+
 class BindHooks:
     def __init__(self, bk, task, src="oracle", rho=0.5, beta=None, band="all", cams="agent", ctrl="none", phase=True, seed=0,
-                 w1_layer=None, keep=0.5, phrases=None, proto=None, topk=4, gproto=None, inst=None, npk=3):
+                 w1_layer=None, keep=0.5, phrases=None, proto=None, topk=4, gproto=None, inst=None, npk=3, qual=None):
         self.bk, self.task = bk, task
         self.src, self.ctrl, self.phase = src, ctrl, bool(phase) and phase != "approach"
         self.cfg = (dict(mode="fixed", beta=float(beta)) if beta is not None else dict(mode="mass", rho=float(rho)))
@@ -91,6 +95,7 @@ class BindHooks:
         self.inst = None if inst is None else int(inst)  # INSTANCE r of the prototype's type: the r-th peak of its map (row-major)
         self.track = None                                # the tracked instance's patch (row, col) within the episode
         self.npk = int(npk)                              # how many peaks (instances) the map is cut into
+        self.qual = qual                                 # a qualifier word: the instance by the grammar (experiments/q22_grammar.py)
         self.topk = int(topk)
         self.phrases = phrases or {}
         self.owl = None
@@ -161,7 +166,8 @@ class BindHooks:
             if self.src == "w4":                         # the demo's visual object prototype (experiments/q4_template.py)
                 f = self._feats(obs)
                 sim = f @ (self.gproto if (self.closed and self.gproto is not None) else self.proto)
-                k = np.argsort(sim)[::-1][: self.topk] if self.inst is None else self._instance(sim, n_peaks=self.npk)
+                k = (np.argsort(sim)[::-1][: self.topk] if self.inst is None and self.qual is None
+                     else self._instance(sim, n_peaks=self.npk))
                 m = np.zeros(256, np.float32)
                 m[k] = 1.0
                 m = m.reshape(16, 16)
@@ -205,7 +211,12 @@ class BindHooks:
                 if len(peaks) == n_peaks:
                     break
             peaks.sort()
-            self.track = peaks[min(self.inst, len(peaks) - 1)]
+            if self.qual is not None:                    # the grammar: back / front / middle = first / last / middle row,
+                axis, end = GRAMMAR[self.qual]           # right / left = first / last column (the client image is mirrored)
+                order = sorted(peaks, key=lambda ab: ab[0] if axis == "row" else ab[1])
+                self.track = order[0] if end == "first" else order[-1] if end == "last" else order[len(order) // 2]
+            else:
+                self.track = peaks[min(self.inst, len(peaks) - 1)]
         else:
             i0, j0 = self.track
             win = [(a, b) for a in range(max(0, i0 - sep), min(16, i0 + sep + 1)) for b in range(max(0, j0 - sep), min(16, j0 + sep + 1))]

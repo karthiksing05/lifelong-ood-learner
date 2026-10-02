@@ -185,6 +185,14 @@ def arm_spec(tid, arm, fold, demo=0):
         pf = "&pfile=q18_self_protos" if "self" in parts else ""         # _self: the prototype from the task's own successes
         pf += next((f"&inst={p_[4:]}" for p_ in parts if p_.startswith("inst")), "")   # _inst<r>: the r-th instance of the type
         pf += next((f"&npk={p_[3:]}" for p_ in parts if p_.startswith("npk")), "")     # _npk<n>: the map cut into n instances
+        if "qual" in parts:                                              # _qual: the instance the instruction's qualifier names
+            import re as _re                                             # (the grammar of ledger q22_grammar)
+            from lifelong_ood.policy import factors as F
+            lang = next(x for x in F.load() if x.suite == SUITE_OF.get("suite", "libero_90") and x.index == tid).language
+            hits = sorted((m_.start(), q_) for q_ in ("front", "back", "middle", "left", "right") for m_ in _re.finditer(rf"\b{q_}\b", lang))
+            if not hits:
+                return None
+            pf += f"&qual={hits[0][1]}"
         return (f"bind:{tid}?suite={SUITE_OF.get('suite', 'libero_90')}&src=w4&rho={parts[0][3:]}&band=all{ph}&proto={src}{pf}", "0", False)
     if arm == "bindrole":                                                # attention pointer while open + role swap while closed
         import glob as _glob                                             # (base instruction): the approach and the carry bound apart
