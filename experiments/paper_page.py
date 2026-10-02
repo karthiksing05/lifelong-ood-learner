@@ -536,11 +536,26 @@ def proto_reuse():
                   "source's bowl.", wide=True))
 
 
+def stream_par():
+    r = row("q17_stream", "read")
+    if not r:
+        return ""
+    h = r["hypotheses"]
+    A, B, E = h["H1"], h["H2"], h["H3"]
+    return (f"<p>The stream (pre-registered, m3_prereg tag q17_stream). The {A['n'] // 20} failing tasks with a moved object arrive one at "
+            f"a time, in a seeded order and its mirror. Only an arrival whose object type the library lacks asks for a demonstration "
+            f"({r['demos']['A']} of {A['n'] // 20} in either order, {r['bytes']['A']:,} bytes of prototypes); the rest choose among the "
+            f"library's prototypes of their type, and the acceptance test keeps a form or the policy. In the seeded order the kept arms "
+            f"succeed {A['x']} of {A['n']} times against {A['control']} zero-shot (Holm p {A['holm_p']:.2g}, not significant); in "
+            f"the mirror {B['x']} (Holm p {B['holm_p']:.2g}). Each order keeps a form on {A['kept_forms']} tasks; a demonstration for "
+            f"every task keeps {E['kept_forms']} and succeeds {E['x']} times ({r['bytes']['every_demo']:,} bytes). The library holds "
+            f"one prototype per type, and among three bowls it points at its own source's bowl: tasks naming the front or the "
+            f"middle bowl find no candidate that beats the policy. The library has to grow below the type.</p>")
+
+
 P_STREAM = f"""
 {reuse_par()}
-{pending("A stream of tasks", "The 50 LIBERO-90 tasks pi0.5 fails arrive one at a time in two mirrored orders. Each is decomposed into task "
-         "prototypes; it is composed when that explains it, else what its own attempts teach is folded (shared by every later task with that "
-         "factor). The read reports success and bytes against tasks, and the success of earlier arrivals at the end.")}
+{stream_par()}
 {pending("Other policies", "The same codes on pi0 and SmolVLA, each with its own conditionals and its own tokens; and CALVIN ABC→D, whose "
          "unseen scene D is the same reading problem.")}"""
 
@@ -561,7 +576,7 @@ LIBERO-90 tasks have one.</li>
 
 P_VER = f"""
 <p>Every read quoted as a test was pre-registered in <code>ledger/m3_prereg</code> before its first episode (tags zc_probe, zc_bind, zc_pilot,
-zc_main, b_bind_q1, b_bind_q2, b_bind_q2_amend1, b_scheme_main, q_probes, q_pilot, q6_main, q7_tokpractice, q8_main, q10_main, q13_main); reads marked exploratory were not. Every number on this page is read from <code>ledger/</code> at commit
+zc_main, b_bind_q1, b_bind_q2, b_bind_q2_amend1, b_scheme_main, q_probes, q_pilot, q6_main, q7_tokpractice, q8_main, q10_main, q13_main, q16_library, q17_stream); reads marked exploratory were not. Every number on this page is read from <code>ledger/</code> at commit
 <code>{esc(commit)}</code> by <code>experiments/paper_page.py</code>, and the README's copies are re-derived by
 <code>experiments/audit_numbers.py</code>. Episodes are paired by task and init state; intervals come from a two-level bootstrap, tests from
 the exact sign test, with Holm correction within a read. One pre-registered probe failed its own validity gate and is not used: the
