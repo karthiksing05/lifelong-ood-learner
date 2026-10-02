@@ -183,6 +183,7 @@ def arm_spec(tid, arm, fold, demo=0):
         src = next((p_[3:] for p_ in parts if p_.startswith("src")), str(tid))
         ph = "&phase=approach" if "approach" in parts else ""
         pf = "&pfile=q18_self_protos" if "self" in parts else ""         # _self: the prototype from the task's own successes
+        pf += "&pfile=q24_type_protos" if "type" in parts else ""        # _type: the mean of other tasks' prototypes of the type
         pf += next((f"&inst={p_[4:]}" for p_ in parts if p_.startswith("inst")), "")   # _inst<r>: the r-th instance of the type
         pf += next((f"&npk={p_[3:]}" for p_ in parts if p_.startswith("npk")), "")     # _npk<n>: the map cut into n instances
         if "qual" in parts:                                              # _qual: the instance the instruction's qualifier names

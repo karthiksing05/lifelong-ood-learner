@@ -1,0 +1,127 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration of the grammar read",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky1.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "905e97d64762ac498485eb64257ddedc692d73a8",
+  "short": "905e97d6"
+ },
+ "keys": {},
+ "metrics": {
+  "arm": "bindw4@rho0.7_approach_type_qual_npk<n>: attention mass 0.7 while the gripper is open on the patches of the instance the grammar picks among the n strongest peaks of the type prototype's map; n per word learned from the other tasks with that word (results/robot/q24_plan.json)",
+  "hypotheses": {
+   "H1": "named object moved first (client bind tracking): grammar > zero-shot pooled over the 14 tasks (exact sign test on discordant pairs by init state)",
+   "H2": "success: grammar > zero-shot pooled",
+   "correction": "Holm over H1, H2"
+  },
+  "note": "many of these tasks also need a step binding does not supply (a shelf placement, 'and close it', a stack), so H2 is expected to be weaker than H1; no acceptance test here: this reads the grammar itself",
+  "plan": {
+   "12": {
+    "npk": 3,
+    "word": "back"
+   },
+   "13": {
+    "npk": 4,
+    "word": "front"
+   },
+   "14": {
+    "npk": 3,
+    "word": "middle"
+   },
+   "15": {
+    "npk": 3,
+    "word": "middle"
+   },
+   "16": {
+    "npk": 4,
+    "word": "front"
+   },
+   "17": {
+    "npk": 3,
+    "word": "middle"
+   },
+   "3": {
+    "npk": 3,
+    "word": "back"
+   },
+   "4": {
+    "npk": 4,
+    "word": "front"
+   },
+   "60": {
+    "npk": 4,
+    "word": "left"
+   },
+   "63": {
+    "npk": 4,
+    "word": "left"
+   },
+   "64": {
+    "npk": 4,
+    "word": "right"
+   },
+   "87": {
+    "npk": 3,
+    "word": "left"
+   },
+   "88": {
+    "npk": 3,
+    "word": "right"
+   },
+   "89": {
+    "npk": 4,
+    "word": "right"
+   }
+  },
+  "tasks": [
+   3,
+   4,
+   12,
+   13,
+   14,
+   15,
+   16,
+   17,
+   60,
+   63,
+   64,
+   87,
+   88,
+   89
+  ],
+  "test": "experiment q24_main: the grammar arm and zero-shot on init states 30-49, 20 episodes, noise seed 6",
+  "written_before": "any episode of q24_main"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_90__q24_grammar__s6__905e97d6",
+ "schema": 1,
+ "script": "experiments/prereg/q24_grammar.py",
+ "seconds": null,
+ "seed": 6,
+ "source_commit": null,
+ "started": "2026-10-02T19:27:46+00:00",
+ "stream": null,
+ "tag": "q24_grammar"
+}

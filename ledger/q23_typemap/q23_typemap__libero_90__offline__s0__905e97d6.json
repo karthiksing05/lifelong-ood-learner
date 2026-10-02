@@ -1,0 +1,334 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "experiments/q23_typemap.py --record",
+ "config": {},
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "brainiac.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4004289",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "q23_typemap",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "905e97d64762ac498485eb64257ddedc692d73a8",
+  "short": "905e97d6"
+ },
+ "keys": {},
+ "metrics": {
+  "mean": {
+   "mean_n3": 0.6571428571428571,
+   "mean_n4": 0.5571428571428572,
+   "min_n3": 0.5428571428571428,
+   "min_n4": 0.4714285714285714,
+   "single_n3": 0.5881868131868132,
+   "single_n4": 0.48131868131868133
+  },
+  "per_task": {
+   "12": {
+    "donors": [
+     2,
+     13,
+     14,
+     15,
+     16,
+     17,
+     25,
+     29,
+     30,
+     31,
+     60,
+     63,
+     64
+    ],
+    "mean_n3": 1.0,
+    "mean_n4": 1.0,
+    "min_n3": 1.0,
+    "min_n4": 0.8,
+    "single_n3": 0.8538461538461538,
+    "single_n4": 0.7461538461538462,
+    "word": "back"
+   },
+   "13": {
+    "donors": [
+     2,
+     12,
+     14,
+     15,
+     16,
+     17,
+     25,
+     29,
+     30,
+     31,
+     60,
+     63,
+     64
+    ],
+    "mean_n3": 0.3,
+    "mean_n4": 1.0,
+    "min_n3": 0.3,
+    "min_n4": 0.9,
+    "single_n3": 0.2846153846153846,
+    "single_n4": 0.6,
+    "word": "front"
+   },
+   "14": {
+    "donors": [
+     2,
+     12,
+     13,
+     15,
+     16,
+     17,
+     25,
+     29,
+     30,
+     31,
+     60,
+     63,
+     64
+    ],
+    "mean_n3": 1.0,
+    "mean_n4": 0.1,
+    "min_n3": 0.8,
+    "min_n4": 0.1,
+    "single_n3": 0.6923076923076923,
+    "single_n4": 0.2076923076923077,
+    "word": "middle"
+   },
+   "15": {
+    "donors": [
+     2,
+     12,
+     13,
+     14,
+     16,
+     17,
+     25,
+     29,
+     30,
+     31,
+     60,
+     63,
+     64
+    ],
+    "mean_n3": 1.0,
+    "mean_n4": 0.1,
+    "min_n3": 0.6,
+    "min_n4": 0.2,
+    "single_n3": 0.7307692307692308,
+    "single_n4": 0.17692307692307693,
+    "word": "middle"
+   },
+   "16": {
+    "donors": [
+     2,
+     12,
+     13,
+     14,
+     15,
+     17,
+     25,
+     29,
+     30,
+     31,
+     60,
+     63,
+     64
+    ],
+    "mean_n3": 0.5,
+    "mean_n4": 0.9,
+    "min_n3": 0.5,
+    "min_n4": 1.0,
+    "single_n3": 0.5692307692307692,
+    "single_n4": 0.8153846153846154,
+    "word": "front"
+   },
+   "17": {
+    "donors": [
+     2,
+     12,
+     13,
+     14,
+     15,
+     16,
+     25,
+     29,
+     30,
+     31,
+     60,
+     63,
+     64
+    ],
+    "mean_n3": 0.8,
+    "mean_n4": 0.0,
+    "min_n3": 0.7,
+    "min_n4": 0.1,
+    "single_n3": 0.6307692307692307,
+    "single_n4": 0.07692307692307694,
+    "word": "middle"
+   },
+   "3": {
+    "donors": [
+     4
+    ],
+    "mean_n3": 0.5,
+    "mean_n4": 0.4,
+    "min_n3": 0.5,
+    "min_n4": 0.4,
+    "single_n3": 0.5,
+    "single_n4": 0.4,
+    "word": "back"
+   },
+   "4": {
+    "donors": [
+     3
+    ],
+    "mean_n3": 0.0,
+    "mean_n4": 0.0,
+    "min_n3": 0.0,
+    "min_n4": 0.0,
+    "single_n3": 0.0,
+    "single_n4": 0.0,
+    "word": "front"
+   },
+   "60": {
+    "donors": [
+     2,
+     12,
+     13,
+     14,
+     15,
+     16,
+     17,
+     25,
+     29,
+     30,
+     31,
+     63,
+     64
+    ],
+    "mean_n3": 0.6,
+    "mean_n4": 0.6,
+    "min_n3": 0.6,
+    "min_n4": 0.6,
+    "single_n3": 0.6,
+    "single_n4": 0.5846153846153845,
+    "word": "left"
+   },
+   "63": {
+    "donors": [
+     2,
+     12,
+     13,
+     14,
+     15,
+     16,
+     17,
+     25,
+     29,
+     30,
+     31,
+     60,
+     64
+    ],
+    "mean_n3": 0.8,
+    "mean_n4": 0.8,
+    "min_n3": 0.8,
+    "min_n4": 0.7,
+    "single_n3": 0.7846153846153847,
+    "single_n4": 0.7615384615384615,
+    "word": "left"
+   },
+   "64": {
+    "donors": [
+     2,
+     12,
+     13,
+     14,
+     15,
+     16,
+     17,
+     25,
+     29,
+     30,
+     31,
+     60,
+     63
+    ],
+    "mean_n3": 0.9,
+    "mean_n4": 0.9,
+    "min_n3": 0.8,
+    "min_n4": 0.8,
+    "single_n3": 0.7384615384615384,
+    "single_n4": 0.5692307692307693,
+    "word": "right"
+   },
+   "87": {
+    "donors": [
+     88,
+     89
+    ],
+    "mean_n3": 0.3,
+    "mean_n4": 0.4,
+    "min_n3": 0.1,
+    "min_n4": 0.1,
+    "single_n3": 0.5,
+    "single_n4": 0.45,
+    "word": "left"
+   },
+   "88": {
+    "donors": [
+     87,
+     89
+    ],
+    "mean_n3": 0.7,
+    "mean_n4": 0.8,
+    "min_n3": 0.5,
+    "min_n4": 0.5,
+    "single_n3": 0.65,
+    "single_n4": 0.65,
+    "word": "right"
+   },
+   "89": {
+    "donors": [
+     87,
+     88
+    ],
+    "mean_n3": 0.8,
+    "mean_n4": 0.8,
+    "min_n3": 0.4,
+    "min_n4": 0.4,
+    "single_n3": 0.7,
+    "single_n4": 0.7,
+    "word": "right"
+   }
+  },
+  "tasks": 14
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "q23_typemap__libero_90__offline__s0__905e97d6",
+ "schema": 1,
+ "script": "experiments/q23_typemap.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-02T19:26:28+00:00",
+ "stream": null,
+ "tag": "offline"
+}
