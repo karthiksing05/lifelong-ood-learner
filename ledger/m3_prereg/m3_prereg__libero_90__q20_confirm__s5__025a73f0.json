@@ -1,0 +1,52 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "amendment: confirmation round",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky1.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "025a73f095d780f3e73b954dc58d0964cfb58f47",
+  "short": "025a73f0"
+ },
+ "keys": {},
+ "metrics": {
+  "disclosure": "proposed after reading q20_stream, where one kept form lost at test (task 70, 4 vs 16) as in q18_self; the confirmation episodes are new and the rule is fixed here; the test episodes are q20_main's",
+  "hypotheses": {
+   "H1": "order A with confirmation: kept > zero-shot pooled over 48 (exact sign test)",
+   "H2": "order B: the same",
+   "correction": "Holm over H1, H2"
+  },
+  "rule": "keep a form only if it beats the policy on BOTH the acceptance states 0-9 and the confirmation states 10-19",
+  "written_before": "any episode of q20_confirm"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_90__q20_confirm__s5__025a73f0",
+ "schema": 1,
+ "script": "experiments/prereg/q20_confirm.py",
+ "seconds": null,
+ "seed": 5,
+ "source_commit": null,
+ "started": "2026-10-02T18:35:01+00:00",
+ "stream": null,
+ "tag": "q20_confirm"
+}
