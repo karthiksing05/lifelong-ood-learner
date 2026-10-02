@@ -4,9 +4,10 @@ The method of the overhaul of 2026-10-01 (plan: `~/.claude/plans/i-m-interested-
 follows the thesis in [THE_TASK.md](THE_TASK.md): decompose an arrival into the model's prototypes, store a code when they
 explain it, fold a small unit only where they do not, consolidate, charge every byte, damage nothing, and generate new
 trajectories from the model's own conditional. Every result it rests on is a read in `ledger/`, quoted in the README; this page
-carries no numbers. A new task arrives as its instruction and its scene, with NO demonstration (the user's decision of
-2026-10-01: a demonstration of the task is not a test of the thesis). Demo-based work, including the earlier one-demo program,
-is archived: [archive/2026-10-program/](../archive/2026-10-program/).
+carries no numbers. A new task arrives as its instruction and its scene, with at most ONE demonstration used once as a query
+and never executed, replayed or fitted (the user's decisions of 2026-10-01: a demonstration to imitate is not a test of the
+thesis; one used as a query is allowed when it makes learning rapid and reusable). Demo-executing work, including the earlier
+one-demo program, is archived: [archive/2026-10-program/](../archive/2026-10-program/).
 
 ## What the frozen policy already holds
 
@@ -21,24 +22,27 @@ is archived: [archive/2026-10-program/](../archive/2026-10-program/).
   ICLR paper found the same in image diffusion models: a model that never read several objects from one caption fails to,
   although it learned each object.
 
-## 0 The method since 2026-10-02: prototype PoE planning
+## 0 The method (2026-10-02): bind with a prototype, fold, accept by practice, reuse the library
 
-Wang et al.'s test-time composition (arXiv 2605.07078) ported to the flow policy: the arrival's ONE demonstration is the query,
-used once to select experts and never executed (`lifelong_ood/policy/poe.py`, `experiments/q3_build.py`).
-- EXPERTS. The policy family, live at every observation: the policy under the task's instruction, under "pick up the {noun}"
-  prompts, and with its action expert's attention raised on one of 16 image blocks (scene options; no oracle). Motion prototypes:
-  the nodes of the policy's action-marginal tree that the demonstration's chunks fall into at t = 0.3, 0.4, 0.55 (Wang's discovery
-  from the query), as Gaussians.
-- SELECTION per phase (the gripper's open / closed runs): Wang's greedy submodular coverage of the phase's demo chunks, the task's
-  own policy forced in, K = 3, per-dim softmax weights (tau 0.5), the policy's variance its calibrated error against demos.
-- THE CODE per phase: the experts' observation-free ids and per-dim weights (0.6-1.8 KB per task; built in under 70 s, no training).
-- COMPOSITION: the selected prototypes multiply into one Gaussian (Wang's Eq. 9, precision-weighted, so broad prototypes barely
-  move it); it is mixed with the policy experts in velocity space at every Euler step with the policy family's share at least
-  lambda on every action dim (the gripper from the policy family), so the policy keeps generating (the share that keeps
-  observation sensitivity >= 0.3 was measured, not assumed: an early weight still moves the output, ledger q0_share).
-- REUSE and FOLD (designed): phase codes are kept in a library keyed by the phase's verb signature; a phase no stored code
-  explains folds a token that becomes a new expert for later tasks (Wang's missing mechanism).
-Sections 1-4 below describe the role-code scheme of 2026-10-01 (no demonstration), kept as the no-demo reference.
+- WHERE, from one query. The arrival's demonstration, if it has one, is used once: its first grasp, projected into its first
+  frame, marks the moved object's image patch, and the policy's own SigLIP features there form a 4 KB OBJECT PROTOTYPE
+  (`experiments/q4_template.py`). The prototype keeps the object's appearance and its place in the scene. Every prototype is kept
+  in a LIBRARY, typed by the object.
+- BIND (compose). While the policy's commanded gripper is open, the action expert's attention to the 4 image patches most like the
+  prototype is raised to mass 0.7 at every layer and Euler step (`lifelong_ood/policy/bind_hooks.py`, `attn_bias.py`). The scene's
+  trained routine supplies the motion and the prototype supplies which object; the policy generates every action.
+- FOLD. Binding's successes on practice states fold into an 18.4 KB token that the task's own instruction then reads (section 3).
+- ACCEPT. Before anything is kept, the learner tries the policy alone, the binding form and the token on fresh practice states and
+  keeps the best, ties to the policy (`experiments/q13_read.py`). A unit that does not beat the policy on the learner's own
+  attempts is not stored, so a task is never served worse than the frozen policy serves it on practice.
+- REUSE. A later arrival whose object type is already in the library asks for no demonstration: its candidate forms use the
+  library's prototypes of that type, and the acceptance test keeps one or none (`experiments/q16_read.py`). The kept unit is a
+  library index.
+- NOT MECHANISMS. Attention binds the object slot only: raised on the goal region while the gripper is closed, it breaks the carry.
+  A token fitted across tasks binds the object more often but succeeds less often. Wang et al.'s product of experts over the
+  policy family and motion prototypes (`lifelong_ood/policy/poe.py`) failed its pilot. Each is a README row.
+
+Sections 1-4 below describe the role-code scheme of 2026-10-01 (no demonstration at all), kept as the no-demo reference.
 
 ## 1 Read: decompose the arrival
 
@@ -87,9 +91,12 @@ trading bytes for drift on old tasks. Designed; run after the zero-shot and fold
 ## Known limits
 
 - The binding injections need WHERE the new object is. The policy's own grounding and an open-vocabulary detector both fall short
-  of the pre-registered pointing gate; the reads use the simulator's segmentation and renderer as an oracle, during practice
-  only for the token arm.
+  of the pre-registered pointing gate; WHERE comes from the simulator's segmentation (an oracle, during practice only), from one
+  demonstration's object prototype, or from the library.
+- The goal slot: where a scene's routine puts the object somewhere else (a drawer for "on top of the cabinet"), no injection here
+  rebinds the goal.
+- Coverage: binding gives a form on a minority of the failing LIBERO-90 tasks with a moved object (README, broad screens).
 - A role swap binds only where the scene's routine keys on the object's appearance; a routine tied to a position, objects that
   differ only in colour or label, and objects whose grasps differ (a pan for a moka pot) stay out of reach.
-- A base must exist: a task the policy performs in the same scene with the same goal up to the moved object.
+- Role codes need a base: a task the policy performs in the same scene with the same goal up to the moved object.
 - Simulation only (LIBERO-90), one policy so far (pi0.5).
