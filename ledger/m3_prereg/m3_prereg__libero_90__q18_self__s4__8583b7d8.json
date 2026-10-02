@@ -1,0 +1,54 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration of the self-prototype read",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky1.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "8583b7d81b888e900b0d864b324419ac086cfd02",
+  "short": "8583b7d8"
+ },
+ "keys": {},
+ "metrics": {
+  "acceptance": "experiment q18_accept: zero-shot and the self-prototype form (bindw4@rho0.7_approach_self) on init states 10-19, 10 episodes, noise seed 4; keep the form only if it has MORE successes",
+  "build": "every task with >= 1 success gets a 4 KB prototype: in each successful episode the end effector at the grasp (of the commanded closes sustained for 5 records, the one that starts lowest), projected into that episode's first frame, marks the patch; the policy's SigLIP features at it and its 4 neighbours, averaged over successes. Validity reported: pointing on the first frames of init states 0-9 (simulator segmentation, scoring only)",
+  "explore": "experiment q18_explore: zero-shot on init states 0-9, 10 episodes, recorded, noise seed 4",
+  "grasp_rule_fixed_on": "the recorded q8_p1 practice episodes (oracle-binding rollouts of 7 tasks): pointing 0.5-1.0 per task (results/robot/q18_validate.json), before any q18 episode",
+  "hypotheses": {
+   "H1": "kept > zero-shot pooled over the 48 tasks (exact sign test on discordant pairs by init state)"
+  },
+  "tasks": "the 48 failing LIBERO-90 tasks with a moved object of q17_stream",
+  "test": "experiment q18_main: the kept arm and zero-shot on init states 30-49, 20 episodes, noise seed 4",
+  "written_before": "any episode of q18_explore, q18_accept or q18_main"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_90__q18_self__s4__8583b7d8",
+ "schema": 1,
+ "script": "experiments/prereg/q18_self.py",
+ "seconds": null,
+ "seed": 4,
+ "source_commit": null,
+ "started": "2026-10-02T15:44:53+00:00",
+ "stream": null,
+ "tag": "q18_self"
+}

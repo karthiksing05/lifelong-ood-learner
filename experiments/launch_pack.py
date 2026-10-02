@@ -182,7 +182,8 @@ def arm_spec(tid, arm, fold, demo=0):
         parts = arm.split("@", 1)[1].split("_")                          # bindw4@rho0.7_approach[_src<task>] (deployable)
         src = next((p_[3:] for p_ in parts if p_.startswith("src")), str(tid))
         ph = "&phase=approach" if "approach" in parts else ""
-        return (f"bind:{tid}?suite={SUITE_OF.get('suite', 'libero_90')}&src=w4&rho={parts[0][3:]}&band=all{ph}&proto={src}", "0", False)
+        pf = "&pfile=q18_self_protos" if "self" in parts else ""         # _self: the prototype from the task's own successes
+        return (f"bind:{tid}?suite={SUITE_OF.get('suite', 'libero_90')}&src=w4&rho={parts[0][3:]}&band=all{ph}&proto={src}{pf}", "0", False)
     if arm == "bindrole":                                                # attention pointer while open + role swap while closed
         import glob as _glob                                             # (base instruction): the approach and the carry bound apart
         from lifelong_ood.policy import factors as F
