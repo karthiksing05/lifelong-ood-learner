@@ -107,7 +107,11 @@ def joint(a):
     for t in [int(x) for x in a.joint.split("+")]:
         steps = P.steps_of(texts[t])
         s = next((i for i, c in enumerate(steps) if P.step_key(c) == a.key), None)
-        ep = d90.load(d90.episodes_of_text(texts[t])[a.demo])
+        eps_ = d90.episodes_of_text(texts[t])
+        if len(eps_) <= a.demo:
+            print(f"[c0j] task {t}: the dataset has no demonstration under its instruction; skipped", flush=True)
+            continue
+        ep = d90.load(eps_[a.demo])
         segs = P.segment(ep["actions"], len(steps))
         if s is None or segs is None:
             print(f"[c0j] task {t}: no step with key {a.key} (or no release to cut at); skipped", flush=True)

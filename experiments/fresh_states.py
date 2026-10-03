@@ -22,6 +22,8 @@ def main():
     os.makedirs(OUT, exist_ok=True)
     suite = benchmark.get_benchmark_dict()["libero_90"]()
     for tid in tasks:
+        if os.path.exists(os.path.join(OUT, f"libero_90_{tid}.npy")):
+            continue                                            # done by an earlier (interrupted) job: the seeds fix the states
         task = suite.get_task(tid)
         stored = suite.get_task_init_states(tid)
         bddl = pathlib.Path(get_libero_path("bddl_files")) / task.problem_folder / task.bddl_file
