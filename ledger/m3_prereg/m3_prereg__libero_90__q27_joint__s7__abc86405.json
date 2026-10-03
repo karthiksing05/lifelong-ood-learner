@@ -1,0 +1,380 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration of the consolidated-primitive read",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky1.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "abc864059d16125129832eb58107e16b55d3aa6f",
+  "short": "abc86405"
+ },
+ "keys": {},
+ "metrics": {
+  "acceptance": "experiment q27_accept: zero-shot and the primitive arm on init states 0-9, 10 episodes, noise seed 7; keep the primitive arm only with MORE successes",
+  "bytes": "one primitive per step key in a stream (18.7 MB each); this leave-one-task-out read fits one per task and key",
+  "context": "c1b_joint (exploratory, states 0-9, seed 0) was read before this registration: 'on top of the cabinet' 19/30 vs 2, 'on the plate' 7/40 vs 17",
+  "fits": "experiments/c0_fit.py --joint (rank 16, 1000 steps); the 7 fits of ledger c1b_joint (tasks 12 13 14 30 15 25 31) were made by this procedure and are reused",
+  "hypotheses": {
+   "H1": "kept > zero-shot pooled over the 20 tasks (exact sign test on discordant pairs)",
+   "H2": "the primitive arm unfiltered > zero-shot pooled",
+   "correction": "Holm over H1, H2"
+  },
+  "steps": {
+   "1": [
+    [
+     "close||the top drawer of the cabinet",
+     [
+      0,
+      3,
+      4,
+      5,
+      28
+     ]
+    ],
+    [
+     "put|on top of|the top drawer of the cabinet",
+     []
+    ]
+   ],
+   "12": [
+    [
+     "put|on|the plate",
+     [
+      9,
+      13,
+      14,
+      30,
+      36,
+      71,
+      72
+     ]
+    ]
+   ],
+   "13": [
+    [
+     "put|on|the plate",
+     [
+      9,
+      12,
+      14,
+      30,
+      36,
+      71,
+      72
+     ]
+    ]
+   ],
+   "14": [
+    [
+     "put|on|the plate",
+     [
+      9,
+      12,
+      13,
+      30,
+      36,
+      71,
+      72
+     ]
+    ]
+   ],
+   "15": [
+    [
+     "put|on top of|the cabinet",
+     [
+      10,
+      25,
+      31,
+      41,
+      43
+     ]
+    ]
+   ],
+   "2": [
+    [
+     "put|in|the top drawer of the cabinet",
+     [
+      3,
+      4,
+      5,
+      8,
+      29,
+      32
+     ]
+    ]
+   ],
+   "25": [
+    [
+     "put|on top of|the cabinet",
+     [
+      10,
+      15,
+      31,
+      41,
+      43
+     ]
+    ]
+   ],
+   "29": [
+    [
+     "put|in|the top drawer of the cabinet",
+     [
+      2,
+      3,
+      4,
+      5,
+      8,
+      32
+     ]
+    ]
+   ],
+   "3": [
+    [
+     "put|in|the top drawer of the cabinet",
+     [
+      2,
+      4,
+      5,
+      8,
+      29,
+      32
+     ]
+    ],
+    [
+     "close||the top drawer of the cabinet",
+     [
+      0,
+      1,
+      4,
+      5,
+      28
+     ]
+    ]
+   ],
+   "30": [
+    [
+     "put|on|the plate",
+     [
+      9,
+      12,
+      13,
+      14,
+      36,
+      71,
+      72
+     ]
+    ]
+   ],
+   "31": [
+    [
+     "put|on top of|the cabinet",
+     [
+      10,
+      15,
+      25,
+      41,
+      43
+     ]
+    ]
+   ],
+   "32": [
+    [
+     "put|in|the top drawer of the cabinet",
+     [
+      2,
+      3,
+      4,
+      5,
+      8,
+      29
+     ]
+    ]
+   ],
+   "36": [
+    [
+     "put|on|the plate",
+     [
+      9,
+      12,
+      13,
+      14,
+      30,
+      71,
+      72
+     ]
+    ]
+   ],
+   "38": [
+    [
+     "put|on|the stove",
+     [
+      18,
+      19,
+      21,
+      45
+     ]
+    ]
+   ],
+   "4": [
+    [
+     "put|in|the top drawer of the cabinet",
+     [
+      2,
+      3,
+      5,
+      8,
+      29,
+      32
+     ]
+    ],
+    [
+     "close||the top drawer of the cabinet",
+     [
+      0,
+      1,
+      3,
+      5,
+      28
+     ]
+    ]
+   ],
+   "41": [
+    [
+     "put|on top of|the cabinet",
+     [
+      10,
+      15,
+      25,
+      31,
+      43
+     ]
+    ]
+   ],
+   "43": [
+    [
+     "put|on top of|the cabinet",
+     [
+      10,
+      15,
+      25,
+      31,
+      41
+     ]
+    ]
+   ],
+   "45": [
+    [
+     "turn on||the stove",
+     [
+      20,
+      21,
+      44
+     ]
+    ],
+    [
+     "put|on|the stove",
+     [
+      18,
+      19,
+      21,
+      38
+     ]
+    ]
+   ],
+   "5": [
+    [
+     "put|in|the top drawer of the cabinet",
+     [
+      2,
+      3,
+      4,
+      8,
+      29,
+      32
+     ]
+    ],
+    [
+     "close||the top drawer of the cabinet",
+     [
+      0,
+      1,
+      3,
+      4,
+      28
+     ]
+    ]
+   ],
+   "8": [
+    [
+     "open||the top drawer of the cabinet",
+     []
+    ],
+    [
+     "put|in|the top drawer of the cabinet",
+     [
+      2,
+      3,
+      4,
+      5,
+      29,
+      32
+     ]
+    ]
+   ]
+  },
+  "tasks": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   8,
+   12,
+   13,
+   14,
+   15,
+   25,
+   29,
+   30,
+   31,
+   32,
+   36,
+   38,
+   41,
+   43,
+   45
+  ],
+  "test": "experiment q27_main: both arms on init states 30-49, 20 episodes, noise seed 7",
+  "written_before": "any episode of q27_accept or q27_main"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_90__q27_joint__s7__abc86405",
+ "schema": 1,
+ "script": "experiments/prereg/q27_joint.py",
+ "seconds": null,
+ "seed": 7,
+ "source_commit": null,
+ "started": "2026-10-03T00:43:40+00:00",
+ "stream": null,
+ "tag": "q27_joint"
+}
