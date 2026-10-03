@@ -858,7 +858,21 @@ def interp_par():
             f"({ov['plate']['own']:.3f} against {ov['plate']['other']:.3f}), which is the instance gap left against per-task adapters.</p>"
             + fig('<img src="media/i2_similarity.png" alt="cosine similarity between motion primitives" style="width:100%">',
                   "Cosine similarity between the motion primitives' weight updates, exact in rank space; rows are grouped by step "
-                  "key (C2: the stream's successive refits; J and Q27: leave-one-out joint fits; own: one demonstration)."))
+                  "key (C2: the stream's successive refits; J and Q27: leave-one-out joint fits; own: one demonstration)."
+                  ) + c4_par())
+
+
+def c4_par():
+    c = row("c4_bind", "screen")
+    if not c:
+        return ""
+    t = c["totals"]
+    return (f"<p>The interpretation points at a repair: a primitive trained without binding moves the approach on its own, so binding "
+            f"added at test breaks it. Refit with binding on during training, the plate primitives and binding compose: "
+            f"{t['new_bind']} of 40 practice episodes against {t['old_bind']} for the earlier primitives with binding added, the back "
+            f"bowl {c['rows']['12:prims_Jplate12b.0_bind']['success']} of 10 against {c['rows']['12:zs']['success']} zero-shot "
+            f"(exploratory); on two of the four tasks the policy alone remains better ({t['zs']} zero-shot in all).</p>")
+
 
 
 P_INTERP = f"""{interp_par()}"""
