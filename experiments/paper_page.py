@@ -128,6 +128,30 @@ def coverage_chart():
     return "".join(out)
 
 
+def methods_chart(rows):
+    """Success rate per method on the stream's tasks (fresh start states), to scale 0-1; each bar labelled with its successes,
+    the demonstrations it used and the bytes it stores.  rows: (label, successes, episodes, demos, bytes, ours)."""
+    W, top, bh, gap, right = 640, 30, 18, 30, 150
+    scale = (W - right)
+    h = top + len(rows) * (bh + gap) + 20
+    out = [f'<svg viewBox="0 0 {W} {h}" class="chart" role="img" aria-label="success rate per method with demonstrations and bytes">',
+           f'<rect x="0" y="4" width="12" height="10" class="bar ours"/><text x="18" y="13" class="tick">this scheme</text>',
+           f'<rect x="110" y="4" width="12" height="10" class="bar base"/><text x="128" y="13" class="tick">baselines</text>']
+    y = top
+    for lab, k, n, demos, nb, ours in rows:
+        r = k / n if n else 0.0
+        out.append(f'<text x="0" y="{y - 4}" class="lab">{esc(lab)} <tspan class="dim">({demos} demonstrations, '
+                   f'{nb / 1e6:.0f} MB)</tspan></text>')
+        out.append(f'<rect x="0" y="{y}" width="{max(r * scale, 2):.1f}" height="{bh}" rx="2" class="bar {"ours" if ours else "base"}">'
+                   f'<title>{esc(lab)}: {k} of {n}</title></rect>')
+        out.append(f'<text x="{r * scale + 6:.1f}" y="{y + bh - 4}" class="val">{r:.2f} <tspan class="dim">{k} of {n}</tspan></text>')
+        y += bh + gap
+    for t in (0, 0.25, 0.5, 0.75, 1.0):
+        out.append(f'<text x="{t * scale:.1f}" y="{y + 2}" class="tick" text-anchor="{"start" if t == 0 else "middle"}">{t:.2f}</text>')
+    out.append("</svg>")
+    return "".join(out)
+
+
 def binding_grid():
     """Living rooms 1-3: which object the policy picked up first, against the object the instruction named."""
     tasks = [t for t in range(46, 60)]
@@ -835,7 +859,7 @@ figcaption b,.tcap b{color:var(--ink2)}
 svg.chart{width:100%;min-width:560px;height:auto;display:block;font-family:var(--sans)}
 svg .lab{font-size:13px;fill:var(--ink2)} svg .val{font-size:12px;fill:var(--ink)} svg .dim{fill:var(--muted)}
 svg .tick{font-size:11px;fill:var(--muted)} svg .rl{font-size:12px;fill:var(--ink2)} svg .rl.hl{fill:var(--ink);font-weight:600}
-svg .bar.on{fill:var(--ours)} svg .bar.off{fill:var(--rule)}
+svg .bar.on{fill:var(--ours)} svg .bar.off{fill:var(--rule)} svg .bar.ours{fill:var(--ours)} svg .bar.base{fill:var(--base)}
 svg .gridl{stroke:var(--rule);stroke-width:1} svg .span{stroke:var(--rule);stroke-width:2}
 svg .dot{stroke:var(--paper);stroke-width:1.5} svg .dot.f{fill:var(--ours)} svg .dot.c{fill:var(--base)} svg .dot.p{fill:var(--muted)} svg .dot.z{fill:var(--ink)}
 .tbl{margin:22px 0}
