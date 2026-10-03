@@ -1,0 +1,48 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "amendment: LoRA with the acceptance test",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky1.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "be1b95513bac850bc8055302015720160c9d2564",
+  "short": "be1b9551"
+ },
+ "keys": {},
+ "metrics": {
+  "arm": "lora_acc: per task, lora if its f1_accept successes exceed zero-shot's, else zs",
+  "disclosure": "proposed after f1's Q27 half showed the per-task LoRA at 0 of 20 on two tasks zero-shot solves 14-15 times",
+  "reported": "lora_acc vs zs, vs lora, and the scheme's kept arm vs lora_acc, per set, with demonstrations used",
+  "written_before": "any episode of f1_accept"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_90__f1_amend1__s9__be1b9551",
+ "schema": 1,
+ "script": "experiments/prereg/f1_amend1.py",
+ "seconds": null,
+ "seed": 9,
+ "source_commit": null,
+ "started": "2026-10-03T07:35:35+00:00",
+ "stream": null,
+ "tag": "f1_amend1"
+}
