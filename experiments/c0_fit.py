@@ -142,9 +142,11 @@ def joint(a):
         spec_q4.loader.exec_module(q4)
         maps = []
         for o, (t, approach) in zip(obs, frame_info):
-            if not approach or str(t) not in protos.files:
+            if not approach:
                 maps.append({})
                 continue
+            if str(t) not in protos.files:                                  # no silent fallback: a donor without a prototype
+                raise SystemExit(f"[c0j] task {t} has no object prototype (q4_template.py); build it before --bind")
             f = q4.feats(bk, o["observation/image"], o["observation/wrist_image"], o["observation/state"])
             k = np.argsort(f @ protos[str(t)])[::-1][:4]
             m = np.zeros(256, np.float32)

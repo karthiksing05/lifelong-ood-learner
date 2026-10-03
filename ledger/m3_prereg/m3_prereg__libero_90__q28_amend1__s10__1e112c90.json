@@ -1,0 +1,48 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "amendment: q28 defect and rerun",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky1.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "1e112c908c4702d5b8892363abb580e551b84849",
+  "short": "1e112c90"
+ },
+ "keys": {},
+ "metrics": {
+  "defect": "missing prototypes for tasks 9 72 46 47 50 54: binding arm absent there, binding-aware training partial",
+  "rerun": "prototypes built; all 16 binding-aware primitives refit (...b2) with binding on every frame before the first grasp; binding arm rerun at acceptance and test; plain and zs arms kept",
+  "seen_before": "the first run's partial read (10 of 16 tasks): H1 37 vs 31 of 200, H2 26 vs 11 of 200",
+  "written_before": "any fit or episode of the rerun"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_90__q28_amend1__s10__1e112c90",
+ "schema": 1,
+ "script": "experiments/prereg/q28_amend1.py",
+ "seconds": null,
+ "seed": 10,
+ "source_commit": null,
+ "started": "2026-10-03T19:47:02+00:00",
+ "stream": null,
+ "tag": "q28_amend1"
+}
