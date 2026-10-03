@@ -1,0 +1,306 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration of the binding-aware primitive read",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky1.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "b1f8d561f41e665c831ad20fc8d71d6c487e6b8b",
+  "short": "b1f8d561"
+ },
+ "keys": {},
+ "metrics": {
+  "acceptance": "experiment q28_accept: zs, plain primitive, binding-aware primitive + binding on stored init states 0-9, 10 episodes, noise seed 10; keep the most successes, ties to the policy, then plain",
+  "context": "c4_bind (exploratory, the 4 plate tasks 12 13 14 30, states 0-9, seed 0) was read before: 15 vs 6 of 40",
+  "fits": "rank 16, 1000 steps (as c1b_joint and c4_bind); the 8 fits of tasks 12 13 14 30 from c1b_joint / c4_bind reused",
+  "hypotheses": {
+   "H1": "kept > zs pooled over the 16 tasks (exact sign test)",
+   "H2": "binding-aware + binding > plain primitive pooled",
+   "correction": "Holm over H1, H2"
+  },
+  "plan": {
+   "12": {
+    "bind": "Jplate12b",
+    "donors": [
+     9,
+     13,
+     14,
+     30,
+     36,
+     71,
+     72
+    ],
+    "key": "put|on|the plate",
+    "plain": "Jplate12"
+   },
+   "13": {
+    "bind": "Jplate13b",
+    "donors": [
+     9,
+     12,
+     14,
+     30,
+     36,
+     71,
+     72
+    ],
+    "key": "put|on|the plate",
+    "plain": "Jplate13"
+   },
+   "14": {
+    "bind": "Jplate14b",
+    "donors": [
+     9,
+     12,
+     13,
+     30,
+     36,
+     71,
+     72
+    ],
+    "key": "put|on|the plate",
+    "plain": "Jplate14"
+   },
+   "30": {
+    "bind": "Jplate30b",
+    "donors": [
+     9,
+     12,
+     13,
+     14,
+     36,
+     71,
+     72
+    ],
+    "key": "put|on|the plate",
+    "plain": "Jplate30"
+   },
+   "36": {
+    "bind": "Q28plate36b",
+    "donors": [
+     9,
+     12,
+     13,
+     14,
+     30,
+     71,
+     72
+    ],
+    "key": "put|on|the plate",
+    "plain": "Q28plate36"
+   },
+   "46": {
+    "bind": "Q28basket46b",
+    "donors": [
+     47,
+     48,
+     49,
+     50,
+     52,
+     53,
+     54,
+     51
+    ],
+    "key": "put|in|the basket",
+    "plain": "Q28basket46"
+   },
+   "47": {
+    "bind": "Q28basket47b",
+    "donors": [
+     46,
+     48,
+     49,
+     50,
+     52,
+     53,
+     54,
+     51
+    ],
+    "key": "put|in|the basket",
+    "plain": "Q28basket47"
+   },
+   "48": {
+    "bind": "Q28basket48b",
+    "donors": [
+     46,
+     47,
+     49,
+     50,
+     52,
+     53,
+     54,
+     51
+    ],
+    "key": "put|in|the basket",
+    "plain": "Q28basket48"
+   },
+   "49": {
+    "bind": "Q28basket49b",
+    "donors": [
+     46,
+     47,
+     48,
+     50,
+     52,
+     53,
+     54,
+     51
+    ],
+    "key": "put|in|the basket",
+    "plain": "Q28basket49"
+   },
+   "50": {
+    "bind": "Q28basket50b",
+    "donors": [
+     46,
+     47,
+     48,
+     49,
+     52,
+     53,
+     54,
+     51
+    ],
+    "key": "put|in|the basket",
+    "plain": "Q28basket50"
+   },
+   "52": {
+    "bind": "Q28basket52b",
+    "donors": [
+     46,
+     47,
+     48,
+     49,
+     50,
+     53,
+     54,
+     51
+    ],
+    "key": "put|in|the basket",
+    "plain": "Q28basket52"
+   },
+   "53": {
+    "bind": "Q28basket53b",
+    "donors": [
+     46,
+     47,
+     48,
+     49,
+     50,
+     52,
+     54,
+     51
+    ],
+    "key": "put|in|the basket",
+    "plain": "Q28basket53"
+   },
+   "54": {
+    "bind": "Q28basket54b",
+    "donors": [
+     46,
+     47,
+     48,
+     49,
+     50,
+     52,
+     53,
+     51
+    ],
+    "key": "put|in|the basket",
+    "plain": "Q28basket54"
+   },
+   "71": {
+    "bind": "Q28plate71b",
+    "donors": [
+     9,
+     12,
+     13,
+     14,
+     30,
+     36,
+     72
+    ],
+    "key": "put|on|the plate",
+    "plain": "Q28plate71"
+   },
+   "72": {
+    "bind": "Q28plate72b",
+    "donors": [
+     9,
+     12,
+     13,
+     14,
+     30,
+     36,
+     71
+    ],
+    "key": "put|on|the plate",
+    "plain": "Q28plate72"
+   },
+   "9": {
+    "bind": "Q28plate9b",
+    "donors": [
+     12,
+     13,
+     14,
+     30,
+     36,
+     71,
+     72
+    ],
+    "key": "put|on|the plate",
+    "plain": "Q28plate9"
+   }
+  },
+  "tasks": [
+   9,
+   12,
+   13,
+   14,
+   30,
+   36,
+   46,
+   47,
+   48,
+   49,
+   50,
+   52,
+   53,
+   54,
+   71,
+   72
+  ],
+  "test": "experiment q28_main: all three arms on the 20 fresh start states, noise seed 10",
+  "written_before": "any fit or episode of q28"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_90__q28_bindprim__s10__b1f8d561",
+ "schema": 1,
+ "script": "experiments/prereg/q28_bindprim.py",
+ "seconds": null,
+ "seed": 10,
+ "source_commit": null,
+ "started": "2026-10-03T18:32:09+00:00",
+ "stream": null,
+ "tag": "q28_bindprim"
+}
