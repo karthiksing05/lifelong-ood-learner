@@ -38,7 +38,17 @@ one-demo program, is archived: [archive/2026-10-program/](../archive/2026-10-pro
 - REUSE. A later arrival whose object type is already in the library asks for no demonstration: its candidate forms use the
   library's prototypes of that type, and the acceptance test keeps one or none (`experiments/q16_read.py`). The kept unit is a
   library index.
-- NOT MECHANISMS. Attention binds the object slot only: raised on the goal region while the gripper is closed, it breaks the carry.
+- GRAMMAR. A qualifier word picks the instance: back / front / middle order the type's peaks by image row, right / left by
+  column (`experiments/q22_grammar.py`); the type prototype is the mean of the library's prototypes of the type.
+- MOTION PRIMITIVES (plan C, docs/PLAN_PRIMITIVES.md). An instruction splits into steps at its conjunction; a step's key is its
+  verb, preposition and target. Where nothing the library holds passes the acceptance test, the arrival's one demonstration is
+  cut into its steps at the first sustained release, and each step's primitive (a rank-4 LoRA on the action expert,
+  `lifelong_ood/policy/primitives.py`, `experiments/c0_fit.py`) is REFIT on every demonstration of that step so far: one
+  primitive per step key, shared by every task with that step. The policy switches primitives at its own release; the
+  acceptance test keeps a primitive or the policy. A primitive fitted on one demonstration holds that object and room; fitted
+  across the arrivals that share the step it transfers (docs/COBWEB_UPDATE.md, Proposition 7).
+- NOT MECHANISMS. Attention binds the object slot only: raised on the goal region while the gripper is closed, it breaks the carry;
+  added to a primitive it breaks the primitive; chaining clauses by switching the instruction needs clauses the policy performs.
   A token fitted across tasks binds the object more often but succeeds less often. Wang et al.'s product of experts over the
   policy family and motion prototypes (`lifelong_ood/policy/poe.py`) failed its pilot. Each is a README row.
 
