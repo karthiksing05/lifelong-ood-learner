@@ -871,7 +871,20 @@ def c4_par():
             f"added at test breaks it. Refit with binding on during training, the plate primitives and binding compose: "
             f"{t['new_bind']} of 40 practice episodes against {t['old_bind']} for the earlier primitives with binding added, the back "
             f"bowl {c['rows']['12:prims_Jplate12b.0_bind']['success']} of 10 against {c['rows']['12:zs']['success']} zero-shot "
-            f"(exploratory); on two of the four tasks the policy alone remains better ({t['zs']} zero-shot in all).</p>")
+            f"(exploratory); on two of the four tasks the policy alone remains better ({t['zs']} zero-shot in all).</p>" + q28_par())
+
+
+def q28_par():
+    q = row("q28_bindprim", "read")
+    if not q:
+        return ""
+    h1, h2, tt = q["hypotheses"]["H1"], q["hypotheses"]["H2"], q["totals"]
+    return (f"<p>Pre-registered on the {len(q['kept'])} plate and basket tasks, on fresh start states (m3_prereg tags q28_bindprim "
+            f"and q28_amend1; a first run was void because six tasks had no stored prototype): primitives trained under binding and "
+            f"run with it succeed {tt['bind']} of {h2['n']} times against {tt['plain']} for the plain ones (Holm p "
+            f"{h2['holm_p']:.2g}), so attention and adapter compose. Both stay below the policy on these keys ({tt['zs']} "
+            f"zero-shot), and the kept arms reach {h1['x']} (Holm p {h1['holm_p']:.2g}, not significant): where the policy already "
+            f"chooses the object well, a primitive pooled over other objects rarely improves on it.</p>")
 
 
 
