@@ -118,11 +118,12 @@ def _flow_batch(n, H, A, gen, device):
 
 
 def train(bk, state, key, params, bank, chunks_full, steps=1000, lr=1e-4, batch=32, seed=0, anchor=None,
-          anchor_weight=1.0, log_every=100, log=print, weight_decay=0.0, groups=None):
+          anchor_weight=1.0, log_every=100, log=print, weight_decay=0.0, groups=None, gate_of=None):
     """Flow-matching fine-tune of the expert `key` on (bank rows, chunks_full [N, H, A] padded, normalised).
     anchor = (anchor_bank, anchor_chunks_full): the r ~ 0 half, target = the base velocity (expert off).
     groups = [(row indices, rows per batch), ...]: every batch draws that many rows from each group (default: uniform over the
-    bank).  -> dict of loss curves."""
+    bank).  gate_of(row indices) -> a gate the batch's velocity runs under (e.g. attention binding per row; attn_bias.biased).
+    -> dict of loss curves."""
     torch.manual_seed(seed)
     gen = torch.Generator(device="cpu").manual_seed(seed)
     rng = np.random.default_rng(seed)
@@ -142,7 +143,7 @@ def train(bk, state, key, params, bank, chunks_full, steps=1000, lr=1e-4, batch=
         xt = t[:, None, None] * eps + (1 - t[:, None, None]) * a
         u = (eps - a).reshape(len(idx), -1)
         with on():
-            v = bk.v_full(xt, t, pre)
+            v = bk.v_full(xt, t, pre, None if gate_of is None else gate_of(idx))
         loss = ((v - u) ** 2).mean()
         la = torch.zeros((), device=bk.device)
         if anchor is not None:

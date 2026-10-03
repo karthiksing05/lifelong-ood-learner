@@ -40,6 +40,8 @@ def main():
                                                  "with its own clause), saved as prim_<name>_0.pt")
     ap.add_argument("--key", default="", help="the step key of --joint")
     ap.add_argument("--name", default="", help="the file name of --joint")
+    ap.add_argument("--bind", action="store_true", help="--joint: fit under attention binding (each task's own demo prototype, "
+                                                        "top-4 patches, mass 0.7, before the demo's first grasp), as at test")
     a = ap.parse_args()
     if a.joint:
         a.key = a.key.replace("_", " ")                                   # the job wrapper splits arguments on spaces
@@ -103,7 +105,7 @@ def joint(a):
     bk = PolicyBackbone("pi05_libero", device="cuda")
     d90 = D.Demos90()
     norm = D.Norm.load()
-    obs, rows, used = [], [], []
+    obs, rows, used, frame_info = [], [], [], []
     for t in [int(x) for x in a.joint.split("+")]:
         steps = P.steps_of(texts[t])
         s = next((i for i, c in enumerate(steps) if P.step_key(c) == a.key), None)
@@ -119,21 +121,47 @@ def joint(a):
         lo, hi = segs[s]
         idx, _ = D.chunk_indices(len(ep["actions"]), bk.H)
         rows.append(D.pad_rows(D.to_rows(ep["actions"][idx[lo:hi]], norm), bk.H))
+        g = np.asarray(ep["actions"])[:, 6] > 0
+        first = int(np.argmax(g)) if g.any() else len(g)
         for i in range(lo, hi):
             o = d90.observation(ep, i)
             o["prompt"] = steps[s]
             obs.append(o)
+            frame_info.append((t, i < first))                               # (task, before the demo's first grasp)
         used.append(dict(task=t, clause=steps[s], frames=[int(lo), int(hi)]))
         print(f"[c0j] task {t} step {s} '{steps[s]}': frames {lo}-{hi}", flush=True)
     full = np.concatenate(rows, 0)
     bank = adapt.LazyPrefixBank(bk, obs)                                    # ~26 MB per cached prefix: computed per batch
+    gate_of = None
+    if a.bind:                                                              # binding-aware primitive: the same attention as at test
+        import torch
+        from lifelong_ood.policy import attn_bias as AB
+        protos = np.load(os.path.join(R, "q4_object_protos.npz"))
+        spec_q4 = importlib.util.spec_from_file_location("q4", os.path.join(ROOT, "experiments", "q4_template.py"))
+        q4 = importlib.util.module_from_spec(spec_q4)
+        spec_q4.loader.exec_module(q4)
+        maps = []
+        for o, (t, approach) in zip(obs, frame_info):
+            if not approach or str(t) not in protos.files:
+                maps.append({})
+                continue
+            f = q4.feats(bk, o["observation/image"], o["observation/wrist_image"], o["observation/state"])
+            k = np.argsort(f @ protos[str(t)])[::-1][:4]
+            m = np.zeros(256, np.float32)
+            m[k] = 1.0
+            maps.append({"agent": m.reshape(16, 16)})
+        width = int(bank.take([0]).pad_masks.shape[1])
+        gate_of = lambda idx: (lambda: AB.biased(bk, [maps[int(j)] for j in idx], mode="mass", rho=0.7, width=width,   # noqa: E731
+                                                  batch=len(idx)))
+        print(f"[c0j] binding maps on {sum(bool(m_) for m_ in maps)} of {len(maps)} frames", flush=True)
     state, banks = adapt.inject(bk, scope=a.scope)
     key = f"prim_{a.name}_0"
     params = add_node(banks, key, a.rank)
     t0 = time.time()
-    hist = adapt.train(bk, state, key, params, bank, full, steps=a.steps, lr=a.lr, batch=a.batch, log=lambda x: print(x, flush=True))
+    hist = adapt.train(bk, state, key, params, bank, full, steps=a.steps, lr=a.lr, batch=a.batch, log=lambda x: print(x, flush=True),
+                       gate_of=gate_of)
     path = os.path.join(R, f"prim_{a.name}_0.pt")
-    meta = dict(joint=used, step_key=a.key, rank=a.rank, scope=a.scope, frames=int(len(obs)))
+    meta = dict(joint=used, step_key=a.key, rank=a.rank, scope=a.scope, frames=int(len(obs)), bind=bool(a.bind))
     nb = adapt.save(banks, key, path, meta=meta)
     print(f"[c0j] {a.name}: key {a.key}, {len(used)} demos, {len(obs)} frames, {nb / 1e6:.1f} MB, flow {hist['loss'][0]:.4f} -> "
           f"{hist['loss'][-1]:.4f} in {time.time() - t0:.0f}s", flush=True)
