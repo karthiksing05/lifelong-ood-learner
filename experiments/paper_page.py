@@ -709,6 +709,38 @@ P_STREAM = f"""
 {pending("Other policies", "The same codes on pi0 and SmolVLA, each with its own conditionals and its own tokens; and CALVIN ABC→D, whose "
          "unseen scene D is the same reading problem.")}"""
 
+def prim_par():
+    c0, v2, c1, cb = row("c0_exec", "screen"), row("c0_exec", "v2"), row("c1_reuse", "screen"), row("c1b_joint", "screen")
+    if not (c0 and v2 and c1 and cb):
+        return ""
+    q = row("q27_joint", "read")
+    out = (f"<p>Binding cannot supply a motion the policy lacks, so the user allowed the one demonstration to teach a motion, as a "
+           f"reusable STEP rather than a task (docs/PLAN_PRIMITIVES.md). An instruction splits into steps at its conjunction; a "
+           f"step's key is its verb, preposition and target (\u201cput | in | the top drawer of the cabinet\u201d), the object "
+           f"left out. A primitive is a rank-16 LoRA on the action expert (18.7 MB) fitted on the step's segment of a demonstration "
+           f"with the step's clause as the prompt; the policy switches primitives at its own release. On the 13 pool tasks with "
+           f"an archived one-demo LoRA, a task's own step primitives succeed {v2['own_total_with_one_step']} of 130 times against "
+           f"{v2['lora_total']} for the LoRA and {c0['totals']['zs']} zero-shot (exploratory). Fitted on ONE other task's demo, a "
+           f"primitive does not transfer: {c1['reused']} successes against {c1['zero_shot']} zero-shot over "
+           f"{len(c1['one_step_pairs'])} pairs; it holds that object's grasp and room. Fitted on EVERY other task that shares the "
+           f"step, it does: \u201con top of the cabinet\u201d gives {cb['cabinet']['joint']} of {cb['cabinet']['n']} against "
+           f"{cb['cabinet']['zs']} on three black-bowl tasks in kitchens it never saw, including the one whose routine puts the "
+           f"bowl in a drawer ({cb['rows']['25:prims_Jcab25.0']['success']} of 10 against 0). Where the difficulty is which of "
+           f"three bowls, the pooled \u201con the plate\u201d overrides the policy's reading ({cb['plate']['joint']} of "
+           f"{cb['plate']['n']} against {cb['plate']['zs']}). Consolidation across arrivals, Proposition 7's prediction, is what "
+           f"makes a step reusable.</p>")
+    if q:
+        h1, h2 = q["hypotheses"]["H1"], q["hypotheses"]["H2"]
+        out += (f"<p>Pre-registered (m3_prereg tag q27_joint): on the {len(q['per_task'])} pool tasks with a step shared by at "
+                f"least three other tasks, leave-one-task-out consolidated primitives kept by the acceptance test succeed "
+                f"{h1['x']} of {h1['n']} times against {h1['control']} zero-shot (Holm p {h1['holm_p']:.2g}); unfiltered, "
+                f"{h2['x']} (Holm p {h2['holm_p']:.2g}). No demonstration of a scored task entered its primitives.</p>")
+    return out
+
+
+P_PRIM = f"""{prim_par()}"""
+
+
 P_LIMITS = """
 <ul>
 <li>Where the named object is comes from the simulator's segmentation during practice, or from the one demonstration's object
@@ -735,7 +767,7 @@ policy's first chunk points at the named object only {probe['validity']['PA']:.2
 NAV = [("abstract", "", "Abstract"), ("s1", "1", "Introduction"), ("s2", "2", "Why the policy fails new tasks"),
        ("s3", "3", "Method"), ("s4", "4", "Experiments"), ("s4-1", "4.1", "Prompt composition"), ("s4-2", "4.2", "Where"),
        ("s4-3", "4.3", "Binding"), ("s4-4", "4.4", "Folding"), ("s4-5", "4.5", "Main read"), ("s4-6", "4.6", "Prototype PoE"),
-       ("s4-7", "4.7", "Streams, other policies"), ("s6", "5", "Limitations"),
+       ("s4-7", "4.7", "Streams, other policies"), ("s4-8", "4.8", "Motion primitives"), ("s6", "5", "Limitations"),
        ("s7", "", "Verification")]
 
 CSS = r"""
@@ -836,6 +868,7 @@ for every arm.</p>
 <section id="s4-5"><h3 style="font-size:20px">4.5 The scheme on unseen start states</h3>{P_MAIN}</section>
 <section id="s4-6"><h3 style="font-size:20px">4.6 Prototype PoE planning, and where from one demonstration</h3>{P_POE}</section>
 <section id="s4-7"><h3 style="font-size:20px">4.7 Streams and other policies</h3>{P_STREAM}</section>
+<section id="s4-8"><h3 style="font-size:20px">4.8 Reusable motion primitives</h3>{P_PRIM}</section>
 </section>
 <section id="s6"><h2><span class="sn">5</span>Limitations</h2>{P_LIMITS}</section>
 <section id="s7"><h2>Verification</h2>{P_VER}</section>
