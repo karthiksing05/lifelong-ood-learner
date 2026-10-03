@@ -1,0 +1,73 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 4677632,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 4677632,
+  "tree": 0
+ },
+ "command": "primitive size",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky1.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "c1b_joint",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "250e96d3951e5c5b0d3ab9f5ada621596feced1c",
+  "short": "250e96d3"
+ },
+ "keys": {},
+ "metrics": {
+  "bytes": {
+   "l2": 258048,
+   "r16": 18710528,
+   "r4": 4677632
+  },
+  "n": 30,
+  "note": "plan C, primitive size (exploratory): the leave-one-out 'on top of the cabinet' primitives of c1b_joint refit at rank 4 over the action expert and at rank 2 on its last two layers; practice states 0-9, 10 episodes, seed 0",
+  "success": {
+   "l2": {
+    "15": 2,
+    "25": 0,
+    "31": 0
+   },
+   "r16": {
+    "15": 5,
+    "25": 9,
+    "31": 5
+   },
+   "r4": {
+    "15": 7,
+    "25": 7,
+    "31": 5
+   }
+  },
+  "totals": {
+   "l2": 2,
+   "r16": 19,
+   "r4": 19
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "c1b_joint__libero_90__size__s0__250e96d3",
+ "schema": 1,
+ "script": "(c0_fit.py --joint --rank 4 | --rank 2 --scope last2; launch_pack c1b_joint)",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-03T03:06:33+00:00",
+ "stream": null,
+ "tag": "size"
+}

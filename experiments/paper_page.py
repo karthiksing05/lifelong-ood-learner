@@ -740,6 +740,12 @@ def prim_par():
                 f"least three other tasks, leave-one-task-out consolidated primitives kept by the acceptance test succeed "
                 f"{h1['x']} of {h1['n']} times against {h1['control']} zero-shot (Holm p {h1['holm_p']:.2g}); unfiltered, "
                 f"{h2['x']} (Holm p {h2['holm_p']:.2g}). No demonstration of a scored task entered its primitives.</p>")
+    z = row("c1b_joint", "size")
+    if z:
+        out += (f"<p>A primitive need not be large: refit at rank 4 ({z['bytes']['r4'] / 1e6:.1f} MB) the three cabinet primitives "
+                f"succeed {z['totals']['r4']} of {z['n']} times, as at rank 16 ({z['bytes']['r16'] / 1e6:.1f} MB); confined to the "
+                f"expert's last two layers ({z['bytes']['l2'] / 1e6:.1f} MB) they fail ({z['totals']['l2']}). One rank-4 primitive "
+                f"per step, shared by every task with that step, against an 18.7 MB adapter per task (exploratory).</p>")
     return out
 
 

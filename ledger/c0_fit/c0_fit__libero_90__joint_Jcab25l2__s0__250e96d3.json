@@ -1,0 +1,144 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 258048,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 258048,
+  "tree": 0
+ },
+ "command": "experiments/c0_fit.py --task 0 --joint 10+15+31+41+43 --key put|on_top_of|the_cabinet --name Jcab25l2 --rank 2 --scope last2",
+ "config": {
+  "batch": 32,
+  "demo": 0,
+  "joint": "10+15+31+41+43",
+  "key": "put|on top of|the cabinet",
+  "lr": 0.0001,
+  "name": "Jcab25l2",
+  "rank": 2,
+  "scope": "last2",
+  "steps": 1000,
+  "tag": "",
+  "task": 0
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "heistotron.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4005677",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "c0_fit",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "250e96d3951e5c5b0d3ab9f5ada621596feced1c",
+  "short": "250e96d3"
+ },
+ "keys": {},
+ "metrics": {
+  "bytes": 258048,
+  "curve": {
+   "anchor": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "loss": [
+    0.12041628360748291,
+    0.0828777477145195,
+    0.052952565252780914,
+    0.04153057932853699,
+    0.04911164566874504,
+    0.03332456946372986,
+    0.030332783237099648,
+    0.03024313785135746,
+    0.02661328949034214,
+    0.030130809172987938,
+    0.026099983602762222
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "frames": 770,
+  "joint": [
+   {
+    "clause": "put the black bowl on top of the cabinet",
+    "frames": [
+     0,
+     147
+    ],
+    "task": 10
+   },
+   {
+    "clause": "put the middle black bowl on top of the cabinet",
+    "frames": [
+     0,
+     137
+    ],
+    "task": 15
+   },
+   {
+    "clause": "put the black bowl on top of the cabinet",
+    "frames": [
+     0,
+     147
+    ],
+    "task": 31
+   },
+   {
+    "clause": "put the frying pan on top of the cabinet",
+    "frames": [
+     0,
+     195
+    ],
+    "task": 41
+   },
+   {
+    "clause": "put the white bowl on top of the cabinet",
+    "frames": [
+     0,
+     144
+    ],
+    "task": 43
+   }
+  ],
+  "rank": 2,
+  "scope": "last2",
+  "step_key": "put|on top of|the cabinet"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "c0_fit__libero_90__joint_Jcab25l2__s0__250e96d3",
+ "schema": 1,
+ "script": "experiments/c0_fit.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-03T02:53:08+00:00",
+ "stream": null,
+ "tag": "joint_Jcab25l2"
+}
