@@ -1,0 +1,144 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 18710528,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 18710528,
+  "tree": 0
+ },
+ "command": "experiments/c0_fit.py --task 0 --joint 0+1+4+5+28 --key close||the_top_drawer_of_the_cabinet --name Q27t3s1",
+ "config": {
+  "batch": 32,
+  "demo": 0,
+  "joint": "0+1+4+5+28",
+  "key": "close||the top drawer of the cabinet",
+  "lr": 0.0001,
+  "name": "Q27t3s1",
+  "rank": 16,
+  "scope": "expert",
+  "steps": 1000,
+  "tag": "",
+  "task": 0
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "omgwth.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4005339",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "c0_fit",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "f107a6f7388c2b570522f1e1e348b1f982ec97a9",
+  "short": "f107a6f7"
+ },
+ "keys": {},
+ "metrics": {
+  "bytes": 18710528,
+  "curve": {
+   "anchor": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "loss": [
+    0.10337577015161514,
+    0.02404843270778656,
+    0.016970058903098106,
+    0.00782132800668478,
+    0.009158450178802013,
+    0.005548590328544378,
+    0.004157640039920807,
+    0.00447164848446846,
+    0.002688989508897066,
+    0.010780860669910908,
+    0.007173930294811726
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "frames": 453,
+  "joint": [
+   {
+    "clause": "close the top drawer of the cabinet",
+    "frames": [
+     0,
+     65
+    ],
+    "task": 0
+   },
+   {
+    "clause": "close the top drawer of the cabinet",
+    "frames": [
+     0,
+     189
+    ],
+    "task": 1
+   },
+   {
+    "clause": "close the top drawer of the cabinet",
+    "frames": [
+     110,
+     173
+    ],
+    "task": 4
+   },
+   {
+    "clause": "close the top drawer of the cabinet",
+    "frames": [
+     97,
+     168
+    ],
+    "task": 5
+   },
+   {
+    "clause": "close the top drawer of the cabinet",
+    "frames": [
+     0,
+     65
+    ],
+    "task": 28
+   }
+  ],
+  "rank": 16,
+  "scope": "expert",
+  "step_key": "close||the top drawer of the cabinet"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "c0_fit__libero_90__joint_Q27t3s1__s0__f107a6f7",
+ "schema": 1,
+ "script": "experiments/c0_fit.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-03T01:23:10+00:00",
+ "stream": null,
+ "tag": "joint_Q27t3s1"
+}

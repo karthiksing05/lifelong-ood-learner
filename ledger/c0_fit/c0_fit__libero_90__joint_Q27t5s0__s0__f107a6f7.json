@@ -1,0 +1,152 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 18710528,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 18710528,
+  "tree": 0
+ },
+ "command": "experiments/c0_fit.py --task 0 --joint 2+3+4+8+29+32 --key put|in|the_top_drawer_of_the_cabinet --name Q27t5s0",
+ "config": {
+  "batch": 32,
+  "demo": 0,
+  "joint": "2+3+4+8+29+32",
+  "key": "put|in|the top drawer of the cabinet",
+  "lr": 0.0001,
+  "name": "Q27t5s0",
+  "rank": 16,
+  "scope": "expert",
+  "steps": 1000,
+  "tag": "",
+  "task": 0
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "xaea-12.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4005342",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "c0_fit",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "f107a6f7388c2b570522f1e1e348b1f982ec97a9",
+  "short": "f107a6f7"
+ },
+ "keys": {},
+ "metrics": {
+  "bytes": 18710528,
+  "curve": {
+   "anchor": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "loss": [
+    0.07086743414402008,
+    0.023051898926496506,
+    0.018739113584160805,
+    0.00879114679992199,
+    0.011187734082341194,
+    0.006657472345978022,
+    0.005075850989669561,
+    0.002610236406326294,
+    0.004720722790807486,
+    0.01114762481302023,
+    0.006869183387607336
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "frames": 667,
+  "joint": [
+   {
+    "clause": "put the black bowl in the top drawer of the cabinet",
+    "frames": [
+     0,
+     116
+    ],
+    "task": 2
+   },
+   {
+    "clause": "put the butter at the back in the top drawer of the cabinet",
+    "frames": [
+     0,
+     117
+    ],
+    "task": 3
+   },
+   {
+    "clause": "put the butter at the front in the top drawer of the cabinet",
+    "frames": [
+     0,
+     110
+    ],
+    "task": 4
+   },
+   {
+    "clause": "put the bowl in the top drawer of the cabinet",
+    "frames": [
+     181,
+     189
+    ],
+    "task": 8
+   },
+   {
+    "clause": "put the black bowl in the top drawer of the cabinet",
+    "frames": [
+     0,
+     116
+    ],
+    "task": 29
+   },
+   {
+    "clause": "put the ketchup in the top drawer of the cabinet",
+    "frames": [
+     0,
+     200
+    ],
+    "task": 32
+   }
+  ],
+  "rank": 16,
+  "scope": "expert",
+  "step_key": "put|in|the top drawer of the cabinet"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "c0_fit__libero_90__joint_Q27t5s0__s0__f107a6f7",
+ "schema": 1,
+ "script": "experiments/c0_fit.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-03T01:22:43+00:00",
+ "stream": null,
+ "tag": "joint_Q27t5s0"
+}

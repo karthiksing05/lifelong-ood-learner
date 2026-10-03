@@ -58,6 +58,7 @@ q6 = row("q6_main", "read")
 q7 = row("q7_tokpractice", "read")
 q13 = row("q13_main", "read")
 q16 = row("q16_library", "read")
+q27 = row("q27_joint", "read")
 of10 = lambda key, f="BA", src=None: int(round(10 * (src or q2m)[key][f]))                     # noqa: E731
 token_bytes = [r for r in L.load("f4_fold", tag="token_demo") if not r.get("retired")][-1]["bytes"]["total"]
 lang = {int(k): v["language"] for k, v in json.load(open(os.path.join(R, "f0_coverage.json")))["tasks"].items()}   # the read's artifact
@@ -235,7 +236,11 @@ pre-registered read, storing {q13['kept_bytes'] / 1024:.0f} KB in all and leavin
 Once an object type has a prototype, later tasks with that type need no demonstration: practice chooses among the stored
 prototypes, and the kept arm succeeds {q16['hypotheses']['H1']['x']} of {q16['hypotheses']['H1']['n']} times against
 {q16['hypotheses']['H1']['control']} zero-shot, level with forms built from each task's own demonstration
-({q16['hypotheses']['H2']['control']}). Tokens shared across tasks bind the object more often but succeed less often.</p>"""
+({q16['hypotheses']['H2']['control']}). Tokens shared across tasks bind the object more often but succeed less often. Where a
+step needs a motion the policy lacks, the demonstration may teach it as a reusable step: a primitive fitted on every other task
+that shares the step, kept only where the learner's practice favours it, raises {len(q27['per_task'])} tasks from
+{q27['hypotheses']['H1']['control']} to {q27['hypotheses']['H1']['x']} successes of {q27['hypotheses']['H1']['n']} in a
+pre-registered read with no demonstration of the scored task, including a goal no binding reached.</p>"""
 
 P_INTRO = f"""
 <p>A trained robot policy already knows how to reach, grasp, carry and place. When it fails a new task in a familiar room, the
@@ -255,7 +260,7 @@ overwritten.</p></div>
 for most of them (Section 2). (2) A benchmark that tests the thesis: tasks the policy has never seen, with no demonstration of them.
 (3) Role codes: a new task as a task prototype the policy performs with one object slot rebound, and two ways to inject the
 binding with the policy generating (Sections 3.3, 4.3). (4) Folding the policy's own successes into a token, with no demonstration
-(Section 4.4), and the scheme's pre-registered read on start states nobody tuned on (Section 4.5). (5) An acceptance test on the learner's own practice that keeps the policy, the binding or the token per task; in its pre-registered read no task does worse than the frozen policy (Section 4.5). (6) A library of 4 KB object prototypes that lets later tasks with a known object type skip the demonstration (Sections 4.5, 4.7).</p>"""
+(Section 4.4), and the scheme's pre-registered read on start states nobody tuned on (Section 4.5). (5) An acceptance test on the learner's own practice that keeps the policy, the binding or the token per task; in its pre-registered read no task does worse than the frozen policy (Section 4.5). (6) A library of 4 KB object prototypes that lets later tasks with a known object type skip the demonstration (Sections 4.5, 4.7). (7) Motion primitives per step, consolidated over the arrivals that share the step, which reach tasks binding cannot (Section 4.8).</p>"""
 
 P_WHY = f"""
 <h3 id="s2-1">2.1 Success follows what the training instructions named</h3>

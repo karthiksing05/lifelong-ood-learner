@@ -1,0 +1,144 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 18710528,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 18710528,
+  "tree": 0
+ },
+ "command": "experiments/c0_fit.py --task 0 --joint 10+15+25+31+41 --key put|on_top_of|the_cabinet --name Q27t43s0",
+ "config": {
+  "batch": 32,
+  "demo": 0,
+  "joint": "10+15+25+31+41",
+  "key": "put|on top of|the cabinet",
+  "lr": 0.0001,
+  "name": "Q27t43s0",
+  "rank": 16,
+  "scope": "expert",
+  "steps": 1000,
+  "tag": "",
+  "task": 0
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "megazord.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4005350",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "c0_fit",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "f107a6f7388c2b570522f1e1e348b1f982ec97a9",
+  "short": "f107a6f7"
+ },
+ "keys": {},
+ "metrics": {
+  "bytes": 18710528,
+  "curve": {
+   "anchor": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "loss": [
+    0.11220544576644897,
+    0.0284052025526762,
+    0.01322939433157444,
+    0.00875199493020773,
+    0.017348792403936386,
+    0.007007879205048084,
+    0.006004610564559698,
+    0.0062608979642391205,
+    0.008517668582499027,
+    0.009392411448061466,
+    0.00595378503203392
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "frames": 773,
+  "joint": [
+   {
+    "clause": "put the black bowl on top of the cabinet",
+    "frames": [
+     0,
+     147
+    ],
+    "task": 10
+   },
+   {
+    "clause": "put the middle black bowl on top of the cabinet",
+    "frames": [
+     0,
+     137
+    ],
+    "task": 15
+   },
+   {
+    "clause": "put the black bowl on top of the cabinet",
+    "frames": [
+     0,
+     147
+    ],
+    "task": 25
+   },
+   {
+    "clause": "put the black bowl on top of the cabinet",
+    "frames": [
+     0,
+     147
+    ],
+    "task": 31
+   },
+   {
+    "clause": "put the frying pan on top of the cabinet",
+    "frames": [
+     0,
+     195
+    ],
+    "task": 41
+   }
+  ],
+  "rank": 16,
+  "scope": "expert",
+  "step_key": "put|on top of|the cabinet"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "c0_fit__libero_90__joint_Q27t43s0__s0__f107a6f7",
+ "schema": 1,
+ "script": "experiments/c0_fit.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-03T01:23:06+00:00",
+ "stream": null,
+ "tag": "joint_Q27t43s0"
+}

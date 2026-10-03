@@ -1,0 +1,128 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 18710528,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 18710528,
+  "tree": 0
+ },
+ "command": "experiments/c0_fit.py --task 0 --joint 20+21+44 --key turn_on||the_stove --name Q27t45s0",
+ "config": {
+  "batch": 32,
+  "demo": 0,
+  "joint": "20+21+44",
+  "key": "turn on||the stove",
+  "lr": 0.0001,
+  "name": "Q27t45s0",
+  "rank": 16,
+  "scope": "expert",
+  "steps": 1000,
+  "tag": "",
+  "task": 0
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "optimistprime.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4005351",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "c0_fit",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "f107a6f7388c2b570522f1e1e348b1f982ec97a9",
+  "short": "f107a6f7"
+ },
+ "keys": {},
+ "metrics": {
+  "bytes": 18710528,
+  "curve": {
+   "anchor": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "loss": [
+    0.03173677250742912,
+    0.012961107306182384,
+    0.007013469934463501,
+    0.00329248677007854,
+    0.005918658804148436,
+    0.0030629299581050873,
+    0.0015232007717713714,
+    0.0018597195157781243,
+    0.0015317865181714296,
+    0.004775167442858219,
+    0.0027795012574642897
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "frames": 291,
+  "joint": [
+   {
+    "clause": "turn on the stove",
+    "frames": [
+     0,
+     89
+    ],
+    "task": 20
+   },
+   {
+    "clause": "turn on the stove",
+    "frames": [
+     0,
+     113
+    ],
+    "task": 21
+   },
+   {
+    "clause": "turn on the stove",
+    "frames": [
+     0,
+     89
+    ],
+    "task": 44
+   }
+  ],
+  "rank": 16,
+  "scope": "expert",
+  "step_key": "turn on||the stove"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "c0_fit__libero_90__joint_Q27t45s0__s0__f107a6f7",
+ "schema": 1,
+ "script": "experiments/c0_fit.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-03T01:23:03+00:00",
+ "stream": null,
+ "tag": "joint_Q27t45s0"
+}

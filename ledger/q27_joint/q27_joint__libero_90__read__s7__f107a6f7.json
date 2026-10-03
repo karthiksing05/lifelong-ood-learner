@@ -1,0 +1,305 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 112200000,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 112200000,
+  "tree": 0
+ },
+ "command": "experiments/q27_read.py --read --record",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky1.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "q27_joint",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "f107a6f7388c2b570522f1e1e348b1f982ec97a9",
+  "short": "f107a6f7"
+ },
+ "keys": {},
+ "metrics": {
+  "acceptance": {
+   "1": {
+    "prims": 0,
+    "zs": 0
+   },
+   "12": {
+    "prims": 0,
+    "zs": 6
+   },
+   "13": {
+    "prims": 0,
+    "zs": 0
+   },
+   "14": {
+    "prims": 0,
+    "zs": 4
+   },
+   "15": {
+    "prims": 5,
+    "zs": 0
+   },
+   "2": {
+    "prims": 8,
+    "zs": 7
+   },
+   "25": {
+    "prims": 6,
+    "zs": 0
+   },
+   "29": {
+    "prims": 2,
+    "zs": 6
+   },
+   "3": {
+    "prims": 0,
+    "zs": 0
+   },
+   "30": {
+    "prims": 8,
+    "zs": 8
+   },
+   "31": {
+    "prims": 3,
+    "zs": 0
+   },
+   "32": {
+    "prims": 0,
+    "zs": 0
+   },
+   "36": {
+    "prims": 0,
+    "zs": 0
+   },
+   "38": {
+    "prims": 0,
+    "zs": 4
+   },
+   "4": {
+    "prims": 0,
+    "zs": 0
+   },
+   "41": {
+    "prims": 0,
+    "zs": 0
+   },
+   "43": {
+    "prims": 0,
+    "zs": 2
+   },
+   "45": {
+    "prims": 2,
+    "zs": 0
+   },
+   "5": {
+    "prims": 2,
+    "zs": 0
+   },
+   "8": {
+    "prims": 0,
+    "zs": 0
+   }
+  },
+  "hypotheses": {
+   "H1": {
+    "arm": "kept",
+    "control": 71,
+    "diff": {
+     "diff": 0.0925,
+     "hi": 0.1875,
+     "hi90": 0.17,
+     "lo": 0.015,
+     "lo90": 0.0225,
+     "n_pairs": 400,
+     "n_tasks": 20
+    },
+    "discordant": [
+     43,
+     6
+    ],
+    "holm_p": 1.1455530568582617e-07,
+    "n": 400,
+    "passes": true,
+    "sign_p": 5.7277652842913085e-08,
+    "x": 108
+   },
+   "H2": {
+    "arm": "prims",
+    "control": 71,
+    "diff": {
+     "diff": -0.005,
+     "hi": 0.13,
+     "hi90": 0.105,
+     "lo": -0.1375,
+     "lo90": -0.1175,
+     "n_pairs": 400,
+     "n_tasks": 20
+    },
+    "discordant": [
+     46,
+     48
+    ],
+    "holm_p": 0.9179230673157426,
+    "n": 400,
+    "passes": false,
+    "sign_p": 0.9179230673157426,
+    "x": 69
+   }
+  },
+  "kept": {
+   "1": "zs",
+   "12": "zs",
+   "13": "zs",
+   "14": "zs",
+   "15": "prims@Jcab15.0",
+   "2": "prims@Q27t2s0.0",
+   "25": "prims@Jcab25.0",
+   "29": "zs",
+   "3": "zs",
+   "30": "zs",
+   "31": "prims@Jcab31.0",
+   "32": "zs",
+   "36": "zs",
+   "38": "zs",
+   "4": "zs",
+   "41": "zs",
+   "43": "zs",
+   "45": "prims@Q27t45s0.0+Q27t45s1.0",
+   "5": "prims@Q27t5s0.0+Q27t5s1.0",
+   "8": "zs"
+  },
+  "keys": [
+   "close||the top drawer of the cabinet",
+   "put|in|the top drawer of the cabinet",
+   "put|on top of|the cabinet",
+   "put|on|the plate",
+   "put|on|the stove",
+   "turn on||the stove"
+  ],
+  "missing": [],
+  "per_task": {
+   "1": {
+    "kept": false,
+    "prims": 0,
+    "zs": 0
+   },
+   "12": {
+    "kept": false,
+    "prims": 1,
+    "zs": 6
+   },
+   "13": {
+    "kept": false,
+    "prims": 0,
+    "zs": 1
+   },
+   "14": {
+    "kept": false,
+    "prims": 3,
+    "zs": 9
+   },
+   "15": {
+    "kept": true,
+    "prims": 10,
+    "zs": 0
+   },
+   "2": {
+    "kept": true,
+    "prims": 16,
+    "zs": 15
+   },
+   "25": {
+    "kept": true,
+    "prims": 15,
+    "zs": 0
+   },
+   "29": {
+    "kept": false,
+    "prims": 1,
+    "zs": 11
+   },
+   "3": {
+    "kept": false,
+    "prims": 0,
+    "zs": 0
+   },
+   "30": {
+    "kept": false,
+    "prims": 8,
+    "zs": 14
+   },
+   "31": {
+    "kept": true,
+    "prims": 6,
+    "zs": 4
+   },
+   "32": {
+    "kept": false,
+    "prims": 0,
+    "zs": 0
+   },
+   "36": {
+    "kept": false,
+    "prims": 0,
+    "zs": 0
+   },
+   "38": {
+    "kept": false,
+    "prims": 0,
+    "zs": 10
+   },
+   "4": {
+    "kept": false,
+    "prims": 0,
+    "zs": 0
+   },
+   "41": {
+    "kept": false,
+    "prims": 0,
+    "zs": 0
+   },
+   "43": {
+    "kept": false,
+    "prims": 0,
+    "zs": 1
+   },
+   "45": {
+    "kept": true,
+    "prims": 6,
+    "zs": 0
+   },
+   "5": {
+    "kept": true,
+    "prims": 3,
+    "zs": 0
+   },
+   "8": {
+    "kept": false,
+    "prims": 0,
+    "zs": 0
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "q27_joint__libero_90__read__s7__f107a6f7",
+ "schema": 1,
+ "script": "experiments/q27_read.py",
+ "seconds": null,
+ "seed": 7,
+ "source_commit": null,
+ "started": "2026-10-03T02:08:43+00:00",
+ "stream": null,
+ "tag": "read"
+}
