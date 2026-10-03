@@ -1,0 +1,89 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "C0/C1 after the chunk fix",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky1.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "c0_exec",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "911dbd8ce9471a42a428c03d3792d1503df308da",
+  "short": "911dbd8c"
+ },
+ "keys": {},
+ "metrics": {
+  "drawer_reuse": {
+   "32:prims_4.0.v2": {
+    "n": 10,
+    "success": 0
+   },
+   "3:prims_4.0.v2+4.1.v2": {
+    "n": 10,
+    "success": 0
+   },
+   "4:prims_3.0.v2+3.1.v2": {
+    "n": 10,
+    "success": 0
+   },
+   "5:prims_4.0.v2+4.1.v2": {
+    "n": 10,
+    "success": 3
+   }
+  },
+  "drawer_reuse_total": 3,
+  "lora_total": 71,
+  "note": "plan C after the chunk fix (c0_fit: chunks near a step's end run into the demo's real next actions): the two-step tasks' own primitives refit (_v2) and the drawer reuse pairs rerun with them; practice states 0-9, 10 episodes, seed 0",
+  "own_total_with_one_step": 78,
+  "own_two_step": {
+   "1:prims_own2": {
+    "n": 10,
+    "success": 2
+   },
+   "3:prims_own2": {
+    "n": 10,
+    "success": 10
+   },
+   "4:prims_own2": {
+    "n": 10,
+    "success": 7
+   },
+   "5:prims_own2": {
+    "n": 10,
+    "success": 4
+   },
+   "63:prims_own2": {
+    "n": 10,
+    "success": 8
+   }
+  },
+  "own_two_step_total": 31
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "c0_exec__libero_90__v2__s0__911dbd8c",
+ "schema": 1,
+ "script": "(c0_fit.py --tag _v2; launch_pack c0_exec prims@own2, c1_reuse prims@<k>.<s>.v2)",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-03T00:03:44+00:00",
+ "stream": null,
+ "tag": "v2"
+}
