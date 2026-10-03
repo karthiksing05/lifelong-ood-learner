@@ -1,0 +1,66 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration of the fresh-state benchmark",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky1.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "6687064de6b9eed8362660e9d9801abd5625ccf3",
+  "short": "6687064d"
+ },
+ "keys": {},
+ "metrics": {
+  "arms": {
+   "bcl@er_<key>": "the same with experience replay (half of each batch from earlier demos)",
+   "bcl@joint_<key>": "one LoRA per step key trained on all the key's demos at once (b_continual.py; 2000 steps)",
+   "bcl@seq_<key>": "one LoRA per key fine-tuned task after task in the stream order (500 steps per task)",
+   "c2_final": "each C2 key's final primitive",
+   "c2_kept": "each C2 arrival's kept arm (c2_state.json)",
+   "lora": "per-task one-demo LoRA, rank 16 (r3_fewshot.py; 18.7 MB per task, a demo for every task)",
+   "q27_kept": "each Q27 task's kept arm (q27_kept.json)",
+   "zs": "the frozen policy"
+  },
+  "descriptive": "two-sided sign tests and bootstrap intervals of c2_kept against lora, bcl joint, bcl seq, bcl er; seq against lora on each key's earlier arrivals (forgetting); costs per method: demonstrations used, bytes stored, practice episodes run before test",
+  "episodes": "20 per task and arm, fresh states 0-19, experiment f1_main",
+  "hypotheses": {
+   "H1": "C2 set: c2_kept > zs pooled (exact sign test on discordant pairs by state)",
+   "H2": "Q27 set: q27_kept > zs pooled",
+   "correction": "Holm over H1, H2"
+  },
+  "sets": {
+   "C2": "the 30 arrivals of c2_stream (4 step keys)",
+   "Q27": "the 20 tasks of q27_joint"
+  },
+  "written_before": "any episode of f1_main"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_90__f1_fresh__s9__6687064d",
+ "schema": 1,
+ "script": "experiments/prereg/f1_fresh.py",
+ "seconds": null,
+ "seed": 9,
+ "source_commit": null,
+ "started": "2026-10-03T03:50:24+00:00",
+ "stream": null,
+ "tag": "f1_fresh"
+}

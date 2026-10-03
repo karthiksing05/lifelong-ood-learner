@@ -80,6 +80,8 @@ def arm_spec(tid, arm, fold, demo=0):
     if arm in ("learned", "learned_mem0", "learned_origfold"):           # compose -> practise -> consolidate (r15_consolidate.py)
         extra = {"learned": "", "learned_mem0": "&mem=0", "learned_origfold": "&fold=orig"}[arm]
         return (f"learned:{tid}?{C}&window=20{extra}", "0", False)
+    if arm.startswith("bcl@"):                                           # continual baselines (b_continual.py): bcl@<mode>_<key>
+        return (f"lora:{os.path.join(R, 'bcl_' + arm[4:] + '.pt')}", "0", False)
     if arm.startswith("lora@"):                                          # lora@<name>: results/robot/<name>_<task>_lora.pt (rounds)
         return (f"lora:{os.path.join(R, arm[5:] + '_' + str(tid) + '_lora.pt')}", "0", False)
     if arm == "lora_learn":                                              # LoRA on the demo + the same successful rollouts
