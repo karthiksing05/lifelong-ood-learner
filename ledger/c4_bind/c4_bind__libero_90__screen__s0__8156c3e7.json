@@ -1,0 +1,133 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "binding-aware primitives",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky1.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "c4_bind",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "8156c3e7f7e9d7eb7a69aee126e9ead8ac1a94a2",
+  "short": "8156c3e7"
+ },
+ "keys": {},
+ "metrics": {
+  "note": "exploratory, practice states 0-9, 10 episodes, noise seed 0: the leave-one-out 'on the plate' primitives of c1b_joint refit UNDER attention binding (c0_fit --joint --bind: each training frame before the demo's first grasp biased toward its own demo prototype's top-4 patches at mass 0.7), run with binding at test (the scored task's own demo prototype as the query)",
+  "rows": {
+   "12:prims_Jplate12.0": {
+    "bound": 1,
+    "n": 10,
+    "success": 0
+   },
+   "12:prims_Jplate12.0_bind": {
+    "bound": 0,
+    "n": 10,
+    "success": 0
+   },
+   "12:prims_Jplate12b.0_bind": {
+    "bound": 10,
+    "n": 10,
+    "success": 9
+   },
+   "12:zs": {
+    "bound": 5,
+    "n": 10,
+    "success": 4
+   },
+   "13:prims_Jplate13.0": {
+    "bound": 0,
+    "n": 10,
+    "success": 0
+   },
+   "13:prims_Jplate13.0_bind": {
+    "bound": 3,
+    "n": 10,
+    "success": 1
+   },
+   "13:prims_Jplate13b.0_bind": {
+    "bound": 2,
+    "n": 10,
+    "success": 2
+   },
+   "13:zs": {
+    "bound": 0,
+    "n": 10,
+    "success": 0
+   },
+   "14:prims_Jplate14.0": {
+    "bound": 1,
+    "n": 10,
+    "success": 0
+   },
+   "14:prims_Jplate14.0_bind": {
+    "bound": 6,
+    "n": 10,
+    "success": 4
+   },
+   "14:prims_Jplate14b.0_bind": {
+    "bound": 2,
+    "n": 10,
+    "success": 0
+   },
+   "14:zs": {
+    "bound": 5,
+    "n": 10,
+    "success": 5
+   },
+   "30:prims_Jplate30.0": {
+    "bound": 8,
+    "n": 10,
+    "success": 7
+   },
+   "30:prims_Jplate30.0_bind": {
+    "bound": 2,
+    "n": 10,
+    "success": 1
+   },
+   "30:prims_Jplate30b.0_bind": {
+    "bound": 5,
+    "n": 10,
+    "success": 4
+   },
+   "30:zs": {
+    "bound": 10,
+    "n": 10,
+    "success": 8
+   }
+  },
+  "totals": {
+   "new_bind": 15,
+   "old": 7,
+   "old_bind": 6,
+   "zs": 17
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "c4_bind__libero_90__screen__s0__8156c3e7",
+ "schema": 1,
+ "script": "(c0_fit.py --joint --bind; launch_pack c4_bind)",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-03T18:29:12+00:00",
+ "stream": null,
+ "tag": "screen"
+}
