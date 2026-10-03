@@ -1,0 +1,112 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 4677632,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 4677632,
+  "tree": 0
+ },
+ "command": "experiments/c0_fit.py --task 0 --joint 57 --key put|in|the_tray --name C2tray1 --rank 4",
+ "config": {
+  "batch": 32,
+  "demo": 0,
+  "joint": "57",
+  "key": "put|in|the tray",
+  "lr": 0.0001,
+  "name": "C2tray1",
+  "rank": 4,
+  "scope": "expert",
+  "steps": 1000,
+  "tag": "",
+  "task": 0
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "voltron.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4005943",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "c0_fit",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "f5efcd581cb80744181a1d9c91c48a670ac3dce6",
+  "short": "f5efcd58"
+ },
+ "keys": {},
+ "metrics": {
+  "bytes": 4677632,
+  "curve": {
+   "anchor": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "loss": [
+    0.026659658178687096,
+    0.023732608184218407,
+    0.006481532007455826,
+    0.007253117859363556,
+    0.007207603193819523,
+    0.0031105540692806244,
+    0.0057856435887515545,
+    0.0033334773033857346,
+    0.0027685014065355062,
+    0.008017206564545631,
+    0.0037518590688705444
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "frames": 148,
+  "joint": [
+   {
+    "clause": "pick up the cream cheese and put it in the tray",
+    "frames": [
+     0,
+     148
+    ],
+    "task": 57
+   }
+  ],
+  "rank": 4,
+  "scope": "expert",
+  "step_key": "put|in|the tray"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "c0_fit__libero_90__joint_C2tray1__s0__f5efcd58",
+ "schema": 1,
+ "script": "experiments/c0_fit.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-03T03:53:36+00:00",
+ "stream": null,
+ "tag": "joint_C2tray1"
+}

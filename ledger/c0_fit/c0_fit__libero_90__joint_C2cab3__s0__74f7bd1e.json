@@ -1,0 +1,128 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 4677632,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 4677632,
+  "tree": 0
+ },
+ "command": "experiments/c0_fit.py --task 0 --joint 31+15+10 --key put|on_top_of|the_cabinet --name C2cab3 --rank 4",
+ "config": {
+  "batch": 32,
+  "demo": 0,
+  "joint": "31+15+10",
+  "key": "put|on top of|the cabinet",
+  "lr": 0.0001,
+  "name": "C2cab3",
+  "rank": 4,
+  "scope": "expert",
+  "steps": 1000,
+  "tag": "",
+  "task": 0
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "crushinator.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4006827",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "c0_fit",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "74f7bd1e556adcb10b69483e7963004e46bc4975",
+  "short": "74f7bd1e"
+ },
+ "keys": {},
+ "metrics": {
+  "bytes": 4677632,
+  "curve": {
+   "anchor": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "loss": [
+    0.0816846489906311,
+    0.03485087305307388,
+    0.021535802632570267,
+    0.010989099740982056,
+    0.010249863378703594,
+    0.007752289064228535,
+    0.007141397334635258,
+    0.0034210518933832645,
+    0.00851717870682478,
+    0.009986238554120064,
+    0.005368353333324194
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "frames": 431,
+  "joint": [
+   {
+    "clause": "put the black bowl on top of the cabinet",
+    "frames": [
+     0,
+     147
+    ],
+    "task": 31
+   },
+   {
+    "clause": "put the middle black bowl on top of the cabinet",
+    "frames": [
+     0,
+     137
+    ],
+    "task": 15
+   },
+   {
+    "clause": "put the black bowl on top of the cabinet",
+    "frames": [
+     0,
+     147
+    ],
+    "task": 10
+   }
+  ],
+  "rank": 4,
+  "scope": "expert",
+  "step_key": "put|on top of|the cabinet"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "c0_fit__libero_90__joint_C2cab3__s0__74f7bd1e",
+ "schema": 1,
+ "script": "experiments/c0_fit.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-03T08:10:19+00:00",
+ "stream": null,
+ "tag": "joint_C2cab3"
+}

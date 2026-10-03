@@ -1,0 +1,112 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 4677632,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 4677632,
+  "tree": 0
+ },
+ "command": "experiments/c0_fit.py --task 0 --joint 31 --key put|on_top_of|the_cabinet --name C2cab1 --rank 4",
+ "config": {
+  "batch": 32,
+  "demo": 0,
+  "joint": "31",
+  "key": "put|on top of|the cabinet",
+  "lr": 0.0001,
+  "name": "C2cab1",
+  "rank": 4,
+  "scope": "expert",
+  "steps": 1000,
+  "tag": "",
+  "task": 0
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "heistotron.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4005949",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "c0_fit",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "f5efcd581cb80744181a1d9c91c48a670ac3dce6",
+  "short": "f5efcd58"
+ },
+ "keys": {},
+ "metrics": {
+  "bytes": 4677632,
+  "curve": {
+   "anchor": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "loss": [
+    0.06781303882598877,
+    0.022768547758460045,
+    0.010382591746747494,
+    0.005640632938593626,
+    0.009196844883263111,
+    0.002631653565913439,
+    0.0025480729527771473,
+    0.0014318943722173572,
+    0.0017888132715597749,
+    0.006617893930524588,
+    0.00414162315428257
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "frames": 147,
+  "joint": [
+   {
+    "clause": "put the black bowl on top of the cabinet",
+    "frames": [
+     0,
+     147
+    ],
+    "task": 31
+   }
+  ],
+  "rank": 4,
+  "scope": "expert",
+  "step_key": "put|on top of|the cabinet"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "c0_fit__libero_90__joint_C2cab1__s0__f5efcd58",
+ "schema": 1,
+ "script": "experiments/c0_fit.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-03T03:57:19+00:00",
+ "stream": null,
+ "tag": "joint_C2cab1"
+}

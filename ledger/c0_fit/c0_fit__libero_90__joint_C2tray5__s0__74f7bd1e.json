@@ -1,0 +1,144 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 4677632,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 4677632,
+  "tree": 0
+ },
+ "command": "experiments/c0_fit.py --task 0 --joint 57+62+55+59+56 --key put|in|the_tray --name C2tray5 --rank 4",
+ "config": {
+  "batch": 32,
+  "demo": 0,
+  "joint": "57+62+55+59+56",
+  "key": "put|in|the tray",
+  "lr": 0.0001,
+  "name": "C2tray5",
+  "rank": 4,
+  "scope": "expert",
+  "steps": 1000,
+  "tag": "",
+  "task": 0
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "crushinator.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4007069",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "c0_fit",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "74f7bd1e556adcb10b69483e7963004e46bc4975",
+  "short": "74f7bd1e"
+ },
+ "keys": {},
+ "metrics": {
+  "bytes": 4677632,
+  "curve": {
+   "anchor": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "loss": [
+    0.06635880470275879,
+    0.02470557577908039,
+    0.022639920935034752,
+    0.01995066925883293,
+    0.023662477731704712,
+    0.014807126484811306,
+    0.012546914629638195,
+    0.005563864018768072,
+    0.00895200576633215,
+    0.013043338432908058,
+    0.009141785092651844
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "frames": 604,
+  "joint": [
+   {
+    "clause": "pick up the cream cheese and put it in the tray",
+    "frames": [
+     0,
+     148
+    ],
+    "task": 57
+   },
+   {
+    "clause": "pick up the salad dressing and put it in the tray",
+    "frames": [
+     0,
+     114
+    ],
+    "task": 62
+   },
+   {
+    "clause": "pick up the alphabet soup and put it in the tray",
+    "frames": [
+     0,
+     111
+    ],
+    "task": 55
+   },
+   {
+    "clause": "pick up the tomato sauce and put it in the tray",
+    "frames": [
+     0,
+     128
+    ],
+    "task": 59
+   },
+   {
+    "clause": "pick up the butter and put it in the tray",
+    "frames": [
+     0,
+     103
+    ],
+    "task": 56
+   }
+  ],
+  "rank": 4,
+  "scope": "expert",
+  "step_key": "put|in|the tray"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "c0_fit__libero_90__joint_C2tray5__s0__74f7bd1e",
+ "schema": 1,
+ "script": "experiments/c0_fit.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-03T09:58:58+00:00",
+ "stream": null,
+ "tag": "joint_C2tray5"
+}

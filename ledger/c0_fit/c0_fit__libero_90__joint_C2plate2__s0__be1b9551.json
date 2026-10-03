@@ -1,0 +1,120 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 4677632,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 4677632,
+  "tree": 0
+ },
+ "command": "experiments/c0_fit.py --task 0 --joint 9+71 --key put|on|the_plate --name C2plate2 --rank 4",
+ "config": {
+  "batch": 32,
+  "demo": 0,
+  "joint": "9+71",
+  "key": "put|on|the plate",
+  "lr": 0.0001,
+  "name": "C2plate2",
+  "rank": 4,
+  "scope": "expert",
+  "steps": 1000,
+  "tag": "",
+  "task": 0
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "heistotron.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4006578",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "c0_fit",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "be1b95513bac850bc8055302015720160c9d2564",
+  "short": "be1b9551"
+ },
+ "keys": {},
+ "metrics": {
+  "bytes": 4677632,
+  "curve": {
+   "anchor": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "loss": [
+    0.07392864674329758,
+    0.034263040870428085,
+    0.022658411413431168,
+    0.01590503565967083,
+    0.013103100471198559,
+    0.005901678465306759,
+    0.004278284963220358,
+    0.0030750983860343695,
+    0.007952209562063217,
+    0.011573988012969494,
+    0.006907239090651274
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "frames": 253,
+  "joint": [
+   {
+    "clause": "put the black bowl on the plate",
+    "frames": [
+     0,
+     137
+    ],
+    "task": 9
+   },
+   {
+    "clause": "put the red mug on the plate",
+    "frames": [
+     0,
+     116
+    ],
+    "task": 71
+   }
+  ],
+  "rank": 4,
+  "scope": "expert",
+  "step_key": "put|on|the plate"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "c0_fit__libero_90__joint_C2plate2__s0__be1b9551",
+ "schema": 1,
+ "script": "experiments/c0_fit.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-03T06:11:08+00:00",
+ "stream": null,
+ "tag": "joint_C2plate2"
+}

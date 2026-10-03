@@ -1,0 +1,350 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 18710528,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 18710528,
+  "tree": 0
+ },
+ "command": "experiments/c2_stream.py --read --record",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky1.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "c2_stream",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "a4f4655f2e24e074eb6223dd2a23c4b2a8a0e357",
+  "short": "a4f4655f"
+ },
+ "keys": {},
+ "metrics": {
+  "arrivals": {
+   "basket": 9,
+   "cab": 6,
+   "plate": 8,
+   "tray": 7
+  },
+  "bytes": 18710528,
+  "demos": {
+   "basket": 9,
+   "cab": 5,
+   "plate": 7,
+   "tray": 7
+  },
+  "hypotheses": {
+   "H1": {
+    "control": 269,
+    "diff": {
+     "diff": 0.22166666666666668,
+     "hi": 0.3383333333333333,
+     "hi90": 0.31833333333333336,
+     "lo": 0.11333333333333333,
+     "lo90": 0.12833333333333333,
+     "n_pairs": 600,
+     "n_tasks": 30
+    },
+    "discordant": [
+     142,
+     9
+    ],
+    "holm_p": 1.3183356323434489e-31,
+    "n": 600,
+    "passes": true,
+    "sign_p": 6.591678161717244e-32,
+    "x": 402
+   },
+   "H2": {
+    "control": 269,
+    "diff": {
+     "diff": 0.095,
+     "hi": 0.245,
+     "hi90": 0.22166666666666668,
+     "lo": -0.06,
+     "lo90": -0.03333333333333333,
+     "n_pairs": 600,
+     "n_tasks": 30
+    },
+    "discordant": [
+     140,
+     83
+    ],
+    "holm_p": 0.0001640523149550963,
+    "n": 600,
+    "passes": true,
+    "sign_p": 0.0001640523149550963,
+    "x": 326
+   }
+  },
+  "missing": [],
+  "per_task": {
+   "10": {
+    "demo": true,
+    "final_s": 12,
+    "kept": "zs",
+    "kept_s": 20,
+    "key": "cab",
+    "zs": 20
+   },
+   "12": {
+    "demo": true,
+    "final_s": 6,
+    "kept": "zs",
+    "kept_s": 5,
+    "key": "plate",
+    "zs": 5
+   },
+   "13": {
+    "demo": true,
+    "final_s": 9,
+    "kept": "prims@C2plate3.0",
+    "kept_s": 14,
+    "key": "plate",
+    "zs": 1
+   },
+   "14": {
+    "demo": true,
+    "final_s": 2,
+    "kept": "zs",
+    "kept_s": 10,
+    "key": "plate",
+    "zs": 10
+   },
+   "15": {
+    "demo": true,
+    "final_s": 20,
+    "kept": "prims@C2cab2.0",
+    "kept_s": 16,
+    "key": "cab",
+    "zs": 0
+   },
+   "25": {
+    "demo": false,
+    "final_s": 18,
+    "kept": "prims@C2cab2.0",
+    "kept_s": 20,
+    "key": "cab",
+    "zs": 0
+   },
+   "30": {
+    "demo": false,
+    "final_s": 7,
+    "kept": "prims@C2plate7.0",
+    "kept_s": 7,
+    "key": "plate",
+    "zs": 10
+   },
+   "31": {
+    "demo": true,
+    "final_s": 4,
+    "kept": "zs",
+    "kept_s": 4,
+    "key": "cab",
+    "zs": 4
+   },
+   "36": {
+    "demo": true,
+    "final_s": 6,
+    "kept": "prims@C2plate4.0",
+    "kept_s": 10,
+    "key": "plate",
+    "zs": 1
+   },
+   "41": {
+    "demo": true,
+    "final_s": 10,
+    "kept": "prims@C2cab5.0",
+    "kept_s": 10,
+    "key": "cab",
+    "zs": 0
+   },
+   "43": {
+    "demo": true,
+    "final_s": 6,
+    "kept": "prims@C2cab4.0",
+    "kept_s": 12,
+    "key": "cab",
+    "zs": 1
+   },
+   "46": {
+    "demo": true,
+    "final_s": 9,
+    "kept": "zs",
+    "kept_s": 20,
+    "key": "basket",
+    "zs": 20
+   },
+   "47": {
+    "demo": true,
+    "final_s": 19,
+    "kept": "zs",
+    "kept_s": 20,
+    "key": "basket",
+    "zs": 20
+   },
+   "48": {
+    "demo": true,
+    "final_s": 17,
+    "kept": "prims@C2basket5.0",
+    "kept_s": 17,
+    "key": "basket",
+    "zs": 0
+   },
+   "49": {
+    "demo": true,
+    "final_s": 0,
+    "kept": "zs",
+    "kept_s": 0,
+    "key": "basket",
+    "zs": 0
+   },
+   "50": {
+    "demo": true,
+    "final_s": 17,
+    "kept": "zs",
+    "kept_s": 17,
+    "key": "basket",
+    "zs": 17
+   },
+   "51": {
+    "demo": true,
+    "final_s": 2,
+    "kept": "zs",
+    "kept_s": 19,
+    "key": "basket",
+    "zs": 19
+   },
+   "52": {
+    "demo": true,
+    "final_s": 1,
+    "kept": "prims@C2basket3.0",
+    "kept_s": 6,
+    "key": "basket",
+    "zs": 0
+   },
+   "53": {
+    "demo": true,
+    "final_s": 6,
+    "kept": "prims@C2basket4.0",
+    "kept_s": 3,
+    "key": "basket",
+    "zs": 1
+   },
+   "54": {
+    "demo": true,
+    "final_s": 13,
+    "kept": "zs",
+    "kept_s": 18,
+    "key": "basket",
+    "zs": 18
+   },
+   "55": {
+    "demo": true,
+    "final_s": 19,
+    "kept": "zs",
+    "kept_s": 20,
+    "key": "tray",
+    "zs": 20
+   },
+   "56": {
+    "demo": true,
+    "final_s": 19,
+    "kept": "zs",
+    "kept_s": 16,
+    "key": "tray",
+    "zs": 16
+   },
+   "57": {
+    "demo": true,
+    "final_s": 20,
+    "kept": "zs",
+    "kept_s": 20,
+    "key": "tray",
+    "zs": 20
+   },
+   "58": {
+    "demo": true,
+    "final_s": 10,
+    "kept": "prims@C2tray6.0",
+    "kept_s": 7,
+    "key": "tray",
+    "zs": 0
+   },
+   "59": {
+    "demo": true,
+    "final_s": 13,
+    "kept": "prims@C2tray4.0",
+    "kept_s": 12,
+    "key": "tray",
+    "zs": 7
+   },
+   "61": {
+    "demo": true,
+    "final_s": 18,
+    "kept": "zs",
+    "kept_s": 20,
+    "key": "tray",
+    "zs": 20
+   },
+   "62": {
+    "demo": true,
+    "final_s": 7,
+    "kept": "prims@C2tray2.0",
+    "kept_s": 9,
+    "key": "tray",
+    "zs": 0
+   },
+   "71": {
+    "demo": true,
+    "final_s": 5,
+    "kept": "prims@C2plate2.0",
+    "kept_s": 11,
+    "key": "plate",
+    "zs": 0
+   },
+   "72": {
+    "demo": true,
+    "final_s": 11,
+    "kept": "zs",
+    "kept_s": 20,
+    "key": "plate",
+    "zs": 20
+   },
+   "9": {
+    "demo": true,
+    "final_s": 20,
+    "kept": "zs",
+    "kept_s": 19,
+    "key": "plate",
+    "zs": 19
+   }
+  },
+  "primitives": {
+   "basket": "C2basket9",
+   "cab": "C2cab5",
+   "plate": "C2plate7",
+   "tray": "C2tray7"
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "c2_stream__libero_90__read__s8__a4f4655f",
+ "schema": 1,
+ "script": "experiments/c2_stream.py",
+ "seconds": null,
+ "seed": 8,
+ "source_commit": null,
+ "started": "2026-10-03T15:29:01+00:00",
+ "stream": null,
+ "tag": "read"
+}

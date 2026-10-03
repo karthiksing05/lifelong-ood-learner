@@ -1,0 +1,120 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 4677632,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 4677632,
+  "tree": 0
+ },
+ "command": "experiments/c0_fit.py --task 0 --joint 47+54 --key put|in|the_basket --name C2basket2 --rank 4",
+ "config": {
+  "batch": 32,
+  "demo": 0,
+  "joint": "47+54",
+  "key": "put|in|the basket",
+  "lr": 0.0001,
+  "name": "C2basket2",
+  "rank": 4,
+  "scope": "expert",
+  "steps": 1000,
+  "tag": "",
+  "task": 0
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "consu.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4006573",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "c0_fit",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "be1b95513bac850bc8055302015720160c9d2564",
+  "short": "be1b9551"
+ },
+ "keys": {},
+ "metrics": {
+  "bytes": 4677632,
+  "curve": {
+   "anchor": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "loss": [
+    0.06567718088626862,
+    0.019934063777327538,
+    0.011258902959525585,
+    0.0128563791513443,
+    0.012227344326674938,
+    0.0062752366065979,
+    0.003210425842553377,
+    0.0027952701784670353,
+    0.0036073289811611176,
+    0.0092355040833354,
+    0.005463253241032362
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "frames": 261,
+  "joint": [
+   {
+    "clause": "pick up the cream cheese box and put it in the basket",
+    "frames": [
+     0,
+     158
+    ],
+    "task": 47
+   },
+   {
+    "clause": "pick up the tomato sauce and put it in the basket",
+    "frames": [
+     0,
+     103
+    ],
+    "task": 54
+   }
+  ],
+  "rank": 4,
+  "scope": "expert",
+  "step_key": "put|in|the basket"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "c0_fit__libero_90__joint_C2basket2__s0__be1b9551",
+ "schema": 1,
+ "script": "experiments/c0_fit.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-03T06:05:26+00:00",
+ "stream": null,
+ "tag": "joint_C2basket2"
+}

@@ -1,0 +1,136 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 4677632,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 4677632,
+  "tree": 0
+ },
+ "command": "experiments/c0_fit.py --task 0 --joint 9+71+13+36 --key put|on|the_plate --name C2plate4 --rank 4",
+ "config": {
+  "batch": 32,
+  "demo": 0,
+  "joint": "9+71+13+36",
+  "key": "put|on|the plate",
+  "lr": 0.0001,
+  "name": "C2plate4",
+  "rank": 4,
+  "scope": "expert",
+  "steps": 1000,
+  "tag": "",
+  "task": 0
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "brainiac.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4006963",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "c0_fit",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "74f7bd1e556adcb10b69483e7963004e46bc4975",
+  "short": "74f7bd1e"
+ },
+ "keys": {},
+ "metrics": {
+  "bytes": 4677632,
+  "curve": {
+   "anchor": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "loss": [
+    0.07561343908309937,
+    0.032309334725141525,
+    0.02575564943253994,
+    0.018726257607340813,
+    0.01606232486665249,
+    0.01075044833123684,
+    0.007418038789182901,
+    0.005297473166137934,
+    0.004757923539727926,
+    0.00877551268786192,
+    0.006949122995138168
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "frames": 605,
+  "joint": [
+   {
+    "clause": "put the black bowl on the plate",
+    "frames": [
+     0,
+     137
+    ],
+    "task": 9
+   },
+   {
+    "clause": "put the red mug on the plate",
+    "frames": [
+     0,
+     116
+    ],
+    "task": 71
+   },
+   {
+    "clause": "put the black bowl at the front on the plate",
+    "frames": [
+     0,
+     134
+    ],
+    "task": 13
+   },
+   {
+    "clause": "put the white bowl on the plate",
+    "frames": [
+     0,
+     218
+    ],
+    "task": 36
+   }
+  ],
+  "rank": 4,
+  "scope": "expert",
+  "step_key": "put|on|the plate"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "c0_fit__libero_90__joint_C2plate4__s0__74f7bd1e",
+ "schema": 1,
+ "script": "experiments/c0_fit.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-03T09:14:06+00:00",
+ "stream": null,
+ "tag": "joint_C2plate4"
+}

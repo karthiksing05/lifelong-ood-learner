@@ -1,0 +1,120 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 4677632,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 4677632,
+  "tree": 0
+ },
+ "command": "experiments/c0_fit.py --task 0 --joint 57+62 --key put|in|the_tray --name C2tray2 --rank 4",
+ "config": {
+  "batch": 32,
+  "demo": 0,
+  "joint": "57+62",
+  "key": "put|in|the tray",
+  "lr": 0.0001,
+  "name": "C2tray2",
+  "rank": 4,
+  "scope": "expert",
+  "steps": 1000,
+  "tag": "",
+  "task": 0
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "deebot.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4006579",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "c0_fit",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "be1b95513bac850bc8055302015720160c9d2564",
+  "short": "be1b9551"
+ },
+ "keys": {},
+ "metrics": {
+  "bytes": 4677632,
+  "curve": {
+   "anchor": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "loss": [
+    0.06664521992206573,
+    0.027872232720255852,
+    0.014269962906837463,
+    0.011045155115425587,
+    0.014422453008592129,
+    0.006271235644817352,
+    0.005788618233054876,
+    0.0020886759739369154,
+    0.003601370844990015,
+    0.011137383058667183,
+    0.005603952798992395
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "frames": 262,
+  "joint": [
+   {
+    "clause": "pick up the cream cheese and put it in the tray",
+    "frames": [
+     0,
+     148
+    ],
+    "task": 57
+   },
+   {
+    "clause": "pick up the salad dressing and put it in the tray",
+    "frames": [
+     0,
+     114
+    ],
+    "task": 62
+   }
+  ],
+  "rank": 4,
+  "scope": "expert",
+  "step_key": "put|in|the tray"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "c0_fit__libero_90__joint_C2tray2__s0__be1b9551",
+ "schema": 1,
+ "script": "experiments/c0_fit.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-03T06:11:51+00:00",
+ "stream": null,
+ "tag": "joint_C2tray2"
+}
