@@ -833,6 +833,37 @@ def prim_par():
 P_PRIM = f"""{prim_par()}"""
 
 
+def interp_par():
+    i1, i2, i3 = row("i1_prototypes", "read"), row("i2_primitives", "read"), row("i3_behavior", "read")
+    if not (i1 and i2 and i3):
+        return ""
+    u, g, ov, tb = i1["unique_share"], i2["module_share_mean"], i3["own_vs_other"], i3["table"]
+    return (f"<p>A prototype is an object type at a place. Over the library's {i1['n']} prototypes, three factors explain "
+            f"{100 * i1['r2_full']:.0f}% of the variance in their pairwise similarity: the type {100 * u['type']:.0f}% on its own, the "
+            f"place in the image {100 * u['place']:.0f}%, the room {100 * u['room']:.0f}% (exploratory). Their hierarchy (Figure "
+            f"{FIG['n'] + 1}) groups the books of three study rooms, the frying pans and the bottles, and puts two objects grasped at "
+            f"the same patch side by side. That is why a borrowed prototype transfers across rooms when its type is alone and "
+            f"points at its own source's instance when it is not.</p>"
+            + fig('<img src="media/i1_prototype_tree.png" alt="hierarchy of the object prototypes" style="width:100%">',
+                  "The library's object prototypes, clustered by 1 minus cosine similarity (average linkage); each leaf is the "
+                  "object type, the room and the grasp patch (row, column) of the demonstration it came from.")
+            + f"<p>A consolidated primitive encodes its step. Primitives of one step key have cosine {i2['same_key_cos']:.2f} with each "
+            f"other and {i2['diff_key_cos']:.3f} with other keys' (Figure {FIG['n'] + 1}), and a key's successive refits in the "
+            f"stream agree more as demonstrations accumulate. The update lives in the action expert's queries "
+            f"({g['q_proj']:.2f} of its squared norm) and MLP ({g['gate_proj'] + g['up_proj'] + g['down_proj']:.2f}), almost not in "
+            f"its keys and values: a primitive changes what the action tokens look at and how they transform it. What it does to the "
+            f"actions matches the reads: the cabinet primitive changes the height of the carry ({tb['cab']['cab']['carry']['z']:.2f}) "
+            f"and acts twice as much on its own step's frames ({ov['cab']['own']:.2f} against {ov['cab']['other']:.2f}); the plate "
+            f"primitive acts on the approach, where the policy chooses the bowl, and no more on its own step's frames than on others "
+            f"({ov['plate']['own']:.3f} against {ov['plate']['other']:.3f}), which is the instance gap left against per-task adapters.</p>"
+            + fig('<img src="media/i2_similarity.png" alt="cosine similarity between motion primitives" style="width:100%">',
+                  "Cosine similarity between the motion primitives' weight updates, exact in rank space; rows are grouped by step "
+                  "key (C2: the stream's successive refits; J and Q27: leave-one-out joint fits; own: one demonstration)."))
+
+
+P_INTERP = f"""{interp_par()}"""
+
+
 P_LIMITS = """
 <ul>
 <li>Where the named object is comes from the simulator's segmentation during practice, or from the one demonstration's object
@@ -859,7 +890,7 @@ policy's first chunk points at the named object only {probe['validity']['PA']:.2
 NAV = [("abstract", "", "Abstract"), ("s1", "1", "Introduction"), ("s2", "2", "Why the policy fails new tasks"),
        ("s3", "3", "Method"), ("s4", "4", "Experiments"), ("s4-1", "4.1", "Prompt composition"), ("s4-2", "4.2", "Where"),
        ("s4-3", "4.3", "Binding"), ("s4-4", "4.4", "Folding"), ("s4-5", "4.5", "Main read"), ("s4-6", "4.6", "Prototype PoE"),
-       ("s4-7", "4.7", "Streams, other policies"), ("s4-8", "4.8", "Motion primitives"), ("s6", "5", "Limitations"),
+       ("s4-7", "4.7", "Streams, other policies"), ("s4-8", "4.8", "Motion primitives"), ("s4-9", "4.9", "What the units encode"), ("s6", "5", "Limitations"),
        ("s7", "", "Verification")]
 
 CSS = r"""
@@ -961,6 +992,7 @@ for every arm.</p>
 <section id="s4-6"><h3 style="font-size:20px">4.6 Prototype PoE planning, and where from one demonstration</h3>{P_POE}</section>
 <section id="s4-7"><h3 style="font-size:20px">4.7 Streams and other policies</h3>{P_STREAM}</section>
 <section id="s4-8"><h3 style="font-size:20px">4.8 Reusable motion primitives</h3>{P_PRIM}</section>
+<section id="s4-9"><h3 style="font-size:20px">4.9 What the prototypes and primitives encode</h3>{P_INTERP}</section>
 </section>
 <section id="s6"><h2><span class="sn">5</span>Limitations</h2>{P_LIMITS}</section>
 <section id="s7"><h2>Verification</h2>{P_VER}</section>
