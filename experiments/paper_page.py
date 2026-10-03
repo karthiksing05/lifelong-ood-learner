@@ -764,6 +764,20 @@ def prim_par():
                 f"least three other tasks, leave-one-task-out consolidated primitives kept by the acceptance test succeed "
                 f"{h1['x']} of {h1['n']} times against {h1['control']} zero-shot (Holm p {h1['holm_p']:.2g}); unfiltered, "
                 f"{h2['x']} (Holm p {h2['holm_p']:.2g}). No demonstration of a scored task entered its primitives.</p>")
+    c2 = row("c2_stream", "read")
+    if c2:
+        h1, h2 = c2["hypotheses"]["H1"], c2["hypotheses"]["H2"]
+        kept = sum(v["kept"] != "zs" for v in c2["per_task"].values())
+        nodemo = sum(v["kept"] != "zs" and not v["demo"] for v in c2["per_task"].values())
+        out += (f"<p>The stream (pre-registered, m3_prereg tag c2_stream): {sum(c2['arrivals'].values())} single-step tasks in "
+                f"{len(c2['arrivals'])} step keys arrive one at a time; each tries its key's current primitive first and requests "
+                f"its demonstration only if the primitive is not kept, after which the key's primitive is refit on every "
+                f"demonstration so far. It requested {sum(c2['demos'].values())} demonstrations and kept a primitive on {kept} "
+                f"arrivals ({nodemo} with no demonstration of their own), storing {c2['bytes'] / 1e6:.1f} MB for all of them. The kept "
+                f"arms succeed {h1['x']} of {h1['n']} times against {h1['control']} zero-shot (Holm p {h1['holm_p']:.2g}); each key's "
+                f"final primitive, run on all its arrivals, {h2['x']} (Holm p {h2['holm_p']:.2g}), so refitting on later "
+                f"demonstrations keeps part of the earlier arrivals' gain. Reuse saved few demonstrations: a refit primitive rarely "
+                f"beat the policy on a new arrival before that arrival's own demonstration joined it.</p>")
     f = row("f1_fresh", "q27_half")
     if f:
         out += (f"<p>Every stored LIBERO-90 start state had been used by some earlier read, so the pre-registered fresh-state benchmark "
