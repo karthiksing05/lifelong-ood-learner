@@ -740,6 +740,16 @@ def prim_par():
                 f"least three other tasks, leave-one-task-out consolidated primitives kept by the acceptance test succeed "
                 f"{h1['x']} of {h1['n']} times against {h1['control']} zero-shot (Holm p {h1['holm_p']:.2g}); unfiltered, "
                 f"{h2['x']} (Holm p {h2['holm_p']:.2g}). No demonstration of a scored task entered its primitives.</p>")
+    f = row("f1_fresh", "q27_half")
+    if f:
+        out += (f"<p>Every stored LIBERO-90 start state had been used by some earlier read, so the pre-registered fresh-state benchmark "
+                f"(m3_prereg tag f1_fresh) draws 20 new start states per task from LIBERO's own placement sampler. On the "
+                f"{f['H2']['tasks']} tasks above, the kept arms succeed {f['H2']['x']} of {f['H2']['n']} times against "
+                f"{f['H2']['y']} zero-shot (discordant pairs {f['H2']['discordant'][0]} to {f['H2']['discordant'][1]}). The per-task "
+                f"one-demo LoRA, fitted on each scored task's own demonstration, succeeds {f['q27_vs_lora']['y']} times: with no "
+                f"demonstration of the scored task the scheme reaches about two fifths of it. A per-task adapter damages nothing "
+                f"either, so the scheme's case is a frontier: success per demonstration requested and per byte stored, which the "
+                f"stream measures.</p>")
     z = row("c1b_joint", "size")
     if z:
         out += (f"<p>A primitive need not be large: refit at rank 4 ({z['bytes']['r4'] / 1e6:.1f} MB) the three cabinet primitives "
