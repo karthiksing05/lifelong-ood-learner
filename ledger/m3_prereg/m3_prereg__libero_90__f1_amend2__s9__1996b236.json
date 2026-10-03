@@ -1,0 +1,48 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "amendment: joint per-key LoRA with the acceptance test",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky1.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "1996b23624b3575b98ee6fd1eb055a7cf842b3e4",
+  "short": "1996b236"
+ },
+ "keys": {},
+ "metrics": {
+  "arm": "joint_acc: per task, bcl@joint_<key> if its f1_accept successes exceed zero-shot's, else zs",
+  "disclosure": "proposed after f1's read showed the scheme above joint (419 vs 346) with the acceptance test on one side only",
+  "reported": "joint_acc vs zs and the scheme's kept arm vs joint_acc on the stream's 30 tasks, with demonstrations and bytes",
+  "written_before": "any episode of the joint arm in f1_accept"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_90__f1_amend2__s9__1996b236",
+ "schema": 1,
+ "script": "experiments/prereg/f1_amend2.py",
+ "seconds": null,
+ "seed": 9,
+ "source_commit": null,
+ "started": "2026-10-03T16:19:31+00:00",
+ "stream": null,
+ "tag": "f1_amend2"
+}
