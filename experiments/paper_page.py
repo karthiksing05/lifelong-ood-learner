@@ -59,6 +59,8 @@ q7 = row("q7_tokpractice", "read")
 q13 = row("q13_main", "read")
 q16 = row("q16_library", "read")
 q27 = row("q27_joint", "read")
+f1 = row("f1_fresh", "read")
+f1c = row("f1_fresh", "costs")
 of10 = lambda key, f="BA", src=None: int(round(10 * (src or q2m)[key][f]))                     # noqa: E731
 token_bytes = [r for r in L.load("f4_fold", tag="token_demo") if not r.get("retired")][-1]["bytes"]["total"]
 lang = {int(k): v["language"] for k, v in json.load(open(os.path.join(R, "f0_coverage.json")))["tasks"].items()}   # the read's artifact
@@ -141,7 +143,7 @@ def methods_chart(rows):
     for lab, k, n, demos, nb, ours in rows:
         r = k / n if n else 0.0
         out.append(f'<text x="0" y="{y - 4}" class="lab">{esc(lab)} <tspan class="dim">({demos} demonstrations, '
-                   f'{nb / 1e6:.0f} MB)</tspan></text>')
+                   f'{nb / 1e6:.1f} MB)</tspan></text>')
         out.append(f'<rect x="0" y="{y}" width="{max(r * scale, 2):.1f}" height="{bh}" rx="2" class="bar {"ours" if ours else "base"}">'
                    f'<title>{esc(lab)}: {k} of {n}</title></rect>')
         out.append(f'<text x="{r * scale + 6:.1f}" y="{y + bh - 4}" class="val">{r:.2f} <tspan class="dim">{k} of {n}</tspan></text>')
@@ -264,7 +266,11 @@ prototypes, and the kept arm succeeds {q16['hypotheses']['H1']['x']} of {q16['hy
 step needs a motion the policy lacks, the demonstration may teach it as a reusable step: a primitive fitted on every other task
 that shares the step, kept only where the learner's practice favours it, raises {len(q27['per_task'])} tasks from
 {q27['hypotheses']['H1']['control']} to {q27['hypotheses']['H1']['x']} successes of {q27['hypotheses']['H1']['n']} in a
-pre-registered read with no demonstration of the scored task, including a goal no binding reached.</p>"""
+pre-registered read with no demonstration of the scored task, including a goal no binding reached. In a stream of 30 tasks
+on never-used start states, these consolidated primitives beat joint, sequential and replay training of shared adapters and
+reach {100 * f1['descriptive']['c2_vs_lora']['x'] / f1['descriptive']['c2_vs_lora']['y']:.0f}% of a separate one-demo adapter per task
+at a {f1c['lora'] / f1c['scheme']:.0f}th of its storage; a separate adapter per task with the same acceptance test stays the
+strongest.</p>"""
 
 P_INTRO = f"""
 <p>A trained robot policy already knows how to reach, grasp, carry and place. When it fails a new task in a familiar room, the
@@ -788,6 +794,27 @@ def prim_par():
                 f"demonstration of the scored task the scheme reaches about two fifths of it. A per-task adapter damages nothing "
                 f"either, so the scheme's case is a frontier: success per demonstration requested and per byte stored, which the "
                 f"stream measures.</p>")
+    F1, FC = row("f1_fresh", "read"), row("f1_fresh", "costs")
+    if F1 and FC:
+        d, h1 = F1["descriptive"], F1["hypotheses"]["H1"]
+        nd = FC["scheme_demos"] - len(FC["lora_missing"])
+        rows = [("zero-shot (the frozen policy)", h1["y"], h1["n"], 0, 0, False),
+                ("sequential fine-tuning, one LoRA per key", d["c2_vs_seq"]["y"], d["c2_vs_seq"]["n"], FC["lora_tasks"], FC["bcl"]["seq"], False),
+                ("experience replay, one LoRA per key", d["c2_vs_er"]["y"], d["c2_vs_er"]["n"], FC["lora_tasks"], FC["bcl"]["er"], False),
+                ("joint multi-task, one LoRA per key", d["c2_vs_joint"]["y"], d["c2_vs_joint"]["n"], FC["lora_tasks"], FC["bcl"]["joint"], False),
+                ("this scheme: consolidated step primitives", h1["x"], h1["n"], nd, FC["scheme"], True),
+                ("a one-demo LoRA per task", d["c2_vs_lora"]["y"], d["c2_vs_lora"]["n"], FC["lora_tasks"], FC["lora"], False),
+                ("a one-demo LoRA per task + the acceptance test", d["c2_vs_lora_acc"]["y"], d["c2_vs_lora_acc"]["n"], FC["lora_tasks"], FC["lora"], False)]
+        out += (f"<p>Against its baselines, on start states no rule has seen (pre-registered, m3_prereg tags f1_fresh and f1_amend1), "
+                f"the stream is the best of the learners that share storage across tasks, and reaches "
+                f"{100 * d['c2_vs_lora']['x'] / d['c2_vs_lora']['y']:.0f}% of a separate adapter per task at a "
+                f"{FC['lora'] / FC['scheme']:.0f}th of its storage (Figure {FIG['n'] + 1}). Sequential fine-tuning forgets; a separate "
+                f"adapter per task given the same acceptance test remains the strongest.</p>"
+                + fig('<div class="chartwrap">' + methods_chart(rows) + '</div>',
+                      f"Success rate on the stream's {FC['lora_tasks'] + len(FC['lora_missing'])} tasks, 20 never-used start "
+                      f"states each, noise seed 9, with the demonstrations each method used and the bytes it stores (task 51 has "
+                      f"no demonstration, so the per-task rows cover 29 tasks). The scheme also ran {FC['practice_episodes']} "
+                      f"practice episodes before test; the baselines ran none."))
     z = row("c1b_joint", "size")
     if z:
         out += (f"<p>A primitive need not be large: refit at rank 4 ({z['bytes']['r4'] / 1e6:.1f} MB) the three cabinet primitives "
