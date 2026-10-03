@@ -1,0 +1,64 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "experiments/i1_prototypes.py --record",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "asimo.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": "4007867",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "i1_prototypes",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "1a3b2f9a23e6492953e7536e95e4df3fb2cd0155",
+  "short": "1a3b2f9a"
+ },
+ "keys": {},
+ "metrics": {
+  "coef": {
+   "intercept": 0.9658413028148778,
+   "patch_distance": -0.0014933485939959334,
+   "same_room": 0.00598162303337913,
+   "same_type": 0.018786258813819047
+  },
+  "group_mean_cos": {
+   "other type, other room": 0.9579620957374573,
+   "other type, same room": 0.9644889235496521,
+   "same type, other room": 0.9788218140602112,
+   "same type, same room": 0.9867122173309326
+  },
+  "n": 62,
+  "place_corr_same_type_room": -0.3430891988778249,
+  "r2_full": 0.3481201331575091,
+  "unique_share": {
+   "place": 0.10509167609390135,
+   "room": 0.007570380253090314,
+   "type": 0.141142721209234
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "i1_prototypes__libero_90__read__s0__1a3b2f9a",
+ "schema": 1,
+ "script": "experiments/i1_prototypes.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-03T17:32:10+00:00",
+ "stream": null,
+ "tag": "read"
+}

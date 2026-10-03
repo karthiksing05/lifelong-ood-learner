@@ -16,7 +16,6 @@ import re
 import sys
 
 import numpy as np
-import torch
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT)
@@ -27,6 +26,7 @@ MODULES = ("q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down
 
 
 def load(path):
+    import torch
     z = torch.load(path, map_location="cpu")
     banks = {n: (w["A"].float().numpy(), w["B"].float().numpy()) for n, w in z["banks"].items()}
     return banks, z.get("meta", {})
@@ -134,18 +134,20 @@ def figures(res, names, S):
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
     order = sorted(range(len(names)), key=lambda i: (str(res["keys"][names[i]]), res["kinds"][names[i]], names[i]))
-    fig, ax = plt.subplots(figsize=(9, 8))
+    fig, ax = plt.subplots(figsize=(11, 9))
     im = ax.imshow(S[np.ix_(order, order)], cmap="Blues", vmin=0, vmax=1)
     ax.set_xticks(range(len(order)), [names[i] for i in order], rotation=90, fontsize=6)
-    ax.set_yticks(range(len(order)), [f"{names[i]}  ({res['keys'][names[i]]})" for i in order], fontsize=6)
+    ax.set_yticks(range(len(order)), [f"{names[i]}  ({str(res['keys'][names[i]]).replace('|', ' ').replace('  ', ' ')})"
+                                      for i in order], fontsize=6)
     fig.colorbar(im, ax=ax, fraction=0.03, label="cosine of the weight updates")
-    fig.tight_layout()
+    fig.subplots_adjust(left=0.36, right=0.95, bottom=0.12, top=0.98)
     fig.savefig(os.path.join(ROOT, "figures", "robot", "i2_similarity.png"), dpi=130)
     fig, ax = plt.subplots(figsize=(7, 3.6))
     for k, c in KEYCOL.items():
         fin = [n for n in names if res["keys"][n] == k and res["kinds"][n] != "single demonstration"]
         if fin:
             ax.plot(range(18), np.mean([res["where"][n]["layers"] for n in fin], 0), color=c, lw=2, label=k.replace("|", " "))
+    ax.set_xticks(range(0, 18, 1))
     ax.set_xlabel("action-expert layer")
     ax.set_ylabel("share of the update's squared norm")
     ax.legend(fontsize=7, frameon=False)
@@ -156,4 +158,8 @@ def figures(res, names, S):
 
 
 if __name__ == "__main__":
-    main()
+    if "--figure" in sys.argv:                                   # redraw from the saved read (no torch needed)
+        r_ = json.load(open(os.path.join(R, "i2_primitives.json")))
+        figures(r_, r_["names"], np.asarray(r_["similarity"]))
+    else:
+        main()
