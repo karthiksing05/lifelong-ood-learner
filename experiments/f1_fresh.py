@@ -130,6 +130,14 @@ def read(record):
     desc["q27_vs_lora_acc"] = compare({t: (L(t, a), lora_acc(t)) for t, a in q27.items()}, "q27_vs_lora_acc")
     desc["c2_vs_lora_acc"] = compare({t: (L(t, v["kept"]), lora_acc(t)) for t, v in c2.items()}, "c2_vs_lora_acc")
     desc["lora_acc_vs_zs_c2"] = compare({t: (lora_acc(t), L(t, "zs")) for t in c2}, "lora_acc_vs_zs_c2")
+    def joint_acc(t, arm):                                              # amendment f1_amend2: the per-key joint LoRA, accepted
+        f = lambda a: os.path.join(R, f"f1_accept_{t}_{tag(a)}.json")  # noqa: E731
+        if not (os.path.exists(f(arm)) and os.path.exists(f("zs"))):
+            return None
+        s_ = {a: sum(bool(e["success"]) for v in json.load(open(f(a)))["tasks"].values() for e in v["episodes"]) for a in (arm, "zs")}
+        return L(t, arm) if s_[arm] > s_["zs"] else L(t, "zs")
+    desc["joint_acc_vs_zs"] = compare({t: (joint_acc(t, v["bcl"]["joint"]), L(t, "zs")) for t, v in c2.items()}, "joint_acc_vs_zs")
+    desc["c2_vs_joint_acc"] = compare({t: (L(t, v["kept"]), joint_acc(t, v["bcl"]["joint"])) for t, v in c2.items()}, "c2_vs_joint_acc")
     demos = {k: len(s["library"]) for k, s in st.items() if not k.startswith("_")}
     practice = sum(10 * (1 + (a.get("prims1") is not None) + (a.get("prims2") is not None))
                    for k, s in st.items() if not k.startswith("_") for a in s["arrivals"])
