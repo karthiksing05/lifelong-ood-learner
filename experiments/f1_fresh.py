@@ -31,6 +31,8 @@ def c2_arms():
             continue
         final = f"prims@{s['prim']}.0" if s["prim"] else "zs"
         for a in s["arrivals"]:
+            if "kept" not in a:
+                continue                                                # the stream has not decided this arrival yet
             out[str(a["task"])] = dict(key=k, kept=a["kept"], final=final, demo=a["demo"],
                                        bcl={m: f"bcl@{m}_{k}" for m in ("joint", "seq", "er")})
     return out, st
@@ -134,7 +136,9 @@ def read(record):
                   flush=True)
     print("[f1] costs", res["costs"], ("missing " + str(len(missing))) if missing else "", flush=True)
     json.dump(res, open(os.path.join(R, "f1_read.json"), "w"), indent=1)
-    if record and not missing:
+    complete = all(len(s["arrivals"]) == len(s["order"]) and all("kept" in a for a in s["arrivals"])
+                   for k, s in st.items() if not k.startswith("_"))
+    if record and not missing and complete:
         from lifelong_ood import ledger
         print(ledger.record("f1_fresh", bench="libero_90", tag="read", seed=SEED, metrics=res,
                             bytes=dict(experts=0, tree=0, codes=0, samples=0, teacher_copies=0, total=0),

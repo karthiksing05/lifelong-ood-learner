@@ -1,0 +1,90 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "--read (Q27 half)",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky1.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "f1_fresh",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "dc619a045a61b7f79fbb45eae3c38d1757443119",
+  "short": "dc619a04"
+ },
+ "keys": {},
+ "metrics": {
+  "H2": {
+   "diff": {
+    "diff": 0.125,
+    "hi": 0.2325624999999991,
+    "hi90": 0.215,
+    "lo": 0.03,
+    "lo90": 0.0425,
+    "n_pairs": 400,
+    "n_tasks": 20
+   },
+   "discordant": [
+    52,
+    2
+   ],
+   "holm_p": 3.299582829185965e-13,
+   "label": "Q27 kept vs zs",
+   "n": 400,
+   "passes": true,
+   "sign_p": 1.6497914145929826e-13,
+   "tasks": 20,
+   "x": 120,
+   "y": 70
+  },
+  "kept_forms": 6,
+  "note": "f1_fresh, the Q27 half (complete for its 20 tasks): fresh never-used start states, noise seed 9; H2 of the pre-registration (Holm with H1 when the stream half is read: at most twice the sign p); x = kept arm, y = zero-shot (H2) / per-task one-demo LoRA (q27_vs_lora)",
+  "q27_vs_lora": {
+   "diff": {
+    "diff": -0.4275,
+    "hi": -0.1975,
+    "hi90": -0.2375,
+    "lo": -0.635,
+    "lo90": -0.6025,
+    "n_pairs": 400,
+    "n_tasks": 20
+   },
+   "discordant": [
+    37,
+    208
+   ],
+   "label": "q27_vs_lora",
+   "n": 400,
+   "sign_p": 4.4574233103299676e-30,
+   "tasks": 20,
+   "x": 120,
+   "y": 291
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "f1_fresh__libero_90__q27_half__s9__dc619a04",
+ "schema": 1,
+ "script": "experiments/f1_fresh.py",
+ "seconds": null,
+ "seed": 9,
+ "source_commit": null,
+ "started": "2026-10-03T05:36:36+00:00",
+ "stream": null,
+ "tag": "q27_half"
+}
