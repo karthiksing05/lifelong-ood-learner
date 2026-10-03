@@ -1,0 +1,58 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 18710528,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 18710528,
+  "tree": 0
+ },
+ "command": "F1 storage per method",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky1.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "f1_fresh",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "92531e8e66ec4190906c166e47d404e080e2b6f6",
+  "short": "92531e8e"
+ },
+ "keys": {},
+ "metrics": {
+  "bcl": {
+   "er": 74842112,
+   "joint": 74842112,
+   "seq": 74842112
+  },
+  "lora": 542605312,
+  "lora_missing": [
+   51
+  ],
+  "lora_tasks": 29,
+  "note": "bytes each method stores for the 30 stream tasks (from the fits' ledger rows); task 51 has no demonstration, so no LoRA",
+  "practice_episodes": 840,
+  "scheme": 18710528,
+  "scheme_demos": 28
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "f1_fresh__libero_90__costs__s9__92531e8e",
+ "schema": 1,
+ "script": "(ledger rows r3_fewshot, b_continual, c0_fit)",
+ "seconds": null,
+ "seed": 9,
+ "source_commit": null,
+ "started": "2026-10-03T16:13:18+00:00",
+ "stream": null,
+ "tag": "costs"
+}

@@ -1,0 +1,401 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "experiments/f1_fresh.py --read --record",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky1.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "f1_fresh",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "92531e8e66ec4190906c166e47d404e080e2b6f6",
+  "short": "92531e8e"
+ },
+ "keys": {},
+ "metrics": {
+  "costs": {
+   "baseline_demos": 30,
+   "c2_arrivals": 30,
+   "c2_demos": {
+    "basket": 9,
+    "cab": 5,
+    "plate": 7,
+    "tray": 7
+   },
+   "c2_demos_total": 28,
+   "c2_practice_episodes": 840
+  },
+  "descriptive": {
+   "c2_final_vs_zs": {
+    "diff": {
+     "diff": 0.14,
+     "hi": 0.2916666666666667,
+     "hi90": 0.26674999999999877,
+     "lo": -0.011666666666666667,
+     "lo90": 0.013333333333333334,
+     "n_pairs": 600,
+     "n_tasks": 30
+    },
+    "discordant": [
+     146,
+     62
+    ],
+    "label": "c2_final_vs_zs",
+    "n": 600,
+    "sign_p": 5.420655344195589e-09,
+    "tasks": 30,
+    "x": 359,
+    "y": 275
+   },
+   "c2_vs_er": {
+    "diff": {
+     "diff": 0.135,
+     "hi": 0.22337499999999938,
+     "hi90": 0.20833333333333334,
+     "lo": 0.055,
+     "lo90": 0.06666666666666667,
+     "n_pairs": 600,
+     "n_tasks": 30
+    },
+    "discordant": [
+     125,
+     44
+    ],
+    "label": "c2_vs_er",
+    "n": 600,
+    "sign_p": 3.474452713207422e-10,
+    "tasks": 30,
+    "x": 419,
+    "y": 338
+   },
+   "c2_vs_joint": {
+    "diff": {
+     "diff": 0.12166666666666667,
+     "hi": 0.22333333333333333,
+     "hi90": 0.20508333333333212,
+     "lo": 0.023333333333333334,
+     "lo90": 0.03833333333333333,
+     "n_pairs": 600,
+     "n_tasks": 30
+    },
+    "discordant": [
+     116,
+     43
+    ],
+    "label": "c2_vs_joint",
+    "n": 600,
+    "sign_p": 6.158593708959424e-09,
+    "tasks": 30,
+    "x": 419,
+    "y": 346
+   },
+   "c2_vs_lora": {
+    "diff": {
+     "diff": -0.05,
+     "hi": 0.0896551724137931,
+     "hi90": 0.06379310344827586,
+     "lo": -0.1793103448275862,
+     "lo90": -0.16034482758620688,
+     "n_pairs": 580,
+     "n_tasks": 29
+    },
+    "discordant": [
+     76,
+     105
+    ],
+    "label": "c2_vs_lora",
+    "n": 580,
+    "sign_p": 0.03712027545039735,
+    "tasks": 29,
+    "x": 400,
+    "y": 429
+   },
+   "c2_vs_lora_acc": {
+    "diff": {
+     "diff": -0.11551724137931034,
+     "hi": -0.02586206896551724,
+     "hi90": -0.039655172413793106,
+     "lo": -0.21379310344827587,
+     "lo90": -0.19827586206896552,
+     "n_pairs": 580,
+     "n_tasks": 29
+    },
+    "discordant": [
+     34,
+     101
+    ],
+    "label": "c2_vs_lora_acc",
+    "n": 580,
+    "sign_p": 6.598814566611073e-09,
+    "tasks": 29,
+    "x": 400,
+    "y": 467
+   },
+   "c2_vs_seq": {
+    "diff": {
+     "diff": 0.31,
+     "hi": 0.435,
+     "hi90": 0.4166666666666667,
+     "lo": 0.18166666666666667,
+     "lo90": 0.2,
+     "n_pairs": 600,
+     "n_tasks": 30
+    },
+    "discordant": [
+     209,
+     23
+    ],
+    "label": "c2_vs_seq",
+    "n": 600,
+    "sign_p": 1.0379170935200349e-38,
+    "tasks": 30,
+    "x": 419,
+    "y": 233
+   },
+   "er_vs_zs": {
+    "diff": {
+     "diff": 0.105,
+     "hi": 0.23670833333333272,
+     "hi90": 0.215,
+     "lo": -0.018333333333333333,
+     "lo90": 0.0,
+     "n_pairs": 600,
+     "n_tasks": 30
+    },
+    "discordant": [
+     121,
+     58
+    ],
+    "label": "er_vs_zs",
+    "n": 600,
+    "sign_p": 2.864403723470169e-06,
+    "tasks": 30,
+    "x": 338,
+    "y": 275
+   },
+   "joint_vs_zs": {
+    "diff": {
+     "diff": 0.11833333333333333,
+     "hi": 0.27666666666666667,
+     "hi90": 0.25,
+     "lo": -0.03666666666666667,
+     "lo90": -0.011666666666666667,
+     "n_pairs": 600,
+     "n_tasks": 30
+    },
+    "discordant": [
+     142,
+     71
+    ],
+    "label": "joint_vs_zs",
+    "n": 600,
+    "sign_p": 1.3028495116652505e-06,
+    "tasks": 30,
+    "x": 346,
+    "y": 275
+   },
+   "lora_acc_vs_zs_c2": {
+    "diff": {
+     "diff": 0.36379310344827587,
+     "hi": 0.506896551724138,
+     "hi90": 0.48284482758620567,
+     "lo": 0.2293103448275862,
+     "lo90": 0.25,
+     "n_pairs": 580,
+     "n_tasks": 29
+    },
+    "discordant": [
+     216,
+     5
+    ],
+    "label": "lora_acc_vs_zs_c2",
+    "n": 580,
+    "sign_p": 2.549588922583158e-57,
+    "tasks": 29,
+    "x": 467,
+    "y": 256
+   },
+   "lora_acc_vs_zs_q27": {
+    "diff": {
+     "diff": 0.5725,
+     "hi": 0.7325,
+     "hi90": 0.71,
+     "lo": 0.4025,
+     "lo90": 0.43,
+     "n_pairs": 400,
+     "n_tasks": 20
+    },
+    "discordant": [
+     233,
+     4
+    ],
+    "label": "lora_acc_vs_zs_q27",
+    "n": 400,
+    "sign_p": 1.1806166733857314e-63,
+    "tasks": 20,
+    "x": 299,
+    "y": 70
+   },
+   "lora_vs_zs": {
+    "diff": {
+     "diff": 0.2982758620689655,
+     "hi": 0.474181034482758,
+     "hi90": 0.44655172413793104,
+     "lo": 0.11206896551724138,
+     "lo90": 0.14655172413793102,
+     "n_pairs": 580,
+     "n_tasks": 29
+    },
+    "discordant": [
+     224,
+     51
+    ],
+    "label": "lora_vs_zs",
+    "n": 580,
+    "sign_p": 4.9467865544008094e-27,
+    "tasks": 29,
+    "x": 429,
+    "y": 256
+   },
+   "q27_vs_lora": {
+    "diff": {
+     "diff": -0.4275,
+     "hi": -0.1975,
+     "hi90": -0.2375,
+     "lo": -0.635,
+     "lo90": -0.6025,
+     "n_pairs": 400,
+     "n_tasks": 20
+    },
+    "discordant": [
+     37,
+     208
+    ],
+    "label": "q27_vs_lora",
+    "n": 400,
+    "sign_p": 4.4574233103299676e-30,
+    "tasks": 20,
+    "x": 120,
+    "y": 291
+   },
+   "q27_vs_lora_acc": {
+    "diff": {
+     "diff": -0.4475,
+     "hi": -0.25,
+     "hi90": -0.28,
+     "lo": -0.635,
+     "lo90": -0.605,
+     "n_pairs": 400,
+     "n_tasks": 20
+    },
+    "discordant": [
+     22,
+     201
+    ],
+    "label": "q27_vs_lora_acc",
+    "n": 400,
+    "sign_p": 2.333284203253004e-37,
+    "tasks": 20,
+    "x": 120,
+    "y": 299
+   },
+   "seq_vs_lora": {
+    "diff": {
+     "diff": -0.34655172413793106,
+     "hi": -0.20517241379310344,
+     "hi90": -0.22758620689655173,
+     "lo": -0.4896551724137931,
+     "lo90": -0.4672413793103448,
+     "n_pairs": 580,
+     "n_tasks": 29
+    },
+    "discordant": [
+     18,
+     219
+    ],
+    "label": "seq_vs_lora",
+    "n": 580,
+    "sign_p": 4.419603297728872e-45,
+    "tasks": 29,
+    "x": 228,
+    "y": 429
+   }
+  },
+  "hypotheses": {
+   "H1": {
+    "diff": {
+     "diff": 0.24,
+     "hi": 0.36333333333333334,
+     "hi90": 0.3433333333333333,
+     "lo": 0.125,
+     "lo90": 0.14166666666666666,
+     "n_pairs": 600,
+     "n_tasks": 30
+    },
+    "discordant": [
+     149,
+     5
+    ],
+    "holm_p": 1.2246223090304817e-37,
+    "label": "C2 kept vs zs",
+    "n": 600,
+    "passes": true,
+    "sign_p": 6.123111545152409e-38,
+    "tasks": 30,
+    "x": 419,
+    "y": 275
+   },
+   "H2": {
+    "diff": {
+     "diff": 0.125,
+     "hi": 0.2325624999999991,
+     "hi90": 0.215,
+     "lo": 0.03,
+     "lo90": 0.0425,
+     "n_pairs": 400,
+     "n_tasks": 20
+    },
+    "discordant": [
+     52,
+     2
+    ],
+    "holm_p": 1.6497914145929826e-13,
+    "label": "Q27 kept vs zs",
+    "n": 400,
+    "passes": true,
+    "sign_p": 1.6497914145929826e-13,
+    "tasks": 20,
+    "x": 120,
+    "y": 70
+   }
+  },
+  "missing": []
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "f1_fresh__libero_90__read__s9__92531e8e",
+ "schema": 1,
+ "script": "experiments/f1_fresh.py",
+ "seconds": null,
+ "seed": 9,
+ "source_commit": null,
+ "started": "2026-10-03T16:12:55+00:00",
+ "stream": null,
+ "tag": "read"
+}
