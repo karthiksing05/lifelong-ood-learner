@@ -1,0 +1,87 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "--read (f1_amend2)",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky1.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "f1_fresh",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "f317e82f0d6f0410ae0b5602a88ced73d3c91809",
+  "short": "f317e82f"
+ },
+ "keys": {},
+ "metrics": {
+  "c2_vs_joint_acc": {
+   "diff": {
+    "diff": 0.03166666666666667,
+    "hi": 0.10666666666666667,
+    "hi90": 0.09333333333333334,
+    "lo": -0.03833333333333333,
+    "lo90": -0.028333333333333332,
+    "n_pairs": 600,
+    "n_tasks": 30
+   },
+   "discordant": [
+    55,
+    36
+   ],
+   "label": "c2_vs_joint_acc",
+   "n": 600,
+   "sign_p": 0.05857352841018888,
+   "tasks": 30,
+   "x": 419,
+   "y": 400
+  },
+  "joint_acc_vs_zs": {
+   "diff": {
+    "diff": 0.20833333333333334,
+    "hi": 0.335,
+    "hi90": 0.31333333333333335,
+    "lo": 0.09333333333333334,
+    "lo90": 0.10833333333333334,
+    "n_pairs": 600,
+    "n_tasks": 30
+   },
+   "discordant": [
+    127,
+    2
+   ],
+   "label": "joint_acc_vs_zs",
+   "n": 600,
+   "sign_p": 2.464423906498926e-35,
+   "tasks": 30,
+   "x": 400,
+   "y": 275
+  },
+  "note": "f1_amend2 (descriptive): the per-key joint LoRA given the same acceptance test"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "f1_fresh__libero_90__amend2__s9__f317e82f",
+ "schema": 1,
+ "script": "experiments/f1_fresh.py",
+ "seconds": null,
+ "seed": 9,
+ "source_commit": null,
+ "started": "2026-10-03T16:33:41+00:00",
+ "stream": null,
+ "tag": "amend2"
+}

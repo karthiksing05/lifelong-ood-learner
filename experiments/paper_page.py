@@ -794,7 +794,7 @@ def prim_par():
                 f"demonstration of the scored task the scheme reaches about two fifths of it. A per-task adapter damages nothing "
                 f"either, so the scheme's case is a frontier: success per demonstration requested and per byte stored, which the "
                 f"stream measures.</p>")
-    F1, FC = row("f1_fresh", "read"), row("f1_fresh", "costs")
+    F1, FC, A2 = row("f1_fresh", "read"), row("f1_fresh", "costs"), row("f1_fresh", "amend2")
     if F1 and FC:
         d, h1 = F1["descriptive"], F1["hypotheses"]["H1"]
         nd = FC["scheme_demos"] - len(FC["lora_missing"])
@@ -802,6 +802,8 @@ def prim_par():
                 ("sequential fine-tuning, one LoRA per key", d["c2_vs_seq"]["y"], d["c2_vs_seq"]["n"], FC["lora_tasks"], FC["bcl"]["seq"], False),
                 ("experience replay, one LoRA per key", d["c2_vs_er"]["y"], d["c2_vs_er"]["n"], FC["lora_tasks"], FC["bcl"]["er"], False),
                 ("joint multi-task, one LoRA per key", d["c2_vs_joint"]["y"], d["c2_vs_joint"]["n"], FC["lora_tasks"], FC["bcl"]["joint"], False),
+                *([("joint multi-task + the acceptance test", A2["joint_acc_vs_zs"]["x"], A2["joint_acc_vs_zs"]["n"],
+                     FC["lora_tasks"], FC["bcl"]["joint"], False)] if A2 else []),
                 ("this scheme: consolidated step primitives", h1["x"], h1["n"], nd, FC["scheme"], True),
                 ("a one-demo LoRA per task", d["c2_vs_lora"]["y"], d["c2_vs_lora"]["n"], FC["lora_tasks"], FC["lora"], False),
                 ("a one-demo LoRA per task + the acceptance test", d["c2_vs_lora_acc"]["y"], d["c2_vs_lora_acc"]["n"], FC["lora_tasks"], FC["lora"], False)]
@@ -809,7 +811,11 @@ def prim_par():
                 f"the stream is the best of the learners that share storage across tasks, and reaches "
                 f"{100 * d['c2_vs_lora']['x'] / d['c2_vs_lora']['y']:.0f}% of a separate adapter per task at a "
                 f"{FC['lora'] / FC['scheme']:.0f}th of its storage (Figure {FIG['n'] + 1}). Sequential fine-tuning forgets; a separate "
-                f"adapter per task given the same acceptance test remains the strongest.</p>"
+                f"adapter per task given the same acceptance test remains the strongest."
+                + (f" Given the same acceptance test, one adapter per step key trained on all its demonstrations reaches "
+                   f"{A2['joint_acc_vs_zs']['x']}, and the stream's lead over it is not significant (sign p "
+                   f"{A2['c2_vs_joint_acc']['sign_p']:.2g}): most of the gain over shared-storage baselines is the acceptance test; "
+                   f"the stream adds a quarter of the storage and fewer demonstrations." if A2 else "") + "</p>"
                 + fig('<div class="chartwrap">' + methods_chart(rows) + '</div>',
                       f"Success rate on the stream's {FC['lora_tasks'] + len(FC['lora_missing'])} tasks, 20 never-used start "
                       f"states each, noise seed 9, with the demonstrations each method used and the bytes it stores (task 51 has "
