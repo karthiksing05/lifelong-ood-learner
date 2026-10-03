@@ -40,15 +40,19 @@ def q27_arms():
     return {t: a for t, a in json.load(open(os.path.join(R, "q27_kept.json")))["kept"].items()}
 
 
+def has_lora(t):
+    return os.path.exists(os.path.join(R, f"r3_lora_{t}.pt"))           # task 51 has no demonstration in the dataset
+
+
 def launch(which):
     per = {}
     if which == "Q27":
         for t, a in q27_arms().items():
-            per[t] = sorted({"zs", "lora", a})
+            per[t] = sorted({"zs", a} | ({"lora"} if has_lora(t) else set()))
     else:
         arms, _ = c2_arms()
         for t, v in arms.items():
-            per[t] = sorted({"zs", "lora", v["kept"], v["final"], *v["bcl"].values()})
+            per[t] = sorted({"zs", v["kept"], v["final"], *v["bcl"].values()} | ({"lora"} if has_lora(t) else set()))
     jobs = []
     for t, arms in per.items():
         out = subprocess.run([PY, "experiments/launch_pack.py", "--tasks", t, "--arms", ",".join(arms), "--experiment", "f1_main",
@@ -86,11 +90,11 @@ def read(record):
     q27 = q27_arms()
     L = lambda t, a: load(t, a)                                         # noqa: E731
     for t, v in c2.items():
-        for a in ("zs", "lora", v["kept"], v["final"], *v["bcl"].values()):
+        for a in ("zs", v["kept"], v["final"], *v["bcl"].values()) + (("lora",) if has_lora(t) else ()):
             if load(t, a) is None:
                 missing.append(f"C2 {t}:{a}")
     for t, a in q27.items():
-        for x in ("zs", "lora", a):
+        for x in ("zs", a) + (("lora",) if has_lora(t) else ()):
             if load(t, x) is None:
                 missing.append(f"Q27 {t}:{x}")
     hyp = {"H1": compare({t: (L(t, v["kept"]), L(t, "zs")) for t, v in c2.items()}, "C2 kept vs zs"),
