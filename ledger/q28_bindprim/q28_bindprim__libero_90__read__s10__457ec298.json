@@ -1,0 +1,292 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "experiments/q28_read.py --read --record",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky1.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "q28_bindprim",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "457ec2983784bccec77ea576d52524f76c568edf",
+  "short": "457ec298"
+ },
+ "keys": {},
+ "metrics": {
+  "acceptance": {
+   "12": {
+    "bind": 9,
+    "plain": 0,
+    "zs": 6
+   },
+   "13": {
+    "bind": 2,
+    "plain": 0,
+    "zs": 0
+   },
+   "14": {
+    "bind": 0,
+    "plain": 1,
+    "zs": 4
+   },
+   "30": {
+    "bind": 4,
+    "plain": 7,
+    "zs": 9
+   },
+   "36": {
+    "bind": 0,
+    "plain": 0,
+    "zs": 0
+   },
+   "46": {
+    "bind": 6,
+    "plain": 6,
+    "zs": 10
+   },
+   "47": {
+    "bind": 10,
+    "plain": 6,
+    "zs": 10
+   },
+   "48": {
+    "bind": 0,
+    "plain": 0,
+    "zs": 0
+   },
+   "49": {
+    "bind": 0,
+    "plain": 0,
+    "zs": 0
+   },
+   "50": {
+    "bind": 1,
+    "plain": 6,
+    "zs": 10
+   },
+   "52": {
+    "bind": 2,
+    "plain": 0,
+    "zs": 1
+   },
+   "53": {
+    "bind": 0,
+    "plain": 0,
+    "zs": 0
+   },
+   "54": {
+    "bind": 7,
+    "plain": 8,
+    "zs": 10
+   },
+   "71": {
+    "bind": 0,
+    "plain": 0,
+    "zs": 0
+   },
+   "72": {
+    "bind": 8,
+    "plain": 0,
+    "zs": 10
+   },
+   "9": {
+    "bind": 10,
+    "plain": 10,
+    "zs": 10
+   }
+  },
+  "hypotheses": {
+   "H1": {
+    "diff": {
+     "diff": 0.025,
+     "hi": 0.078125,
+     "hi90": 0.06875,
+     "lo": -0.009375,
+     "lo90": -0.003125,
+     "n_pairs": 320,
+     "n_tasks": 16
+    },
+    "discordant": [
+     12,
+     4
+    ],
+    "holm_p": 0.076812744140625,
+    "n": 320,
+    "passes": false,
+    "sign_p": 0.076812744140625,
+    "x": 152,
+    "y": 144
+   },
+   "H2": {
+    "diff": {
+     "diff": 0.115625,
+     "hi": 0.2875,
+     "hi90": 0.259375,
+     "lo": -0.046875,
+     "lo90": -0.021875,
+     "n_pairs": 320,
+     "n_tasks": 16
+    },
+    "discordant": [
+     62,
+     25
+    ],
+    "holm_p": 0.00018121597193043696,
+    "n": 320,
+    "passes": true,
+    "sign_p": 9.060798596521848e-05,
+    "x": 119,
+    "y": 82
+   }
+  },
+  "kept": {
+   "12": "bind",
+   "13": "bind",
+   "14": "zs",
+   "30": "zs",
+   "36": "zs",
+   "46": "zs",
+   "47": "zs",
+   "48": "zs",
+   "49": "zs",
+   "50": "zs",
+   "52": "bind",
+   "53": "zs",
+   "54": "zs",
+   "71": "zs",
+   "72": "zs",
+   "9": "zs"
+  },
+  "missing": [],
+  "per_task": {
+   "12": {
+    "bind": 15,
+    "kept": "bind",
+    "plain": 1,
+    "zs": 14
+   },
+   "13": {
+    "bind": 7,
+    "kept": "bind",
+    "plain": 0,
+    "zs": 0
+   },
+   "14": {
+    "bind": 6,
+    "kept": "zs",
+    "plain": 0,
+    "zs": 5
+   },
+   "30": {
+    "bind": 4,
+    "kept": "zs",
+    "plain": 10,
+    "zs": 12
+   },
+   "36": {
+    "bind": 0,
+    "kept": "zs",
+    "plain": 0,
+    "zs": 0
+   },
+   "46": {
+    "bind": 14,
+    "kept": "zs",
+    "plain": 6,
+    "zs": 20
+   },
+   "47": {
+    "bind": 19,
+    "kept": "zs",
+    "plain": 14,
+    "zs": 20
+   },
+   "48": {
+    "bind": 0,
+    "kept": "zs",
+    "plain": 0,
+    "zs": 0
+   },
+   "49": {
+    "bind": 0,
+    "kept": "zs",
+    "plain": 0,
+    "zs": 0
+   },
+   "50": {
+    "bind": 5,
+    "kept": "zs",
+    "plain": 15,
+    "zs": 19
+   },
+   "52": {
+    "bind": 0,
+    "kept": "bind",
+    "plain": 0,
+    "zs": 0
+   },
+   "53": {
+    "bind": 0,
+    "kept": "zs",
+    "plain": 0,
+    "zs": 0
+   },
+   "54": {
+    "bind": 14,
+    "kept": "zs",
+    "plain": 16,
+    "zs": 15
+   },
+   "71": {
+    "bind": 0,
+    "kept": "zs",
+    "plain": 0,
+    "zs": 0
+   },
+   "72": {
+    "bind": 17,
+    "kept": "zs",
+    "plain": 0,
+    "zs": 20
+   },
+   "9": {
+    "bind": 18,
+    "kept": "zs",
+    "plain": 20,
+    "zs": 19
+   }
+  },
+  "totals": {
+   "bind": 119,
+   "plain": 82,
+   "zs": 144
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "q28_bindprim__libero_90__read__s10__457ec298",
+ "schema": 1,
+ "script": "experiments/q28_read.py",
+ "seconds": null,
+ "seed": 10,
+ "source_commit": null,
+ "started": "2026-10-03T20:53:00+00:00",
+ "stream": null,
+ "tag": "read"
+}
