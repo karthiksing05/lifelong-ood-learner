@@ -1,0 +1,94 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 37421056,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 37421056,
+  "tree": 0
+ },
+ "command": "experiments/c0_fit.py --task 4 --tag _v2",
+ "config": {
+  "batch": 32,
+  "demo": 0,
+  "lr": 0.0001,
+  "rank": 16,
+  "scope": "expert",
+  "steps": 1000,
+  "tag": "_v2",
+  "task": 4
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "nestor.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4005206",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "c0_fit",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "911dbd8ce9471a42a428c03d3792d1503df308da",
+  "short": "911dbd8c"
+ },
+ "keys": {
+  "task": 4
+ },
+ "metrics": {
+  "steps": [
+   {
+    "bytes": 18710528,
+    "clause": "put the butter at the front in the top drawer of the cabinet",
+    "demo_episode": 1551,
+    "final_loss": 0.003680905792862177,
+    "first_loss": 0.07248993217945099,
+    "frames": [
+     0,
+     110
+    ],
+    "path": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/prim_4_0_v2.pt",
+    "rank": 16,
+    "scope": "expert",
+    "secs": 137.61207103729248,
+    "step": 0,
+    "step_key": "put|in|the top drawer of the cabinet",
+    "task": 4
+   },
+   {
+    "bytes": 18710528,
+    "clause": "close the top drawer of the cabinet",
+    "demo_episode": 1551,
+    "final_loss": 0.00320494850166142,
+    "first_loss": 0.1298736184835434,
+    "frames": [
+     110,
+     173
+    ],
+    "path": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/prim_4_1_v2.pt",
+    "rank": 16,
+    "scope": "expert",
+    "secs": 134.3179280757904,
+    "step": 1,
+    "step_key": "close||the top drawer of the cabinet",
+    "task": 4
+   }
+  ],
+  "text": "put the butter at the front in the top drawer of the cabinet and close it"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "c0_fit__libero_90__task4_v2__task-4__s0__911dbd8c",
+ "schema": 1,
+ "script": "experiments/c0_fit.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-02T23:52:24+00:00",
+ "stream": null,
+ "tag": "task4_v2"
+}

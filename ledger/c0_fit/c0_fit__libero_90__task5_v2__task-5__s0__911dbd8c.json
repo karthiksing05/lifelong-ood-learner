@@ -1,0 +1,94 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 37421056,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 37421056,
+  "tree": 0
+ },
+ "command": "experiments/c0_fit.py --task 5 --tag _v2",
+ "config": {
+  "batch": 32,
+  "demo": 0,
+  "lr": 0.0001,
+  "rank": 16,
+  "scope": "expert",
+  "steps": 1000,
+  "tag": "_v2",
+  "task": 5
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "nestor.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4005207",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "c0_fit",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "911dbd8ce9471a42a428c03d3792d1503df308da",
+  "short": "911dbd8c"
+ },
+ "keys": {
+  "task": 5
+ },
+ "metrics": {
+  "steps": [
+   {
+    "bytes": 18710528,
+    "clause": "put the chocolate pudding in the top drawer of the cabinet",
+    "demo_episode": 1096,
+    "final_loss": 0.003485069377347827,
+    "first_loss": 0.05294796824455261,
+    "frames": [
+     0,
+     97
+    ],
+    "path": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/prim_5_0_v2.pt",
+    "rank": 16,
+    "scope": "expert",
+    "secs": 134.83419585227966,
+    "step": 0,
+    "step_key": "put|in|the top drawer of the cabinet",
+    "task": 5
+   },
+   {
+    "bytes": 18710528,
+    "clause": "close the top drawer of the cabinet",
+    "demo_episode": 1096,
+    "final_loss": 0.00285005453042686,
+    "first_loss": 0.11450731754302979,
+    "frames": [
+     97,
+     168
+    ],
+    "path": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/prim_5_1_v2.pt",
+    "rank": 16,
+    "scope": "expert",
+    "secs": 132.91872835159302,
+    "step": 1,
+    "step_key": "close||the top drawer of the cabinet",
+    "task": 5
+   }
+  ],
+  "text": "put the chocolate pudding in the top drawer of the cabinet and close it"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "c0_fit__libero_90__task5_v2__task-5__s0__911dbd8c",
+ "schema": 1,
+ "script": "experiments/c0_fit.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-02T23:52:15+00:00",
+ "stream": null,
+ "tag": "task5_v2"
+}

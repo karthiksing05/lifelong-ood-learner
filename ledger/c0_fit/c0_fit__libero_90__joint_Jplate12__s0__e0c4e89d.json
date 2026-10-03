@@ -1,0 +1,160 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 18710528,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 18710528,
+  "tree": 0
+ },
+ "command": "experiments/c0_fit.py --task 0 --joint 9+13+14+30+36+71+72 --key put|on|the_plate --name Jplate12",
+ "config": {
+  "batch": 32,
+  "demo": 0,
+  "joint": "9+13+14+30+36+71+72",
+  "key": "put|on|the plate",
+  "lr": 0.0001,
+  "name": "Jplate12",
+  "rank": 16,
+  "scope": "expert",
+  "steps": 1000,
+  "tag": "",
+  "task": 0
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "heistotron.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4005220",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "c0_fit",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "e0c4e89d868908de36f62f8973f4ecb360931170",
+  "short": "e0c4e89d"
+ },
+ "keys": {},
+ "metrics": {
+  "bytes": 18710528,
+  "curve": {
+   "anchor": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "loss": [
+    0.06014568731188774,
+    0.026947801932692528,
+    0.02588823437690735,
+    0.018886743113398552,
+    0.014549258165061474,
+    0.006120322737842798,
+    0.0060597932897508144,
+    0.003234364092350006,
+    0.0048321825452148914,
+    0.010314060375094414,
+    0.0066940635442733765
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "frames": 997,
+  "joint": [
+   {
+    "clause": "put the black bowl on the plate",
+    "frames": [
+     0,
+     137
+    ],
+    "task": 9
+   },
+   {
+    "clause": "put the black bowl at the front on the plate",
+    "frames": [
+     0,
+     134
+    ],
+    "task": 13
+   },
+   {
+    "clause": "put the middle black bowl on the plate",
+    "frames": [
+     0,
+     108
+    ],
+    "task": 14
+   },
+   {
+    "clause": "put the black bowl on the plate",
+    "frames": [
+     0,
+     137
+    ],
+    "task": 30
+   },
+   {
+    "clause": "put the white bowl on the plate",
+    "frames": [
+     0,
+     218
+    ],
+    "task": 36
+   },
+   {
+    "clause": "put the red mug on the plate",
+    "frames": [
+     0,
+     116
+    ],
+    "task": 71
+   },
+   {
+    "clause": "put the white mug on the plate",
+    "frames": [
+     0,
+     147
+    ],
+    "task": 72
+   }
+  ],
+  "rank": 16,
+  "scope": "expert",
+  "step_key": "put|on|the plate"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "c0_fit__libero_90__joint_Jplate12__s0__e0c4e89d",
+ "schema": 1,
+ "script": "experiments/c0_fit.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-03T00:28:34+00:00",
+ "stream": null,
+ "tag": "joint_Jplate12"
+}

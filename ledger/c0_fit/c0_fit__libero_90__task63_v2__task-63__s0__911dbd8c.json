@@ -1,0 +1,94 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 37421056,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 37421056,
+  "tree": 0
+ },
+ "command": "experiments/c0_fit.py --task 63 --tag _v2",
+ "config": {
+  "batch": 32,
+  "demo": 0,
+  "lr": 0.0001,
+  "rank": 16,
+  "scope": "expert",
+  "steps": 1000,
+  "tag": "_v2",
+  "task": 63
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "omgwth.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4005208",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "c0_fit",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "911dbd8ce9471a42a428c03d3792d1503df308da",
+  "short": "911dbd8c"
+ },
+ "keys": {
+  "task": 63
+ },
+ "metrics": {
+  "steps": [
+   {
+    "bytes": 18710528,
+    "clause": "stack the left bowl on the right bowl",
+    "demo_episode": 2517,
+    "final_loss": 0.0027852884959429502,
+    "first_loss": 0.05949009582400322,
+    "frames": [
+     0,
+     126
+    ],
+    "path": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/prim_63_0_v2.pt",
+    "rank": 16,
+    "scope": "expert",
+    "secs": 146.67156744003296,
+    "step": 0,
+    "step_key": "stack|on|the right bowl",
+    "task": 63
+   },
+   {
+    "bytes": 18710528,
+    "clause": "place the bowls in the tray",
+    "demo_episode": 2517,
+    "final_loss": 0.0037332915235310793,
+    "first_loss": 0.09669487923383713,
+    "frames": [
+     126,
+     195
+    ],
+    "path": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/prim_63_1_v2.pt",
+    "rank": 16,
+    "scope": "expert",
+    "secs": 135.26439118385315,
+    "step": 1,
+    "step_key": "place|in|the tray",
+    "task": 63
+   }
+  ],
+  "text": "stack the left bowl on the right bowl and place them in the tray"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "c0_fit__libero_90__task63_v2__task-63__s0__911dbd8c",
+ "schema": 1,
+ "script": "experiments/c0_fit.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-02T23:52:31+00:00",
+ "stream": null,
+ "tag": "task63_v2"
+}

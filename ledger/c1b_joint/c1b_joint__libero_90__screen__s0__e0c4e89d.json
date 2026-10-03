@@ -1,0 +1,127 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "C1b joint primitives",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky1.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "c1b_joint",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "e0c4e89d868908de36f62f8973f4ecb360931170",
+  "short": "e0c4e89d"
+ },
+ "keys": {},
+ "metrics": {
+  "cabinet": {
+   "joint": 19,
+   "n": 30,
+   "zs": 2
+  },
+  "note": "plan C read C1b (exploratory), practice states 0-9, 10 episodes, noise seed 0: a step primitive fitted JOINTLY on every OTHER LIBERO-90 task's demo with the same step key (each with its own clause; c0_fit --joint), run on the held-out task with its own clause, no binding: 'put|on top of|the cabinet' (fitted on 5 of tasks 10 15 25 31 41 43) and 'put|on|the plate' (fitted on 7 of tasks 9 12 13 14 30 36 71 72)",
+  "plate": {
+   "joint": 7,
+   "n": 40,
+   "zs": 17
+  },
+  "rows": {
+   "12:prims_Jplate12.0": {
+    "bound": 1,
+    "n": 10,
+    "success": 0
+   },
+   "12:zs": {
+    "bound": 5,
+    "n": 10,
+    "success": 4
+   },
+   "13:prims_Jplate13.0": {
+    "bound": 0,
+    "n": 10,
+    "success": 0
+   },
+   "13:zs": {
+    "bound": 0,
+    "n": 10,
+    "success": 0
+   },
+   "14:prims_Jplate14.0": {
+    "bound": 1,
+    "n": 10,
+    "success": 0
+   },
+   "14:zs": {
+    "bound": 5,
+    "n": 10,
+    "success": 5
+   },
+   "15:prims_Jcab15.0": {
+    "bound": 5,
+    "n": 10,
+    "success": 5
+   },
+   "15:zs": {
+    "bound": 0,
+    "n": 10,
+    "success": 0
+   },
+   "25:prims_Jcab25.0": {
+    "bound": 9,
+    "n": 10,
+    "success": 9
+   },
+   "25:zs": {
+    "bound": 10,
+    "n": 10,
+    "success": 0
+   },
+   "30:prims_Jplate30.0": {
+    "bound": 8,
+    "n": 10,
+    "success": 7
+   },
+   "30:zs": {
+    "bound": 10,
+    "n": 10,
+    "success": 8
+   },
+   "31:prims_Jcab31.0": {
+    "bound": 5,
+    "n": 10,
+    "success": 5
+   },
+   "31:zs": {
+    "bound": 4,
+    "n": 10,
+    "success": 2
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "c1b_joint__libero_90__screen__s0__e0c4e89d",
+ "schema": 1,
+ "script": "(c0_fit.py --joint; launch_pack c1b_joint, arms zs, prims@J<name>.0)",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-03T00:41:34+00:00",
+ "stream": null,
+ "tag": "screen"
+}
