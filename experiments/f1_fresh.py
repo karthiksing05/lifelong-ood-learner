@@ -120,6 +120,16 @@ def read(record):
                     ("er_vs_zs", lambda t, v: (L(t, v["bcl"]["er"]), L(t, "zs")))):
         desc[name] = compare({t: f(t, v) for t, v in c2.items()}, name)
     desc["q27_vs_lora"] = compare({t: (L(t, a), L(t, "lora")) for t, a in q27.items()}, "q27_vs_lora")
+    def lora_acc(t):                                                    # amendment f1_amend1: the LoRA with the acceptance test
+        f = lambda a: os.path.join(R, f"f1_accept_{t}_{tag(a)}.json")  # noqa: E731
+        if not (os.path.exists(f("lora")) and os.path.exists(f("zs"))):
+            return None
+        s_ = {a: sum(bool(e["success"]) for v in json.load(open(f(a)))["tasks"].values() for e in v["episodes"]) for a in ("lora", "zs")}
+        return L(t, "lora") if s_["lora"] > s_["zs"] else L(t, "zs")
+    desc["lora_acc_vs_zs_q27"] = compare({t: (lora_acc(t), L(t, "zs")) for t in q27}, "lora_acc_vs_zs_q27")
+    desc["q27_vs_lora_acc"] = compare({t: (L(t, a), lora_acc(t)) for t, a in q27.items()}, "q27_vs_lora_acc")
+    desc["c2_vs_lora_acc"] = compare({t: (L(t, v["kept"]), lora_acc(t)) for t, v in c2.items()}, "c2_vs_lora_acc")
+    desc["lora_acc_vs_zs_c2"] = compare({t: (lora_acc(t), L(t, "zs")) for t in c2}, "lora_acc_vs_zs_c2")
     demos = {k: len(s["library"]) for k, s in st.items() if not k.startswith("_")}
     practice = sum(10 * (1 + (a.get("prims1") is not None) + (a.get("prims2") is not None))
                    for k, s in st.items() if not k.startswith("_") for a in s["arrivals"])
