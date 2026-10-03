@@ -1,0 +1,100 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration of plan C's stream",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky1.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "5aa6cb6d8fc8bde831f3d28a7f8c403a08e7f1b7",
+  "short": "5aa6cb6d"
+ },
+ "keys": {},
+ "metrics": {
+  "context": "c1b_joint (rank 4 = rank 16 on the cabinet key, exploratory) and q27_joint (pre-registered) were read before this",
+  "hypotheses": {
+   "H1": "kept > zero-shot pooled over the 30 arrivals (exact sign test)",
+   "H2": "the final primitive > zero-shot pooled over all arrivals (consolidation keeps earlier arrivals' gains)",
+   "correction": "Holm over H1, H2"
+  },
+  "keys": {
+   "basket": "put|in|the basket",
+   "cab": "put|on top of|the cabinet",
+   "plate": "put|on|the plate",
+   "tray": "put|in|the tray"
+  },
+  "orders": {
+   "basket": [
+    47,
+    54,
+    52,
+    53,
+    48,
+    50,
+    51,
+    46,
+    49
+   ],
+   "cab": [
+    31,
+    15,
+    25,
+    10,
+    43,
+    41
+   ],
+   "plate": [
+    9,
+    71,
+    13,
+    36,
+    12,
+    14,
+    72,
+    30
+   ],
+   "tray": [
+    57,
+    62,
+    55,
+    59,
+    56,
+    58,
+    61
+   ]
+  },
+  "reported": "demonstrations requested per key and in all (of 30 arrivals), primitives stored (4.7 MB each), per-arrival success",
+  "rule": "per key, arrivals in order: the key's current primitive (if any) vs the policy on init states 0-9, 10 episodes, noise seed 8; kept if MORE successes; else the arrival requests its one demonstration, which joins the key's library, the key's primitive is refit on all its demonstrations (c0_fit --joint, rank 4, 1000 steps) and tried again against the same zero-shot episodes; kept if more successes",
+  "test": "c2_main: each arrival's kept arm, zero-shot and the key's FINAL primitive on init states 30-49, 20 episodes, seed 8",
+  "written_before": "any episode or fit of c2_stream"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_90__c2_stream__s8__5aa6cb6d",
+ "schema": 1,
+ "script": "experiments/prereg/c2_stream.py",
+ "seconds": null,
+ "seed": 8,
+ "source_commit": null,
+ "started": "2026-10-03T03:10:01+00:00",
+ "stream": null,
+ "tag": "c2_stream"
+}
