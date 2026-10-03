@@ -268,6 +268,8 @@ def main():
                     "learners practise on states 0..state_mod-1 only")
     ap.add_argument("--first-trial", type=int, default=0)
     ap.add_argument("--seed", type=int, default=7)
+    ap.add_argument("--fresh", default="", help="a directory of FRESH init states (experiments/fresh_states.py): trial k starts from "
+                    "<dir>/<suite>_<task>.npy[k] instead of the stored init state k")
     ap.add_argument("--replan", type=int, default=5)
     ap.add_argument("--wait", type=int, default=10)
     ap.add_argument("--resize", type=int, default=224)
@@ -313,7 +315,8 @@ def main():
     res = dict(suite=a.suite, tasks={}, args=vars(a), started=time.time())
     for tid in tasks:
         task = suite.get_task(tid)
-        init_states = suite.get_task_init_states(tid)
+        init_states = (np.load(os.path.join(a.fresh, f"{a.suite}_{tid}.npy")) if a.fresh
+                       else suite.get_task_init_states(tid))
         bddl = pathlib.Path(get_libero_path("bddl_files")) / task.problem_folder / task.bddl_file
         env = OffScreenRenderEnv(bddl_file_name=str(bddl), camera_heights=256, camera_widths=256,
                                      **({"camera_segmentations": "element"} if (a.seg or a.swap) else {}))
