@@ -1,0 +1,274 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "experiments/d1_read.py --diagnose --record",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky1.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "d1_factored",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "78aaae520b324f6a25435caf0000129c272319b7",
+  "short": "78aaae52"
+ },
+ "keys": {},
+ "metrics": {
+  "tasks": {
+   "36": {
+    "arms": {
+     "goal": {
+      "n": 20,
+      "none": 5,
+      "right": 0,
+      "success": 0,
+      "wrong": 15
+     },
+     "goal_bind": {
+      "n": 20,
+      "none": 20,
+      "right": 0,
+      "success": 0,
+      "wrong": 0
+     },
+     "lora": {
+      "n": 20,
+      "none": 2,
+      "right": 18,
+      "success": 14,
+      "wrong": 0
+     },
+     "zs": {
+      "n": 20,
+      "none": 5,
+      "right": 0,
+      "success": 1,
+      "wrong": 15
+     }
+    },
+    "referent": "white_bowl_1"
+   },
+   "41": {
+    "arms": {
+     "goal": {
+      "n": 20,
+      "none": 1,
+      "right": 0,
+      "success": 0,
+      "wrong": 19
+     },
+     "goal_bind": {
+      "n": 20,
+      "none": 19,
+      "right": 1,
+      "success": 0,
+      "wrong": 0
+     },
+     "lora": {
+      "n": 20,
+      "none": 1,
+      "right": 19,
+      "success": 14,
+      "wrong": 0
+     },
+     "zs": {
+      "n": 20,
+      "none": 1,
+      "right": 0,
+      "success": 0,
+      "wrong": 19
+     }
+    },
+    "referent": "chefmate_8_frypan_1"
+   },
+   "48": {
+    "arms": {
+     "goal": {
+      "n": 20,
+      "none": 0,
+      "right": 0,
+      "success": 0,
+      "wrong": 20
+     },
+     "goal_bind": {
+      "n": 20,
+      "none": 4,
+      "right": 0,
+      "success": 0,
+      "wrong": 16
+     },
+     "lora": {
+      "n": 20,
+      "none": 2,
+      "right": 18,
+      "success": 14,
+      "wrong": 0
+     },
+     "zs": {
+      "n": 20,
+      "none": 0,
+      "right": 0,
+      "success": 0,
+      "wrong": 20
+     }
+    },
+    "referent": "ketchup_1"
+   },
+   "53": {
+    "arms": {
+     "goal": {
+      "n": 20,
+      "none": 0,
+      "right": 0,
+      "success": 0,
+      "wrong": 20
+     },
+     "goal_bind": {
+      "n": 20,
+      "none": 12,
+      "right": 7,
+      "success": 1,
+      "wrong": 1
+     },
+     "lora": {
+      "n": 20,
+      "none": 0,
+      "right": 18,
+      "success": 18,
+      "wrong": 2
+     },
+     "zs": {
+      "n": 20,
+      "none": 0,
+      "right": 0,
+      "success": 0,
+      "wrong": 20
+     }
+    },
+    "referent": "orange_juice_1"
+   },
+   "58": {
+    "arms": {
+     "goal": {
+      "n": 20,
+      "none": 0,
+      "right": 0,
+      "success": 0,
+      "wrong": 20
+     },
+     "goal_bind": {
+      "n": 20,
+      "none": 2,
+      "right": 0,
+      "success": 0,
+      "wrong": 18
+     },
+     "lora": {
+      "n": 20,
+      "none": 4,
+      "right": 16,
+      "success": 8,
+      "wrong": 0
+     },
+     "zs": {
+      "n": 20,
+      "none": 0,
+      "right": 0,
+      "success": 0,
+      "wrong": 20
+     }
+    },
+    "referent": "ketchup_1"
+   },
+   "71": {
+    "arms": {
+     "goal": {
+      "n": 20,
+      "none": 0,
+      "right": 0,
+      "success": 0,
+      "wrong": 20
+     },
+     "goal_bind": {
+      "n": 20,
+      "none": 2,
+      "right": 0,
+      "success": 0,
+      "wrong": 18
+     },
+     "lora": {
+      "n": 20,
+      "none": 0,
+      "right": 20,
+      "success": 16,
+      "wrong": 0
+     },
+     "zs": {
+      "n": 20,
+      "none": 0,
+      "right": 0,
+      "success": 0,
+      "wrong": 20
+     }
+    },
+    "referent": "red_coffee_mug_1"
+   }
+  },
+  "totals": {
+   "goal": {
+    "n": 120,
+    "none": 6,
+    "right": 0,
+    "success": 0,
+    "wrong": 114
+   },
+   "goal_bind": {
+    "n": 120,
+    "none": 59,
+    "right": 8,
+    "success": 1,
+    "wrong": 53
+   },
+   "lora": {
+    "n": 120,
+    "none": 9,
+    "right": 109,
+    "success": 84,
+    "wrong": 2
+   },
+   "zs": {
+    "n": 120,
+    "none": 6,
+    "right": 0,
+    "success": 1,
+    "wrong": 114
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "d1_factored__libero_90__diagnosis__s11__78aaae52",
+ "schema": 1,
+ "script": "experiments/d1_read.py",
+ "seconds": null,
+ "seed": 11,
+ "source_commit": null,
+ "started": "2026-10-04T07:27:00+00:00",
+ "stream": null,
+ "tag": "diagnosis"
+}

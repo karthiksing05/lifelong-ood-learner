@@ -38,3 +38,33 @@ nothing the policy already does is damaged.
 
 Success = D1's kept arm level with or above the per-task LoRA + acceptance at a fraction of its bytes, and D2 requesting markedly
 fewer demonstrations than the step-primitive stream (27 of 30).
+
+## D1's outcome (2026-10-04; ledger d1_factored)
+
+H1 passes (kept 343 vs 271 of 600 zero-shot); H2 fails (324 vs 454 of 580 against the per-task LoRA + acceptance). The gap is
+the APPROACH: on the 6 tasks where only the LoRA succeeds, the policy's first grasp takes the wrong object in 114 of 120 episodes
+(milk for orange juice, alphabet soup for ketchup, the white bowl for the frying pan). The goal primitive acts after the grasp and
+inherits the wrong object; attention binding turns the arm toward the named object but grasps nothing (59 of 120). The LoRA,
+fitted on the task's own demonstration, grasps the named object first in 109 of 120.
+
+## Plan E: the object factor gets its own prototype
+
+The goal primitive is the transport's prototype; the approach has had only an attention bias, which says WHERE but not HOW to
+reach and grasp. Plan E gives the approach its own consolidated primitive, symmetric to the goal's:
+
+| phase | factor | key | prototype |
+|---|---|---|---|
+| approach (until the policy's own grasp) | the OBJECT | verb + object, the instance qualifier left out ("put the black bowl"; `primitives.object_key`) | a rank-4 LoRA fitted only on demonstrations' frames before their first sustained grasp, consolidated over EVERY LIBERO-90 demonstration with that object (the black bowl: 14 tasks, kitchens and living rooms, plates, drawers, cabinets, trays) |
+| transport (grasp to release) | the GOAL | preposition + target | the goal primitive of plan D |
+
+The step's prompt keeps its qualifier ("at the back", "middle"), so an object primitive fitted on several instances can read it;
+binding stays available to the acceptance test. A task is the composition of its object's and its goal's prototypes; 30 tasks
+need 15 object and 4 goal prototypes (19 x 4.7 MB = 89 MB) against 29 per-task LoRAs (545 MB).
+
+| | question | design |
+|---|---|---|
+| E0 (exploratory) | does the object primitive fix the approach? | 30 stream tasks, stored states 0-9, noise seed 11 (paired with D1's acceptance runs): leave-one-out object + goal primitives (no demonstration of the task); all-in object + goal primitives (the task's one demonstration absorbed into both prototypes: the library after the stream); the all-in object primitive alone |
+| E1 (pre-registered) | the factored library against the per-task LoRA | fresh start states, new noise seed; acceptance over {policy, leave-one-out pair, all-in pair}; kept vs zero-shot and non-inferiority to the per-task LoRA + acceptance |
+
+Success: E1's kept arm non-inferior to the per-task LoRA + acceptance at a sixth of its bytes, every task composed from shared
+object and goal prototypes.

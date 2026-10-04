@@ -1,0 +1,625 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 18710528,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 18710528,
+  "tree": 0
+ },
+ "command": "experiments/d1_read.py --read --record",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky1.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "d1_factored",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "ad610477fcafdd10f5f02dd6f11dc641dae041c3",
+  "short": "ad610477"
+ },
+ "keys": {},
+ "metrics": {
+  "acceptance": {
+   "10": {
+    "goal": 7,
+    "goal_bind": 4,
+    "lora": 0,
+    "zs": 10
+   },
+   "12": {
+    "goal": 6,
+    "goal_bind": 5,
+    "lora": 10,
+    "zs": 6
+   },
+   "13": {
+    "goal": 0,
+    "goal_bind": 3,
+    "lora": 8,
+    "zs": 0
+   },
+   "14": {
+    "goal": 3,
+    "goal_bind": 3,
+    "lora": 8,
+    "zs": 4
+   },
+   "15": {
+    "goal": 0,
+    "goal_bind": 2,
+    "lora": 9,
+    "zs": 0
+   },
+   "25": {
+    "goal": 9,
+    "goal_bind": 9,
+    "lora": 9,
+    "zs": 0
+   },
+   "30": {
+    "goal": 10,
+    "goal_bind": 3,
+    "lora": 0,
+    "zs": 9
+   },
+   "31": {
+    "goal": 8,
+    "goal_bind": 1,
+    "lora": 3,
+    "zs": 0
+   },
+   "36": {
+    "goal": 0,
+    "goal_bind": 0,
+    "lora": 6,
+    "zs": 0
+   },
+   "41": {
+    "goal": 0,
+    "goal_bind": 0,
+    "lora": 4,
+    "zs": 0
+   },
+   "43": {
+    "goal": 4,
+    "goal_bind": 9,
+    "lora": 8,
+    "zs": 1
+   },
+   "46": {
+    "goal": 10,
+    "goal_bind": 2,
+    "lora": 6,
+    "zs": 10
+   },
+   "47": {
+    "goal": 10,
+    "goal_bind": 8,
+    "lora": 9,
+    "zs": 10
+   },
+   "48": {
+    "goal": 1,
+    "goal_bind": 0,
+    "lora": 8,
+    "zs": 0
+   },
+   "49": {
+    "goal": 0,
+    "goal_bind": 0,
+    "lora": 0,
+    "zs": 0
+   },
+   "50": {
+    "goal": 10,
+    "goal_bind": 0,
+    "lora": 10,
+    "zs": 10
+   },
+   "51": {
+    "goal": 10,
+    "zs": 10
+   },
+   "52": {
+    "goal": 0,
+    "goal_bind": 2,
+    "lora": 7,
+    "zs": 0
+   },
+   "53": {
+    "goal": 0,
+    "goal_bind": 0,
+    "lora": 10,
+    "zs": 0
+   },
+   "54": {
+    "goal": 10,
+    "goal_bind": 1,
+    "lora": 8,
+    "zs": 8
+   },
+   "55": {
+    "goal": 10,
+    "goal_bind": 3,
+    "lora": 9,
+    "zs": 10
+   },
+   "56": {
+    "goal": 10,
+    "goal_bind": 8,
+    "lora": 10,
+    "zs": 9
+   },
+   "57": {
+    "goal": 10,
+    "goal_bind": 0,
+    "lora": 10,
+    "zs": 10
+   },
+   "58": {
+    "goal": 0,
+    "goal_bind": 0,
+    "lora": 6,
+    "zs": 0
+   },
+   "59": {
+    "goal": 6,
+    "goal_bind": 0,
+    "lora": 6,
+    "zs": 1
+   },
+   "61": {
+    "goal": 10,
+    "goal_bind": 2,
+    "lora": 10,
+    "zs": 10
+   },
+   "62": {
+    "goal": 0,
+    "goal_bind": 0,
+    "lora": 3,
+    "zs": 0
+   },
+   "71": {
+    "goal": 0,
+    "goal_bind": 0,
+    "lora": 8,
+    "zs": 0
+   },
+   "72": {
+    "goal": 10,
+    "goal_bind": 5,
+    "lora": 10,
+    "zs": 10
+   },
+   "9": {
+    "goal": 7,
+    "goal_bind": 8,
+    "lora": 10,
+    "zs": 9
+   }
+  },
+  "descriptive": {
+   "goal_bind_vs_zs": {
+    "diff": {
+     "diff": -0.1396551724137931,
+     "hi": 0.032758620689655175,
+     "hi90": 0.005172413793103448,
+     "lo": -0.3103448275862069,
+     "lo90": -0.2827586206896552,
+     "n_pairs": 580,
+     "n_tasks": 29
+    },
+    "discordant": [
+     73,
+     154
+    ],
+    "n": 580,
+    "sign_p": 8.079893202406251e-08,
+    "tasks": 29,
+    "x": 171,
+    "y": 252
+   },
+   "goal_vs_zs": {
+    "diff": {
+     "diff": 0.045,
+     "hi": 0.13166666666666665,
+     "hi90": 0.115,
+     "lo": -0.021666666666666667,
+     "lo90": -0.013333333333333334,
+     "n_pairs": 600,
+     "n_tasks": 30
+    },
+    "discordant": [
+     52,
+     25
+    ],
+    "n": 600,
+    "sign_p": 0.0027990538772776244,
+    "tasks": 30,
+    "x": 298,
+    "y": 271
+   },
+   "lora_acc_vs_zs": {
+    "diff": {
+     "diff": 0.3482758620689655,
+     "hi": 0.4896551724137931,
+     "hi90": 0.4672413793103448,
+     "lo": 0.21551724137931033,
+     "lo90": 0.23448275862068965,
+     "n_pairs": 580,
+     "n_tasks": 29
+    },
+    "discordant": [
+     207,
+     5
+    ],
+    "n": 580,
+    "sign_p": 1.0593782498164916e-54,
+    "tasks": 29,
+    "x": 454,
+    "y": 252
+   },
+   "lora_vs_zs": {
+    "diff": {
+     "diff": 0.2775862068965517,
+     "hi": 0.453448275862069,
+     "hi90": 0.4241379310344828,
+     "lo": 0.09655172413793103,
+     "lo90": 0.12758620689655173,
+     "n_pairs": 580,
+     "n_tasks": 29
+    },
+    "discordant": [
+     211,
+     50
+    ],
+    "n": 580,
+    "sign_p": 1.0374067841385182e-24,
+    "tasks": 29,
+    "x": 413,
+    "y": 252
+   }
+  },
+  "hypotheses": {
+   "H1": {
+    "diff": {
+     "diff": 0.12,
+     "hi": 0.21666666666666667,
+     "hi90": 0.19666666666666666,
+     "lo": 0.03833333333333333,
+     "lo90": 0.04833333333333333,
+     "n_pairs": 600,
+     "n_tasks": 30
+    },
+    "discordant": [
+     80,
+     8
+    ],
+    "holm_p": 4.601761192576427e-16,
+    "n": 600,
+    "passes": true,
+    "sign_p": 4.601761192576427e-16,
+    "tasks": 30,
+    "x": 343,
+    "y": 271
+   },
+   "H2": {
+    "diff": {
+     "diff": -0.22413793103448276,
+     "hi": -0.10689655172413794,
+     "hi90": -0.12413793103448276,
+     "lo": -0.35,
+     "lo90": -0.3275862068965517,
+     "n_pairs": 580,
+     "n_tasks": 29
+    },
+    "discordant": [
+     22,
+     152
+    ],
+    "n": 580,
+    "noninferior": false,
+    "sign_p": 4.246524322063393e-25,
+    "tasks": 29,
+    "x": 324,
+    "y": 454
+   }
+  },
+  "kept": {
+   "10": "zs",
+   "12": "zs",
+   "13": "goal_bind",
+   "14": "zs",
+   "15": "goal_bind",
+   "25": "goal",
+   "30": "goal",
+   "31": "goal",
+   "36": "zs",
+   "41": "zs",
+   "43": "goal_bind",
+   "46": "zs",
+   "47": "zs",
+   "48": "goal",
+   "49": "zs",
+   "50": "zs",
+   "51": "zs",
+   "52": "goal_bind",
+   "53": "zs",
+   "54": "goal",
+   "55": "zs",
+   "56": "goal",
+   "57": "zs",
+   "58": "zs",
+   "59": "goal",
+   "61": "zs",
+   "62": "zs",
+   "71": "zs",
+   "72": "zs",
+   "9": "zs"
+  },
+  "kept_lora": {
+   "10": "zs",
+   "12": "lora",
+   "13": "lora",
+   "14": "lora",
+   "15": "lora",
+   "25": "lora",
+   "30": "zs",
+   "31": "lora",
+   "36": "lora",
+   "41": "lora",
+   "43": "lora",
+   "46": "zs",
+   "47": "zs",
+   "48": "lora",
+   "49": "zs",
+   "50": "zs",
+   "52": "lora",
+   "53": "lora",
+   "54": "zs",
+   "55": "zs",
+   "56": "lora",
+   "57": "zs",
+   "58": "lora",
+   "59": "lora",
+   "61": "zs",
+   "62": "lora",
+   "71": "lora",
+   "72": "zs",
+   "9": "lora"
+  },
+  "missing": [],
+  "per_task": {
+   "10": {
+    "goal": 17,
+    "goal_bind": 6,
+    "kept": "zs",
+    "lora": 1,
+    "zs": 18
+   },
+   "12": {
+    "goal": 12,
+    "goal_bind": 18,
+    "kept": "zs",
+    "lora": 20,
+    "zs": 13
+   },
+   "13": {
+    "goal": 0,
+    "goal_bind": 12,
+    "kept": "goal_bind",
+    "lora": 19,
+    "zs": 0
+   },
+   "14": {
+    "goal": 5,
+    "goal_bind": 15,
+    "kept": "zs",
+    "lora": 19,
+    "zs": 6
+   },
+   "15": {
+    "goal": 0,
+    "goal_bind": 6,
+    "kept": "goal_bind",
+    "lora": 17,
+    "zs": 0
+   },
+   "25": {
+    "goal": 19,
+    "goal_bind": 18,
+    "kept": "goal",
+    "lora": 20,
+    "zs": 0
+   },
+   "30": {
+    "goal": 16,
+    "goal_bind": 1,
+    "kept": "goal",
+    "lora": 0,
+    "zs": 13
+   },
+   "31": {
+    "goal": 13,
+    "goal_bind": 0,
+    "kept": "goal",
+    "lora": 4,
+    "zs": 2
+   },
+   "36": {
+    "goal": 0,
+    "goal_bind": 0,
+    "kept": "zs",
+    "lora": 14,
+    "zs": 1
+   },
+   "41": {
+    "goal": 0,
+    "goal_bind": 0,
+    "kept": "zs",
+    "lora": 14,
+    "zs": 0
+   },
+   "43": {
+    "goal": 1,
+    "goal_bind": 12,
+    "kept": "goal_bind",
+    "lora": 19,
+    "zs": 1
+   },
+   "46": {
+    "goal": 20,
+    "goal_bind": 4,
+    "kept": "zs",
+    "lora": 9,
+    "zs": 20
+   },
+   "47": {
+    "goal": 19,
+    "goal_bind": 7,
+    "kept": "zs",
+    "lora": 19,
+    "zs": 20
+   },
+   "48": {
+    "goal": 0,
+    "goal_bind": 0,
+    "kept": "goal",
+    "lora": 14,
+    "zs": 0
+   },
+   "49": {
+    "goal": 1,
+    "goal_bind": 0,
+    "kept": "zs",
+    "lora": 0,
+    "zs": 0
+   },
+   "50": {
+    "goal": 18,
+    "goal_bind": 0,
+    "kept": "zs",
+    "lora": 20,
+    "zs": 19
+   },
+   "51": {
+    "goal": 20,
+    "kept": "zs",
+    "zs": 19
+   },
+   "52": {
+    "goal": 0,
+    "goal_bind": 8,
+    "kept": "goal_bind",
+    "lora": 9,
+    "zs": 0
+   },
+   "53": {
+    "goal": 0,
+    "goal_bind": 1,
+    "kept": "zs",
+    "lora": 18,
+    "zs": 0
+   },
+   "54": {
+    "goal": 14,
+    "goal_bind": 2,
+    "kept": "goal",
+    "lora": 18,
+    "zs": 17
+   },
+   "55": {
+    "goal": 20,
+    "goal_bind": 13,
+    "kept": "zs",
+    "lora": 20,
+    "zs": 20
+   },
+   "56": {
+    "goal": 20,
+    "goal_bind": 12,
+    "kept": "goal",
+    "lora": 20,
+    "zs": 19
+   },
+   "57": {
+    "goal": 20,
+    "goal_bind": 1,
+    "kept": "zs",
+    "lora": 18,
+    "zs": 19
+   },
+   "58": {
+    "goal": 0,
+    "goal_bind": 0,
+    "kept": "zs",
+    "lora": 8,
+    "zs": 0
+   },
+   "59": {
+    "goal": 9,
+    "goal_bind": 1,
+    "kept": "goal",
+    "lora": 16,
+    "zs": 5
+   },
+   "61": {
+    "goal": 20,
+    "goal_bind": 13,
+    "kept": "zs",
+    "lora": 20,
+    "zs": 20
+   },
+   "62": {
+    "goal": 0,
+    "goal_bind": 0,
+    "kept": "zs",
+    "lora": 1,
+    "zs": 0
+   },
+   "71": {
+    "goal": 0,
+    "goal_bind": 0,
+    "kept": "zs",
+    "lora": 16,
+    "zs": 0
+   },
+   "72": {
+    "goal": 19,
+    "goal_bind": 11,
+    "kept": "zs",
+    "lora": 20,
+    "zs": 20
+   },
+   "9": {
+    "goal": 15,
+    "goal_bind": 10,
+    "kept": "zs",
+    "lora": 20,
+    "zs": 19
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "d1_factored__libero_90__read__s11__ad610477",
+ "schema": 1,
+ "script": "experiments/d1_read.py",
+ "seconds": null,
+ "seed": 11,
+ "source_commit": null,
+ "started": "2026-10-04T07:16:00+00:00",
+ "stream": null,
+ "tag": "read"
+}
