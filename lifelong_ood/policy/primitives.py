@@ -61,14 +61,30 @@ def segment(actions, n_steps, run=RELEASE_RUN):
     return [(0, r[0]), (r[0], T)]
 
 
+def goal_key(clause):
+    """Plan D: the GOAL of a step, object and verb left out: (preposition, target), e.g. "in|the basket"."""
+    k = step_key(clause).split("|")
+    return f"{k[1]}|{k[2]}"
+
+
+def transport(actions, lo, hi, run=RELEASE_RUN):
+    """Plan D: the frames of a step that carry the object -- from the step's first sustained grasp (closed >= run frames) to the
+    step's end.  None if the step never grasps (closing a drawer, turning a knob)."""
+    c = np.asarray(actions)[lo:hi, 6] > 0
+    starts = [i for i in range(len(c) - run + 1) if c[i:i + run].all() and (i == 0 or not c[i - 1])]
+    return None if not starts else (lo + starts[0], hi)
+
+
 class PrimHooks:
     """Serve hooks for a sequence of steps: the step's clause as the prompt and its primitive (a keyed LoRA, or none = the policy
     itself) switched on; the next step begins when the policy's own commanded gripper releases a grasp held for 3 queries.
     `inner`: hooks for the first step (e.g. BindHooks binding the step's object); its bias applies only during that step."""
 
-    def __init__(self, bk, steps, paths, inner=None):
+    def __init__(self, bk, steps, paths, inner=None, goal_only=False):
         from . import adapt
         self.steps, self.inner = list(steps), inner
+        self.goal_only = bool(goal_only)                 # plan D: a primitive acts only from the grasp to the release
+        self.carrying = False
         self.state, self.keys = None, []
         for p in paths:
             if p is None:
@@ -83,10 +99,12 @@ class PrimHooks:
 
     def _apply(self):
         k = self.keys[self.step] if self.step < len(self.keys) else None
+        if self.goal_only and not self.carrying:
+            k = None                                     # the approach is the policy's (and the object binding's)
         self.state["on"] = frozenset({k}) if k else frozenset()
 
     def reset(self, meta):
-        self.step, self.run, self.closed = 0, 0, False
+        self.step, self.run, self.closed, self.carrying = 0, 0, False, False
         self._apply()
         if self.inner is not None and hasattr(self.inner, "reset"):
             self.inner.reset(meta)
@@ -99,7 +117,21 @@ class PrimHooks:
     def observe(self, actions):
         a = np.asarray(actions)
         self.closed = bool(a[min(4, len(a) - 1), 6] > 0)
-        if self.step < len(self.steps) - 1:
+        if self.goal_only:                               # grasp (closed 3 queries) -> carry; release -> next step's approach
+            if self.closed:
+                self.run += 1
+                if self.run >= 3 and not self.carrying:
+                    self.carrying = True
+                    self._apply()
+                    self.log.append(("carry", self.step))
+            else:
+                if self.carrying:
+                    self.carrying = False
+                    self.step = min(self.step + 1, len(self.steps) - 1)
+                    self._apply()
+                    self.log.append(("release", self.step))
+                self.run = 0
+        elif self.step < len(self.steps) - 1:
             if self.closed:
                 self.run += 1
             else:
@@ -112,6 +144,6 @@ class PrimHooks:
             self.inner.observe(actions)
 
     def __call__(self, obs, pre, meta):
-        if self.inner is not None and self.step == 0:
+        if self.inner is not None and (not self.carrying if self.goal_only else self.step == 0):
             return self.inner(obs, pre, meta)
         return None, None

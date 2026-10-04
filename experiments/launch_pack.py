@@ -188,6 +188,7 @@ def arm_spec(tid, arm, fold, demo=0):
                 ps.append("none" if k_ == "x" else os.path.join(
                     R, f"prim_{f_[0]}_{f_[1] if len(f_) > 1 else s_}{'_' + f_[2] if len(f_) > 2 else ''}.pt"))
         bind = "&bind=1" if "bind" in fl else ""
+        bind += "&goal=1" if "goal" in fl else ""                         # plan D: the primitive only from grasp to release
         return (f"prims:{tid}?suite={SUITE_OF.get('suite', 'libero_90')}&paths={'+'.join(ps)}{bind}", "0", False)
     if arm == "seqzs":                                                   # sequencing alone: the instruction's two clauses in turn
         return (f"bind:{tid}?suite={SUITE_OF.get('suite', 'libero_90')}&src=w4&rho=0.7&band=all&proto=none&nobind=1&seq=1", "0", False)

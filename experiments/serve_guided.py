@@ -295,7 +295,7 @@ def main():
                                  phrases=F.scene_phrases(task, tasks),
                                  proto=np.load(os.path.join(ROOT, "results", "robot", kv.get("pfile", "q4_object_protos") + ".npz"))[
                                      kv.get("proto", body)])
-        hooks = PR.PrimHooks(bk, steps, paths, inner=inner)
+        hooks = PR.PrimHooks(bk, steps, paths, inner=inner, goal_only=kv.get("goal") == "1")
         logging.info(f"prims: task {body}, steps {steps}, primitives {paths}, bind {inner is not None}")
     elif a.mode.startswith("lora:"):
         # lora:<expert.pt> -- the few-shot baseline: a flat adapter on the action expert, always on
