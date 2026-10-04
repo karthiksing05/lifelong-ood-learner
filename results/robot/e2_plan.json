@@ -1,0 +1,48 @@
+{
+ "15": {
+  "instance_key": "put|the black bowl|middle",
+  "object_key": "put|the black bowl",
+  "parent": "Osc1",
+  "goal_name": "Gsccab",
+  "child_tasks": [
+   14,
+   15
+  ],
+  "child": "Ich2",
+  "scratch": "Sch2"
+ },
+ "13": {
+  "instance_key": "put|the black bowl|front",
+  "object_key": "put|the black bowl",
+  "parent": "Osc1",
+  "goal_name": "Gscplate",
+  "child_tasks": [
+   13
+  ],
+  "child": "Ich1",
+  "scratch": "Sch1"
+ },
+ "12": {
+  "instance_key": "put|the black bowl|back",
+  "object_key": "put|the black bowl",
+  "parent": "Osc1",
+  "goal_name": "Gscplate",
+  "child_tasks": [
+   12
+  ],
+  "child": "Ich0",
+  "scratch": "Sch0"
+ },
+ "14": {
+  "instance_key": "put|the black bowl|middle",
+  "object_key": "put|the black bowl",
+  "parent": "Osc1",
+  "goal_name": "Gscplate",
+  "child_tasks": [
+   14,
+   15
+  ],
+  "child": "Ich2",
+  "scratch": "Sch2"
+ }
+}

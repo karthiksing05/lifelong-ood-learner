@@ -319,6 +319,7 @@ def main():
     ap.add_argument("--partition", default="", help="overcap: the packs run on the preemptible overcap partition (requeued)")
     ap.add_argument("--bind", default="", choices=("", "track", "stop"), help="client bind tracking (first object moved; stop = end there)")
     ap.add_argument("--fresh", action="store_true", help="trials start from the FRESH init states (results/robot/fresh_states)")
+    ap.add_argument("--fresh-dir", default="fresh_states", help="with --fresh: which set (fresh_states_b: E3's, sampler seeds 200000+)")
     ap.add_argument("--dry", action="store_true")
     a = ap.parse_args()
     SUITE_OF["suite"] = a.suite
@@ -359,7 +360,7 @@ def main():
                         **({"LIGHT": "1"} if a.light else {}), **({"OBJECTS": "1", "ALL_OBJECTS": "1"} if a.all_objects else {}),
                         **({"STATE_MOD": "30"} if arm in ("dsrl_train", "dsrlo_train") else {}),
                         **({"SEG": "1"} if "src=oracle" in (s[0] or "") else {}), **({"BIND": a.bind} if a.bind else {}),
-                        **({"FRESH": os.path.join(R, "fresh_states")} if a.fresh else {}),
+                        **({"FRESH": os.path.join(R, a.fresh_dir)} if a.fresh else {}),
                         **(s[3] if len(s) > 3 else {}),
                         **({"BACKBONE_CONFIG": a.backbone, "BACKBONE_CKPT": "lerobot/smolvla_libero",
                             "SERVER_PY": "/coc/flash10/ksingara3/robot/smolvla/.venv/bin/python"} if a.backbone.startswith("smolvla") else

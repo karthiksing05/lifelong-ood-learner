@@ -1,0 +1,96 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/e2_instance_14_fac_Ich2.Gscplate_seed12.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "roll.sh MODE=prims:14?suite=libero_90&paths=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/prim_Gscplate_0.pt&apaths=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/prim_Ich2_0.pt&goal=1 SUITE=libero_90 TASKS=14 TRIALS=10 (job 4012167)",
+ "config": {
+  "client": {
+   "all_objects": false,
+   "bind": "track",
+   "branches": "",
+   "first_trial": 0,
+   "fresh": "",
+   "host": "127.0.0.1",
+   "light": false,
+   "max_steps": 0,
+   "no_meta": false,
+   "objects": false,
+   "out": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/e2_instance_14_fac_Ich2.Gscplate_seed12.json",
+   "port": 9051,
+   "record": false,
+   "replan": 5,
+   "resize": 224,
+   "seed": 7,
+   "seg": false,
+   "state_mod": 0,
+   "suite": "libero_90",
+   "swap": "",
+   "swap_cams": "both",
+   "swap_mode": "render",
+   "swap_phase": "all",
+   "tasks": "14",
+   "trials": 10,
+   "videos": 2,
+   "wait": 10
+  },
+  "job": "4012167",
+  "mode": "prims:14?suite=libero_90&paths=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/prim_Gscplate_0.pt&apaths=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/prim_Ich2_0.pt&goal=1"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "nestor.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4012167",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "e2_instance",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "85a40faa1fa27f25fcb941edb47d07ee36ce668e",
+  "short": "85a40faa"
+ },
+ "keys": {
+  "first_trial": 0,
+  "mode": "prims:14?suite=libero_90&paths=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/prim_Gscplate_0.pt&apaths=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/prim_Ich2_0.pt&goal=1",
+  "tasks": "14",
+  "trials": 10
+ },
+ "metrics": {
+  "complete": true,
+  "n_episodes": 10,
+  "secs": 337.68887066841125,
+  "success_rate": 0.6,
+  "tasks": {
+   "14": {
+    "errors": 0,
+    "language": "put the middle black bowl on the plate",
+    "mean_steps": 226.3,
+    "n": 10,
+    "success_rate": 0.6
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "e2_instance__libero_90__fac_Ich2.Gscplate_seed12__first_trial-0__mode6b672fcf5f0f__tasks-14__trials-10__s7__85a40faa",
+ "schema": 1,
+ "script": "experiments/libero_client.py",
+ "seconds": null,
+ "seed": 7,
+ "source_commit": null,
+ "started": "2026-10-04T12:19:35+00:00",
+ "stream": null,
+ "tag": "fac_Ich2.Gscplate_seed12"
+}

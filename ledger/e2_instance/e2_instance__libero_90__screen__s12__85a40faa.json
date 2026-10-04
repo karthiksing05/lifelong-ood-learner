@@ -1,0 +1,131 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "experiments/e2_instance.py --read --record",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky1.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "e2_instance",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "85a40faa1fa27f25fcb941edb47d07ee36ce668e",
+  "short": "85a40faa"
+ },
+ "keys": {},
+ "metrics": {
+  "episodes_per_task": 10,
+  "missing": [],
+  "per_task": {
+   "12": {
+    "child": 10,
+    "lora": 10,
+    "scratch": 10,
+    "type": 5,
+    "zs": 6
+   },
+   "13": {
+    "child": 10,
+    "lora": 9,
+    "scratch": 10,
+    "type": 5,
+    "zs": 1
+   },
+   "14": {
+    "child": 6,
+    "lora": 7,
+    "scratch": 8,
+    "type": 0,
+    "zs": 3
+   },
+   "15": {
+    "child": 9,
+    "lora": 9,
+    "scratch": 9,
+    "type": 3,
+    "zs": 0
+   }
+  },
+  "plan": {
+   "12": {
+    "child": "Ich0",
+    "child_tasks": [
+     12
+    ],
+    "goal_name": "Gscplate",
+    "instance_key": "put|the black bowl|back",
+    "object_key": "put|the black bowl",
+    "parent": "Osc1",
+    "scratch": "Sch0"
+   },
+   "13": {
+    "child": "Ich1",
+    "child_tasks": [
+     13
+    ],
+    "goal_name": "Gscplate",
+    "instance_key": "put|the black bowl|front",
+    "object_key": "put|the black bowl",
+    "parent": "Osc1",
+    "scratch": "Sch1"
+   },
+   "14": {
+    "child": "Ich2",
+    "child_tasks": [
+     14,
+     15
+    ],
+    "goal_name": "Gscplate",
+    "instance_key": "put|the black bowl|middle",
+    "object_key": "put|the black bowl",
+    "parent": "Osc1",
+    "scratch": "Sch2"
+   },
+   "15": {
+    "child": "Ich2",
+    "child_tasks": [
+     14,
+     15
+    ],
+    "goal_name": "Gsccab",
+    "instance_key": "put|the black bowl|middle",
+    "object_key": "put|the black bowl",
+    "parent": "Osc1",
+    "scratch": "Sch2"
+   }
+  },
+  "totals": {
+   "child": 35,
+   "lora": 35,
+   "scratch": 37,
+   "type": 13,
+   "zs": 10
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "e2_instance__libero_90__screen__s12__85a40faa",
+ "schema": 1,
+ "script": "experiments/e2_instance.py",
+ "seconds": null,
+ "seed": 12,
+ "source_commit": null,
+ "started": "2026-10-04T12:22:33+00:00",
+ "stream": null,
+ "tag": "screen"
+}

@@ -13,7 +13,8 @@ import numpy as np
 from libero.libero import benchmark, get_libero_path
 from libero.libero.envs import OffScreenRenderEnv
 
-OUT = "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/fresh_states"
+OUT = os.path.join("/coc/flash10/ksingara3/lifelong-ood-learner/results/robot",
+                   os.environ.get("FRESH_DIR", "fresh_states"))   # a second set (fresh_states_b, BASE 200000) for E3
 
 
 def main():
