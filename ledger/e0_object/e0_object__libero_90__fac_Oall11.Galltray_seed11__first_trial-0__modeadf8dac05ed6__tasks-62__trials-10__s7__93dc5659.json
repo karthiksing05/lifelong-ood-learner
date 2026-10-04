@@ -1,0 +1,96 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/e0_object_62_fac_Oall11.Galltray_seed11.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "roll.sh MODE=prims:62?suite=libero_90&paths=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/prim_Galltray_0.pt&apaths=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/prim_Oall11_0.pt&goal=1 SUITE=libero_90 TASKS=62 TRIALS=10 (job 4011608)",
+ "config": {
+  "client": {
+   "all_objects": false,
+   "bind": "track",
+   "branches": "",
+   "first_trial": 0,
+   "fresh": "",
+   "host": "127.0.0.1",
+   "light": false,
+   "max_steps": 0,
+   "no_meta": false,
+   "objects": false,
+   "out": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/e0_object_62_fac_Oall11.Galltray_seed11.json",
+   "port": 9114,
+   "record": false,
+   "replan": 5,
+   "resize": 224,
+   "seed": 7,
+   "seg": false,
+   "state_mod": 0,
+   "suite": "libero_90",
+   "swap": "",
+   "swap_cams": "both",
+   "swap_mode": "render",
+   "swap_phase": "all",
+   "tasks": "62",
+   "trials": 10,
+   "videos": 2,
+   "wait": 10
+  },
+  "job": "4011608",
+  "mode": "prims:62?suite=libero_90&paths=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/prim_Galltray_0.pt&apaths=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/prim_Oall11_0.pt&goal=1"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "kitt.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4011608",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "e0_object",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "93dc56593fddd3e4f02ffdd85a3725897701c6e2",
+  "short": "93dc5659"
+ },
+ "keys": {
+  "first_trial": 0,
+  "mode": "prims:62?suite=libero_90&paths=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/prim_Galltray_0.pt&apaths=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/prim_Oall11_0.pt&goal=1",
+  "tasks": "62",
+  "trials": 10
+ },
+ "metrics": {
+  "complete": true,
+  "n_episodes": 10,
+  "secs": 398.2065010070801,
+  "success_rate": 0.4,
+  "tasks": {
+   "62": {
+    "errors": 0,
+    "language": "pick up the salad dressing and put it in the tray",
+    "mean_steps": 279.1,
+    "n": 10,
+    "success_rate": 0.4
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "e0_object__libero_90__fac_Oall11.Galltray_seed11__first_trial-0__modeadf8dac05ed6__tasks-62__trials-10__s7__93dc5659",
+ "schema": 1,
+ "script": "experiments/libero_client.py",
+ "seconds": null,
+ "seed": 7,
+ "source_commit": null,
+ "started": "2026-10-04T09:07:59+00:00",
+ "stream": null,
+ "tag": "fac_Oall11.Galltray_seed11"
+}

@@ -1,0 +1,96 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/e0_object_48_fac_Oloo48.Gbasket48_seed11.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "roll.sh MODE=prims:48?suite=libero_90&paths=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/prim_Gbasket48_0.pt&apaths=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/prim_Oloo48_0.pt&goal=1 SUITE=libero_90 TASKS=48 TRIALS=10 (job 4011595)",
+ "config": {
+  "client": {
+   "all_objects": false,
+   "bind": "track",
+   "branches": "",
+   "first_trial": 0,
+   "fresh": "",
+   "host": "127.0.0.1",
+   "light": false,
+   "max_steps": 0,
+   "no_meta": false,
+   "objects": false,
+   "out": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/e0_object_48_fac_Oloo48.Gbasket48_seed11.json",
+   "port": 9075,
+   "record": false,
+   "replan": 5,
+   "resize": 224,
+   "seed": 7,
+   "seg": false,
+   "state_mod": 0,
+   "suite": "libero_90",
+   "swap": "",
+   "swap_cams": "both",
+   "swap_mode": "render",
+   "swap_phase": "all",
+   "tasks": "48",
+   "trials": 10,
+   "videos": 2,
+   "wait": 10
+  },
+  "job": "4011595",
+  "mode": "prims:48?suite=libero_90&paths=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/prim_Gbasket48_0.pt&apaths=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/prim_Oloo48_0.pt&goal=1"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "protocol.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4011595",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "e0_object",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "93dc56593fddd3e4f02ffdd85a3725897701c6e2",
+  "short": "93dc5659"
+ },
+ "keys": {
+  "first_trial": 0,
+  "mode": "prims:48?suite=libero_90&paths=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/prim_Gbasket48_0.pt&apaths=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/prim_Oloo48_0.pt&goal=1",
+  "tasks": "48",
+  "trials": 10
+ },
+ "metrics": {
+  "complete": true,
+  "n_episodes": 10,
+  "secs": 497.5447108745575,
+  "success_rate": 0.0,
+  "tasks": {
+   "48": {
+    "errors": 0,
+    "language": "pick up the ketchup and put it in the basket",
+    "mean_steps": 400.0,
+    "n": 10,
+    "success_rate": 0.0
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "e0_object__libero_90__fac_Oloo48.Gbasket48_seed11__first_trial-0__moded11c87cbe85f__tasks-48__trials-10__s7__93dc5659",
+ "schema": 1,
+ "script": "experiments/libero_client.py",
+ "seconds": null,
+ "seed": 7,
+ "source_commit": null,
+ "started": "2026-10-04T09:06:35+00:00",
+ "stream": null,
+ "tag": "fac_Oloo48.Gbasket48_seed11"
+}

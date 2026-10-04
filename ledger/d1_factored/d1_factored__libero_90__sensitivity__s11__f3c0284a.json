@@ -1,0 +1,95 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "experiments/d1_read.py --sensitivity --record",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky1.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "d1_factored",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "f3c0284ac0a019037a103ccbfd8b332f8ca0daf7",
+  "short": "f3c0284a"
+ },
+ "keys": {},
+ "metrics": {
+  "H1": {
+   "diff": {
+    "diff": 0.1,
+    "hi": 0.19285714285714287,
+    "hi90": 0.1761904761904762,
+    "lo": 0.02619047619047619,
+    "lo90": 0.03571428571428571,
+    "n_pairs": 420,
+    "n_tasks": 21
+   },
+   "discordant": [
+    44,
+    2
+   ],
+   "n": 420,
+   "sign_p": 3.0752289603697136e-11,
+   "tasks": 21,
+   "x": 205,
+   "y": 163
+  },
+  "H2": {
+   "diff": {
+    "diff": -0.3425,
+    "hi": -0.2025,
+    "hi90": -0.2275,
+    "lo": -0.485,
+    "lo90": -0.4625,
+    "n_pairs": 400,
+    "n_tasks": 20
+   },
+   "discordant": [
+    7,
+    144
+   ],
+   "n": 400,
+   "sign_p": 2.269603084085948e-34,
+   "tasks": 20,
+   "x": 186,
+   "y": 323
+  },
+  "excluded": [
+   "31",
+   "25",
+   "10",
+   "9",
+   "30",
+   "54",
+   "50",
+   "46",
+   "49"
+  ]
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "d1_factored__libero_90__sensitivity__s11__f3c0284a",
+ "schema": 1,
+ "script": "experiments/d1_read.py",
+ "seconds": null,
+ "seed": 11,
+ "source_commit": null,
+ "started": "2026-10-04T09:20:57+00:00",
+ "stream": null,
+ "tag": "sensitivity"
+}

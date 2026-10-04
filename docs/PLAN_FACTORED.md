@@ -68,3 +68,16 @@ need 15 object and 4 goal prototypes (19 x 4.7 MB = 89 MB) against 29 per-task L
 
 Success: E1's kept arm non-inferior to the per-task LoRA + acceptance at a sixth of its bytes, every task composed from shared
 object and goal prototypes.
+
+## E0's outcome and a data defect (2026-10-04; ledgers e0_object, l90_scenes)
+
+E0 (exploratory, stored states 0-9): the factored library with each task's demonstration absorbed (object + goal prototypes)
+succeeds 201 of 300 against 137 zero-shot; the per-task LoRA 205 of 290. On D1's six wrong-object tasks: 39 of 60 (LoRA 42). The
+object primitive fixes the approach. Leave-one-out (no demonstration of the task) gives 125 against 117 on 25 tasks: an object's
+prototype from OTHER tasks transfers for some objects only.
+
+While reading E0, identical fits for tasks 46 and 50 exposed a data defect: the IPEC port merges tasks by instruction, and the
+first-episode rule gave 16 LIBERO-90 tasks another scene's demonstration (5 in the stream) and put 4 stream tasks' own
+demonstration into their "leave-one-out" fits. Fixed at the data layer (Demos90.episodes_of_task, verified per scene block).
+D1's verdicts hold without the 9 shared-instruction tasks. E1 is registered on the corrected data (m3_prereg tag e1_factored):
+library refit, the 5 affected LoRAs refit, acceptance and test at noise seed 12.
