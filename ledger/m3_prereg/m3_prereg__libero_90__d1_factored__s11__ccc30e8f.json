@@ -1,0 +1,266 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration of plan D's main read",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky1.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "ccc30e8fa3758c3eb2ad2d4d3c647041e40d108a",
+  "short": "ccc30e8f"
+ },
+ "keys": {},
+ "metrics": {
+  "context": "d0_goal (exploratory, 14 of these tasks, stored states, seed 0) was read before this registration",
+  "hypotheses": {
+   "H1": "the scheme's kept arm > zero-shot pooled over the 30 tasks (exact sign test on discordant pairs)",
+   "H2": "NON-INFERIORITY to the per-task LoRA with the acceptance test, on the 29 tasks with a LoRA: the task-level bootstrap 95% lower bound of (scheme - LoRA_acc) success rate above -0.05",
+   "correction": "H1 alone in the Holm family; H2 is a separate pre-specified criterion"
+  },
+  "plan": {
+   "10": {
+    "goal": "Gcab10",
+    "key": "on top of|the cabinet",
+    "lora": true,
+    "proto": false
+   },
+   "12": {
+    "goal": "Gplate12",
+    "key": "on|the plate",
+    "lora": true,
+    "proto": true
+   },
+   "13": {
+    "goal": "Gplate13",
+    "key": "on|the plate",
+    "lora": true,
+    "proto": true
+   },
+   "14": {
+    "goal": "Gplate14",
+    "key": "on|the plate",
+    "lora": true,
+    "proto": true
+   },
+   "15": {
+    "goal": "Gcab15",
+    "key": "on top of|the cabinet",
+    "lora": true,
+    "proto": true
+   },
+   "25": {
+    "goal": "Gcab25",
+    "key": "on top of|the cabinet",
+    "lora": true,
+    "proto": true
+   },
+   "30": {
+    "goal": "Gplate30",
+    "key": "on|the plate",
+    "lora": true,
+    "proto": true
+   },
+   "31": {
+    "goal": "Gcab31",
+    "key": "on top of|the cabinet",
+    "lora": true,
+    "proto": true
+   },
+   "36": {
+    "goal": "Gplate36",
+    "key": "on|the plate",
+    "lora": true,
+    "proto": true
+   },
+   "41": {
+    "goal": "Gcab41",
+    "key": "on top of|the cabinet",
+    "lora": true,
+    "proto": true
+   },
+   "43": {
+    "goal": "Gcab43",
+    "key": "on top of|the cabinet",
+    "lora": true,
+    "proto": true
+   },
+   "46": {
+    "goal": "Gbasket46",
+    "key": "in|the basket",
+    "lora": true,
+    "proto": true
+   },
+   "47": {
+    "goal": "Gbasket47",
+    "key": "in|the basket",
+    "lora": true,
+    "proto": true
+   },
+   "48": {
+    "goal": "Gbasket48",
+    "key": "in|the basket",
+    "lora": true,
+    "proto": true
+   },
+   "49": {
+    "goal": "Gbasket49",
+    "key": "in|the basket",
+    "lora": true,
+    "proto": true
+   },
+   "50": {
+    "goal": "Gbasket50",
+    "key": "in|the basket",
+    "lora": true,
+    "proto": true
+   },
+   "51": {
+    "goal": "Gbasket51",
+    "key": "in|the basket",
+    "lora": false,
+    "proto": false
+   },
+   "52": {
+    "goal": "Gbasket52",
+    "key": "in|the basket",
+    "lora": true,
+    "proto": true
+   },
+   "53": {
+    "goal": "Gbasket53",
+    "key": "in|the basket",
+    "lora": true,
+    "proto": true
+   },
+   "54": {
+    "goal": "Gbasket54",
+    "key": "in|the basket",
+    "lora": true,
+    "proto": true
+   },
+   "55": {
+    "goal": "Gtray55",
+    "key": "in|the tray",
+    "lora": true,
+    "proto": true
+   },
+   "56": {
+    "goal": "Gtray56",
+    "key": "in|the tray",
+    "lora": true,
+    "proto": true
+   },
+   "57": {
+    "goal": "Gtray57",
+    "key": "in|the tray",
+    "lora": true,
+    "proto": true
+   },
+   "58": {
+    "goal": "Gtray58",
+    "key": "in|the tray",
+    "lora": true,
+    "proto": true
+   },
+   "59": {
+    "goal": "Gtray59",
+    "key": "in|the tray",
+    "lora": true,
+    "proto": true
+   },
+   "61": {
+    "goal": "Gtray61",
+    "key": "in|the tray",
+    "lora": true,
+    "proto": false
+   },
+   "62": {
+    "goal": "Gtray62",
+    "key": "in|the tray",
+    "lora": true,
+    "proto": true
+   },
+   "71": {
+    "goal": "Gplate71",
+    "key": "on|the plate",
+    "lora": true,
+    "proto": true
+   },
+   "72": {
+    "goal": "Gplate72",
+    "key": "on|the plate",
+    "lora": true,
+    "proto": true
+   },
+   "9": {
+    "goal": "Gplate9",
+    "key": "on|the plate",
+    "lora": true,
+    "proto": true
+   }
+  },
+  "reported": "bytes (one rank-4 goal primitive per goal key: 4 x 4.7 MB; per-task LoRA 29 x 18.7 MB), demonstrations used (the scheme: as queries for binding and in other tasks' primitives; the baseline: one fitted per task), practice episodes",
+  "tasks": [
+   9,
+   10,
+   12,
+   13,
+   14,
+   15,
+   25,
+   30,
+   31,
+   36,
+   41,
+   43,
+   46,
+   47,
+   48,
+   49,
+   50,
+   51,
+   52,
+   53,
+   54,
+   55,
+   56,
+   57,
+   58,
+   59,
+   61,
+   62,
+   71,
+   72
+  ],
+  "written_before": "any fit or episode of d1"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_90__d1_factored__s11__ccc30e8f",
+ "schema": 1,
+ "script": "experiments/prereg/d1_factored.py",
+ "seconds": null,
+ "seed": 11,
+ "source_commit": null,
+ "started": "2026-10-04T04:42:09+00:00",
+ "stream": null,
+ "tag": "d1_factored"
+}
