@@ -1,0 +1,332 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "experiments/i4_factors.py --record",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "asimo.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": "4011800",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "i4_factors",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "6a2582330f7414ebe331f45e4cbe405db2dda5d0",
+  "short": "6a258233"
+ },
+ "keys": {},
+ "metrics": {
+  "goals": {
+   "Gscbasket": "in|the basket",
+   "Gsccab": "on top of|the cabinet",
+   "Gscplate": "on|the plate",
+   "Gsctray": "in|the tray"
+  },
+  "objects": {
+   "Osc0": "put|the alphabet soup",
+   "Osc1": "put|the black bowl",
+   "Osc10": "put|the red mug",
+   "Osc11": "put|the salad dressing",
+   "Osc12": "put|the tomato sauce",
+   "Osc13": "put|the white bowl",
+   "Osc14": "put|the white mug",
+   "Osc2": "put|the butter",
+   "Osc3": "put|the chocolate pudding",
+   "Osc4": "put|the cream cheese",
+   "Osc5": "put|the cream cheese box",
+   "Osc6": "put|the frying pan",
+   "Osc7": "put|the ketchup",
+   "Osc8": "put|the milk",
+   "Osc9": "put|the orange juice"
+  },
+  "similarity": {
+   "goal_goal": 0.12536484887930016,
+   "object_goal": 0.036879921893777076,
+   "object_object": 0.05838683856254566
+  },
+  "stability": {
+   "by_donors": {
+    "2": 0.5534379497771597,
+    "3": 0.7014894446410737
+   },
+   "n_same": 25,
+   "other_objects": 0.056910516878115366,
+   "rows": [
+    {
+     "allin": "Oall1",
+     "cos": 0.7533328029687499,
+     "donors": 13,
+     "loo": "Oloo31",
+     "task": 31
+    },
+    {
+     "allin": "Oall1",
+     "cos": 0.7266185840626479,
+     "donors": 13,
+     "loo": "Oloo15",
+     "task": 15
+    },
+    {
+     "allin": "Oall1",
+     "cos": 0.7627712123541321,
+     "donors": 13,
+     "loo": "Oloo25",
+     "task": 25
+    },
+    {
+     "allin": "Oall1",
+     "cos": 0.7681550377663015,
+     "donors": 13,
+     "loo": "Oloo10",
+     "task": 10
+    },
+    {
+     "allin": "Oall13",
+     "cos": 0.4903000323118406,
+     "donors": 2,
+     "loo": "Oloo43",
+     "task": 43
+    },
+    {
+     "allin": "Oall6",
+     "cos": 0.6593440655192004,
+     "donors": 5,
+     "loo": "Oloo41",
+     "task": 41
+    },
+    {
+     "allin": "Oall1",
+     "cos": 0.7490548092303109,
+     "donors": 13,
+     "loo": "Oloo9",
+     "task": 9
+    },
+    {
+     "allin": "Oall10",
+     "cos": 0.675702988020717,
+     "donors": 3,
+     "loo": "Oloo71",
+     "task": 71
+    },
+    {
+     "allin": "Oall1",
+     "cos": 0.6760487539386906,
+     "donors": 13,
+     "loo": "Oloo13",
+     "task": 13
+    },
+    {
+     "allin": "Oall13",
+     "cos": 0.5148210395201577,
+     "donors": 2,
+     "loo": "Oloo36",
+     "task": 36
+    },
+    {
+     "allin": "Oall1",
+     "cos": 0.7269443292708507,
+     "donors": 13,
+     "loo": "Oloo12",
+     "task": 12
+    },
+    {
+     "allin": "Oall1",
+     "cos": 0.721348604309218,
+     "donors": 13,
+     "loo": "Oloo14",
+     "task": 14
+    },
+    {
+     "allin": "Oall14",
+     "cos": 0.4438961496360997,
+     "donors": 2,
+     "loo": "Oloo72",
+     "task": 72
+    },
+    {
+     "allin": "Oall1",
+     "cos": 0.761802377433317,
+     "donors": 13,
+     "loo": "Oloo30",
+     "task": 30
+    },
+    {
+     "allin": "Oall12",
+     "cos": 0.722589124284879,
+     "donors": 2,
+     "loo": "Oloo54",
+     "task": 54
+    },
+    {
+     "allin": "Oall7",
+     "cos": 0.641450250476573,
+     "donors": 2,
+     "loo": "Oloo48",
+     "task": 48
+    },
+    {
+     "allin": "Oall0",
+     "cos": 0.654413518397482,
+     "donors": 2,
+     "loo": "Oloo50",
+     "task": 50
+    },
+    {
+     "allin": "Oall2",
+     "cos": 0.800678211072277,
+     "donors": 3,
+     "loo": "Oloo51",
+     "task": 51
+    },
+    {
+     "allin": "Oall0",
+     "cos": 0.6448508096132611,
+     "donors": 2,
+     "loo": "Oloo46",
+     "task": 46
+    },
+    {
+     "allin": "Oall12",
+     "cos": 0.7191260914577717,
+     "donors": 2,
+     "loo": "Oloo49",
+     "task": 49
+    },
+    {
+     "allin": "Oall0",
+     "cos": 0.4655354356038266,
+     "donors": 2,
+     "loo": "Oloo55",
+     "task": 55
+    },
+    {
+     "allin": "Oall12",
+     "cos": 0.20172120326249193,
+     "donors": 2,
+     "loo": "Oloo59",
+     "task": 59
+    },
+    {
+     "allin": "Oall2",
+     "cos": 0.4908813172557894,
+     "donors": 3,
+     "loo": "Oloo56",
+     "task": 56
+    },
+    {
+     "allin": "Oall7",
+     "cos": 0.5891137929843719,
+     "donors": 2,
+     "loo": "Oloo58",
+     "task": 58
+    },
+    {
+     "allin": "Oall3",
+     "cos": 0.5481691317728283,
+     "donors": 3,
+     "loo": "Oloo61",
+     "task": 61
+    }
+   ],
+   "same_object": 0.6363467869009515
+  },
+  "summary": {
+   "goal": {
+    "attention": 0.2207820789668306,
+    "late_layers": 0.6300886568092274
+   },
+   "object": {
+    "attention": 0.20220506113722425,
+    "late_layers": 0.661408008433194
+   }
+  },
+  "where": {
+   "goal": {
+    "layers": [
+     0.023037985324147504,
+     0.0026200489983195666,
+     0.006193277539211211,
+     0.02812463611195195,
+     0.026070105758144228,
+     0.13168526065756525,
+     0.0542460080044393,
+     0.03333188688158112,
+     0.06422568774580995,
+     0.07246108451320227,
+     0.09035247176157593,
+     0.06228769723158069,
+     0.10024370613084513,
+     0.0877977905888995,
+     0.08857494781690697,
+     0.05956503977334733,
+     0.05751052942732718,
+     0.011295389565542479
+    ],
+    "modules": {
+     "down_proj": 0.04899375729286204,
+     "gate_proj": 0.2505523683905816,
+     "k_proj": 0.0022812085699595954,
+     "o_proj": 0.03812345789885524,
+     "q_proj": 0.1773647979673478,
+     "up_proj": 0.2009672439748108,
+     "v_proj": 0.0030126145306679734
+    }
+   },
+   "object": {
+    "layers": [
+     0.02037879129830822,
+     0.003531053083651161,
+     0.010895944499072722,
+     0.026608720263970136,
+     0.029023774316687123,
+     0.08221811412197617,
+     0.05458728463545503,
+     0.037770612750354565,
+     0.07297848978710221,
+     0.06996414038021719,
+     0.08828636558912911,
+     0.056790079526038435,
+     0.10349551436965838,
+     0.0994843493571947,
+     0.09242083131133075,
+     0.07247911249624578,
+     0.061044856636889536,
+     0.01744275876649015
+    ],
+    "modules": {
+     "down_proj": 0.060659213638603715,
+     "gate_proj": 0.2680998921616274,
+     "k_proj": 0.003959428468602941,
+     "o_proj": 0.03922860211097135,
+     "q_proj": 0.15520640771821093,
+     "up_proj": 0.19330410614259547,
+     "v_proj": 0.0038106228394390288
+    }
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "i4_factors__libero_90__read__s0__6a258233",
+ "schema": 1,
+ "script": "experiments/i4_factors.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-04T10:03:25+00:00",
+ "stream": null,
+ "tag": "read"
+}

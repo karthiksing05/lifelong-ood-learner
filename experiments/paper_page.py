@@ -958,6 +958,15 @@ def plan_e_par():
                 f"{de['fac_vs_zs']['x']} times and the LoRA {de['lora_vs_zs']['x']}. The library stores {b['prototypes']} prototypes "
                 f"({b['library'] / 1e6:.1f} MB) where the per-task LoRAs store {b['loras']} adapters ({b['per_task_lora'] / 1e6:.1f} "
                 f"MB).</p>")
+    i4 = row("i4_factors", "read")
+    if i4:
+        sm, st = i4["similarity"], i4["stability"]
+        out += (f"<p>In weight space (exploratory), each object prototype points its own way: the mean cosine between object "
+                f"prototypes is {sm['object_object']:.3f}, between object and goal prototypes {sm['object_goal']:.3f}. No shared "
+                f"reach-and-grasp update exists; the object factor carries the object. Both factors act in the same layers and modules "
+                f"(the later layers' queries and MLP, almost nothing in keys and values), so they differ in direction, not in location. A "
+                f"prototype summarises its demonstrations: refit without one task's demonstration, an object prototype keeps a cosine of "
+                f"{st['same_object']:.2f} with the full one, against {st['other_objects']:.3f} with other objects' prototypes.</p>")
     return out
 
 
