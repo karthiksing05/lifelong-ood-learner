@@ -1,0 +1,922 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration of plan E's main read",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky1.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "835337481dbff758f6ddee5b7e3ffea58a91c94b",
+  "short": "83533748"
+ },
+ "keys": {},
+ "metrics": {
+  "context": "e0_object (exploratory; the stream's 30 tasks, stored states 0-9, seed 11; first-episode demonstrations, another scene's for 5 tasks) was read before this registration, and the data defect (ledger l90_scenes) was found and fixed before it",
+  "demonstration_tasks": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   9,
+   10,
+   12,
+   13,
+   14,
+   15,
+   18,
+   21,
+   24,
+   25,
+   29,
+   30,
+   31,
+   32,
+   36,
+   37,
+   40,
+   41,
+   42,
+   43,
+   45,
+   46,
+   47,
+   48,
+   49,
+   50,
+   52,
+   53,
+   54,
+   55,
+   56,
+   57,
+   58,
+   59,
+   60,
+   61,
+   62,
+   63,
+   64,
+   65,
+   66,
+   67,
+   69,
+   70,
+   71,
+   72,
+   84,
+   85
+  ],
+  "hypotheses": {
+   "H1": "the scheme's kept arm > zero-shot pooled over the 30 tasks (exact sign test on discordant pairs, alpha 0.05)",
+   "H2": "NON-INFERIORITY to the per-task LoRA with the acceptance test, on the 29 tasks with a LoRA: the task-level bootstrap 95% lower bound of (scheme - LoRA_acc) success rate above -0.05",
+   "correction": "H1 alone in the Holm family; H2 is a separate pre-specified criterion"
+  },
+  "plan": {
+   "10": {
+    "goal_key": "on top of|the cabinet",
+    "goal_name": "Gsccab",
+    "goal_tasks": [
+     10,
+     15,
+     25,
+     31,
+     41,
+     43
+    ],
+    "lora": true,
+    "obj_name": "Osc1",
+    "obj_tasks": [
+     1,
+     2,
+     9,
+     10,
+     12,
+     13,
+     14,
+     15,
+     24,
+     25,
+     29,
+     30,
+     31,
+     60
+    ],
+    "object_key": "put|the black bowl"
+   },
+   "12": {
+    "goal_key": "on|the plate",
+    "goal_name": "Gscplate",
+    "goal_tasks": [
+     9,
+     12,
+     13,
+     14,
+     30,
+     36,
+     71,
+     72
+    ],
+    "lora": true,
+    "obj_name": "Osc1",
+    "obj_tasks": [
+     1,
+     2,
+     9,
+     10,
+     12,
+     13,
+     14,
+     15,
+     24,
+     25,
+     29,
+     30,
+     31,
+     60
+    ],
+    "object_key": "put|the black bowl"
+   },
+   "13": {
+    "goal_key": "on|the plate",
+    "goal_name": "Gscplate",
+    "goal_tasks": [
+     9,
+     12,
+     13,
+     14,
+     30,
+     36,
+     71,
+     72
+    ],
+    "lora": true,
+    "obj_name": "Osc1",
+    "obj_tasks": [
+     1,
+     2,
+     9,
+     10,
+     12,
+     13,
+     14,
+     15,
+     24,
+     25,
+     29,
+     30,
+     31,
+     60
+    ],
+    "object_key": "put|the black bowl"
+   },
+   "14": {
+    "goal_key": "on|the plate",
+    "goal_name": "Gscplate",
+    "goal_tasks": [
+     9,
+     12,
+     13,
+     14,
+     30,
+     36,
+     71,
+     72
+    ],
+    "lora": true,
+    "obj_name": "Osc1",
+    "obj_tasks": [
+     1,
+     2,
+     9,
+     10,
+     12,
+     13,
+     14,
+     15,
+     24,
+     25,
+     29,
+     30,
+     31,
+     60
+    ],
+    "object_key": "put|the black bowl"
+   },
+   "15": {
+    "goal_key": "on top of|the cabinet",
+    "goal_name": "Gsccab",
+    "goal_tasks": [
+     10,
+     15,
+     25,
+     31,
+     41,
+     43
+    ],
+    "lora": true,
+    "obj_name": "Osc1",
+    "obj_tasks": [
+     1,
+     2,
+     9,
+     10,
+     12,
+     13,
+     14,
+     15,
+     24,
+     25,
+     29,
+     30,
+     31,
+     60
+    ],
+    "object_key": "put|the black bowl"
+   },
+   "25": {
+    "goal_key": "on top of|the cabinet",
+    "goal_name": "Gsccab",
+    "goal_tasks": [
+     10,
+     15,
+     25,
+     31,
+     41,
+     43
+    ],
+    "lora": true,
+    "obj_name": "Osc1",
+    "obj_tasks": [
+     1,
+     2,
+     9,
+     10,
+     12,
+     13,
+     14,
+     15,
+     24,
+     25,
+     29,
+     30,
+     31,
+     60
+    ],
+    "object_key": "put|the black bowl"
+   },
+   "30": {
+    "goal_key": "on|the plate",
+    "goal_name": "Gscplate",
+    "goal_tasks": [
+     9,
+     12,
+     13,
+     14,
+     30,
+     36,
+     71,
+     72
+    ],
+    "lora": true,
+    "obj_name": "Osc1",
+    "obj_tasks": [
+     1,
+     2,
+     9,
+     10,
+     12,
+     13,
+     14,
+     15,
+     24,
+     25,
+     29,
+     30,
+     31,
+     60
+    ],
+    "object_key": "put|the black bowl"
+   },
+   "31": {
+    "goal_key": "on top of|the cabinet",
+    "goal_name": "Gsccab",
+    "goal_tasks": [
+     10,
+     15,
+     25,
+     31,
+     41,
+     43
+    ],
+    "lora": true,
+    "obj_name": "Osc1",
+    "obj_tasks": [
+     1,
+     2,
+     9,
+     10,
+     12,
+     13,
+     14,
+     15,
+     24,
+     25,
+     29,
+     30,
+     31,
+     60
+    ],
+    "object_key": "put|the black bowl"
+   },
+   "36": {
+    "goal_key": "on|the plate",
+    "goal_name": "Gscplate",
+    "goal_tasks": [
+     9,
+     12,
+     13,
+     14,
+     30,
+     36,
+     71,
+     72
+    ],
+    "lora": true,
+    "obj_name": "Osc13",
+    "obj_tasks": [
+     36,
+     37,
+     43
+    ],
+    "object_key": "put|the white bowl"
+   },
+   "41": {
+    "goal_key": "on top of|the cabinet",
+    "goal_name": "Gsccab",
+    "goal_tasks": [
+     10,
+     15,
+     25,
+     31,
+     41,
+     43
+    ],
+    "lora": true,
+    "obj_name": "Osc6",
+    "obj_tasks": [
+     18,
+     21,
+     40,
+     41,
+     42,
+     45
+    ],
+    "object_key": "put|the frying pan"
+   },
+   "43": {
+    "goal_key": "on top of|the cabinet",
+    "goal_name": "Gsccab",
+    "goal_tasks": [
+     10,
+     15,
+     25,
+     31,
+     41,
+     43
+    ],
+    "lora": true,
+    "obj_name": "Osc13",
+    "obj_tasks": [
+     36,
+     37,
+     43
+    ],
+    "object_key": "put|the white bowl"
+   },
+   "46": {
+    "goal_key": "in|the basket",
+    "goal_name": "Gscbasket",
+    "goal_tasks": [
+     46,
+     47,
+     48,
+     49,
+     50,
+     51,
+     52,
+     53,
+     54
+    ],
+    "lora": true,
+    "obj_name": "Osc0",
+    "obj_tasks": [
+     46,
+     50,
+     55
+    ],
+    "object_key": "put|the alphabet soup"
+   },
+   "47": {
+    "goal_key": "in|the basket",
+    "goal_name": "Gscbasket",
+    "goal_tasks": [
+     46,
+     47,
+     48,
+     49,
+     50,
+     51,
+     52,
+     53,
+     54
+    ],
+    "lora": true,
+    "obj_name": "Osc5",
+    "obj_tasks": [
+     47
+    ],
+    "object_key": "put|the cream cheese box"
+   },
+   "48": {
+    "goal_key": "in|the basket",
+    "goal_name": "Gscbasket",
+    "goal_tasks": [
+     46,
+     47,
+     48,
+     49,
+     50,
+     51,
+     52,
+     53,
+     54
+    ],
+    "lora": true,
+    "obj_name": "Osc7",
+    "obj_tasks": [
+     32,
+     48,
+     58
+    ],
+    "object_key": "put|the ketchup"
+   },
+   "49": {
+    "goal_key": "in|the basket",
+    "goal_name": "Gscbasket",
+    "goal_tasks": [
+     46,
+     47,
+     48,
+     49,
+     50,
+     51,
+     52,
+     53,
+     54
+    ],
+    "lora": true,
+    "obj_name": "Osc12",
+    "obj_tasks": [
+     49,
+     54,
+     59
+    ],
+    "object_key": "put|the tomato sauce"
+   },
+   "50": {
+    "goal_key": "in|the basket",
+    "goal_name": "Gscbasket",
+    "goal_tasks": [
+     46,
+     47,
+     48,
+     49,
+     50,
+     51,
+     52,
+     53,
+     54
+    ],
+    "lora": true,
+    "obj_name": "Osc0",
+    "obj_tasks": [
+     46,
+     50,
+     55
+    ],
+    "object_key": "put|the alphabet soup"
+   },
+   "51": {
+    "goal_key": "in|the basket",
+    "goal_name": "Gscbasket",
+    "goal_tasks": [
+     46,
+     47,
+     48,
+     49,
+     50,
+     51,
+     52,
+     53,
+     54
+    ],
+    "lora": false,
+    "obj_name": "Osc2",
+    "obj_tasks": [
+     3,
+     4,
+     51,
+     56
+    ],
+    "object_key": "put|the butter"
+   },
+   "52": {
+    "goal_key": "in|the basket",
+    "goal_name": "Gscbasket",
+    "goal_tasks": [
+     46,
+     47,
+     48,
+     49,
+     50,
+     51,
+     52,
+     53,
+     54
+    ],
+    "lora": true,
+    "obj_name": "Osc8",
+    "obj_tasks": [
+     52
+    ],
+    "object_key": "put|the milk"
+   },
+   "53": {
+    "goal_key": "in|the basket",
+    "goal_name": "Gscbasket",
+    "goal_tasks": [
+     46,
+     47,
+     48,
+     49,
+     50,
+     51,
+     52,
+     53,
+     54
+    ],
+    "lora": true,
+    "obj_name": "Osc9",
+    "obj_tasks": [
+     53
+    ],
+    "object_key": "put|the orange juice"
+   },
+   "54": {
+    "goal_key": "in|the basket",
+    "goal_name": "Gscbasket",
+    "goal_tasks": [
+     46,
+     47,
+     48,
+     49,
+     50,
+     51,
+     52,
+     53,
+     54
+    ],
+    "lora": true,
+    "obj_name": "Osc12",
+    "obj_tasks": [
+     49,
+     54,
+     59
+    ],
+    "object_key": "put|the tomato sauce"
+   },
+   "55": {
+    "goal_key": "in|the tray",
+    "goal_name": "Gsctray",
+    "goal_tasks": [
+     55,
+     56,
+     57,
+     58,
+     59,
+     61,
+     62,
+     63,
+     64
+    ],
+    "lora": true,
+    "obj_name": "Osc0",
+    "obj_tasks": [
+     46,
+     50,
+     55
+    ],
+    "object_key": "put|the alphabet soup"
+   },
+   "56": {
+    "goal_key": "in|the tray",
+    "goal_name": "Gsctray",
+    "goal_tasks": [
+     55,
+     56,
+     57,
+     58,
+     59,
+     61,
+     62,
+     63,
+     64
+    ],
+    "lora": true,
+    "obj_name": "Osc2",
+    "obj_tasks": [
+     3,
+     4,
+     51,
+     56
+    ],
+    "object_key": "put|the butter"
+   },
+   "57": {
+    "goal_key": "in|the tray",
+    "goal_name": "Gsctray",
+    "goal_tasks": [
+     55,
+     56,
+     57,
+     58,
+     59,
+     61,
+     62,
+     63,
+     64
+    ],
+    "lora": true,
+    "obj_name": "Osc4",
+    "obj_tasks": [
+     57
+    ],
+    "object_key": "put|the cream cheese"
+   },
+   "58": {
+    "goal_key": "in|the tray",
+    "goal_name": "Gsctray",
+    "goal_tasks": [
+     55,
+     56,
+     57,
+     58,
+     59,
+     61,
+     62,
+     63,
+     64
+    ],
+    "lora": true,
+    "obj_name": "Osc7",
+    "obj_tasks": [
+     32,
+     48,
+     58
+    ],
+    "object_key": "put|the ketchup"
+   },
+   "59": {
+    "goal_key": "in|the tray",
+    "goal_name": "Gsctray",
+    "goal_tasks": [
+     55,
+     56,
+     57,
+     58,
+     59,
+     61,
+     62,
+     63,
+     64
+    ],
+    "lora": true,
+    "obj_name": "Osc12",
+    "obj_tasks": [
+     49,
+     54,
+     59
+    ],
+    "object_key": "put|the tomato sauce"
+   },
+   "61": {
+    "goal_key": "in|the tray",
+    "goal_name": "Gsctray",
+    "goal_tasks": [
+     55,
+     56,
+     57,
+     58,
+     59,
+     61,
+     62,
+     63,
+     64
+    ],
+    "lora": true,
+    "obj_name": "Osc3",
+    "obj_tasks": [
+     5,
+     61,
+     69,
+     70
+    ],
+    "object_key": "put|the chocolate pudding"
+   },
+   "62": {
+    "goal_key": "in|the tray",
+    "goal_name": "Gsctray",
+    "goal_tasks": [
+     55,
+     56,
+     57,
+     58,
+     59,
+     61,
+     62,
+     63,
+     64
+    ],
+    "lora": true,
+    "obj_name": "Osc11",
+    "obj_tasks": [
+     62
+    ],
+    "object_key": "put|the salad dressing"
+   },
+   "71": {
+    "goal_key": "on|the plate",
+    "goal_name": "Gscplate",
+    "goal_tasks": [
+     9,
+     12,
+     13,
+     14,
+     30,
+     36,
+     71,
+     72
+    ],
+    "lora": true,
+    "obj_name": "Osc10",
+    "obj_tasks": [
+     65,
+     66,
+     71,
+     84
+    ],
+    "object_key": "put|the red mug"
+   },
+   "72": {
+    "goal_key": "on|the plate",
+    "goal_name": "Gscplate",
+    "goal_tasks": [
+     9,
+     12,
+     13,
+     14,
+     30,
+     36,
+     71,
+     72
+    ],
+    "lora": true,
+    "obj_name": "Osc14",
+    "obj_tasks": [
+     67,
+     72,
+     85
+    ],
+    "object_key": "put|the white mug"
+   },
+   "9": {
+    "goal_key": "on|the plate",
+    "goal_name": "Gscplate",
+    "goal_tasks": [
+     9,
+     12,
+     13,
+     14,
+     30,
+     36,
+     71,
+     72
+    ],
+    "lora": true,
+    "obj_name": "Osc1",
+    "obj_tasks": [
+     1,
+     2,
+     9,
+     10,
+     12,
+     13,
+     14,
+     15,
+     24,
+     25,
+     29,
+     30,
+     31,
+     60
+    ],
+    "object_key": "put|the black bowl"
+   }
+  },
+  "prototypes": [
+   "Gscbasket",
+   "Gsccab",
+   "Gscplate",
+   "Gsctray",
+   "Osc0",
+   "Osc1",
+   "Osc10",
+   "Osc11",
+   "Osc12",
+   "Osc13",
+   "Osc14",
+   "Osc2",
+   "Osc3",
+   "Osc4",
+   "Osc5",
+   "Osc6",
+   "Osc7",
+   "Osc8",
+   "Osc9"
+  ],
+  "reported": "bytes (the library: one rank-4 primitive per object key and per goal key; per-task LoRA 29 x 18.8 MB), demonstrations used (the scheme: one per LIBERO-90 task sharing an object or goal key with the stream; the baseline: the scored task's own), fac vs zs, lora vs zs, fac vs lora, per goal key",
+  "tasks": [
+   9,
+   10,
+   12,
+   13,
+   14,
+   15,
+   25,
+   30,
+   31,
+   36,
+   41,
+   43,
+   46,
+   47,
+   48,
+   49,
+   50,
+   51,
+   52,
+   53,
+   54,
+   55,
+   56,
+   57,
+   58,
+   59,
+   61,
+   62,
+   71,
+   72
+  ],
+  "written_before": "any fit or episode of e1"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_90__e1_factored__s12__83533748",
+ "schema": 1,
+ "script": "experiments/prereg/e1_factored.py",
+ "seconds": null,
+ "seed": 12,
+ "source_commit": null,
+ "started": "2026-10-04T09:22:46+00:00",
+ "stream": null,
+ "tag": "e1_factored"
+}
