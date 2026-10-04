@@ -99,3 +99,12 @@ own demonstrations. The type prototype still serves unqualified instructions. Sc
 states 0-9, seed 12, paired with E1's acceptance runs): child-from-parent vs child-from-scratch vs the type prototype. If the
 children close the instance gap, E3 (pre-registered, new seed) reads the hierarchical library on all 30 tasks; the parser fix
 (step_key's rightmost preposition) adds task 60 to the tray goal prototype, refit for E3.
+
+## E2 and E3 outcomes (2026-10-04; ledgers e2_instance, e3_hier)
+
+E2 (exploratory): instance children 37 of 40 on the four instance tasks (type prototype 13, LoRA 35); starting a child from its
+parent adds nothing. E3 (pre-registered, a second never-used set of start states, seed 13): the hierarchical library (22
+prototypes, 102.9 MB) keeps 499 of 600 against 273 zero-shot; against the per-task LoRA + acceptance (545.4 MB) 480 vs 494 of 580,
+-0.024 [-0.074, +0.024]: within a few points, interval holding zero, but non-inferiority at 0.05 NOT established (as the
+registration's power projection expected; between-task differences dominate). Without acceptance, library 480 vs LoRA 485. The
+library beats the LoRA in the basket and trails slightly on the other goals.

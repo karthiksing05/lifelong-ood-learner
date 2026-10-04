@@ -1,0 +1,648 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 102907904,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 102907904,
+  "tree": 0
+ },
+ "command": "experiments/e3_read.py --read --record",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky1.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "e3_hier",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "3d6b922086791e42e1f14e9cf987779338d2c08a",
+  "short": "3d6b9220"
+ },
+ "keys": {},
+ "metrics": {
+  "acceptance": {
+   "10": {
+    "hfac": 9,
+    "lora": 10,
+    "zs": 10
+   },
+   "12": {
+    "hfac": 10,
+    "lora": 10,
+    "zs": 4
+   },
+   "13": {
+    "hfac": 10,
+    "lora": 10,
+    "zs": 0
+   },
+   "14": {
+    "hfac": 8,
+    "lora": 6,
+    "zs": 5
+   },
+   "15": {
+    "hfac": 10,
+    "lora": 10,
+    "zs": 1
+   },
+   "25": {
+    "hfac": 9,
+    "lora": 9,
+    "zs": 0
+   },
+   "30": {
+    "hfac": 10,
+    "lora": 10,
+    "zs": 9
+   },
+   "31": {
+    "hfac": 9,
+    "lora": 10,
+    "zs": 0
+   },
+   "36": {
+    "hfac": 4,
+    "lora": 7,
+    "zs": 0
+   },
+   "41": {
+    "hfac": 4,
+    "lora": 9,
+    "zs": 0
+   },
+   "43": {
+    "hfac": 9,
+    "lora": 8,
+    "zs": 0
+   },
+   "46": {
+    "hfac": 8,
+    "lora": 4,
+    "zs": 10
+   },
+   "47": {
+    "hfac": 10,
+    "lora": 9,
+    "zs": 9
+   },
+   "48": {
+    "hfac": 6,
+    "lora": 8,
+    "zs": 0
+   },
+   "49": {
+    "hfac": 5,
+    "lora": 8,
+    "zs": 0
+   },
+   "50": {
+    "hfac": 9,
+    "lora": 8,
+    "zs": 10
+   },
+   "51": {
+    "hfac": 9,
+    "zs": 10
+   },
+   "52": {
+    "hfac": 9,
+    "lora": 6,
+    "zs": 0
+   },
+   "53": {
+    "hfac": 10,
+    "lora": 10,
+    "zs": 0
+   },
+   "54": {
+    "hfac": 9,
+    "lora": 9,
+    "zs": 8
+   },
+   "55": {
+    "hfac": 10,
+    "lora": 10,
+    "zs": 10
+   },
+   "56": {
+    "hfac": 10,
+    "lora": 10,
+    "zs": 9
+   },
+   "57": {
+    "hfac": 10,
+    "lora": 8,
+    "zs": 10
+   },
+   "58": {
+    "hfac": 4,
+    "lora": 6,
+    "zs": 0
+   },
+   "59": {
+    "hfac": 6,
+    "lora": 8,
+    "zs": 1
+   },
+   "61": {
+    "hfac": 9,
+    "lora": 10,
+    "zs": 10
+   },
+   "62": {
+    "hfac": 4,
+    "lora": 3,
+    "zs": 0
+   },
+   "71": {
+    "hfac": 8,
+    "lora": 7,
+    "zs": 0
+   },
+   "72": {
+    "hfac": 10,
+    "lora": 10,
+    "zs": 10
+   },
+   "9": {
+    "hfac": 10,
+    "lora": 10,
+    "zs": 9
+   }
+  },
+  "by_goal": {
+   "basket": {
+    "hfac": 151,
+    "kept": 156,
+    "lora": 128,
+    "lora_acc": 135,
+    "zs": 94
+   },
+   "cab": {
+    "hfac": 102,
+    "kept": 100,
+    "lora": 110,
+    "lora_acc": 109,
+    "type": 1,
+    "zs": 26
+   },
+   "plate": {
+    "hfac": 139,
+    "kept": 139,
+    "lora": 144,
+    "lora_acc": 144,
+    "type": 16,
+    "zs": 74
+   },
+   "tray": {
+    "hfac": 103,
+    "kept": 104,
+    "lora": 103,
+    "lora_acc": 106,
+    "zs": 79
+   }
+  },
+  "bytes": {
+   "library": 102907904,
+   "loras": 29,
+   "per_task_lora": 545449371,
+   "prototypes": 22
+  },
+  "descriptive": {
+   "hfac_vs_lora": {
+    "diff": {
+     "diff": -0.008620689655172414,
+     "hi": 0.04655172413793104,
+     "hi90": 0.03793103448275862,
+     "lo": -0.06379310344827586,
+     "lo90": -0.05344827586206897,
+     "n_pairs": 580,
+     "n_tasks": 29
+    },
+    "discordant": [
+     46,
+     51
+    ],
+    "n": 580,
+    "sign_p": 0.6848587772144032,
+    "tasks": 29,
+    "x": 480,
+    "y": 485
+   },
+   "hfac_vs_zs": {
+    "diff": {
+     "diff": 0.37,
+     "hi": 0.500041666666666,
+     "hi90": 0.47833333333333333,
+     "lo": 0.24166666666666667,
+     "lo90": 0.26166666666666666,
+     "n_pairs": 600,
+     "n_tasks": 30
+    },
+    "discordant": [
+     238,
+     16
+    ],
+    "n": 600,
+    "sign_p": 6.5553065405705526e-52,
+    "tasks": 30,
+    "x": 495,
+    "y": 273
+   },
+   "instance_child_vs_lora": {
+    "diff": {
+     "diff": 0.0375,
+     "hi": 0.15,
+     "hi90": 0.125,
+     "lo": -0.0625,
+     "lo90": -0.05,
+     "n_pairs": 80,
+     "n_tasks": 4
+    },
+    "discordant": [
+     9,
+     6
+    ],
+    "n": 80,
+    "sign_p": 0.60723876953125,
+    "tasks": 4,
+    "x": 74,
+    "y": 71
+   },
+   "instance_child_vs_type": {
+    "diff": {
+     "diff": 0.7125,
+     "hi": 0.8625,
+     "hi90": 0.85,
+     "lo": 0.5125,
+     "lo90": 0.55,
+     "n_pairs": 80,
+     "n_tasks": 4
+    },
+    "discordant": [
+     57,
+     0
+    ],
+    "n": 80,
+    "sign_p": 1.3877787807814457e-17,
+    "tasks": 4,
+    "x": 74,
+    "y": 17
+   },
+   "lora_acc_vs_zs": {
+    "diff": {
+     "diff": 0.41379310344827586,
+     "hi": 0.5551724137931034,
+     "hi90": 0.5327586206896552,
+     "lo": 0.27241379310344827,
+     "lo90": 0.29482758620689653,
+     "n_pairs": 580,
+     "n_tasks": 29
+    },
+    "discordant": [
+     248,
+     8
+    ],
+    "n": 580,
+    "sign_p": 7.309706626692487e-63,
+    "tasks": 29,
+    "x": 494,
+    "y": 254
+   },
+   "lora_vs_zs": {
+    "diff": {
+     "diff": 0.39827586206896554,
+     "hi": 0.5465517241379311,
+     "hi90": 0.5241379310344828,
+     "lo": 0.24655172413793103,
+     "lo90": 0.27241379310344827,
+     "n_pairs": 580,
+     "n_tasks": 29
+    },
+    "discordant": [
+     253,
+     22
+    ],
+    "n": 580,
+    "sign_p": 6.263041424774112e-51,
+    "tasks": 29,
+    "x": 485,
+    "y": 254
+   }
+  },
+  "hypotheses": {
+   "H1": {
+    "diff": {
+     "diff": 0.37666666666666665,
+     "hi": 0.5033333333333333,
+     "hi90": 0.48333333333333334,
+     "lo": 0.25333333333333335,
+     "lo90": 0.27166666666666667,
+     "n_pairs": 600,
+     "n_tasks": 30
+    },
+    "discordant": [
+     232,
+     6
+    ],
+    "n": 600,
+    "passes": true,
+    "sign_p": 1.100815092024933e-60,
+    "tasks": 30,
+    "x": 499,
+    "y": 273
+   },
+   "H2": {
+    "diff": {
+     "diff": -0.02413793103448276,
+     "hi": 0.02413793103448276,
+     "hi90": 0.017241379310344827,
+     "lo": -0.07413793103448275,
+     "lo90": -0.06551724137931035,
+     "n_pairs": 580,
+     "n_tasks": 29
+    },
+    "discordant": [
+     34,
+     48
+    ],
+    "n": 580,
+    "noninferior": false,
+    "sign_p": 0.15067520762630382,
+    "tasks": 29,
+    "x": 480,
+    "y": 494
+   }
+  },
+  "kept": {
+   "10": "zs",
+   "12": "hfac",
+   "13": "hfac",
+   "14": "hfac",
+   "15": "hfac",
+   "25": "hfac",
+   "30": "hfac",
+   "31": "hfac",
+   "36": "hfac",
+   "41": "hfac",
+   "43": "hfac",
+   "46": "zs",
+   "47": "hfac",
+   "48": "hfac",
+   "49": "hfac",
+   "50": "zs",
+   "51": "zs",
+   "52": "hfac",
+   "53": "hfac",
+   "54": "hfac",
+   "55": "zs",
+   "56": "hfac",
+   "57": "zs",
+   "58": "hfac",
+   "59": "hfac",
+   "61": "zs",
+   "62": "hfac",
+   "71": "hfac",
+   "72": "zs",
+   "9": "hfac"
+  },
+  "kept_lora": {
+   "10": "zs",
+   "12": "lora",
+   "13": "lora",
+   "14": "lora",
+   "15": "lora",
+   "25": "lora",
+   "30": "lora",
+   "31": "lora",
+   "36": "lora",
+   "41": "lora",
+   "43": "lora",
+   "46": "zs",
+   "47": "zs",
+   "48": "lora",
+   "49": "lora",
+   "50": "zs",
+   "52": "lora",
+   "53": "lora",
+   "54": "lora",
+   "55": "zs",
+   "56": "lora",
+   "57": "zs",
+   "58": "lora",
+   "59": "lora",
+   "61": "zs",
+   "62": "lora",
+   "71": "lora",
+   "72": "zs",
+   "9": "lora"
+  },
+  "missing": [],
+  "per_task": {
+   "10": {
+    "hfac": 20,
+    "kept": "zs",
+    "lora": 19,
+    "zs": 18
+   },
+   "12": {
+    "hfac": 20,
+    "kept": "hfac",
+    "lora": 19,
+    "type": 11,
+    "zs": 9
+   },
+   "13": {
+    "hfac": 19,
+    "kept": "hfac",
+    "lora": 19,
+    "type": 4,
+    "zs": 0
+   },
+   "14": {
+    "hfac": 17,
+    "kept": "hfac",
+    "lora": 17,
+    "type": 1,
+    "zs": 12
+   },
+   "15": {
+    "hfac": 18,
+    "kept": "hfac",
+    "lora": 16,
+    "type": 1,
+    "zs": 1
+   },
+   "25": {
+    "hfac": 17,
+    "kept": "hfac",
+    "lora": 20,
+    "zs": 0
+   },
+   "30": {
+    "hfac": 20,
+    "kept": "hfac",
+    "lora": 20,
+    "zs": 14
+   },
+   "31": {
+    "hfac": 19,
+    "kept": "hfac",
+    "lora": 20,
+    "zs": 3
+   },
+   "36": {
+    "hfac": 10,
+    "kept": "hfac",
+    "lora": 13,
+    "zs": 0
+   },
+   "41": {
+    "hfac": 10,
+    "kept": "hfac",
+    "lora": 17,
+    "zs": 1
+   },
+   "43": {
+    "hfac": 18,
+    "kept": "hfac",
+    "lora": 18,
+    "zs": 3
+   },
+   "46": {
+    "hfac": 18,
+    "kept": "zs",
+    "lora": 13,
+    "zs": 20
+   },
+   "47": {
+    "hfac": 20,
+    "kept": "hfac",
+    "lora": 20,
+    "zs": 20
+   },
+   "48": {
+    "hfac": 14,
+    "kept": "hfac",
+    "lora": 17,
+    "zs": 0
+   },
+   "49": {
+    "hfac": 15,
+    "kept": "hfac",
+    "lora": 18,
+    "zs": 0
+   },
+   "50": {
+    "hfac": 18,
+    "kept": "zs",
+    "lora": 17,
+    "zs": 17
+   },
+   "51": {
+    "hfac": 15,
+    "kept": "zs",
+    "zs": 19
+   },
+   "52": {
+    "hfac": 13,
+    "kept": "hfac",
+    "lora": 11,
+    "zs": 0
+   },
+   "53": {
+    "hfac": 20,
+    "kept": "hfac",
+    "lora": 20,
+    "zs": 1
+   },
+   "54": {
+    "hfac": 18,
+    "kept": "hfac",
+    "lora": 12,
+    "zs": 17
+   },
+   "55": {
+    "hfac": 20,
+    "kept": "zs",
+    "lora": 19,
+    "zs": 20
+   },
+   "56": {
+    "hfac": 20,
+    "kept": "hfac",
+    "lora": 20,
+    "zs": 18
+   },
+   "57": {
+    "hfac": 19,
+    "kept": "zs",
+    "lora": 18,
+    "zs": 20
+   },
+   "58": {
+    "hfac": 9,
+    "kept": "hfac",
+    "lora": 11,
+    "zs": 0
+   },
+   "59": {
+    "hfac": 10,
+    "kept": "hfac",
+    "lora": 9,
+    "zs": 1
+   },
+   "61": {
+    "hfac": 20,
+    "kept": "zs",
+    "lora": 20,
+    "zs": 20
+   },
+   "62": {
+    "hfac": 5,
+    "kept": "hfac",
+    "lora": 6,
+    "zs": 0
+   },
+   "71": {
+    "hfac": 13,
+    "kept": "hfac",
+    "lora": 16,
+    "zs": 0
+   },
+   "72": {
+    "hfac": 20,
+    "kept": "zs",
+    "lora": 20,
+    "zs": 20
+   },
+   "9": {
+    "hfac": 20,
+    "kept": "hfac",
+    "lora": 20,
+    "zs": 19
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "e3_hier__libero_90__read__s13__3d6b9220",
+ "schema": 1,
+ "script": "experiments/e3_read.py",
+ "seconds": null,
+ "seed": 13,
+ "source_commit": null,
+ "started": "2026-10-04T15:53:59+00:00",
+ "stream": null,
+ "tag": "read"
+}

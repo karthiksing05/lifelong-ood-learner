@@ -61,6 +61,7 @@ q16 = row("q16_library", "read")
 q27 = row("q27_joint", "read")
 f1 = row("f1_fresh", "read")
 f1c = row("f1_fresh", "costs")
+e3 = row("e3_hier", "read")
 of10 = lambda key, f="BA", src=None: int(round(10 * (src or q2m)[key][f]))                     # noqa: E731
 token_bytes = [r for r in L.load("f4_fold", tag="token_demo") if not r.get("retired")][-1]["bytes"]["total"]
 lang = {int(k): v["language"] for k, v in json.load(open(os.path.join(R, "f0_coverage.json")))["tasks"].items()}   # the read's artifact
@@ -269,8 +270,15 @@ that shares the step, kept only where the learner's practice favours it, raises 
 pre-registered read with no demonstration of the scored task, including a goal no binding reached. In a stream of 30 tasks
 on never-used start states, these consolidated primitives beat joint, sequential and replay training of shared adapters and
 reach {100 * f1['descriptive']['c2_vs_lora']['x'] / f1['descriptive']['c2_vs_lora']['y']:.0f}% of a separate one-demo adapter per task
-at a {f1c['lora'] / f1c['scheme']:.0f}th of its storage; a separate adapter per task with the same acceptance test stays the
-strongest.</p>"""
+at a {f1c['lora'] / f1c['scheme']:.0f}th of its storage; a separate adapter per task with the same acceptance test stays
+stronger. Factoring each step at the policy's own grasp into an OBJECT prototype and a GOAL prototype, each consolidated over every
+demonstration that shares it, with a child prototype when the instruction names an instance, closes most of that gap: on a second
+set of never-used start states the kept library succeeds {e3['hypotheses']['H1']['x']} of {e3['hypotheses']['H1']['n']} times
+against {e3['hypotheses']['H1']['y']} zero-shot, and {e3['hypotheses']['H2']['x']} of {e3['hypotheses']['H2']['n']} against
+{e3['hypotheses']['H2']['y']} for per-task adapters with the same acceptance test (difference {e3['hypotheses']['H2']['diff']['diff']:+.3f},
+95% interval {e3['hypotheses']['H2']['diff']['lo']:+.3f} to {e3['hypotheses']['H2']['diff']['hi']:+.3f}), storing
+{e3['bytes']['prototypes']} prototypes in place of {e3['bytes']['loras']} adapters; non-inferiority at the pre-registered margin of
+0.05 is not established.</p>"""
 
 P_INTRO = f"""
 <p>A trained robot policy already knows how to reach, grasp, carry and place. When it fails a new task in a familiar room, the
@@ -958,6 +966,24 @@ def plan_e_par():
                 f"{de['fac_vs_zs']['x']} times and the LoRA {de['lora_vs_zs']['x']}. The library stores {b['prototypes']} prototypes "
                 f"({b['library'] / 1e6:.1f} MB) where the per-task LoRAs store {b['loras']} adapters ({b['per_task_lora'] / 1e6:.1f} "
                 f"MB).</p>")
+    e2, e3_ = row("e2_instance", "screen"), row("e3_hier", "read")
+    if e2 and e3_:
+        h1, h2, de, b = e3_["hypotheses"]["H1"], e3_["hypotheses"]["H2"], e3_["descriptive"], e3_["bytes"]
+        out += (f"<p>The gap sat on tasks that name an instance (\u201cthe middle black bowl\u201d), where a prototype pooled over "
+                f"14 black bowls averages their approaches. Cobweb's hierarchy answers it: a type concept has instance children, and a "
+                f"step that names an instance uses the child, consolidated over the demonstrations with that object and that "
+                f"qualifier. In a screen the children succeed {e2['totals']['scratch']} of 40 times on the four instance tasks against "
+                f"{e2['totals']['type']} for the type prototype (exploratory). The confirmatory read (m3_prereg tag e3_hier) tested "
+                f"the hierarchical library, {b['prototypes']} prototypes for {h1['tasks']} tasks, on a second set of start states no "
+                f"design decision had seen. The kept arms succeed {h1['x']} of {h1['n']} times against {h1['y']} zero-shot (sign p "
+                f"{h1['sign_p']:.2g}), and {h2['x']} of {h2['n']} against {h2['y']} for the per-task LoRA with acceptance (difference "
+                f"{h2['diff']['diff']:+.3f}, 95% interval {h2['diff']['lo']:+.3f} to {h2['diff']['hi']:+.3f}). The interval holds "
+                f"zero, but its lower bound misses the margin of 0.05, as the registration's power projection expected: the tasks "
+                f"differ too much among themselves for 30 of them to establish non-inferiority. Without acceptance the library and the "
+                f"LoRA are level ({de['hfac_vs_lora']['x']} against {de['hfac_vs_lora']['y']}); the instance children succeed "
+                f"{de['instance_child_vs_type']['x']} of {de['instance_child_vs_type']['n']} times against "
+                f"{de['instance_child_vs_type']['y']} for the type prototype. The library stores {b['library'] / 1e6:.1f} MB where "
+                f"the per-task LoRAs store {b['per_task_lora'] / 1e6:.1f} MB.</p>")
     i4 = row("i4_factors", "read")
     if i4:
         sm, st = i4["similarity"], i4["stability"]
