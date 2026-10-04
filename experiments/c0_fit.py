@@ -43,6 +43,8 @@ def main():
                                                         "(from the step's first sustained grasp to its end)")
     ap.add_argument("--approach", action="store_true", help="plan E: match steps by OBJECT key (verb|object, qualifier left out) "
                                                             "and fit only their approach frames (before the step's first grasp)")
+    ap.add_argument("--init", default="", help="plan E2: start --joint from this primitive's weights (a child concept starts from "
+                                                "its parent's prototype and specialises on its own demonstrations)")
     ap.add_argument("--name", default="", help="the file name of --joint")
     ap.add_argument("--bind", action="store_true", help="--joint: fit under attention binding (each task's own demo prototype, "
                                                         "top-4 patches, mass 0.7, before the demo's first grasp), as at test")
@@ -176,12 +178,20 @@ def joint(a):
     state, banks = adapt.inject(bk, scope=a.scope)
     key = f"prim_{a.name}_0"
     params = add_node(banks, key, a.rank)
+    if a.init:                                                              # the parent's prototype, copied into the child's slot
+        import torch
+        z = torch.load(a.init if os.path.isabs(a.init) else os.path.join(R, a.init), map_location="cpu")
+        by_name = {b.name: b for b in banks}
+        for n_, w in z["banks"].items():
+            by_name[n_].A[key].weight.data.copy_(w["A"].to(by_name[n_].A[key].weight.dtype))
+            by_name[n_].B[key].weight.data.copy_(w["B"].to(by_name[n_].B[key].weight.dtype))
+        print(f"[c0j] initialised from {a.init}", flush=True)
     t0 = time.time()
     hist = adapt.train(bk, state, key, params, bank, full, steps=a.steps, lr=a.lr, batch=a.batch, log=lambda x: print(x, flush=True),
                        gate_of=gate_of)
     path = os.path.join(R, f"prim_{a.name}_0.pt")
     meta = dict(joint=used, step_key=a.key, rank=a.rank, scope=a.scope, frames=int(len(obs)), bind=bool(a.bind), goal=bool(a.goal),
-                approach=bool(a.approach))
+                approach=bool(a.approach), init=a.init)
     nb = adapt.save(banks, key, path, meta=meta)
     print(f"[c0j] {a.name}: key {a.key}, {len(used)} demos, {len(obs)} frames, {nb / 1e6:.1f} MB, flow {hist['loss'][0]:.4f} -> "
           f"{hist['loss'][-1]:.4f} in {time.time() - t0:.0f}s", flush=True)

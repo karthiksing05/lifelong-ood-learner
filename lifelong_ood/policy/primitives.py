@@ -28,9 +28,9 @@ def step_key(clause):
     c = re.sub(r"^pick up (.+?) and (place|put) it", r"put \1", clause)
     verb = "turn on" if c.startswith("turn on") else "turn off" if c.startswith("turn off") else c.split()[0]
     rest = c[len(verb):]
-    m = re.search(rf"\b{PREP} (the (?:[a-z]+ ){{0,3}}[a-z]+(?: of the [a-z]+)?)$", rest)
-    if m:
-        return f"{verb}|{m.group(1)}|{m.group(2)}"
+    m = re.search(rf"^(.*)\b{PREP} (the (?:[a-z]+ ){{0,3}}[a-z]+(?: of the [a-z]+)?)$", rest)   # the RIGHTMOST preposition: "the
+    if m:                                                    # black bowl on the left ... in the tray" goes in the tray (fixed 2026-10-04;
+        return f"{verb}|{m.group(2)}|{m.group(3)}"           # before, tasks 60 and 87 read "on | the left ...")
     m = re.search(r"\b(the (?:[a-z]+ ){0,3}[a-z]+(?: of the [a-z]+)?)$", rest)
     return f"{verb}||{m.group(1) if m else c}"
 
@@ -87,6 +87,18 @@ def object_key(clause):
     if prep and rest.endswith(f" {prep} {target}"):
         rest = rest[: -len(f" {prep} {target}")]
     return f"{verb}|{re.sub(r' +', ' ', re.sub(QUALIFIERS, '', rest)).strip()}"
+
+
+def instance_key(clause):
+    """Plan E2: the INSTANCE child of a step's object concept -- its object key and the qualifier the instruction names for it
+    ("put|the black bowl|middle"); None when the object phrase names no instance (the type concept serves it)."""
+    verb, prep, target = step_key(clause).split("|")
+    c = re.sub(r"^pick up (.+?) and (place|put) it", r"put \1", clause)
+    rest = " " + c[len(verb):].strip()
+    if prep and rest.endswith(f" {prep} {target}"):
+        rest = rest[: -len(f" {prep} {target}")]
+    q = [w for w in ("front", "back", "middle", "left", "right") if re.search(rf"\b{w}\b", rest)]
+    return f"{object_key(clause)}|{q[0]}" if q else None
 
 
 def approach(actions, lo, hi, run=RELEASE_RUN):
