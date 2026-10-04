@@ -140,7 +140,30 @@ def diagnose(record):
                             config={}, script="experiments/d1_read.py", command=" ".join(sys.argv)))
 
 
+def sensitivity(record):
+    """The data defect of 2026-10-04 (ledger l90_scenes): tasks sharing an instruction shared one demonstration.  D1's hypotheses
+    recomputed without the stream tasks whose instruction another LIBERO-90 task shares (their goal primitive could contain their
+    own demonstration, or their LoRA another scene's)."""
+    from lifelong_ood import ledger
+    m = ledger.load("l90_scenes", tag="map")[-1]["metrics"]
+    shared = sorted({t for g in m["groups"].values() for t in g["tasks"]})
+    r = json.load(open(os.path.join(R, "d1_read.json")))
+    A = arms()
+    test = {t: {k: load("d1_main", t, v) for k, v in A[t].items()} for t in r["kept"] if int(t) not in shared}
+    h1 = compare({t: {"x": x[r["kept"][t]], "y": x["zs"]} for t, x in test.items()})
+    h2 = compare({t: {"x": x[r["kept"][t]], "y": x[r["kept_lora"][t]]} for t, x in test.items() if t in r["kept_lora"]})
+    print(f"[d1] without the {30 - len(test)} shared-instruction tasks: H1 {h1['x']} vs {h1['y']} of {h1['n']} (sign p {h1['sign_p']:.2g}); "
+          f"H2 {h2['x']} vs {h2['y']} of {h2['n']}, diff {h2['diff']['diff']:+.3f} [{h2['diff']['lo']:+.3f}, {h2['diff']['hi']:+.3f}]", flush=True)
+    if record:
+        print(ledger.record("d1_factored", bench="libero_90", tag="sensitivity", seed=SEED,
+                            metrics=dict(excluded=[t for t in r["kept"] if int(t) in shared], H1=h1, H2=h2),
+                            bytes=dict(experts=0, tree=0, codes=0, samples=0, teacher_copies=0, total=0),
+                            config={}, script="experiments/d1_read.py", command=" ".join(sys.argv)))
+
+
 if __name__ == "__main__":
+    if "--sensitivity" in sys.argv:
+        sensitivity("--record" in sys.argv)
     if "--diagnose" in sys.argv:
         diagnose("--record" in sys.argv)
     if "--accept" in sys.argv:
