@@ -919,7 +919,49 @@ def factored_par():
             f"grasp it: the approach needs its own prototype.</p>")
 
 
-P_FACTOR = f"""{factored_par()}"""
+def plan_e_par():
+    e0, dg, mp, sn = row("e0_object", "screen"), row("d1_factored", "diagnosis"), row("l90_scenes", "map"), row("d1_factored", "sensitivity")
+    if not (e0 and dg and mp and sn):
+        return ""
+    t, gap = e0["totals"], list(dg["tasks"])
+    g_all = sum(e0["per_task"][x]["all"] for x in gap)
+    g_lora = sum(e0["per_task"][x]["lora"] for x in gap)
+    out = (f"<p>Plan E gives the approach its own prototype, symmetric to the goal's: an OBJECT primitive, a rank-4 LoRA fitted only on "
+           f"demonstrations' frames before their first grasp, keyed by the step's object with the instance word left out "
+           f"(\u201cput the black bowl\u201d) and consolidated over every LIBERO-90 demonstration of that object. It acts until the "
+           f"policy's grasp; the goal primitive acts from the grasp to the release. A task is the composition of its object's and its "
+           f"goal's prototypes: the stream's {e0['tasks']['all']} tasks need {e0['library']['object_keys']} object and "
+           f"{e0['library']['goal_keys']} goal prototypes. In a screen on stored states (exploratory), with each task's one "
+           f"demonstration absorbed into its two prototypes, the library succeeds {t['all']} of {10 * e0['tasks']['all']} times against "
+           f"{t['zs']} zero-shot; the per-task LoRA succeeds {t['lora']} of {10 * e0['tasks']['lora']}. On the {len(gap)} wrong-object "
+           f"tasks it succeeds {g_all} of {10 * len(gap)} (LoRA {g_lora}). Without any demonstration of the task the object prototypes "
+           f"of other tasks transfer only for some objects ({t['loo']} against {e0['paired']['loo']['zs']} zero-shot on "
+           f"{e0['tasks']['loo']} tasks).</p>")
+    out += (f"<p>Reading the screen exposed a data defect. The IPEC port of LIBERO-90 merges tasks by instruction ({mp['shared_texts']} "
+            f"instructions shared by {mp['shared_tasks']} tasks in different scenes), and every read had taken an instruction's first "
+            f"episode as the task's demonstration: {len(mp['wrong_scene_tasks'])} tasks were given another scene's demonstration, the "
+            f"per-task LoRA's included, and some leave-one-out fits contained the scored task's own demonstration through a "
+            f"same-instruction task. Each task now takes its demonstration from its own scene's block of episodes, matched to its rendered "
+            f"first frames. Without the {len(sn['excluded'])} affected stream tasks D1 keeps its verdicts (kept {sn['H1']['x']} against "
+            f"{sn['H1']['y']} of {sn['H1']['n']} zero-shot; {sn['H2']['x']} against {sn['H2']['y']} of {sn['H2']['n']} for the LoRA "
+            f"with acceptance), and the stream's two demonstrations \u201csaved\u201d were the defect's.</p>")
+    e1 = row("e1_factored", "read")
+    if e1:
+        h1, h2, de, b = e1["hypotheses"]["H1"], e1["hypotheses"]["H2"], e1["descriptive"], e1["bytes"]
+        kept = sum(v == "fac" for v in e1["kept"].values())
+        out += (f"<p>Pre-registered on the corrected data (m3_prereg tag e1_factored; fresh start states, a new noise seed), the "
+                f"acceptance test kept the factored library on {kept} of {h1['tasks']} tasks. The kept arms succeed {h1['x']} of "
+                f"{h1['n']} times against {h1['y']} zero-shot (sign p {h1['sign_p']:.2g}). Against the per-task LoRA, refit on each "
+                f"task's own scene and given the same acceptance test, they reach {h2['x']} of {h2['n']} against {h2['y']} (difference "
+                f"{h2['diff']['diff']:+.3f}, 95% interval {h2['diff']['lo']:+.3f} to {h2['diff']['hi']:+.3f}): non-inferiority "
+                f"{'holds' if h2['noninferior'] else 'fails'} at the pre-registered margin of 0.05. Alone, the library succeeds "
+                f"{de['fac_vs_zs']['x']} times and the LoRA {de['lora_vs_zs']['x']}. The library stores {b['prototypes']} prototypes "
+                f"({b['library'] / 1e6:.1f} MB) where the per-task LoRAs store {b['loras']} adapters ({b['per_task_lora'] / 1e6:.1f} "
+                f"MB).</p>")
+    return out
+
+
+P_FACTOR = f"""{factored_par()}{plan_e_par()}"""
 
 
 P_LIMITS = """
