@@ -1,0 +1,762 @@
+{
+ "31": {
+  "object_key": "put|the black bowl",
+  "goal_key": "on top of|the cabinet",
+  "lora": true,
+  "obj_name": "Osc1",
+  "obj_tasks": [
+   1,
+   2,
+   9,
+   10,
+   12,
+   13,
+   14,
+   15,
+   24,
+   25,
+   29,
+   30,
+   31,
+   60
+  ],
+  "goal_name": "Gsccab",
+  "goal_tasks": [
+   10,
+   15,
+   25,
+   31,
+   41,
+   43
+  ]
+ },
+ "15": {
+  "object_key": "put|the black bowl",
+  "goal_key": "on top of|the cabinet",
+  "lora": true,
+  "obj_name": "Osc1",
+  "obj_tasks": [
+   1,
+   2,
+   9,
+   10,
+   12,
+   13,
+   14,
+   15,
+   24,
+   25,
+   29,
+   30,
+   31,
+   60
+  ],
+  "goal_name": "Gsccab",
+  "goal_tasks": [
+   10,
+   15,
+   25,
+   31,
+   41,
+   43
+  ]
+ },
+ "25": {
+  "object_key": "put|the black bowl",
+  "goal_key": "on top of|the cabinet",
+  "lora": true,
+  "obj_name": "Osc1",
+  "obj_tasks": [
+   1,
+   2,
+   9,
+   10,
+   12,
+   13,
+   14,
+   15,
+   24,
+   25,
+   29,
+   30,
+   31,
+   60
+  ],
+  "goal_name": "Gsccab",
+  "goal_tasks": [
+   10,
+   15,
+   25,
+   31,
+   41,
+   43
+  ]
+ },
+ "10": {
+  "object_key": "put|the black bowl",
+  "goal_key": "on top of|the cabinet",
+  "lora": true,
+  "obj_name": "Osc1",
+  "obj_tasks": [
+   1,
+   2,
+   9,
+   10,
+   12,
+   13,
+   14,
+   15,
+   24,
+   25,
+   29,
+   30,
+   31,
+   60
+  ],
+  "goal_name": "Gsccab",
+  "goal_tasks": [
+   10,
+   15,
+   25,
+   31,
+   41,
+   43
+  ]
+ },
+ "43": {
+  "object_key": "put|the white bowl",
+  "goal_key": "on top of|the cabinet",
+  "lora": true,
+  "obj_name": "Osc13",
+  "obj_tasks": [
+   36,
+   37,
+   43
+  ],
+  "goal_name": "Gsccab",
+  "goal_tasks": [
+   10,
+   15,
+   25,
+   31,
+   41,
+   43
+  ]
+ },
+ "41": {
+  "object_key": "put|the frying pan",
+  "goal_key": "on top of|the cabinet",
+  "lora": true,
+  "obj_name": "Osc6",
+  "obj_tasks": [
+   18,
+   21,
+   40,
+   41,
+   42,
+   45
+  ],
+  "goal_name": "Gsccab",
+  "goal_tasks": [
+   10,
+   15,
+   25,
+   31,
+   41,
+   43
+  ]
+ },
+ "9": {
+  "object_key": "put|the black bowl",
+  "goal_key": "on|the plate",
+  "lora": true,
+  "obj_name": "Osc1",
+  "obj_tasks": [
+   1,
+   2,
+   9,
+   10,
+   12,
+   13,
+   14,
+   15,
+   24,
+   25,
+   29,
+   30,
+   31,
+   60
+  ],
+  "goal_name": "Gscplate",
+  "goal_tasks": [
+   9,
+   12,
+   13,
+   14,
+   30,
+   36,
+   71,
+   72
+  ]
+ },
+ "71": {
+  "object_key": "put|the red mug",
+  "goal_key": "on|the plate",
+  "lora": true,
+  "obj_name": "Osc10",
+  "obj_tasks": [
+   65,
+   66,
+   71,
+   84
+  ],
+  "goal_name": "Gscplate",
+  "goal_tasks": [
+   9,
+   12,
+   13,
+   14,
+   30,
+   36,
+   71,
+   72
+  ]
+ },
+ "13": {
+  "object_key": "put|the black bowl",
+  "goal_key": "on|the plate",
+  "lora": true,
+  "obj_name": "Osc1",
+  "obj_tasks": [
+   1,
+   2,
+   9,
+   10,
+   12,
+   13,
+   14,
+   15,
+   24,
+   25,
+   29,
+   30,
+   31,
+   60
+  ],
+  "goal_name": "Gscplate",
+  "goal_tasks": [
+   9,
+   12,
+   13,
+   14,
+   30,
+   36,
+   71,
+   72
+  ]
+ },
+ "36": {
+  "object_key": "put|the white bowl",
+  "goal_key": "on|the plate",
+  "lora": true,
+  "obj_name": "Osc13",
+  "obj_tasks": [
+   36,
+   37,
+   43
+  ],
+  "goal_name": "Gscplate",
+  "goal_tasks": [
+   9,
+   12,
+   13,
+   14,
+   30,
+   36,
+   71,
+   72
+  ]
+ },
+ "12": {
+  "object_key": "put|the black bowl",
+  "goal_key": "on|the plate",
+  "lora": true,
+  "obj_name": "Osc1",
+  "obj_tasks": [
+   1,
+   2,
+   9,
+   10,
+   12,
+   13,
+   14,
+   15,
+   24,
+   25,
+   29,
+   30,
+   31,
+   60
+  ],
+  "goal_name": "Gscplate",
+  "goal_tasks": [
+   9,
+   12,
+   13,
+   14,
+   30,
+   36,
+   71,
+   72
+  ]
+ },
+ "14": {
+  "object_key": "put|the black bowl",
+  "goal_key": "on|the plate",
+  "lora": true,
+  "obj_name": "Osc1",
+  "obj_tasks": [
+   1,
+   2,
+   9,
+   10,
+   12,
+   13,
+   14,
+   15,
+   24,
+   25,
+   29,
+   30,
+   31,
+   60
+  ],
+  "goal_name": "Gscplate",
+  "goal_tasks": [
+   9,
+   12,
+   13,
+   14,
+   30,
+   36,
+   71,
+   72
+  ]
+ },
+ "72": {
+  "object_key": "put|the white mug",
+  "goal_key": "on|the plate",
+  "lora": true,
+  "obj_name": "Osc14",
+  "obj_tasks": [
+   67,
+   72,
+   85
+  ],
+  "goal_name": "Gscplate",
+  "goal_tasks": [
+   9,
+   12,
+   13,
+   14,
+   30,
+   36,
+   71,
+   72
+  ]
+ },
+ "30": {
+  "object_key": "put|the black bowl",
+  "goal_key": "on|the plate",
+  "lora": true,
+  "obj_name": "Osc1",
+  "obj_tasks": [
+   1,
+   2,
+   9,
+   10,
+   12,
+   13,
+   14,
+   15,
+   24,
+   25,
+   29,
+   30,
+   31,
+   60
+  ],
+  "goal_name": "Gscplate",
+  "goal_tasks": [
+   9,
+   12,
+   13,
+   14,
+   30,
+   36,
+   71,
+   72
+  ]
+ },
+ "47": {
+  "object_key": "put|the cream cheese box",
+  "goal_key": "in|the basket",
+  "lora": true,
+  "obj_name": "Osc5",
+  "obj_tasks": [
+   47
+  ],
+  "goal_name": "Gscbasket",
+  "goal_tasks": [
+   46,
+   47,
+   48,
+   49,
+   50,
+   51,
+   52,
+   53,
+   54
+  ]
+ },
+ "54": {
+  "object_key": "put|the tomato sauce",
+  "goal_key": "in|the basket",
+  "lora": true,
+  "obj_name": "Osc12",
+  "obj_tasks": [
+   49,
+   54,
+   59
+  ],
+  "goal_name": "Gscbasket",
+  "goal_tasks": [
+   46,
+   47,
+   48,
+   49,
+   50,
+   51,
+   52,
+   53,
+   54
+  ]
+ },
+ "52": {
+  "object_key": "put|the milk",
+  "goal_key": "in|the basket",
+  "lora": true,
+  "obj_name": "Osc8",
+  "obj_tasks": [
+   52
+  ],
+  "goal_name": "Gscbasket",
+  "goal_tasks": [
+   46,
+   47,
+   48,
+   49,
+   50,
+   51,
+   52,
+   53,
+   54
+  ]
+ },
+ "53": {
+  "object_key": "put|the orange juice",
+  "goal_key": "in|the basket",
+  "lora": true,
+  "obj_name": "Osc9",
+  "obj_tasks": [
+   53
+  ],
+  "goal_name": "Gscbasket",
+  "goal_tasks": [
+   46,
+   47,
+   48,
+   49,
+   50,
+   51,
+   52,
+   53,
+   54
+  ]
+ },
+ "48": {
+  "object_key": "put|the ketchup",
+  "goal_key": "in|the basket",
+  "lora": true,
+  "obj_name": "Osc7",
+  "obj_tasks": [
+   32,
+   48,
+   58
+  ],
+  "goal_name": "Gscbasket",
+  "goal_tasks": [
+   46,
+   47,
+   48,
+   49,
+   50,
+   51,
+   52,
+   53,
+   54
+  ]
+ },
+ "50": {
+  "object_key": "put|the alphabet soup",
+  "goal_key": "in|the basket",
+  "lora": true,
+  "obj_name": "Osc0",
+  "obj_tasks": [
+   46,
+   50,
+   55
+  ],
+  "goal_name": "Gscbasket",
+  "goal_tasks": [
+   46,
+   47,
+   48,
+   49,
+   50,
+   51,
+   52,
+   53,
+   54
+  ]
+ },
+ "51": {
+  "object_key": "put|the butter",
+  "goal_key": "in|the basket",
+  "lora": false,
+  "obj_name": "Osc2",
+  "obj_tasks": [
+   3,
+   4,
+   51,
+   56
+  ],
+  "goal_name": "Gscbasket",
+  "goal_tasks": [
+   46,
+   47,
+   48,
+   49,
+   50,
+   51,
+   52,
+   53,
+   54
+  ]
+ },
+ "46": {
+  "object_key": "put|the alphabet soup",
+  "goal_key": "in|the basket",
+  "lora": true,
+  "obj_name": "Osc0",
+  "obj_tasks": [
+   46,
+   50,
+   55
+  ],
+  "goal_name": "Gscbasket",
+  "goal_tasks": [
+   46,
+   47,
+   48,
+   49,
+   50,
+   51,
+   52,
+   53,
+   54
+  ]
+ },
+ "49": {
+  "object_key": "put|the tomato sauce",
+  "goal_key": "in|the basket",
+  "lora": true,
+  "obj_name": "Osc12",
+  "obj_tasks": [
+   49,
+   54,
+   59
+  ],
+  "goal_name": "Gscbasket",
+  "goal_tasks": [
+   46,
+   47,
+   48,
+   49,
+   50,
+   51,
+   52,
+   53,
+   54
+  ]
+ },
+ "57": {
+  "object_key": "put|the cream cheese",
+  "goal_key": "in|the tray",
+  "lora": true,
+  "obj_name": "Osc4",
+  "obj_tasks": [
+   57
+  ],
+  "goal_name": "Gsctray",
+  "goal_tasks": [
+   55,
+   56,
+   57,
+   58,
+   59,
+   61,
+   62,
+   63,
+   64
+  ]
+ },
+ "62": {
+  "object_key": "put|the salad dressing",
+  "goal_key": "in|the tray",
+  "lora": true,
+  "obj_name": "Osc11",
+  "obj_tasks": [
+   62
+  ],
+  "goal_name": "Gsctray",
+  "goal_tasks": [
+   55,
+   56,
+   57,
+   58,
+   59,
+   61,
+   62,
+   63,
+   64
+  ]
+ },
+ "55": {
+  "object_key": "put|the alphabet soup",
+  "goal_key": "in|the tray",
+  "lora": true,
+  "obj_name": "Osc0",
+  "obj_tasks": [
+   46,
+   50,
+   55
+  ],
+  "goal_name": "Gsctray",
+  "goal_tasks": [
+   55,
+   56,
+   57,
+   58,
+   59,
+   61,
+   62,
+   63,
+   64
+  ]
+ },
+ "59": {
+  "object_key": "put|the tomato sauce",
+  "goal_key": "in|the tray",
+  "lora": true,
+  "obj_name": "Osc12",
+  "obj_tasks": [
+   49,
+   54,
+   59
+  ],
+  "goal_name": "Gsctray",
+  "goal_tasks": [
+   55,
+   56,
+   57,
+   58,
+   59,
+   61,
+   62,
+   63,
+   64
+  ]
+ },
+ "56": {
+  "object_key": "put|the butter",
+  "goal_key": "in|the tray",
+  "lora": true,
+  "obj_name": "Osc2",
+  "obj_tasks": [
+   3,
+   4,
+   51,
+   56
+  ],
+  "goal_name": "Gsctray",
+  "goal_tasks": [
+   55,
+   56,
+   57,
+   58,
+   59,
+   61,
+   62,
+   63,
+   64
+  ]
+ },
+ "58": {
+  "object_key": "put|the ketchup",
+  "goal_key": "in|the tray",
+  "lora": true,
+  "obj_name": "Osc7",
+  "obj_tasks": [
+   32,
+   48,
+   58
+  ],
+  "goal_name": "Gsctray",
+  "goal_tasks": [
+   55,
+   56,
+   57,
+   58,
+   59,
+   61,
+   62,
+   63,
+   64
+  ]
+ },
+ "61": {
+  "object_key": "put|the chocolate pudding",
+  "goal_key": "in|the tray",
+  "lora": true,
+  "obj_name": "Osc3",
+  "obj_tasks": [
+   5,
+   61,
+   69,
+   70
+  ],
+  "goal_name": "Gsctray",
+  "goal_tasks": [
+   55,
+   56,
+   57,
+   58,
+   59,
+   61,
+   62,
+   63,
+   64
+  ]
+ }
+}

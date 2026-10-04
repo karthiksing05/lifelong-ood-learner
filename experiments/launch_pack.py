@@ -190,6 +190,11 @@ def arm_spec(tid, arm, fold, demo=0):
         bind = "&bind=1" if "bind" in fl else ""
         bind += "&goal=1" if "goal" in fl else ""                         # plan D: the primitive only from grasp to release
         return (f"prims:{tid}?suite={SUITE_OF.get('suite', 'libero_90')}&paths={'+'.join(ps)}{bind}", "0", False)
+    if arm == "lorasc":                                                  # the per-task LoRA on the task's OWN scene's demonstration:
+        from lifelong_ood import ledger as _L                            # refit (_sc) where the first episode of its text was another
+        wrong = set(_L.load("l90_scenes", tag="map")[-1]["metrics"]["wrong_scene_tasks"])   # scene's (experiments/l90_scenes.py)
+        f_ = os.path.join(R, f"r3_lora_{tid}_sc.pt" if tid in wrong else f"r3_lora_{tid}.pt")
+        return (f"lora:{f_}", "0", False) if os.path.exists(f_) else None
     if arm.startswith("fac@"):                                          # plan E: fac@<object>.<goal>[_bind] -- the object primitive
         spec_, _, fl = arm.split("@", 1)[1].partition("_")               # prim_<object>_0.pt before the grasp, the goal primitive
         o_, g_ = spec_.split(".")                                        # prim_<goal>_0.pt from the grasp to the release ("x" = none)
