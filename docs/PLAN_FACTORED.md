@@ -81,3 +81,21 @@ first-episode rule gave 16 LIBERO-90 tasks another scene's demonstration (5 in t
 demonstration into their "leave-one-out" fits. Fixed at the data layer (Demos90.episodes_of_task, verified per scene block).
 D1's verdicts hold without the 9 shared-instruction tasks. E1 is registered on the corrected data (m3_prereg tag e1_factored):
 library refit, the 5 affected LoRAs refit, acceptance and test at noise seed 12.
+
+## E1's outcome (2026-10-04; ledger e1_factored)
+
+H1 passes (kept 439 vs 272 of 600). H2 fails, with half of D1's gap: 420 vs 478 of 580 against the scene-correct per-task LoRA
++ acceptance (-0.100 [-0.193, -0.010]). The library beats the LoRA in the basket (148 vs 134) and ties in the tray; 45 of the 58
+missing successes sit on four tasks that NAME AN INSTANCE of the black bowl (middle, front, back), where the type prototype
+(14 black-bowl demonstrations) does not pick the named bowl. Interpretation (i4): object prototypes are object-specific
+directions; both factors act in the same layers and modules; a prototype is stable to leaving one demonstration out.
+
+## Plan E2: instance children (Cobweb's hierarchy)
+
+A type concept has children; an instance is served by the most specific concept that matches. A step whose object phrase
+names an instance (primitives.instance_key = object key + qualifier) uses the CHILD prototype: consolidated over every
+demonstration with that object and that qualifier, starting from the parent's prototype (c0_fit --init) and specialising on its
+own demonstrations. The type prototype still serves unqualified instructions. Screen E2 (exploratory, the 4 instance tasks,
+states 0-9, seed 12, paired with E1's acceptance runs): child-from-parent vs child-from-scratch vs the type prototype. If the
+children close the instance gap, E3 (pre-registered, new seed) reads the hierarchical library on all 30 tasks; the parser fix
+(step_key's rightmost preposition) adds task 60 to the tray goal prototype, refit for E3.
