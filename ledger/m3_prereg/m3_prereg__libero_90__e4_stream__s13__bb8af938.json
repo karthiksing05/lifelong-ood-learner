@@ -1,0 +1,186 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration of plan E's stream read",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky1.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "bb8af938f717fe8eca7638e2893102825fc5f5d0",
+  "short": "bb8af938"
+ },
+ "keys": {},
+ "metrics": {
+  "concepts": [
+   "G:in|the basket",
+   "G:in|the tray",
+   "G:on top of|the cabinet",
+   "G:on|the plate",
+   "I:put|the black bowl|back",
+   "I:put|the black bowl|front",
+   "I:put|the black bowl|middle",
+   "O:put|the alphabet soup",
+   "O:put|the black bowl",
+   "O:put|the butter",
+   "O:put|the chocolate pudding",
+   "O:put|the cream cheese",
+   "O:put|the cream cheese box",
+   "O:put|the frying pan",
+   "O:put|the ketchup",
+   "O:put|the milk",
+   "O:put|the orange juice",
+   "O:put|the red mug",
+   "O:put|the salad dressing",
+   "O:put|the tomato sauce",
+   "O:put|the white bowl",
+   "O:put|the white mug"
+  ],
+  "context": "E3 (all demonstrations at once) was read before this registration; this read changes no method, only the order in which demonstrations arrive and the rule that requests them",
+  "hypotheses": {
+   "H1": "per order, the served arms > zero-shot pooled over the 30 tasks (exact sign test; Holm over the two orders)",
+   "H2": "NO DAMAGE, per order: on the arrivals that kept the library and whose composition changed after they arrived, the final library's composition is non-inferior to the arrival-time composition (task-level bootstrap 95% lower bound of the difference above -0.05)",
+   "reported": "demonstrations requested per order (of 29 that exist; task 51 has none), arrivals kept without a demonstration, prototypes and bytes; served arms against E3's per-task LoRA with acceptance and against E3's all-at-once library (descriptive)"
+  },
+  "orders": {
+   "a": [
+    43,
+    71,
+    9,
+    31,
+    30,
+    10,
+    59,
+    61,
+    49,
+    41,
+    36,
+    54,
+    47,
+    15,
+    57,
+    50,
+    52,
+    51,
+    58,
+    12,
+    25,
+    53,
+    72,
+    56,
+    14,
+    13,
+    46,
+    55,
+    62,
+    48
+   ],
+   "b": [
+    53,
+    36,
+    12,
+    30,
+    57,
+    58,
+    43,
+    25,
+    46,
+    51,
+    13,
+    62,
+    72,
+    50,
+    10,
+    59,
+    54,
+    71,
+    52,
+    14,
+    61,
+    49,
+    41,
+    47,
+    56,
+    9,
+    15,
+    55,
+    48,
+    31
+   ]
+  },
+  "prior_library": {
+   "G:in|the tray": [
+    60,
+    63,
+    64
+   ],
+   "O:put|the black bowl": [
+    1,
+    2,
+    24,
+    29,
+    60
+   ],
+   "O:put|the butter": [
+    3,
+    4
+   ],
+   "O:put|the chocolate pudding": [
+    5,
+    69,
+    70
+   ],
+   "O:put|the frying pan": [
+    18,
+    21,
+    40,
+    42,
+    45
+   ],
+   "O:put|the ketchup": [
+    32
+   ],
+   "O:put|the red mug": [
+    65,
+    66,
+    84
+   ],
+   "O:put|the white bowl": [
+    37
+   ],
+   "O:put|the white mug": [
+    67,
+    85
+   ]
+  },
+  "written_before": "any fit or episode of e4"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_90__e4_stream__s13__bb8af938",
+ "schema": 1,
+ "script": "experiments/prereg/e4_stream.py",
+ "seconds": null,
+ "seed": 13,
+ "source_commit": null,
+ "started": "2026-10-04T16:25:47+00:00",
+ "stream": null,
+ "tag": "e4_stream"
+}
