@@ -1,0 +1,322 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "plan D screen",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky1.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "d0_goal",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "dcf0383e488fec711c527a6ffbf2e43971946b5c",
+  "short": "dcf0383e"
+ },
+ "keys": {},
+ "metrics": {
+  "note": "plan D screen D0 (exploratory), stored states 0-9, 10 episodes, noise seed 0: leave-one-out GOAL primitives (rank 4, fitted only on the post-grasp frames of every other LIBERO-90 task with the same goal key, object omitted; c0_fit --goal) switched on from the policy's grasp to its release (_goal), optionally with object binding before the grasp (_goal_bind), against zero-shot and the earlier leave-one-out STEP primitives",
+  "rows": {
+   "12:prims_Gplate12.0_goal": {
+    "bound": 5,
+    "n": 10,
+    "success": 5
+   },
+   "12:prims_Gplate12.0_goal_bind": {
+    "bound": 9,
+    "n": 10,
+    "success": 9
+   },
+   "12:prims_Jplate12.0": {
+    "bound": 1,
+    "n": 10,
+    "success": 0
+   },
+   "12:zs": {
+    "bound": 5,
+    "n": 10,
+    "success": 4
+   },
+   "13:prims_Gplate13.0_goal": {
+    "bound": 0,
+    "n": 10,
+    "success": 0
+   },
+   "13:prims_Gplate13.0_goal_bind": {
+    "bound": 6,
+    "n": 10,
+    "success": 2
+   },
+   "13:prims_Jplate13.0": {
+    "bound": 0,
+    "n": 10,
+    "success": 0
+   },
+   "13:zs": {
+    "bound": 0,
+    "n": 10,
+    "success": 0
+   },
+   "14:prims_Gplate14.0_goal": {
+    "bound": 4,
+    "n": 10,
+    "success": 4
+   },
+   "14:prims_Gplate14.0_goal_bind": {
+    "bound": 5,
+    "n": 10,
+    "success": 3
+   },
+   "14:prims_Jplate14.0": {
+    "bound": 1,
+    "n": 10,
+    "success": 0
+   },
+   "14:zs": {
+    "bound": 5,
+    "n": 10,
+    "success": 5
+   },
+   "15:prims_Gcab15.0_goal": {
+    "bound": 0,
+    "n": 10,
+    "success": 0
+   },
+   "15:prims_Gcab15.0_goal_bind": {
+    "bound": 4,
+    "n": 10,
+    "success": 5
+   },
+   "15:prims_Jcab15.0": {
+    "bound": 5,
+    "n": 10,
+    "success": 5
+   },
+   "15:zs": {
+    "bound": 0,
+    "n": 10,
+    "success": 0
+   },
+   "25:prims_Gcab25.0_goal": {
+    "bound": 10,
+    "n": 10,
+    "success": 10
+   },
+   "25:prims_Gcab25.0_goal_bind": {
+    "bound": 10,
+    "n": 10,
+    "success": 9
+   },
+   "25:prims_Jcab25.0": {
+    "bound": 9,
+    "n": 10,
+    "success": 9
+   },
+   "25:zs": {
+    "bound": 10,
+    "n": 10,
+    "success": 0
+   },
+   "30:prims_Gplate30.0_goal": {
+    "bound": 8,
+    "n": 10,
+    "success": 10
+   },
+   "30:prims_Gplate30.0_goal_bind": {
+    "bound": 0,
+    "n": 10,
+    "success": 0
+   },
+   "30:prims_Jplate30.0": {
+    "bound": 8,
+    "n": 10,
+    "success": 7
+   },
+   "30:zs": {
+    "bound": 10,
+    "n": 10,
+    "success": 8
+   },
+   "31:prims_Gcab31.0_goal": {
+    "bound": 3,
+    "n": 10,
+    "success": 6
+   },
+   "31:prims_Gcab31.0_goal_bind": {
+    "bound": 0,
+    "n": 10,
+    "success": 1
+   },
+   "31:prims_Jcab31.0": {
+    "bound": 5,
+    "n": 10,
+    "success": 5
+   },
+   "31:zs": {
+    "bound": 4,
+    "n": 10,
+    "success": 2
+   },
+   "46:prims_Gbasket46.0_goal": {
+    "bound": 10,
+    "n": 10,
+    "success": 10
+   },
+   "46:prims_Gbasket46.0_goal_bind": {
+    "bound": 2,
+    "n": 10,
+    "success": 1
+   },
+   "46:prims_Q28basket46.0": {
+    "bound": 5,
+    "n": 10,
+    "success": 5
+   },
+   "46:zs": {
+    "bound": 10,
+    "n": 10,
+    "success": 10
+   },
+   "48:prims_Gbasket48.0_goal": {
+    "bound": 0,
+    "n": 10,
+    "success": 0
+   },
+   "48:prims_Gbasket48.0_goal_bind": {
+    "bound": 0,
+    "n": 10,
+    "success": 0
+   },
+   "48:prims_Q28basket48.0": {
+    "bound": 1,
+    "n": 10,
+    "success": 1
+   },
+   "48:zs": {
+    "bound": 0,
+    "n": 10,
+    "success": 0
+   },
+   "52:prims_Gbasket52.0_goal": {
+    "bound": 1,
+    "n": 10,
+    "success": 0
+   },
+   "52:prims_Gbasket52.0_goal_bind": {
+    "bound": 3,
+    "n": 10,
+    "success": 1
+   },
+   "52:prims_Q28basket52.0": {
+    "bound": 0,
+    "n": 10,
+    "success": 0
+   },
+   "52:zs": {
+    "bound": 1,
+    "n": 10,
+    "success": 0
+   },
+   "53:prims_Gbasket53.0_goal": {
+    "bound": 1,
+    "n": 10,
+    "success": 0
+   },
+   "53:prims_Gbasket53.0_goal_bind": {
+    "bound": 3,
+    "n": 10,
+    "success": 0
+   },
+   "53:prims_Q28basket53.0": {
+    "bound": 1,
+    "n": 10,
+    "success": 0
+   },
+   "53:zs": {
+    "bound": 1,
+    "n": 10,
+    "success": 0
+   },
+   "55:prims_Gtray55.0_goal": {
+    "bound": 10,
+    "n": 10,
+    "success": 10
+   },
+   "55:prims_Gtray55.0_goal_bind": {
+    "bound": 6,
+    "n": 10,
+    "success": 4
+   },
+   "55:zs": {
+    "bound": 10,
+    "n": 10,
+    "success": 10
+   },
+   "56:prims_Gtray56.0_goal": {
+    "bound": 0,
+    "n": 10,
+    "success": 10
+   },
+   "56:prims_Gtray56.0_goal_bind": {
+    "bound": 9,
+    "n": 10,
+    "success": 7
+   },
+   "56:zs": {
+    "bound": 0,
+    "n": 10,
+    "success": 10
+   },
+   "57:prims_Gtray57.0_goal": {
+    "bound": 10,
+    "n": 10,
+    "success": 10
+   },
+   "57:prims_Gtray57.0_goal_bind": {
+    "bound": 7,
+    "n": 10,
+    "success": 0
+   },
+   "57:zs": {
+    "bound": 10,
+    "n": 10,
+    "success": 10
+   }
+  },
+  "totals": {
+   "goal": 75,
+   "goal_bind": 42,
+   "goal_on_old": 45,
+   "old_step": 32,
+   "old_tasks": 11,
+   "tasks": 14,
+   "zs": 59,
+   "zs_on_old": 29
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "d0_goal__libero_90__screen__s0__dcf0383e",
+ "schema": 1,
+ "script": "(c0_fit.py --joint --goal --rank 4; launch_pack d0_goal)",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-04T04:40:12+00:00",
+ "stream": null,
+ "tag": "screen"
+}

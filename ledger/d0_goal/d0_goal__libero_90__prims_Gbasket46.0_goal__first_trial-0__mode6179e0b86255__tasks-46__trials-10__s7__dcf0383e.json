@@ -1,0 +1,96 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/d0_goal_46_prims_Gbasket46.0_goal.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "roll.sh MODE=prims:46?suite=libero_90&paths=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/prim_Gbasket46_0.pt&goal=1 SUITE=libero_90 TASKS=46 TRIALS=10 (job 4010463)",
+ "config": {
+  "client": {
+   "all_objects": false,
+   "bind": "track",
+   "branches": "",
+   "first_trial": 0,
+   "fresh": "",
+   "host": "127.0.0.1",
+   "light": false,
+   "max_steps": 0,
+   "no_meta": false,
+   "objects": false,
+   "out": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/d0_goal_46_prims_Gbasket46.0_goal.json",
+   "port": 9160,
+   "record": false,
+   "replan": 5,
+   "resize": 224,
+   "seed": 7,
+   "seg": false,
+   "state_mod": 0,
+   "suite": "libero_90",
+   "swap": "",
+   "swap_cams": "both",
+   "swap_mode": "render",
+   "swap_phase": "all",
+   "tasks": "46",
+   "trials": 10,
+   "videos": 2,
+   "wait": 10
+  },
+  "job": "4010463",
+  "mode": "prims:46?suite=libero_90&paths=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/prim_Gbasket46_0.pt&goal=1"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "crushinator.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4010463",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "d0_goal",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "dcf0383e488fec711c527a6ffbf2e43971946b5c",
+  "short": "dcf0383e"
+ },
+ "keys": {
+  "first_trial": 0,
+  "mode": "prims:46?suite=libero_90&paths=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/prim_Gbasket46_0.pt&goal=1",
+  "tasks": "46",
+  "trials": 10
+ },
+ "metrics": {
+  "complete": true,
+  "n_episodes": 10,
+  "secs": 173.37802410125732,
+  "success_rate": 1.0,
+  "tasks": {
+   "46": {
+    "errors": 0,
+    "language": "pick up the alphabet soup and put it in the basket",
+    "mean_steps": 134.1,
+    "n": 10,
+    "success_rate": 1.0
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "d0_goal__libero_90__prims_Gbasket46.0_goal__first_trial-0__mode6179e0b86255__tasks-46__trials-10__s7__dcf0383e",
+ "schema": 1,
+ "script": "experiments/libero_client.py",
+ "seconds": null,
+ "seed": 7,
+ "source_commit": null,
+ "started": "2026-10-04T04:28:22+00:00",
+ "stream": null,
+ "tag": "prims_Gbasket46.0_goal"
+}
