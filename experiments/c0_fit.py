@@ -41,6 +41,8 @@ def main():
     ap.add_argument("--key", default="", help="the step key of --joint (with --goal: the goal key, prep|target)")
     ap.add_argument("--goal", action="store_true", help="plan D: match steps by GOAL key and fit only their transport frames "
                                                         "(from the step's first sustained grasp to its end)")
+    ap.add_argument("--approach", action="store_true", help="plan E: match steps by OBJECT key (verb|object, qualifier left out) "
+                                                            "and fit only their approach frames (before the step's first grasp)")
     ap.add_argument("--name", default="", help="the file name of --joint")
     ap.add_argument("--bind", action="store_true", help="--joint: fit under attention binding (each task's own demo prototype, "
                                                         "top-4 patches, mass 0.7, before the demo's first grasp), as at test")
@@ -110,7 +112,7 @@ def joint(a):
     obs, rows, used, frame_info = [], [], [], []
     for t in [int(x) for x in a.joint.split("+")]:
         steps = P.steps_of(texts[t])
-        match = P.goal_key if a.goal else P.step_key
+        match = P.goal_key if a.goal else P.object_key if a.approach else P.step_key
         s = next((i for i, c in enumerate(steps) if match(c) == a.key), None)
         eps_ = d90.episodes_of_text(texts[t])
         if len(eps_) <= a.demo:
@@ -128,6 +130,12 @@ def joint(a):
                 print(f"[c0j] task {t}: its step never grasps; skipped", flush=True)
                 continue
             lo, hi = tr
+        if a.approach:                                                      # plan E: reaching and grasping the object only
+            ap_ = P.approach(ep["actions"], lo, hi)
+            if ap_ is None:
+                print(f"[c0j] task {t}: its step never grasps; skipped", flush=True)
+                continue
+            lo, hi = ap_
         idx, _ = D.chunk_indices(len(ep["actions"]), bk.H)
         rows.append(D.pad_rows(D.to_rows(ep["actions"][idx[lo:hi]], norm), bk.H))
         g = np.asarray(ep["actions"])[:, 6] > 0
@@ -172,7 +180,8 @@ def joint(a):
     hist = adapt.train(bk, state, key, params, bank, full, steps=a.steps, lr=a.lr, batch=a.batch, log=lambda x: print(x, flush=True),
                        gate_of=gate_of)
     path = os.path.join(R, f"prim_{a.name}_0.pt")
-    meta = dict(joint=used, step_key=a.key, rank=a.rank, scope=a.scope, frames=int(len(obs)), bind=bool(a.bind), goal=bool(a.goal))
+    meta = dict(joint=used, step_key=a.key, rank=a.rank, scope=a.scope, frames=int(len(obs)), bind=bool(a.bind), goal=bool(a.goal),
+                approach=bool(a.approach))
     nb = adapt.save(banks, key, path, meta=meta)
     print(f"[c0j] {a.name}: key {a.key}, {len(used)} demos, {len(obs)} frames, {nb / 1e6:.1f} MB, flow {hist['loss'][0]:.4f} -> "
           f"{hist['loss'][-1]:.4f} in {time.time() - t0:.0f}s", flush=True)

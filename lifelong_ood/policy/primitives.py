@@ -75,23 +75,51 @@ def transport(actions, lo, hi, run=RELEASE_RUN):
     return None if not starts else (lo + starts[0], hi)
 
 
+QUALIFIERS = r"\b(at|on) the (front|back|left|right)\b|\b(front|back|middle|left|right)\b"
+
+
+def object_key(clause):
+    """Plan E: the OBJECT of a step, its instance qualifier left out: (verb, object), e.g. "put|the black bowl" for "put the black
+    bowl at the back on the plate".  The qualifier stays in the step's prompt, so a primitive fitted on several instances sees it."""
+    verb, prep, target = step_key(clause).split("|")
+    c = re.sub(r"^pick up (.+?) and (place|put) it", r"put \1", clause)
+    rest = " " + c[len(verb):].strip()
+    if prep and rest.endswith(f" {prep} {target}"):
+        rest = rest[: -len(f" {prep} {target}")]
+    return f"{verb}|{re.sub(r' +', ' ', re.sub(QUALIFIERS, '', rest)).strip()}"
+
+
+def approach(actions, lo, hi, run=RELEASE_RUN):
+    """Plan E: the frames of a step before its first sustained grasp (reaching the object; the chunks of the last frames carry the
+    closing).  None if the step never grasps, or grasps at its first frame."""
+    tr = transport(actions, lo, hi, run)
+    return None if tr is None or tr[0] <= lo else (lo, tr[0])
+
+
 class PrimHooks:
     """Serve hooks for a sequence of steps: the step's clause as the prompt and its primitive (a keyed LoRA, or none = the policy
     itself) switched on; the next step begins when the policy's own commanded gripper releases a grasp held for 3 queries.
-    `inner`: hooks for the first step (e.g. BindHooks binding the step's object); its bias applies only during that step."""
+    `inner`: hooks for the first step (e.g. BindHooks binding the step's object); its bias applies only during that step.
+    `approach_paths` (plan E, with goal_only): per step, the OBJECT primitive switched on before the grasp."""
 
-    def __init__(self, bk, steps, paths, inner=None, goal_only=False):
+    def __init__(self, bk, steps, paths, inner=None, goal_only=False, approach_paths=None):
         from . import adapt
         self.steps, self.inner = list(steps), inner
         self.goal_only = bool(goal_only)                 # plan D: a primitive acts only from the grasp to the release
         self.carrying = False
-        self.state, self.keys = None, []
+        self.state, self.keys, self.akeys = None, [], []
         for p in paths:
             if p is None:
                 self.keys.append(None)
                 continue
             self.state, key, _ = adapt.load(bk, p, state=self.state)
             self.keys.append(key)
+        for p in approach_paths or []:
+            if p is None:
+                self.akeys.append(None)
+                continue
+            self.state, key, _ = adapt.load(bk, p, state=self.state)
+            self.akeys.append(key)
         if self.state is None:
             self.state = {"on": frozenset()}
         self.step, self.run, self.closed = 0, 0, False
@@ -99,8 +127,8 @@ class PrimHooks:
 
     def _apply(self):
         k = self.keys[self.step] if self.step < len(self.keys) else None
-        if self.goal_only and not self.carrying:
-            k = None                                     # the approach is the policy's (and the object binding's)
+        if self.goal_only and not self.carrying:         # the approach is the object primitive's, else the policy's (and the
+            k = self.akeys[self.step] if self.step < len(self.akeys) else None   # object binding's)
         self.state["on"] = frozenset({k}) if k else frozenset()
 
     def reset(self, meta):

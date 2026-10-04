@@ -3,6 +3,7 @@
     ~/flash/miniconda3/envs/chunks/bin/python experiments/d1_read.py --accept     # stored init states 0-9, seed 11
     ~/flash/miniconda3/envs/chunks/bin/python experiments/d1_read.py --test       # fresh start states, seed 11, all arms
     ~/flash/miniconda3/envs/chunks/bin/python experiments/d1_read.py --read [--record]
+    ~/flash/miniconda3/envs/chunks/bin/python experiments/d1_read.py --diagnose [--record]   # which object each arm grasps first
 """
 import json
 import os
@@ -107,7 +108,41 @@ def read(record):
                             config={}, script="experiments/d1_read.py", command=" ".join(sys.argv)))
 
 
+def diagnose(record):
+    """Where the gap to the LoRA lies: on the tasks where zero-shot, the goal primitive and goal + binding each succeed at most once
+    in 20 and the per-task LoRA at least 8 times, which object each arm grasps first (the task's referent, from its BDDL goal)."""
+    from lifelong_ood.policy import bind_hooks as BH
+    from lifelong_ood.policy import factors as F
+    ts = F.load()
+    r = json.load(open(os.path.join(R, "d1_read.json")))
+    A = arms()
+    gap = [t for t, v in r["per_task"].items() if all(v.get(k, 0) <= 1 for k in ORDER) and v.get("lora", 0) >= 8]
+    out = {}
+    for t in gap:
+        ref = BH.referents(next(x for x in ts if x.suite == "libero_90" and x.index == int(t)))["open"][0]
+        row = {}
+        for k, a in A[t].items():
+            eps = [e for v in json.load(open(os.path.join(R, f"d1_main_{t}_{tag(a)}.json")))["tasks"].values() for e in v["episodes"]]
+            row[k] = dict(n=len(eps), right=sum(e.get("bound") == ref for e in eps),
+                          wrong=sum(e.get("bound") not in (None, ref) for e in eps), none=sum(e.get("bound") is None for e in eps),
+                          success=sum(bool(e["success"]) for e in eps))
+        out[t] = dict(referent=ref, arms=row)
+    tot = {k: {m: sum(v["arms"][k][m] for v in out.values() if k in v["arms"]) for m in ("n", "right", "wrong", "none", "success")}
+           for k in ("zs", "goal", "goal_bind", "lora")}
+    print("[d1] gap tasks", gap, flush=True)
+    for k, v in tot.items():
+        print(f"[d1]   {k}: first grasp right {v['right']}, wrong {v['wrong']}, none {v['none']} of {v['n']}; success {v['success']}",
+              flush=True)
+    if record:
+        from lifelong_ood import ledger
+        print(ledger.record("d1_factored", bench="libero_90", tag="diagnosis", seed=SEED, metrics=dict(tasks=out, totals=tot),
+                            bytes=dict(experts=0, tree=0, codes=0, samples=0, teacher_copies=0, total=0),
+                            config={}, script="experiments/d1_read.py", command=" ".join(sys.argv)))
+
+
 if __name__ == "__main__":
+    if "--diagnose" in sys.argv:
+        diagnose("--record" in sys.argv)
     if "--accept" in sys.argv:
         launch("d1_accept", 0, 10, False)
     if "--test" in sys.argv:

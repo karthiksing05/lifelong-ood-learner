@@ -190,6 +190,14 @@ def arm_spec(tid, arm, fold, demo=0):
         bind = "&bind=1" if "bind" in fl else ""
         bind += "&goal=1" if "goal" in fl else ""                         # plan D: the primitive only from grasp to release
         return (f"prims:{tid}?suite={SUITE_OF.get('suite', 'libero_90')}&paths={'+'.join(ps)}{bind}", "0", False)
+    if arm.startswith("fac@"):                                          # plan E: fac@<object>.<goal>[_bind] -- the object primitive
+        spec_, _, fl = arm.split("@", 1)[1].partition("_")               # prim_<object>_0.pt before the grasp, the goal primitive
+        o_, g_ = spec_.split(".")                                        # prim_<goal>_0.pt from the grasp to the release ("x" = none)
+        pth = lambda n_: "none" if n_ == "x" else os.path.join(R, f"prim_{n_}_0.pt")   # noqa: E731
+        if any(p_ != "none" and not os.path.exists(p_) for p_ in (pth(g_), pth(o_))):
+            return None
+        bind = "&bind=1" if "bind" in fl else ""
+        return (f"prims:{tid}?suite={SUITE_OF.get('suite', 'libero_90')}&paths={pth(g_)}&apaths={pth(o_)}&goal=1{bind}", "0", False)
     if arm == "seqzs":                                                   # sequencing alone: the instruction's two clauses in turn
         return (f"bind:{tid}?suite={SUITE_OF.get('suite', 'libero_90')}&src=w4&rho=0.7&band=all&proto=none&nobind=1&seq=1", "0", False)
     if arm.startswith("bindw4g@"):                                       # the goal slot: attention on the demo's goal prototype while

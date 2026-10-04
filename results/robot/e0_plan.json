@@ -1,0 +1,1063 @@
+{
+ "31": {
+  "object_key": "put|the black bowl",
+  "goal_key": "on top of|the cabinet",
+  "proto": true,
+  "lora": true,
+  "loo_obj": [
+   1,
+   2,
+   9,
+   10,
+   12,
+   13,
+   14,
+   15,
+   24,
+   25,
+   29,
+   30,
+   60
+  ],
+  "all_obj": [
+   1,
+   2,
+   9,
+   10,
+   12,
+   13,
+   14,
+   15,
+   24,
+   25,
+   29,
+   30,
+   31,
+   60
+  ],
+  "loo_goal": "Gcab31",
+  "all_goal": "Gallcab",
+  "all_goal_tasks": [
+   10,
+   15,
+   25,
+   31,
+   41,
+   43
+  ],
+  "obj_loo_name": "Oloo31",
+  "obj_all_name": "Oall1"
+ },
+ "15": {
+  "object_key": "put|the black bowl",
+  "goal_key": "on top of|the cabinet",
+  "proto": true,
+  "lora": true,
+  "loo_obj": [
+   1,
+   2,
+   9,
+   10,
+   12,
+   13,
+   14,
+   24,
+   25,
+   29,
+   30,
+   31,
+   60
+  ],
+  "all_obj": [
+   1,
+   2,
+   9,
+   10,
+   12,
+   13,
+   14,
+   15,
+   24,
+   25,
+   29,
+   30,
+   31,
+   60
+  ],
+  "loo_goal": "Gcab15",
+  "all_goal": "Gallcab",
+  "all_goal_tasks": [
+   10,
+   15,
+   25,
+   31,
+   41,
+   43
+  ],
+  "obj_loo_name": "Oloo15",
+  "obj_all_name": "Oall1"
+ },
+ "25": {
+  "object_key": "put|the black bowl",
+  "goal_key": "on top of|the cabinet",
+  "proto": true,
+  "lora": true,
+  "loo_obj": [
+   1,
+   2,
+   9,
+   10,
+   12,
+   13,
+   14,
+   15,
+   24,
+   29,
+   30,
+   31,
+   60
+  ],
+  "all_obj": [
+   1,
+   2,
+   9,
+   10,
+   12,
+   13,
+   14,
+   15,
+   24,
+   25,
+   29,
+   30,
+   31,
+   60
+  ],
+  "loo_goal": "Gcab25",
+  "all_goal": "Gallcab",
+  "all_goal_tasks": [
+   10,
+   15,
+   25,
+   31,
+   41,
+   43
+  ],
+  "obj_loo_name": "Oloo25",
+  "obj_all_name": "Oall1"
+ },
+ "10": {
+  "object_key": "put|the black bowl",
+  "goal_key": "on top of|the cabinet",
+  "proto": false,
+  "lora": true,
+  "loo_obj": [
+   1,
+   2,
+   9,
+   12,
+   13,
+   14,
+   15,
+   24,
+   25,
+   29,
+   30,
+   31,
+   60
+  ],
+  "all_obj": [
+   1,
+   2,
+   9,
+   10,
+   12,
+   13,
+   14,
+   15,
+   24,
+   25,
+   29,
+   30,
+   31,
+   60
+  ],
+  "loo_goal": "Gcab10",
+  "all_goal": "Gallcab",
+  "all_goal_tasks": [
+   10,
+   15,
+   25,
+   31,
+   41,
+   43
+  ],
+  "obj_loo_name": "Oloo10",
+  "obj_all_name": "Oall1"
+ },
+ "43": {
+  "object_key": "put|the white bowl",
+  "goal_key": "on top of|the cabinet",
+  "proto": true,
+  "lora": true,
+  "loo_obj": [
+   36,
+   37
+  ],
+  "all_obj": [
+   36,
+   37,
+   43
+  ],
+  "loo_goal": "Gcab43",
+  "all_goal": "Gallcab",
+  "all_goal_tasks": [
+   10,
+   15,
+   25,
+   31,
+   41,
+   43
+  ],
+  "obj_loo_name": "Oloo43",
+  "obj_all_name": "Oall13"
+ },
+ "41": {
+  "object_key": "put|the frying pan",
+  "goal_key": "on top of|the cabinet",
+  "proto": true,
+  "lora": true,
+  "loo_obj": [
+   18,
+   21,
+   40,
+   42,
+   45
+  ],
+  "all_obj": [
+   18,
+   21,
+   40,
+   41,
+   42,
+   45
+  ],
+  "loo_goal": "Gcab41",
+  "all_goal": "Gallcab",
+  "all_goal_tasks": [
+   10,
+   15,
+   25,
+   31,
+   41,
+   43
+  ],
+  "obj_loo_name": "Oloo41",
+  "obj_all_name": "Oall6"
+ },
+ "9": {
+  "object_key": "put|the black bowl",
+  "goal_key": "on|the plate",
+  "proto": true,
+  "lora": true,
+  "loo_obj": [
+   1,
+   2,
+   10,
+   12,
+   13,
+   14,
+   15,
+   24,
+   25,
+   29,
+   30,
+   31,
+   60
+  ],
+  "all_obj": [
+   1,
+   2,
+   9,
+   10,
+   12,
+   13,
+   14,
+   15,
+   24,
+   25,
+   29,
+   30,
+   31,
+   60
+  ],
+  "loo_goal": "Gplate9",
+  "all_goal": "Gallplate",
+  "all_goal_tasks": [
+   9,
+   12,
+   13,
+   14,
+   30,
+   36,
+   71,
+   72
+  ],
+  "obj_loo_name": "Oloo9",
+  "obj_all_name": "Oall1"
+ },
+ "71": {
+  "object_key": "put|the red mug",
+  "goal_key": "on|the plate",
+  "proto": true,
+  "lora": true,
+  "loo_obj": [
+   65,
+   66,
+   84
+  ],
+  "all_obj": [
+   65,
+   66,
+   71,
+   84
+  ],
+  "loo_goal": "Gplate71",
+  "all_goal": "Gallplate",
+  "all_goal_tasks": [
+   9,
+   12,
+   13,
+   14,
+   30,
+   36,
+   71,
+   72
+  ],
+  "obj_loo_name": "Oloo71",
+  "obj_all_name": "Oall10"
+ },
+ "13": {
+  "object_key": "put|the black bowl",
+  "goal_key": "on|the plate",
+  "proto": true,
+  "lora": true,
+  "loo_obj": [
+   1,
+   2,
+   9,
+   10,
+   12,
+   14,
+   15,
+   24,
+   25,
+   29,
+   30,
+   31,
+   60
+  ],
+  "all_obj": [
+   1,
+   2,
+   9,
+   10,
+   12,
+   13,
+   14,
+   15,
+   24,
+   25,
+   29,
+   30,
+   31,
+   60
+  ],
+  "loo_goal": "Gplate13",
+  "all_goal": "Gallplate",
+  "all_goal_tasks": [
+   9,
+   12,
+   13,
+   14,
+   30,
+   36,
+   71,
+   72
+  ],
+  "obj_loo_name": "Oloo13",
+  "obj_all_name": "Oall1"
+ },
+ "36": {
+  "object_key": "put|the white bowl",
+  "goal_key": "on|the plate",
+  "proto": true,
+  "lora": true,
+  "loo_obj": [
+   37,
+   43
+  ],
+  "all_obj": [
+   36,
+   37,
+   43
+  ],
+  "loo_goal": "Gplate36",
+  "all_goal": "Gallplate",
+  "all_goal_tasks": [
+   9,
+   12,
+   13,
+   14,
+   30,
+   36,
+   71,
+   72
+  ],
+  "obj_loo_name": "Oloo36",
+  "obj_all_name": "Oall13"
+ },
+ "12": {
+  "object_key": "put|the black bowl",
+  "goal_key": "on|the plate",
+  "proto": true,
+  "lora": true,
+  "loo_obj": [
+   1,
+   2,
+   9,
+   10,
+   13,
+   14,
+   15,
+   24,
+   25,
+   29,
+   30,
+   31,
+   60
+  ],
+  "all_obj": [
+   1,
+   2,
+   9,
+   10,
+   12,
+   13,
+   14,
+   15,
+   24,
+   25,
+   29,
+   30,
+   31,
+   60
+  ],
+  "loo_goal": "Gplate12",
+  "all_goal": "Gallplate",
+  "all_goal_tasks": [
+   9,
+   12,
+   13,
+   14,
+   30,
+   36,
+   71,
+   72
+  ],
+  "obj_loo_name": "Oloo12",
+  "obj_all_name": "Oall1"
+ },
+ "14": {
+  "object_key": "put|the black bowl",
+  "goal_key": "on|the plate",
+  "proto": true,
+  "lora": true,
+  "loo_obj": [
+   1,
+   2,
+   9,
+   10,
+   12,
+   13,
+   15,
+   24,
+   25,
+   29,
+   30,
+   31,
+   60
+  ],
+  "all_obj": [
+   1,
+   2,
+   9,
+   10,
+   12,
+   13,
+   14,
+   15,
+   24,
+   25,
+   29,
+   30,
+   31,
+   60
+  ],
+  "loo_goal": "Gplate14",
+  "all_goal": "Gallplate",
+  "all_goal_tasks": [
+   9,
+   12,
+   13,
+   14,
+   30,
+   36,
+   71,
+   72
+  ],
+  "obj_loo_name": "Oloo14",
+  "obj_all_name": "Oall1"
+ },
+ "72": {
+  "object_key": "put|the white mug",
+  "goal_key": "on|the plate",
+  "proto": true,
+  "lora": true,
+  "loo_obj": [
+   67,
+   85
+  ],
+  "all_obj": [
+   67,
+   72,
+   85
+  ],
+  "loo_goal": "Gplate72",
+  "all_goal": "Gallplate",
+  "all_goal_tasks": [
+   9,
+   12,
+   13,
+   14,
+   30,
+   36,
+   71,
+   72
+  ],
+  "obj_loo_name": "Oloo72",
+  "obj_all_name": "Oall14"
+ },
+ "30": {
+  "object_key": "put|the black bowl",
+  "goal_key": "on|the plate",
+  "proto": true,
+  "lora": true,
+  "loo_obj": [
+   1,
+   2,
+   9,
+   10,
+   12,
+   13,
+   14,
+   15,
+   24,
+   25,
+   29,
+   31,
+   60
+  ],
+  "all_obj": [
+   1,
+   2,
+   9,
+   10,
+   12,
+   13,
+   14,
+   15,
+   24,
+   25,
+   29,
+   30,
+   31,
+   60
+  ],
+  "loo_goal": "Gplate30",
+  "all_goal": "Gallplate",
+  "all_goal_tasks": [
+   9,
+   12,
+   13,
+   14,
+   30,
+   36,
+   71,
+   72
+  ],
+  "obj_loo_name": "Oloo30",
+  "obj_all_name": "Oall1"
+ },
+ "47": {
+  "object_key": "put|the cream cheese box",
+  "goal_key": "in|the basket",
+  "proto": true,
+  "lora": true,
+  "loo_obj": [],
+  "all_obj": [
+   47
+  ],
+  "loo_goal": "Gbasket47",
+  "all_goal": "Gallbasket",
+  "all_goal_tasks": [
+   46,
+   47,
+   48,
+   49,
+   50,
+   51,
+   52,
+   53,
+   54
+  ],
+  "obj_loo_name": "Oloo47",
+  "obj_all_name": "Oall5"
+ },
+ "54": {
+  "object_key": "put|the tomato sauce",
+  "goal_key": "in|the basket",
+  "proto": true,
+  "lora": true,
+  "loo_obj": [
+   49,
+   59
+  ],
+  "all_obj": [
+   49,
+   54,
+   59
+  ],
+  "loo_goal": "Gbasket54",
+  "all_goal": "Gallbasket",
+  "all_goal_tasks": [
+   46,
+   47,
+   48,
+   49,
+   50,
+   51,
+   52,
+   53,
+   54
+  ],
+  "obj_loo_name": "Oloo54",
+  "obj_all_name": "Oall12"
+ },
+ "52": {
+  "object_key": "put|the milk",
+  "goal_key": "in|the basket",
+  "proto": true,
+  "lora": true,
+  "loo_obj": [],
+  "all_obj": [
+   52
+  ],
+  "loo_goal": "Gbasket52",
+  "all_goal": "Gallbasket",
+  "all_goal_tasks": [
+   46,
+   47,
+   48,
+   49,
+   50,
+   51,
+   52,
+   53,
+   54
+  ],
+  "obj_loo_name": "Oloo52",
+  "obj_all_name": "Oall8"
+ },
+ "53": {
+  "object_key": "put|the orange juice",
+  "goal_key": "in|the basket",
+  "proto": true,
+  "lora": true,
+  "loo_obj": [],
+  "all_obj": [
+   53
+  ],
+  "loo_goal": "Gbasket53",
+  "all_goal": "Gallbasket",
+  "all_goal_tasks": [
+   46,
+   47,
+   48,
+   49,
+   50,
+   51,
+   52,
+   53,
+   54
+  ],
+  "obj_loo_name": "Oloo53",
+  "obj_all_name": "Oall9"
+ },
+ "48": {
+  "object_key": "put|the ketchup",
+  "goal_key": "in|the basket",
+  "proto": true,
+  "lora": true,
+  "loo_obj": [
+   32,
+   58
+  ],
+  "all_obj": [
+   32,
+   48,
+   58
+  ],
+  "loo_goal": "Gbasket48",
+  "all_goal": "Gallbasket",
+  "all_goal_tasks": [
+   46,
+   47,
+   48,
+   49,
+   50,
+   51,
+   52,
+   53,
+   54
+  ],
+  "obj_loo_name": "Oloo48",
+  "obj_all_name": "Oall7"
+ },
+ "50": {
+  "object_key": "put|the alphabet soup",
+  "goal_key": "in|the basket",
+  "proto": true,
+  "lora": true,
+  "loo_obj": [
+   46,
+   55
+  ],
+  "all_obj": [
+   46,
+   50,
+   55
+  ],
+  "loo_goal": "Gbasket50",
+  "all_goal": "Gallbasket",
+  "all_goal_tasks": [
+   46,
+   47,
+   48,
+   49,
+   50,
+   51,
+   52,
+   53,
+   54
+  ],
+  "obj_loo_name": "Oloo50",
+  "obj_all_name": "Oall0"
+ },
+ "51": {
+  "object_key": "put|the butter",
+  "goal_key": "in|the basket",
+  "proto": false,
+  "lora": false,
+  "loo_obj": [
+   3,
+   4,
+   56
+  ],
+  "all_obj": [
+   3,
+   4,
+   51,
+   56
+  ],
+  "loo_goal": "Gbasket51",
+  "all_goal": "Gallbasket",
+  "all_goal_tasks": [
+   46,
+   47,
+   48,
+   49,
+   50,
+   51,
+   52,
+   53,
+   54
+  ],
+  "obj_loo_name": "Oloo51",
+  "obj_all_name": "Oall2"
+ },
+ "46": {
+  "object_key": "put|the alphabet soup",
+  "goal_key": "in|the basket",
+  "proto": true,
+  "lora": true,
+  "loo_obj": [
+   50,
+   55
+  ],
+  "all_obj": [
+   46,
+   50,
+   55
+  ],
+  "loo_goal": "Gbasket46",
+  "all_goal": "Gallbasket",
+  "all_goal_tasks": [
+   46,
+   47,
+   48,
+   49,
+   50,
+   51,
+   52,
+   53,
+   54
+  ],
+  "obj_loo_name": "Oloo46",
+  "obj_all_name": "Oall0"
+ },
+ "49": {
+  "object_key": "put|the tomato sauce",
+  "goal_key": "in|the basket",
+  "proto": true,
+  "lora": true,
+  "loo_obj": [
+   54,
+   59
+  ],
+  "all_obj": [
+   49,
+   54,
+   59
+  ],
+  "loo_goal": "Gbasket49",
+  "all_goal": "Gallbasket",
+  "all_goal_tasks": [
+   46,
+   47,
+   48,
+   49,
+   50,
+   51,
+   52,
+   53,
+   54
+  ],
+  "obj_loo_name": "Oloo49",
+  "obj_all_name": "Oall12"
+ },
+ "57": {
+  "object_key": "put|the cream cheese",
+  "goal_key": "in|the tray",
+  "proto": true,
+  "lora": true,
+  "loo_obj": [],
+  "all_obj": [
+   57
+  ],
+  "loo_goal": "Gtray57",
+  "all_goal": "Galltray",
+  "all_goal_tasks": [
+   55,
+   56,
+   57,
+   58,
+   59,
+   61,
+   62,
+   63,
+   64
+  ],
+  "obj_loo_name": "Oloo57",
+  "obj_all_name": "Oall4"
+ },
+ "62": {
+  "object_key": "put|the salad dressing",
+  "goal_key": "in|the tray",
+  "proto": true,
+  "lora": true,
+  "loo_obj": [],
+  "all_obj": [
+   62
+  ],
+  "loo_goal": "Gtray62",
+  "all_goal": "Galltray",
+  "all_goal_tasks": [
+   55,
+   56,
+   57,
+   58,
+   59,
+   61,
+   62,
+   63,
+   64
+  ],
+  "obj_loo_name": "Oloo62",
+  "obj_all_name": "Oall11"
+ },
+ "55": {
+  "object_key": "put|the alphabet soup",
+  "goal_key": "in|the tray",
+  "proto": true,
+  "lora": true,
+  "loo_obj": [
+   46,
+   50
+  ],
+  "all_obj": [
+   46,
+   50,
+   55
+  ],
+  "loo_goal": "Gtray55",
+  "all_goal": "Galltray",
+  "all_goal_tasks": [
+   55,
+   56,
+   57,
+   58,
+   59,
+   61,
+   62,
+   63,
+   64
+  ],
+  "obj_loo_name": "Oloo55",
+  "obj_all_name": "Oall0"
+ },
+ "59": {
+  "object_key": "put|the tomato sauce",
+  "goal_key": "in|the tray",
+  "proto": true,
+  "lora": true,
+  "loo_obj": [
+   49,
+   54
+  ],
+  "all_obj": [
+   49,
+   54,
+   59
+  ],
+  "loo_goal": "Gtray59",
+  "all_goal": "Galltray",
+  "all_goal_tasks": [
+   55,
+   56,
+   57,
+   58,
+   59,
+   61,
+   62,
+   63,
+   64
+  ],
+  "obj_loo_name": "Oloo59",
+  "obj_all_name": "Oall12"
+ },
+ "56": {
+  "object_key": "put|the butter",
+  "goal_key": "in|the tray",
+  "proto": true,
+  "lora": true,
+  "loo_obj": [
+   3,
+   4,
+   51
+  ],
+  "all_obj": [
+   3,
+   4,
+   51,
+   56
+  ],
+  "loo_goal": "Gtray56",
+  "all_goal": "Galltray",
+  "all_goal_tasks": [
+   55,
+   56,
+   57,
+   58,
+   59,
+   61,
+   62,
+   63,
+   64
+  ],
+  "obj_loo_name": "Oloo56",
+  "obj_all_name": "Oall2"
+ },
+ "58": {
+  "object_key": "put|the ketchup",
+  "goal_key": "in|the tray",
+  "proto": true,
+  "lora": true,
+  "loo_obj": [
+   32,
+   48
+  ],
+  "all_obj": [
+   32,
+   48,
+   58
+  ],
+  "loo_goal": "Gtray58",
+  "all_goal": "Galltray",
+  "all_goal_tasks": [
+   55,
+   56,
+   57,
+   58,
+   59,
+   61,
+   62,
+   63,
+   64
+  ],
+  "obj_loo_name": "Oloo58",
+  "obj_all_name": "Oall7"
+ },
+ "61": {
+  "object_key": "put|the chocolate pudding",
+  "goal_key": "in|the tray",
+  "proto": false,
+  "lora": true,
+  "loo_obj": [
+   5,
+   69,
+   70
+  ],
+  "all_obj": [
+   5,
+   61,
+   69,
+   70
+  ],
+  "loo_goal": "Gtray61",
+  "all_goal": "Galltray",
+  "all_goal_tasks": [
+   55,
+   56,
+   57,
+   58,
+   59,
+   61,
+   62,
+   63,
+   64
+  ],
+  "obj_loo_name": "Oloo61",
+  "obj_all_name": "Oall3"
+ }
+}

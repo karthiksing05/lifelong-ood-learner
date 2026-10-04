@@ -275,7 +275,8 @@ def main():
     elif a.mode.startswith("prims:"):
         # prims:<task>?paths=<p0>+<p1>[&bind=1&proto=<k>&rho=0.7] -- plan C (docs/PLAN_PRIMITIVES.md): the task's steps in turn, each
         # with its motion primitive (a keyed LoRA; "none" = the policy itself), switched at the policy's own release; bind=1
-        # raises attention on the object prototype during the first step (lifelong_ood/policy/primitives.py)
+        # raises attention on the object prototype during the first step (lifelong_ood/policy/primitives.py); goal=1 switches each
+        # primitive on only from the grasp to the release, apaths=<a0>+<a1> (plan E) the object primitives before the grasp
         import numpy as np
         from lifelong_ood.policy import bind_hooks as BH
         from lifelong_ood.policy import factors as F
@@ -295,8 +296,9 @@ def main():
                                  phrases=F.scene_phrases(task, tasks),
                                  proto=np.load(os.path.join(ROOT, "results", "robot", kv.get("pfile", "q4_object_protos") + ".npz"))[
                                      kv.get("proto", body)])
-        hooks = PR.PrimHooks(bk, steps, paths, inner=inner, goal_only=kv.get("goal") == "1")
-        logging.info(f"prims: task {body}, steps {steps}, primitives {paths}, bind {inner is not None}")
+        apaths = [None if p_ == "none" else p_ for p_ in kv["apaths"].split("+")][:len(steps)] if "apaths" in kv else None
+        hooks = PR.PrimHooks(bk, steps, paths, inner=inner, goal_only=kv.get("goal") == "1", approach_paths=apaths)
+        logging.info(f"prims: task {body}, steps {steps}, primitives {paths}, approach {apaths}, bind {inner is not None}")
     elif a.mode.startswith("lora:"):
         # lora:<expert.pt> -- the few-shot baseline: a flat adapter on the action expert, always on
         from lifelong_ood.policy import adapt
