@@ -891,6 +891,37 @@ def q28_par():
 P_INTERP = f"""{interp_par()}"""
 
 
+def factored_par():
+    d0, d1, dg = row("d0_goal", "screen"), row("d1_factored", "read"), row("d1_factored", "diagnosis")
+    if not (d0 and d1 and dg):
+        return ""
+    t0 = d0["totals"]
+    h1, h2, de = d1["hypotheses"]["H1"], d1["hypotheses"]["H2"], d1["descriptive"]
+    kept = {k: sum(v == k for v in d1["kept"].values()) for k in ("zs", "goal", "goal_bind")}
+    g = dg["totals"]
+    return (f"<p>The interpretation shows a step primitive fusing two factors: which object the arm reaches for, and where it carries "
+            f"it. Plan D splits each step at the policy's own grasp. Before the grasp the object factor acts (the object prototype "
+            f"through attention binding); from the grasp to the release a GOAL primitive acts, a rank-4 LoRA fitted only on "
+            f"demonstrations' post-grasp frames, keyed by the goal (\u201cin the basket\u201d) with the object left out and "
+            f"consolidated over every other task with that goal. In a screen on {t0['tasks']} held-out tasks the goal primitive "
+            f"succeeds {t0['goal']} of {10 * t0['tasks']} times against {t0['zs']} zero-shot, and no longer overrides the policy's "
+            f"choice of object (exploratory).</p>"
+            f"<p>Pre-registered on the stream's {h1['tasks']} tasks and fresh start states (m3_prereg tag d1_factored), the acceptance "
+            f"test kept the policy on {kept['zs']} tasks, the goal primitive on {kept['goal']} and the goal primitive with binding on "
+            f"{kept['goal_bind']}. The kept arms succeed {h1['x']} of {h1['n']} times against {h1['y']} zero-shot (sign p "
+            f"{h1['sign_p']:.2g}). Against the per-task one-demo LoRA with the same acceptance test they reach {h2['x']} of {h2['n']} "
+            f"against {h2['y']} (difference {h2['diff']['diff']:+.3f}, 95% interval {h2['diff']['lo']:+.3f} to "
+            f"{h2['diff']['hi']:+.3f}): non-inferiority fails. The first grasp shows where. On the {len(dg['tasks'])} tasks where only "
+            f"the LoRA succeeds, the policy grasps the wrong object first in {g['zs']['wrong']} of {g['zs']['n']} episodes (the milk "
+            f"for the orange juice, the alphabet soup for the ketchup); the goal primitive inherits that grasp, and binding turns the "
+            f"arm toward the named object but grasps nothing in {g['goal_bind']['none']}. The LoRA grasps the named object first in "
+            f"{g['lora']['right']} and succeeds {g['lora']['success']} times. Binding says where the object is, not how to reach and "
+            f"grasp it: the approach needs its own prototype.</p>")
+
+
+P_FACTOR = f"""{factored_par()}"""
+
+
 P_LIMITS = """
 <ul>
 <li>Where the named object is comes from the simulator's segmentation during practice, or from the one demonstration's object
@@ -908,7 +939,7 @@ LIBERO-90 tasks have one.</li>
 
 P_VER = f"""
 <p>Every read quoted as a test was pre-registered in <code>ledger/m3_prereg</code> before its first episode (tags zc_probe, zc_bind, zc_pilot,
-zc_main, b_bind_q1, b_bind_q2, b_bind_q2_amend1, b_scheme_main, q_probes, q_pilot, q6_main, q7_tokpractice, q8_main, q10_main, q13_main, q16_library, q17_stream, q18_self, q20_stream, q20_confirm, q24_grammar, q26_grammar_accept); reads marked exploratory were not. Every number on this page is read from <code>ledger/</code> at commit
+zc_main, b_bind_q1, b_bind_q2, b_bind_q2_amend1, b_scheme_main, q_probes, q_pilot, q6_main, q7_tokpractice, q8_main, q10_main, q13_main, q16_library, q17_stream, q18_self, q20_stream, q20_confirm, q24_grammar, q26_grammar_accept, q27_joint, c2_stream, f1_fresh, f1_amend1, f1_amend2, q28_bindprim, q28_amend1, d1_factored); reads marked exploratory were not. Every number on this page is read from <code>ledger/</code> at commit
 <code>{esc(commit)}</code> by <code>experiments/paper_page.py</code>, and the README's copies are re-derived by
 <code>experiments/audit_numbers.py</code>. Episodes are paired by task and init state; intervals come from a two-level bootstrap, tests from
 the exact sign test, with Holm correction within a read. One pre-registered probe failed its own validity gate and is not used: the
@@ -917,7 +948,8 @@ policy's first chunk points at the named object only {probe['validity']['PA']:.2
 NAV = [("abstract", "", "Abstract"), ("s1", "1", "Introduction"), ("s2", "2", "Why the policy fails new tasks"),
        ("s3", "3", "Method"), ("s4", "4", "Experiments"), ("s4-1", "4.1", "Prompt composition"), ("s4-2", "4.2", "Where"),
        ("s4-3", "4.3", "Binding"), ("s4-4", "4.4", "Folding"), ("s4-5", "4.5", "Main read"), ("s4-6", "4.6", "Prototype PoE"),
-       ("s4-7", "4.7", "Streams, other policies"), ("s4-8", "4.8", "Motion primitives"), ("s4-9", "4.9", "What the units encode"), ("s6", "5", "Limitations"),
+       ("s4-7", "4.7", "Streams, other policies"), ("s4-8", "4.8", "Motion primitives"), ("s4-9", "4.9", "What the units encode"),
+       ("s4-10", "4.10", "Factored steps"), ("s6", "5", "Limitations"),
        ("s7", "", "Verification")]
 
 CSS = r"""
@@ -1020,6 +1052,7 @@ for every arm.</p>
 <section id="s4-7"><h3 style="font-size:20px">4.7 Streams and other policies</h3>{P_STREAM}</section>
 <section id="s4-8"><h3 style="font-size:20px">4.8 Reusable motion primitives</h3>{P_PRIM}</section>
 <section id="s4-9"><h3 style="font-size:20px">4.9 What the prototypes and primitives encode</h3>{P_INTERP}</section>
+<section id="s4-10"><h3 style="font-size:20px">4.10 Factored steps: an object prototype and a goal prototype</h3>{P_FACTOR}</section>
 </section>
 <section id="s6"><h2><span class="sn">5</span>Limitations</h2>{P_LIMITS}</section>
 <section id="s7"><h2>Verification</h2>{P_VER}</section>
