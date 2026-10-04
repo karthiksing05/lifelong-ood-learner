@@ -2,7 +2,7 @@
 
     python experiments/r3_prepare.py --tree results/robot/r2b_all_tree.npz --tasks 19,33,24,67,35,39 --K 3
 
-For each LIBERO-90 benchmark task (unique language in the IPEC port), THE demo = the first IPEC episode of that text;
+For each LIBERO-90 benchmark task, THE demo = the first episode of the task's own scene block (data.episodes_of_task);
 the next `--held` episodes are held out for the novelty read.  Writes results/robot/r3_prog_<tid>_{code,raw}.npz and a
 ledger row per task: program bytes, how well the library explains the demo's chunks (PoE mean rms to the chunk,
 per-dim NLL of the chunk under the PoE Gaussian, best-node NLL per level vs the library's own frames), gripper
@@ -66,7 +66,7 @@ def main():
     os.makedirs("results/robot", exist_ok=True)
     for tid in [int(x) for x in a.tasks.split(",")]:
         text = texts[tid]
-        eps = d90.episodes_of_text(text)
+        eps = d90.episodes_of_task(tid)
         if not eps:
             print(f"[r3p] task {tid} '{text}': no IPEC episodes (merged or dropped)", flush=True)
             continue

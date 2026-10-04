@@ -59,7 +59,7 @@ def main():
     bk = PolicyBackbone("pi05_libero", device="cuda")
     obs, chunks, per_task = [], [], {}
     for t in [int(x) for x in a.tasks.replace("+", ",").split(",")]:
-        ep = d90.load(d90.episodes_of_text(texts[t])[0])
+        ep = d90.load(d90.episodes_of_task(t)[0])
         T = len(ep["actions"])
         rows = D.to_rows(ep["actions"][D.chunk_indices(T, 10)[0]], norm)
         win = np.zeros(T, bool)

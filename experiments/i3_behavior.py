@@ -47,8 +47,8 @@ def main():
     d90 = D.Demos90()
     res = {}
     for fk, s in keys.items():                                    # frames from each key's first two library demonstrations
-        for t in [x for x in s["library"] if d90.episodes_of_text(texts[x])][:2]:
-            ep = d90.load(d90.episodes_of_text(texts[t])[0])
+        for t in [x for x in s["library"] if d90.episodes_of_task(x)][:2]:
+            ep = d90.load(d90.episodes_of_task(t)[0])
             ph = phase_of(ep["actions"])
             for i in range(0, len(ep["actions"]), STRIDE):
                 obs = d90.observation(ep, i)

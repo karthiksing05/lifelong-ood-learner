@@ -91,7 +91,7 @@ def main():
     thr = novelty.calibrate(Tree.load(a.tree), novelty.heldout_rows(D.Demos(), lib), band)
     rows_of, held_of = {}, {}
     for tid in order:
-        eps = d90.episodes_of_text(texts[tid])
+        eps = d90.episodes_of_task(tid)
         ep = d90.load(eps[0])
         rows_of[tid] = D.to_rows(ep["actions"][D.chunk_indices(len(ep["actions"]), 10)[0]], norm)
         if len(eps) > 1:

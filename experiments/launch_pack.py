@@ -27,7 +27,7 @@ def grasps(tid, demo=0):
     spec.loader.exec_module(m)
     texts, _ = m.libero90_texts()
     d = D.Demos90()
-    ep = d.load(d.episodes_of_text(texts[tid])[demo])
+    ep = d.load(d.episodes_of_task(tid)[demo])
     return len(D.gripper_events(ep["actions"])) > 0
 
 

@@ -103,7 +103,7 @@ def main():
                 m[4 * bi:4 * bi + 4, 4 * bj:4 * bj + 4] = 1.0
                 rows.append(poe.PolicyRow(texts[tid], focus={"agent": m}, name=f"cell:{bi}{bj}"))
         P = len(rows)
-        eps_ = d90.episodes_of_text(texts[tid])
+        eps_ = d90.episodes_of_task(tid)
         demos = {}
         for d in (0, 1):
             if d >= len(eps_):

@@ -30,7 +30,7 @@ def grasp_tokens(tids):
     out = {}
     for t in tids:
         f = os.path.join(R, "f0b_firstframes", f"libero_90_{t}.npz")
-        eps = d90.episodes_of_text(texts[t])
+        eps = d90.episodes_of_task(t)
         if not eps or not os.path.exists(f):
             continue
         ep = d90.load(eps[0])

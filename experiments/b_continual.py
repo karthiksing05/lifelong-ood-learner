@@ -47,12 +47,12 @@ def main():
     d90 = D.Demos90()
     norm = D.Norm.load()
     obs, rows, owner = [], [], []
-    skipped = [t for t in tasks if not d90.episodes_of_text(texts[t])]
+    skipped = [t for t in tasks if not d90.episodes_of_task(t)]
     tasks = [t for t in tasks if t not in skipped]                       # no demonstration in the dataset (task 51)
     if skipped:
         print(f"[bcl] skipped (no demonstration in the dataset): {skipped}", flush=True)
     for t in tasks:
-        ep = d90.load(d90.episodes_of_text(texts[t])[0])
+        ep = d90.load(d90.episodes_of_task(t)[0])
         T = len(ep["actions"])
         idx, _ = D.chunk_indices(T, bk.H)
         rows.append(D.pad_rows(D.to_rows(ep["actions"][idx], norm), bk.H))

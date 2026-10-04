@@ -32,7 +32,7 @@ def main():
     d90, norm = D.Demos90(), D.Norm.load()
     rows = {}
     for t in HELD:
-        ep = d90.load(d90.episodes_of_text(texts[t])[0])
+        ep = d90.load(d90.episodes_of_task(t)[0])
         T = len(ep["actions"])
         rows[t] = D.to_rows(ep["actions"][D.chunk_indices(T, 10)[0]], norm).astype(np.float32)
 

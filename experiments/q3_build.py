@@ -63,7 +63,7 @@ def main():
         t0 = time.time()
         rows = rows_for(by[("libero_90", tid)], texts[tid], tasks)
         P = len(rows)
-        ep = d90.load(d90.episodes_of_text(texts[tid])[demo])
+        ep = d90.load(d90.episodes_of_task(tid)[demo])
         T = len(ep["actions"])
         idx, _ = D.chunk_indices(T, bk.H)
         Q = D.to_rows(ep["actions"][idx], norm)

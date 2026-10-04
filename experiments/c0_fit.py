@@ -59,7 +59,7 @@ def main():
     from lifelong_ood.policy.backbone import PolicyBackbone
     bk = PolicyBackbone("pi05_libero", device="cuda")
     d90 = D.Demos90()
-    ep_idx = d90.episodes_of_text(text)[a.demo]
+    ep_idx = d90.episodes_of_task(a.task)[a.demo]
     ep = d90.load(ep_idx)
     segs = P.segment(ep["actions"], len(steps))
     if segs is None:
@@ -114,7 +114,7 @@ def joint(a):
         steps = P.steps_of(texts[t])
         match = P.goal_key if a.goal else P.object_key if a.approach else P.step_key
         s = next((i for i, c in enumerate(steps) if match(c) == a.key), None)
-        eps_ = d90.episodes_of_text(texts[t])
+        eps_ = d90.episodes_of_task(t)
         if len(eps_) <= a.demo:
             print(f"[c0j] task {t}: the dataset has no demonstration under its instruction; skipped", flush=True)
             continue

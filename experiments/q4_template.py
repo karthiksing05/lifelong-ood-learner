@@ -76,7 +76,7 @@ def main():
         moved = BH.referents(t)["closed" if goal else "open"]
         if not moved or tid not in [x.index for x in tasks if x.suite == "libero_90"]:
             continue
-        ep = d90.load(d90.episodes_of_text(texts[tid])[0])
+        ep = d90.load(d90.episodes_of_task(tid)[0])
         closed = np.where(ep["actions"][:, 6] > 0)[0]
         if len(closed) == 0:
             continue

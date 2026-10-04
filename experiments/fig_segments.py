@@ -40,7 +40,7 @@ def main():
     spec.loader.exec_module(r3p)
     texts, _ = r3p.libero90_texts()
     d90, norm = D.Demos90(), D.Norm.load()
-    ep = d90.load(d90.episodes_of_text(texts[a.task])[0])
+    ep = d90.load(d90.episodes_of_task(a.task)[0])
     T = len(ep["actions"])
     rows = D.to_rows(ep["actions"][D.chunk_indices(T, 10)[0]], norm)
     seq = segcode.sequence(rows)

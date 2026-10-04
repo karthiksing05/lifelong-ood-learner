@@ -67,7 +67,7 @@ def main():
         nodes, counts = np.unique(lent, return_counts=True)
         top = nodes[np.argsort(-counts)][:a.P]
         share = {int(n): float(c) / lent.size for n, c in zip(nodes, counts)}
-        ep90 = d90.load(d90.episodes_of_text(texts[a.task])[0])
+        ep90 = d90.load(d90.episodes_of_task(a.task)[0])
         img90, _ = d90.frames(ep90["episode_index"])
     SURFACE, INK, INK2 = "#fcfcfb", "#0b0b0b", "#52514e"
     fig, axs = plt.subplots(len(top), a.S + 1, figsize=(1.55 * (a.S + 1) + 2.4, 1.72 * len(top) + 0.6), facecolor=SURFACE, squeeze=False)

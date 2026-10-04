@@ -82,7 +82,7 @@ def main():
     texts, _ = r3p.libero90_texts()
     d90, norm = D.Demos90(), D.Norm.load()
     # OWN: the target's one demo, every frame
-    ep = d90.load(d90.episodes_of_text(texts[t])[0])
+    ep = d90.load(d90.episodes_of_task(t)[0])
     T0 = len(ep["actions"])
     own_rows = D.to_rows(ep["actions"][D.chunk_indices(T0, 10)[0]], norm)
     own = [("demo", t, ep, i) for i in range(T0)]
@@ -91,7 +91,7 @@ def main():
         share = a.pool_cap // max(len(srcs), 1)
         out = []
         for s in srcs:
-            eps_ = d90.load(d90.episodes_of_text(texts[s])[0])
+            eps_ = d90.load(d90.episodes_of_task(s)[0])
             cand = [("demo", s, eps_, i) for i in range(len(eps_["actions"]))]
             files = sorted(f for p in PRACTICE for f in glob.glob(f"{R}/{p}_{s}_*_rec/task{s}_trial*.npz"))
             succ = [f for f in files if bool(np.load(f)["success"])]

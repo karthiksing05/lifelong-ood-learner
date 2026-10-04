@@ -39,7 +39,7 @@ def main():
     texts, _ = r3p.libero90_texts()
     d90, norm = D.Demos90(), D.Norm.load()
     for t in [int(x) for x in a.tasks.replace("+", ",").split(",")]:
-        ep = d90.load(d90.episodes_of_text(texts[t])[0])
+        ep = d90.load(d90.episodes_of_task(t)[0])
         T = len(ep["actions"])
         rows = D.to_rows(ep["actions"][D.chunk_indices(T, 10)[0]], norm)
         full = DemoProgram.from_segcode(leaves, rows, ep["state"], L=a.L)

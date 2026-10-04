@@ -116,7 +116,7 @@ def main():
     r4 = load_module("r4", os.path.join(ROOT, "experiments", "r4_fold.py"))
     texts, _ = r3p.libero90_texts()
     d90, norm = D.Demos90(), D.Norm.load()
-    ep = d90.load(d90.episodes_of_text(texts[t])[0])
+    ep = d90.load(d90.episodes_of_task(t)[0])
     T0 = len(ep["actions"])
     demo_rows = D.to_rows(ep["actions"][D.chunk_indices(T0, 10)[0]], norm)
     demo_prog = DemoProgram.load(f"{R}/r3_prog_{t}_raw_lib40.npz")

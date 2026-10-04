@@ -113,7 +113,7 @@ def main():
     d90, norm = D.Demos90(), D.Norm.load()
     eps = []                                                              # (task, source, rows)
     for t in TASKS:
-        for k, e in enumerate(d90.episodes_of_text(texts[t])[: a.demos]):
+        for k, e in enumerate(d90.episodes_of_task(t)[: a.demos]):
             eps.append((t, "human", chunks(d90.load(e)["actions"], norm)))
         recs = sorted(glob.glob(os.path.join(R, f"m6_round1_{t}_*_rec", "*.npz")) + glob.glob(os.path.join(R, f"m6_round2_{t}_*_rec", "*.npz")))
         got = 0

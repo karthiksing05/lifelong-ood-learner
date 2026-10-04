@@ -90,7 +90,7 @@ def main():
     if a.source in ("demo", "demo+rollouts"):
         d90 = D.Demos90()
         for t in tids:
-            ep_idx = d90.episodes_of_text(texts[t])[a.demo]
+            ep_idx = d90.episodes_of_task(t)[a.demo]
             ep = d90.load(ep_idx)
             T_ = len(ep["actions"])
             obs += [d90.observation(ep, i) for i in range(T_)]

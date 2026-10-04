@@ -58,7 +58,7 @@ def match(tasks, rank=None, suffix=""):
     os.makedirs(OUT, exist_ok=True)
     for t in tasks:
         # IPEC merges tasks by language: the demo is the FIRST episode of the text that comes from this task's scene
-        eps = d90.episodes_of_text(texts[t])
+        eps = d90.episodes_of_task(t)
         if not eps:
             print(f"[p0a] task {t}: no IPEC episode for '{texts[t]}'", flush=True)
             continue

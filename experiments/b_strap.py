@@ -43,7 +43,7 @@ def dump():
     d90 = D.Demos90()
     out = {}
     for t in HELD:
-        ep = d90.load(d90.episodes_of_text(tx[t])[0])
+        ep = d90.load(d90.episodes_of_task(t)[0])
         img, _ = d90.frames(ep["episode_index"])
         out[f"img_{t}"] = np.stack([np.asarray(Image.fromarray(x).resize((224, 224), Image.BICUBIC)) for x in img])
         out[f"eef_{t}"] = ep["state"][:, :3]
@@ -230,7 +230,7 @@ def train(t, steps=2000, rank=16, lr=1e-4, batch=32, seed=0, name="strap"):
     bk = PolicyBackbone("pi05_libero", device="cuda")
     norm = D.Norm.load()
     d90, dm = D.Demos90(), D.Demos()
-    ep = d90.load(d90.episodes_of_text(tx[t])[0])
+    ep = d90.load(d90.episodes_of_task(t)[0])
     T = len(ep["actions"])
     idx, _ = D.chunk_indices(T, bk.H)
     obs = [d90.observation(ep, i) for i in range(T)]

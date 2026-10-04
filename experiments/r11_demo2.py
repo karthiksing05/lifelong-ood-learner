@@ -36,7 +36,7 @@ def main():
     d90, norm = D.Demos90(), D.Norm.load()
     k = a.demo
     for t in [int(x) for x in a.tasks.replace("+", ",").split(",")]:
-        ep_idx = d90.episodes_of_text(texts[t])[k]
+        ep_idx = d90.episodes_of_task(t)[k]
         ep = d90.load(ep_idx)
         T = len(ep["actions"])
         rows = D.to_rows(ep["actions"][D.chunk_indices(T, 10)[0]], norm)

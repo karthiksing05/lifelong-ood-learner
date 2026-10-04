@@ -51,7 +51,7 @@ def main():
         spec.loader.exec_module(r3p)
         texts, _ = r3p.libero90_texts()
         d90 = D.Demos90()
-        ep = d90.load(d90.episodes_of_text(texts[int(task)])[int(rest[0]) if rest else 0])
+        ep = d90.load(d90.episodes_of_task(int(task))[int(rest[0]) if rest else 0])
         if kind == "playback":
             policy = B.PlaybackPolicy(ep["actions"])
         else:

@@ -77,7 +77,7 @@ def main():
         new = np.concatenate([succ[s] for s in HELD if s != t])
         M = np.concatenate([z["mu"], new])
         grown = lib_from(BASE_ID + np.arange(len(M)), M, np.tile(v0, (len(M), 1)))
-        ep = d90.load(d90.episodes_of_text(texts[t])[0])
+        ep = d90.load(d90.episodes_of_task(t)[0])
         T = len(ep["actions"])
         rows = D.to_rows(ep["actions"][D.chunk_indices(T, 10)[0]], norm)
         mb, mg, from_new = [], [], []

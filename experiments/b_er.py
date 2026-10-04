@@ -42,7 +42,7 @@ def main():
     norm = D.Norm.load()
     obs, rows, groups, per = [], [], [], {}
     for t in HELD:
-        ep = d90.load(d90.episodes_of_text(texts[t])[0])
+        ep = d90.load(d90.episodes_of_task(t)[0])
         T = len(ep["actions"])
         idx, _ = D.chunk_indices(T, bk.H)
         start = len(obs)

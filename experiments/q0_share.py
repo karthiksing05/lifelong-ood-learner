@@ -52,7 +52,7 @@ def main():
     res = {f"{we}_{wl}": dict(dev=[], early=[], sens=[]) for we, wl in ARMS}
     exact = []
     for tid in HELD:
-        ep = d90.load(d90.episodes_of_text(texts[tid])[0])
+        ep = d90.load(d90.episodes_of_task(tid)[0])
         T = len(ep["actions"])
         idx, _ = D.chunk_indices(T, bk.H)
         Q = D.to_rows(ep["actions"][idx], norm)                         # [T, 70]

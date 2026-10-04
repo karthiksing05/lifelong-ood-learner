@@ -50,7 +50,7 @@ def main():
     d90, norm = D.Demos90(), D.Norm.load()
     for tid in [int(x) for x in a.tasks.split(",")]:
         t0 = time.time()
-        ep = d90.load(d90.episodes_of_text(texts[tid])[0])
+        ep = d90.load(d90.episodes_of_task(tid)[0])
         T = len(ep["actions"])
         rows = D.to_rows(ep["actions"][D.chunk_indices(T, bk.H)[0]], norm)
         mu = np.zeros_like(rows)

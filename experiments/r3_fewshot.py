@@ -2,7 +2,8 @@
 
     sbatch --export=ALL,ENV=openpi,SCRIPT="experiments/r3_fewshot.py --task 35" slurm/jobs/robot_gpu.sbatch
 
-THE demo = the first IPEC episode of the task's text (the same demo the composition programs use).  Every frame is a
+THE demo = the first episode of the task's OWN scene block (data.Demos90.episodes_of_task; before 2026-10-04 the first
+episode of its text, another scene's for tasks that share an instruction: experiments/l90_scenes.py).  Every frame is a
 training pair (observation, 10-step chunk); the VLM prefix is cached once; KeyedLoRA (rank r) on every Linear of the
 expert (lm_head / embeddings excluded) is trained with openpi's flow-matching loss.  Saves
 results/robot/r3_lora_<task>{tag}.pt; ledger row r3_fewshot with the loss curve, parameters and bytes (fp16).
@@ -45,7 +46,7 @@ def main():
     bk = PolicyBackbone("pi05_libero", device="cuda")
     print(f"[r3f] {bk.describe()}", flush=True)
     d90 = D.Demos90()
-    ep_idx = d90.episodes_of_text(text)[a.demo]
+    ep_idx = d90.episodes_of_task(a.task)[a.demo]
     ep = d90.load(ep_idx)
     T = len(ep["actions"])
     t0 = time.time()

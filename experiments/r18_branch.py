@@ -100,7 +100,7 @@ def leaf2_program(t, lib, d90, norm, texts):
     from lifelong_ood.policy.compose import DemoProgram
     from lifelong_ood.operators.decompose import loglik_perdim
     prog = DemoProgram.load(os.path.join(R, f"r7_dim_{t}_s1.npz"))
-    ep = d90.load(d90.episodes_of_text(texts[t])[0])
+    ep = d90.load(d90.episodes_of_task(t)[0])
     T = len(ep["actions"])
     rows = D.to_rows(ep["actions"][D.chunk_indices(T, 10)[0]], norm)
     assert len(rows) == len(prog.mu)

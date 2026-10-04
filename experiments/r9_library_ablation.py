@@ -78,7 +78,7 @@ def main():
         texts, _ = r3p.libero90_texts()
         d90, norm = D.Demos90(), D.Norm.load()
         for t in [int(x) for x in a.programs.replace("+", ",").split(",")]:
-            ep = d90.load(d90.episodes_of_text(texts[t])[0])
+            ep = d90.load(d90.episodes_of_task(t)[0])
             T = len(ep["actions"])
             rows = D.to_rows(ep["actions"][D.chunk_indices(T, 10)[0]], norm)
             for name, lib in (("leaf", libs["bank_policy"]), ("shared", libs["t0.4"])):
@@ -98,7 +98,7 @@ def main():
     runs = [(n, 8) for n in libs] + [("band", k) for k in (1, 2, 4)]
     res = {f"{n}_K{k}": {} for n, k in runs}
     for t in held:
-        ep = d90.load(d90.episodes_of_text(texts[t])[0])
+        ep = d90.load(d90.episodes_of_task(t)[0])
         T = len(ep["actions"])
         rows = D.to_rows(ep["actions"][D.chunk_indices(T, 10)[0]], norm)
         line = []

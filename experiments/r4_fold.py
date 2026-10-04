@@ -88,7 +88,7 @@ def main():
     log(f"[r4] calibration on {len(cal_rows)} held-out library frames: q{a.q} per band level {thr}")
 
     # the demo and its novelty
-    ep_idx = d90.episodes_of_text(text)[a.demo]
+    ep_idx = d90.episodes_of_task(a.task)[a.demo]
     ep = d90.load(ep_idx)
     T = len(ep["actions"])
     rows = D.to_rows(ep["actions"][D.chunk_indices(T, 10)[0]], norm)

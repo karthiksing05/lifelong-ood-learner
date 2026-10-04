@@ -266,6 +266,15 @@ class Demos90(Demos):
     def episodes_of_text(self, text):
         return [e["episode_index"] for e in self.eps if e["tasks"][0] == text]
 
+    def episodes_of_task(self, task):
+        """The benchmark task's OWN episodes: its scene's block of its (possibly merged) text, verified against its rendered
+        first frames (experiments/l90_scenes.py; ledger l90_scenes).  Use this, never episodes_of_text, to pick a task's demo."""
+        if not hasattr(self, "_scene_eps"):
+            p = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "results", "robot",
+                             "l90_scene_episodes.json")
+            self._scene_eps = {int(k): v for k, v in json.load(open(p)).items()}
+        return list(self._scene_eps[int(task)])
+
     def frames(self, episode_index):
         """Decode both camera streams of an episode (AV1 via PyAV's libdav1d).  -> (image [T,256,256,3], wrist [T,...]).
         Same orientation as pi05_libero's training frames (checked against LIBERO-10 KITCHEN_SCENE3, 2026-09-25)."""

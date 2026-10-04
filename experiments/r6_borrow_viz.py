@@ -42,7 +42,7 @@ def main():
         tree = Tree.load(cp.library)
         comp = cp.model()
         Mk, Vk = C.prototypes(tree, cp.ids)
-        ep = d90.load(d90.episodes_of_text(texts[tid])[0])
+        ep = d90.load(d90.episodes_of_task(tid)[0])
         T = len(ep["actions"])
         Z = torch.as_tensor(C.features(ep["state"], np.arange(T) / max(T - 1, 1)))
         with torch.no_grad():
