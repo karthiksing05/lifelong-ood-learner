@@ -142,7 +142,8 @@ def read(record):
         for k, x in r.items():
             by_goal.setdefault(g, {}).setdefault(k, 0)
             by_goal[g][k] += x
-    res = dict(per_task=per, totals=tot, tasks=cov, paired=on, by_goal=by_goal, missing=missing, grasp=grasp)
+    res = dict(per_task=per, totals=tot, tasks=cov, paired=on, by_goal=by_goal, missing=missing, grasp=grasp,
+               library=dict(object_keys=len({v['object_key'] for v in pl.values()}), goal_keys=len({v['goal_key'] for v in pl.values()})))
     print("[e0] totals", tot, "tasks", cov, flush=True)
     print("[e0] on each arm's tasks", on, flush=True)
     for g, r in by_goal.items():
