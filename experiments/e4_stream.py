@@ -293,16 +293,25 @@ def load(exp, t, a):
     return {int(e["trial"]): int(bool(e["success"])) for v in json.load(open(f))["tasks"].values() for e in v["episodes"]}
 
 
-def read(record):
-    st = json.load(open(STATE))
+def read(record, state=None, mains=("e4_main",), ledger_name="e4_stream", out="e4_read.json"):
+    """-> per order: H1 served vs zero-shot, damage (final vs arrival-time), served vs E3's LoRA + acceptance, demonstrations.
+    `mains`: the experiments a served arm's test may live in (W1 reuses E4's runs of an identical arm)."""
+    st = json.load(open(state or STATE))
+
+    def test_of(t, arm):
+        for m in mains:
+            z = load(m, t, arm)
+            if z is not None:
+                return z
+        return None
     e3 = json.load(open(os.path.join(R, "e3_read.json")))
     C = E1.compare
     res, missing = {}, []
     for o, sv in served(st).items():
         x = {}
         for t, (fin, arr) in sv.items():
-            z = {"zs": load("e3_main", t, "zs"), "fin": load("e3_main", t, "zs") if fin == "zs" else load("e4_main", t, fin),
-                 "arr": load("e3_main", t, "zs") if arr == "zs" else load("e4_main", t, arr)}
+            z = {"zs": load("e3_main", t, "zs"), "fin": load("e3_main", t, "zs") if fin == "zs" else test_of(t, fin),
+                 "arr": load("e3_main", t, "zs") if arr == "zs" else test_of(t, arr)}
             if t in e3["kept_lora"]:
                 z["lora_acc"] = load("e3_main", t, "zs" if e3["kept_lora"][t] == "zs" else "lorasc")
             if None in z.values():
@@ -335,15 +344,15 @@ def read(record):
             print(f"[e4]   damage (final vs arrival-time, {dmg['tasks']} tasks): {dmg['x']} vs {dmg['y']}, diff {dmg['diff']['diff']:+.3f} "
                   f"[{dmg['diff']['lo']:+.3f}, {dmg['diff']['hi']:+.3f}]", flush=True)
     res["missing"] = missing
-    json.dump(res, open(os.path.join(R, "e4_read.json"), "w"), indent=1)
+    json.dump(res, open(os.path.join(R, out), "w"), indent=1)
     if missing:
         print("[e4] missing", missing, flush=True)
     if record and not missing:
         from lifelong_ood import ledger
-        print(ledger.record("e4_stream", bench="libero_90", tag="read", seed=SEED, metrics=res,
+        print(ledger.record(ledger_name, bench="libero_90", tag="read", seed=SEED, metrics=res,
                             bytes=dict(experts=int(max(res[o]["prototypes"] for o in ORDERS) * E1.PRIM_BYTES), tree=0, codes=0, samples=0,
                                        teacher_copies=0, total=int(max(res[o]["prototypes"] for o in ORDERS) * E1.PRIM_BYTES)),
-                            config={}, script="experiments/e4_stream.py", command=" ".join(sys.argv)))
+                            config={}, script=f"experiments/{ledger_name.split('_')[0]}_stream.py", command=" ".join(sys.argv)))
 
 
 if __name__ == "__main__":

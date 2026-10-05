@@ -159,3 +159,5 @@ if __name__ == "__main__":
         json.dump(init(), open(STATE, "w"), indent=1)
     if "--run" in sys.argv:
         run()
+    if "--read" in sys.argv:
+        E4.read("--record" in sys.argv, state=STATE, mains=("w1_main", "e4_main"), ledger_name="w1_stream", out="w1_read.json")
