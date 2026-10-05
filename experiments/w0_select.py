@@ -93,8 +93,8 @@ def main():
                         for sd in (0, 1):
                             for b in range(0, hi - lo, 32):
                                 j = np.arange(b, min(b + 32, hi - lo))
-                                x = bk.sample(len(j), bank.take(j), seed=1000 * sd + b, full=True)
-                                a = full[j].reshape(len(j), -1)
+                                x = np.asarray(bk.sample(len(j), bank.take(j), seed=1000 * sd + b, full=True), np.float32)
+                                a = full[j].reshape(len(j), -1).cpu().numpy()
                                 tot += float(((x[:, bk.real] - a[:, bk.real]) ** 2).mean(1).sum())
                     losses[n or "policy"] = tot / (2 * (hi - lo))
                     continue
