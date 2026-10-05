@@ -33,3 +33,13 @@ instruction does not name.
 | W1 (pre-registered, if W0 passes) | the stream with query selection | E4's stream with two changes: (1) a demonstration is requested only when the best of {policy, language-keyed composition} fails practice (fixes E4's requests on tasks the policy already solves); (2) the requested demonstration first SELECTS among existing prototypes (incorporate) and creates a concept only when none covers it. Measures: demonstrations requested, prototypes created, success on fresh states, damage to earlier arrivals |
 
 Gates for W1: object recognition (type level) on at least 24 of 30 queries and novelty AUC of at least 0.8 for both factors.
+
+## W0's outcome (2026-10-05; ledger w0_select)
+
+Both selection scores fail the gates. Flow-loss gain: the instruction's object concept on top for 12 of 29 held-out queries, its
+goal concept for 13 (novelty AUC 0.49, 0.48). Sampled-chunk error: 12 and 17 (0.49, 0.52). One demonstration's motion varies
+more between placements of the same task than between concepts, so a likelihood of one trajectory does not identify the concept,
+although rollouts show the prototypes are sharply concept-specific. Query selection is dropped; W1 runs with the instruction's
+keys and the thesis's request rule (pre-registered m3_prereg w1_stream). What Wang et al. contribute here is the program
+(prototypes of a frozen generative policy, selected per OOD task and composed, the policy generating every action); what the
+project adds is their missing mechanism: new primitives detected by practice, consolidated into concepts, reused by later tasks.
