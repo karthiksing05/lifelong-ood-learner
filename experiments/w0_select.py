@@ -27,6 +27,7 @@ from lifelong_ood.policy import primitives as P              # noqa: E402
 
 R = os.path.join(ROOT, "results", "robot")
 SAMPLES, DEMO = 4, 1
+SCORE = "sample" if "--sample" in sys.argv else "flow"   # W0b: sampled chunks against the query's own chunks (Euler, same noise)
 
 
 def main():
@@ -87,6 +88,16 @@ def main():
             for n in names:
                 on = keys_on(state, {keyname[n]} if n else set())
                 tot = 0.0
+                if SCORE == "sample":                    # the action error of the prototype's own samples (2 noise seeds)
+                    with torch.no_grad(), on():
+                        for sd in (0, 1):
+                            for b in range(0, hi - lo, 32):
+                                j = np.arange(b, min(b + 32, hi - lo))
+                                x = bk.sample(len(j), bank.take(j), seed=1000 * sd + b, full=True)
+                                a = full[j].reshape(len(j), -1)
+                                tot += float(((x[:, bk.real] - a[:, bk.real]) ** 2).mean(1).sum())
+                    losses[n or "policy"] = tot / (2 * (hi - lo))
+                    continue
                 with torch.no_grad(), on():
                     for tt, eps_ in draws:
                         for b in range(0, hi - lo, 32):
@@ -108,12 +119,13 @@ def main():
               f"goal top {top['goal']} {concept[top['goal']][1]} (truth {truth['goal']})", flush=True)
     res = analyse(out, concept)
     json.dump(dict(rows=out, concept={n: list(c) for n, c in concept.items()}, summary=res),
-              open(os.path.join(R, "w0_select.json"), "w"), indent=1)
+              open(os.path.join(R, f"w0_select{'_sample' if SCORE == 'sample' else ''}.json"), "w"), indent=1)
     print(json.dumps(res, indent=1), flush=True)
     if "--record" in sys.argv:
         from lifelong_ood import ledger
-        print(ledger.record("w0_select", bench="libero_90", tag="probe", seed=0, metrics=dict(summary=res, rows=out),
-                            bytes=dict(experts=0, tree=0, codes=0, samples=0, teacher_copies=0, total=0), config=dict(samples=SAMPLES, demo=DEMO),
+        print(ledger.record("w0_select", bench="libero_90", tag="probe" if SCORE == "flow" else "probe_sample", seed=0,
+                            metrics=dict(summary=res, rows=out), bytes=dict(experts=0, tree=0, codes=0, samples=0, teacher_copies=0, total=0),
+                            config=dict(samples=SAMPLES, demo=DEMO, score=SCORE),
                             script="experiments/w0_select.py", command=" ".join(sys.argv)))
 
 
