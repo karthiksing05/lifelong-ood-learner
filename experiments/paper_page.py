@@ -999,6 +999,49 @@ def plan_e_par():
 P_FACTOR = f"""{factored_par()}{plan_e_par()}"""
 
 
+def streams_par():
+    e4, w1, w0 = row("e4_stream", "read"), row("w1_stream", "read"), row("w0_select", "probe_sample")
+    if not e4:
+        return ""
+    out = ("<p>Learned as a stream, the library starts from the demonstrations of the LIBERO-90 tasks outside the stream, and the "
+           "30 tasks arrive one at a time in two orders. An arrival is composed from the current library (its instance child, else its "
+           "type concept; its goal concept; a missing factor is left to the policy) and requests its one demonstration only when practice "
+           "rejects the composition; the demonstration then updates every concept on its path, as Cobweb updates every node an instance "
+           "passes. Each task is served at the end by the final library (pre-registered, m3_prereg tag e4_stream).</p>")
+    rows_ = []
+    for name, r in (("E4", e4), ("W1", w1)):
+        if not r:
+            continue
+        for o in ("a", "b"):
+            x = r[o]
+            dm = x.get("damage") or {}
+            rows_.append(f"<tr><td>{name}</td><td>{o}</td><td class=n>{x['demos']}</td><td class=n>{len(x['kept_without_demo'])}</td>"
+                         f"<td class=n>{x['H1']['x']} / {x['H1']['y']}</td><td class=n>{x['vs_lora_acc']['x']} / {x['vs_lora_acc']['y']}</td>"
+                         f"<td class=n>{(str(dm['x']) + ' / ' + str(dm['y'])) if dm else '&ndash;'}</td></tr>")
+    out += ('<div class="tbl"><p class="tcap"><b>Table.</b> The library learned as a stream, per rule and order. Demonstrations requested '
+            '(of the 29 that exist); arrivals kept without one; served successes against zero-shot (of 600) and against the per-task '
+            'LoRA with acceptance (of 580); on the arrivals whose composition changed after they arrived, the final composition against '
+            'the arrival-time one (damage). Fresh start states, set b.</p><div class="scroll"><table><thead><tr><th>rule</th><th>order</th>'
+            '<th class=n>demos</th><th class=n>no demo</th><th class=n>vs zero-shot</th><th class=n>vs LoRA + acc.</th>'
+            '<th class=n>final / arrival</th></tr></thead><tbody>' + "".join(rows_) + "</tbody></table></div></div>")
+    out += fig('<img src="media/streams_demos.png" alt="cumulative demonstrations requested against arrivals" style="width:100%">',
+               "<b>Demonstrations requested as the stream arrives.</b> E4 requests one whenever the composition does not beat the "
+               "policy; W1 only when neither the policy nor the composition reaches 8 of 10 practice episodes. Hollow markers: arrivals "
+               "kept without a demonstration; dotted: one demonstration per arrival.")
+    if w0:
+        out += (f"<p>Wang et al. select a model's prototypes by how well they cover one query. Given a held-out demonstration as the "
+                f"query, neither the policy's flow-matching loss nor the error of each prototype's own samples picks the instruction's "
+                f"concept above chance (object concept on top for {w0['summary']['object']['top1']} of "
+                f"{w0['summary']['object']['queries']} queries by sampled error; exploratory): one trajectory's motion varies more between "
+                f"placements than between concepts. The learner therefore selects by the instruction's words and keeps by practice, and "
+                f"what it adds to Wang et al.'s program is their missing mechanism: new primitives detected by practice, consolidated into "
+                f"concepts and reused by later arrivals.</p>")
+    return out
+
+
+P_STREAMS = f"""{streams_par()}"""
+
+
 P_LIMITS = """
 <ul>
 <li>Where the named object is comes from the simulator's segmentation during practice, or from the one demonstration's object
@@ -1026,7 +1069,7 @@ NAV = [("abstract", "", "Abstract"), ("s1", "1", "Introduction"), ("s2", "2", "W
        ("s3", "3", "Method"), ("s4", "4", "Experiments"), ("s4-1", "4.1", "Prompt composition"), ("s4-2", "4.2", "Where"),
        ("s4-3", "4.3", "Binding"), ("s4-4", "4.4", "Folding"), ("s4-5", "4.5", "Main read"), ("s4-6", "4.6", "Prototype PoE"),
        ("s4-7", "4.7", "Streams, other policies"), ("s4-8", "4.8", "Motion primitives"), ("s4-9", "4.9", "What the units encode"),
-       ("s4-10", "4.10", "Factored steps"), ("s6", "5", "Limitations"),
+       ("s4-10", "4.10", "Factored steps"), ("s4-11", "4.11", "Learned as a stream"), ("s6", "5", "Limitations"),
        ("s7", "", "Verification")]
 
 CSS = r"""
@@ -1130,6 +1173,7 @@ for every arm.</p>
 <section id="s4-8"><h3 style="font-size:20px">4.8 Reusable motion primitives</h3>{P_PRIM}</section>
 <section id="s4-9"><h3 style="font-size:20px">4.9 What the prototypes and primitives encode</h3>{P_INTERP}</section>
 <section id="s4-10"><h3 style="font-size:20px">4.10 Factored steps: an object prototype and a goal prototype</h3>{P_FACTOR}</section>
+<section id="s4-11"><h3 style="font-size:20px">4.11 The library learned as a stream</h3>{P_STREAMS}</section>
 </section>
 <section id="s6"><h2><span class="sn">5</span>Limitations</h2>{P_LIMITS}</section>
 <section id="s7"><h2>Verification</h2>{P_VER}</section>

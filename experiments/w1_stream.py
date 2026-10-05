@@ -160,4 +160,27 @@ if __name__ == "__main__":
     if "--run" in sys.argv:
         run()
     if "--read" in sys.argv:
-        E4.read("--record" in sys.argv, state=STATE, mains=("w1_main", "e4_main"), ledger_name="w1_stream", out="w1_read.json")
+        E4.read(False, state=STATE, mains=("w1_main", "e4_main"), ledger_name="w1_stream", out="w1_read.json")
+        res = json.load(open(os.path.join(R, "w1_read.json")))
+        w1, e4 = json.load(open(STATE)), json.load(open(E4.STATE))
+        sw, se = E4.served(w1), E4.served(e4)
+        for o in E4.ORDERS:                                              # H2: W1's served arms against E4's, same tasks and states
+            def arm(t, a):
+                return E4.load("e3_main", t, "zs") if a == "zs" else next(
+                    (z for z in (E4.load(m, t, a) for m in ("w1_main", "e4_main")) if z is not None), None)
+            tab = {t: {"x": arm(t, sw[o][t][0]), "y": arm(t, se[o][t][0])} for t in sw[o] if t in se[o]}
+            if any(v["x"] is None or v["y"] is None for v in tab.values()):
+                res["missing"].append(f"{o}:vs_e4")
+                continue
+            h2 = E4.E1.compare(tab)
+            h2["noninferior"] = bool(h2["diff"]["lo"] > -0.05)
+            res[o]["vs_e4"] = h2
+            res[o]["e4_demos"] = sum(bool(a.get("demo")) and not a.get("demo_unavailable") for a in e4[o]["arrivals"])
+            print(f"[w1] order {o}: served {h2['x']} vs E4's {h2['y']} of {h2['n']}, diff {h2['diff']['diff']:+.3f} "
+                  f"[{h2['diff']['lo']:+.3f}, {h2['diff']['hi']:+.3f}]; demos {res[o]['demos']} vs E4's {res[o]['e4_demos']}", flush=True)
+        json.dump(res, open(os.path.join(R, "w1_read.json"), "w"), indent=1)
+        if "--record" in sys.argv and not res["missing"]:
+            from lifelong_ood import ledger
+            print(ledger.record("w1_stream", bench="libero_90", tag="read", seed=E4.SEED, metrics=res,
+                                bytes=dict(experts=0, tree=0, codes=0, samples=0, teacher_copies=0, total=0), config=dict(theta=THETA),
+                                script="experiments/w1_stream.py", command=" ".join(sys.argv)))
