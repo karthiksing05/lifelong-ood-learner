@@ -26,7 +26,10 @@ def main():
             f = os.path.join(R, f"{run}_state.json")
             if not os.path.exists(f):
                 continue
-            arr = [a for a in json.load(open(f))[o]["arrivals"] if "kept" in a]
+            st_ = json.load(open(f))
+            if any(st_[x]["i"] < len(st_[x]["order"]) for x in ("a", "b")):
+                continue                                                  # a stream still running is left out
+            arr = [a for a in st_[o]["arrivals"] if "kept" in a]
             n, xs, ys, free = 0, [0], [0], []
             for i, a in enumerate(arr, 1):
                 n += bool(a.get("demo")) and not a.get("demo_unavailable")

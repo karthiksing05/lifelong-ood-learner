@@ -1024,10 +1024,19 @@ def streams_par():
             'the arrival-time one (damage). Fresh start states, set b.</p><div class="scroll"><table><thead><tr><th>rule</th><th>order</th>'
             '<th class=n>demos</th><th class=n>no demo</th><th class=n>vs zero-shot</th><th class=n>vs LoRA + acc.</th>'
             '<th class=n>final / arrival</th></tr></thead><tbody>' + "".join(rows_) + "</tbody></table></div></div>")
-    out += fig('<img src="media/streams_demos.png" alt="cumulative demonstrations requested against arrivals" style="width:100%">',
-               "<b>Demonstrations requested as the stream arrives.</b> E4 requests one whenever the composition does not beat the "
-               "policy; W1 only when neither the policy nor the composition reaches 8 of 10 practice episodes. Hollow markers: arrivals "
-               "kept without a demonstration; dotted: one demonstration per arrival.")
+    a_, b_ = e4["a"], e4["b"]
+    out += (f"<p>Under E4's rule (a demonstration whenever the composition does not beat the policy in practice) both orders beat the "
+            f"policy by far ({a_['H1']['x']} and {b_['H1']['x']} of {a_['H1']['n']} against {a_['H1']['y']}). In order a "
+            f"consolidation helped the arrivals it touched: the final library succeeds {a_['damage']['x']} times where their "
+            f"arrival-time compositions succeeded {a_['damage']['y']}. In order b it did not: {b_['damage']['x']} against "
+            f"{b_['damage']['y']}, and one arrival kept at 9 practice successes against the policy's 8 falls to 0 of 20 under the final "
+            f"library, where the policy alone succeeds 17. The losses sit on arrivals kept without a demonstration on a thin practice "
+            f"margin (2 against 1, 3 against 0): the rule saves demonstrations on evidence too weak to keep a unit, and nothing "
+            f"re-checks an arrival when a concept it uses changes.</p>")
+    cap = ("<b>Demonstrations requested as the stream arrives.</b> E4 requests one whenever the composition does not beat the policy"
+           + ("; W1 only when neither the policy nor the composition reaches 8 of 10 practice episodes" if w1 else "")
+           + ". Hollow markers: arrivals kept without a demonstration; dotted: one demonstration per arrival.")
+    out += fig('<img src="media/streams_demos.png" alt="cumulative demonstrations requested against arrivals" style="width:100%">', cap)
     if w0:
         out += (f"<p>Wang et al. select a model's prototypes by how well they cover one query. Given a held-out demonstration as the "
                 f"query, neither the policy's flow-matching loss nor the error of each prototype's own samples picks the instruction's "
