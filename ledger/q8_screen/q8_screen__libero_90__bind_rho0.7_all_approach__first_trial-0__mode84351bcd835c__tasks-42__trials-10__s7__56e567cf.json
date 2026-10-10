@@ -1,0 +1,95 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/q8_screen_42_bind_rho0.7_all_approach.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "roll.sh MODE=bind:42?suite=libero_90&src=oracle&rho=0.7&band=all&ctrl=none&phase=approach SUITE=libero_90 TASKS=42 TRIALS=10 (job 4002261)",
+ "config": {
+  "client": {
+   "all_objects": false,
+   "bind": "track",
+   "branches": "",
+   "first_trial": 0,
+   "host": "127.0.0.1",
+   "light": false,
+   "max_steps": 0,
+   "no_meta": false,
+   "objects": false,
+   "out": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/q8_screen_42_bind_rho0.7_all_approach.json",
+   "port": 9783,
+   "record": false,
+   "replan": 5,
+   "resize": 224,
+   "seed": 7,
+   "seg": true,
+   "state_mod": 0,
+   "suite": "libero_90",
+   "swap": "",
+   "swap_cams": "both",
+   "swap_mode": "render",
+   "swap_phase": "all",
+   "tasks": "42",
+   "trials": 10,
+   "videos": 2,
+   "wait": 10
+  },
+  "job": "4002261",
+  "mode": "bind:42?suite=libero_90&src=oracle&rho=0.7&band=all&ctrl=none&phase=approach"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "chappie.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4002261",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "q8_screen",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "56e567cf9fc13cac2c08094fe6edd9b0671bc260",
+  "short": "56e567cf"
+ },
+ "keys": {
+  "first_trial": 0,
+  "mode": "bind:42?suite=libero_90&src=oracle&rho=0.7&band=all&ctrl=none&phase=approach",
+  "tasks": "42",
+  "trials": 10
+ },
+ "metrics": {
+  "complete": true,
+  "n_episodes": 10,
+  "secs": 573.8435759544373,
+  "success_rate": 0.0,
+  "tasks": {
+   "42": {
+    "errors": 0,
+    "language": "put the frying pan under the cabinet shelf",
+    "mean_steps": 400.0,
+    "n": 10,
+    "success_rate": 0.0
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "q8_screen__libero_90__bind_rho0.7_all_approach__first_trial-0__mode84351bcd835c__tasks-42__trials-10__s7__56e567cf",
+ "schema": 1,
+ "script": "experiments/libero_client.py",
+ "seconds": null,
+ "seed": 7,
+ "source_commit": null,
+ "started": "2026-10-02T08:31:04+00:00",
+ "stream": null,
+ "tag": "bind_rho0.7_all_approach"
+}

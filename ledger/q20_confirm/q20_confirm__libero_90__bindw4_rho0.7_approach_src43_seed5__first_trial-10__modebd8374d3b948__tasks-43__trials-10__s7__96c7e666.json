@@ -1,0 +1,95 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/q20_confirm_43_bindw4_rho0.7_approach_src43_seed5.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "roll.sh MODE=bind:43?suite=libero_90&src=w4&rho=0.7&band=all&phase=approach&proto=43 SUITE=libero_90 TASKS=43 TRIALS=10 (job 4004191)",
+ "config": {
+  "client": {
+   "all_objects": false,
+   "bind": "track",
+   "branches": "",
+   "first_trial": 10,
+   "host": "127.0.0.1",
+   "light": false,
+   "max_steps": 0,
+   "no_meta": false,
+   "objects": false,
+   "out": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/q20_confirm_43_bindw4_rho0.7_approach_src43_seed5.json",
+   "port": 9483,
+   "record": false,
+   "replan": 5,
+   "resize": 224,
+   "seed": 7,
+   "seg": false,
+   "state_mod": 0,
+   "suite": "libero_90",
+   "swap": "",
+   "swap_cams": "both",
+   "swap_mode": "render",
+   "swap_phase": "all",
+   "tasks": "43",
+   "trials": 10,
+   "videos": 2,
+   "wait": 10
+  },
+  "job": "4004191",
+  "mode": "bind:43?suite=libero_90&src=w4&rho=0.7&band=all&phase=approach&proto=43"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "spot.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4004191",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "q20_confirm",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "96c7e666082c464327a1c81592964cfb2464d8f7",
+  "short": "96c7e666"
+ },
+ "keys": {
+  "first_trial": 10,
+  "mode": "bind:43?suite=libero_90&src=w4&rho=0.7&band=all&phase=approach&proto=43",
+  "tasks": "43",
+  "trials": 10
+ },
+ "metrics": {
+  "complete": true,
+  "n_episodes": 10,
+  "secs": 255.94467449188232,
+  "success_rate": 0.6,
+  "tasks": {
+   "43": {
+    "errors": 0,
+    "language": "put the white bowl on top of the cabinet",
+    "mean_steps": 268.4,
+    "n": 10,
+    "success_rate": 0.6
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "q20_confirm__libero_90__bindw4_rho0.7_approach_src43_seed5__first_trial-10__modebd8374d3b948__tasks-43__trials-10__s7__96c7e666",
+ "schema": 1,
+ "script": "experiments/libero_client.py",
+ "seconds": null,
+ "seed": 7,
+ "source_commit": null,
+ "started": "2026-10-02T18:40:54+00:00",
+ "stream": null,
+ "tag": "bindw4_rho0.7_approach_src43_seed5"
+}

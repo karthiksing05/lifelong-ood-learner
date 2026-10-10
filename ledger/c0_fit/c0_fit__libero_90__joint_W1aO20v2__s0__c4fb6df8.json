@@ -1,0 +1,128 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 4677632,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 4677632,
+  "tree": 0
+ },
+ "command": "experiments/c0_fit.py --task 0 --joint 37+43 --key put|the_white_bowl --name W1aO20v2 --rank 4 --approach",
+ "config": {
+  "approach": true,
+  "batch": 32,
+  "bind": false,
+  "demo": 0,
+  "goal": false,
+  "init": "",
+  "joint": "37+43",
+  "key": "put|the white bowl",
+  "lr": 0.0001,
+  "name": "W1aO20v2",
+  "rank": 4,
+  "scope": "expert",
+  "steps": 1000,
+  "tag": "",
+  "task": 0
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "spot.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4016258",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "c0_fit",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "c4fb6df81a9ec99b5e2f82b64e96ea6e5bb1d797",
+  "short": "c4fb6df8"
+ },
+ "keys": {},
+ "metrics": {
+  "approach": true,
+  "bind": false,
+  "bytes": 4677632,
+  "curve": {
+   "anchor": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "loss": [
+    0.08151008933782578,
+    0.0240632351487875,
+    0.013424018397927284,
+    0.006263960152864456,
+    0.00875061471015215,
+    0.0034145109821110964,
+    0.001910658786073327,
+    0.0011175185209140182,
+    0.0027540531009435654,
+    0.009305933490395546,
+    0.003845764324069023
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "frames": 101,
+  "goal": false,
+  "init": "",
+  "joint": [
+   {
+    "clause": "put the white bowl to the right of the plate",
+    "frames": [
+     0,
+     50
+    ],
+    "task": 37
+   },
+   {
+    "clause": "put the white bowl on top of the cabinet",
+    "frames": [
+     0,
+     51
+    ],
+    "task": 43
+   }
+  ],
+  "rank": 4,
+  "scope": "expert",
+  "step_key": "put|the white bowl"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "c0_fit__libero_90__joint_W1aO20v2__s0__c4fb6df8",
+ "schema": 1,
+ "script": "experiments/c0_fit.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-05T07:43:26+00:00",
+ "stream": null,
+ "tag": "joint_W1aO20v2"
+}

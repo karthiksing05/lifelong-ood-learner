@@ -1,0 +1,128 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 4677632,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 4677632,
+  "tree": 0
+ },
+ "command": "experiments/c0_fit.py --task 0 --joint 32+58 --key put|the_ketchup --name W1aO14v2 --rank 4 --approach",
+ "config": {
+  "approach": true,
+  "batch": 32,
+  "bind": false,
+  "demo": 0,
+  "goal": false,
+  "init": "",
+  "joint": "32+58",
+  "key": "put|the ketchup",
+  "lr": 0.0001,
+  "name": "W1aO14v2",
+  "rank": 4,
+  "scope": "expert",
+  "steps": 1000,
+  "tag": "",
+  "task": 0
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "ig-88.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4018220",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "c0_fit",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "d17bf8d5f3e10268a51adfc8d136ac5f83a46648",
+  "short": "d17bf8d5"
+ },
+ "keys": {},
+ "metrics": {
+  "approach": true,
+  "bind": false,
+  "bytes": 4677632,
+  "curve": {
+   "anchor": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "loss": [
+    0.09857317060232162,
+    0.019891057163476944,
+    0.01260262168943882,
+    0.007062045391649008,
+    0.009022344835102558,
+    0.0070806085132062435,
+    0.003025804180651903,
+    0.002856939798220992,
+    0.004555718041956425,
+    0.008329985663294792,
+    0.005843231920152903
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "frames": 153,
+  "goal": false,
+  "init": "",
+  "joint": [
+   {
+    "clause": "put the ketchup in the top drawer of the cabinet",
+    "frames": [
+     0,
+     92
+    ],
+    "task": 32
+   },
+   {
+    "clause": "pick up the ketchup and put it in the tray",
+    "frames": [
+     0,
+     61
+    ],
+    "task": 58
+   }
+  ],
+  "rank": 4,
+  "scope": "expert",
+  "step_key": "put|the ketchup"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "c0_fit__libero_90__joint_W1aO14v2__s0__d17bf8d5",
+ "schema": 1,
+ "script": "experiments/c0_fit.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-05T20:13:47+00:00",
+ "stream": null,
+ "tag": "joint_W1aO14v2"
+}

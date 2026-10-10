@@ -1,0 +1,109 @@
+{
+ "artifacts": [
+  "results/robot/r3_lora_50.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 18710528,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 18710528,
+  "tree": 0
+ },
+ "command": "experiments/r3_fewshot.py --task 50",
+ "config": {
+  "batch": 32,
+  "demo": 0,
+  "full": false,
+  "lr": 0.0001,
+  "rank": 16,
+  "scope": "expert",
+  "seed": 0,
+  "steps": 1000,
+  "tag": "",
+  "task": 50
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "cheetah.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4006151",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r3_fewshot",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "f5efcd581cb80744181a1d9c91c48a670ac3dce6",
+  "short": "f5efcd58"
+ },
+ "keys": {
+  "task": 50
+ },
+ "metrics": {
+  "curve": {
+   "anchor": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "loss": [
+    0.04357505589723587,
+    0.027024615556001663,
+    0.012377786450088024,
+    0.00553962541744113,
+    0.006466350983828306,
+    0.0036500953137874603,
+    0.0016168494476005435,
+    0.0016453195130452514,
+    0.0021702093072235584,
+    0.0057188356295228004,
+    0.0038187545724213123
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "demo_episode": 35,
+  "final_loss": 0.0038187545724213123,
+  "first_loss": 0.04357505589723587,
+  "n_banks": 163,
+  "n_frames": 154,
+  "n_params": 9355264,
+  "task": 50,
+  "text": "pick up the alphabet soup and put it in the basket",
+  "train_secs": 123.25043749809265
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r3_fewshot__libero_90__base__task-50__s0__f5efcd58",
+ "schema": 1,
+ "script": "experiments/r3_fewshot.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-03T04:57:41+00:00",
+ "stream": null,
+ "tag": ""
+}

@@ -1,0 +1,120 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 4677632,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 4677632,
+  "tree": 0
+ },
+ "command": "experiments/c0_fit.py --task 0 --joint 53 --key put|the_orange_juice --name W2bO16v1 --rank 4 --approach",
+ "config": {
+  "approach": true,
+  "batch": 32,
+  "bind": false,
+  "demo": 0,
+  "goal": false,
+  "init": "",
+  "joint": "53",
+  "key": "put|the orange juice",
+  "lr": 0.0001,
+  "name": "W2bO16v1",
+  "rank": 4,
+  "scope": "expert",
+  "steps": 1000,
+  "tag": "",
+  "task": 0
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "megazord.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4019311",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "c0_fit",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "5a7339ab1eaae6036fbc24862e2b1e97bee598cf",
+  "short": "5a7339ab"
+ },
+ "keys": {},
+ "metrics": {
+  "approach": true,
+  "bind": false,
+  "bytes": 4677632,
+  "curve": {
+   "anchor": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "loss": [
+    0.03230050206184387,
+    0.006243349518626928,
+    0.0022131740115582943,
+    0.0017229110235348344,
+    0.0036530052311718464,
+    0.0009471572120673954,
+    0.0016724414890632033,
+    0.0005208106013014913,
+    0.000670876819640398,
+    0.004752479027956724,
+    0.0013276463141664863
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "frames": 59,
+  "goal": false,
+  "init": "",
+  "joint": [
+   {
+    "clause": "pick up the orange juice and put it in the basket",
+    "frames": [
+     0,
+     59
+    ],
+    "task": 53
+   }
+  ],
+  "rank": 4,
+  "scope": "expert",
+  "step_key": "put|the orange juice"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "c0_fit__libero_90__joint_W2bO16v1__s0__5a7339ab",
+ "schema": 1,
+ "script": "experiments/c0_fit.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-06T01:36:48+00:00",
+ "stream": null,
+ "tag": "joint_W2bO16v1"
+}

@@ -1,0 +1,134 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 4677632,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 4677632,
+  "tree": 0
+ },
+ "command": "experiments/c0_fit.py --task 0 --joint 67+72+85 --key put|the_white_mug --name Oall14 --rank 4 --approach",
+ "config": {
+  "approach": true,
+  "batch": 32,
+  "bind": false,
+  "demo": 0,
+  "goal": false,
+  "joint": "67+72+85",
+  "key": "put|the white mug",
+  "lr": 0.0001,
+  "name": "Oall14",
+  "rank": 4,
+  "scope": "expert",
+  "steps": 1000,
+  "tag": "",
+  "task": 0
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "ig-88.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4011359",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "c0_fit",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "93dc56593fddd3e4f02ffdd85a3725897701c6e2",
+  "short": "93dc5659"
+ },
+ "keys": {},
+ "metrics": {
+  "approach": true,
+  "bind": false,
+  "bytes": 4677632,
+  "curve": {
+   "anchor": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "loss": [
+    0.042716048657894135,
+    0.016775742173194885,
+    0.010671834461390972,
+    0.005790612194687128,
+    0.00639018788933754,
+    0.0062468331307172775,
+    0.002473986241966486,
+    0.0021746603306382895,
+    0.0035581819247454405,
+    0.007671950850635767,
+    0.006462110672146082
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "frames": 118,
+  "goal": false,
+  "joint": [
+   {
+    "clause": "put the white mug on the left plate",
+    "frames": [
+     0,
+     28
+    ],
+    "task": 67
+   },
+   {
+    "clause": "put the white mug on the plate",
+    "frames": [
+     0,
+     57
+    ],
+    "task": 72
+   },
+   {
+    "clause": "pick up the white mug and place it to the right of the caddy",
+    "frames": [
+     0,
+     33
+    ],
+    "task": 85
+   }
+  ],
+  "rank": 4,
+  "scope": "expert",
+  "step_key": "put|the white mug"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "c0_fit__libero_90__joint_Oall14__s0__93dc5659",
+ "schema": 1,
+ "script": "experiments/c0_fit.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-04T08:05:45+00:00",
+ "stream": null,
+ "tag": "joint_Oall14"
+}

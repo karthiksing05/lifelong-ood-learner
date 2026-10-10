@@ -1,0 +1,241 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/b2_steer_offline_calib.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "experiments/b2_steer_offline.py --only libero_goal_0+libero_object_0+libero_goal_1+libero_object_1+libero_goal_2+libero_object_2+libero_goal_3+libero_object_3+libero_goal_4+libero_object_4+libero_goal_5+libero_object_5+libero_goal_6+libero_object_6+libero_goal_7+libero_object_7+libero_goal_8+libero_object_8+libero_goal_9+libero_object_9 --tag calib --record",
+ "config": {},
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "major.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3998156",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "b2_steer",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "b923620af11cea5f8f51a4eaca497a906b6b1b3b",
+  "short": "b923620a"
+ },
+ "keys": {},
+ "metrics": {
+  "configs": {
+   "fixed4_all": {
+    "beta": 4.0,
+    "layers": null,
+    "mode": "fixed"
+   },
+   "fixed8_all": {
+    "beta": 8.0,
+    "layers": null,
+    "mode": "fixed"
+   },
+   "mass0.3_all": {
+    "layers": null,
+    "mode": "mass",
+    "rho": 0.3
+   },
+   "mass0.3_mid": {
+    "layers": [
+     6,
+     7,
+     8,
+     9,
+     10,
+     11
+    ],
+    "mode": "mass",
+    "rho": 0.3
+   },
+   "mass0.5_all": {
+    "layers": null,
+    "mode": "mass",
+    "rho": 0.5
+   },
+   "mass0.5_mid": {
+    "layers": [
+     6,
+     7,
+     8,
+     9,
+     10,
+     11
+    ],
+    "mode": "mass",
+    "rho": 0.5
+   },
+   "mass0.7_all": {
+    "layers": null,
+    "mode": "mass",
+    "rho": 0.7
+   },
+   "mass0.7_mid": {
+    "layers": [
+     6,
+     7,
+     8,
+     9,
+     10,
+     11
+    ],
+    "mode": "mass",
+    "rho": 0.7
+   }
+  },
+  "groups": {
+   "object": {
+    "CC_swap": 0.29268849638173744,
+    "PA_base": 0.16666666666666669,
+    "PA_swap": 0.3,
+    "chance": 0.16666666666666669,
+    "configs": {
+     "fixed4_all": {
+      "CC": -0.26682332347960375,
+      "LS": 0.9920205227557579,
+      "OS": 0.988425775851446,
+      "PA": 0.1716666666666667,
+      "SHIFT": 0.06499999999999999
+     },
+     "fixed8_all": {
+      "CC": -0.011696587830036341,
+      "LS": 0.8204506213381579,
+      "OS": 0.7931495790459252,
+      "PA": 0.1825,
+      "SHIFT": 0.095
+     },
+     "mass0.3_all": {
+      "CC": 0.13063167489732505,
+      "LS": 0.901670402080424,
+      "OS": 0.8592153443519471,
+      "PA": 0.1691666666666667,
+      "SHIFT": 0.09
+     },
+     "mass0.3_mid": {
+      "CC": -0.15072449224878748,
+      "LS": 0.9643778779282073,
+      "OS": 0.9066500622827357,
+      "PA": 0.1691666666666667,
+      "SHIFT": 0.085
+     },
+     "mass0.5_all": {
+      "CC": 0.25879784467598743,
+      "LS": 0.7800571846175751,
+      "OS": 0.8229150812749332,
+      "PA": 0.19416666666666665,
+      "SHIFT": 0.05
+     },
+     "mass0.5_mid": {
+      "CC": -0.14539528382270356,
+      "LS": 0.9270776217418601,
+      "OS": 0.8371933831770374,
+      "PA": 0.16833333333333336,
+      "SHIFT": 0.08
+     },
+     "mass0.7_all": {
+      "CC": 0.2944503031523902,
+      "LS": 0.7916643192509459,
+      "OS": 1.1311623926828482,
+      "PA": 0.215,
+      "SHIFT": 0.06999999999999999
+     },
+     "mass0.7_mid": {
+      "CC": -0.15223655090398483,
+      "LS": 0.8755254823742018,
+      "OS": 0.7572655824174248,
+      "PA": 0.17583333333333334,
+      "SHIFT": 0.075
+     }
+    },
+    "tasks": 10
+   },
+   "validity": {
+    "CC_swap": 0.7116359714927336,
+    "PA_base": 0.35416666666666663,
+    "PA_swap": 0.51875,
+    "chance": 0.3541666666666667,
+    "configs": {
+     "fixed4_all": {
+      "CC": 0.16646510219864669,
+      "LS": 0.9982442025347004,
+      "OS": 0.9902789823303644,
+      "PA": 0.3520833333333333,
+      "SHIFT": 0.18125
+     },
+     "fixed8_all": {
+      "CC": 0.480261255023479,
+      "LS": 0.8499251482842649,
+      "OS": 0.9693913420704451,
+      "PA": 0.3208333333333333,
+      "SHIFT": 0.1875
+     },
+     "mass0.3_all": {
+      "CC": 0.2691611098181246,
+      "LS": 0.8478282739935963,
+      "OS": 0.9481360864478607,
+      "PA": 0.33541666666666664,
+      "SHIFT": 0.1875
+     },
+     "mass0.3_mid": {
+      "CC": 0.3886854127454108,
+      "LS": 0.9595100344015055,
+      "OS": 0.9549125111209456,
+      "PA": 0.35416666666666663,
+      "SHIFT": 0.18125
+     },
+     "mass0.5_all": {
+      "CC": 0.13277385817570936,
+      "LS": 0.6637288826756403,
+      "OS": 0.9350593291652425,
+      "PA": 0.3104166666666666,
+      "SHIFT": 0.23125
+     },
+     "mass0.5_mid": {
+      "CC": 0.38315687510059326,
+      "LS": 0.9233631798252309,
+      "OS": 0.9321297443594116,
+      "PA": 0.34791666666666665,
+      "SHIFT": 0.1875
+     },
+     "mass0.7_all": {
+      "CC": 0.019107399737753238,
+      "LS": 0.9167819857915813,
+      "OS": 1.2809969199289473,
+      "PA": 0.275,
+      "SHIFT": 0.26875
+     },
+     "mass0.7_mid": {
+      "CC": 0.38393313954102554,
+      "LS": 0.874877846719707,
+      "OS": 0.9083134951734964,
+      "PA": 0.3458333333333333,
+      "SHIFT": 0.19374999999999998
+     }
+    },
+    "tasks": 8
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "b2_steer__libero__offline_calib__s0__b923620a",
+ "schema": 1,
+ "script": "experiments/b2_steer_offline.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-02T00:10:19+00:00",
+ "stream": null,
+ "tag": "offline_calib"
+}

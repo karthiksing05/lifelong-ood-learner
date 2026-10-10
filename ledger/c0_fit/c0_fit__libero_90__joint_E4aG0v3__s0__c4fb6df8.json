@@ -1,0 +1,136 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 4677632,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 4677632,
+  "tree": 0
+ },
+ "command": "experiments/c0_fit.py --task 0 --joint 49+50+54 --key in|the_basket --name E4aG0v3 --rank 4 --goal",
+ "config": {
+  "approach": false,
+  "batch": 32,
+  "bind": false,
+  "demo": 0,
+  "goal": true,
+  "init": "",
+  "joint": "49+50+54",
+  "key": "in|the basket",
+  "lr": 0.0001,
+  "name": "E4aG0v3",
+  "rank": 4,
+  "scope": "expert",
+  "steps": 1000,
+  "tag": "",
+  "task": 0
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "crushinator.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4016271",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "c0_fit",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "c4fb6df81a9ec99b5e2f82b64e96ea6e5bb1d797",
+  "short": "c4fb6df8"
+ },
+ "keys": {},
+ "metrics": {
+  "approach": false,
+  "bind": false,
+  "bytes": 4677632,
+  "curve": {
+   "anchor": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "loss": [
+    0.04296049103140831,
+    0.027110224589705467,
+    0.019496750086545944,
+    0.013475030660629272,
+    0.013097154907882214,
+    0.00760418176651001,
+    0.005582692567259073,
+    0.004256976768374443,
+    0.0035605409648269415,
+    0.009433123283088207,
+    0.007080766838043928
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "frames": 230,
+  "goal": true,
+  "init": "",
+  "joint": [
+   {
+    "clause": "pick up the tomato sauce and put it in the basket",
+    "frames": [
+     75,
+     160
+    ],
+    "task": 49
+   },
+   {
+    "clause": "pick up the alphabet soup and put it in the basket",
+    "frames": [
+     49,
+     130
+    ],
+    "task": 50
+   },
+   {
+    "clause": "pick up the tomato sauce and put it in the basket",
+    "frames": [
+     39,
+     103
+    ],
+    "task": 54
+   }
+  ],
+  "rank": 4,
+  "scope": "expert",
+  "step_key": "in|the basket"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "c0_fit__libero_90__joint_E4aG0v3__s0__c4fb6df8",
+ "schema": 1,
+ "script": "experiments/c0_fit.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-05T07:59:42+00:00",
+ "stream": null,
+ "tag": "joint_E4aG0v3"
+}

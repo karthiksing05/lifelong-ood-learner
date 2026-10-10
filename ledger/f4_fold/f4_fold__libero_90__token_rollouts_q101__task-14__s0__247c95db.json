@@ -1,0 +1,105 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/ftoken_14_q101.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 18432,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 18432,
+  "tree": 0
+ },
+ "command": "experiments/f4_fold.py --task 14 --source rollouts --rec results/robot/q10_p1_14_bindw4_rho0.7_approach_rec --tag _q101",
+ "config": {
+  "batch": 16,
+  "demo": 0,
+  "lr": 0.01,
+  "max_frames": 400,
+  "n_tokens": 1,
+  "rec": "results/robot/q10_p1_14_bindw4_rho0.7_approach_rec",
+  "seed": 0,
+  "source": "rollouts",
+  "steps": 600,
+  "stride": 5,
+  "tag": "_q101",
+  "task": "14"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "spot.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4002497",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "f4_fold",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "247c95db536ff99fa6b7bed6ca475ac877eddd38",
+  "short": "247c95db"
+ },
+ "keys": {
+  "task": "14"
+ },
+ "metrics": {
+  "curve": {
+   "anchor": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "loss": [
+    0.04426686093211174,
+    0.011773355305194855,
+    0.031918805092573166,
+    0.02101755142211914,
+    0.011207287199795246,
+    0.009618247859179974
+   ],
+   "step": [
+    100,
+    200,
+    300,
+    400,
+    500,
+    600
+   ]
+  },
+  "demo_episode": [
+   "results/robot/q10_p1_14_bindw4_rho0.7_approach_rec/task14_trial11.npz",
+   "results/robot/q10_p1_14_bindw4_rho0.7_approach_rec/task14_trial13.npz",
+   "results/robot/q10_p1_14_bindw4_rho0.7_approach_rec/task14_trial19.npz",
+   "results/robot/q10_p1_14_bindw4_rho0.7_approach_rec/task14_trial20.npz",
+   "results/robot/q10_p1_14_bindw4_rho0.7_approach_rec/task14_trial21.npz",
+   "results/robot/q10_p1_14_bindw4_rho0.7_approach_rec/task14_trial24.npz",
+   "results/robot/q10_p1_14_bindw4_rho0.7_approach_rec/task14_trial26.npz",
+   "results/robot/q10_p1_14_bindw4_rho0.7_approach_rec/task14_trial27.npz"
+  ],
+  "final_loss": 0.009618247859179974,
+  "first_loss": 0.04426686093211174,
+  "n_frames": 290,
+  "n_tokens": 1,
+  "source": "rollouts",
+  "task": "14",
+  "text": "put the middle black bowl on the plate",
+  "train_secs": 56.65959334373474
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "f4_fold__libero_90__token_rollouts_q101__task-14__s0__247c95db",
+ "schema": 1,
+ "script": "experiments/f4_fold.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-02T10:01:48+00:00",
+ "stream": null,
+ "tag": "token_rollouts_q101"
+}

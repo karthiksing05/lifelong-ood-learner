@@ -1,0 +1,168 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 4677632,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 4677632,
+  "tree": 0
+ },
+ "command": "experiments/c0_fit.py --task 0 --joint 1+2+12+13+24+25+29+60 --key put|the_black_bowl --name W2bO8v4 --rank 4 --approach",
+ "config": {
+  "approach": true,
+  "batch": 32,
+  "bind": false,
+  "demo": 0,
+  "goal": false,
+  "init": "",
+  "joint": "1+2+12+13+24+25+29+60",
+  "key": "put|the black bowl",
+  "lr": 0.0001,
+  "name": "W2bO8v4",
+  "rank": 4,
+  "scope": "expert",
+  "steps": 1000,
+  "tag": "",
+  "task": 0
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "dave.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4022613",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "c0_fit",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "5a7339ab1eaae6036fbc24862e2b1e97bee598cf",
+  "short": "5a7339ab"
+ },
+ "keys": {},
+ "metrics": {
+  "approach": true,
+  "bind": false,
+  "bytes": 4677632,
+  "curve": {
+   "anchor": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "loss": [
+    0.072547547519207,
+    0.03235543146729469,
+    0.02198033779859543,
+    0.016367752104997635,
+    0.01400255598127842,
+    0.008177484385669231,
+    0.005539173725992441,
+    0.004850003868341446,
+    0.005513608921319246,
+    0.010914323851466179,
+    0.005384918302297592
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "frames": 363,
+  "goal": false,
+  "init": "",
+  "joint": [
+   {
+    "clause": "put the black bowl in the top drawer of the cabinet",
+    "frames": [
+     0,
+     40
+    ],
+    "task": 2
+   },
+   {
+    "clause": "put the black bowl at the back on the plate",
+    "frames": [
+     0,
+     36
+    ],
+    "task": 12
+   },
+   {
+    "clause": "put the black bowl at the front on the plate",
+    "frames": [
+     0,
+     71
+    ],
+    "task": 13
+   },
+   {
+    "clause": "put the black bowl in the bottom drawer of the cabinet",
+    "frames": [
+     0,
+     72
+    ],
+    "task": 24
+   },
+   {
+    "clause": "put the black bowl on top of the cabinet",
+    "frames": [
+     0,
+     62
+    ],
+    "task": 25
+   },
+   {
+    "clause": "put the black bowl in the top drawer of the cabinet",
+    "frames": [
+     0,
+     46
+    ],
+    "task": 29
+   },
+   {
+    "clause": "pick up the black bowl on the left and put it in the tray",
+    "frames": [
+     0,
+     36
+    ],
+    "task": 60
+   }
+  ],
+  "rank": 4,
+  "scope": "expert",
+  "step_key": "put|the black bowl"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "c0_fit__libero_90__joint_W2bO8v4__s0__5a7339ab",
+ "schema": 1,
+ "script": "experiments/c0_fit.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-06T17:17:18+00:00",
+ "stream": null,
+ "tag": "joint_W2bO8v4"
+}

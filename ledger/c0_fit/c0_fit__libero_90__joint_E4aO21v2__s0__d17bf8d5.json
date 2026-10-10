@@ -1,0 +1,136 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 4677632,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 4677632,
+  "tree": 0
+ },
+ "command": "experiments/c0_fit.py --task 0 --joint 67+72+85 --key put|the_white_mug --name E4aO21v2 --rank 4 --approach",
+ "config": {
+  "approach": true,
+  "batch": 32,
+  "bind": false,
+  "demo": 0,
+  "goal": false,
+  "init": "",
+  "joint": "67+72+85",
+  "key": "put|the white mug",
+  "lr": 0.0001,
+  "name": "E4aO21v2",
+  "rank": 4,
+  "scope": "expert",
+  "steps": 1000,
+  "tag": "",
+  "task": 0
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "samantha.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4017360",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "c0_fit",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "d17bf8d5f3e10268a51adfc8d136ac5f83a46648",
+  "short": "d17bf8d5"
+ },
+ "keys": {},
+ "metrics": {
+  "approach": true,
+  "bind": false,
+  "bytes": 4677632,
+  "curve": {
+   "anchor": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "loss": [
+    0.042716048657894135,
+    0.017056671902537346,
+    0.010739835910499096,
+    0.005916937254369259,
+    0.006429059896618128,
+    0.006289761047810316,
+    0.002497323788702488,
+    0.0022133493330329657,
+    0.003455554833635688,
+    0.00772520387545228,
+    0.006347560789436102
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "frames": 118,
+  "goal": false,
+  "init": "",
+  "joint": [
+   {
+    "clause": "put the white mug on the left plate",
+    "frames": [
+     0,
+     28
+    ],
+    "task": 67
+   },
+   {
+    "clause": "put the white mug on the plate",
+    "frames": [
+     0,
+     57
+    ],
+    "task": 72
+   },
+   {
+    "clause": "pick up the white mug and place it to the right of the caddy",
+    "frames": [
+     0,
+     33
+    ],
+    "task": 85
+   }
+  ],
+  "rank": 4,
+  "scope": "expert",
+  "step_key": "put|the white mug"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "c0_fit__libero_90__joint_E4aO21v2__s0__d17bf8d5",
+ "schema": 1,
+ "script": "experiments/c0_fit.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-05T15:29:08+00:00",
+ "stream": null,
+ "tag": "joint_E4aO21v2"
+}

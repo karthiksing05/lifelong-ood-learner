@@ -1,0 +1,95 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/b_q2mini_49_bind_rho0.7_all.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "roll.sh MODE=bind:49?suite=libero_90&src=oracle&rho=0.7&band=all&ctrl=none SUITE=libero_90 TASKS=49 TRIALS=10 (job 3998315)",
+ "config": {
+  "client": {
+   "all_objects": false,
+   "bind": "stop",
+   "branches": "",
+   "first_trial": 0,
+   "host": "127.0.0.1",
+   "light": false,
+   "max_steps": 0,
+   "no_meta": false,
+   "objects": false,
+   "out": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/b_q2mini_49_bind_rho0.7_all.json",
+   "port": 9257,
+   "record": false,
+   "replan": 5,
+   "resize": 224,
+   "seed": 7,
+   "seg": true,
+   "state_mod": 0,
+   "suite": "libero_90",
+   "swap": "",
+   "swap_cams": "both",
+   "swap_mode": "render",
+   "swap_phase": "all",
+   "tasks": "49",
+   "trials": 10,
+   "videos": 2,
+   "wait": 10
+  },
+  "job": "3998315",
+  "mode": "bind:49?suite=libero_90&src=oracle&rho=0.7&band=all&ctrl=none"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "spot.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3998315",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "b_q2mini",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "caea555081b802be3a13eb116a378c78c5da8079",
+  "short": "caea5550"
+ },
+ "keys": {
+  "first_trial": 0,
+  "mode": "bind:49?suite=libero_90&src=oracle&rho=0.7&band=all&ctrl=none",
+  "tasks": "49",
+  "trials": 10
+ },
+ "metrics": {
+  "complete": true,
+  "n_episodes": 10,
+  "secs": 540.5817654132843,
+  "success_rate": 0.0,
+  "tasks": {
+   "49": {
+    "errors": 0,
+    "language": "pick up the tomato sauce and put it in the basket",
+    "mean_steps": 400.0,
+    "n": 10,
+    "success_rate": 0.0
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "b_q2mini__libero_90__bind_rho0.7_all__first_trial-0__modea0debb24f119__tasks-49__trials-10__s7__caea5550",
+ "schema": 1,
+ "script": "experiments/libero_client.py",
+ "seconds": null,
+ "seed": 7,
+ "source_commit": null,
+ "started": "2026-10-01T23:23:39+00:00",
+ "stream": null,
+ "tag": "bind_rho0.7_all"
+}

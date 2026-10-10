@@ -1,0 +1,95 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/q16_accept_79_bindw4_rho0.7_approach_src74_seed2.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "roll.sh MODE=bind:79?suite=libero_90&src=w4&rho=0.7&band=all&phase=approach&proto=74 SUITE=libero_90 TASKS=79 TRIALS=10 (job 4002907)",
+ "config": {
+  "client": {
+   "all_objects": false,
+   "bind": "track",
+   "branches": "",
+   "first_trial": 0,
+   "host": "127.0.0.1",
+   "light": false,
+   "max_steps": 0,
+   "no_meta": false,
+   "objects": false,
+   "out": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/q16_accept_79_bindw4_rho0.7_approach_src74_seed2.json",
+   "port": 9112,
+   "record": false,
+   "replan": 5,
+   "resize": 224,
+   "seed": 7,
+   "seg": false,
+   "state_mod": 0,
+   "suite": "libero_90",
+   "swap": "",
+   "swap_cams": "both",
+   "swap_mode": "render",
+   "swap_phase": "all",
+   "tasks": "79",
+   "trials": 10,
+   "videos": 2,
+   "wait": 10
+  },
+  "job": "4002907",
+  "mode": "bind:79?suite=libero_90&src=w4&rho=0.7&band=all&phase=approach&proto=74"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "spd-13.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4002907",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "q16_accept",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "41fc3dcc2ac16689c0fc1f0d93e1a78124741ce8",
+  "short": "41fc3dcc"
+ },
+ "keys": {
+  "first_trial": 0,
+  "mode": "bind:79?suite=libero_90&src=w4&rho=0.7&band=all&phase=approach&proto=74",
+  "tasks": "79",
+  "trials": 10
+ },
+ "metrics": {
+  "complete": true,
+  "n_episodes": 10,
+  "secs": 460.38275694847107,
+  "success_rate": 0.2,
+  "tasks": {
+   "79": {
+    "errors": 0,
+    "language": "pick up the book and place it in the left compartment of the caddy",
+    "mean_steps": 382.6,
+    "n": 10,
+    "success_rate": 0.2
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "q16_accept__libero_90__bindw4_rho0.7_approach_src74_seed2__first_trial-0__mode16726972af9f__tasks-79__trials-10__s7__41fc3dcc",
+ "schema": 1,
+ "script": "experiments/libero_client.py",
+ "seconds": null,
+ "seed": 7,
+ "source_commit": null,
+ "started": "2026-10-02T14:09:56+00:00",
+ "stream": null,
+ "tag": "bindw4_rho0.7_approach_src74_seed2"
+}

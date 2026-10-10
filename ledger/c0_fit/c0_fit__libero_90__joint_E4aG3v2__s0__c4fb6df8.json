@@ -1,0 +1,128 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 4677632,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 4677632,
+  "tree": 0
+ },
+ "command": "experiments/c0_fit.py --task 0 --joint 12+30 --key on|the_plate --name E4aG3v2 --rank 4 --goal",
+ "config": {
+  "approach": false,
+  "batch": 32,
+  "bind": false,
+  "demo": 0,
+  "goal": true,
+  "init": "",
+  "joint": "12+30",
+  "key": "on|the plate",
+  "lr": 0.0001,
+  "name": "E4aG3v2",
+  "rank": 4,
+  "scope": "expert",
+  "steps": 1000,
+  "tag": "",
+  "task": 0
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "ig-88.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4016662",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "c0_fit",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "c4fb6df81a9ec99b5e2f82b64e96ea6e5bb1d797",
+  "short": "c4fb6df8"
+ },
+ "keys": {},
+ "metrics": {
+  "approach": false,
+  "bind": false,
+  "bytes": 4677632,
+  "curve": {
+   "anchor": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "loss": [
+    0.09306343644857407,
+    0.0336921364068985,
+    0.022228015586733818,
+    0.014364811591804028,
+    0.011583281680941582,
+    0.005745952017605305,
+    0.0037224136758595705,
+    0.004955166019499302,
+    0.0037251717876642942,
+    0.00964463409036398,
+    0.010123004205524921
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "frames": 158,
+  "goal": true,
+  "init": "",
+  "joint": [
+   {
+    "clause": "put the black bowl at the back on the plate",
+    "frames": [
+     36,
+     108
+    ],
+    "task": 12
+   },
+   {
+    "clause": "put the black bowl on the plate",
+    "frames": [
+     45,
+     131
+    ],
+    "task": 30
+   }
+  ],
+  "rank": 4,
+  "scope": "expert",
+  "step_key": "on|the plate"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "c0_fit__libero_90__joint_E4aG3v2__s0__c4fb6df8",
+ "schema": 1,
+ "script": "experiments/c0_fit.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-05T11:58:18+00:00",
+ "stream": null,
+ "tag": "joint_E4aG3v2"
+}

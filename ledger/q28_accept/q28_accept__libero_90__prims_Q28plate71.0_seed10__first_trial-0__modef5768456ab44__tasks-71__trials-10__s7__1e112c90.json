@@ -1,0 +1,96 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/q28_accept_71_prims_Q28plate71.0_seed10.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "roll.sh MODE=prims:71?suite=libero_90&paths=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/prim_Q28plate71_0.pt SUITE=libero_90 TASKS=71 TRIALS=10 (job 4008087)",
+ "config": {
+  "client": {
+   "all_objects": false,
+   "bind": "track",
+   "branches": "",
+   "first_trial": 0,
+   "fresh": "",
+   "host": "127.0.0.1",
+   "light": false,
+   "max_steps": 0,
+   "no_meta": false,
+   "objects": false,
+   "out": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/q28_accept_71_prims_Q28plate71.0_seed10.json",
+   "port": 9862,
+   "record": false,
+   "replan": 5,
+   "resize": 224,
+   "seed": 7,
+   "seg": false,
+   "state_mod": 0,
+   "suite": "libero_90",
+   "swap": "",
+   "swap_cams": "both",
+   "swap_mode": "render",
+   "swap_phase": "all",
+   "tasks": "71",
+   "trials": 10,
+   "videos": 2,
+   "wait": 10
+  },
+  "job": "4008087",
+  "mode": "prims:71?suite=libero_90&paths=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/prim_Q28plate71_0.pt"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "chitti.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4008087",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "q28_accept",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "1e112c908c4702d5b8892363abb580e551b84849",
+  "short": "1e112c90"
+ },
+ "keys": {
+  "first_trial": 0,
+  "mode": "prims:71?suite=libero_90&paths=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/prim_Q28plate71_0.pt",
+  "tasks": "71",
+  "trials": 10
+ },
+ "metrics": {
+  "complete": true,
+  "n_episodes": 10,
+  "secs": 537.4447622299194,
+  "success_rate": 0.0,
+  "tasks": {
+   "71": {
+    "errors": 0,
+    "language": "put the red mug on the plate",
+    "mean_steps": 400.0,
+    "n": 10,
+    "success_rate": 0.0
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "q28_accept__libero_90__prims_Q28plate71.0_seed10__first_trial-0__modef5768456ab44__tasks-71__trials-10__s7__1e112c90",
+ "schema": 1,
+ "script": "experiments/libero_client.py",
+ "seconds": null,
+ "seed": 7,
+ "source_commit": null,
+ "started": "2026-10-03T19:23:39+00:00",
+ "stream": null,
+ "tag": "prims_Q28plate71.0_seed10"
+}

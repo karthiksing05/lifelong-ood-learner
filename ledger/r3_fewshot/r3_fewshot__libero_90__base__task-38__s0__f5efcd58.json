@@ -1,0 +1,109 @@
+{
+ "artifacts": [
+  "results/robot/r3_lora_38.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 18710528,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 18710528,
+  "tree": 0
+ },
+ "command": "experiments/r3_fewshot.py --task 38",
+ "config": {
+  "batch": 32,
+  "demo": 0,
+  "full": false,
+  "lr": 0.0001,
+  "rank": 16,
+  "scope": "expert",
+  "seed": 0,
+  "steps": 1000,
+  "tag": "",
+  "task": 38
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "dendrite.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4006146",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r3_fewshot",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "f5efcd581cb80744181a1d9c91c48a670ac3dce6",
+  "short": "f5efcd58"
+ },
+ "keys": {
+  "task": 38
+ },
+ "metrics": {
+  "curve": {
+   "anchor": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "loss": [
+    0.07280489057302475,
+    0.015763983130455017,
+    0.008055226877331734,
+    0.0030235007870942354,
+    0.00744759663939476,
+    0.0029176846146583557,
+    0.002424068981781602,
+    0.0020610918290913105,
+    0.004543700255453587,
+    0.00954475998878479,
+    0.006068717688322067
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "demo_episode": 596,
+  "final_loss": 0.006068717688322067,
+  "first_loss": 0.07280489057302475,
+  "n_banks": 163,
+  "n_frames": 188,
+  "n_params": 9355264,
+  "task": 38,
+  "text": "put the right moka pot on the stove",
+  "train_secs": 124.47614550590515
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r3_fewshot__libero_90__base__task-38__s0__f5efcd58",
+ "schema": 1,
+ "script": "experiments/r3_fewshot.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-03T04:53:33+00:00",
+ "stream": null,
+ "tag": ""
+}

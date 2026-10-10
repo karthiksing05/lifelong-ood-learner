@@ -1,0 +1,96 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/f1_main_41_bcl_er_cab_seed9.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "roll.sh MODE=lora:/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/bcl_er_cab.pt SUITE=libero_90 TASKS=41 TRIALS=20 (job 4007482)",
+ "config": {
+  "client": {
+   "all_objects": false,
+   "bind": "track",
+   "branches": "",
+   "first_trial": 0,
+   "fresh": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/fresh_states",
+   "host": "127.0.0.1",
+   "light": false,
+   "max_steps": 0,
+   "no_meta": false,
+   "objects": false,
+   "out": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/f1_main_41_bcl_er_cab_seed9.json",
+   "port": 9786,
+   "record": false,
+   "replan": 5,
+   "resize": 224,
+   "seed": 7,
+   "seg": false,
+   "state_mod": 0,
+   "suite": "libero_90",
+   "swap": "",
+   "swap_cams": "both",
+   "swap_mode": "render",
+   "swap_phase": "all",
+   "tasks": "41",
+   "trials": 20,
+   "videos": 2,
+   "wait": 10
+  },
+  "job": "4007482",
+  "mode": "lora:/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/bcl_er_cab.pt"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "chappie.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4007482",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "f1_main",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "92531e8e66ec4190906c166e47d404e080e2b6f6",
+  "short": "92531e8e"
+ },
+ "keys": {
+  "first_trial": 0,
+  "mode": "lora:/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/bcl_er_cab.pt",
+  "tasks": "41",
+  "trials": 20
+ },
+ "metrics": {
+  "complete": true,
+  "n_episodes": 20,
+  "secs": 691.8476474285126,
+  "success_rate": 0.8,
+  "tasks": {
+   "41": {
+    "errors": 0,
+    "language": "put the frying pan on top of the cabinet",
+    "mean_steps": 253.65,
+    "n": 20,
+    "success_rate": 0.8
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "f1_main__libero_90__bcl_er_cab_seed9__first_trial-0__mode57444fe98184__tasks-41__trials-20__s7__92531e8e",
+ "schema": 1,
+ "script": "experiments/libero_client.py",
+ "seconds": null,
+ "seed": 7,
+ "source_commit": null,
+ "started": "2026-10-03T15:38:07+00:00",
+ "stream": null,
+ "tag": "bcl_er_cab_seed9"
+}

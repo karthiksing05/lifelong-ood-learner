@@ -1,0 +1,118 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 4677632,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 4677632,
+  "tree": 0
+ },
+ "command": "experiments/c0_fit.py --task 0 --joint 62 --key put|the_salad_dressing --name Oall11 --rank 4 --approach",
+ "config": {
+  "approach": true,
+  "batch": 32,
+  "bind": false,
+  "demo": 0,
+  "goal": false,
+  "joint": "62",
+  "key": "put|the salad dressing",
+  "lr": 0.0001,
+  "name": "Oall11",
+  "rank": 4,
+  "scope": "expert",
+  "steps": 1000,
+  "tag": "",
+  "task": 0
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "shakey.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4011377",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "c0_fit",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "93dc56593fddd3e4f02ffdd85a3725897701c6e2",
+  "short": "93dc5659"
+ },
+ "keys": {},
+ "metrics": {
+  "approach": true,
+  "bind": false,
+  "bytes": 4677632,
+  "curve": {
+   "anchor": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "loss": [
+    0.08625602722167969,
+    0.010809848085045815,
+    0.005194644909352064,
+    0.0025234941858798265,
+    0.008834214881062508,
+    0.0015005555469542742,
+    0.0019444540375843644,
+    0.0010379357263445854,
+    0.0013000903418287635,
+    0.005145271774381399,
+    0.0023350247647613287
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "frames": 39,
+  "goal": false,
+  "joint": [
+   {
+    "clause": "pick up the salad dressing and put it in the tray",
+    "frames": [
+     0,
+     39
+    ],
+    "task": 62
+   }
+  ],
+  "rank": 4,
+  "scope": "expert",
+  "step_key": "put|the salad dressing"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "c0_fit__libero_90__joint_Oall11__s0__93dc5659",
+ "schema": 1,
+ "script": "experiments/c0_fit.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-04T08:44:14+00:00",
+ "stream": null,
+ "tag": "joint_Oall11"
+}

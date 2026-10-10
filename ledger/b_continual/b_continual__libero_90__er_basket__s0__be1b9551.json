@@ -1,0 +1,78 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/bcl_er_basket.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 18710528,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 18710528,
+  "tree": 0
+ },
+ "command": "experiments/b_continual.py --mode er --tasks 47+54+52+53+48+50+51+46+49 --tag _basket",
+ "config": {
+  "batch": 32,
+  "joint_steps": 2000,
+  "lr": 0.0001,
+  "mode": "er",
+  "rank": 16,
+  "steps": 500,
+  "tag": "_basket",
+  "tasks": "47+54+52+53+48+50+51+46+49"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "randotron.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4006181",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "b_continual",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "be1b95513bac850bc8055302015720160c9d2564",
+  "short": "be1b9551"
+ },
+ "keys": {},
+ "metrics": {
+  "final_losses": [
+   0.0015586594818159938,
+   0.001037642708979547,
+   0.002784470794722438,
+   0.0041342382319271564,
+   0.0015924327308312058,
+   0.0011912990594282746,
+   0.0017116321250796318,
+   0.002960466779768467
+  ],
+  "frames": 1097,
+  "mode": "er",
+  "secs": 8951.702561855316,
+  "tasks": [
+   47,
+   54,
+   52,
+   53,
+   48,
+   50,
+   46,
+   49
+  ]
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "b_continual__libero_90__er_basket__s0__be1b9551",
+ "schema": 1,
+ "script": "experiments/b_continual.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-03T07:34:59+00:00",
+ "stream": null,
+ "tag": "er_basket"
+}

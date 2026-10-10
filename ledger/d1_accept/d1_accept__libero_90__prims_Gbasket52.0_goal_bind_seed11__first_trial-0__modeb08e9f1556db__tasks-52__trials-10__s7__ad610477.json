@@ -1,0 +1,96 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/d1_accept_52_prims_Gbasket52.0_goal_bind_seed11.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "roll.sh MODE=prims:52?suite=libero_90&paths=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/prim_Gbasket52_0.pt&bind=1&goal=1 SUITE=libero_90 TASKS=52 TRIALS=10 (job 4010908)",
+ "config": {
+  "client": {
+   "all_objects": false,
+   "bind": "track",
+   "branches": "",
+   "first_trial": 0,
+   "fresh": "",
+   "host": "127.0.0.1",
+   "light": false,
+   "max_steps": 0,
+   "no_meta": false,
+   "objects": false,
+   "out": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/d1_accept_52_prims_Gbasket52.0_goal_bind_seed11.json",
+   "port": 9624,
+   "record": false,
+   "replan": 5,
+   "resize": 224,
+   "seed": 7,
+   "seg": false,
+   "state_mod": 0,
+   "suite": "libero_90",
+   "swap": "",
+   "swap_cams": "both",
+   "swap_mode": "render",
+   "swap_phase": "all",
+   "tasks": "52",
+   "trials": 10,
+   "videos": 2,
+   "wait": 10
+  },
+  "job": "4010908",
+  "mode": "prims:52?suite=libero_90&paths=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/prim_Gbasket52_0.pt&bind=1&goal=1"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "clippy.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4010908",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "d1_accept",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "ad610477fcafdd10f5f02dd6f11dc641dae041c3",
+  "short": "ad610477"
+ },
+ "keys": {
+  "first_trial": 0,
+  "mode": "prims:52?suite=libero_90&paths=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/prim_Gbasket52_0.pt&bind=1&goal=1",
+  "tasks": "52",
+  "trials": 10
+ },
+ "metrics": {
+  "complete": true,
+  "n_episodes": 10,
+  "secs": 509.1534125804901,
+  "success_rate": 0.2,
+  "tasks": {
+   "52": {
+    "errors": 0,
+    "language": "pick up the milk and put it in the basket",
+    "mean_steps": 364.2,
+    "n": 10,
+    "success_rate": 0.2
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "d1_accept__libero_90__prims_Gbasket52.0_goal_bind_seed11__first_trial-0__modeb08e9f1556db__tasks-52__trials-10__s7__ad610477",
+ "schema": 1,
+ "script": "experiments/libero_client.py",
+ "seconds": null,
+ "seed": 7,
+ "source_commit": null,
+ "started": "2026-10-04T06:08:31+00:00",
+ "stream": null,
+ "tag": "prims_Gbasket52.0_goal_bind_seed11"
+}

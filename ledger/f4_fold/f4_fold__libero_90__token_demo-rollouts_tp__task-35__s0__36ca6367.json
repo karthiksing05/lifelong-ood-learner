@@ -1,0 +1,100 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/ftoken_35_tp.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 18432,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 18432,
+  "tree": 0
+ },
+ "command": "experiments/f4_fold.py --task 35 --source demo+rollouts --rec results/robot/q7_p1_35_ftoken_self_rec --tag _tp",
+ "config": {
+  "batch": 16,
+  "demo": 0,
+  "lr": 0.01,
+  "max_frames": 400,
+  "n_tokens": 1,
+  "rec": "results/robot/q7_p1_35_ftoken_self_rec",
+  "seed": 0,
+  "source": "demo+rollouts",
+  "steps": 600,
+  "stride": 5,
+  "tag": "_tp",
+  "task": "35"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "voltron.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4001916",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "f4_fold",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "36ca6367121c3eec14e1f0d5a6033ac584fd1676",
+  "short": "36ca6367"
+ },
+ "keys": {
+  "task": "35"
+ },
+ "metrics": {
+  "curve": {
+   "anchor": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "loss": [
+    0.03654174879193306,
+    0.02057155780494213,
+    0.02300802245736122,
+    0.02647833339869976,
+    0.015657523646950722,
+    0.02074657566845417
+   ],
+   "step": [
+    100,
+    200,
+    300,
+    400,
+    500,
+    600
+   ]
+  },
+  "demo_episode": [
+   "results/robot/q7_p1_35_ftoken_self_rec/task35_trial20.npz",
+   "results/robot/q7_p1_35_ftoken_self_rec/task35_trial27.npz",
+   957
+  ],
+  "final_loss": 0.02074657566845417,
+  "first_loss": 0.03654174879193306,
+  "n_frames": 221,
+  "n_tokens": 1,
+  "source": "demo+rollouts",
+  "task": "35",
+  "text": "open the microwave",
+  "train_secs": 57.23139047622681
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "f4_fold__libero_90__token_demo-rollouts_tp__task-35__s0__36ca6367",
+ "schema": 1,
+ "script": "experiments/f4_fold.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-02T06:59:36+00:00",
+ "stream": null,
+ "tag": "token_demo+rollouts_tp"
+}

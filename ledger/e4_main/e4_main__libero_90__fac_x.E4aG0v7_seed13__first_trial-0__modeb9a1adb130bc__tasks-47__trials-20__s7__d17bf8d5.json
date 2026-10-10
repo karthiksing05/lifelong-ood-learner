@@ -1,0 +1,96 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/e4_main_47_fac_x.E4aG0v7_seed13.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "roll.sh MODE=prims:47?suite=libero_90&paths=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/prim_E4aG0v7_0.pt&apaths=none&goal=1 SUITE=libero_90 TASKS=47 TRIALS=20 (job 4019078)",
+ "config": {
+  "client": {
+   "all_objects": false,
+   "bind": "track",
+   "branches": "",
+   "first_trial": 0,
+   "fresh": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/fresh_states_b",
+   "host": "127.0.0.1",
+   "light": false,
+   "max_steps": 0,
+   "no_meta": false,
+   "objects": false,
+   "out": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/e4_main_47_fac_x.E4aG0v7_seed13.json",
+   "port": 9775,
+   "record": false,
+   "replan": 5,
+   "resize": 224,
+   "seed": 7,
+   "seg": false,
+   "state_mod": 0,
+   "suite": "libero_90",
+   "swap": "",
+   "swap_cams": "both",
+   "swap_mode": "render",
+   "swap_phase": "all",
+   "tasks": "47",
+   "trials": 20,
+   "videos": 2,
+   "wait": 10
+  },
+  "job": "4019078",
+  "mode": "prims:47?suite=libero_90&paths=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/prim_E4aG0v7_0.pt&apaths=none&goal=1"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "nestor.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4019078",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "e4_main",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "d17bf8d5f3e10268a51adfc8d136ac5f83a46648",
+  "short": "d17bf8d5"
+ },
+ "keys": {
+  "first_trial": 0,
+  "mode": "prims:47?suite=libero_90&paths=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/prim_E4aG0v7_0.pt&apaths=none&goal=1",
+  "tasks": "47",
+  "trials": 20
+ },
+ "metrics": {
+  "complete": true,
+  "n_episodes": 20,
+  "secs": 590.3166799545288,
+  "success_rate": 1.0,
+  "tasks": {
+   "47": {
+    "errors": 0,
+    "language": "pick up the cream cheese box and put it in the basket",
+    "mean_steps": 249.1,
+    "n": 20,
+    "success_rate": 1.0
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "e4_main__libero_90__fac_x.E4aG0v7_seed13__first_trial-0__modeb9a1adb130bc__tasks-47__trials-20__s7__d17bf8d5",
+ "schema": 1,
+ "script": "experiments/libero_client.py",
+ "seconds": null,
+ "seed": 7,
+ "source_commit": null,
+ "started": "2026-10-06T00:02:26+00:00",
+ "stream": null,
+ "tag": "fac_x.E4aG0v7_seed13"
+}

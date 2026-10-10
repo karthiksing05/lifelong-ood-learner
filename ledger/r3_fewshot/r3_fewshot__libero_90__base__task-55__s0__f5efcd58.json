@@ -1,0 +1,109 @@
+{
+ "artifacts": [
+  "results/robot/r3_lora_55.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 18710528,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 18710528,
+  "tree": 0
+ },
+ "command": "experiments/r3_fewshot.py --task 55",
+ "config": {
+  "batch": 32,
+  "demo": 0,
+  "full": false,
+  "lr": 0.0001,
+  "rank": 16,
+  "scope": "expert",
+  "seed": 0,
+  "steps": 1000,
+  "tag": "",
+  "task": 55
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "chitti.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4006154",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r3_fewshot",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "f5efcd581cb80744181a1d9c91c48a670ac3dce6",
+  "short": "f5efcd58"
+ },
+ "keys": {
+  "task": 55
+ },
+ "metrics": {
+  "curve": {
+   "anchor": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "loss": [
+    0.03990795835852623,
+    0.0070679145865142345,
+    0.003297968301922083,
+    0.0022529882844537497,
+    0.007226625923067331,
+    0.0015554319834336638,
+    0.0025142624508589506,
+    0.001367899589240551,
+    0.0015268706483766437,
+    0.005865817423909903,
+    0.003061258466914296
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "demo_episode": 2431,
+  "final_loss": 0.003061258466914296,
+  "first_loss": 0.03990795835852623,
+  "n_banks": 163,
+  "n_frames": 111,
+  "n_params": 9355264,
+  "task": 55,
+  "text": "pick up the alphabet soup and put it in the tray",
+  "train_secs": 127.69674491882324
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r3_fewshot__libero_90__base__task-55__s0__f5efcd58",
+ "schema": 1,
+ "script": "experiments/r3_fewshot.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-03T05:00:54+00:00",
+ "stream": null,
+ "tag": ""
+}

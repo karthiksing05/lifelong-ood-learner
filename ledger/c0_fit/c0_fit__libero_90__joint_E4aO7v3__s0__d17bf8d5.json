@@ -1,0 +1,136 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 4677632,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 4677632,
+  "tree": 0
+ },
+ "command": "experiments/c0_fit.py --task 0 --joint 46+50+55 --key put|the_alphabet_soup --name E4aO7v3 --rank 4 --approach",
+ "config": {
+  "approach": true,
+  "batch": 32,
+  "bind": false,
+  "demo": 0,
+  "goal": false,
+  "init": "",
+  "joint": "46+50+55",
+  "key": "put|the alphabet soup",
+  "lr": 0.0001,
+  "name": "E4aO7v3",
+  "rank": 4,
+  "scope": "expert",
+  "steps": 1000,
+  "tag": "",
+  "task": 0
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "megabot.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4018298",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "c0_fit",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "d17bf8d5f3e10268a51adfc8d136ac5f83a46648",
+  "short": "d17bf8d5"
+ },
+ "keys": {},
+ "metrics": {
+  "approach": true,
+  "bind": false,
+  "bytes": 4677632,
+  "curve": {
+   "anchor": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "loss": [
+    0.02273186668753624,
+    0.018767839297652245,
+    0.009023568592965603,
+    0.0033554595429450274,
+    0.008250276558101177,
+    0.0046705203130841255,
+    0.0013722751755267382,
+    0.0017402287339791656,
+    0.0031168407294899225,
+    0.006408490240573883,
+    0.0034923944622278214
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "frames": 146,
+  "goal": false,
+  "init": "",
+  "joint": [
+   {
+    "clause": "pick up the alphabet soup and put it in the basket",
+    "frames": [
+     0,
+     51
+    ],
+    "task": 46
+   },
+   {
+    "clause": "pick up the alphabet soup and put it in the basket",
+    "frames": [
+     0,
+     49
+    ],
+    "task": 50
+   },
+   {
+    "clause": "pick up the alphabet soup and put it in the tray",
+    "frames": [
+     0,
+     46
+    ],
+    "task": 55
+   }
+  ],
+  "rank": 4,
+  "scope": "expert",
+  "step_key": "put|the alphabet soup"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "c0_fit__libero_90__joint_E4aO7v3__s0__d17bf8d5",
+ "schema": 1,
+ "script": "experiments/c0_fit.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-05T21:07:27+00:00",
+ "stream": null,
+ "tag": "joint_E4aO7v3"
+}

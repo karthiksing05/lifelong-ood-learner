@@ -1,0 +1,78 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/bcl_seq_plate.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 18710528,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 18710528,
+  "tree": 0
+ },
+ "command": "experiments/b_continual.py --mode seq --tasks 9+71+13+36+12+14+72+30 --tag _plate",
+ "config": {
+  "batch": 32,
+  "joint_steps": 2000,
+  "lr": 0.0001,
+  "mode": "seq",
+  "rank": 16,
+  "steps": 500,
+  "tag": "_plate",
+  "tasks": "9+71+13+36+12+14+72+30"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "samantha.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4006177",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "b_continual",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "dc619a045a61b7f79fbb45eae3c38d1757443119",
+  "short": "dc619a04"
+ },
+ "keys": {},
+ "metrics": {
+  "final_losses": [
+   0.002106370870023966,
+   0.0007476153550669551,
+   0.003224240383133292,
+   0.005995749495923519,
+   0.0018766295397654176,
+   0.0010218735551461577,
+   0.0019272133940830827,
+   0.006449343170970678
+  ],
+  "frames": 1105,
+  "mode": "seq",
+  "secs": 583.6855094432831,
+  "tasks": [
+   9,
+   71,
+   13,
+   36,
+   12,
+   14,
+   72,
+   30
+  ]
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "b_continual__libero_90__seq_plate__s0__dc619a04",
+ "schema": 1,
+ "script": "experiments/b_continual.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-03T05:14:26+00:00",
+ "stream": null,
+ "tag": "seq_plate"
+}

@@ -1,0 +1,109 @@
+{
+ "artifacts": [
+  "results/robot/r3_lora_45.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 18710528,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 18710528,
+  "tree": 0
+ },
+ "command": "experiments/r3_fewshot.py --task 45",
+ "config": {
+  "batch": 32,
+  "demo": 0,
+  "full": false,
+  "lr": 0.0001,
+  "rank": 16,
+  "scope": "expert",
+  "seed": 0,
+  "steps": 1000,
+  "tag": "",
+  "task": 45
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "megazord.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4006147",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r3_fewshot",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "f5efcd581cb80744181a1d9c91c48a670ac3dce6",
+  "short": "f5efcd58"
+ },
+ "keys": {
+  "task": 45
+ },
+ "metrics": {
+  "curve": {
+   "anchor": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "loss": [
+    0.07660756260156631,
+    0.01589111052453518,
+    0.008089689537882805,
+    0.0026784813962876797,
+    0.006576223764568567,
+    0.0028223132248967886,
+    0.0038962021935731173,
+    0.001605059253051877,
+    0.0020622059237211943,
+    0.00742949265986681,
+    0.0038966999854892492
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "demo_episode": 527,
+  "final_loss": 0.0038966999854892492,
+  "first_loss": 0.07660756260156631,
+  "n_banks": 163,
+  "n_frames": 253,
+  "n_params": 9355264,
+  "task": 45,
+  "text": "turn on the stove and put the frying pan on it",
+  "train_secs": 128.87064361572266
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r3_fewshot__libero_90__base__task-45__s0__f5efcd58",
+ "schema": 1,
+ "script": "experiments/r3_fewshot.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-03T04:54:59+00:00",
+ "stream": null,
+ "tag": ""
+}

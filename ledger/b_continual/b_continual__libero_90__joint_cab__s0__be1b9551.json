@@ -1,0 +1,69 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/bcl_joint_cab.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 18710528,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 18710528,
+  "tree": 0
+ },
+ "command": "experiments/b_continual.py --mode joint --tasks 31+15+25+10+43+41 --tag _cab",
+ "config": {
+  "batch": 32,
+  "joint_steps": 2000,
+  "lr": 0.0001,
+  "mode": "joint",
+  "rank": 16,
+  "steps": 500,
+  "tag": "_cab",
+  "tasks": "31+15+25+10+43+41"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "xaea-12.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4006173",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "b_continual",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "be1b95513bac850bc8055302015720160c9d2564",
+  "short": "be1b9551"
+ },
+ "keys": {},
+ "metrics": {
+  "final_losses": [
+   0.0031254866626113653
+  ],
+  "frames": 917,
+  "mode": "joint",
+  "secs": 4490.639248132706,
+  "tasks": [
+   31,
+   15,
+   25,
+   10,
+   43,
+   41
+  ]
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "b_continual__libero_90__joint_cab__s0__be1b9551",
+ "schema": 1,
+ "script": "experiments/b_continual.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-03T06:19:33+00:00",
+ "stream": null,
+ "tag": "joint_cab"
+}

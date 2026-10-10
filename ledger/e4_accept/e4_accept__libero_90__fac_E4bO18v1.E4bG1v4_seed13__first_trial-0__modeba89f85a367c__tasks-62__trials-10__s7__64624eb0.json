@@ -1,0 +1,96 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/e4_accept_62_fac_E4bO18v1.E4bG1v4_seed13.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "roll.sh MODE=prims:62?suite=libero_90&paths=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/prim_E4bG1v4_0.pt&apaths=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/prim_E4bO18v1_0.pt&goal=1 SUITE=libero_90 TASKS=62 TRIALS=10 (job 4015322)",
+ "config": {
+  "client": {
+   "all_objects": false,
+   "bind": "track",
+   "branches": "",
+   "first_trial": 0,
+   "fresh": "",
+   "host": "127.0.0.1",
+   "light": false,
+   "max_steps": 0,
+   "no_meta": false,
+   "objects": false,
+   "out": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/e4_accept_62_fac_E4bO18v1.E4bG1v4_seed13.json",
+   "port": 9816,
+   "record": false,
+   "replan": 5,
+   "resize": 224,
+   "seed": 7,
+   "seg": false,
+   "state_mod": 0,
+   "suite": "libero_90",
+   "swap": "",
+   "swap_cams": "both",
+   "swap_mode": "render",
+   "swap_phase": "all",
+   "tasks": "62",
+   "trials": 10,
+   "videos": 2,
+   "wait": 10
+  },
+  "job": "4015322",
+  "mode": "prims:62?suite=libero_90&paths=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/prim_E4bG1v4_0.pt&apaths=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/prim_E4bO18v1_0.pt&goal=1"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "randotron.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4015322",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "e4_accept",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "64624eb0955ca13a7ce377295049038caff1eeb8",
+  "short": "64624eb0"
+ },
+ "keys": {
+  "first_trial": 0,
+  "mode": "prims:62?suite=libero_90&paths=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/prim_E4bG1v4_0.pt&apaths=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/prim_E4bO18v1_0.pt&goal=1",
+  "tasks": "62",
+  "trials": 10
+ },
+ "metrics": {
+  "complete": true,
+  "n_episodes": 10,
+  "secs": 401.1514792442322,
+  "success_rate": 0.3,
+  "tasks": {
+   "62": {
+    "errors": 0,
+    "language": "pick up the salad dressing and put it in the tray",
+    "mean_steps": 309.8,
+    "n": 10,
+    "success_rate": 0.3
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "e4_accept__libero_90__fac_E4bO18v1.E4bG1v4_seed13__first_trial-0__modeba89f85a367c__tasks-62__trials-10__s7__64624eb0",
+ "schema": 1,
+ "script": "experiments/libero_client.py",
+ "seconds": null,
+ "seed": 7,
+ "source_commit": null,
+ "started": "2026-10-05T04:07:06+00:00",
+ "stream": null,
+ "tag": "fac_E4bO18v1.E4bG1v4_seed13"
+}

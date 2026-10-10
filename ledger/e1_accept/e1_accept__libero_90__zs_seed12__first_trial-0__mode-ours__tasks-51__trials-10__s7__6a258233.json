@@ -1,0 +1,96 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/e1_accept_51_zs_seed12.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "roll.sh MODE=ours SUITE=libero_90 TASKS=51 TRIALS=10 (job 4011849)",
+ "config": {
+  "client": {
+   "all_objects": false,
+   "bind": "track",
+   "branches": "",
+   "first_trial": 0,
+   "fresh": "",
+   "host": "127.0.0.1",
+   "light": false,
+   "max_steps": 0,
+   "no_meta": false,
+   "objects": false,
+   "out": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/e1_accept_51_zs_seed12.json",
+   "port": 9837,
+   "record": false,
+   "replan": 5,
+   "resize": 224,
+   "seed": 7,
+   "seg": false,
+   "state_mod": 0,
+   "suite": "libero_90",
+   "swap": "",
+   "swap_cams": "both",
+   "swap_mode": "render",
+   "swap_phase": "all",
+   "tasks": "51",
+   "trials": 10,
+   "videos": 2,
+   "wait": 10
+  },
+  "job": "4011849",
+  "mode": "ours"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "uniblab.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4011849",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "e1_accept",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "6a2582330f7414ebe331f45e4cbe405db2dda5d0",
+  "short": "6a258233"
+ },
+ "keys": {
+  "first_trial": 0,
+  "mode": "ours",
+  "tasks": "51",
+  "trials": 10
+ },
+ "metrics": {
+  "complete": true,
+  "n_episodes": 10,
+  "secs": 271.33062267303467,
+  "success_rate": 1.0,
+  "tasks": {
+   "51": {
+    "errors": 0,
+    "language": "pick up the butter and put it in the basket",
+    "mean_steps": 250.3,
+    "n": 10,
+    "success_rate": 1.0
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "e1_accept__libero_90__zs_seed12__first_trial-0__mode-ours__tasks-51__trials-10__s7__6a258233",
+ "schema": 1,
+ "script": "experiments/libero_client.py",
+ "seconds": null,
+ "seed": 7,
+ "source_commit": null,
+ "started": "2026-10-04T10:17:15+00:00",
+ "stream": null,
+ "tag": "zs_seed12"
+}

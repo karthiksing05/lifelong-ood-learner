@@ -1,0 +1,131 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/ftoken_12_q82.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 18432,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 18432,
+  "tree": 0
+ },
+ "command": "experiments/f4_fold.py --task 12 --source rollouts --rec results/robot/q8_p1_12_bind_rho0.7_all_approach_rec+results/robot/q8_p2_12_ftoken_self_q81_rec --tag _q82",
+ "config": {
+  "batch": 16,
+  "demo": 0,
+  "lr": 0.01,
+  "max_frames": 400,
+  "n_tokens": 1,
+  "rec": "results/robot/q8_p1_12_bind_rho0.7_all_approach_rec+results/robot/q8_p2_12_ftoken_self_q81_rec",
+  "seed": 0,
+  "source": "rollouts",
+  "steps": 600,
+  "stride": 5,
+  "tag": "_q82",
+  "task": "12"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "ig-88.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4002298",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "f4_fold",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "a75dae6812d53e382a7a5f76e26a21f3a1c6eb8b",
+  "short": "a75dae68"
+ },
+ "keys": {
+  "task": "12"
+ },
+ "metrics": {
+  "curve": {
+   "anchor": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "loss": [
+    0.029364457353949547,
+    0.024264072999358177,
+    0.025797564536333084,
+    0.02141476608812809,
+    0.01804479956626892,
+    0.03532326966524124
+   ],
+   "step": [
+    100,
+    200,
+    300,
+    400,
+    500,
+    600
+   ]
+  },
+  "demo_episode": [
+   "results/robot/q8_p1_12_bind_rho0.7_all_approach_rec/task12_trial10.npz",
+   "results/robot/q8_p1_12_bind_rho0.7_all_approach_rec/task12_trial11.npz",
+   "results/robot/q8_p1_12_bind_rho0.7_all_approach_rec/task12_trial12.npz",
+   "results/robot/q8_p1_12_bind_rho0.7_all_approach_rec/task12_trial13.npz",
+   "results/robot/q8_p1_12_bind_rho0.7_all_approach_rec/task12_trial15.npz",
+   "results/robot/q8_p1_12_bind_rho0.7_all_approach_rec/task12_trial16.npz",
+   "results/robot/q8_p1_12_bind_rho0.7_all_approach_rec/task12_trial17.npz",
+   "results/robot/q8_p1_12_bind_rho0.7_all_approach_rec/task12_trial18.npz",
+   "results/robot/q8_p1_12_bind_rho0.7_all_approach_rec/task12_trial19.npz",
+   "results/robot/q8_p1_12_bind_rho0.7_all_approach_rec/task12_trial20.npz",
+   "results/robot/q8_p1_12_bind_rho0.7_all_approach_rec/task12_trial22.npz",
+   "results/robot/q8_p1_12_bind_rho0.7_all_approach_rec/task12_trial23.npz",
+   "results/robot/q8_p1_12_bind_rho0.7_all_approach_rec/task12_trial24.npz",
+   "results/robot/q8_p1_12_bind_rho0.7_all_approach_rec/task12_trial25.npz",
+   "results/robot/q8_p1_12_bind_rho0.7_all_approach_rec/task12_trial27.npz",
+   "results/robot/q8_p1_12_bind_rho0.7_all_approach_rec/task12_trial29.npz",
+   "results/robot/q8_p2_12_ftoken_self_q81_rec/task12_trial10.npz",
+   "results/robot/q8_p2_12_ftoken_self_q81_rec/task12_trial11.npz",
+   "results/robot/q8_p2_12_ftoken_self_q81_rec/task12_trial12.npz",
+   "results/robot/q8_p2_12_ftoken_self_q81_rec/task12_trial13.npz",
+   "results/robot/q8_p2_12_ftoken_self_q81_rec/task12_trial15.npz",
+   "results/robot/q8_p2_12_ftoken_self_q81_rec/task12_trial16.npz",
+   "results/robot/q8_p2_12_ftoken_self_q81_rec/task12_trial17.npz",
+   "results/robot/q8_p2_12_ftoken_self_q81_rec/task12_trial18.npz",
+   "results/robot/q8_p2_12_ftoken_self_q81_rec/task12_trial19.npz",
+   "results/robot/q8_p2_12_ftoken_self_q81_rec/task12_trial20.npz",
+   "results/robot/q8_p2_12_ftoken_self_q81_rec/task12_trial21.npz",
+   "results/robot/q8_p2_12_ftoken_self_q81_rec/task12_trial22.npz",
+   "results/robot/q8_p2_12_ftoken_self_q81_rec/task12_trial23.npz",
+   "results/robot/q8_p2_12_ftoken_self_q81_rec/task12_trial24.npz",
+   "results/robot/q8_p2_12_ftoken_self_q81_rec/task12_trial25.npz",
+   "results/robot/q8_p2_12_ftoken_self_q81_rec/task12_trial27.npz",
+   "results/robot/q8_p2_12_ftoken_self_q81_rec/task12_trial28.npz",
+   "results/robot/q8_p2_12_ftoken_self_q81_rec/task12_trial29.npz"
+  ],
+  "final_loss": 0.03532326966524124,
+  "first_loss": 0.029364457353949547,
+  "n_frames": 400,
+  "n_tokens": 1,
+  "source": "rollouts",
+  "task": "12",
+  "text": "put the black bowl at the back on the plate",
+  "train_secs": 52.65290975570679
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "f4_fold__libero_90__token_rollouts_q82__task-12__s0__a75dae68",
+ "schema": 1,
+ "script": "experiments/f4_fold.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-02T09:08:24+00:00",
+ "stream": null,
+ "tag": "token_rollouts_q82"
+}

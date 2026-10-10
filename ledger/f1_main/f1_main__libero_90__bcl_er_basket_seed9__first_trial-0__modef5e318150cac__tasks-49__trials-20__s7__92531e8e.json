@@ -1,0 +1,96 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/f1_main_49_bcl_er_basket_seed9.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "roll.sh MODE=lora:/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/bcl_er_basket.pt SUITE=libero_90 TASKS=49 TRIALS=20 (job 4007579)",
+ "config": {
+  "client": {
+   "all_objects": false,
+   "bind": "track",
+   "branches": "",
+   "first_trial": 0,
+   "fresh": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/fresh_states",
+   "host": "127.0.0.1",
+   "light": false,
+   "max_steps": 0,
+   "no_meta": false,
+   "objects": false,
+   "out": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/f1_main_49_bcl_er_basket_seed9.json",
+   "port": 9207,
+   "record": false,
+   "replan": 5,
+   "resize": 224,
+   "seed": 7,
+   "seg": false,
+   "state_mod": 0,
+   "suite": "libero_90",
+   "swap": "",
+   "swap_cams": "both",
+   "swap_mode": "render",
+   "swap_phase": "all",
+   "tasks": "49",
+   "trials": 20,
+   "videos": 2,
+   "wait": 10
+  },
+  "job": "4007579",
+  "mode": "lora:/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/bcl_er_basket.pt"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "brainiac.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4007579",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "f1_main",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "92531e8e66ec4190906c166e47d404e080e2b6f6",
+  "short": "92531e8e"
+ },
+ "keys": {
+  "first_trial": 0,
+  "mode": "lora:/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/bcl_er_basket.pt",
+  "tasks": "49",
+  "trials": 20
+ },
+ "metrics": {
+  "complete": true,
+  "n_episodes": 20,
+  "secs": 1069.3310585021973,
+  "success_rate": 0.0,
+  "tasks": {
+   "49": {
+    "errors": 0,
+    "language": "pick up the tomato sauce and put it in the basket",
+    "mean_steps": 400.0,
+    "n": 20,
+    "success_rate": 0.0
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "f1_main__libero_90__bcl_er_basket_seed9__first_trial-0__modef5e318150cac__tasks-49__trials-20__s7__92531e8e",
+ "schema": 1,
+ "script": "experiments/libero_client.py",
+ "seconds": null,
+ "seed": 7,
+ "source_commit": null,
+ "started": "2026-10-03T16:01:41+00:00",
+ "stream": null,
+ "tag": "bcl_er_basket_seed9"
+}

@@ -1,0 +1,95 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/b_k1_practice_52_role.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "roll.sh MODE=promptx:pick_up_the_alphabet_soup_and_put_it_in_the_basket SUITE=libero_90 TASKS=52 TRIALS=20 (job 3998259)",
+ "config": {
+  "client": {
+   "all_objects": false,
+   "bind": "track",
+   "branches": "",
+   "first_trial": 10,
+   "host": "127.0.0.1",
+   "light": false,
+   "max_steps": 0,
+   "no_meta": false,
+   "objects": false,
+   "out": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/b_k1_practice_52_role.json",
+   "port": 9087,
+   "record": true,
+   "replan": 5,
+   "resize": 224,
+   "seed": 7,
+   "seg": false,
+   "state_mod": 0,
+   "suite": "libero_90",
+   "swap": "milk_1:alphabet_soup_1",
+   "swap_cams": "both",
+   "swap_mode": "render",
+   "swap_phase": "all",
+   "tasks": "52",
+   "trials": 20,
+   "videos": 2,
+   "wait": 10
+  },
+  "job": "3998259",
+  "mode": "promptx:pick_up_the_alphabet_soup_and_put_it_in_the_basket"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "heistotron.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3998259",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "b_k1_practice",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "caea555081b802be3a13eb116a378c78c5da8079",
+  "short": "caea5550"
+ },
+ "keys": {
+  "first_trial": 10,
+  "mode": "promptx:pick_up_the_alphabet_soup_and_put_it_in_the_basket",
+  "tasks": "52",
+  "trials": 20
+ },
+ "metrics": {
+  "complete": true,
+  "n_episodes": 20,
+  "secs": 865.824241399765,
+  "success_rate": 0.45,
+  "tasks": {
+   "52": {
+    "errors": 0,
+    "language": "pick up the milk and put it in the basket",
+    "mean_steps": 315.55,
+    "n": 20,
+    "success_rate": 0.45
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "b_k1_practice__libero_90__role__first_trial-10__mode061f16d58739__tasks-52__trials-20__s7__caea5550",
+ "schema": 1,
+ "script": "experiments/libero_client.py",
+ "seconds": null,
+ "seed": 7,
+ "source_commit": null,
+ "started": "2026-10-01T23:21:13+00:00",
+ "stream": null,
+ "tag": "role"
+}

@@ -1,0 +1,182 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 4677632,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 4677632,
+  "tree": 0
+ },
+ "command": "experiments/c0_fit.py --task 0 --joint 55+56+57+58+59+61+62+63+64 --key in|the_tray --name Galltray --rank 4 --goal",
+ "config": {
+  "approach": false,
+  "batch": 32,
+  "bind": false,
+  "demo": 0,
+  "goal": true,
+  "joint": "55+56+57+58+59+61+62+63+64",
+  "key": "in|the tray",
+  "lr": 0.0001,
+  "name": "Galltray",
+  "rank": 4,
+  "scope": "expert",
+  "steps": 1000,
+  "tag": "",
+  "task": 0
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "shakey.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4011376",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "c0_fit",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "93dc56593fddd3e4f02ffdd85a3725897701c6e2",
+  "short": "93dc5659"
+ },
+ "keys": {},
+ "metrics": {
+  "approach": false,
+  "bind": false,
+  "bytes": 4677632,
+  "curve": {
+   "anchor": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "loss": [
+    0.051985081285238266,
+    0.029259342700242996,
+    0.02795851230621338,
+    0.02610100246965885,
+    0.02263442985713482,
+    0.015560939908027649,
+    0.008798212744295597,
+    0.010216242633759975,
+    0.008117669261991978,
+    0.013630961067974567,
+    0.00920675229281187
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "frames": 640,
+  "goal": true,
+  "joint": [
+   {
+    "clause": "pick up the alphabet soup and put it in the tray",
+    "frames": [
+     46,
+     111
+    ],
+    "task": 55
+   },
+   {
+    "clause": "pick up the butter and put it in the tray",
+    "frames": [
+     38,
+     103
+    ],
+    "task": 56
+   },
+   {
+    "clause": "pick up the cream cheese and put it in the tray",
+    "frames": [
+     66,
+     148
+    ],
+    "task": 57
+   },
+   {
+    "clause": "pick up the ketchup and put it in the tray",
+    "frames": [
+     61,
+     143
+    ],
+    "task": 58
+   },
+   {
+    "clause": "pick up the tomato sauce and put it in the tray",
+    "frames": [
+     72,
+     128
+    ],
+    "task": 59
+   },
+   {
+    "clause": "pick up the chocolate pudding and put it in the tray",
+    "frames": [
+     58,
+     151
+    ],
+    "task": 61
+   },
+   {
+    "clause": "pick up the salad dressing and put it in the tray",
+    "frames": [
+     39,
+     114
+    ],
+    "task": 62
+   },
+   {
+    "clause": "place the bowls in the tray",
+    "frames": [
+     144,
+     195
+    ],
+    "task": 63
+   },
+   {
+    "clause": "place the bowls in the tray",
+    "frames": [
+     157,
+     228
+    ],
+    "task": 64
+   }
+  ],
+  "rank": 4,
+  "scope": "expert",
+  "step_key": "in|the tray"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "c0_fit__libero_90__joint_Galltray__s0__93dc5659",
+ "schema": 1,
+ "script": "experiments/c0_fit.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-04T08:44:22+00:00",
+ "stream": null,
+ "tag": "joint_Galltray"
+}

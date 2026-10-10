@@ -1,0 +1,96 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/f1_accept_9_bcl_joint_plate_seed9.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "roll.sh MODE=lora:/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/bcl_joint_plate.pt SUITE=libero_90 TASKS=9 TRIALS=10 (job 4007660)",
+ "config": {
+  "client": {
+   "all_objects": false,
+   "bind": "track",
+   "branches": "",
+   "first_trial": 0,
+   "fresh": "",
+   "host": "127.0.0.1",
+   "light": false,
+   "max_steps": 0,
+   "no_meta": false,
+   "objects": false,
+   "out": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/f1_accept_9_bcl_joint_plate_seed9.json",
+   "port": 9450,
+   "record": false,
+   "replan": 5,
+   "resize": 224,
+   "seed": 7,
+   "seg": false,
+   "state_mod": 0,
+   "suite": "libero_90",
+   "swap": "",
+   "swap_cams": "both",
+   "swap_mode": "render",
+   "swap_phase": "all",
+   "tasks": "9",
+   "trials": 10,
+   "videos": 2,
+   "wait": 10
+  },
+  "job": "4007660",
+  "mode": "lora:/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/bcl_joint_plate.pt"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "heistotron.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4007660",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "f1_accept",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "f317e82f0d6f0410ae0b5602a88ced73d3c91809",
+  "short": "f317e82f"
+ },
+ "keys": {
+  "first_trial": 0,
+  "mode": "lora:/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/bcl_joint_plate.pt",
+  "tasks": "9",
+  "trials": 10
+ },
+ "metrics": {
+  "complete": true,
+  "n_episodes": 10,
+  "secs": 208.25466561317444,
+  "success_rate": 0.9,
+  "tasks": {
+   "9": {
+    "errors": 0,
+    "language": "put the black bowl on the plate",
+    "mean_steps": 142.6,
+    "n": 10,
+    "success_rate": 0.9
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "f1_accept__libero_90__bcl_joint_plate_seed9__first_trial-0__mode97405491e94a__tasks-9__trials-10__s7__f317e82f",
+ "schema": 1,
+ "script": "experiments/libero_client.py",
+ "seconds": null,
+ "seed": 7,
+ "source_commit": null,
+ "started": "2026-10-03T16:24:46+00:00",
+ "stream": null,
+ "tag": "bcl_joint_plate_seed9"
+}

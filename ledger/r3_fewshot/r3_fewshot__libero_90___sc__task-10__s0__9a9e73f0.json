@@ -1,0 +1,109 @@
+{
+ "artifacts": [
+  "results/robot/r3_lora_10_sc.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 18710528,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 18710528,
+  "tree": 0
+ },
+ "command": "experiments/r3_fewshot.py --task 10 --tag _sc",
+ "config": {
+  "batch": 32,
+  "demo": 0,
+  "full": false,
+  "lr": 0.0001,
+  "rank": 16,
+  "scope": "expert",
+  "seed": 0,
+  "steps": 1000,
+  "tag": "_sc",
+  "task": 10
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "samantha.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4011701",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "r3_fewshot",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "9a9e73f0de9033db3ceae56851746b3090f4e2d6",
+  "short": "9a9e73f0"
+ },
+ "keys": {
+  "task": 10
+ },
+ "metrics": {
+  "curve": {
+   "anchor": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "loss": [
+    0.05507264286279678,
+    0.010745319537818432,
+    0.00383256608620286,
+    0.0037886076606810093,
+    0.0052332207560539246,
+    0.002701730700209737,
+    0.0025057196617126465,
+    0.0012915522092953324,
+    0.0010766212362796068,
+    0.007857955992221832,
+    0.0033071681391447783
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "demo_episode": 1809,
+  "final_loss": 0.0033071681391447783,
+  "first_loss": 0.05507264286279678,
+  "n_banks": 163,
+  "n_frames": 151,
+  "n_params": 9355264,
+  "task": 10,
+  "text": "put the black bowl on top of the cabinet",
+  "train_secs": 127.98899149894714
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "r3_fewshot__libero_90___sc__task-10__s0__9a9e73f0",
+ "schema": 1,
+ "script": "experiments/r3_fewshot.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-04T09:26:37+00:00",
+ "stream": null,
+ "tag": "_sc"
+}

@@ -1,0 +1,109 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/ftoken_34_tp.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 18432,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 18432,
+  "tree": 0
+ },
+ "command": "experiments/f4_fold.py --task 34 --source demo+rollouts --rec results/robot/q7_p1_34_ftoken_self_rec --tag _tp",
+ "config": {
+  "batch": 16,
+  "demo": 0,
+  "lr": 0.01,
+  "max_frames": 400,
+  "n_tokens": 1,
+  "rec": "results/robot/q7_p1_34_ftoken_self_rec",
+  "seed": 0,
+  "source": "demo+rollouts",
+  "steps": 600,
+  "stride": 5,
+  "tag": "_tp",
+  "task": "34"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "dave.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4001936",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "f4_fold",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "36ca6367121c3eec14e1f0d5a6033ac584fd1676",
+  "short": "36ca6367"
+ },
+ "keys": {
+  "task": "34"
+ },
+ "metrics": {
+  "curve": {
+   "anchor": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "loss": [
+    0.04674706608057022,
+    0.023601217195391655,
+    0.04417542368173599,
+    0.023512791842222214,
+    0.024596013128757477,
+    0.020587485283613205
+   ],
+   "step": [
+    100,
+    200,
+    300,
+    400,
+    500,
+    600
+   ]
+  },
+  "demo_episode": [
+   "results/robot/q7_p1_34_ftoken_self_rec/task34_trial10.npz",
+   "results/robot/q7_p1_34_ftoken_self_rec/task34_trial12.npz",
+   "results/robot/q7_p1_34_ftoken_self_rec/task34_trial15.npz",
+   "results/robot/q7_p1_34_ftoken_self_rec/task34_trial16.npz",
+   "results/robot/q7_p1_34_ftoken_self_rec/task34_trial18.npz",
+   "results/robot/q7_p1_34_ftoken_self_rec/task34_trial21.npz",
+   "results/robot/q7_p1_34_ftoken_self_rec/task34_trial22.npz",
+   "results/robot/q7_p1_34_ftoken_self_rec/task34_trial24.npz",
+   "results/robot/q7_p1_34_ftoken_self_rec/task34_trial25.npz",
+   "results/robot/q7_p1_34_ftoken_self_rec/task34_trial26.npz",
+   "results/robot/q7_p1_34_ftoken_self_rec/task34_trial27.npz",
+   2074
+  ],
+  "final_loss": 0.020587485283613205,
+  "first_loss": 0.04674706608057022,
+  "n_frames": 511,
+  "n_tokens": 1,
+  "source": "demo+rollouts",
+  "task": "34",
+  "text": "put the yellow and white mug to the front of the white mug",
+  "train_secs": 75.69625186920166
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "f4_fold__libero_90__token_demo-rollouts_tp__task-34__s0__36ca6367",
+ "schema": 1,
+ "script": "experiments/f4_fold.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-02T06:58:36+00:00",
+ "stream": null,
+ "tag": "token_demo+rollouts_tp"
+}

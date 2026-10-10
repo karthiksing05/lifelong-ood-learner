@@ -1,0 +1,95 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/q8_p2_2_ftoken_self_q81.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "roll.sh MODE=ftoken:/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/ftoken_2_q81.pt SUITE=libero_90 TASKS=2 TRIALS=20 (job 4002318)",
+ "config": {
+  "client": {
+   "all_objects": false,
+   "bind": "track",
+   "branches": "",
+   "first_trial": 10,
+   "host": "127.0.0.1",
+   "light": false,
+   "max_steps": 0,
+   "no_meta": false,
+   "objects": false,
+   "out": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/q8_p2_2_ftoken_self_q81.json",
+   "port": 9084,
+   "record": true,
+   "replan": 5,
+   "resize": 224,
+   "seed": 7,
+   "seg": false,
+   "state_mod": 0,
+   "suite": "libero_90",
+   "swap": "",
+   "swap_cams": "both",
+   "swap_mode": "render",
+   "swap_phase": "all",
+   "tasks": "2",
+   "trials": 20,
+   "videos": 2,
+   "wait": 10
+  },
+  "job": "4002318",
+  "mode": "ftoken:/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/ftoken_2_q81.pt"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "dave.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4002318",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "q8_p2",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "a75dae6812d53e382a7a5f76e26a21f3a1c6eb8b",
+  "short": "a75dae68"
+ },
+ "keys": {
+  "first_trial": 10,
+  "mode": "ftoken:/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/ftoken_2_q81.pt",
+  "tasks": "2",
+  "trials": 20
+ },
+ "metrics": {
+  "complete": true,
+  "n_episodes": 20,
+  "secs": 642.2905974388123,
+  "success_rate": 0.75,
+  "tasks": {
+   "2": {
+    "errors": 0,
+    "language": "put the black bowl in the top drawer of the cabinet",
+    "mean_steps": 274.9,
+    "n": 20,
+    "success_rate": 0.75
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "q8_p2__libero_90__ftoken_self_q81__first_trial-10__mode8ed1c3ea76f7__tasks-2__trials-20__s7__a75dae68",
+ "schema": 1,
+ "script": "experiments/libero_client.py",
+ "seconds": null,
+ "seed": 7,
+ "source_commit": null,
+ "started": "2026-10-02T09:12:14+00:00",
+ "stream": null,
+ "tag": "ftoken_self_q81"
+}

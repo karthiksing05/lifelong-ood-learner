@@ -1,0 +1,111 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/ftoken_43_q82.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 18432,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 18432,
+  "tree": 0
+ },
+ "command": "experiments/f4_fold.py --task 43 --source rollouts --rec results/robot/q8_p1_43_bind_rho0.7_all_approach_rec+results/robot/q8_p2_43_ftoken_self_q81_rec --tag _q82",
+ "config": {
+  "batch": 16,
+  "demo": 0,
+  "lr": 0.01,
+  "max_frames": 400,
+  "n_tokens": 1,
+  "rec": "results/robot/q8_p1_43_bind_rho0.7_all_approach_rec+results/robot/q8_p2_43_ftoken_self_q81_rec",
+  "seed": 0,
+  "source": "rollouts",
+  "steps": 600,
+  "stride": 5,
+  "tag": "_q82",
+  "task": "43"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "dave.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4002326",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "f4_fold",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "a75dae6812d53e382a7a5f76e26a21f3a1c6eb8b",
+  "short": "a75dae68"
+ },
+ "keys": {
+  "task": "43"
+ },
+ "metrics": {
+  "curve": {
+   "anchor": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "loss": [
+    0.029362201690673828,
+    0.03096066787838936,
+    0.026481319218873978,
+    0.01864120364189148,
+    0.0135510778054595,
+    0.01736828312277794
+   ],
+   "step": [
+    100,
+    200,
+    300,
+    400,
+    500,
+    600
+   ]
+  },
+  "demo_episode": [
+   "results/robot/q8_p1_43_bind_rho0.7_all_approach_rec/task43_trial11.npz",
+   "results/robot/q8_p1_43_bind_rho0.7_all_approach_rec/task43_trial13.npz",
+   "results/robot/q8_p1_43_bind_rho0.7_all_approach_rec/task43_trial14.npz",
+   "results/robot/q8_p1_43_bind_rho0.7_all_approach_rec/task43_trial20.npz",
+   "results/robot/q8_p1_43_bind_rho0.7_all_approach_rec/task43_trial24.npz",
+   "results/robot/q8_p1_43_bind_rho0.7_all_approach_rec/task43_trial28.npz",
+   "results/robot/q8_p2_43_ftoken_self_q81_rec/task43_trial10.npz",
+   "results/robot/q8_p2_43_ftoken_self_q81_rec/task43_trial13.npz",
+   "results/robot/q8_p2_43_ftoken_self_q81_rec/task43_trial14.npz",
+   "results/robot/q8_p2_43_ftoken_self_q81_rec/task43_trial16.npz",
+   "results/robot/q8_p2_43_ftoken_self_q81_rec/task43_trial17.npz",
+   "results/robot/q8_p2_43_ftoken_self_q81_rec/task43_trial19.npz",
+   "results/robot/q8_p2_43_ftoken_self_q81_rec/task43_trial20.npz",
+   "results/robot/q8_p2_43_ftoken_self_q81_rec/task43_trial25.npz"
+  ],
+  "final_loss": 0.01736828312277794,
+  "first_loss": 0.029362201690673828,
+  "n_frames": 400,
+  "n_tokens": 1,
+  "source": "rollouts",
+  "task": "43",
+  "text": "put the white bowl on top of the cabinet",
+  "train_secs": 72.31622791290283
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "f4_fold__libero_90__token_rollouts_q82__task-43__s0__a75dae68",
+ "schema": 1,
+ "script": "experiments/f4_fold.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-02T09:18:30+00:00",
+ "stream": null,
+ "tag": "token_rollouts_q82"
+}

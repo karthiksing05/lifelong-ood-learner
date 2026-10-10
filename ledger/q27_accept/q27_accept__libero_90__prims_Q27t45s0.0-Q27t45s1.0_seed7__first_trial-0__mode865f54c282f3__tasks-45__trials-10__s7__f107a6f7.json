@@ -1,0 +1,95 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/q27_accept_45_prims_Q27t45s0.0+Q27t45s1.0_seed7.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "roll.sh MODE=prims:45?suite=libero_90&paths=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/prim_Q27t45s0_0.pt+/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/prim_Q27t45s1_0.pt SUITE=libero_90 TASKS=45 TRIALS=10 (job 4005499)",
+ "config": {
+  "client": {
+   "all_objects": false,
+   "bind": "track",
+   "branches": "",
+   "first_trial": 0,
+   "host": "127.0.0.1",
+   "light": false,
+   "max_steps": 0,
+   "no_meta": false,
+   "objects": false,
+   "out": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/q27_accept_45_prims_Q27t45s0.0+Q27t45s1.0_seed7.json",
+   "port": 9058,
+   "record": false,
+   "replan": 5,
+   "resize": 224,
+   "seed": 7,
+   "seg": false,
+   "state_mod": 0,
+   "suite": "libero_90",
+   "swap": "",
+   "swap_cams": "both",
+   "swap_mode": "render",
+   "swap_phase": "all",
+   "tasks": "45",
+   "trials": 10,
+   "videos": 2,
+   "wait": 10
+  },
+  "job": "4005499",
+  "mode": "prims:45?suite=libero_90&paths=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/prim_Q27t45s0_0.pt+/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/prim_Q27t45s1_0.pt"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "deebot.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4005499",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "q27_accept",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "f107a6f7388c2b570522f1e1e348b1f982ec97a9",
+  "short": "f107a6f7"
+ },
+ "keys": {
+  "first_trial": 0,
+  "mode": "prims:45?suite=libero_90&paths=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/prim_Q27t45s0_0.pt+/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/prim_Q27t45s1_0.pt",
+  "tasks": "45",
+  "trials": 10
+ },
+ "metrics": {
+  "complete": true,
+  "n_episodes": 10,
+  "secs": 489.7901084423065,
+  "success_rate": 0.2,
+  "tasks": {
+   "45": {
+    "errors": 0,
+    "language": "turn on the stove and put the frying pan on it",
+    "mean_steps": 372.5,
+    "n": 10,
+    "success_rate": 0.2
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "q27_accept__libero_90__prims_Q27t45s0.0-Q27t45s1.0_seed7__first_trial-0__mode865f54c282f3__tasks-45__trials-10__s7__f107a6f7",
+ "schema": 1,
+ "script": "experiments/libero_client.py",
+ "seconds": null,
+ "seed": 7,
+ "source_commit": null,
+ "started": "2026-10-03T01:43:35+00:00",
+ "stream": null,
+ "tag": "prims_Q27t45s0.0+Q27t45s1.0_seed7"
+}

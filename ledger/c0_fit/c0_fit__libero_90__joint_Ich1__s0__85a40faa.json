@@ -1,0 +1,120 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 4677632,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 4677632,
+  "tree": 0
+ },
+ "command": "experiments/c0_fit.py --task 0 --joint 13 --key put|the_black_bowl --name Ich1 --rank 4 --approach --init prim_Osc1_0.pt",
+ "config": {
+  "approach": true,
+  "batch": 32,
+  "bind": false,
+  "demo": 0,
+  "goal": false,
+  "init": "prim_Osc1_0.pt",
+  "joint": "13",
+  "key": "put|the black bowl",
+  "lr": 0.0001,
+  "name": "Ich1",
+  "rank": 4,
+  "scope": "expert",
+  "steps": 1000,
+  "tag": "",
+  "task": 0
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "nestor.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4012030",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "c0_fit",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "85a40faa1fa27f25fcb941edb47d07ee36ce668e",
+  "short": "85a40faa"
+ },
+ "keys": {},
+ "metrics": {
+  "approach": true,
+  "bind": false,
+  "bytes": 4677632,
+  "curve": {
+   "anchor": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "loss": [
+    0.00299057993106544,
+    0.0015529518714174628,
+    0.001173233613371849,
+    0.0008779442287050188,
+    0.003915539477020502,
+    0.0008291183039546013,
+    0.001131226192228496,
+    0.000631404691375792,
+    0.0013496580068022013,
+    0.005169577896595001,
+    0.0016242031706497073
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "frames": 71,
+  "goal": false,
+  "init": "prim_Osc1_0.pt",
+  "joint": [
+   {
+    "clause": "put the black bowl at the front on the plate",
+    "frames": [
+     0,
+     71
+    ],
+    "task": 13
+   }
+  ],
+  "rank": 4,
+  "scope": "expert",
+  "step_key": "put|the black bowl"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "c0_fit__libero_90__joint_Ich1__s0__85a40faa",
+ "schema": 1,
+ "script": "experiments/c0_fit.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-04T12:08:57+00:00",
+ "stream": null,
+ "tag": "joint_Ich1"
+}

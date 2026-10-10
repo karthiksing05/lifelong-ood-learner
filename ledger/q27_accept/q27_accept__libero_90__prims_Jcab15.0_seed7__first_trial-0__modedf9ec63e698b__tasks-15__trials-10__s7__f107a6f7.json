@@ -1,0 +1,95 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/q27_accept_15_prims_Jcab15.0_seed7.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "roll.sh MODE=prims:15?suite=libero_90&paths=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/prim_Jcab15_0.pt SUITE=libero_90 TASKS=15 TRIALS=10 (job 4005489)",
+ "config": {
+  "client": {
+   "all_objects": false,
+   "bind": "track",
+   "branches": "",
+   "first_trial": 0,
+   "host": "127.0.0.1",
+   "light": false,
+   "max_steps": 0,
+   "no_meta": false,
+   "objects": false,
+   "out": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/q27_accept_15_prims_Jcab15.0_seed7.json",
+   "port": 9028,
+   "record": false,
+   "replan": 5,
+   "resize": 224,
+   "seed": 7,
+   "seg": false,
+   "state_mod": 0,
+   "suite": "libero_90",
+   "swap": "",
+   "swap_cams": "both",
+   "swap_mode": "render",
+   "swap_phase": "all",
+   "tasks": "15",
+   "trials": 10,
+   "videos": 2,
+   "wait": 10
+  },
+  "job": "4005489",
+  "mode": "prims:15?suite=libero_90&paths=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/prim_Jcab15_0.pt"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "optimistprime.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4005489",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "q27_accept",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "f107a6f7388c2b570522f1e1e348b1f982ec97a9",
+  "short": "f107a6f7"
+ },
+ "keys": {
+  "first_trial": 0,
+  "mode": "prims:15?suite=libero_90&paths=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/prim_Jcab15_0.pt",
+  "tasks": "15",
+  "trials": 10
+ },
+ "metrics": {
+  "complete": true,
+  "n_episodes": 10,
+  "secs": 392.8886137008667,
+  "success_rate": 0.5,
+  "tasks": {
+   "15": {
+    "errors": 0,
+    "language": "put the middle black bowl on top of the cabinet",
+    "mean_steps": 268.2,
+    "n": 10,
+    "success_rate": 0.5
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "q27_accept__libero_90__prims_Jcab15.0_seed7__first_trial-0__modedf9ec63e698b__tasks-15__trials-10__s7__f107a6f7",
+ "schema": 1,
+ "script": "experiments/libero_client.py",
+ "seconds": null,
+ "seed": 7,
+ "source_commit": null,
+ "started": "2026-10-03T01:35:52+00:00",
+ "stream": null,
+ "tag": "prims_Jcab15.0_seed7"
+}

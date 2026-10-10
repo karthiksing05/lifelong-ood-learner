@@ -1,0 +1,162 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 18710528,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 18710528,
+  "tree": 0
+ },
+ "command": "experiments/c0_fit.py --task 0 --joint 46+47+48+49+50+52+54+51 --key put|in|the_basket --name Q28basket53b2 --bind",
+ "config": {
+  "batch": 32,
+  "bind": true,
+  "demo": 0,
+  "joint": "46+47+48+49+50+52+54+51",
+  "key": "put|in|the basket",
+  "lr": 0.0001,
+  "name": "Q28basket53b2",
+  "rank": 16,
+  "scope": "expert",
+  "steps": 1000,
+  "tag": "",
+  "task": 0
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "megazord.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4008215",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "c0_fit",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "457ec2983784bccec77ea576d52524f76c568edf",
+  "short": "457ec298"
+ },
+ "keys": {},
+ "metrics": {
+  "bind": true,
+  "bytes": 18710528,
+  "curve": {
+   "anchor": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "loss": [
+    0.06801259517669678,
+    0.02091212570667267,
+    0.020773515105247498,
+    0.013430878520011902,
+    0.014392380602657795,
+    0.013571947813034058,
+    0.0065416209399700165,
+    0.008218674920499325,
+    0.005147888325154781,
+    0.01114522572606802,
+    0.00846594013273716
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "frames": 949,
+  "joint": [
+   {
+    "clause": "pick up the alphabet soup and put it in the basket",
+    "frames": [
+     0,
+     154
+    ],
+    "task": 46
+   },
+   {
+    "clause": "pick up the cream cheese box and put it in the basket",
+    "frames": [
+     0,
+     158
+    ],
+    "task": 47
+   },
+   {
+    "clause": "pick up the ketchup and put it in the basket",
+    "frames": [
+     0,
+     173
+    ],
+    "task": 48
+   },
+   {
+    "clause": "pick up the tomato sauce and put it in the basket",
+    "frames": [
+     0,
+     103
+    ],
+    "task": 49
+   },
+   {
+    "clause": "pick up the alphabet soup and put it in the basket",
+    "frames": [
+     0,
+     154
+    ],
+    "task": 50
+   },
+   {
+    "clause": "pick up the milk and put it in the basket",
+    "frames": [
+     0,
+     104
+    ],
+    "task": 52
+   },
+   {
+    "clause": "pick up the tomato sauce and put it in the basket",
+    "frames": [
+     0,
+     103
+    ],
+    "task": 54
+   }
+  ],
+  "rank": 16,
+  "scope": "expert",
+  "step_key": "put|in|the basket"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "c0_fit__libero_90__joint_Q28basket53b2__s0__457ec298",
+ "schema": 1,
+ "script": "experiments/c0_fit.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-03T20:28:17+00:00",
+ "stream": null,
+ "tag": "joint_Q28basket53b2"
+}

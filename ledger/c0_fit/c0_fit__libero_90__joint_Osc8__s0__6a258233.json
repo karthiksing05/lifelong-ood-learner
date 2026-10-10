@@ -1,0 +1,118 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 4677632,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 4677632,
+  "tree": 0
+ },
+ "command": "experiments/c0_fit.py --task 0 --joint 52 --key put|the_milk --name Osc8 --rank 4 --approach",
+ "config": {
+  "approach": true,
+  "batch": 32,
+  "bind": false,
+  "demo": 0,
+  "goal": false,
+  "joint": "52",
+  "key": "put|the milk",
+  "lr": 0.0001,
+  "name": "Osc8",
+  "rank": 4,
+  "scope": "expert",
+  "steps": 1000,
+  "tag": "",
+  "task": 0
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "uniblab.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4011690",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "c0_fit",
+ "git": {
+  "branch": "main",
+  "dirty": false,
+  "hash": "6a2582330f7414ebe331f45e4cbe405db2dda5d0",
+  "short": "6a258233"
+ },
+ "keys": {},
+ "metrics": {
+  "approach": true,
+  "bind": false,
+  "bytes": 4677632,
+  "curve": {
+   "anchor": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "loss": [
+    0.07154376804828644,
+    0.013571441173553467,
+    0.003694613231346011,
+    0.0027470330242067575,
+    0.004576205741614103,
+    0.0013683520955964923,
+    0.0011137340916320682,
+    0.0008200284210033715,
+    0.00164789950940758,
+    0.005845639854669571,
+    0.002301953500136733
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "frames": 35,
+  "goal": false,
+  "joint": [
+   {
+    "clause": "pick up the milk and put it in the basket",
+    "frames": [
+     0,
+     35
+    ],
+    "task": 52
+   }
+  ],
+  "rank": 4,
+  "scope": "expert",
+  "step_key": "put|the milk"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "c0_fit__libero_90__joint_Osc8__s0__6a258233",
+ "schema": 1,
+ "script": "experiments/c0_fit.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-04T10:01:51+00:00",
+ "stream": null,
+ "tag": "joint_Osc8"
+}

@@ -1,0 +1,96 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/f1_main_72_bcl_seq_plate_seed9.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "roll.sh MODE=lora:/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/bcl_seq_plate.pt SUITE=libero_90 TASKS=72 TRIALS=20 (job 4007518)",
+ "config": {
+  "client": {
+   "all_objects": false,
+   "bind": "track",
+   "branches": "",
+   "first_trial": 0,
+   "fresh": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/fresh_states",
+   "host": "127.0.0.1",
+   "light": false,
+   "max_steps": 0,
+   "no_meta": false,
+   "objects": false,
+   "out": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/f1_main_72_bcl_seq_plate_seed9.json",
+   "port": 9024,
+   "record": false,
+   "replan": 5,
+   "resize": 224,
+   "seed": 7,
+   "seg": false,
+   "state_mod": 0,
+   "suite": "libero_90",
+   "swap": "",
+   "swap_cams": "both",
+   "swap_mode": "render",
+   "swap_phase": "all",
+   "tasks": "72",
+   "trials": 20,
+   "videos": 2,
+   "wait": 10
+  },
+  "job": "4007518",
+  "mode": "lora:/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/bcl_seq_plate.pt"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "nestor.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4007518",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "f1_main",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "a4f4655f2e24e074eb6223dd2a23c4b2a8a0e357",
+  "short": "a4f4655f"
+ },
+ "keys": {
+  "first_trial": 0,
+  "mode": "lora:/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/bcl_seq_plate.pt",
+  "tasks": "72",
+  "trials": 20
+ },
+ "metrics": {
+  "complete": true,
+  "n_episodes": 20,
+  "secs": 392.3483293056488,
+  "success_rate": 1.0,
+  "tasks": {
+   "72": {
+    "errors": 0,
+    "language": "put the white mug on the plate",
+    "mean_steps": 126.6,
+    "n": 20,
+    "success_rate": 1.0
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "f1_main__libero_90__bcl_seq_plate_seed9__first_trial-0__mode5f4155f68407__tasks-72__trials-20__s7__a4f4655f",
+ "schema": 1,
+ "script": "experiments/libero_client.py",
+ "seconds": null,
+ "seed": 7,
+ "source_commit": null,
+ "started": "2026-10-03T15:33:43+00:00",
+ "stream": null,
+ "tag": "bcl_seq_plate_seed9"
+}

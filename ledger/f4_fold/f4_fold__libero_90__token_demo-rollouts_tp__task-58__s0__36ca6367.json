@@ -1,0 +1,106 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/ftoken_58_tp.pt"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 18432,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 18432,
+  "tree": 0
+ },
+ "command": "experiments/f4_fold.py --task 58 --source demo+rollouts --rec results/robot/q7_p1_58_ftoken_self_rec --tag _tp",
+ "config": {
+  "batch": 16,
+  "demo": 0,
+  "lr": 0.01,
+  "max_frames": 400,
+  "n_tokens": 1,
+  "rec": "results/robot/q7_p1_58_ftoken_self_rec",
+  "seed": 0,
+  "source": "demo+rollouts",
+  "steps": 600,
+  "stride": 5,
+  "tag": "_tp",
+  "task": "58"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "chappie.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4001990",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "f4_fold",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "36ca6367121c3eec14e1f0d5a6033ac584fd1676",
+  "short": "36ca6367"
+ },
+ "keys": {
+  "task": "58"
+ },
+ "metrics": {
+  "curve": {
+   "anchor": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "loss": [
+    0.04430849477648735,
+    0.03174708038568497,
+    0.01891467347741127,
+    0.030411234125494957,
+    0.011713359504938126,
+    0.013210994191467762
+   ],
+   "step": [
+    100,
+    200,
+    300,
+    400,
+    500,
+    600
+   ]
+  },
+  "demo_episode": [
+   "results/robot/q7_p1_58_ftoken_self_rec/task58_trial10.npz",
+   "results/robot/q7_p1_58_ftoken_self_rec/task58_trial12.npz",
+   "results/robot/q7_p1_58_ftoken_self_rec/task58_trial14.npz",
+   "results/robot/q7_p1_58_ftoken_self_rec/task58_trial15.npz",
+   "results/robot/q7_p1_58_ftoken_self_rec/task58_trial20.npz",
+   "results/robot/q7_p1_58_ftoken_self_rec/task58_trial22.npz",
+   "results/robot/q7_p1_58_ftoken_self_rec/task58_trial28.npz",
+   "results/robot/q7_p1_58_ftoken_self_rec/task58_trial29.npz",
+   2701
+  ],
+  "final_loss": 0.013210994191467762,
+  "first_loss": 0.04430849477648735,
+  "n_frames": 370,
+  "n_tokens": 1,
+  "source": "demo+rollouts",
+  "task": "58",
+  "text": "pick up the ketchup and put it in the tray",
+  "train_secs": 70.0026330947876
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "f4_fold__libero_90__token_demo-rollouts_tp__task-58__s0__36ca6367",
+ "schema": 1,
+ "script": "experiments/f4_fold.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-02T07:02:21+00:00",
+ "stream": null,
+ "tag": "token_demo+rollouts_tp"
+}

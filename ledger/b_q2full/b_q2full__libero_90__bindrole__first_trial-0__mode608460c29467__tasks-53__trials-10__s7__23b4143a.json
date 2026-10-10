@@ -1,0 +1,95 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/b_q2full_53_bindrole.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "roll.sh MODE=bind:53?suite=libero_90&src=oracle&rho=0.7&band=all&phase=approach&prompt=base SUITE=libero_90 TASKS=53 TRIALS=10 (job 3998792)",
+ "config": {
+  "client": {
+   "all_objects": false,
+   "bind": "track",
+   "branches": "",
+   "first_trial": 0,
+   "host": "127.0.0.1",
+   "light": false,
+   "max_steps": 0,
+   "no_meta": false,
+   "objects": false,
+   "out": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/b_q2full_53_bindrole.json",
+   "port": 9817,
+   "record": false,
+   "replan": 5,
+   "resize": 224,
+   "seed": 7,
+   "seg": true,
+   "state_mod": 0,
+   "suite": "libero_90",
+   "swap": "orange_juice_1:alphabet_soup_1",
+   "swap_cams": "both",
+   "swap_mode": "render",
+   "swap_phase": "closed",
+   "tasks": "53",
+   "trials": 10,
+   "videos": 2,
+   "wait": 10
+  },
+  "job": "3998792",
+  "mode": "bind:53?suite=libero_90&src=oracle&rho=0.7&band=all&phase=approach&prompt=base"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "voltron.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "3998792",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "b_q2full",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "23b4143a97724404e462231f16972cfb039778de",
+  "short": "23b4143a"
+ },
+ "keys": {
+  "first_trial": 0,
+  "mode": "bind:53?suite=libero_90&src=oracle&rho=0.7&band=all&phase=approach&prompt=base",
+  "tasks": "53",
+  "trials": 10
+ },
+ "metrics": {
+  "complete": true,
+  "n_episodes": 10,
+  "secs": 458.2589316368103,
+  "success_rate": 0.1,
+  "tasks": {
+   "53": {
+    "errors": 0,
+    "language": "pick up the orange juice and put it in the basket",
+    "mean_steps": 397.1,
+    "n": 10,
+    "success_rate": 0.1
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "b_q2full__libero_90__bindrole__first_trial-0__mode608460c29467__tasks-53__trials-10__s7__23b4143a",
+ "schema": 1,
+ "script": "experiments/libero_client.py",
+ "seconds": null,
+ "seed": 7,
+ "source_commit": null,
+ "started": "2026-10-02T01:10:45+00:00",
+ "stream": null,
+ "tag": "bindrole"
+}
