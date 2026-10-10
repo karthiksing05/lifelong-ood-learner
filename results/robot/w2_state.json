@@ -243,11 +243,9 @@
    48
   ],
   "i": 14,
-  "phase": "fit",
+  "phase": "settle",
   "jobs": [
-   "4022823",
-   "4022824",
-   "4022825"
+   "4043491"
   ],
   "library": {
    "G:in|the basket": {
@@ -281,10 +279,10 @@
      41,
      43
     ],
-    "name": "W2aG2v3",
+    "name": "W2aG2v4",
     "v": 4,
     "jobs": [],
-    "pending": "W2aG2v4"
+    "pending": null
    },
    "G:on|the plate": {
     "idx": 3,
@@ -318,10 +316,10 @@
     "tasks": [
      15
     ],
-    "name": null,
+    "name": "W2aI6v1",
     "v": 1,
     "jobs": [],
-    "pending": "W2aI6v1"
+    "pending": null
    },
    "O:put|the alphabet soup": {
     "idx": 7,
@@ -342,10 +340,10 @@
      31,
      60
     ],
-    "name": "E4aO8v1",
+    "name": "W2aO8v3",
     "v": 3,
     "jobs": [],
-    "pending": "W2aO8v3"
+    "pending": null
    },
    "O:put|the butter": {
     "idx": 9,
@@ -997,7 +995,12 @@
      "O:put|the white mug": "E4aO21v1"
     },
     "acc1": 0,
-    "demo": true
+    "demo": true,
+    "comp2": "fac@W2aI6v1.W2aG2v4",
+    "acc2": 10,
+    "kept": "fac@W2aI6v1.W2aG2v4",
+    "arrival_kept": "fac@W2aI6v1.W2aG2v4",
+    "valid": "fac@W2aI6v1.W2aG2v4"
    }
   ],
   "demos": 8,
@@ -1038,10 +1041,9 @@
    31
   ],
   "i": 12,
-  "phase": "fit",
+  "phase": "accept2",
   "jobs": [
-   "4022813",
-   "4022814"
+   "4043492"
   ],
   "library": {
    "G:in|the basket": {
@@ -1063,10 +1065,10 @@
      63,
      64
     ],
-    "name": "W2bG1v2",
+    "name": "W2bG1v3",
     "v": 3,
     "jobs": [],
-    "pending": "W2bG1v3"
+    "pending": null
    },
    "G:on top of|the cabinet": {
     "idx": 2,
@@ -1243,10 +1245,10 @@
     "tasks": [
      62
     ],
-    "name": null,
+    "name": "W2bO18v1",
     "v": 1,
     "jobs": [],
-    "pending": "W2bO18v1"
+    "pending": null
    },
    "O:put|the tomato sauce": {
     "idx": 19,
@@ -1730,7 +1732,8 @@
      "O:put|the white mug": "E4bO21v1"
     },
     "acc1": 0,
-    "demo": true
+    "demo": true,
+    "comp2": "fac@W2bO18v1.W2bG1v3"
    }
   ],
   "demos": 8,
