@@ -243,9 +243,9 @@
    48
   ],
   "i": 19,
-  "phase": "accept2",
+  "phase": "start",
   "jobs": [
-   "4066373"
+   "4066472"
   ],
   "library": {
    "G:in|the basket": {
@@ -761,10 +761,14 @@
     "acc2": 6,
     "kept": "fac@W2aO19v1.W2aG1v2",
     "arrival_kept": "fac@W2aO19v1.W2aG1v2",
-    "valid": "fac@W2aO19v2.W2aG1v2",
+    "valid": "fac@W2aO19v2.W2aG1v3",
     "rechecks": [
      {
       "comp": "fac@W2aO19v2.W2aG1v2",
+      "acc": 3
+     },
+     {
+      "comp": "fac@W2aO19v2.W2aG1v3",
       "acc": 3
      }
     ]
@@ -1195,12 +1199,16 @@
     },
     "acc1": 0,
     "demo": true,
-    "comp2": "fac@W2aO14v2.W2aG1v3"
+    "comp2": "fac@W2aO14v2.W2aG1v3",
+    "acc2": 0,
+    "kept": "zs",
+    "arrival_kept": "zs",
+    "valid": null
    }
   ],
   "demos": 10,
   "recheck": [],
-  "current": 58
+  "current": null
  },
  "b": {
   "order": [
@@ -1235,10 +1243,10 @@
    48,
    31
   ],
-  "i": 18,
-  "phase": "accept2",
+  "i": 19,
+  "phase": "accept1",
   "jobs": [
-   "4066374"
+   "4066531"
   ],
   "library": {
    "G:in|the basket": {
@@ -1553,7 +1561,7 @@
     "acc2": 6,
     "kept": "fac@W2bO20v2.W2bG3v1",
     "arrival_kept": "fac@W2bO20v2.W2bG3v1",
-    "valid": "fac@W2bO20v3.W2bG3v3",
+    "valid": "fac@W2bO20v3.W2bG3v4",
     "rechecks": [
      {
       "comp": "fac@W2bO20v2.W2bG3v2",
@@ -1565,6 +1573,10 @@
      },
      {
       "comp": "fac@W2bO20v3.W2bG3v3",
+      "acc": 7
+     },
+     {
+      "comp": "fac@W2bO20v3.W2bG3v4",
       "acc": 7
      }
     ]
@@ -1603,10 +1615,14 @@
     "acc2": 10,
     "kept": "fac@W2bI4v1.W2bG3v2",
     "arrival_kept": "fac@W2bI4v1.W2bG3v2",
-    "valid": "fac@W2bI4v1.W2bG3v3",
+    "valid": "fac@W2bI4v1.W2bG3v4",
     "rechecks": [
      {
       "comp": "fac@W2bI4v1.W2bG3v3",
+      "acc": 10
+     },
+     {
+      "comp": "fac@W2bI4v1.W2bG3v4",
       "acc": 10
      }
     ]
@@ -1901,7 +1917,13 @@
     "acc2": 9,
     "kept": "fac@W2bI5v1.W2bG3v3",
     "arrival_kept": "fac@W2bI5v1.W2bG3v3",
-    "valid": "fac@W2bI5v1.W2bG3v3"
+    "valid": "fac@W2bI5v1.W2bG3v4",
+    "rechecks": [
+     {
+      "comp": "fac@W2bI5v1.W2bG3v4",
+      "acc": 10
+     }
+    ]
    },
    {
     "task": 62,
@@ -2141,11 +2163,44 @@
     },
     "acc1": 2,
     "demo": true,
-    "comp2": "fac@W2bO17v2.W2bG3v4"
+    "comp2": "fac@W2bO17v2.W2bG3v4",
+    "acc2": 8,
+    "kept": "fac@W2bO17v2.W2bG3v4",
+    "arrival_kept": "fac@W2bO17v2.W2bG3v4",
+    "valid": "fac@W2bO17v2.W2bG3v4"
+   },
+   {
+    "task": 52,
+    "zs": 0,
+    "comp1": "fac@x.W2bG0v1",
+    "library_before": {
+     "G:in|the basket": "W2bG0v1",
+     "G:in|the tray": "W2bG1v4",
+     "G:on top of|the cabinet": "W2bG2v2",
+     "G:on|the plate": "W2bG3v4",
+     "I:put|the black bowl|back": "W2bI4v1",
+     "I:put|the black bowl|front": "W2bI5v1",
+     "I:put|the black bowl|middle": null,
+     "O:put|the alphabet soup": null,
+     "O:put|the black bowl": "W2bO8v4",
+     "O:put|the butter": "E4bO9v1",
+     "O:put|the chocolate pudding": "E4bO10v1",
+     "O:put|the cream cheese": null,
+     "O:put|the cream cheese box": null,
+     "O:put|the frying pan": "E4bO13v1",
+     "O:put|the ketchup": "W2bO14v2",
+     "O:put|the milk": null,
+     "O:put|the orange juice": "W2bO16v1",
+     "O:put|the red mug": "W2bO17v2",
+     "O:put|the salad dressing": "W2bO18v1",
+     "O:put|the tomato sauce": "W2bO19v1",
+     "O:put|the white bowl": "W2bO20v3",
+     "O:put|the white mug": "E4bO21v1"
+    }
    }
   ],
   "demos": 10,
   "recheck": [],
-  "current": 71
+  "current": 52
  }
 }

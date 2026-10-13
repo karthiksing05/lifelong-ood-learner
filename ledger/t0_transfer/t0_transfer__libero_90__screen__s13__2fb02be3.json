@@ -1,0 +1,446 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "experiments/t0_transfer.py --read --record",
+ "config": {
+  "k": 3,
+  "theta": 8
+ },
+ "env": {
+  "device": "cpu",
+  "host": "sky2.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "t0_transfer",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "2fb02be30eec3d77b5c83f291389799725abf633",
+  "short": "2fb02be3"
+ },
+ "keys": {},
+ "metrics": {
+  "beats_policy": 9,
+  "missing": [],
+  "per_task": {
+   "10": {
+    "best": "Osc14",
+    "best_acc": 10,
+    "first": 8,
+    "own_library": 9,
+    "transfers": false,
+    "tries": {
+     "Osc13": 8,
+     "Osc14": 10,
+     "Osc2": 8
+    },
+    "zs": 10
+   },
+   "12": {
+    "best": "Osc14",
+    "best_acc": 8,
+    "first": 3,
+    "own_library": 10,
+    "transfers": true,
+    "tries": {
+     "Osc13": 3,
+     "Osc14": 8,
+     "Osc2": 1
+    },
+    "zs": 4
+   },
+   "13": {
+    "best": "Osc2",
+    "best_acc": 1,
+    "first": 0,
+    "own_library": 10,
+    "transfers": false,
+    "tries": {
+     "Osc13": 0,
+     "Osc14": 0,
+     "Osc2": 1
+    },
+    "zs": 0
+   },
+   "14": {
+    "best": "Osc2",
+    "best_acc": 9,
+    "first": 8,
+    "own_library": 8,
+    "transfers": true,
+    "tries": {
+     "Osc13": 8,
+     "Osc14": 1,
+     "Osc2": 9
+    },
+    "zs": 5
+   },
+   "15": {
+    "best": "Osc2",
+    "best_acc": 2,
+    "first": 1,
+    "own_library": 10,
+    "transfers": false,
+    "tries": {
+     "Osc13": 1,
+     "Osc14": 1,
+     "Osc2": 2
+    },
+    "zs": 1
+   },
+   "25": {
+    "best": "Osc13",
+    "best_acc": 0,
+    "first": 0,
+    "own_library": 9,
+    "transfers": false,
+    "tries": {
+     "Osc13": 0,
+     "Osc14": 0,
+     "Osc2": 0
+    },
+    "zs": 0
+   },
+   "30": {
+    "best": "Osc13",
+    "best_acc": 7,
+    "first": 7,
+    "own_library": 10,
+    "transfers": false,
+    "tries": {
+     "Osc13": 7,
+     "Osc14": 3,
+     "Osc2": 0
+    },
+    "zs": 9
+   },
+   "31": {
+    "best": "Osc13",
+    "best_acc": 2,
+    "first": 2,
+    "own_library": 9,
+    "transfers": false,
+    "tries": {
+     "Osc13": 2,
+     "Osc14": 2,
+     "Osc2": 0
+    },
+    "zs": 0
+   },
+   "36": {
+    "best": "Osc1",
+    "best_acc": 0,
+    "first": 0,
+    "own_library": 4,
+    "transfers": false,
+    "tries": {
+     "Osc1": 0,
+     "Osc14": 0,
+     "Osc8": 0
+    },
+    "zs": 0
+   },
+   "41": {
+    "best": "Osc12",
+    "best_acc": 0,
+    "first": 0,
+    "own_library": 4,
+    "transfers": false,
+    "tries": {
+     "Osc11": 0,
+     "Osc12": 0,
+     "Osc3": 0
+    },
+    "zs": 0
+   },
+   "43": {
+    "best": "Osc14",
+    "best_acc": 5,
+    "first": 0,
+    "own_library": 9,
+    "transfers": false,
+    "tries": {
+     "Osc1": 0,
+     "Osc14": 5,
+     "Osc8": 0
+    },
+    "zs": 0
+   },
+   "46": {
+    "best": "Osc3",
+    "best_acc": 10,
+    "first": 10,
+    "own_library": 8,
+    "transfers": false,
+    "tries": {
+     "Osc3": 10,
+     "Osc6": 6,
+     "Osc7": 0
+    },
+    "zs": 10
+   },
+   "47": {
+    "best": "Osc4",
+    "best_acc": 9,
+    "first": 9,
+    "own_library": 10,
+    "transfers": false,
+    "tries": {
+     "Osc11": 7,
+     "Osc4": 9,
+     "Osc9": 9
+    },
+    "zs": 9
+   },
+   "48": {
+    "best": "Osc3",
+    "best_acc": 0,
+    "first": 0,
+    "own_library": 6,
+    "transfers": false,
+    "tries": {
+     "Osc0": 0,
+     "Osc10": 0,
+     "Osc3": 0
+    },
+    "zs": 0
+   },
+   "49": {
+    "best": "Osc9",
+    "best_acc": 1,
+    "first": 1,
+    "own_library": 5,
+    "transfers": false,
+    "tries": {
+     "Osc10": 0,
+     "Osc11": 0,
+     "Osc9": 1
+    },
+    "zs": 0
+   },
+   "50": {
+    "best": "Osc3",
+    "best_acc": 9,
+    "first": 9,
+    "own_library": 9,
+    "transfers": false,
+    "tries": {
+     "Osc3": 9,
+     "Osc6": 0,
+     "Osc7": 0
+    },
+    "zs": 10
+   },
+   "51": {
+    "best": "Osc8",
+    "best_acc": 10,
+    "first": 10,
+    "own_library": 9,
+    "transfers": false,
+    "tries": {
+     "Osc11": 0,
+     "Osc4": 9,
+     "Osc8": 10
+    },
+    "zs": 10
+   },
+   "52": {
+    "best": "Osc2",
+    "best_acc": 3,
+    "first": 3,
+    "own_library": 9,
+    "transfers": false,
+    "tries": {
+     "Osc13": 0,
+     "Osc2": 3,
+     "Osc4": 0
+    },
+    "zs": 0
+   },
+   "53": {
+    "best": "Osc4",
+    "best_acc": 1,
+    "first": 1,
+    "own_library": 10,
+    "transfers": false,
+    "tries": {
+     "Osc11": 0,
+     "Osc4": 1,
+     "Osc5": 0
+    },
+    "zs": 0
+   },
+   "54": {
+    "best": "Osc10",
+    "best_acc": 2,
+    "first": 0,
+    "own_library": 9,
+    "transfers": false,
+    "tries": {
+     "Osc10": 2,
+     "Osc11": 0,
+     "Osc9": 0
+    },
+    "zs": 8
+   },
+   "55": {
+    "best": "Osc3",
+    "best_acc": 6,
+    "first": 6,
+    "own_library": 10,
+    "transfers": false,
+    "tries": {
+     "Osc3": 6,
+     "Osc6": 4,
+     "Osc7": 0
+    },
+    "zs": 10
+   },
+   "56": {
+    "best": "Osc8",
+    "best_acc": 8,
+    "first": 8,
+    "own_library": 10,
+    "transfers": false,
+    "tries": {
+     "Osc11": 0,
+     "Osc4": 6,
+     "Osc8": 8
+    },
+    "zs": 9
+   },
+   "57": {
+    "best": "Osc2",
+    "best_acc": 1,
+    "first": 0,
+    "own_library": 10,
+    "transfers": false,
+    "tries": {
+     "Osc11": 0,
+     "Osc2": 1,
+     "Osc5": 0
+    },
+    "zs": 10
+   },
+   "58": {
+    "best": "Osc3",
+    "best_acc": 0,
+    "first": 0,
+    "own_library": 4,
+    "transfers": false,
+    "tries": {
+     "Osc0": 0,
+     "Osc10": 0,
+     "Osc3": 0
+    },
+    "zs": 0
+   },
+   "59": {
+    "best": "Osc9",
+    "best_acc": 0,
+    "first": 0,
+    "own_library": 6,
+    "transfers": false,
+    "tries": {
+     "Osc10": 0,
+     "Osc11": 0,
+     "Osc9": 0
+    },
+    "zs": 1
+   },
+   "61": {
+    "best": "Osc4",
+    "best_acc": 10,
+    "first": 0,
+    "own_library": 9,
+    "transfers": false,
+    "tries": {
+     "Osc11": 0,
+     "Osc12": 0,
+     "Osc4": 10
+    },
+    "zs": 10
+   },
+   "62": {
+    "best": "Osc4",
+    "best_acc": 0,
+    "first": 0,
+    "own_library": 4,
+    "transfers": false,
+    "tries": {
+     "Osc2": 0,
+     "Osc4": 0,
+     "Osc5": 0
+    },
+    "zs": 0
+   },
+   "71": {
+    "best": "Osc14",
+    "best_acc": 0,
+    "first": 0,
+    "own_library": 8,
+    "transfers": false,
+    "tries": {
+     "Osc11": 0,
+     "Osc12": 0,
+     "Osc14": 0
+    },
+    "zs": 0
+   },
+   "72": {
+    "best": "Osc1",
+    "best_acc": 8,
+    "first": 7,
+    "own_library": 10,
+    "transfers": false,
+    "tries": {
+     "Osc1": 8,
+     "Osc10": 0,
+     "Osc13": 7
+    },
+    "zs": 10
+   },
+   "9": {
+    "best": "Osc14",
+    "best_acc": 9,
+    "first": 8,
+    "own_library": 10,
+    "transfers": false,
+    "tries": {
+     "Osc13": 8,
+     "Osc14": 9,
+     "Osc2": 6
+    },
+    "zs": 9
+   }
+  },
+  "policy_below_theta": 17,
+  "tasks": 30,
+  "transfers": 2,
+  "transfers_first": 1,
+  "transfers_where_policy_fails": 2
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "t0_transfer__libero_90__screen__s13__2fb02be3",
+ "schema": 1,
+ "script": "experiments/t0_transfer.py",
+ "seconds": null,
+ "seed": 13,
+ "source_commit": null,
+ "started": "2026-10-13T13:48:06+00:00",
+ "stream": null,
+ "tag": "screen"
+}

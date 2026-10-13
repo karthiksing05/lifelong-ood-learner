@@ -1,0 +1,96 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/w2_accept_59_fac_W2aO19v2.W2aG1v3_seed13.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "roll.sh MODE=prims:59?suite=libero_90&paths=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/prim_W2aG1v3_0.pt&apaths=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/prim_W2aO19v2_0.pt&goal=1 SUITE=libero_90 TASKS=59 TRIALS=10 (job 4066472)",
+ "config": {
+  "client": {
+   "all_objects": false,
+   "bind": "track",
+   "branches": "",
+   "first_trial": 0,
+   "fresh": "",
+   "host": "127.0.0.1",
+   "light": false,
+   "max_steps": 0,
+   "no_meta": false,
+   "objects": false,
+   "out": "/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/w2_accept_59_fac_W2aO19v2.W2aG1v3_seed13.json",
+   "port": 9276,
+   "record": false,
+   "replan": 5,
+   "resize": 224,
+   "seed": 7,
+   "seg": false,
+   "state_mod": 0,
+   "suite": "libero_90",
+   "swap": "",
+   "swap_cams": "both",
+   "swap_mode": "render",
+   "swap_phase": "all",
+   "tasks": "59",
+   "trials": 10,
+   "videos": 2,
+   "wait": 10
+  },
+  "job": "4066472",
+  "mode": "prims:59?suite=libero_90&paths=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/prim_W2aG1v3_0.pt&apaths=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/prim_W2aO19v2_0.pt&goal=1"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "dave.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4066472",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "w2_accept",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "2fb02be30eec3d77b5c83f291389799725abf633",
+  "short": "2fb02be3"
+ },
+ "keys": {
+  "first_trial": 0,
+  "mode": "prims:59?suite=libero_90&paths=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/prim_W2aG1v3_0.pt&apaths=/coc/flash10/ksingara3/lifelong-ood-learner/results/robot/prim_W2aO19v2_0.pt&goal=1",
+  "tasks": "59",
+  "trials": 10
+ },
+ "metrics": {
+  "complete": true,
+  "n_episodes": 10,
+  "secs": 445.00409173965454,
+  "success_rate": 0.3,
+  "tasks": {
+   "59": {
+    "errors": 0,
+    "language": "pick up the tomato sauce and put it in the tray",
+    "mean_steps": 351.4,
+    "n": 10,
+    "success_rate": 0.3
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "w2_accept__libero_90__fac_W2aO19v2.W2aG1v3_seed13__first_trial-0__mode021f38c6d9f4__tasks-59__trials-10__s7__2fb02be3",
+ "schema": 1,
+ "script": "experiments/libero_client.py",
+ "seconds": null,
+ "seed": 7,
+ "source_commit": null,
+ "started": "2026-10-13T13:46:05+00:00",
+ "stream": null,
+ "tag": "fac_W2aO19v2.W2aG1v3_seed13"
+}
