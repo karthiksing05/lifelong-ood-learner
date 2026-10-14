@@ -1,0 +1,2998 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 88875008,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 88875008,
+  "tree": 0
+ },
+ "command": "experiments/w2_stream.py --read --record",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "sky2.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": null,
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "w2_stream",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "ca526a7d67e3ed68f8215054b3b1a0519117a373",
+  "short": "ca526a7d"
+ },
+ "keys": {},
+ "metrics": {
+  "a": {
+   "H1": {
+    "diff": {
+     "diff": 0.3283333333333333,
+     "hi": 0.4666666666666667,
+     "hi90": 0.44333333333333336,
+     "lo": 0.19833333333333333,
+     "lo90": 0.21666666666666667,
+     "n_pairs": 600,
+     "n_tasks": 30
+    },
+    "discordant": [
+     198,
+     1
+    ],
+    "n": 600,
+    "passes": true,
+    "sign_p": 4.9784122222889134e-58,
+    "tasks": 30,
+    "x": 470,
+    "y": 273
+   },
+   "arrivals": 30,
+   "arrivals_log": [
+    {
+     "acc1": 0,
+     "acc2": 8,
+     "arrival_kept": "fac@W2aO20v2.W2aG2v1",
+     "comp1": "fac@E4aO20v1.x",
+     "comp2": "fac@W2aO20v2.W2aG2v1",
+     "demo": true,
+     "kept": "fac@W2aO20v2.W2aG2v1",
+     "library_before": {
+      "G:in|the basket": null,
+      "G:in|the tray": "E4aG1v1",
+      "G:on top of|the cabinet": null,
+      "G:on|the plate": null,
+      "I:put|the black bowl|back": null,
+      "I:put|the black bowl|front": null,
+      "I:put|the black bowl|middle": null,
+      "O:put|the alphabet soup": null,
+      "O:put|the black bowl": "E4aO8v1",
+      "O:put|the butter": "E4aO9v1",
+      "O:put|the chocolate pudding": "E4aO10v1",
+      "O:put|the cream cheese": null,
+      "O:put|the cream cheese box": null,
+      "O:put|the frying pan": "E4aO13v1",
+      "O:put|the ketchup": "E4aO14v1",
+      "O:put|the milk": null,
+      "O:put|the orange juice": null,
+      "O:put|the red mug": "E4aO17v1",
+      "O:put|the salad dressing": null,
+      "O:put|the tomato sauce": null,
+      "O:put|the white bowl": "E4aO20v1",
+      "O:put|the white mug": "E4aO21v1"
+     },
+     "rechecks": [
+      {
+       "acc": 9,
+       "comp": "fac@W2aO20v2.W2aG2v3"
+      },
+      {
+       "acc": 9,
+       "comp": "fac@W2aO20v3.W2aG2v3"
+      },
+      {
+       "acc": 7,
+       "comp": "fac@W2aO20v3.W2aG2v4"
+      },
+      {
+       "acc": 8,
+       "comp": "fac@W2aO20v3.W2aG2v5"
+      }
+     ],
+     "task": 43,
+     "valid": "fac@W2aO20v3.W2aG2v5",
+     "zs": 0
+    },
+    {
+     "acc1": 2,
+     "acc2": 6,
+     "arrival_kept": "fac@W2aO17v2.W2aG3v1",
+     "comp1": "fac@E4aO17v1.x",
+     "comp2": "fac@W2aO17v2.W2aG3v1",
+     "demo": true,
+     "kept": "fac@W2aO17v2.W2aG3v1",
+     "library_before": {
+      "G:in|the basket": null,
+      "G:in|the tray": "E4aG1v1",
+      "G:on top of|the cabinet": "W2aG2v1",
+      "G:on|the plate": null,
+      "I:put|the black bowl|back": null,
+      "I:put|the black bowl|front": null,
+      "I:put|the black bowl|middle": null,
+      "O:put|the alphabet soup": null,
+      "O:put|the black bowl": "E4aO8v1",
+      "O:put|the butter": "E4aO9v1",
+      "O:put|the chocolate pudding": "E4aO10v1",
+      "O:put|the cream cheese": null,
+      "O:put|the cream cheese box": null,
+      "O:put|the frying pan": "E4aO13v1",
+      "O:put|the ketchup": "E4aO14v1",
+      "O:put|the milk": null,
+      "O:put|the orange juice": null,
+      "O:put|the red mug": "E4aO17v1",
+      "O:put|the salad dressing": null,
+      "O:put|the tomato sauce": null,
+      "O:put|the white bowl": "W2aO20v2",
+      "O:put|the white mug": "E4aO21v1"
+     },
+     "rechecks": [
+      {
+       "acc": 7,
+       "comp": "fac@W2aO17v2.W2aG3v2"
+      },
+      {
+       "acc": 6,
+       "comp": "fac@W2aO17v2.W2aG3v3"
+      },
+      {
+       "acc": 7,
+       "comp": "fac@W2aO17v2.W2aG3v4"
+      },
+      {
+       "acc": 7,
+       "comp": "fac@W2aO17v2.W2aG3v5"
+      }
+     ],
+     "task": 71,
+     "valid": "fac@W2aO17v2.W2aG3v5",
+     "zs": 0
+    },
+    {
+     "acc1": 5,
+     "arrival_kept": "zs",
+     "comp1": "fac@E4aO8v1.W2aG3v1",
+     "demo": false,
+     "kept": "zs",
+     "library_before": {
+      "G:in|the basket": null,
+      "G:in|the tray": "E4aG1v1",
+      "G:on top of|the cabinet": "W2aG2v1",
+      "G:on|the plate": "W2aG3v1",
+      "I:put|the black bowl|back": null,
+      "I:put|the black bowl|front": null,
+      "I:put|the black bowl|middle": null,
+      "O:put|the alphabet soup": null,
+      "O:put|the black bowl": "E4aO8v1",
+      "O:put|the butter": "E4aO9v1",
+      "O:put|the chocolate pudding": "E4aO10v1",
+      "O:put|the cream cheese": null,
+      "O:put|the cream cheese box": null,
+      "O:put|the frying pan": "E4aO13v1",
+      "O:put|the ketchup": "E4aO14v1",
+      "O:put|the milk": null,
+      "O:put|the orange juice": null,
+      "O:put|the red mug": "W2aO17v2",
+      "O:put|the salad dressing": null,
+      "O:put|the tomato sauce": null,
+      "O:put|the white bowl": "W2aO20v2",
+      "O:put|the white mug": "E4aO21v1"
+     },
+     "task": 9,
+     "valid": null,
+     "zs": 9
+    },
+    {
+     "acc1": 2,
+     "acc2": 2,
+     "arrival_kept": "fac@E4aO8v1.W2aG2v1",
+     "comp1": "fac@E4aO8v1.W2aG2v1",
+     "comp2": "fac@E4aO8v1.W2aG2v1",
+     "demo": true,
+     "kept": "fac@E4aO8v1.W2aG2v1",
+     "library_before": {
+      "G:in|the basket": null,
+      "G:in|the tray": "E4aG1v1",
+      "G:on top of|the cabinet": "W2aG2v1",
+      "G:on|the plate": "W2aG3v1",
+      "I:put|the black bowl|back": null,
+      "I:put|the black bowl|front": null,
+      "I:put|the black bowl|middle": null,
+      "O:put|the alphabet soup": null,
+      "O:put|the black bowl": "E4aO8v1",
+      "O:put|the butter": "E4aO9v1",
+      "O:put|the chocolate pudding": "E4aO10v1",
+      "O:put|the cream cheese": null,
+      "O:put|the cream cheese box": null,
+      "O:put|the frying pan": "E4aO13v1",
+      "O:put|the ketchup": "E4aO14v1",
+      "O:put|the milk": null,
+      "O:put|the orange juice": null,
+      "O:put|the red mug": "W2aO17v2",
+      "O:put|the salad dressing": null,
+      "O:put|the tomato sauce": null,
+      "O:put|the white bowl": "W2aO20v2",
+      "O:put|the white mug": "E4aO21v1"
+     },
+     "rechecks": [
+      {
+       "acc": 7,
+       "comp": "fac@E4aO8v1.W2aG2v3"
+      },
+      {
+       "acc": 7,
+       "comp": "fac@W2aO8v3.W2aG2v4"
+      },
+      {
+       "acc": 8,
+       "comp": "fac@W2aO8v4.W2aG2v4"
+      },
+      {
+       "acc": 10,
+       "comp": "fac@W2aO8v5.W2aG2v5"
+      },
+      {
+       "acc": 10,
+       "comp": "fac@W2aO8v6.W2aG2v5"
+      },
+      {
+       "acc": 8,
+       "comp": "fac@W2aO8v7.W2aG2v5"
+      }
+     ],
+     "task": 31,
+     "valid": "fac@W2aO8v7.W2aG2v5",
+     "zs": 0
+    },
+    {
+     "acc1": 5,
+     "arrival_kept": "zs",
+     "comp1": "fac@E4aO8v1.W2aG3v1",
+     "demo": false,
+     "kept": "zs",
+     "library_before": {
+      "G:in|the basket": null,
+      "G:in|the tray": "E4aG1v1",
+      "G:on top of|the cabinet": "W2aG2v1",
+      "G:on|the plate": "W2aG3v1",
+      "I:put|the black bowl|back": null,
+      "I:put|the black bowl|front": null,
+      "I:put|the black bowl|middle": null,
+      "O:put|the alphabet soup": null,
+      "O:put|the black bowl": "E4aO8v1",
+      "O:put|the butter": "E4aO9v1",
+      "O:put|the chocolate pudding": "E4aO10v1",
+      "O:put|the cream cheese": null,
+      "O:put|the cream cheese box": null,
+      "O:put|the frying pan": "E4aO13v1",
+      "O:put|the ketchup": "E4aO14v1",
+      "O:put|the milk": null,
+      "O:put|the orange juice": null,
+      "O:put|the red mug": "W2aO17v2",
+      "O:put|the salad dressing": null,
+      "O:put|the tomato sauce": null,
+      "O:put|the white bowl": "W2aO20v2",
+      "O:put|the white mug": "E4aO21v1"
+     },
+     "task": 30,
+     "valid": null,
+     "zs": 9
+    },
+    {
+     "acc1": 4,
+     "arrival_kept": "zs",
+     "comp1": "fac@E4aO8v1.W2aG2v1",
+     "demo": false,
+     "kept": "zs",
+     "library_before": {
+      "G:in|the basket": null,
+      "G:in|the tray": "E4aG1v1",
+      "G:on top of|the cabinet": "W2aG2v1",
+      "G:on|the plate": "W2aG3v1",
+      "I:put|the black bowl|back": null,
+      "I:put|the black bowl|front": null,
+      "I:put|the black bowl|middle": null,
+      "O:put|the alphabet soup": null,
+      "O:put|the black bowl": "E4aO8v1",
+      "O:put|the butter": "E4aO9v1",
+      "O:put|the chocolate pudding": "E4aO10v1",
+      "O:put|the cream cheese": null,
+      "O:put|the cream cheese box": null,
+      "O:put|the frying pan": "E4aO13v1",
+      "O:put|the ketchup": "E4aO14v1",
+      "O:put|the milk": null,
+      "O:put|the orange juice": null,
+      "O:put|the red mug": "W2aO17v2",
+      "O:put|the salad dressing": null,
+      "O:put|the tomato sauce": null,
+      "O:put|the white bowl": "W2aO20v2",
+      "O:put|the white mug": "E4aO21v1"
+     },
+     "task": 10,
+     "valid": null,
+     "zs": 10
+    },
+    {
+     "acc1": 2,
+     "acc2": 6,
+     "arrival_kept": "fac@W2aO19v1.W2aG1v2",
+     "comp1": "fac@x.E4aG1v1",
+     "comp2": "fac@W2aO19v1.W2aG1v2",
+     "demo": true,
+     "kept": "fac@W2aO19v1.W2aG1v2",
+     "library_before": {
+      "G:in|the basket": null,
+      "G:in|the tray": "E4aG1v1",
+      "G:on top of|the cabinet": "W2aG2v1",
+      "G:on|the plate": "W2aG3v1",
+      "I:put|the black bowl|back": null,
+      "I:put|the black bowl|front": null,
+      "I:put|the black bowl|middle": null,
+      "O:put|the alphabet soup": null,
+      "O:put|the black bowl": "E4aO8v1",
+      "O:put|the butter": "E4aO9v1",
+      "O:put|the chocolate pudding": "E4aO10v1",
+      "O:put|the cream cheese": null,
+      "O:put|the cream cheese box": null,
+      "O:put|the frying pan": "E4aO13v1",
+      "O:put|the ketchup": "E4aO14v1",
+      "O:put|the milk": null,
+      "O:put|the orange juice": null,
+      "O:put|the red mug": "W2aO17v2",
+      "O:put|the salad dressing": null,
+      "O:put|the tomato sauce": null,
+      "O:put|the white bowl": "W2aO20v2",
+      "O:put|the white mug": "E4aO21v1"
+     },
+     "rechecks": [
+      {
+       "acc": 3,
+       "comp": "fac@W2aO19v2.W2aG1v2"
+      },
+      {
+       "acc": 3,
+       "comp": "fac@W2aO19v2.W2aG1v3"
+      },
+      {
+       "acc": 4,
+       "comp": "fac@W2aO19v2.W2aG1v4"
+      },
+      {
+       "acc": 2,
+       "comp": "fac@W2aO19v2.W2aG1v5"
+      }
+     ],
+     "task": 59,
+     "valid": "fac@W2aO19v2.W2aG1v5",
+     "zs": 1
+    },
+    {
+     "acc1": 9,
+     "arrival_kept": "zs",
+     "comp1": "fac@E4aO10v1.W2aG1v2",
+     "demo": false,
+     "kept": "zs",
+     "library_before": {
+      "G:in|the basket": null,
+      "G:in|the tray": "W2aG1v2",
+      "G:on top of|the cabinet": "W2aG2v1",
+      "G:on|the plate": "W2aG3v1",
+      "I:put|the black bowl|back": null,
+      "I:put|the black bowl|front": null,
+      "I:put|the black bowl|middle": null,
+      "O:put|the alphabet soup": null,
+      "O:put|the black bowl": "E4aO8v1",
+      "O:put|the butter": "E4aO9v1",
+      "O:put|the chocolate pudding": "E4aO10v1",
+      "O:put|the cream cheese": null,
+      "O:put|the cream cheese box": null,
+      "O:put|the frying pan": "E4aO13v1",
+      "O:put|the ketchup": "E4aO14v1",
+      "O:put|the milk": null,
+      "O:put|the orange juice": null,
+      "O:put|the red mug": "W2aO17v2",
+      "O:put|the salad dressing": null,
+      "O:put|the tomato sauce": "W2aO19v1",
+      "O:put|the white bowl": "W2aO20v2",
+      "O:put|the white mug": "E4aO21v1"
+     },
+     "task": 61,
+     "valid": null,
+     "zs": 10
+    },
+    {
+     "acc1": 0,
+     "acc2": 8,
+     "arrival_kept": "fac@W2aO19v2.W2aG0v1",
+     "comp1": "fac@W2aO19v1.x",
+     "comp2": "fac@W2aO19v2.W2aG0v1",
+     "demo": true,
+     "kept": "fac@W2aO19v2.W2aG0v1",
+     "library_before": {
+      "G:in|the basket": null,
+      "G:in|the tray": "W2aG1v2",
+      "G:on top of|the cabinet": "W2aG2v1",
+      "G:on|the plate": "W2aG3v1",
+      "I:put|the black bowl|back": null,
+      "I:put|the black bowl|front": null,
+      "I:put|the black bowl|middle": null,
+      "O:put|the alphabet soup": null,
+      "O:put|the black bowl": "E4aO8v1",
+      "O:put|the butter": "E4aO9v1",
+      "O:put|the chocolate pudding": "E4aO10v1",
+      "O:put|the cream cheese": null,
+      "O:put|the cream cheese box": null,
+      "O:put|the frying pan": "E4aO13v1",
+      "O:put|the ketchup": "E4aO14v1",
+      "O:put|the milk": null,
+      "O:put|the orange juice": null,
+      "O:put|the red mug": "W2aO17v2",
+      "O:put|the salad dressing": null,
+      "O:put|the tomato sauce": "W2aO19v1",
+      "O:put|the white bowl": "W2aO20v2",
+      "O:put|the white mug": "E4aO21v1"
+     },
+     "rechecks": [
+      {
+       "acc": 10,
+       "comp": "fac@W2aO19v2.W2aG0v2"
+      },
+      {
+       "acc": 7,
+       "comp": "fac@W2aO19v2.W2aG0v3"
+      },
+      {
+       "acc": 8,
+       "comp": "fac@W2aO19v2.W2aG0v4"
+      }
+     ],
+     "task": 49,
+     "valid": "fac@W2aO19v2.W2aG0v4",
+     "zs": 0
+    },
+    {
+     "acc1": 4,
+     "acc2": 3,
+     "arrival_kept": "fac@W2aO13v2.W2aG2v3",
+     "comp1": "fac@E4aO13v1.W2aG2v1",
+     "comp2": "fac@W2aO13v2.W2aG2v3",
+     "demo": true,
+     "kept": "fac@W2aO13v2.W2aG2v3",
+     "library_before": {
+      "G:in|the basket": "W2aG0v1",
+      "G:in|the tray": "W2aG1v2",
+      "G:on top of|the cabinet": "W2aG2v1",
+      "G:on|the plate": "W2aG3v1",
+      "I:put|the black bowl|back": null,
+      "I:put|the black bowl|front": null,
+      "I:put|the black bowl|middle": null,
+      "O:put|the alphabet soup": null,
+      "O:put|the black bowl": "E4aO8v1",
+      "O:put|the butter": "E4aO9v1",
+      "O:put|the chocolate pudding": "E4aO10v1",
+      "O:put|the cream cheese": null,
+      "O:put|the cream cheese box": null,
+      "O:put|the frying pan": "E4aO13v1",
+      "O:put|the ketchup": "E4aO14v1",
+      "O:put|the milk": null,
+      "O:put|the orange juice": null,
+      "O:put|the red mug": "W2aO17v2",
+      "O:put|the salad dressing": null,
+      "O:put|the tomato sauce": "W2aO19v2",
+      "O:put|the white bowl": "W2aO20v2",
+      "O:put|the white mug": "E4aO21v1"
+     },
+     "rechecks": [
+      {
+       "acc": 3,
+       "comp": "fac@W2aO13v2.W2aG2v4"
+      },
+      {
+       "acc": 5,
+       "comp": "fac@W2aO13v2.W2aG2v5"
+      }
+     ],
+     "task": 41,
+     "valid": "fac@W2aO13v2.W2aG2v5",
+     "zs": 0
+    },
+    {
+     "acc1": 2,
+     "acc2": 4,
+     "arrival_kept": "fac@W2aO20v3.W2aG3v2",
+     "comp1": "fac@W2aO20v2.W2aG3v1",
+     "comp2": "fac@W2aO20v3.W2aG3v2",
+     "demo": true,
+     "kept": "fac@W2aO20v3.W2aG3v2",
+     "library_before": {
+      "G:in|the basket": "W2aG0v1",
+      "G:in|the tray": "W2aG1v2",
+      "G:on top of|the cabinet": "W2aG2v3",
+      "G:on|the plate": "W2aG3v1",
+      "I:put|the black bowl|back": null,
+      "I:put|the black bowl|front": null,
+      "I:put|the black bowl|middle": null,
+      "O:put|the alphabet soup": null,
+      "O:put|the black bowl": "E4aO8v1",
+      "O:put|the butter": "E4aO9v1",
+      "O:put|the chocolate pudding": "E4aO10v1",
+      "O:put|the cream cheese": null,
+      "O:put|the cream cheese box": null,
+      "O:put|the frying pan": "W2aO13v2",
+      "O:put|the ketchup": "E4aO14v1",
+      "O:put|the milk": null,
+      "O:put|the orange juice": null,
+      "O:put|the red mug": "W2aO17v2",
+      "O:put|the salad dressing": null,
+      "O:put|the tomato sauce": "W2aO19v2",
+      "O:put|the white bowl": "W2aO20v2",
+      "O:put|the white mug": "E4aO21v1"
+     },
+     "rechecks": [
+      {
+       "acc": 7,
+       "comp": "fac@W2aO20v3.W2aG3v3"
+      },
+      {
+       "acc": 7,
+       "comp": "fac@W2aO20v3.W2aG3v4"
+      },
+      {
+       "acc": 7,
+       "comp": "fac@W2aO20v3.W2aG3v5"
+      }
+     ],
+     "task": 36,
+     "valid": "fac@W2aO20v3.W2aG3v5",
+     "zs": 0
+    },
+    {
+     "acc1": 4,
+     "arrival_kept": "zs",
+     "comp1": "fac@W2aO19v2.W2aG0v1",
+     "demo": false,
+     "kept": "zs",
+     "library_before": {
+      "G:in|the basket": "W2aG0v1",
+      "G:in|the tray": "W2aG1v2",
+      "G:on top of|the cabinet": "W2aG2v3",
+      "G:on|the plate": "W2aG3v2",
+      "I:put|the black bowl|back": null,
+      "I:put|the black bowl|front": null,
+      "I:put|the black bowl|middle": null,
+      "O:put|the alphabet soup": null,
+      "O:put|the black bowl": "E4aO8v1",
+      "O:put|the butter": "E4aO9v1",
+      "O:put|the chocolate pudding": "E4aO10v1",
+      "O:put|the cream cheese": null,
+      "O:put|the cream cheese box": null,
+      "O:put|the frying pan": "W2aO13v2",
+      "O:put|the ketchup": "E4aO14v1",
+      "O:put|the milk": null,
+      "O:put|the orange juice": null,
+      "O:put|the red mug": "W2aO17v2",
+      "O:put|the salad dressing": null,
+      "O:put|the tomato sauce": "W2aO19v2",
+      "O:put|the white bowl": "W2aO20v3",
+      "O:put|the white mug": "E4aO21v1"
+     },
+     "task": 54,
+     "valid": null,
+     "zs": 8
+    },
+    {
+     "acc1": 6,
+     "arrival_kept": "zs",
+     "comp1": "fac@x.W2aG0v1",
+     "demo": false,
+     "kept": "zs",
+     "library_before": {
+      "G:in|the basket": "W2aG0v1",
+      "G:in|the tray": "W2aG1v2",
+      "G:on top of|the cabinet": "W2aG2v3",
+      "G:on|the plate": "W2aG3v2",
+      "I:put|the black bowl|back": null,
+      "I:put|the black bowl|front": null,
+      "I:put|the black bowl|middle": null,
+      "O:put|the alphabet soup": null,
+      "O:put|the black bowl": "E4aO8v1",
+      "O:put|the butter": "E4aO9v1",
+      "O:put|the chocolate pudding": "E4aO10v1",
+      "O:put|the cream cheese": null,
+      "O:put|the cream cheese box": null,
+      "O:put|the frying pan": "W2aO13v2",
+      "O:put|the ketchup": "E4aO14v1",
+      "O:put|the milk": null,
+      "O:put|the orange juice": null,
+      "O:put|the red mug": "W2aO17v2",
+      "O:put|the salad dressing": null,
+      "O:put|the tomato sauce": "W2aO19v2",
+      "O:put|the white bowl": "W2aO20v3",
+      "O:put|the white mug": "E4aO21v1"
+     },
+     "task": 47,
+     "valid": null,
+     "zs": 9
+    },
+    {
+     "acc1": 0,
+     "acc2": 10,
+     "arrival_kept": "fac@W2aI6v1.W2aG2v4",
+     "comp1": "fac@E4aO8v1.W2aG2v3",
+     "comp2": "fac@W2aI6v1.W2aG2v4",
+     "demo": true,
+     "kept": "fac@W2aI6v1.W2aG2v4",
+     "library_before": {
+      "G:in|the basket": "W2aG0v1",
+      "G:in|the tray": "W2aG1v2",
+      "G:on top of|the cabinet": "W2aG2v3",
+      "G:on|the plate": "W2aG3v2",
+      "I:put|the black bowl|back": null,
+      "I:put|the black bowl|front": null,
+      "I:put|the black bowl|middle": null,
+      "O:put|the alphabet soup": null,
+      "O:put|the black bowl": "E4aO8v1",
+      "O:put|the butter": "E4aO9v1",
+      "O:put|the chocolate pudding": "E4aO10v1",
+      "O:put|the cream cheese": null,
+      "O:put|the cream cheese box": null,
+      "O:put|the frying pan": "W2aO13v2",
+      "O:put|the ketchup": "E4aO14v1",
+      "O:put|the milk": null,
+      "O:put|the orange juice": null,
+      "O:put|the red mug": "W2aO17v2",
+      "O:put|the salad dressing": null,
+      "O:put|the tomato sauce": "W2aO19v2",
+      "O:put|the white bowl": "W2aO20v3",
+      "O:put|the white mug": "E4aO21v1"
+     },
+     "rechecks": [
+      {
+       "acc": 10,
+       "comp": "fac@W2aI6v1.W2aG2v5"
+      },
+      {
+       "acc": 10,
+       "comp": "fac@W2aI6v2.W2aG2v5"
+      }
+     ],
+     "task": 15,
+     "valid": "fac@W2aI6v2.W2aG2v5",
+     "zs": 1
+    },
+    {
+     "acc1": 10,
+     "arrival_kept": "zs",
+     "comp1": "fac@x.W2aG1v2",
+     "demo": false,
+     "kept": "zs",
+     "library_before": {
+      "G:in|the basket": "W2aG0v1",
+      "G:in|the tray": "W2aG1v2",
+      "G:on top of|the cabinet": "W2aG2v4",
+      "G:on|the plate": "W2aG3v2",
+      "I:put|the black bowl|back": null,
+      "I:put|the black bowl|front": null,
+      "I:put|the black bowl|middle": "W2aI6v1",
+      "O:put|the alphabet soup": null,
+      "O:put|the black bowl": "W2aO8v3",
+      "O:put|the butter": "E4aO9v1",
+      "O:put|the chocolate pudding": "E4aO10v1",
+      "O:put|the cream cheese": null,
+      "O:put|the cream cheese box": null,
+      "O:put|the frying pan": "W2aO13v2",
+      "O:put|the ketchup": "E4aO14v1",
+      "O:put|the milk": null,
+      "O:put|the orange juice": null,
+      "O:put|the red mug": "W2aO17v2",
+      "O:put|the salad dressing": null,
+      "O:put|the tomato sauce": "W2aO19v2",
+      "O:put|the white bowl": "W2aO20v3",
+      "O:put|the white mug": "E4aO21v1"
+     },
+     "task": 57,
+     "valid": null,
+     "zs": 10
+    },
+    {
+     "acc1": 10,
+     "arrival_kept": "zs",
+     "comp1": "fac@x.W2aG0v1",
+     "demo": false,
+     "kept": "zs",
+     "library_before": {
+      "G:in|the basket": "W2aG0v1",
+      "G:in|the tray": "W2aG1v2",
+      "G:on top of|the cabinet": "W2aG2v4",
+      "G:on|the plate": "W2aG3v2",
+      "I:put|the black bowl|back": null,
+      "I:put|the black bowl|front": null,
+      "I:put|the black bowl|middle": "W2aI6v1",
+      "O:put|the alphabet soup": null,
+      "O:put|the black bowl": "W2aO8v3",
+      "O:put|the butter": "E4aO9v1",
+      "O:put|the chocolate pudding": "E4aO10v1",
+      "O:put|the cream cheese": null,
+      "O:put|the cream cheese box": null,
+      "O:put|the frying pan": "W2aO13v2",
+      "O:put|the ketchup": "E4aO14v1",
+      "O:put|the milk": null,
+      "O:put|the orange juice": null,
+      "O:put|the red mug": "W2aO17v2",
+      "O:put|the salad dressing": null,
+      "O:put|the tomato sauce": "W2aO19v2",
+      "O:put|the white bowl": "W2aO20v3",
+      "O:put|the white mug": "E4aO21v1"
+     },
+     "task": 50,
+     "valid": null,
+     "zs": 10
+    },
+    {
+     "acc1": 0,
+     "acc2": 6,
+     "arrival_kept": "fac@W2aO15v1.W2aG0v2",
+     "comp1": "fac@x.W2aG0v1",
+     "comp2": "fac@W2aO15v1.W2aG0v2",
+     "demo": true,
+     "kept": "fac@W2aO15v1.W2aG0v2",
+     "library_before": {
+      "G:in|the basket": "W2aG0v1",
+      "G:in|the tray": "W2aG1v2",
+      "G:on top of|the cabinet": "W2aG2v4",
+      "G:on|the plate": "W2aG3v2",
+      "I:put|the black bowl|back": null,
+      "I:put|the black bowl|front": null,
+      "I:put|the black bowl|middle": "W2aI6v1",
+      "O:put|the alphabet soup": null,
+      "O:put|the black bowl": "W2aO8v3",
+      "O:put|the butter": "E4aO9v1",
+      "O:put|the chocolate pudding": "E4aO10v1",
+      "O:put|the cream cheese": null,
+      "O:put|the cream cheese box": null,
+      "O:put|the frying pan": "W2aO13v2",
+      "O:put|the ketchup": "E4aO14v1",
+      "O:put|the milk": null,
+      "O:put|the orange juice": null,
+      "O:put|the red mug": "W2aO17v2",
+      "O:put|the salad dressing": null,
+      "O:put|the tomato sauce": "W2aO19v2",
+      "O:put|the white bowl": "W2aO20v3",
+      "O:put|the white mug": "E4aO21v1"
+     },
+     "rechecks": [
+      {
+       "acc": 7,
+       "comp": "fac@W2aO15v1.W2aG0v3"
+      },
+      {
+       "acc": 5,
+       "comp": "fac@W2aO15v1.W2aG0v4"
+      }
+     ],
+     "task": 52,
+     "valid": "fac@W2aO15v1.W2aG0v4",
+     "zs": 0
+    },
+    {
+     "acc1": 10,
+     "arrival_kept": "zs",
+     "comp1": "fac@E4aO9v1.W2aG0v2",
+     "demo": false,
+     "kept": "zs",
+     "library_before": {
+      "G:in|the basket": "W2aG0v2",
+      "G:in|the tray": "W2aG1v2",
+      "G:on top of|the cabinet": "W2aG2v4",
+      "G:on|the plate": "W2aG3v2",
+      "I:put|the black bowl|back": null,
+      "I:put|the black bowl|front": null,
+      "I:put|the black bowl|middle": "W2aI6v1",
+      "O:put|the alphabet soup": null,
+      "O:put|the black bowl": "W2aO8v3",
+      "O:put|the butter": "E4aO9v1",
+      "O:put|the chocolate pudding": "E4aO10v1",
+      "O:put|the cream cheese": null,
+      "O:put|the cream cheese box": null,
+      "O:put|the frying pan": "W2aO13v2",
+      "O:put|the ketchup": "E4aO14v1",
+      "O:put|the milk": "W2aO15v1",
+      "O:put|the orange juice": null,
+      "O:put|the red mug": "W2aO17v2",
+      "O:put|the salad dressing": null,
+      "O:put|the tomato sauce": "W2aO19v2",
+      "O:put|the white bowl": "W2aO20v3",
+      "O:put|the white mug": "E4aO21v1"
+     },
+     "task": 51,
+     "valid": null,
+     "zs": 10
+    },
+    {
+     "acc1": 0,
+     "acc2": 0,
+     "arrival_kept": "zs",
+     "comp1": "fac@E4aO14v1.W2aG1v2",
+     "comp2": "fac@W2aO14v2.W2aG1v3",
+     "demo": true,
+     "kept": "zs",
+     "library_before": {
+      "G:in|the basket": "W2aG0v2",
+      "G:in|the tray": "W2aG1v2",
+      "G:on top of|the cabinet": "W2aG2v4",
+      "G:on|the plate": "W2aG3v2",
+      "I:put|the black bowl|back": null,
+      "I:put|the black bowl|front": null,
+      "I:put|the black bowl|middle": "W2aI6v1",
+      "O:put|the alphabet soup": null,
+      "O:put|the black bowl": "W2aO8v3",
+      "O:put|the butter": "E4aO9v1",
+      "O:put|the chocolate pudding": "E4aO10v1",
+      "O:put|the cream cheese": null,
+      "O:put|the cream cheese box": null,
+      "O:put|the frying pan": "W2aO13v2",
+      "O:put|the ketchup": "E4aO14v1",
+      "O:put|the milk": "W2aO15v1",
+      "O:put|the orange juice": null,
+      "O:put|the red mug": "W2aO17v2",
+      "O:put|the salad dressing": null,
+      "O:put|the tomato sauce": "W2aO19v2",
+      "O:put|the white bowl": "W2aO20v3",
+      "O:put|the white mug": "E4aO21v1"
+     },
+     "task": 58,
+     "valid": null,
+     "zs": 0
+    },
+    {
+     "acc1": 0,
+     "acc2": 10,
+     "arrival_kept": "fac@W2aI4v1.W2aG3v3",
+     "comp1": "fac@W2aO8v3.W2aG3v2",
+     "comp2": "fac@W2aI4v1.W2aG3v3",
+     "demo": true,
+     "kept": "fac@W2aI4v1.W2aG3v3",
+     "library_before": {
+      "G:in|the basket": "W2aG0v2",
+      "G:in|the tray": "W2aG1v3",
+      "G:on top of|the cabinet": "W2aG2v4",
+      "G:on|the plate": "W2aG3v2",
+      "I:put|the black bowl|back": null,
+      "I:put|the black bowl|front": null,
+      "I:put|the black bowl|middle": "W2aI6v1",
+      "O:put|the alphabet soup": null,
+      "O:put|the black bowl": "W2aO8v3",
+      "O:put|the butter": "E4aO9v1",
+      "O:put|the chocolate pudding": "E4aO10v1",
+      "O:put|the cream cheese": null,
+      "O:put|the cream cheese box": null,
+      "O:put|the frying pan": "W2aO13v2",
+      "O:put|the ketchup": "W2aO14v2",
+      "O:put|the milk": "W2aO15v1",
+      "O:put|the orange juice": null,
+      "O:put|the red mug": "W2aO17v2",
+      "O:put|the salad dressing": null,
+      "O:put|the tomato sauce": "W2aO19v2",
+      "O:put|the white bowl": "W2aO20v3",
+      "O:put|the white mug": "E4aO21v1"
+     },
+     "rechecks": [
+      {
+       "acc": 10,
+       "comp": "fac@W2aI4v1.W2aG3v4"
+      },
+      {
+       "acc": 10,
+       "comp": "fac@W2aI4v1.W2aG3v5"
+      }
+     ],
+     "task": 12,
+     "valid": "fac@W2aI4v1.W2aG3v5",
+     "zs": 4
+    },
+    {
+     "acc1": 0,
+     "acc2": 10,
+     "arrival_kept": "fac@W2aO8v5.W2aG2v5",
+     "comp1": "fac@W2aO8v4.W2aG2v4",
+     "comp2": "fac@W2aO8v5.W2aG2v5",
+     "demo": true,
+     "kept": "fac@W2aO8v5.W2aG2v5",
+     "library_before": {
+      "G:in|the basket": "W2aG0v2",
+      "G:in|the tray": "W2aG1v3",
+      "G:on top of|the cabinet": "W2aG2v4",
+      "G:on|the plate": "W2aG3v3",
+      "I:put|the black bowl|back": "W2aI4v1",
+      "I:put|the black bowl|front": null,
+      "I:put|the black bowl|middle": "W2aI6v1",
+      "O:put|the alphabet soup": null,
+      "O:put|the black bowl": "W2aO8v4",
+      "O:put|the butter": "E4aO9v1",
+      "O:put|the chocolate pudding": "E4aO10v1",
+      "O:put|the cream cheese": null,
+      "O:put|the cream cheese box": null,
+      "O:put|the frying pan": "W2aO13v2",
+      "O:put|the ketchup": "W2aO14v2",
+      "O:put|the milk": "W2aO15v1",
+      "O:put|the orange juice": null,
+      "O:put|the red mug": "W2aO17v2",
+      "O:put|the salad dressing": null,
+      "O:put|the tomato sauce": "W2aO19v2",
+      "O:put|the white bowl": "W2aO20v3",
+      "O:put|the white mug": "E4aO21v1"
+     },
+     "rechecks": [
+      {
+       "acc": 8,
+       "comp": "fac@W2aO8v6.W2aG2v5"
+      },
+      {
+       "acc": 10,
+       "comp": "fac@W2aO8v7.W2aG2v5"
+      }
+     ],
+     "task": 25,
+     "valid": "fac@W2aO8v7.W2aG2v5",
+     "zs": 0
+    },
+    {
+     "acc1": 0,
+     "acc2": 10,
+     "arrival_kept": "fac@W2aO16v1.W2aG0v3",
+     "comp1": "fac@x.W2aG0v2",
+     "comp2": "fac@W2aO16v1.W2aG0v3",
+     "demo": true,
+     "kept": "fac@W2aO16v1.W2aG0v3",
+     "library_before": {
+      "G:in|the basket": "W2aG0v2",
+      "G:in|the tray": "W2aG1v3",
+      "G:on top of|the cabinet": "W2aG2v5",
+      "G:on|the plate": "W2aG3v3",
+      "I:put|the black bowl|back": "W2aI4v1",
+      "I:put|the black bowl|front": null,
+      "I:put|the black bowl|middle": "W2aI6v1",
+      "O:put|the alphabet soup": null,
+      "O:put|the black bowl": "W2aO8v5",
+      "O:put|the butter": "E4aO9v1",
+      "O:put|the chocolate pudding": "E4aO10v1",
+      "O:put|the cream cheese": null,
+      "O:put|the cream cheese box": null,
+      "O:put|the frying pan": "W2aO13v2",
+      "O:put|the ketchup": "W2aO14v2",
+      "O:put|the milk": "W2aO15v1",
+      "O:put|the orange juice": null,
+      "O:put|the red mug": "W2aO17v2",
+      "O:put|the salad dressing": null,
+      "O:put|the tomato sauce": "W2aO19v2",
+      "O:put|the white bowl": "W2aO20v3",
+      "O:put|the white mug": "E4aO21v1"
+     },
+     "rechecks": [
+      {
+       "acc": 9,
+       "comp": "fac@W2aO16v1.W2aG0v4"
+      }
+     ],
+     "task": 53,
+     "valid": "fac@W2aO16v1.W2aG0v4",
+     "zs": 0
+    },
+    {
+     "acc1": 9,
+     "arrival_kept": "zs",
+     "comp1": "fac@E4aO21v1.W2aG3v3",
+     "demo": false,
+     "kept": "zs",
+     "library_before": {
+      "G:in|the basket": "W2aG0v3",
+      "G:in|the tray": "W2aG1v3",
+      "G:on top of|the cabinet": "W2aG2v5",
+      "G:on|the plate": "W2aG3v3",
+      "I:put|the black bowl|back": "W2aI4v1",
+      "I:put|the black bowl|front": null,
+      "I:put|the black bowl|middle": "W2aI6v1",
+      "O:put|the alphabet soup": null,
+      "O:put|the black bowl": "W2aO8v5",
+      "O:put|the butter": "E4aO9v1",
+      "O:put|the chocolate pudding": "E4aO10v1",
+      "O:put|the cream cheese": null,
+      "O:put|the cream cheese box": null,
+      "O:put|the frying pan": "W2aO13v2",
+      "O:put|the ketchup": "W2aO14v2",
+      "O:put|the milk": "W2aO15v1",
+      "O:put|the orange juice": "W2aO16v1",
+      "O:put|the red mug": "W2aO17v2",
+      "O:put|the salad dressing": null,
+      "O:put|the tomato sauce": "W2aO19v2",
+      "O:put|the white bowl": "W2aO20v3",
+      "O:put|the white mug": "E4aO21v1"
+     },
+     "task": 72,
+     "valid": null,
+     "zs": 10
+    },
+    {
+     "acc1": 10,
+     "acc2": 10,
+     "arrival_kept": "fac@E4aO9v1.W2aG1v3",
+     "comp1": "fac@E4aO9v1.W2aG1v3",
+     "comp2": "fac@W2aO9v2.W2aG1v5",
+     "demo": true,
+     "kept": "fac@W2aO9v2.W2aG1v5",
+     "late_demo": true,
+     "library_before": {
+      "G:in|the basket": "W2aG0v3",
+      "G:in|the tray": "W2aG1v3",
+      "G:on top of|the cabinet": "W2aG2v5",
+      "G:on|the plate": "W2aG3v3",
+      "I:put|the black bowl|back": "W2aI4v1",
+      "I:put|the black bowl|front": null,
+      "I:put|the black bowl|middle": "W2aI6v1",
+      "O:put|the alphabet soup": null,
+      "O:put|the black bowl": "W2aO8v5",
+      "O:put|the butter": "E4aO9v1",
+      "O:put|the chocolate pudding": "E4aO10v1",
+      "O:put|the cream cheese": null,
+      "O:put|the cream cheese box": null,
+      "O:put|the frying pan": "W2aO13v2",
+      "O:put|the ketchup": "W2aO14v2",
+      "O:put|the milk": "W2aO15v1",
+      "O:put|the orange juice": "W2aO16v1",
+      "O:put|the red mug": "W2aO17v2",
+      "O:put|the salad dressing": null,
+      "O:put|the tomato sauce": "W2aO19v2",
+      "O:put|the white bowl": "W2aO20v3",
+      "O:put|the white mug": "E4aO21v1"
+     },
+     "rechecks": [
+      {
+       "acc": 9,
+       "comp": "fac@E4aO9v1.W2aG1v4"
+      }
+     ],
+     "task": 56,
+     "valid": "fac@W2aO9v2.W2aG1v5",
+     "zs": 9
+    },
+    {
+     "acc1": 1,
+     "acc2": 5,
+     "arrival_kept": "zs",
+     "comp1": "fac@W2aI6v1.W2aG3v3",
+     "comp2": "fac@W2aI6v2.W2aG3v4",
+     "demo": true,
+     "kept": "zs",
+     "library_before": {
+      "G:in|the basket": "W2aG0v3",
+      "G:in|the tray": "W2aG1v3",
+      "G:on top of|the cabinet": "W2aG2v5",
+      "G:on|the plate": "W2aG3v3",
+      "I:put|the black bowl|back": "W2aI4v1",
+      "I:put|the black bowl|front": null,
+      "I:put|the black bowl|middle": "W2aI6v1",
+      "O:put|the alphabet soup": null,
+      "O:put|the black bowl": "W2aO8v5",
+      "O:put|the butter": "E4aO9v1",
+      "O:put|the chocolate pudding": "E4aO10v1",
+      "O:put|the cream cheese": null,
+      "O:put|the cream cheese box": null,
+      "O:put|the frying pan": "W2aO13v2",
+      "O:put|the ketchup": "W2aO14v2",
+      "O:put|the milk": "W2aO15v1",
+      "O:put|the orange juice": "W2aO16v1",
+      "O:put|the red mug": "W2aO17v2",
+      "O:put|the salad dressing": null,
+      "O:put|the tomato sauce": "W2aO19v2",
+      "O:put|the white bowl": "W2aO20v3",
+      "O:put|the white mug": "E4aO21v1"
+     },
+     "task": 14,
+     "valid": null,
+     "zs": 5
+    },
+    {
+     "acc1": 0,
+     "acc2": 9,
+     "arrival_kept": "fac@W2aI5v1.W2aG3v5",
+     "comp1": "fac@W2aO8v6.W2aG3v4",
+     "comp2": "fac@W2aI5v1.W2aG3v5",
+     "demo": true,
+     "kept": "fac@W2aI5v1.W2aG3v5",
+     "library_before": {
+      "G:in|the basket": "W2aG0v3",
+      "G:in|the tray": "W2aG1v3",
+      "G:on top of|the cabinet": "W2aG2v5",
+      "G:on|the plate": "W2aG3v4",
+      "I:put|the black bowl|back": "W2aI4v1",
+      "I:put|the black bowl|front": null,
+      "I:put|the black bowl|middle": "W2aI6v2",
+      "O:put|the alphabet soup": null,
+      "O:put|the black bowl": "W2aO8v6",
+      "O:put|the butter": "E4aO9v1",
+      "O:put|the chocolate pudding": "E4aO10v1",
+      "O:put|the cream cheese": null,
+      "O:put|the cream cheese box": null,
+      "O:put|the frying pan": "W2aO13v2",
+      "O:put|the ketchup": "W2aO14v2",
+      "O:put|the milk": "W2aO15v1",
+      "O:put|the orange juice": "W2aO16v1",
+      "O:put|the red mug": "W2aO17v2",
+      "O:put|the salad dressing": null,
+      "O:put|the tomato sauce": "W2aO19v2",
+      "O:put|the white bowl": "W2aO20v3",
+      "O:put|the white mug": "E4aO21v1"
+     },
+     "task": 13,
+     "valid": "fac@W2aI5v1.W2aG3v5",
+     "zs": 0
+    },
+    {
+     "acc1": 10,
+     "arrival_kept": "zs",
+     "comp1": "fac@x.W2aG0v3",
+     "demo": false,
+     "kept": "zs",
+     "library_before": {
+      "G:in|the basket": "W2aG0v3",
+      "G:in|the tray": "W2aG1v3",
+      "G:on top of|the cabinet": "W2aG2v5",
+      "G:on|the plate": "W2aG3v5",
+      "I:put|the black bowl|back": "W2aI4v1",
+      "I:put|the black bowl|front": "W2aI5v1",
+      "I:put|the black bowl|middle": "W2aI6v2",
+      "O:put|the alphabet soup": null,
+      "O:put|the black bowl": "W2aO8v7",
+      "O:put|the butter": "E4aO9v1",
+      "O:put|the chocolate pudding": "E4aO10v1",
+      "O:put|the cream cheese": null,
+      "O:put|the cream cheese box": null,
+      "O:put|the frying pan": "W2aO13v2",
+      "O:put|the ketchup": "W2aO14v2",
+      "O:put|the milk": "W2aO15v1",
+      "O:put|the orange juice": "W2aO16v1",
+      "O:put|the red mug": "W2aO17v2",
+      "O:put|the salad dressing": null,
+      "O:put|the tomato sauce": "W2aO19v2",
+      "O:put|the white bowl": "W2aO20v3",
+      "O:put|the white mug": "E4aO21v1"
+     },
+     "task": 46,
+     "valid": null,
+     "zs": 10
+    },
+    {
+     "acc1": 10,
+     "arrival_kept": "zs",
+     "comp1": "fac@x.W2aG1v3",
+     "demo": false,
+     "kept": "zs",
+     "library_before": {
+      "G:in|the basket": "W2aG0v3",
+      "G:in|the tray": "W2aG1v3",
+      "G:on top of|the cabinet": "W2aG2v5",
+      "G:on|the plate": "W2aG3v5",
+      "I:put|the black bowl|back": "W2aI4v1",
+      "I:put|the black bowl|front": "W2aI5v1",
+      "I:put|the black bowl|middle": "W2aI6v2",
+      "O:put|the alphabet soup": null,
+      "O:put|the black bowl": "W2aO8v7",
+      "O:put|the butter": "E4aO9v1",
+      "O:put|the chocolate pudding": "E4aO10v1",
+      "O:put|the cream cheese": null,
+      "O:put|the cream cheese box": null,
+      "O:put|the frying pan": "W2aO13v2",
+      "O:put|the ketchup": "W2aO14v2",
+      "O:put|the milk": "W2aO15v1",
+      "O:put|the orange juice": "W2aO16v1",
+      "O:put|the red mug": "W2aO17v2",
+      "O:put|the salad dressing": null,
+      "O:put|the tomato sauce": "W2aO19v2",
+      "O:put|the white bowl": "W2aO20v3",
+      "O:put|the white mug": "E4aO21v1"
+     },
+     "task": 55,
+     "valid": null,
+     "zs": 10
+    },
+    {
+     "acc1": 0,
+     "acc2": 5,
+     "arrival_kept": "fac@W2aO18v1.W2aG1v4",
+     "comp1": "fac@x.W2aG1v3",
+     "comp2": "fac@W2aO18v1.W2aG1v4",
+     "demo": true,
+     "kept": "fac@W2aO18v1.W2aG1v4",
+     "library_before": {
+      "G:in|the basket": "W2aG0v3",
+      "G:in|the tray": "W2aG1v3",
+      "G:on top of|the cabinet": "W2aG2v5",
+      "G:on|the plate": "W2aG3v5",
+      "I:put|the black bowl|back": "W2aI4v1",
+      "I:put|the black bowl|front": "W2aI5v1",
+      "I:put|the black bowl|middle": "W2aI6v2",
+      "O:put|the alphabet soup": null,
+      "O:put|the black bowl": "W2aO8v7",
+      "O:put|the butter": "E4aO9v1",
+      "O:put|the chocolate pudding": "E4aO10v1",
+      "O:put|the cream cheese": null,
+      "O:put|the cream cheese box": null,
+      "O:put|the frying pan": "W2aO13v2",
+      "O:put|the ketchup": "W2aO14v2",
+      "O:put|the milk": "W2aO15v1",
+      "O:put|the orange juice": "W2aO16v1",
+      "O:put|the red mug": "W2aO17v2",
+      "O:put|the salad dressing": null,
+      "O:put|the tomato sauce": "W2aO19v2",
+      "O:put|the white bowl": "W2aO20v3",
+      "O:put|the white mug": "E4aO21v1"
+     },
+     "rechecks": [
+      {
+       "acc": 5,
+       "comp": "fac@W2aO18v1.W2aG1v5"
+      }
+     ],
+     "task": 62,
+     "valid": "fac@W2aO18v1.W2aG1v5",
+     "zs": 0
+    },
+    {
+     "acc1": 1,
+     "acc2": 7,
+     "arrival_kept": "fac@W2aO14v3.W2aG0v4",
+     "comp1": "fac@W2aO14v2.W2aG0v3",
+     "comp2": "fac@W2aO14v3.W2aG0v4",
+     "demo": true,
+     "kept": "fac@W2aO14v3.W2aG0v4",
+     "library_before": {
+      "G:in|the basket": "W2aG0v3",
+      "G:in|the tray": "W2aG1v5",
+      "G:on top of|the cabinet": "W2aG2v5",
+      "G:on|the plate": "W2aG3v5",
+      "I:put|the black bowl|back": "W2aI4v1",
+      "I:put|the black bowl|front": "W2aI5v1",
+      "I:put|the black bowl|middle": "W2aI6v2",
+      "O:put|the alphabet soup": null,
+      "O:put|the black bowl": "W2aO8v7",
+      "O:put|the butter": "W2aO9v2",
+      "O:put|the chocolate pudding": "E4aO10v1",
+      "O:put|the cream cheese": null,
+      "O:put|the cream cheese box": null,
+      "O:put|the frying pan": "W2aO13v2",
+      "O:put|the ketchup": "W2aO14v2",
+      "O:put|the milk": "W2aO15v1",
+      "O:put|the orange juice": "W2aO16v1",
+      "O:put|the red mug": "W2aO17v2",
+      "O:put|the salad dressing": "W2aO18v1",
+      "O:put|the tomato sauce": "W2aO19v2",
+      "O:put|the white bowl": "W2aO20v3",
+      "O:put|the white mug": "E4aO21v1"
+     },
+     "task": 48,
+     "valid": "fac@W2aO14v3.W2aG0v4",
+     "zs": 0
+    }
+   ],
+   "changed_since_arrival": 14,
+   "damage": {
+    "diff": {
+     "diff": 0.017857142857142856,
+     "hi": 0.125,
+     "hi90": 0.10714285714285714,
+     "lo": -0.06785714285714285,
+     "lo90": -0.05357142857142857,
+     "n_pairs": 280,
+     "n_tasks": 14
+    },
+    "discordant": [
+     23,
+     18
+    ],
+    "n": 280,
+    "noninferior": false,
+    "sign_p": 0.5327092552361137,
+    "tasks": 14,
+    "x": 202,
+    "y": 197
+   },
+   "demos": 18,
+   "kept_library": 16,
+   "kept_without_demo": [
+    9,
+    30,
+    10,
+    61,
+    54,
+    47,
+    57,
+    50,
+    51,
+    72,
+    46,
+    55
+   ],
+   "per_task": {
+    "10": {
+     "arr": 18,
+     "fin": 18,
+     "lora_acc": 18,
+     "zs": 18
+    },
+    "12": {
+     "arr": 20,
+     "fin": 20,
+     "lora_acc": 19,
+     "zs": 9
+    },
+    "13": {
+     "arr": 19,
+     "fin": 19,
+     "lora_acc": 19,
+     "zs": 0
+    },
+    "14": {
+     "arr": 12,
+     "fin": 12,
+     "lora_acc": 17,
+     "zs": 12
+    },
+    "15": {
+     "arr": 20,
+     "fin": 18,
+     "lora_acc": 16,
+     "zs": 1
+    },
+    "25": {
+     "arr": 17,
+     "fin": 19,
+     "lora_acc": 20,
+     "zs": 0
+    },
+    "30": {
+     "arr": 14,
+     "fin": 14,
+     "lora_acc": 20,
+     "zs": 14
+    },
+    "31": {
+     "arr": 7,
+     "fin": 18,
+     "lora_acc": 20,
+     "zs": 3
+    },
+    "36": {
+     "arr": 11,
+     "fin": 11,
+     "lora_acc": 13,
+     "zs": 0
+    },
+    "41": {
+     "arr": 6,
+     "fin": 6,
+     "lora_acc": 17,
+     "zs": 1
+    },
+    "43": {
+     "arr": 19,
+     "fin": 14,
+     "lora_acc": 18,
+     "zs": 3
+    },
+    "46": {
+     "arr": 20,
+     "fin": 20,
+     "lora_acc": 20,
+     "zs": 20
+    },
+    "47": {
+     "arr": 20,
+     "fin": 20,
+     "lora_acc": 20,
+     "zs": 20
+    },
+    "48": {
+     "arr": 13,
+     "fin": 13,
+     "lora_acc": 17,
+     "zs": 0
+    },
+    "49": {
+     "arr": 19,
+     "fin": 18,
+     "lora_acc": 18,
+     "zs": 0
+    },
+    "50": {
+     "arr": 17,
+     "fin": 17,
+     "lora_acc": 17,
+     "zs": 17
+    },
+    "51": {
+     "arr": 19,
+     "fin": 19,
+     "zs": 19
+    },
+    "52": {
+     "arr": 14,
+     "fin": 15,
+     "lora_acc": 11,
+     "zs": 0
+    },
+    "53": {
+     "arr": 20,
+     "fin": 20,
+     "lora_acc": 20,
+     "zs": 1
+    },
+    "54": {
+     "arr": 17,
+     "fin": 17,
+     "lora_acc": 12,
+     "zs": 17
+    },
+    "55": {
+     "arr": 20,
+     "fin": 20,
+     "lora_acc": 20,
+     "zs": 20
+    },
+    "56": {
+     "arr": 20,
+     "fin": 20,
+     "lora_acc": 20,
+     "zs": 18
+    },
+    "57": {
+     "arr": 20,
+     "fin": 20,
+     "lora_acc": 20,
+     "zs": 20
+    },
+    "58": {
+     "arr": 0,
+     "fin": 0,
+     "lora_acc": 11,
+     "zs": 0
+    },
+    "59": {
+     "arr": 8,
+     "fin": 7,
+     "lora_acc": 9,
+     "zs": 1
+    },
+    "61": {
+     "arr": 20,
+     "fin": 20,
+     "lora_acc": 20,
+     "zs": 20
+    },
+    "62": {
+     "arr": 1,
+     "fin": 2,
+     "lora_acc": 6,
+     "zs": 0
+    },
+    "71": {
+     "arr": 15,
+     "fin": 14,
+     "lora_acc": 16,
+     "zs": 0
+    },
+    "72": {
+     "arr": 20,
+     "fin": 20,
+     "lora_acc": 20,
+     "zs": 20
+    },
+    "9": {
+     "arr": 19,
+     "fin": 19,
+     "lora_acc": 20,
+     "zs": 19
+    }
+   },
+   "prototypes": 19,
+   "unavailable": 0,
+   "vs_lora_acc": {
+    "diff": {
+     "diff": -0.07413793103448275,
+     "hi": -0.006896551724137931,
+     "hi90": -0.017241379310344827,
+     "lo": -0.1482758620689655,
+     "lo90": -0.13448275862068965,
+     "n_pairs": 580,
+     "n_tasks": 29
+    },
+    "discordant": [
+     27,
+     70
+    ],
+    "n": 580,
+    "sign_p": 1.476695145759083e-05,
+    "tasks": 29,
+    "x": 451,
+    "y": 494
+   }
+  },
+  "b": {
+   "H1": {
+    "diff": {
+     "diff": 0.33666666666666667,
+     "hi": 0.47,
+     "hi90": 0.44666666666666666,
+     "lo": 0.20666666666666667,
+     "lo90": 0.22666666666666666,
+     "n_pairs": 600,
+     "n_tasks": 30
+    },
+    "discordant": [
+     209,
+     7
+    ],
+    "n": 600,
+    "passes": true,
+    "sign_p": 7.749823134427871e-53,
+    "tasks": 30,
+    "x": 475,
+    "y": 273
+   },
+   "arrivals": 30,
+   "arrivals_log": [
+    {
+     "acc1": null,
+     "acc2": 9,
+     "arrival_kept": "fac@W2bO16v1.W2bG0v1",
+     "comp1": null,
+     "comp2": "fac@W2bO16v1.W2bG0v1",
+     "demo": true,
+     "kept": "fac@W2bO16v1.W2bG0v1",
+     "library_before": {
+      "G:in|the basket": null,
+      "G:in|the tray": "E4bG1v1",
+      "G:on top of|the cabinet": null,
+      "G:on|the plate": null,
+      "I:put|the black bowl|back": null,
+      "I:put|the black bowl|front": null,
+      "I:put|the black bowl|middle": null,
+      "O:put|the alphabet soup": null,
+      "O:put|the black bowl": "E4bO8v1",
+      "O:put|the butter": "E4bO9v1",
+      "O:put|the chocolate pudding": "E4bO10v1",
+      "O:put|the cream cheese": null,
+      "O:put|the cream cheese box": null,
+      "O:put|the frying pan": "E4bO13v1",
+      "O:put|the ketchup": "E4bO14v1",
+      "O:put|the milk": null,
+      "O:put|the orange juice": null,
+      "O:put|the red mug": "E4bO17v1",
+      "O:put|the salad dressing": null,
+      "O:put|the tomato sauce": null,
+      "O:put|the white bowl": "E4bO20v1",
+      "O:put|the white mug": "E4bO21v1"
+     },
+     "rechecks": [
+      {
+       "acc": 9,
+       "comp": "fac@W2bO16v1.W2bG0v2"
+      },
+      {
+       "acc": 10,
+       "comp": "fac@W2bO16v1.W2bG0v3"
+      },
+      {
+       "acc": 10,
+       "comp": "fac@W2bO16v1.W2bG0v4"
+      }
+     ],
+     "task": 53,
+     "valid": "fac@W2bO16v1.W2bG0v4",
+     "zs": 0
+    },
+    {
+     "acc1": 5,
+     "acc2": 6,
+     "arrival_kept": "fac@W2bO20v2.W2bG3v1",
+     "comp1": "fac@E4bO20v1.x",
+     "comp2": "fac@W2bO20v2.W2bG3v1",
+     "demo": true,
+     "kept": "fac@W2bO20v2.W2bG3v1",
+     "library_before": {
+      "G:in|the basket": "W2bG0v1",
+      "G:in|the tray": "E4bG1v1",
+      "G:on top of|the cabinet": null,
+      "G:on|the plate": null,
+      "I:put|the black bowl|back": null,
+      "I:put|the black bowl|front": null,
+      "I:put|the black bowl|middle": null,
+      "O:put|the alphabet soup": null,
+      "O:put|the black bowl": "E4bO8v1",
+      "O:put|the butter": "E4bO9v1",
+      "O:put|the chocolate pudding": "E4bO10v1",
+      "O:put|the cream cheese": null,
+      "O:put|the cream cheese box": null,
+      "O:put|the frying pan": "E4bO13v1",
+      "O:put|the ketchup": "E4bO14v1",
+      "O:put|the milk": null,
+      "O:put|the orange juice": "W2bO16v1",
+      "O:put|the red mug": "E4bO17v1",
+      "O:put|the salad dressing": null,
+      "O:put|the tomato sauce": null,
+      "O:put|the white bowl": "E4bO20v1",
+      "O:put|the white mug": "E4bO21v1"
+     },
+     "rechecks": [
+      {
+       "acc": 7,
+       "comp": "fac@W2bO20v2.W2bG3v2"
+      },
+      {
+       "acc": 8,
+       "comp": "fac@W2bO20v3.W2bG3v2"
+      },
+      {
+       "acc": 7,
+       "comp": "fac@W2bO20v3.W2bG3v3"
+      },
+      {
+       "acc": 7,
+       "comp": "fac@W2bO20v3.W2bG3v4"
+      },
+      {
+       "acc": 8,
+       "comp": "fac@W2bO20v3.W2bG3v5"
+      }
+     ],
+     "task": 36,
+     "valid": "fac@W2bO20v3.W2bG3v5",
+     "zs": 0
+    },
+    {
+     "acc1": 2,
+     "acc2": 10,
+     "arrival_kept": "fac@W2bI4v1.W2bG3v2",
+     "comp1": "fac@E4bO8v1.W2bG3v1",
+     "comp2": "fac@W2bI4v1.W2bG3v2",
+     "demo": true,
+     "kept": "fac@W2bI4v1.W2bG3v2",
+     "library_before": {
+      "G:in|the basket": "W2bG0v1",
+      "G:in|the tray": "E4bG1v1",
+      "G:on top of|the cabinet": null,
+      "G:on|the plate": "W2bG3v1",
+      "I:put|the black bowl|back": null,
+      "I:put|the black bowl|front": null,
+      "I:put|the black bowl|middle": null,
+      "O:put|the alphabet soup": null,
+      "O:put|the black bowl": "E4bO8v1",
+      "O:put|the butter": "E4bO9v1",
+      "O:put|the chocolate pudding": "E4bO10v1",
+      "O:put|the cream cheese": null,
+      "O:put|the cream cheese box": null,
+      "O:put|the frying pan": "E4bO13v1",
+      "O:put|the ketchup": "E4bO14v1",
+      "O:put|the milk": null,
+      "O:put|the orange juice": "W2bO16v1",
+      "O:put|the red mug": "E4bO17v1",
+      "O:put|the salad dressing": null,
+      "O:put|the tomato sauce": null,
+      "O:put|the white bowl": "W2bO20v2",
+      "O:put|the white mug": "E4bO21v1"
+     },
+     "rechecks": [
+      {
+       "acc": 10,
+       "comp": "fac@W2bI4v1.W2bG3v3"
+      },
+      {
+       "acc": 10,
+       "comp": "fac@W2bI4v1.W2bG3v4"
+      },
+      {
+       "acc": 10,
+       "comp": "fac@W2bI4v1.W2bG3v5"
+      }
+     ],
+     "task": 12,
+     "valid": "fac@W2bI4v1.W2bG3v5",
+     "zs": 4
+    },
+    {
+     "acc1": 8,
+     "arrival_kept": "zs",
+     "comp1": "fac@W2bO8v2.W2bG3v2",
+     "demo": false,
+     "kept": "zs",
+     "library_before": {
+      "G:in|the basket": "W2bG0v1",
+      "G:in|the tray": "E4bG1v1",
+      "G:on top of|the cabinet": null,
+      "G:on|the plate": "W2bG3v2",
+      "I:put|the black bowl|back": "W2bI4v1",
+      "I:put|the black bowl|front": null,
+      "I:put|the black bowl|middle": null,
+      "O:put|the alphabet soup": null,
+      "O:put|the black bowl": "W2bO8v2",
+      "O:put|the butter": "E4bO9v1",
+      "O:put|the chocolate pudding": "E4bO10v1",
+      "O:put|the cream cheese": null,
+      "O:put|the cream cheese box": null,
+      "O:put|the frying pan": "E4bO13v1",
+      "O:put|the ketchup": "E4bO14v1",
+      "O:put|the milk": null,
+      "O:put|the orange juice": "W2bO16v1",
+      "O:put|the red mug": "E4bO17v1",
+      "O:put|the salad dressing": null,
+      "O:put|the tomato sauce": null,
+      "O:put|the white bowl": "W2bO20v2",
+      "O:put|the white mug": "E4bO21v1"
+     },
+     "task": 30,
+     "valid": null,
+     "zs": 9
+    },
+    {
+     "acc1": 10,
+     "arrival_kept": "zs",
+     "comp1": "fac@x.E4bG1v1",
+     "demo": false,
+     "kept": "zs",
+     "library_before": {
+      "G:in|the basket": "W2bG0v1",
+      "G:in|the tray": "E4bG1v1",
+      "G:on top of|the cabinet": null,
+      "G:on|the plate": "W2bG3v2",
+      "I:put|the black bowl|back": "W2bI4v1",
+      "I:put|the black bowl|front": null,
+      "I:put|the black bowl|middle": null,
+      "O:put|the alphabet soup": null,
+      "O:put|the black bowl": "W2bO8v2",
+      "O:put|the butter": "E4bO9v1",
+      "O:put|the chocolate pudding": "E4bO10v1",
+      "O:put|the cream cheese": null,
+      "O:put|the cream cheese box": null,
+      "O:put|the frying pan": "E4bO13v1",
+      "O:put|the ketchup": "E4bO14v1",
+      "O:put|the milk": null,
+      "O:put|the orange juice": "W2bO16v1",
+      "O:put|the red mug": "E4bO17v1",
+      "O:put|the salad dressing": null,
+      "O:put|the tomato sauce": null,
+      "O:put|the white bowl": "W2bO20v2",
+      "O:put|the white mug": "E4bO21v1"
+     },
+     "task": 57,
+     "valid": null,
+     "zs": 10
+    },
+    {
+     "acc1": 0,
+     "acc2": 0,
+     "arrival_kept": "zs",
+     "comp1": "fac@E4bO14v1.E4bG1v1",
+     "comp2": "fac@W2bO14v2.W2bG1v2",
+     "demo": true,
+     "kept": "zs",
+     "library_before": {
+      "G:in|the basket": "W2bG0v1",
+      "G:in|the tray": "E4bG1v1",
+      "G:on top of|the cabinet": null,
+      "G:on|the plate": "W2bG3v2",
+      "I:put|the black bowl|back": "W2bI4v1",
+      "I:put|the black bowl|front": null,
+      "I:put|the black bowl|middle": null,
+      "O:put|the alphabet soup": null,
+      "O:put|the black bowl": "W2bO8v2",
+      "O:put|the butter": "E4bO9v1",
+      "O:put|the chocolate pudding": "E4bO10v1",
+      "O:put|the cream cheese": null,
+      "O:put|the cream cheese box": null,
+      "O:put|the frying pan": "E4bO13v1",
+      "O:put|the ketchup": "E4bO14v1",
+      "O:put|the milk": null,
+      "O:put|the orange juice": "W2bO16v1",
+      "O:put|the red mug": "E4bO17v1",
+      "O:put|the salad dressing": null,
+      "O:put|the tomato sauce": null,
+      "O:put|the white bowl": "W2bO20v2",
+      "O:put|the white mug": "E4bO21v1"
+     },
+     "task": 58,
+     "valid": null,
+     "zs": 0
+    },
+    {
+     "acc1": 0,
+     "acc2": 5,
+     "arrival_kept": "fac@W2bO20v3.W2bG2v1",
+     "comp1": "fac@W2bO20v2.x",
+     "comp2": "fac@W2bO20v3.W2bG2v1",
+     "demo": true,
+     "kept": "fac@W2bO20v3.W2bG2v1",
+     "library_before": {
+      "G:in|the basket": "W2bG0v1",
+      "G:in|the tray": "W2bG1v2",
+      "G:on top of|the cabinet": null,
+      "G:on|the plate": "W2bG3v2",
+      "I:put|the black bowl|back": "W2bI4v1",
+      "I:put|the black bowl|front": null,
+      "I:put|the black bowl|middle": null,
+      "O:put|the alphabet soup": null,
+      "O:put|the black bowl": "W2bO8v2",
+      "O:put|the butter": "E4bO9v1",
+      "O:put|the chocolate pudding": "E4bO10v1",
+      "O:put|the cream cheese": null,
+      "O:put|the cream cheese box": null,
+      "O:put|the frying pan": "E4bO13v1",
+      "O:put|the ketchup": "W2bO14v2",
+      "O:put|the milk": null,
+      "O:put|the orange juice": "W2bO16v1",
+      "O:put|the red mug": "E4bO17v1",
+      "O:put|the salad dressing": null,
+      "O:put|the tomato sauce": null,
+      "O:put|the white bowl": "W2bO20v2",
+      "O:put|the white mug": "E4bO21v1"
+     },
+     "rechecks": [
+      {
+       "acc": 7,
+       "comp": "fac@W2bO20v3.W2bG2v2"
+      },
+      {
+       "acc": 8,
+       "comp": "fac@W2bO20v3.W2bG2v3"
+      },
+      {
+       "acc": 8,
+       "comp": "fac@W2bO20v3.W2bG2v4"
+      }
+     ],
+     "task": 43,
+     "valid": "fac@W2bO20v3.W2bG2v4",
+     "zs": 0
+    },
+    {
+     "acc1": 0,
+     "acc2": 10,
+     "arrival_kept": "fac@W2bO8v3.W2bG2v2",
+     "comp1": "fac@W2bO8v2.W2bG2v1",
+     "comp2": "fac@W2bO8v3.W2bG2v2",
+     "demo": true,
+     "kept": "fac@W2bO8v3.W2bG2v2",
+     "library_before": {
+      "G:in|the basket": "W2bG0v1",
+      "G:in|the tray": "W2bG1v2",
+      "G:on top of|the cabinet": "W2bG2v1",
+      "G:on|the plate": "W2bG3v2",
+      "I:put|the black bowl|back": "W2bI4v1",
+      "I:put|the black bowl|front": null,
+      "I:put|the black bowl|middle": null,
+      "O:put|the alphabet soup": null,
+      "O:put|the black bowl": "W2bO8v2",
+      "O:put|the butter": "E4bO9v1",
+      "O:put|the chocolate pudding": "E4bO10v1",
+      "O:put|the cream cheese": null,
+      "O:put|the cream cheese box": null,
+      "O:put|the frying pan": "E4bO13v1",
+      "O:put|the ketchup": "W2bO14v2",
+      "O:put|the milk": null,
+      "O:put|the orange juice": "W2bO16v1",
+      "O:put|the red mug": "E4bO17v1",
+      "O:put|the salad dressing": null,
+      "O:put|the tomato sauce": null,
+      "O:put|the white bowl": "W2bO20v3",
+      "O:put|the white mug": "E4bO21v1"
+     },
+     "rechecks": [
+      {
+       "acc": 9,
+       "comp": "fac@W2bO8v4.W2bG2v2"
+      },
+      {
+       "acc": 9,
+       "comp": "fac@W2bO8v5.W2bG2v2"
+      },
+      {
+       "acc": 10,
+       "comp": "fac@W2bO8v5.W2bG2v3"
+      },
+      {
+       "acc": 10,
+       "comp": "fac@W2bO8v6.W2bG2v4"
+      }
+     ],
+     "task": 25,
+     "valid": "fac@W2bO8v6.W2bG2v4",
+     "zs": 0
+    },
+    {
+     "acc1": 10,
+     "arrival_kept": "zs",
+     "comp1": "fac@x.W2bG0v1",
+     "demo": false,
+     "kept": "zs",
+     "library_before": {
+      "G:in|the basket": "W2bG0v1",
+      "G:in|the tray": "W2bG1v2",
+      "G:on top of|the cabinet": "W2bG2v2",
+      "G:on|the plate": "W2bG3v2",
+      "I:put|the black bowl|back": "W2bI4v1",
+      "I:put|the black bowl|front": null,
+      "I:put|the black bowl|middle": null,
+      "O:put|the alphabet soup": null,
+      "O:put|the black bowl": "W2bO8v3",
+      "O:put|the butter": "E4bO9v1",
+      "O:put|the chocolate pudding": "E4bO10v1",
+      "O:put|the cream cheese": null,
+      "O:put|the cream cheese box": null,
+      "O:put|the frying pan": "E4bO13v1",
+      "O:put|the ketchup": "W2bO14v2",
+      "O:put|the milk": null,
+      "O:put|the orange juice": "W2bO16v1",
+      "O:put|the red mug": "E4bO17v1",
+      "O:put|the salad dressing": null,
+      "O:put|the tomato sauce": null,
+      "O:put|the white bowl": "W2bO20v3",
+      "O:put|the white mug": "E4bO21v1"
+     },
+     "task": 46,
+     "valid": null,
+     "zs": 10
+    },
+    {
+     "acc1": 10,
+     "arrival_kept": "zs",
+     "comp1": "fac@E4bO9v1.W2bG0v1",
+     "demo": false,
+     "kept": "zs",
+     "library_before": {
+      "G:in|the basket": "W2bG0v1",
+      "G:in|the tray": "W2bG1v2",
+      "G:on top of|the cabinet": "W2bG2v2",
+      "G:on|the plate": "W2bG3v2",
+      "I:put|the black bowl|back": "W2bI4v1",
+      "I:put|the black bowl|front": null,
+      "I:put|the black bowl|middle": null,
+      "O:put|the alphabet soup": null,
+      "O:put|the black bowl": "W2bO8v3",
+      "O:put|the butter": "E4bO9v1",
+      "O:put|the chocolate pudding": "E4bO10v1",
+      "O:put|the cream cheese": null,
+      "O:put|the cream cheese box": null,
+      "O:put|the frying pan": "E4bO13v1",
+      "O:put|the ketchup": "W2bO14v2",
+      "O:put|the milk": null,
+      "O:put|the orange juice": "W2bO16v1",
+      "O:put|the red mug": "E4bO17v1",
+      "O:put|the salad dressing": null,
+      "O:put|the tomato sauce": null,
+      "O:put|the white bowl": "W2bO20v3",
+      "O:put|the white mug": "E4bO21v1"
+     },
+     "task": 51,
+     "valid": null,
+     "zs": 10
+    },
+    {
+     "acc1": 0,
+     "acc2": 9,
+     "arrival_kept": "fac@W2bI5v1.W2bG3v3",
+     "comp1": "fac@W2bO8v3.W2bG3v2",
+     "comp2": "fac@W2bI5v1.W2bG3v3",
+     "demo": true,
+     "kept": "fac@W2bI5v1.W2bG3v3",
+     "library_before": {
+      "G:in|the basket": "W2bG0v1",
+      "G:in|the tray": "W2bG1v2",
+      "G:on top of|the cabinet": "W2bG2v2",
+      "G:on|the plate": "W2bG3v2",
+      "I:put|the black bowl|back": "W2bI4v1",
+      "I:put|the black bowl|front": null,
+      "I:put|the black bowl|middle": null,
+      "O:put|the alphabet soup": null,
+      "O:put|the black bowl": "W2bO8v3",
+      "O:put|the butter": "E4bO9v1",
+      "O:put|the chocolate pudding": "E4bO10v1",
+      "O:put|the cream cheese": null,
+      "O:put|the cream cheese box": null,
+      "O:put|the frying pan": "E4bO13v1",
+      "O:put|the ketchup": "W2bO14v2",
+      "O:put|the milk": null,
+      "O:put|the orange juice": "W2bO16v1",
+      "O:put|the red mug": "E4bO17v1",
+      "O:put|the salad dressing": null,
+      "O:put|the tomato sauce": null,
+      "O:put|the white bowl": "W2bO20v3",
+      "O:put|the white mug": "E4bO21v1"
+     },
+     "rechecks": [
+      {
+       "acc": 10,
+       "comp": "fac@W2bI5v1.W2bG3v4"
+      },
+      {
+       "acc": 8,
+       "comp": "fac@W2bI5v1.W2bG3v5"
+      }
+     ],
+     "task": 13,
+     "valid": "fac@W2bI5v1.W2bG3v5",
+     "zs": 0
+    },
+    {
+     "acc1": 0,
+     "acc2": 0,
+     "arrival_kept": "zs",
+     "comp1": "fac@x.W2bG1v2",
+     "comp2": "fac@W2bO18v1.W2bG1v3",
+     "demo": true,
+     "kept": "zs",
+     "library_before": {
+      "G:in|the basket": "W2bG0v1",
+      "G:in|the tray": "W2bG1v2",
+      "G:on top of|the cabinet": "W2bG2v2",
+      "G:on|the plate": "W2bG3v3",
+      "I:put|the black bowl|back": "W2bI4v1",
+      "I:put|the black bowl|front": "W2bI5v1",
+      "I:put|the black bowl|middle": null,
+      "O:put|the alphabet soup": null,
+      "O:put|the black bowl": "W2bO8v4",
+      "O:put|the butter": "E4bO9v1",
+      "O:put|the chocolate pudding": "E4bO10v1",
+      "O:put|the cream cheese": null,
+      "O:put|the cream cheese box": null,
+      "O:put|the frying pan": "E4bO13v1",
+      "O:put|the ketchup": "W2bO14v2",
+      "O:put|the milk": null,
+      "O:put|the orange juice": "W2bO16v1",
+      "O:put|the red mug": "E4bO17v1",
+      "O:put|the salad dressing": null,
+      "O:put|the tomato sauce": null,
+      "O:put|the white bowl": "W2bO20v3",
+      "O:put|the white mug": "E4bO21v1"
+     },
+     "task": 62,
+     "valid": null,
+     "zs": 0
+    },
+    {
+     "acc1": 10,
+     "arrival_kept": "zs",
+     "comp1": "fac@E4bO21v1.W2bG3v3",
+     "demo": false,
+     "kept": "zs",
+     "library_before": {
+      "G:in|the basket": "W2bG0v1",
+      "G:in|the tray": "W2bG1v3",
+      "G:on top of|the cabinet": "W2bG2v2",
+      "G:on|the plate": "W2bG3v3",
+      "I:put|the black bowl|back": "W2bI4v1",
+      "I:put|the black bowl|front": "W2bI5v1",
+      "I:put|the black bowl|middle": null,
+      "O:put|the alphabet soup": null,
+      "O:put|the black bowl": "W2bO8v4",
+      "O:put|the butter": "E4bO9v1",
+      "O:put|the chocolate pudding": "E4bO10v1",
+      "O:put|the cream cheese": null,
+      "O:put|the cream cheese box": null,
+      "O:put|the frying pan": "E4bO13v1",
+      "O:put|the ketchup": "W2bO14v2",
+      "O:put|the milk": null,
+      "O:put|the orange juice": "W2bO16v1",
+      "O:put|the red mug": "E4bO17v1",
+      "O:put|the salad dressing": "W2bO18v1",
+      "O:put|the tomato sauce": null,
+      "O:put|the white bowl": "W2bO20v3",
+      "O:put|the white mug": "E4bO21v1"
+     },
+     "task": 72,
+     "valid": null,
+     "zs": 10
+    },
+    {
+     "acc1": 10,
+     "arrival_kept": "zs",
+     "comp1": "fac@x.W2bG0v1",
+     "demo": false,
+     "kept": "zs",
+     "library_before": {
+      "G:in|the basket": "W2bG0v1",
+      "G:in|the tray": "W2bG1v3",
+      "G:on top of|the cabinet": "W2bG2v2",
+      "G:on|the plate": "W2bG3v3",
+      "I:put|the black bowl|back": "W2bI4v1",
+      "I:put|the black bowl|front": "W2bI5v1",
+      "I:put|the black bowl|middle": null,
+      "O:put|the alphabet soup": null,
+      "O:put|the black bowl": "W2bO8v4",
+      "O:put|the butter": "E4bO9v1",
+      "O:put|the chocolate pudding": "E4bO10v1",
+      "O:put|the cream cheese": null,
+      "O:put|the cream cheese box": null,
+      "O:put|the frying pan": "E4bO13v1",
+      "O:put|the ketchup": "W2bO14v2",
+      "O:put|the milk": null,
+      "O:put|the orange juice": "W2bO16v1",
+      "O:put|the red mug": "E4bO17v1",
+      "O:put|the salad dressing": "W2bO18v1",
+      "O:put|the tomato sauce": null,
+      "O:put|the white bowl": "W2bO20v3",
+      "O:put|the white mug": "E4bO21v1"
+     },
+     "task": 50,
+     "valid": null,
+     "zs": 10
+    },
+    {
+     "acc1": 8,
+     "arrival_kept": "zs",
+     "comp1": "fac@W2bO8v4.W2bG2v2",
+     "demo": false,
+     "kept": "zs",
+     "library_before": {
+      "G:in|the basket": "W2bG0v1",
+      "G:in|the tray": "W2bG1v3",
+      "G:on top of|the cabinet": "W2bG2v2",
+      "G:on|the plate": "W2bG3v3",
+      "I:put|the black bowl|back": "W2bI4v1",
+      "I:put|the black bowl|front": "W2bI5v1",
+      "I:put|the black bowl|middle": null,
+      "O:put|the alphabet soup": null,
+      "O:put|the black bowl": "W2bO8v4",
+      "O:put|the butter": "E4bO9v1",
+      "O:put|the chocolate pudding": "E4bO10v1",
+      "O:put|the cream cheese": null,
+      "O:put|the cream cheese box": null,
+      "O:put|the frying pan": "E4bO13v1",
+      "O:put|the ketchup": "W2bO14v2",
+      "O:put|the milk": null,
+      "O:put|the orange juice": "W2bO16v1",
+      "O:put|the red mug": "E4bO17v1",
+      "O:put|the salad dressing": "W2bO18v1",
+      "O:put|the tomato sauce": null,
+      "O:put|the white bowl": "W2bO20v3",
+      "O:put|the white mug": "E4bO21v1"
+     },
+     "task": 10,
+     "valid": null,
+     "zs": 10
+    },
+    {
+     "acc1": 4,
+     "acc2": 6,
+     "arrival_kept": "fac@W2bO19v1.W2bG1v4",
+     "comp1": "fac@x.W2bG1v3",
+     "comp2": "fac@W2bO19v1.W2bG1v4",
+     "demo": true,
+     "kept": "fac@W2bO19v1.W2bG1v4",
+     "library_before": {
+      "G:in|the basket": "W2bG0v1",
+      "G:in|the tray": "W2bG1v3",
+      "G:on top of|the cabinet": "W2bG2v2",
+      "G:on|the plate": "W2bG3v3",
+      "I:put|the black bowl|back": "W2bI4v1",
+      "I:put|the black bowl|front": "W2bI5v1",
+      "I:put|the black bowl|middle": null,
+      "O:put|the alphabet soup": null,
+      "O:put|the black bowl": "W2bO8v4",
+      "O:put|the butter": "E4bO9v1",
+      "O:put|the chocolate pudding": "E4bO10v1",
+      "O:put|the cream cheese": null,
+      "O:put|the cream cheese box": null,
+      "O:put|the frying pan": "E4bO13v1",
+      "O:put|the ketchup": "W2bO14v2",
+      "O:put|the milk": null,
+      "O:put|the orange juice": "W2bO16v1",
+      "O:put|the red mug": "E4bO17v1",
+      "O:put|the salad dressing": "W2bO18v1",
+      "O:put|the tomato sauce": null,
+      "O:put|the white bowl": "W2bO20v3",
+      "O:put|the white mug": "E4bO21v1"
+     },
+     "rechecks": [
+      {
+       "acc": 6,
+       "comp": "fac@W2bO19v2.W2bG1v4"
+      }
+     ],
+     "task": 59,
+     "valid": "fac@W2bO19v2.W2bG1v4",
+     "zs": 1
+    },
+    {
+     "acc1": 3,
+     "arrival_kept": "zs",
+     "comp1": "fac@W2bO19v1.W2bG0v1",
+     "demo": false,
+     "kept": "zs",
+     "library_before": {
+      "G:in|the basket": "W2bG0v1",
+      "G:in|the tray": "W2bG1v4",
+      "G:on top of|the cabinet": "W2bG2v2",
+      "G:on|the plate": "W2bG3v3",
+      "I:put|the black bowl|back": "W2bI4v1",
+      "I:put|the black bowl|front": "W2bI5v1",
+      "I:put|the black bowl|middle": null,
+      "O:put|the alphabet soup": null,
+      "O:put|the black bowl": "W2bO8v4",
+      "O:put|the butter": "E4bO9v1",
+      "O:put|the chocolate pudding": "E4bO10v1",
+      "O:put|the cream cheese": null,
+      "O:put|the cream cheese box": null,
+      "O:put|the frying pan": "E4bO13v1",
+      "O:put|the ketchup": "W2bO14v2",
+      "O:put|the milk": null,
+      "O:put|the orange juice": "W2bO16v1",
+      "O:put|the red mug": "E4bO17v1",
+      "O:put|the salad dressing": "W2bO18v1",
+      "O:put|the tomato sauce": "W2bO19v1",
+      "O:put|the white bowl": "W2bO20v3",
+      "O:put|the white mug": "E4bO21v1"
+     },
+     "task": 54,
+     "valid": null,
+     "zs": 8
+    },
+    {
+     "acc1": 2,
+     "acc2": 8,
+     "arrival_kept": "fac@W2bO17v2.W2bG3v4",
+     "comp1": "fac@E4bO17v1.W2bG3v3",
+     "comp2": "fac@W2bO17v2.W2bG3v4",
+     "demo": true,
+     "kept": "fac@W2bO17v2.W2bG3v4",
+     "library_before": {
+      "G:in|the basket": "W2bG0v1",
+      "G:in|the tray": "W2bG1v4",
+      "G:on top of|the cabinet": "W2bG2v2",
+      "G:on|the plate": "W2bG3v3",
+      "I:put|the black bowl|back": "W2bI4v1",
+      "I:put|the black bowl|front": "W2bI5v1",
+      "I:put|the black bowl|middle": null,
+      "O:put|the alphabet soup": null,
+      "O:put|the black bowl": "W2bO8v4",
+      "O:put|the butter": "E4bO9v1",
+      "O:put|the chocolate pudding": "E4bO10v1",
+      "O:put|the cream cheese": null,
+      "O:put|the cream cheese box": null,
+      "O:put|the frying pan": "E4bO13v1",
+      "O:put|the ketchup": "W2bO14v2",
+      "O:put|the milk": null,
+      "O:put|the orange juice": "W2bO16v1",
+      "O:put|the red mug": "E4bO17v1",
+      "O:put|the salad dressing": "W2bO18v1",
+      "O:put|the tomato sauce": "W2bO19v1",
+      "O:put|the white bowl": "W2bO20v3",
+      "O:put|the white mug": "E4bO21v1"
+     },
+     "rechecks": [
+      {
+       "acc": 8,
+       "comp": "fac@W2bO17v2.W2bG3v5"
+      }
+     ],
+     "task": 71,
+     "valid": "fac@W2bO17v2.W2bG3v5",
+     "zs": 0
+    },
+    {
+     "acc1": 0,
+     "acc2": 7,
+     "arrival_kept": "fac@W2bO15v1.W2bG0v2",
+     "comp1": "fac@x.W2bG0v1",
+     "comp2": "fac@W2bO15v1.W2bG0v2",
+     "demo": true,
+     "kept": "fac@W2bO15v1.W2bG0v2",
+     "library_before": {
+      "G:in|the basket": "W2bG0v1",
+      "G:in|the tray": "W2bG1v4",
+      "G:on top of|the cabinet": "W2bG2v2",
+      "G:on|the plate": "W2bG3v4",
+      "I:put|the black bowl|back": "W2bI4v1",
+      "I:put|the black bowl|front": "W2bI5v1",
+      "I:put|the black bowl|middle": null,
+      "O:put|the alphabet soup": null,
+      "O:put|the black bowl": "W2bO8v4",
+      "O:put|the butter": "E4bO9v1",
+      "O:put|the chocolate pudding": "E4bO10v1",
+      "O:put|the cream cheese": null,
+      "O:put|the cream cheese box": null,
+      "O:put|the frying pan": "E4bO13v1",
+      "O:put|the ketchup": "W2bO14v2",
+      "O:put|the milk": null,
+      "O:put|the orange juice": "W2bO16v1",
+      "O:put|the red mug": "W2bO17v2",
+      "O:put|the salad dressing": "W2bO18v1",
+      "O:put|the tomato sauce": "W2bO19v1",
+      "O:put|the white bowl": "W2bO20v3",
+      "O:put|the white mug": "E4bO21v1"
+     },
+     "rechecks": [
+      {
+       "acc": 9,
+       "comp": "fac@W2bO15v1.W2bG0v3"
+      },
+      {
+       "acc": 7,
+       "comp": "fac@W2bO15v1.W2bG0v4"
+      }
+     ],
+     "task": 52,
+     "valid": "fac@W2bO15v1.W2bG0v4",
+     "zs": 0
+    },
+    {
+     "acc1": 0,
+     "acc2": 6,
+     "arrival_kept": "fac@W2bI6v1.W2bG3v5",
+     "comp1": "fac@W2bO8v4.W2bG3v4",
+     "comp2": "fac@W2bI6v1.W2bG3v5",
+     "demo": true,
+     "kept": "fac@W2bI6v1.W2bG3v5",
+     "library_before": {
+      "G:in|the basket": "W2bG0v2",
+      "G:in|the tray": "W2bG1v4",
+      "G:on top of|the cabinet": "W2bG2v2",
+      "G:on|the plate": "W2bG3v4",
+      "I:put|the black bowl|back": "W2bI4v1",
+      "I:put|the black bowl|front": "W2bI5v1",
+      "I:put|the black bowl|middle": null,
+      "O:put|the alphabet soup": null,
+      "O:put|the black bowl": "W2bO8v4",
+      "O:put|the butter": "E4bO9v1",
+      "O:put|the chocolate pudding": "E4bO10v1",
+      "O:put|the cream cheese": null,
+      "O:put|the cream cheese box": null,
+      "O:put|the frying pan": "E4bO13v1",
+      "O:put|the ketchup": "W2bO14v2",
+      "O:put|the milk": "W2bO15v1",
+      "O:put|the orange juice": "W2bO16v1",
+      "O:put|the red mug": "W2bO17v2",
+      "O:put|the salad dressing": "W2bO18v1",
+      "O:put|the tomato sauce": "W2bO19v1",
+      "O:put|the white bowl": "W2bO20v3",
+      "O:put|the white mug": "E4bO21v1"
+     },
+     "task": 14,
+     "valid": "fac@W2bI6v1.W2bG3v5",
+     "zs": 5
+    },
+    {
+     "acc1": 9,
+     "arrival_kept": "zs",
+     "comp1": "fac@E4bO10v1.W2bG1v4",
+     "demo": false,
+     "kept": "zs",
+     "library_before": {
+      "G:in|the basket": "W2bG0v2",
+      "G:in|the tray": "W2bG1v4",
+      "G:on top of|the cabinet": "W2bG2v2",
+      "G:on|the plate": "W2bG3v5",
+      "I:put|the black bowl|back": "W2bI4v1",
+      "I:put|the black bowl|front": "W2bI5v1",
+      "I:put|the black bowl|middle": "W2bI6v1",
+      "O:put|the alphabet soup": null,
+      "O:put|the black bowl": "W2bO8v5",
+      "O:put|the butter": "E4bO9v1",
+      "O:put|the chocolate pudding": "E4bO10v1",
+      "O:put|the cream cheese": null,
+      "O:put|the cream cheese box": null,
+      "O:put|the frying pan": "E4bO13v1",
+      "O:put|the ketchup": "W2bO14v2",
+      "O:put|the milk": "W2bO15v1",
+      "O:put|the orange juice": "W2bO16v1",
+      "O:put|the red mug": "W2bO17v2",
+      "O:put|the salad dressing": "W2bO18v1",
+      "O:put|the tomato sauce": "W2bO19v1",
+      "O:put|the white bowl": "W2bO20v3",
+      "O:put|the white mug": "E4bO21v1"
+     },
+     "task": 61,
+     "valid": null,
+     "zs": 10
+    },
+    {
+     "acc1": 0,
+     "acc2": 10,
+     "arrival_kept": "fac@W2bO19v2.W2bG0v3",
+     "comp1": "fac@W2bO19v1.W2bG0v2",
+     "comp2": "fac@W2bO19v2.W2bG0v3",
+     "demo": true,
+     "kept": "fac@W2bO19v2.W2bG0v3",
+     "library_before": {
+      "G:in|the basket": "W2bG0v2",
+      "G:in|the tray": "W2bG1v4",
+      "G:on top of|the cabinet": "W2bG2v2",
+      "G:on|the plate": "W2bG3v5",
+      "I:put|the black bowl|back": "W2bI4v1",
+      "I:put|the black bowl|front": "W2bI5v1",
+      "I:put|the black bowl|middle": "W2bI6v1",
+      "O:put|the alphabet soup": null,
+      "O:put|the black bowl": "W2bO8v5",
+      "O:put|the butter": "E4bO9v1",
+      "O:put|the chocolate pudding": "E4bO10v1",
+      "O:put|the cream cheese": null,
+      "O:put|the cream cheese box": null,
+      "O:put|the frying pan": "E4bO13v1",
+      "O:put|the ketchup": "W2bO14v2",
+      "O:put|the milk": "W2bO15v1",
+      "O:put|the orange juice": "W2bO16v1",
+      "O:put|the red mug": "W2bO17v2",
+      "O:put|the salad dressing": "W2bO18v1",
+      "O:put|the tomato sauce": "W2bO19v1",
+      "O:put|the white bowl": "W2bO20v3",
+      "O:put|the white mug": "E4bO21v1"
+     },
+     "rechecks": [
+      {
+       "acc": 9,
+       "comp": "fac@W2bO19v2.W2bG0v4"
+      }
+     ],
+     "task": 49,
+     "valid": "fac@W2bO19v2.W2bG0v4",
+     "zs": 0
+    },
+    {
+     "acc1": 2,
+     "acc2": 2,
+     "arrival_kept": "fac@W2bO13v2.W2bG2v3",
+     "comp1": "fac@E4bO13v1.W2bG2v2",
+     "comp2": "fac@W2bO13v2.W2bG2v3",
+     "demo": true,
+     "kept": "fac@W2bO13v2.W2bG2v3",
+     "library_before": {
+      "G:in|the basket": "W2bG0v3",
+      "G:in|the tray": "W2bG1v4",
+      "G:on top of|the cabinet": "W2bG2v2",
+      "G:on|the plate": "W2bG3v5",
+      "I:put|the black bowl|back": "W2bI4v1",
+      "I:put|the black bowl|front": "W2bI5v1",
+      "I:put|the black bowl|middle": "W2bI6v1",
+      "O:put|the alphabet soup": null,
+      "O:put|the black bowl": "W2bO8v5",
+      "O:put|the butter": "E4bO9v1",
+      "O:put|the chocolate pudding": "E4bO10v1",
+      "O:put|the cream cheese": null,
+      "O:put|the cream cheese box": null,
+      "O:put|the frying pan": "E4bO13v1",
+      "O:put|the ketchup": "W2bO14v2",
+      "O:put|the milk": "W2bO15v1",
+      "O:put|the orange juice": "W2bO16v1",
+      "O:put|the red mug": "W2bO17v2",
+      "O:put|the salad dressing": "W2bO18v1",
+      "O:put|the tomato sauce": "W2bO19v2",
+      "O:put|the white bowl": "W2bO20v3",
+      "O:put|the white mug": "E4bO21v1"
+     },
+     "rechecks": [
+      {
+       "acc": 2,
+       "comp": "fac@W2bO13v2.W2bG2v4"
+      }
+     ],
+     "task": 41,
+     "valid": "fac@W2bO13v2.W2bG2v4",
+     "zs": 0
+    },
+    {
+     "acc1": 8,
+     "arrival_kept": "zs",
+     "comp1": "fac@x.W2bG0v3",
+     "demo": false,
+     "kept": "zs",
+     "library_before": {
+      "G:in|the basket": "W2bG0v3",
+      "G:in|the tray": "W2bG1v4",
+      "G:on top of|the cabinet": "W2bG2v3",
+      "G:on|the plate": "W2bG3v5",
+      "I:put|the black bowl|back": "W2bI4v1",
+      "I:put|the black bowl|front": "W2bI5v1",
+      "I:put|the black bowl|middle": "W2bI6v1",
+      "O:put|the alphabet soup": null,
+      "O:put|the black bowl": "W2bO8v5",
+      "O:put|the butter": "E4bO9v1",
+      "O:put|the chocolate pudding": "E4bO10v1",
+      "O:put|the cream cheese": null,
+      "O:put|the cream cheese box": null,
+      "O:put|the frying pan": "W2bO13v2",
+      "O:put|the ketchup": "W2bO14v2",
+      "O:put|the milk": "W2bO15v1",
+      "O:put|the orange juice": "W2bO16v1",
+      "O:put|the red mug": "W2bO17v2",
+      "O:put|the salad dressing": "W2bO18v1",
+      "O:put|the tomato sauce": "W2bO19v2",
+      "O:put|the white bowl": "W2bO20v3",
+      "O:put|the white mug": "E4bO21v1"
+     },
+     "task": 47,
+     "valid": null,
+     "zs": 9
+    },
+    {
+     "acc1": 10,
+     "arrival_kept": "fac@E4bO9v1.W2bG1v4",
+     "comp1": "fac@E4bO9v1.W2bG1v4",
+     "demo": false,
+     "kept": "fac@E4bO9v1.W2bG1v4",
+     "library_before": {
+      "G:in|the basket": "W2bG0v3",
+      "G:in|the tray": "W2bG1v4",
+      "G:on top of|the cabinet": "W2bG2v3",
+      "G:on|the plate": "W2bG3v5",
+      "I:put|the black bowl|back": "W2bI4v1",
+      "I:put|the black bowl|front": "W2bI5v1",
+      "I:put|the black bowl|middle": "W2bI6v1",
+      "O:put|the alphabet soup": null,
+      "O:put|the black bowl": "W2bO8v5",
+      "O:put|the butter": "E4bO9v1",
+      "O:put|the chocolate pudding": "E4bO10v1",
+      "O:put|the cream cheese": null,
+      "O:put|the cream cheese box": null,
+      "O:put|the frying pan": "W2bO13v2",
+      "O:put|the ketchup": "W2bO14v2",
+      "O:put|the milk": "W2bO15v1",
+      "O:put|the orange juice": "W2bO16v1",
+      "O:put|the red mug": "W2bO17v2",
+      "O:put|the salad dressing": "W2bO18v1",
+      "O:put|the tomato sauce": "W2bO19v2",
+      "O:put|the white bowl": "W2bO20v3",
+      "O:put|the white mug": "E4bO21v1"
+     },
+     "task": 56,
+     "valid": "fac@E4bO9v1.W2bG1v4",
+     "zs": 9
+    },
+    {
+     "acc1": 6,
+     "arrival_kept": "zs",
+     "comp1": "fac@W2bO8v5.W2bG3v5",
+     "demo": false,
+     "kept": "zs",
+     "library_before": {
+      "G:in|the basket": "W2bG0v3",
+      "G:in|the tray": "W2bG1v4",
+      "G:on top of|the cabinet": "W2bG2v3",
+      "G:on|the plate": "W2bG3v5",
+      "I:put|the black bowl|back": "W2bI4v1",
+      "I:put|the black bowl|front": "W2bI5v1",
+      "I:put|the black bowl|middle": "W2bI6v1",
+      "O:put|the alphabet soup": null,
+      "O:put|the black bowl": "W2bO8v5",
+      "O:put|the butter": "E4bO9v1",
+      "O:put|the chocolate pudding": "E4bO10v1",
+      "O:put|the cream cheese": null,
+      "O:put|the cream cheese box": null,
+      "O:put|the frying pan": "W2bO13v2",
+      "O:put|the ketchup": "W2bO14v2",
+      "O:put|the milk": "W2bO15v1",
+      "O:put|the orange juice": "W2bO16v1",
+      "O:put|the red mug": "W2bO17v2",
+      "O:put|the salad dressing": "W2bO18v1",
+      "O:put|the tomato sauce": "W2bO19v2",
+      "O:put|the white bowl": "W2bO20v3",
+      "O:put|the white mug": "E4bO21v1"
+     },
+     "task": 9,
+     "valid": null,
+     "zs": 9
+    },
+    {
+     "acc1": 9,
+     "arrival_kept": "fac@W2bI6v1.W2bG2v3",
+     "comp1": "fac@W2bI6v1.W2bG2v3",
+     "demo": false,
+     "kept": "fac@W2bI6v1.W2bG2v3",
+     "library_before": {
+      "G:in|the basket": "W2bG0v3",
+      "G:in|the tray": "W2bG1v4",
+      "G:on top of|the cabinet": "W2bG2v3",
+      "G:on|the plate": "W2bG3v5",
+      "I:put|the black bowl|back": "W2bI4v1",
+      "I:put|the black bowl|front": "W2bI5v1",
+      "I:put|the black bowl|middle": "W2bI6v1",
+      "O:put|the alphabet soup": null,
+      "O:put|the black bowl": "W2bO8v5",
+      "O:put|the butter": "E4bO9v1",
+      "O:put|the chocolate pudding": "E4bO10v1",
+      "O:put|the cream cheese": null,
+      "O:put|the cream cheese box": null,
+      "O:put|the frying pan": "W2bO13v2",
+      "O:put|the ketchup": "W2bO14v2",
+      "O:put|the milk": "W2bO15v1",
+      "O:put|the orange juice": "W2bO16v1",
+      "O:put|the red mug": "W2bO17v2",
+      "O:put|the salad dressing": "W2bO18v1",
+      "O:put|the tomato sauce": "W2bO19v2",
+      "O:put|the white bowl": "W2bO20v3",
+      "O:put|the white mug": "E4bO21v1"
+     },
+     "rechecks": [
+      {
+       "acc": 9,
+       "comp": "fac@W2bI6v1.W2bG2v4"
+      }
+     ],
+     "task": 15,
+     "valid": "fac@W2bI6v1.W2bG2v4",
+     "zs": 1
+    },
+    {
+     "acc1": 10,
+     "arrival_kept": "zs",
+     "comp1": "fac@x.W2bG1v4",
+     "demo": false,
+     "kept": "zs",
+     "library_before": {
+      "G:in|the basket": "W2bG0v3",
+      "G:in|the tray": "W2bG1v4",
+      "G:on top of|the cabinet": "W2bG2v3",
+      "G:on|the plate": "W2bG3v5",
+      "I:put|the black bowl|back": "W2bI4v1",
+      "I:put|the black bowl|front": "W2bI5v1",
+      "I:put|the black bowl|middle": "W2bI6v1",
+      "O:put|the alphabet soup": null,
+      "O:put|the black bowl": "W2bO8v5",
+      "O:put|the butter": "E4bO9v1",
+      "O:put|the chocolate pudding": "E4bO10v1",
+      "O:put|the cream cheese": null,
+      "O:put|the cream cheese box": null,
+      "O:put|the frying pan": "W2bO13v2",
+      "O:put|the ketchup": "W2bO14v2",
+      "O:put|the milk": "W2bO15v1",
+      "O:put|the orange juice": "W2bO16v1",
+      "O:put|the red mug": "W2bO17v2",
+      "O:put|the salad dressing": "W2bO18v1",
+      "O:put|the tomato sauce": "W2bO19v2",
+      "O:put|the white bowl": "W2bO20v3",
+      "O:put|the white mug": "E4bO21v1"
+     },
+     "task": 55,
+     "valid": null,
+     "zs": 10
+    },
+    {
+     "acc1": 1,
+     "acc2": 7,
+     "arrival_kept": "fac@W2bO14v3.W2bG0v4",
+     "comp1": "fac@W2bO14v2.W2bG0v3",
+     "comp2": "fac@W2bO14v3.W2bG0v4",
+     "demo": true,
+     "kept": "fac@W2bO14v3.W2bG0v4",
+     "library_before": {
+      "G:in|the basket": "W2bG0v3",
+      "G:in|the tray": "W2bG1v4",
+      "G:on top of|the cabinet": "W2bG2v3",
+      "G:on|the plate": "W2bG3v5",
+      "I:put|the black bowl|back": "W2bI4v1",
+      "I:put|the black bowl|front": "W2bI5v1",
+      "I:put|the black bowl|middle": "W2bI6v1",
+      "O:put|the alphabet soup": null,
+      "O:put|the black bowl": "W2bO8v5",
+      "O:put|the butter": "E4bO9v1",
+      "O:put|the chocolate pudding": "E4bO10v1",
+      "O:put|the cream cheese": null,
+      "O:put|the cream cheese box": null,
+      "O:put|the frying pan": "W2bO13v2",
+      "O:put|the ketchup": "W2bO14v2",
+      "O:put|the milk": "W2bO15v1",
+      "O:put|the orange juice": "W2bO16v1",
+      "O:put|the red mug": "W2bO17v2",
+      "O:put|the salad dressing": "W2bO18v1",
+      "O:put|the tomato sauce": "W2bO19v2",
+      "O:put|the white bowl": "W2bO20v3",
+      "O:put|the white mug": "E4bO21v1"
+     },
+     "task": 48,
+     "valid": "fac@W2bO14v3.W2bG0v4",
+     "zs": 0
+    },
+    {
+     "acc1": 1,
+     "acc2": 9,
+     "arrival_kept": "fac@W2bO8v6.W2bG2v4",
+     "comp1": "fac@W2bO8v5.W2bG2v3",
+     "comp2": "fac@W2bO8v6.W2bG2v4",
+     "demo": true,
+     "kept": "fac@W2bO8v6.W2bG2v4",
+     "library_before": {
+      "G:in|the basket": "W2bG0v4",
+      "G:in|the tray": "W2bG1v4",
+      "G:on top of|the cabinet": "W2bG2v3",
+      "G:on|the plate": "W2bG3v5",
+      "I:put|the black bowl|back": "W2bI4v1",
+      "I:put|the black bowl|front": "W2bI5v1",
+      "I:put|the black bowl|middle": "W2bI6v1",
+      "O:put|the alphabet soup": null,
+      "O:put|the black bowl": "W2bO8v5",
+      "O:put|the butter": "E4bO9v1",
+      "O:put|the chocolate pudding": "E4bO10v1",
+      "O:put|the cream cheese": null,
+      "O:put|the cream cheese box": null,
+      "O:put|the frying pan": "W2bO13v2",
+      "O:put|the ketchup": "W2bO14v3",
+      "O:put|the milk": "W2bO15v1",
+      "O:put|the orange juice": "W2bO16v1",
+      "O:put|the red mug": "W2bO17v2",
+      "O:put|the salad dressing": "W2bO18v1",
+      "O:put|the tomato sauce": "W2bO19v2",
+      "O:put|the white bowl": "W2bO20v3",
+      "O:put|the white mug": "E4bO21v1"
+     },
+     "task": 31,
+     "valid": "fac@W2bO8v6.W2bG2v4",
+     "zs": 0
+    }
+   ],
+   "changed_since_arrival": 12,
+   "damage": {
+    "diff": {
+     "diff": -0.025,
+     "hi": 0.05,
+     "hi90": 0.0375,
+     "lo": -0.1,
+     "lo90": -0.0875,
+     "n_pairs": 240,
+     "n_tasks": 12
+    },
+    "discordant": [
+     16,
+     22
+    ],
+    "n": 240,
+    "noninferior": false,
+    "sign_p": 0.417692190836533,
+    "tasks": 12,
+    "x": 184,
+    "y": 190
+   },
+   "demos": 16,
+   "kept_library": 16,
+   "kept_without_demo": [
+    30,
+    57,
+    46,
+    51,
+    72,
+    50,
+    10,
+    54,
+    61,
+    47,
+    56,
+    9,
+    15,
+    55
+   ],
+   "per_task": {
+    "10": {
+     "arr": 18,
+     "fin": 18,
+     "lora_acc": 18,
+     "zs": 18
+    },
+    "12": {
+     "arr": 20,
+     "fin": 20,
+     "lora_acc": 19,
+     "zs": 9
+    },
+    "13": {
+     "arr": 20,
+     "fin": 17,
+     "lora_acc": 19,
+     "zs": 0
+    },
+    "14": {
+     "arr": 15,
+     "fin": 15,
+     "lora_acc": 17,
+     "zs": 12
+    },
+    "15": {
+     "arr": 19,
+     "fin": 17,
+     "lora_acc": 16,
+     "zs": 1
+    },
+    "25": {
+     "arr": 19,
+     "fin": 15,
+     "lora_acc": 20,
+     "zs": 0
+    },
+    "30": {
+     "arr": 14,
+     "fin": 14,
+     "lora_acc": 20,
+     "zs": 14
+    },
+    "31": {
+     "arr": 18,
+     "fin": 18,
+     "lora_acc": 20,
+     "zs": 3
+    },
+    "36": {
+     "arr": 13,
+     "fin": 10,
+     "lora_acc": 13,
+     "zs": 0
+    },
+    "41": {
+     "arr": 10,
+     "fin": 12,
+     "lora_acc": 17,
+     "zs": 1
+    },
+    "43": {
+     "arr": 19,
+     "fin": 18,
+     "lora_acc": 18,
+     "zs": 3
+    },
+    "46": {
+     "arr": 20,
+     "fin": 20,
+     "lora_acc": 20,
+     "zs": 20
+    },
+    "47": {
+     "arr": 20,
+     "fin": 20,
+     "lora_acc": 20,
+     "zs": 20
+    },
+    "48": {
+     "arr": 15,
+     "fin": 15,
+     "lora_acc": 17,
+     "zs": 0
+    },
+    "49": {
+     "arr": 18,
+     "fin": 19,
+     "lora_acc": 18,
+     "zs": 0
+    },
+    "50": {
+     "arr": 17,
+     "fin": 17,
+     "lora_acc": 17,
+     "zs": 17
+    },
+    "51": {
+     "arr": 19,
+     "fin": 19,
+     "zs": 19
+    },
+    "52": {
+     "arr": 11,
+     "fin": 13,
+     "lora_acc": 11,
+     "zs": 0
+    },
+    "53": {
+     "arr": 20,
+     "fin": 20,
+     "lora_acc": 20,
+     "zs": 1
+    },
+    "54": {
+     "arr": 17,
+     "fin": 17,
+     "lora_acc": 12,
+     "zs": 17
+    },
+    "55": {
+     "arr": 20,
+     "fin": 20,
+     "lora_acc": 20,
+     "zs": 20
+    },
+    "56": {
+     "arr": 19,
+     "fin": 19,
+     "lora_acc": 20,
+     "zs": 18
+    },
+    "57": {
+     "arr": 20,
+     "fin": 20,
+     "lora_acc": 20,
+     "zs": 20
+    },
+    "58": {
+     "arr": 0,
+     "fin": 0,
+     "lora_acc": 11,
+     "zs": 0
+    },
+    "59": {
+     "arr": 8,
+     "fin": 10,
+     "lora_acc": 9,
+     "zs": 1
+    },
+    "61": {
+     "arr": 20,
+     "fin": 20,
+     "lora_acc": 20,
+     "zs": 20
+    },
+    "62": {
+     "arr": 0,
+     "fin": 0,
+     "lora_acc": 6,
+     "zs": 0
+    },
+    "71": {
+     "arr": 13,
+     "fin": 13,
+     "lora_acc": 16,
+     "zs": 0
+    },
+    "72": {
+     "arr": 20,
+     "fin": 20,
+     "lora_acc": 20,
+     "zs": 20
+    },
+    "9": {
+     "arr": 19,
+     "fin": 19,
+     "lora_acc": 20,
+     "zs": 19
+    }
+   },
+   "prototypes": 19,
+   "unavailable": 0,
+   "vs_lora_acc": {
+    "diff": {
+     "diff": -0.06551724137931035,
+     "hi": -0.005172413793103448,
+     "hi90": -0.015431034482759875,
+     "lo": -0.1310344827586207,
+     "lo90": -0.11896551724137931,
+     "n_pairs": 580,
+     "n_tasks": 29
+    },
+    "discordant": [
+     29,
+     67
+    ],
+    "n": 580,
+    "sign_p": 0.00013222219842746964,
+    "tasks": 29,
+    "x": 456,
+    "y": 494
+   }
+  },
+  "missing": []
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "w2_stream__libero_90__read__s13__ca526a7d",
+ "schema": 1,
+ "script": "experiments/w2_stream.py",
+ "seconds": null,
+ "seed": 13,
+ "source_commit": null,
+ "started": "2026-10-14T21:28:13+00:00",
+ "stream": null,
+ "tag": "read"
+}

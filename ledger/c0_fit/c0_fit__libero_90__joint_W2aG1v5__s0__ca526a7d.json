@@ -1,0 +1,168 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90",
+ "bytes": {
+  "codes": 0,
+  "experts": 4677632,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 4677632,
+  "tree": 0
+ },
+ "command": "experiments/c0_fit.py --task 0 --joint 56+58+59+60+62+63+64 --key in|the_tray --name W2aG1v5 --rank 4 --goal",
+ "config": {
+  "approach": false,
+  "batch": 32,
+  "bind": false,
+  "demo": 0,
+  "goal": true,
+  "init": "",
+  "joint": "56+58+59+60+62+63+64",
+  "key": "in|the tray",
+  "lr": 0.0001,
+  "name": "W2aG1v5",
+  "rank": 4,
+  "scope": "expert",
+  "steps": 1000,
+  "tag": "",
+  "task": 0
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "sonny.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4079728",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "c0_fit",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "ca526a7d67e3ed68f8215054b3b1a0519117a373",
+  "short": "ca526a7d"
+ },
+ "keys": {},
+ "metrics": {
+  "approach": false,
+  "bind": false,
+  "bytes": 4677632,
+  "curve": {
+   "anchor": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "loss": [
+    0.07387100905179977,
+    0.03884521499276161,
+    0.02912219427525997,
+    0.020353615283966064,
+    0.020196279510855675,
+    0.009861203841865063,
+    0.006729546934366226,
+    0.007238117046654224,
+    0.00696443160995841,
+    0.010173936374485493,
+    0.009517526254057884
+   ],
+   "step": [
+    1,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000
+   ]
+  },
+  "frames": 474,
+  "goal": true,
+  "init": "",
+  "joint": [
+   {
+    "clause": "pick up the butter and put it in the tray",
+    "frames": [
+     38,
+     103
+    ],
+    "task": 56
+   },
+   {
+    "clause": "pick up the ketchup and put it in the tray",
+    "frames": [
+     61,
+     143
+    ],
+    "task": 58
+   },
+   {
+    "clause": "pick up the tomato sauce and put it in the tray",
+    "frames": [
+     72,
+     128
+    ],
+    "task": 59
+   },
+   {
+    "clause": "pick up the black bowl on the left and put it in the tray",
+    "frames": [
+     36,
+     110
+    ],
+    "task": 60
+   },
+   {
+    "clause": "pick up the salad dressing and put it in the tray",
+    "frames": [
+     39,
+     114
+    ],
+    "task": 62
+   },
+   {
+    "clause": "place the bowls in the tray",
+    "frames": [
+     144,
+     195
+    ],
+    "task": 63
+   },
+   {
+    "clause": "place the bowls in the tray",
+    "frames": [
+     157,
+     228
+    ],
+    "task": 64
+   }
+  ],
+  "rank": 4,
+  "scope": "expert",
+  "step_key": "in|the tray"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "c0_fit__libero_90__joint_W2aG1v5__s0__ca526a7d",
+ "schema": 1,
+ "script": "experiments/c0_fit.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-14T08:04:52+00:00",
+ "stream": null,
+ "tag": "joint_W2aG1v5"
+}

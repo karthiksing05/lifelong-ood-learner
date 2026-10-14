@@ -1001,6 +1001,7 @@ P_FACTOR = f"""{factored_par()}{plan_e_par()}"""
 
 def streams_par():
     e4, w1, w0 = row("e4_stream", "read"), row("w1_stream", "read"), row("w0_select", "probe_sample")
+    w2 = row("w2_stream", "read")
     if not e4:
         return ""
     out = ("<p>Learned as a stream, the library starts from the demonstrations of the LIBERO-90 tasks outside the stream, and the "
@@ -1009,7 +1010,7 @@ def streams_par():
            "rejects the composition; the demonstration then updates every concept on its path, as Cobweb updates every node an instance "
            "passes. Each task is served at the end by the final library (pre-registered, m3_prereg tag e4_stream).</p>")
     rows_ = []
-    for name, r in (("E4", e4), ("W1", w1)):
+    for name, r in (("E4", e4), ("W1", w1), ("W2", w2)):
         if not r:
             continue
         for o in ("a", "b"):
