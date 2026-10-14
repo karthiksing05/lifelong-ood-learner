@@ -1,0 +1,507 @@
+{
+ "tasks": {
+  "2": {
+   "object_key": "put|the black bowl",
+   "goal_key": "in|the top drawer of the cabinet",
+   "instance_key": null,
+   "type": "Osc1",
+   "goal": "XG0",
+   "object_proto": "Osc1"
+  },
+  "18": {
+   "object_key": "put|the frying pan",
+   "goal_key": "on|the stove",
+   "instance_key": null,
+   "type": "Osc6",
+   "goal": "XG1",
+   "object_proto": "Osc6"
+  },
+  "19": {
+   "object_key": "put|the moka pot",
+   "goal_key": "on|the stove",
+   "instance_key": null,
+   "type": "XO2",
+   "goal": "XG1",
+   "object_proto": "XO2"
+  },
+  "24": {
+   "object_key": "put|the black bowl",
+   "goal_key": "in|the bottom drawer of the cabinet",
+   "instance_key": null,
+   "type": "Osc1",
+   "goal": "XG3",
+   "object_proto": "Osc1"
+  },
+  "26": {
+   "object_key": "put|the wine bottle",
+   "goal_key": "in|the bottom drawer of the cabinet",
+   "instance_key": null,
+   "type": "XO4",
+   "goal": "XG3",
+   "object_proto": "XO4"
+  },
+  "27": {
+   "object_key": "put|the wine bottle",
+   "goal_key": "on|the wine rack",
+   "instance_key": null,
+   "type": "XO4",
+   "goal": "XG5",
+   "object_proto": "XO4"
+  },
+  "29": {
+   "object_key": "put|the black bowl",
+   "goal_key": "in|the top drawer of the cabinet",
+   "instance_key": null,
+   "type": "Osc1",
+   "goal": "XG0",
+   "object_proto": "Osc1"
+  },
+  "32": {
+   "object_key": "put|the ketchup",
+   "goal_key": "in|the top drawer of the cabinet",
+   "instance_key": null,
+   "type": "Osc7",
+   "goal": "XG0",
+   "object_proto": "Osc7"
+  },
+  "34": {
+   "object_key": "put|the yellow and white mug",
+   "goal_key": "to the front of|the white mug",
+   "instance_key": null,
+   "type": "XO6",
+   "goal": "XG7",
+   "object_proto": "XO6"
+  },
+  "37": {
+   "object_key": "put|the white bowl",
+   "goal_key": "to the right of|the plate",
+   "instance_key": null,
+   "type": "Osc13",
+   "goal": "XG8",
+   "object_proto": "Osc13"
+  },
+  "38": {
+   "object_key": "put|the moka pot",
+   "goal_key": "on|the stove",
+   "instance_key": "put|the moka pot|right",
+   "type": "XO2",
+   "goal": "XG1",
+   "child": "XI9",
+   "object_proto": "XI9"
+  },
+  "40": {
+   "object_key": "put|the frying pan",
+   "goal_key": "on|the cabinet shelf",
+   "instance_key": null,
+   "type": "Osc6",
+   "goal": "XG10",
+   "object_proto": "Osc6"
+  },
+  "42": {
+   "object_key": "put|the frying pan",
+   "goal_key": "under|the cabinet shelf",
+   "instance_key": null,
+   "type": "Osc6",
+   "goal": "XG11",
+   "object_proto": "Osc6"
+  },
+  "60": {
+   "object_key": "put|the black bowl",
+   "goal_key": "in|the tray",
+   "instance_key": "put|the black bowl|left",
+   "type": "Osc1",
+   "goal": "Ghtray",
+   "child": "XI12",
+   "object_proto": "XI12"
+  },
+  "65": {
+   "object_key": "put|the red mug",
+   "goal_key": "on|the left plate",
+   "instance_key": null,
+   "type": "Osc10",
+   "goal": "XG13",
+   "object_proto": "Osc10"
+  },
+  "66": {
+   "object_key": "put|the red mug",
+   "goal_key": "on|the right plate",
+   "instance_key": null,
+   "type": "Osc10",
+   "goal": "XG14",
+   "object_proto": "Osc10"
+  },
+  "67": {
+   "object_key": "put|the white mug",
+   "goal_key": "on|the left plate",
+   "instance_key": null,
+   "type": "Osc14",
+   "goal": "XG13",
+   "object_proto": "Osc14"
+  },
+  "68": {
+   "object_key": "put|the yellow and white mug",
+   "goal_key": "on|the right plate",
+   "instance_key": null,
+   "type": "XO6",
+   "goal": "XG14",
+   "object_proto": "XO6"
+  },
+  "69": {
+   "object_key": "put|the chocolate pudding",
+   "goal_key": "to the left of|the plate",
+   "instance_key": null,
+   "type": "Osc3",
+   "goal": "XG15",
+   "object_proto": "Osc3"
+  },
+  "70": {
+   "object_key": "put|the chocolate pudding",
+   "goal_key": "to the right of|the plate",
+   "instance_key": null,
+   "type": "Osc3",
+   "goal": "XG8",
+   "object_proto": "Osc3"
+  },
+  "73": {
+   "object_key": "put|the book",
+   "goal_key": "in|the front compartment of the caddy",
+   "instance_key": null,
+   "type": "XO16",
+   "goal": "XG17",
+   "object_proto": "XO16"
+  },
+  "74": {
+   "object_key": "put|the book",
+   "goal_key": "in|the left compartment of the caddy",
+   "instance_key": null,
+   "type": "XO16",
+   "goal": "XG18",
+   "object_proto": "XO16"
+  },
+  "75": {
+   "object_key": "put|the book",
+   "goal_key": "in|the right compartment of the caddy",
+   "instance_key": null,
+   "type": "XO16",
+   "goal": "XG19",
+   "object_proto": "XO16"
+  },
+  "76": {
+   "object_key": "put|the yellow and white mug",
+   "goal_key": "to the right of|the caddy",
+   "instance_key": null,
+   "type": "XO6",
+   "goal": "XG20",
+   "object_proto": "XO6"
+  },
+  "77": {
+   "object_key": "put|the book",
+   "goal_key": "in|the back compartment of the caddy",
+   "instance_key": null,
+   "type": "XO16",
+   "goal": "XG21",
+   "object_proto": "XO16"
+  },
+  "78": {
+   "object_key": "put|the book",
+   "goal_key": "in|the front compartment of the caddy",
+   "instance_key": null,
+   "type": "XO16",
+   "goal": "XG17",
+   "object_proto": "XO16"
+  },
+  "79": {
+   "object_key": "put|the book",
+   "goal_key": "in|the left compartment of the caddy",
+   "instance_key": null,
+   "type": "XO16",
+   "goal": "XG18",
+   "object_proto": "XO16"
+  },
+  "80": {
+   "object_key": "put|the book",
+   "goal_key": "in|the right compartment of the caddy",
+   "instance_key": null,
+   "type": "XO16",
+   "goal": "XG19",
+   "object_proto": "XO16"
+  },
+  "81": {
+   "object_key": "put|the book",
+   "goal_key": "in|the front compartment of the caddy",
+   "instance_key": null,
+   "type": "XO16",
+   "goal": "XG17",
+   "object_proto": "XO16"
+  },
+  "82": {
+   "object_key": "put|the book",
+   "goal_key": "in|the left compartment of the caddy",
+   "instance_key": null,
+   "type": "XO16",
+   "goal": "XG18",
+   "object_proto": "XO16"
+  },
+  "83": {
+   "object_key": "put|the book",
+   "goal_key": "in|the right compartment of the caddy",
+   "instance_key": null,
+   "type": "XO16",
+   "goal": "XG19",
+   "object_proto": "XO16"
+  },
+  "84": {
+   "object_key": "put|the red mug",
+   "goal_key": "to the right of|the caddy",
+   "instance_key": null,
+   "type": "Osc10",
+   "goal": "XG20",
+   "object_proto": "Osc10"
+  },
+  "85": {
+   "object_key": "put|the white mug",
+   "goal_key": "to the right of|the caddy",
+   "instance_key": null,
+   "type": "Osc14",
+   "goal": "XG20",
+   "object_proto": "Osc14"
+  },
+  "86": {
+   "object_key": "put|the book",
+   "goal_key": "on|the cabinet shelf",
+   "instance_key": "put|the book|middle",
+   "type": "XO16",
+   "goal": "XG10",
+   "child": "XI22",
+   "object_proto": "XI22"
+  },
+  "87": {
+   "object_key": "put|the book",
+   "goal_key": "on top of|the shelf",
+   "instance_key": "put|the book|left",
+   "type": "XO16",
+   "goal": "XG23",
+   "child": "XI24",
+   "object_proto": "XI24"
+  },
+  "88": {
+   "object_key": "put|the book",
+   "goal_key": "on|the cabinet shelf",
+   "instance_key": "put|the book|right",
+   "type": "XO16",
+   "goal": "XG10",
+   "child": "XI25",
+   "object_proto": "XI25"
+  },
+  "89": {
+   "object_key": "put|the book",
+   "goal_key": "under|the cabinet shelf",
+   "instance_key": "put|the book|right",
+   "type": "XO16",
+   "goal": "XG11",
+   "child": "XI25",
+   "object_proto": "XI25"
+  }
+ },
+ "new": {
+  "G:in|the top drawer of the cabinet": {
+   "name": "XG0",
+   "tasks": [
+    2,
+    3,
+    4,
+    5,
+    8,
+    29,
+    32
+   ]
+  },
+  "G:on|the stove": {
+   "name": "XG1",
+   "tasks": [
+    18,
+    19,
+    21,
+    38,
+    45
+   ]
+  },
+  "O:put|the moka pot": {
+   "name": "XO2",
+   "tasks": [
+    19,
+    38
+   ]
+  },
+  "G:in|the bottom drawer of the cabinet": {
+   "name": "XG3",
+   "tasks": [
+    24,
+    26
+   ]
+  },
+  "O:put|the wine bottle": {
+   "name": "XO4",
+   "tasks": [
+    26,
+    27
+   ]
+  },
+  "G:on|the wine rack": {
+   "name": "XG5",
+   "tasks": [
+    27
+   ]
+  },
+  "O:put|the yellow and white mug": {
+   "name": "XO6",
+   "tasks": [
+    34,
+    68,
+    76
+   ]
+  },
+  "G:to the front of|the white mug": {
+   "name": "XG7",
+   "tasks": [
+    34
+   ]
+  },
+  "G:to the right of|the plate": {
+   "name": "XG8",
+   "tasks": [
+    37,
+    70
+   ]
+  },
+  "I:put|the moka pot|right": {
+   "name": "XI9",
+   "tasks": [
+    38
+   ]
+  },
+  "G:on|the cabinet shelf": {
+   "name": "XG10",
+   "tasks": [
+    40,
+    86,
+    88
+   ]
+  },
+  "G:under|the cabinet shelf": {
+   "name": "XG11",
+   "tasks": [
+    42,
+    89
+   ]
+  },
+  "I:put|the black bowl|left": {
+   "name": "XI12",
+   "tasks": [
+    60
+   ]
+  },
+  "G:on|the left plate": {
+   "name": "XG13",
+   "tasks": [
+    65,
+    67
+   ]
+  },
+  "G:on|the right plate": {
+   "name": "XG14",
+   "tasks": [
+    66,
+    68
+   ]
+  },
+  "G:to the left of|the plate": {
+   "name": "XG15",
+   "tasks": [
+    69
+   ]
+  },
+  "O:put|the book": {
+   "name": "XO16",
+   "tasks": [
+    73,
+    74,
+    75,
+    77,
+    78,
+    79,
+    80,
+    81,
+    82,
+    83,
+    86,
+    87,
+    88,
+    89
+   ]
+  },
+  "G:in|the front compartment of the caddy": {
+   "name": "XG17",
+   "tasks": [
+    73,
+    78,
+    81
+   ]
+  },
+  "G:in|the left compartment of the caddy": {
+   "name": "XG18",
+   "tasks": [
+    74,
+    79,
+    82
+   ]
+  },
+  "G:in|the right compartment of the caddy": {
+   "name": "XG19",
+   "tasks": [
+    75,
+    80,
+    83
+   ]
+  },
+  "G:to the right of|the caddy": {
+   "name": "XG20",
+   "tasks": [
+    76,
+    84,
+    85
+   ]
+  },
+  "G:in|the back compartment of the caddy": {
+   "name": "XG21",
+   "tasks": [
+    77
+   ]
+  },
+  "I:put|the book|middle": {
+   "name": "XI22",
+   "tasks": [
+    86
+   ]
+  },
+  "G:on top of|the shelf": {
+   "name": "XG23",
+   "tasks": [
+    87
+   ]
+  },
+  "I:put|the book|left": {
+   "name": "XI24",
+   "tasks": [
+    87
+   ]
+  },
+  "I:put|the book|right": {
+   "name": "XI25",
+   "tasks": [
+    88,
+    89
+   ]
+  }
+ }
+}

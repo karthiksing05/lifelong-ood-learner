@@ -75,7 +75,7 @@ def transport(actions, lo, hi, run=RELEASE_RUN):
     return None if not starts else (lo + starts[0], hi)
 
 
-QUALIFIERS = r"\b(at|on) the (front|back|left|right)\b|\b(front|back|middle|left|right)\b"
+QUALIFIERS = r"\b(at|on|in) the (front|back|left|right|middle)\b|\b(front|back|middle|left|right)\b"   # "in the middle": 2026-10-14
 
 
 def object_key(clause):
